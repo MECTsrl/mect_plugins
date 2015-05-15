@@ -1,2 +1,2 @@
-# qt_atcm
-Qt plugins and templates for HMI applications in MECT 
+# qt_plugins
+QtCreator plugins and templates for building HMI applications in MECT Suite
