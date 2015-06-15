@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmtime.png</file>
+    </qresource>
+</RCC>

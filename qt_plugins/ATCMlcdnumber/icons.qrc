@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmlcdnumber.png</file>
+    </qresource>
+</RCC>

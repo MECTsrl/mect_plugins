@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>down.png</file>
+        <file>left.png</file>
+        <file>right.png</file>
+        <file>on.png</file>
+        <file>off.png</file>
+        <file>unk.png</file>
+        <file>marker.png</file>
+    </qresource>
+</RCC>
+

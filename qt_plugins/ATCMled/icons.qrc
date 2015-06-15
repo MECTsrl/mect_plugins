@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmled.png</file>
+        <file>on.png</file>
+        <file>off.png</file>
+        <file>unk.png</file>
+    </qresource>
+</RCC>

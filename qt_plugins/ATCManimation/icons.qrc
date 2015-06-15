@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmanimation.png</file>
+    </qresource>
+</RCC>

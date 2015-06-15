@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmcombobox.png</file>
+        <file>down.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmprogressbar.png</file>
+    </qresource>
+</RCC>

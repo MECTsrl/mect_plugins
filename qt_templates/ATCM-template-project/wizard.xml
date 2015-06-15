@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/****************************************************************************
+ **
+ ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+ ** Contact: http://www.qt-project.org/legal
+ **
+ ** This file is part of Qt Creator.
+ **
+ ** Commercial License Usage
+ ** Licensees holding valid commercial Qt licenses may use this file in
+ ** accordance with the commercial license agreement provided with the
+ ** Software or, alternatively, in accordance with the terms contained in
+ ** a written agreement between you and Digia.  For licensing terms and
+ ** conditions see http://qt.digia.com/licensing.  For further information
+ ** use the contact form at http://qt.digia.com/contact-us.
+ **
+ ** GNU Lesser General Public License Usage
+ ** Alternatively, this file may be used under the terms of the GNU Lesser
+ ** General Public License version 2.1 as published by the Free Software
+ ** Foundation and appearing in the file LICENSE.LGPL included in the
+ ** packaging of this file.  Please review the following information to
+ ** ensure the GNU Lesser General Public License version 2.1 requirements
+ ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+ **
+ ** In addition, as a special exception, Digia gives you certain additional
+ ** rights.  These rights are described in the Digia Qt LGPL Exception
+ ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+ **
+ ****************************************************************************/
+
+Custom project wizard configuration example file. Note that by convention,
+	   the project file goes last.
+	   The "class" and "firstpage" attributes specify that it is a Qt 4 wizard and
+	   leave room for the Qt 4 target page.
+	   -->
+	   <wizard version="1" kind="project"
+	   class="qt4project" firstpage="10"
+	   id="A.customqtproject" category="B.CustomProjects">
+	   <icon>console.png</icon>
+	   <description>Creates an empty Qt project with the template used by ATCM Applications and by QTCMplugin.</description>
+	   <displayname>ATCM plugin template</displayname>;
+	   <displaycategory>Mect Projects</displaycategory>
+	   <files>
+	   <file source="main.cpp" openeditor="false"/>
+	   <file source="main.h" openeditor="false"/>
+	   <file source="hmi_logger.cpp" openeditor="false"/>
+	   <file source="hmi_logger.h" openeditor="false"/>
+	   <file source="pagebrowser.cpp" openeditor="false"/>
+	   <file source="pagebrowser.h" openeditor="false"/>
+	   <file source="page0.cpp" openeditor="false"/>
+	   <file source="page0.h" openeditor="false"/>
+	   <file source="page0.ui" openeditor="true"/>
+	   <file source="alarms.cpp" openeditor="false"/>
+	   <file source="alarms.h" openeditor="false"/>
+	   <file source="alarms.ui" openeditor="false"/>
+	   <file source="alarms_history.cpp" openeditor="false"/>
+	   <file source="alarms_history.h" openeditor="false"/>
+	   <file source="alarms_history.ui" openeditor="false"/>
+	   <file source="screensaver.cpp" openeditor="false"/>
+	   <file source="screensaver.h" openeditor="false"/>
+	   <file source="display_settings.cpp" openeditor="false"/>
+	   <file source="display_settings.h" openeditor="false"/>
+	   <file source="display_settings.ui" openeditor="false"/>
+	   <file source="commpar_rtu.cpp" openeditor="false"/>
+	   <file source="commpar_rtu.h" openeditor="false"/>
+	   <file source="commpar_rtu.ui" openeditor="false"/>
+	   <file source="commpar_tcp.cpp" openeditor="false"/>
+	   <file source="commpar_tcp.h" openeditor="false"/>
+	   <file source="commpar_tcprtu.cpp" openeditor="false"/>
+	   <file source="commpar_tcprtu.h" openeditor="false"/>
+	   <file source="commpar_tcprtu.ui" openeditor="false"/>
+	   <file source="commpar_tcp.ui" openeditor="false"/>
+	   <file source="comm_status.cpp" openeditor="false"/>
+	   <file source="comm_status.h" openeditor="false"/>
+	   <file source="comm_status.ui" openeditor="false"/>
+	   <file source="datalog_set.cpp" openeditor="false"/>
+	   <file source="datalog_set.h" openeditor="false"/>
+	   <file source="datalog_set.ui" openeditor="false"/>
+	   <file source="info.cpp" openeditor="false"/>
+	   <file source="info.h" openeditor="false"/>
+	   <file source="info.ui" openeditor="false"/>
+	   <file source="item_selector.cpp" openeditor="false"/>
+	   <file source="item_selector.h" openeditor="false"/>
+	   <file source="item_selector.ui" openeditor="false"/>
+	   <file source="menu.cpp" openeditor="false"/>
+	   <file source="menu.h" openeditor="false"/>
+	   <file source="menu.ui" openeditor="false"/>
+	   <file source="option.cpp" openeditor="false"/>
+	   <file source="option.h" openeditor="false"/>
+	   <file source="option.ui" openeditor="false"/>
+	   <file source="pages.cpp" openeditor="false"/>
+	   <file source="pages.h" openeditor="false"/>
+	   <file source="recipe.cpp" openeditor="false"/>
+	   <file source="recipe.h" openeditor="false"/>
+	   <file source="recipe_select.cpp" openeditor="false"/>
+	   <file source="recipe_select.h" openeditor="false"/>
+	   <file source="recipe_select.ui" openeditor="false"/>
+	   <file source="recipe.ui" openeditor="false"/>
+	   <file source="sgdd.cpp" openeditor="false"/>
+	   <file source="sgdd.h" openeditor="false"/>
+	   <file source="sgdd.ui" openeditor="false"/>
+	   <file source="time_set.cpp" openeditor="false"/>
+	   <file source="time_set.h" openeditor="false"/>
+	   <file source="time_set.ui" openeditor="false"/>
+	   <file source="trend.cpp" openeditor="false"/>
+	   <file source="trend.h" openeditor="false"/>
+	   <file source="trend.ui" openeditor="false"/>
+	   <file source="trend_option.cpp" openeditor="false"/>
+	   <file source="trend_option.h" openeditor="false"/>
+	   <file source="trend_option.ui" openeditor="false"/>
+	   <file source="trend_other.cpp" openeditor="false"/>
+	   <file source="trend_other.h" openeditor="false"/>
+	   <file source="trend_other.ui" openeditor="false"/>
+	   <file source="trend_range.cpp" openeditor="false"/>
+	   <file source="trend_range.h" openeditor="false"/>
+	   <file source="trend_range.ui" openeditor="false"/>
+	   <file source="buzzer_settings.cpp" openeditor="false"/>
+	   <file source="buzzer_settings.h" openeditor="false"/>
+	   <file source="buzzer_settings.ui" openeditor="false"/>
+	   <file source="data_manager.cpp" openeditor="false"/>
+	   <file source="data_manager.h" openeditor="false"/>
+	   <file source="data_manager.ui" openeditor="false"/>
+	   <file source="store.cpp" openeditor="false"/>
+	   <file source="store.h" openeditor="false"/>
+	   <file source="store.ui" openeditor="false"/>
+	   <file source="store_filter.cpp" openeditor="false"/>
+	   <file source="store_filter.h" openeditor="false"/>
+	   <file source="store_filter.ui" openeditor="false"/>
+	   <file source="style.h" target="style.h" openproject="false"/>
+	   <file source="resources.qrc" target="resources.qrc" openproject="false"/>
+	   <file source="systemicons.qrc" target="systemicons.qrc" openproject="false"/>
+	   <file source="languages.qrc" target="languages.qrc" openproject="false"/>
+	   <file source="img/3d_bar_chart.png" target="img/3d_bar_chart.png" openproject="false" binary="true"/>
+	   <file source="img/Abort.png" target="img/Abort.png" openproject="false" binary="true"/>
+	   <file source="img/About.png" target="img/About.png" openproject="false" binary="true"/>
+	   <file source="img/Accounting.png" target="img/Accounting.png" openproject="false" binary="true"/>
+	   <file source="img/Add.png" target="img/Add.png" openproject="false" binary="true"/>
+	   <file source="img/Address_book.png" target="img/Address_book.png" openproject="false" binary="true"/>
+	   <file source="img/Alarm_clock.png" target="img/Alarm_clock.png" openproject="false" binary="true"/>
+	   <file source="img/Alarm.png" target="img/Alarm.png" openproject="false" binary="true"/>
+	   <file source="img/Alert.png" target="img/Alert.png" openproject="false" binary="true"/>
+	   <file source="img/Alien.png" target="img/Alien.png" openproject="false" binary="true"/>
+	   <file source="img/Anchor.png" target="img/Anchor.png" openproject="false" binary="true"/>
+	   <file source="img/Application.png" target="img/Application.png" openproject="false" binary="true"/>
+	   <file source="img/Apply.png" target="img/Apply.png" openproject="false" binary="true"/>
+	   <file source="img/Back.png" target="img/Back.png" openproject="false" binary="true"/>
+	   <file source="img/Bad_mark.png" target="img/Bad_mark.png" openproject="false" binary="true"/>
+	   <file source="img/Bee.png" target="img/Bee.png" openproject="false" binary="true"/>
+	   <file source="img/Black_bookmark.png" target="img/Black_bookmark.png" openproject="false" binary="true"/>
+	   <file source="img/Black_pin.png" target="img/Black_pin.png" openproject="false" binary="true"/>
+	   <file source="img/Black_tag.png" target="img/Black_tag.png" openproject="false" binary="true"/>
+	   <file source="img/Blog.png" target="img/Blog.png" openproject="false" binary="true"/>
+	   <file source="img/Blue_bookmark.png" target="img/Blue_bookmark.png" openproject="false" binary="true"/>
+	   <file source="img/Blue_key.png" target="img/Blue_key.png" openproject="false" binary="true"/>
+	   <file source="img/Blue_pin.png" target="img/Blue_pin.png" openproject="false" binary="true"/>
+	   <file source="img/Blue_tag.png" target="img/Blue_tag.png" openproject="false" binary="true"/>
+	   <file source="img/Bomb.png" target="img/Bomb.png" openproject="false" binary="true"/>
+	   <file source="img/Bookmark.png" target="img/Bookmark.png" openproject="false" binary="true"/>
+	   <file source="img/Boss.png" target="img/Boss.png" openproject="false" binary="true"/>
+	   <file source="img/Bottom.png" target="img/Bottom.png" openproject="false" binary="true"/>
+	   <file source="img/Briefcase.png" target="img/Briefcase.png" openproject="false" binary="true"/>
+	   <file source="img/Brush.png" target="img/Brush.png" openproject="false" binary="true"/>
+	   <file source="img/Bubble.png" target="img/Bubble.png" openproject="false" binary="true"/>
+	   <file source="img/Buy.png" target="img/Buy.png" openproject="false" binary="true"/>
+	   <file source="img/Calculator.png" target="img/Calculator.png" openproject="false" binary="true"/>
+	   <file source="img/Calendar.png" target="img/Calendar.png" openproject="false" binary="true"/>
+	   <file source="img/Camera.png" target="img/Camera.png" openproject="false" binary="true"/>
+	   <file source="img/Car_key.png" target="img/Car_key.png" openproject="false" binary="true"/>
+	   <file source="img/Chess.png" target="img/Chess.png" openproject="false" binary="true"/>
+	   <file source="img/Chess1.png" target="img/Chess1.png" openproject="false" binary="true"/>
+	   <file source="img/Chess2.png" target="img/Chess2.png" openproject="false" binary="true"/>
+	   <file source="img/CD.png" target="img/CD.png" openproject="false" binary="true"/>
+	   <file source="img/Clipboard.png" target="img/Clipboard.png" openproject="false" binary="true"/>
+	   <file source="img/Clock.png" target="img/Clock.png" openproject="false" binary="true"/>
+	   <file source="img/Close.png" target="img/Close.png" openproject="false" binary="true"/>
+	   <file source="img/Coin.png" target="img/Coin.png" openproject="false" binary="true"/>
+	   <file source="img/Comment.png" target="img/Comment.png" openproject="false" binary="true"/>
+	   <file source="img/Company.png" target="img/Company.png" openproject="false" binary="true"/>
+	   <file source="img/Compass.png" target="img/Compass.png" openproject="false" binary="true"/>
+	   <file source="img/Component.png" target="img/Component.png" openproject="false" binary="true"/>
+	   <file source="img/Computer.png" target="img/Computer.png" openproject="false" binary="true"/>
+	   <file source="img/Copy.png" target="img/Copy.png" openproject="false" binary="true"/>
+	   <file source="img/Create.png" target="img/Create.png" openproject="false" binary="true"/>
+	   <file source="img/Cut.png" target="img/Cut.png" openproject="false" binary="true"/>
+	   <file source="img/Danger.png" target="img/Danger.png" openproject="false" binary="true"/>
+	   <file source="img/Database.png" target="img/Database.png" openproject="false" binary="true"/>
+	   <file source="img/Delete.png" target="img/Delete.png" openproject="false" binary="true"/>
+	   <file source="img/Delivery.png" target="img/Delivery.png" openproject="false" binary="true"/>
+	   <file source="img/Diagram.png" target="img/Diagram.png" openproject="false" binary="true"/>
+	   <file source="img/Dial.png" target="img/Dial.png" openproject="false" binary="true"/>
+	   <file source="img/Disaster.png" target="img/Disaster.png" openproject="false" binary="true"/>
+	   <file source="img/Display.png" target="img/Display.png" openproject="false" binary="true"/>
+	   <file source="img/Dollar.png" target="img/Dollar.png" openproject="false" binary="true"/>
+	   <file source="img/Door.png" target="img/Door.png" openproject="false" binary="true"/>
+	   <file source="img/Download.png" target="img/Download.png" openproject="false" binary="true"/>
+	   <file source="img/Downloads_folder.png" target="img/Downloads_folder.png" openproject="false" binary="true"/>
+	   <file source="img/Down.png" target="img/Down.png" openproject="false" binary="true"/>
+	   <file source="img/Earth.png" target="img/Earth.png" openproject="false" binary="true"/>
+	   <file source="img/Eject.png" target="img/Eject.png" openproject="false" binary="true"/>
+	   <file source="img/E-mail.png" target="img/E-mail.png" openproject="false" binary="true"/>
+	   <file source="img/Equipment.png" target="img/Equipment.png" openproject="false" binary="true"/>
+	   <file source="img/Erase.png" target="img/Erase.png" openproject="false" binary="true"/>
+	   <file source="img/Error.png" target="img/Error.png" openproject="false" binary="true"/>
+	   <file source="img/Euro.png" target="img/Euro.png" openproject="false" binary="true"/>
+	   <file source="img/Exit.png" target="img/Exit.png" openproject="false" binary="true"/>
+	   <file source="img/Expand.png" target="img/Expand.png" openproject="false" binary="true"/>
+	   <file source="img/Eye.png" target="img/Eye.png" openproject="false" binary="true"/>
+	   <file source="img/Fall.png" target="img/Fall.png" openproject="false" binary="true"/>
+	   <file source="img/Fast-forward.png" target="img/Fast-forward.png" openproject="false" binary="true"/>
+	   <file source="img/Favourites.png" target="img/Favourites.png" openproject="false" binary="true"/>
+	   <file source="img/Female.png" target="img/Female.png" openproject="false" binary="true"/>
+	   <file source="img/Female_symbol.png" target="img/Female_symbol.png" openproject="false" binary="true"/>
+	   <file source="img/Film.png" target="img/Film.png" openproject="false" binary="true"/>
+	   <file source="img/Filter.png" target="img/Filter.png" openproject="false" binary="true"/>
+	   <file source="img/Find.png" target="img/Find.png" openproject="false" binary="true"/>
+	   <file source="img/First.png" target="img/First.png" openproject="false" binary="true"/>
+	   <file source="img/First_record.png" target="img/First_record.png" openproject="false" binary="true"/>
+	   <file source="img/Flag.png" target="img/Flag.png" openproject="false" binary="true"/>
+	   <file source="img/Flash_drive.png" target="img/Flash_drive.png" openproject="false" binary="true"/>
+	   <file source="img/Folder.png" target="img/Folder.png" openproject="false" binary="true"/>
+	   <file source="img/Forbidden.png" target="img/Forbidden.png" openproject="false" binary="true"/>
+	   <file source="img/Forward.png" target="img/Forward.png" openproject="false" binary="true"/>
+	   <file source="img/Free_bsd.png" target="img/Free_bsd.png" openproject="false" binary="true"/>
+	   <file source="img/Gift.png" target="img/Gift.png" openproject="false" binary="true"/>
+	   <file source="img/Globe.png" target="img/Globe.png" openproject="false" binary="true"/>
+	   <file source="img/Go_back.png" target="img/Go_back.png" openproject="false" binary="true"/>
+	   <file source="img/Go_forward.png" target="img/Go_forward.png" openproject="false" binary="true"/>
+	   <file source="img/Good_mark.png" target="img/Good_mark.png" openproject="false" binary="true"/>
+	   <file source="img/Go.png" target="img/Go.png" openproject="false" binary="true"/>
+	   <file source="img/Green_bookmark.png" target="img/Green_bookmark.png" openproject="false" binary="true"/>
+	   <file source="img/Green_pin.png" target="img/Green_pin.png" openproject="false" binary="true"/>
+	   <file source="img/Green_tag.png" target="img/Green_tag.png" openproject="false" binary="true"/>
+	   <file source="img/Hard_disk.png" target="img/Hard_disk.png" openproject="false" binary="true"/>
+	   <file source="img/Heart.png" target="img/Heart.png" openproject="false" binary="true"/>
+	   <file source="img/Help_book_3d.png" target="img/Help_book_3d.png" openproject="false" binary="true"/>
+	   <file source="img/Help_book.png" target="img/Help_book.png" openproject="false" binary="true"/>
+	   <file source="img/Help.png" target="img/Help.png" openproject="false" binary="true"/>
+	   <file source="img/Hint.png" target="img/Hint.png" openproject="false" binary="true"/>
+	   <file source="img/History.png" target="img/History.png" openproject="false" binary="true"/>
+	   <file source="img/Home.png" target="img/Home.png" openproject="false" binary="true"/>
+	   <file source="img/Hourglass.png" target="img/Hourglass.png" openproject="false" binary="true"/>
+	   <file source="img/How-to.png" target="img/How-to.png" openproject="false" binary="true"/>
+	   <file source="img/Hungup.png" target="img/Hungup.png" openproject="false" binary="true"/>
+	   <file source="img/Info.png" target="img/Info.png" openproject="false" binary="true"/>
+	   <file source="img/In-yang.png" target="img/In-yang.png" openproject="false" binary="true"/>
+	   <file source="img/Iphone.png" target="img/Iphone.png" openproject="false" binary="true"/>
+	   <file source="img/Key.png" target="img/Key.png" openproject="false" binary="true"/>
+	   <file source="img/Last.png" target="img/Last.png" openproject="false" binary="true"/>
+	   <file source="img/Last_recor.png" target="img/Last_recor.png" openproject="false" binary="true"/>
+	   <file source="img/Left-right.png" target="img/Left-right.png" openproject="false" binary="true"/>
+	   <file source="img/Letter.png" target="img/Letter.png" openproject="false" binary="true"/>
+	   <file source="img/Lightning.png" target="img/Lightning.png" openproject="false" binary="true"/>
+	   <file source="img/Liner.png" target="img/Liner.png" openproject="false" binary="true"/>
+	   <file source="img/Linux.png" target="img/Linux.png" openproject="false" binary="true"/>
+	   <file source="img/List.png" target="img/List.png" openproject="false" binary="true"/>
+	   <file source="img/Load.png" target="img/Load.png" openproject="false" binary="true"/>
+	   <file source="img/Lock.png" target="img/Lock.png" openproject="false" binary="true"/>
+	   <file source="img/Low_rating.png" target="img/Low_rating.png" openproject="false" binary="true"/>
+	   <file source="img/Magic_wand.png" target="img/Magic_wand.png" openproject="false" binary="true"/>
+	   <file source="img/Mail.png" target="img/Mail.png" openproject="false" binary="true"/>
+	   <file source="img/Male.png" target="img/Male.png" openproject="false" binary="true"/>
+	   <file source="img/Male_symbol.png" target="img/Male_symbol.png" openproject="false" binary="true"/>
+	   <file source="img/Medium_rating.png" target="img/Medium_rating.png" openproject="false" binary="true"/>
+	   <file source="img/Message.png" target="img/Message.png" openproject="false" binary="true"/>
+	   <file source="img/Minus.png" target="img/Minus.png" openproject="false" binary="true"/>
+	   <file source="img/Mobile-phone.png" target="img/Mobile-phone.png" openproject="false" binary="true"/>
+	   <file source="img/Modify.png" target="img/Modify.png" openproject="false" binary="true"/>
+	   <file source="img/Move.png" target="img/Move.png" openproject="false" binary="true"/>
+	   <file source="img/Movie.png" target="img/Movie.png" openproject="false" binary="true"/>
+	   <file source="img/Music.png" target="img/Music.png" openproject="false" binary="true"/>
+	   <file source="img/Mute.png" target="img/Mute.png" openproject="false" binary="true"/>
+	   <file source="img/Network_connection.png" target="img/Network_connection.png" openproject="false" binary="true"/>
+	   <file source="img/New_document.png" target="img/New_document.png" openproject="false" binary="true"/>
+	   <file source="img/New.png" target="img/New.png" openproject="false" binary="true"/>
+	   <file source="img/Next.png" target="img/Next.png" openproject="false" binary="true"/>
+	   <file source="img/Next_track.png" target="img/Next_track.png" openproject="false" binary="true"/>
+	   <file source="img/No-entry.png" target="img/No-entry.png" openproject="false" binary="true"/>
+	   <file source="img/No.png" target="img/No.png" openproject="false" binary="true"/>
+	   <file source="img/Notes.png" target="img/Notes.png" openproject="false" binary="true"/>
+	   <file source="img/OK.png" target="img/OK.png" openproject="false" binary="true"/>
+	   <file source="img/Paste.png" target="img/Paste.png" openproject="false" binary="true"/>
+	   <file source="img/Pause.png" target="img/Pause.png" openproject="false" binary="true"/>
+	   <file source="img/People.png" target="img/People.png" openproject="false" binary="true"/>
+	   <file source="img/Percent.png" target="img/Percent.png" openproject="false" binary="true"/>
+	   <file source="img/Person.png" target="img/Person.png" openproject="false" binary="true"/>
+	   <file source="img/Phone_number.png" target="img/Phone_number.png" openproject="false" binary="true"/>
+	   <file source="img/Phone.png" target="img/Phone.png" openproject="false" binary="true"/>
+	   <file source="img/Picture.png" target="img/Picture.png" openproject="false" binary="true"/>
+	   <file source="img/Pie_chart.png" target="img/Pie_chart.png" openproject="false" binary="true"/>
+	   <file source="img/Pinion.png" target="img/Pinion.png" openproject="false" binary="true"/>
+	   <file source="img/Playback.png" target="img/Playback.png" openproject="false" binary="true"/>
+	   <file source="img/Play-music.png" target="img/Play-music.png" openproject="false" binary="true"/>
+	   <file source="img/Play.png" target="img/Play.png" openproject="false" binary="true"/>
+	   <file source="img/Plus.png" target="img/Plus.png" openproject="false" binary="true"/>
+	   <file source="img/Previous.png" target="img/Previous.png" openproject="false" binary="true"/>
+	   <file source="img/Previous_record.png" target="img/Previous_record.png" openproject="false" binary="true"/>
+	   <file source="img/Print.png" target="img/Print.png" openproject="false" binary="true"/>
+	   <file source="img/Problem.png" target="img/Problem.png" openproject="false" binary="true"/>
+	   <file source="img/Question.png" target="img/Question.png" openproject="false" binary="true"/>
+	   <file source="img/Radiation.png" target="img/Radiation.png" openproject="false" binary="true"/>
+	   <file source="img/Raise.png" target="img/Raise.png" openproject="false" binary="true"/>
+	   <file source="img/Record.png" target="img/Record.png" openproject="false" binary="true"/>
+	   <file source="img/Red_bookmark.png" target="img/Red_bookmark.png" openproject="false" binary="true"/>
+	   <file source="img/Red_mark.png" target="img/Red_mark.png" openproject="false" binary="true"/>
+	   <file source="img/Redo.png" target="img/Redo.png" openproject="false" binary="true"/>
+	   <file source="img/Red_pin.png" target="img/Red_pin.png" openproject="false" binary="true"/>
+	   <file source="img/Red_star.png" target="img/Red_star.png" openproject="false" binary="true"/>
+	   <file source="img/Red_tag.png" target="img/Red_tag.png" openproject="false" binary="true"/>
+	   <file source="img/Refresh.png" target="img/Refresh.png" openproject="false" binary="true"/>
+	   <file source="img/Remove.png" target="img/Remove.png" openproject="false" binary="true"/>
+	   <file source="img/Repair.png" target="img/Repair.png" openproject="false" binary="true"/>
+	   <file source="img/Report.png" target="img/Report.png" openproject="false" binary="true"/>
+	   <file source="img/Retort.png" target="img/Retort.png" openproject="false" binary="true"/>
+	   <file source="img/Rewind.png" target="img/Rewind.png" openproject="false" binary="true"/>
+	   <file source="img/Sad.png" target="img/Sad.png" openproject="false" binary="true"/>
+	   <file source="img/Save.png" target="img/Save.png" openproject="false" binary="true"/>
+	   <file source="img/Schedule.png" target="img/Schedule.png" openproject="false" binary="true"/>
+	   <file source="img/Script.png" target="img/Script.png" openproject="false" binary="true"/>
+	   <file source="img/Search.png" target="img/Search.png" openproject="false" binary="true"/>
+	   <file source="img/Shield.png" target="img/Shield.png" openproject="false" binary="true"/>
+	   <file source="img/Shopping_cart.png" target="img/Shopping_cart.png" openproject="false" binary="true"/>
+	   <file source="img/Silence.png" target="img/Silence.png" openproject="false" binary="true"/>
+	   <file source="img/Smile.png" target="img/Smile.png" openproject="false" binary="true"/>
+	   <file source="img/Sound.png" target="img/Sound.png" openproject="false" binary="true"/>
+	   <file source="img/Stock_graph.png" target="img/Stock_graph.png" openproject="false" binary="true"/>
+	   <file source="img/Stop.png" target="img/Stop.png" openproject="false" binary="true"/>
+	   <file source="img/Stop_sign.png" target="img/Stop_sign.png" openproject="false" binary="true"/>
+	   <file source="img/Stopwatch.png" target="img/Stopwatch.png" openproject="false" binary="true"/>
+	   <file source="img/Sum.png" target="img/Sum.png" openproject="false" binary="true"/>
+	   <file source="img/Sync.png" target="img/Sync.png" openproject="false" binary="true"/>
+	   <file source="img/SDcard.png" target="img/SDcard.png" openproject="false" binary="true"/>
+	   <file source="img/Table.png" target="img/Table.png" openproject="false" binary="true"/>
+	   <file source="img/Target.png" target="img/Target.png" openproject="false" binary="true"/>
+	   <file source="img/Taxi.png" target="img/Taxi.png" openproject="false" binary="true"/>
+	   <file source="img/Terminate.png" target="img/Terminate.png" openproject="false" binary="true"/>
+	   <file source="img/Text.png" target="img/Text.png" openproject="false" binary="true"/>
+	   <file source="img/Text_preview.png" target="img/Text_preview.png" openproject="false" binary="true"/>
+	   <file source="img/Thumbs_down.png" target="img/Thumbs_down.png" openproject="false" binary="true"/>
+	   <file source="img/Thumbs_up.png" target="img/Thumbs_up.png" openproject="false" binary="true"/>
+	   <file source="img/Toolbox.png" target="img/Toolbox.png" openproject="false" binary="true"/>
+	   <file source="img/Top.png" target="img/Top.png" openproject="false" binary="true"/>
+	   <file source="img/Trackback.png" target="img/Trackback.png" openproject="false" binary="true"/>
+	   <file source="img/Trash.png" target="img/Trash.png" openproject="false" binary="true"/>
+	   <file source="img/Tune.png" target="img/Tune.png" openproject="false" binary="true"/>
+	   <file source="img/Turn_off.png" target="img/Turn_off.png" openproject="false" binary="true"/>
+	   <file source="img/Twitter.png" target="img/Twitter.png" openproject="false" binary="true"/>
+	   <file source="img/Undo.png" target="img/Undo.png" openproject="false" binary="true"/>
+	   <file source="img/Unlock.png" target="img/Unlock.png" openproject="false" binary="true"/>
+	   <file source="img/Update.png" target="img/Update.png" openproject="false" binary="true"/>
+	   <file source="img/Up-down.png" target="img/Up-down.png" openproject="false" binary="true"/>
+	   <file source="img/Upload.png" target="img/Upload.png" openproject="false" binary="true"/>
+	   <file source="img/Up.png" target="img/Up.png" openproject="false" binary="true"/>
+	   <file source="img/User_group.png" target="img/User_group.png" openproject="false" binary="true"/>
+	   <file source="img/View.png" target="img/View.png" openproject="false" binary="true"/>
+	   <file source="img/Volume.png" target="img/Volume.png" openproject="false" binary="true"/>
+	   <file source="img/Wallet.png" target="img/Wallet.png" openproject="false" binary="true"/>
+	   <file source="img/Warning.png" target="img/Warning.png" openproject="false" binary="true"/>
+	   <file source="img/Wrench.png" target="img/Wrench.png" openproject="false" binary="true"/>
+	   <file source="img/Yellow_bookmark.png" target="img/Yellow_bookmark.png" openproject="false" binary="true"/>
+	   <file source="img/Yellow_pin.png" target="img/Yellow_pin.png" openproject="false" binary="true"/>
+	   <file source="img/Yellow_tag.png" target="img/Yellow_tag.png" openproject="false" binary="true"/>
+	   <file source="img/Yes.png" target="img/Yes.png" openproject="false" binary="true"/>
+	   <file source="img/Zoom.png" target="img/Zoom.png" openproject="false" binary="true"/>
+	   <file source="img/LedOn.png" target="img/LedOn.png" openproject="false" binary="true"/>
+	   <file source="img/LedOff.png" target="img/LedOff.png" openproject="false" binary="true"/>
+	   <file source="config/splash.png" target="config/splash.png" openproject="false" binary="true"/>
+	   <file source="config/systool.png" target="config/systool.png" openproject="false" binary="true"/>
+	   <file source="config/Crosstable.csv" target="config/Crosstable.csv" openproject="false" binary="false"/>
+	   <file source="config/Commpar.csv" target="config/Commpar.csv" openproject="false" binary="false"/>
+	   <file source="config/atn01.conf" target="config/atn01.conf" openproject="false" binary="false"/>
+	   <file source="config/store1.csv" target="config/store1.csv" openproject="false" binary="false"/>
+	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
+	   <file source="config/Alarms.csv" target="config/Alarms.csv" openproject="false" binary="false"/>
+	   <file source="config/application.conf" target="config/application.conf" openproject="false" binary="false"/>
+	   <!-- 
+	   <file source="project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
+	   -->
+	   <file source="project.pro" target="%ProjectName%.pro" openproject="true"/>
+	   <file source="template.pri" target="template.pri" openproject="false"/>
+	   <file source="languages.pri" target="languages.pri" openproject="false"/>
+	   <file source="qt_environment.pri" target="qt_environment.pri" openproject="false"/>
+	   <file source="cleanmissingpage.pl" target="cleanmissingpage.pl" openproject="false"/>
+	   </files>
+	</wizard>

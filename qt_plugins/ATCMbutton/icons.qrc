@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmbutton.png</file>
+    </qresource>
+</RCC>

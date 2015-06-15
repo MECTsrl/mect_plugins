@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmspinbox.png</file>
+        <file>left.png</file>
+        <file>right.png</file>
+    </qresource>
+</RCC>

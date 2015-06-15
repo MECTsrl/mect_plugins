@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>atcmlabel.png</file>
+    </qresource>
+</RCC>
