@@ -137,16 +137,15 @@ void page::updateData()
                         usb_mnt_point,
                         QDateTime::currentDateTime().toString("yy_MM_dd_hh_mm_ss").toAscii().data());
                 
-                /* zip the file, the sign file and delete them */
+                /* zip the file, the file and delete them */
                 if (zipAndSave(QStringList() << srcfilename, QString(dstfilename), true) == false)
                 {
                     USBumount();
-                    QMessageBox::critical(this,tr("USB error"), tr("Cannot create the signature '%1.sign'").arg(srcfilename));
+                    QMessageBox::critical(this,tr("USB error"), tr("Cannot create the zip file '%1'").arg(srcfilename));
                     return;
                 }
                 
                 //QFile::remove(dstfilename);
-                //QFile::remove(QString("%1.sign").arg(dstfilename));
                 
                 /* unmount USB key */
                 USBumount();

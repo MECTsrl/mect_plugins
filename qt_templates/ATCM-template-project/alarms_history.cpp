@@ -615,7 +615,7 @@ void alarms_history::on_pushButtonSave_clicked()
         }
         fclose(fp);
         fclose(fpout);
-        
+#ifdef APP_SIGN 
         /* create the signature file */
         
         /* Open the command for reading. */
@@ -661,13 +661,24 @@ void alarms_history::on_pushButtonSave_clicked()
         /* zip the file, the sign file and delete them */
         if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(dstfilename), QString("%1.zip").arg(dstfilename)) == false)
         {
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot save the sip file '%1.zip'").arg(dstfilename));
+            QMessageBox::critical(this,tr("USB error"), tr("Cannot save the zip file '%1.zip'").arg(dstfilename));
             USBumount();
             return;
         }
         
         QFile::remove(dstfilename);
         QFile::remove(QString("%1.sign").arg(dstfilename));
+#else
+        /* zip the file and delete it */
+        if (zipAndSave(QStringList() << QString(dstfilename), QString("%1.zip").arg(dstfilename)) == false)
+        {
+            QMessageBox::critical(this,tr("USB error"), tr("Cannot save the zip file '%1.zip'").arg(dstfilename));
+            USBumount();
+            return;
+        }
+        
+        QFile::remove(dstfilename);
+#endif
         
         /* unmount USB key */
         USBumount();
