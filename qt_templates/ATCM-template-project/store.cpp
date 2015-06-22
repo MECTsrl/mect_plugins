@@ -693,18 +693,7 @@ void store::on_pushButtonSaveUSB_clicked()
                 usb_mnt_point,
                 QDateTime::currentDateTime().toString("yy_MM_dd_hh_mm_ss").toAscii().data(),
                 outputfile);
-#ifdef APP_SIGN
-        /* zip the file, the sign file and delete them */
-        if (zipAndSave(QStringList() << srcfilename << QString("%1.sign").arg(srcfilename), QString(dstfilename), true) == false)
-        {
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot create the signature '%1.sign'").arg(srcfilename));
-            USBumount();
-            return;
-        }
-        
-        QFile::remove(srcfilename);
-        QFile::remove(QString("%1.sign").arg(srcfilename));
-#else
+
         /* zip the file, the file and delete them */
         if (zipAndSave(QStringList() << srcfilename, QString(dstfilename), true) == false)
         {
@@ -714,7 +703,6 @@ void store::on_pushButtonSaveUSB_clicked()
         }
         
         QFile::remove(srcfilename);
-#endif
         
         /* unmount USB key */
         USBumount();

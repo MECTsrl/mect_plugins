@@ -8,7 +8,6 @@
 #include <ctype.h>
 #ifdef STANDALONE
 #define LOG_PRINT(level, format, args...)
-#define APP_SIGN "/usr/bin/sign"
 #else
 #include "app_logprint.h"
 #include "common.h"
@@ -239,9 +238,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 #endif
 	char * p = NULL;
 	char token[LINE_SIZE] = "";
-#ifdef APP_SIGN
-	char command[LINE_SIZE] = "";
-#endif
 	char line[LINE_SIZE] = "";
 	char tmp[LINE_SIZE] = "";
 	char titleline[LINE_SIZE] = "";
@@ -458,17 +454,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 				}
 				fclose(fpout);
 				fclose(fpin);
-#ifdef APP_SIGN
-				/* create the sign file for the actual extracted log file */
-				sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", APP_SIGN, outFullPathFileName, outFullPathFileName);
-				if (system(command) != 0)
-				{
-                    LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
-                    retval = 9;
-                    goto exit_function;
-                }
-				fprintf(stdout, "%s.sign\n", outFullPathFileName);
-#endif
 			}
 			else
 			{
@@ -553,18 +538,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 					}
 					fclose(fpout);
 					fclose(fpin);
-
-#ifdef APP_SIGN
-					/* create the sign file for the actual extracted log file */
-					sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", APP_SIGN, outFullPathFileName, outFullPathFileName);
-					if (system(command) != 0)
-					{
-                        LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
-                        retval = 11;
-                        goto exit_function;
-                    }
-					fprintf(stdout, "%s.sign\n", outFullPathFileName);
-#endif
 				}
 			}
 		}
@@ -684,17 +657,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 			datetimein = mktime(&mytime);
 		}
 		fclose(fpout);
-#ifdef APP_SIGN
-        /* create the sign file for the actual extracted log file */
-        sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", APP_SIGN, outFullPathFileName, outFullPathFileName);
-        if (system(command) != 0)
-        {
-            LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
-            retval = 16;
-            goto exit_function;
-        }
-        fprintf(stdout, "%s.sign\n", outFullPathFileName);
-#endif
 	}
 	else
 	{

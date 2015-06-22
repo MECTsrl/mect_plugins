@@ -615,60 +615,7 @@ void alarms_history::on_pushButtonSave_clicked()
         }
         fclose(fp);
         fclose(fpout);
-#ifdef APP_SIGN 
-        /* create the signature file */
-        
-        /* Open the command for reading. */
-        sprintf(line, "%s %s", APP_SIGN, dstfilename);
-        fp = popen(line, "r");
-        if (fp == NULL) {
-            LOG_PRINT(error_e,"Failed to run command '%s'\n", line );
-            return;
-        }
-        
-        char sign[LINE_SIZE];
-        
-        /* Read the output a line at a time - output it. */
-        if (fscanf(fp, "%s", sign) > 0) {
-            LOG_PRINT(info_e,"SIGN: '%s'\n", sign);
-        }
-        
-        /* close */
-        pclose(fp);
-        
-        if (sign[0] == '\0')
-        {
-            LOG_PRINT(error_e,"Failed read sign\n");
-            QFile::remove(dstfilename);
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot create the signature '%1'").arg(line));
-            USBumount();
-            return;
-        }
-        
-        sprintf(line, "%s.sign", dstfilename);
-        fpout = fopen(line, "w");
-        if (fpout == NULL)
-        {
-            LOG_PRINT(error_e, "Cannot open '%s'\n", line);
-            QFile::remove(dstfilename);
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot create the signature '%1'").arg(line));
-            USBumount();
-            return;
-        }
-        fprintf(fpout, "%s\n", sign);
-        fclose(fpout);
-        
-        /* zip the file, the sign file and delete them */
-        if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(dstfilename), QString("%1.zip").arg(dstfilename)) == false)
-        {
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot save the zip file '%1.zip'").arg(dstfilename));
-            USBumount();
-            return;
-        }
-        
-        QFile::remove(dstfilename);
-        QFile::remove(QString("%1.sign").arg(dstfilename));
-#else
+
         /* zip the file and delete it */
         if (zipAndSave(QStringList() << QString(dstfilename), QString("%1.zip").arg(dstfilename)) == false)
         {
@@ -678,7 +625,6 @@ void alarms_history::on_pushButtonSave_clicked()
         }
         
         QFile::remove(dstfilename);
-#endif
         
         /* unmount USB key */
         USBumount();
