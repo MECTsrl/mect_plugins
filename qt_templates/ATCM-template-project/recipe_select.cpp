@@ -279,7 +279,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
             return;
         }
 
-        /* zip the file, the file and delete them */
+        /* zip the file, the sign file and delete them */
         if (zipAndSave(QStringList() << srcfilename, QString(dstfilename)) == false)
         {
             QMessageBox::critical(this,tr("USB error"), tr("Cannot create the zip file '%1'").arg(dstfilename));
