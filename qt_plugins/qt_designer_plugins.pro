@@ -36,35 +36,14 @@ SRCDIR ~=s,/,\\,g
 DSTDIR ~=s,/,\\,g
 copytemplateprj.commands = $$quote( $${ATCM_DIR_COPY} $${SRCDIR} $${DSTDIR})
 
-SRCDIR="../qt_templates/ATCM-TP1057HR-template-form-class"
-DSTDIR="$${ATCM_INSTALL_WIZARD}/ATCM-TP1057HR-template-form-class"
+SRCDIR="../qt_templates/ATCM-template-form-class"
+DSTDIR="$${ATCM_INSTALL_WIZARD}/ATCM-template-form-class"
 SRCDIR ~=s,/,\\,g
 DSTDIR ~=s,/,\\,g
-copytp1057hr.commands = $$quote( $${ATCM_DIR_COPY} $${SRCDIR} $${DSTDIR})
+copytemplateformclass.commands = $$quote( $${ATCM_DIR_COPY} $${SRCDIR} $${DSTDIR})
 
-SRCDIR="../qt_templates/ATCM-TP1057-template-form-class"
-DSTDIR="$${ATCM_INSTALL_WIZARD}/ATCM-TP1057-template-form-class"
-SRCDIR ~=s,/,\\,g
-DSTDIR ~=s,/,\\,g
-copytp1057.commands = $$quote( $${ATCM_DIR_COPY} $${SRCDIR} $${DSTDIR})
-
-SRCDIR="../qt_templates/ATCM-TPAC1007-template-form-class"
-DSTDIR="$${ATCM_INSTALL_WIZARD}/ATCM-TPAC1007-template-form-class"
-SRCDIR ~=s,/,\\,g
-DSTDIR ~=s,/,\\,g
-copytp1007.commands = $$quote( $${ATCM_DIR_COPY} $${SRCDIR} $${DSTDIR})
-
-SRCDIR="../qt_templates/ATCM-TPAC1008-template-form-class"
-DSTDIR="$${ATCM_INSTALL_WIZARD}/ATCM-TPAC1008-template-form-class"
-SRCDIR ~=s,/,\\,g
-DSTDIR ~=s,/,\\,g
-copytp1008.commands = $$quote( $${ATCM_DIR_COPY} $${SRCDIR} $${DSTDIR})
-
-first.depends = $(first) copytemplateprj copytp1057hr copytp1057 copytp1007 copytp1008
+first.depends = $(first) copytemplateprj copytemplateformclass
 export(first.depends)
 export(copytemplateprj.commands)
-export(copytp1057hr.commands)
-export(copytp1057.commands)
-export(copytp1007.commands)
-export(copytp1008.commands)
-QMAKE_EXTRA_TARGETS += first copytemplateprj copytp1057hr copytp1057 copytp1007 copytp1008
+export(copytemplateformclass.commands)
+QMAKE_EXTRA_TARGETS += first copytemplateprj copytemplateformclass

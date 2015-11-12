@@ -277,8 +277,10 @@ bool ATCMspinbox::setVariable(QString variable)
             {
                 switch (CtIndex2Type(m_CtIndex))
                 {
-                case int_e:
-                case uint_e:
+                case intab_e:
+                case intba_e:
+                case uintab_e:
+                case uintba_e:
                 case dint_abcd_e:
                 case dint_badc_e:
                 case dint_cdab_e:

@@ -44,6 +44,7 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
     m_borderwidth = 1;
     m_borderradius = 0;
     m_visibilityvar = "";
+    m_format = Dec;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -437,7 +438,19 @@ void ATCMlabel::updateData()
         if (formattedReadFromDb(m_CtIndex, value) == 0)
         {
             m_status = DONE;
-            m_value = value;
+            if (m_format == Bin)
+            {
+               m_value = QString().setNum(atoi(value), 2) + QString("b");
+
+            }
+            else if (m_format == Hex)
+            {
+                m_value = QString("0x") + QString().setNum(atoi(value), 16);
+            }
+            else
+            {
+                m_value = value;
+            }
         }
         else
         {
@@ -592,12 +605,14 @@ void ATCMlabel::writeAction()
     QString strvalue;
     if (m_CtIndex > 0)
     {
-        int decimal = getVarDecimalByCtIndex(m_CtIndex);
+        int decimal = getVarDecimal(m_CtIndex);
         numpad * dk;
         switch (CtIndex2Type(m_CtIndex))
         {
-        case int_e:
-        case uint_e:
+        case intab_e:
+        case intba_e:
+        case uintab_e:
+        case uintba_e:
         case dint_abcd_e:
         case dint_badc_e:
         case dint_cdab_e:
@@ -794,4 +809,10 @@ void ATCMlabel::unsetVisibilityVar()
 void ATCMlabel::unsetApparence()
 {
     setApparence(QFrame::Plain);
+}
+
+void ATCMlabel::setFormat(const enum ATCMLabelFormat format)
+{
+    m_format = format;
+    update();
 }

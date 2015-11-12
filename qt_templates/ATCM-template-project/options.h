@@ -7,49 +7,56 @@
  *
  * @brief Configuration page
  */
-#ifndef OPTION_H
-#define OPTION_H
+#ifndef OPTIONS_H
+#define OPTIONS_H
 
 #include "pagebrowser.h"
 
 namespace Ui {
-class option;
+class options;
 }
 
-class option : public page
+class options : public page
 {
     Q_OBJECT
     
 public:
-    explicit option(QWidget *parent = 0);
-    ~option();
+    explicit options(QWidget *parent = 0);
+    ~options();
     virtual void reload(void);
     virtual void updateData();
     
 private slots:
+#ifdef TRANSLATION
+    void changeEvent(QEvent * event);
+#endif
     void on_pushButtonDateAndTime_clicked();
-
+    
     void on_pushButtonModbus_clicked();
-
+    
     void on_pushButtonPasswords_clicked();
-
+    
     void on_pushButtonErrorsStrategy_clicked();
-
+    
     void on_pushButtonHomePage_clicked();
-
+    
     void on_pushButtonHome_clicked();
-
+    
     void on_pushButtonBack_clicked();
-
+    
     void on_pushButtonDatalog_clicked();
-
+    
     void on_pushButtonDisplaySettings_clicked();
-
+    
     void on_pushButtonBuzzerSettings_clicked();
-
+    
+    void on_pushButtonLanguage_clicked();
+    
 private:
-    Ui::option *ui;
+    Ui::options *ui;
 };
 
-#endif // OPTION_H
+#endif // OPTIONS_H
+
+
 

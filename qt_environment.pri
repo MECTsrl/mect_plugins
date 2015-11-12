@@ -3,7 +3,7 @@ QMAKE_CXXFLAGS_DEBUG   += -Wno-psabi
 
 DEFINES += LOG_LEVEL=error_e
 #DEFINES += ATCM_VERSION="rev.6.10"
-
+#CONFIG += store alarms recipe trend
 contains(QMAKE_HOST.os,Windows){
         ATCM_ARM_LIBRARY_LIBPATH = C:/Qt485/imx28/ATCM/library/lib
 	ATCM_ARM_PLUGINS_LIBPATH = C:/Qt485/imx28/ATCM/plugins/lib

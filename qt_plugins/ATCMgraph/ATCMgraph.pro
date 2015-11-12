@@ -4,6 +4,8 @@ include (../qt_plugins.pri)
 
 LIBS += -lqwt
 
+CONFIG += QwtDll
+
 INCLUDEPATH += $${ATCM_QWT_INCL}
 QMAKE_LIBDIR += $${ATCM_QWT_LIB}
 

@@ -96,6 +96,17 @@ void %ClassName%::updateData()
 }
 
 /**
+ * @brief This is the event slot to detect new language translation.
+ */
+void %ClassName%::changeEvent(QEvent * event)
+{
+    if (event->type() == QEvent::LanguageChange)
+    {
+        ui->retranslateUi(this);
+    }
+}
+
+/**
  * @brief This is the distructor member. The operation written here, are executed only one time when the page will be deleted.
  */
 %ClassName%::~%ClassName%()

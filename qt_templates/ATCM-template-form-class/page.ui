@@ -6,30 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-	<width>480</width>
-	<height>272</height>
+	<width>XXX</width>
+	<height>XXX</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-	<width>480</width>
-	<height>272</height>
+	<width>XXX</width>
+	<height>XXX</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-	<width>480</width>
-	<height>272</height>
+	<width>XXX</width>
+	<height>XXX</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>%ClassName%</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget#%ClassName%
+  <string notr="true">QWidget#%ClassName%
 {
 }</string>
-  </property>
+   </property>
  </widget>
  <resources/>
  <connections/>

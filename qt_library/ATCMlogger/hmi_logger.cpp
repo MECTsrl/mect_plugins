@@ -27,12 +27,13 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <ftw.h>
-#include "main.h"
 #include "hmi_logger.h"
 #include "app_logprint.h"
 #include "cross_table_utility.h"
-#include "alarms.h"
+#include "../../qt_templates/ATCM-template-project/alarms.h"
 #include "common.h"
+
+Logger * logger = NULL;
 
 #if 0
 /**
@@ -120,9 +121,9 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     storefp = NULL;
     _period_msec = period_msec;
     qRegisterMetaType<trend_msg_t>();
-
+    
     LOG_PRINT(verbose_e,"log period is %d\n", _period_msec);
-
+    
     if (alarms_dir != NULL)
     {
         strcpy(AlarmsDir, alarms_dir);
@@ -132,7 +133,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
         strcpy(AlarmsDir, ALARMS_DIR);
     }
     LOG_PRINT(verbose_e, "Alarm dir: '%s'.\n", AlarmsDir);
-
+    
     if (store_dir != NULL)
     {
         strcpy(StorageDir, store_dir);
@@ -142,11 +143,11 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
         strcpy(StorageDir, STORE_DIR);
     }
     LOG_PRINT(verbose_e, "Store dir: '%s'.\n", StorageDir);
-
+    
     time(&Now);
     timeinfo = localtime (&Now);
     strftime (CurrentDate, 32, "%Y_%m_%d", timeinfo);
-
+    
 #ifdef ENABLE_ALARMS
     if (loadErrorTable() <= 0)
     {
@@ -186,7 +187,7 @@ FILE * Logger::openFile(int * newfile, const char * basedir, const char * subdir
 {
     /* create the log name in function of the current date */
     char logFileName[FILENAME_MAX];
-
+    
     /* if necessary, create the subdir */
     if (subdir != NULL)
     {
@@ -198,9 +199,9 @@ FILE * Logger::openFile(int * newfile, const char * basedir, const char * subdir
     {
         sprintf(logFileName, "%s/%s.log", basedir, CurrentDate);
     }
-
+    
     FILE * fp = NULL;
-
+    
     fp = fopen(logFileName, "r");
     /* if ther log file doesn't exist, create it and dump the header */
     if (fp == NULL)
@@ -234,7 +235,7 @@ bool Logger::openAlarmsFile()
         LOG_PRINT(error_e, "Cannot dump the log\n");
         return false;
     }
-
+    
     LOG_PRINT(verbose_e, "Opened log file\n");
     return true;
 }
@@ -269,9 +270,9 @@ void Logger::run()
     BYTE var;
     QHash<QString, event_t *>::const_iterator i;
 #endif
-
+    
     LOG_PRINT(verbose_e, "Start\n");
-
+    
     while (1)
     {
         /* get the actual time */
@@ -298,17 +299,17 @@ void Logger::run()
             {
                 if (LogPeriodSecS > 0 || LogPeriodSecF > 0)
                 {
-                closeStorageFile();
-                if (openStorageFile() == false)
-                {
-                    LOG_PRINT(error_e, "Cannot open the store\n");
-                    return;
+                    closeStorageFile();
+                    if (openStorageFile() == false)
+                    {
+                        LOG_PRINT(error_e, "Cannot open the store\n");
+                        return;
+                    }
                 }
-            }
             }
 #endif
         }
-
+        
 #ifdef ENABLE_STORE
         /* if there is something to dump */
         if (store_elem_nb_S > 0 || store_elem_nb_F > 0)
@@ -343,7 +344,7 @@ void Logger::run()
             }
         }
 #endif
-
+        
 #ifdef ENABLE_ALARMS
         /* check each event */
         for ( i = EventHash.begin(); i != EventHash.end() && i.value() != NULL ; i++)
@@ -394,21 +395,21 @@ void Logger::run()
         }
 #endif
 #ifdef ENABLE_STORE
-		LOG_PRINT(info_e, "store_elem_nb_S %d counterS %d LogPeriodSecS %d store_elem_nb_F %d counterF %d LogPeriodSecF %d \n",
-				store_elem_nb_S, counterS, LogPeriodSecS, store_elem_nb_F, counterF, LogPeriodSecF);
+        LOG_PRINT(info_e, "store_elem_nb_S %d counterS %d LogPeriodSecS %d store_elem_nb_F %d counterF %d LogPeriodSecF %d \n",
+                  store_elem_nb_S, counterS, LogPeriodSecS, store_elem_nb_F, counterF, LogPeriodSecF);
         if (LogPeriodSecS > 0 || LogPeriodSecF > 0)
         {
-        if (
-		(store_elem_nb_S > 0 && (counterS * ALARMS_PERIOD_MS) >= (LogPeriodSecS * 1000))
-		 ||
-		(store_elem_nb_F > 0 && (counterF * ALARMS_PERIOD_MS) >= (LogPeriodSecF * 1000))
-	)
-        {
-            /* log the store variables */
-            dumpStorage();
-        }
-        counterS++;
-        counterF++;
+            if (
+                    (store_elem_nb_S > 0 && (counterS * ALARMS_PERIOD_MS) >= (LogPeriodSecS * 1000))
+                    ||
+                    (store_elem_nb_F > 0 && (counterF * ALARMS_PERIOD_MS) >= (LogPeriodSecF * 1000))
+                    )
+            {
+                /* log the store variables */
+                dumpStorage();
+            }
+            counterS++;
+            counterF++;
         }
 #endif
         usleep(ALARMS_PERIOD_MS * 1000);
@@ -425,7 +426,7 @@ size_t Logger::loadErrorTable()
     char token[LINE_SIZE] = "";
     char tag[LINE_SIZE] = "";
     char * p = NULL;
-
+    
     /* read the error cross table */
     fp = fopen(ERROR_TABLE, "r");
     if (fp == NULL)
@@ -434,9 +435,9 @@ size_t Logger::loadErrorTable()
         LOG_PRINT(error_e, "%s\n", CrossTableErrorMsg);
         return -1;
     }
-
+    
     EventHash.clear();
-
+    
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
         event_t * item = (event_t*)calloc(1, sizeof(event_t));
@@ -468,7 +469,7 @@ size_t Logger::loadErrorTable()
             fclose(fp);
             return elem_nb;
         }
-
+        
         /* extract the Tag of the alarm/event variable */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL || token[0] == '\0')
@@ -481,7 +482,7 @@ size_t Logger::loadErrorTable()
         }
         strcpy(tag, token);
         LOG_PRINT(verbose_e, "FOUND ALARM '%s'\n", token);
-
+        
         /* Check if the variable is present and enabled into the crosstable */
         if (Tag2CtIndex(tag, &(item->CtIndex)) != 0)
         {
@@ -491,7 +492,7 @@ size_t Logger::loadErrorTable()
             fclose(fp);
             return elem_nb;
         }
-
+        
         /* skip - source tag */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -502,7 +503,7 @@ size_t Logger::loadErrorTable()
             fclose(fp);
             return elem_nb;
         }
-
+        
         /* skip - reference tag */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -513,7 +514,7 @@ size_t Logger::loadErrorTable()
             fclose(fp);
             return elem_nb;
         }
-
+        
         /* skip - fix value */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -524,7 +525,7 @@ size_t Logger::loadErrorTable()
             fclose(fp);
             return elem_nb;
         }
-
+        
         /* skip - operator */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -535,7 +536,7 @@ size_t Logger::loadErrorTable()
             fclose(fp);
             return elem_nb;
         }
-
+        
         /* extract the time filter before sho the alarm/event */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -547,7 +548,7 @@ size_t Logger::loadErrorTable()
             return elem_nb;
         }
         item->filtertime = atoi(token);
-
+        
         /* extract the description of the alarm/event */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -559,7 +560,7 @@ size_t Logger::loadErrorTable()
             return elem_nb;
         }
         strcpy(item->description, token);
-
+        
         /* extract the level of the alarm/event */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -571,7 +572,7 @@ size_t Logger::loadErrorTable()
             return elem_nb;
         }
         item->level = atoi(token);
-
+        
         /* extract the persistence of the alarm/event */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -583,7 +584,7 @@ size_t Logger::loadErrorTable()
             return elem_nb;
         }
         item->persistence = atoi(token);
-
+        
         /* extract the dump flag of the alarm/event */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
@@ -596,13 +597,13 @@ size_t Logger::loadErrorTable()
         }
         item->dump = atoi(token);
         LOG_PRINT(verbose_e, "record DUMP %d\n", item->dump);
-
+        
         EventHash.insert(tag, item);
         elem_nb++;
     }
     fclose(fp);
     LOG_PRINT(verbose_e, "Loaded %d record\n", elem_nb);
-
+    
     return elem_nb;
 }
 
@@ -617,7 +618,7 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         LOG_PRINT(error_e, "FATAL: cannot find '%s' into hash table\n", event_msg->tag);
         return false;
     }
-
+    
     event_t * event = item.value();
 #if 0
     if (strcasecmp(LevelColorTable[event->level], INVISIBLE) == 0)
@@ -709,9 +710,9 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
     char msg[LINE_SIZE];
     char buffer [FILENAME_MAX] = "";
     event_descr_e * info_descr = NULL;
-
+    
     strftime (buffer, FILENAME_MAX, "%Y/%m/%d,%H:%M:%S", timeinfo);
-
+    
     /* check if the alarm associated to the actual event is still into the _active_alarms_events_ */
     for (int i = 0; i < _active_alarms_events_.count(); i++)
     {
@@ -723,17 +724,17 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
             break;
         }
     }
-
+    
     if (status == alarm_fall_e && info_descr == NULL)
     {
         LOG_PRINT(info_e, "Nothing interesting to dump...\n");
         return true;
     }
-
+    
     if (info_descr == NULL)
     {
         info_descr = new event_descr_e;
-
+        
         strcpy(info_descr->tag, varname.toAscii().data());
         info_descr->description[0] = '\0';
         info_descr->styleindex = nb_of_alarm_status_e;
@@ -743,10 +744,10 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         info_descr->ack = NULL;
         info_descr->status = alarm_fall_e;
         _active_alarms_events_.append(info_descr);
-
+        
         LOG_PRINT(verbose_e, "New event for %s\n", info_descr->tag);
     }
-
+    
     if (status == alarm_rise_e)
     {
         toemit = true;
@@ -760,6 +761,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
                 info_descr->begin = new QDateTime();
             }
             *(info_descr->begin) = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+            info_descr->isack = false;
         }
         else if (info_descr->begin == NULL)
         {
@@ -789,7 +791,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         }
         info_descr->status = alarm_fall_e;
     }
-
+    
     if (toemit)
     {
         getElemAlarmStyleIndex(info_descr);
@@ -818,7 +820,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
                 return false;
             }
         }
-
+        
         char event[TAG_LEN];
         if (info_descr->isack == true)
         {
@@ -837,7 +839,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
             strcpy(event, "UNK");
             LOG_PRINT(warning_e, "Unknown event\n");
         }
-
+        
         /* prepare the event item */
         /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
         sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
@@ -848,7 +850,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
                 buffer,
                 item->description
                 );
-
+        
         /* dump the item into log file */
         if (alarmsfp != NULL)
         {
@@ -884,7 +886,7 @@ bool Logger::closeAlarmsFile()
 bool Logger::dumpAck(event_msg_e * info_msg)
 {
     char msg[LINE_SIZE];
-
+    
     /* before dump a new event, check the available space */
     if (checkSpace() == 1)
     {
@@ -895,7 +897,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
             return false;
         }
     }
-
+    
     /* ACK ALL */
     if (info_msg == NULL)
     {
@@ -909,11 +911,11 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                 LOG_PRINT(error_e, "FATAL: cannot find '%s' into hash table\n", _active_alarms_events_.at(i)->tag);
                 return false;
             }
-
+            
             event_t * event = item.value();
-
+            
             getElemAlarmStyleIndex(_active_alarms_events_.at(i));
-
+            
             /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
             sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
                     event->type,
@@ -923,7 +925,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                     _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
                     event->description
                     );
-
+            
             /* dump the event into log file */
             if (alarmsfp != NULL)
             {
@@ -931,6 +933,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                 fflush(alarmsfp);
                 sync();
                 LOG_PRINT(verbose_e, "DUMP: '%s'\n", msg);
+                return true;
             }
             else
             {
@@ -938,7 +941,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                 return false;
             }
         }
-	return true;
+        return true;
     }
     /* ACK SINGLE EVENT */
     else
@@ -951,9 +954,9 @@ bool Logger::dumpAck(event_msg_e * info_msg)
             LOG_PRINT(error_e, "FATAL: cannot find '%s' into hash table\n", info_msg->tag);
             return false;
         }
-
+        
         event_t * event = item.value();
-
+        
         for (i = 0; i < _active_alarms_events_.count(); i++)
         {
             /* if found, update the alarm with the last event */
@@ -964,7 +967,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                 break;
             }
         }
-
+        
         /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
         sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
                 event->type,
@@ -974,7 +977,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                 _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
                 event->description
                 );
-
+        
         /* dump the event into log file */
         if (alarmsfp != NULL)
         {
@@ -1010,7 +1013,7 @@ bool Logger::openStorageFile()
         LOG_PRINT(error_e, "Cannot dump the log\n");
         return false;
     }
-
+    
     if (newfile)
     {
         LOG_PRINT(verbose_e, "NEW log file\n");
@@ -1020,7 +1023,7 @@ bool Logger::openStorageFile()
             LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "date; time", nb_of_char, (int)strlen("date; time"));
             return false;
         }
-
+        
         for ( int i = 0; StoreArrayS[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayS[i].tag);
@@ -1041,7 +1044,7 @@ bool Logger::openStorageFile()
                 return false;
             }
         }
-
+        
         if (fprintf(storefp, "\n") != 1)
         {
             LOG_PRINT(error_e, "Cannot dump: '%s'\n", strerror(errno));
@@ -1075,13 +1078,13 @@ bool Logger::dumpStorage()
 #ifdef ENABLE_TREND
     trend_msg_t info_msg;
 #endif
-
+    
     if (storefp == NULL)
     {
         LOG_PRINT(error_e, "Cannot dump: (storefp is null).\n");
         return false;
     }
-
+    
     /* before dump a new event, check the available space */
     if (checkSpace() == 1)
     {
@@ -1092,10 +1095,10 @@ bool Logger::dumpStorage()
             return false;
         }
     }
-
+    
     /* prepare the event item */
     strftime (buffer, FILENAME_MAX, "%Y/%m/%d; %H:%M:%S", timeinfo);
-
+    
     LOG_PRINT(verbose_e, "dumping a new line '%s'\n", buffer);
     int nb_of_char = fprintf(storefp, "%s", buffer);
     if (nb_of_char != (int)strlen(buffer))
@@ -1103,7 +1106,7 @@ bool Logger::dumpStorage()
         LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", buffer, nb_of_char, (int)strlen(buffer));
         return false;
     }
-
+    
     if (store_elem_nb_S > 0  && (counterS * ALARMS_PERIOD_MS) >= (LogPeriodSecS * 1000))
     {
         counterS = 0;
@@ -1116,22 +1119,22 @@ bool Logger::dumpStorage()
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayS[iS].tag );
                 strcpy(value, TAG_NAN);
             }
-
+            
             nb_of_char = fprintf(storefp, "; %s", value);
             if (nb_of_char != (int)strlen(value) + 2)
             {
                 LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
                 return false;
             }
-
+            
 #ifdef ENABLE_TREND
             /* emit a signal to the hmi with the new item to display */
             info_msg.CtIndex = StoreArrayS[iS].CtIndex;
             info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
             if (strcmp(value, TAG_NAN) == 0)
             {
-                    info_msg.value = NAN;
-                    LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
+                info_msg.value = NAN;
+                LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
             }
             else
             {
@@ -1155,7 +1158,7 @@ bool Logger::dumpStorage()
         }
         iS = 0;
     }
-
+    
     if (store_elem_nb_F > 0  && (counterF * ALARMS_PERIOD_MS) >= (LogPeriodSecF * 1000))
     {
         counterF = 0;
@@ -1168,22 +1171,22 @@ bool Logger::dumpStorage()
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayF[iF].tag );
                 strcpy(value, TAG_NAN);
             }
-
+            
             nb_of_char = fprintf(storefp, "; %s", value);
             if (nb_of_char != (int)strlen(value) + 2)
             {
                 LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
                 return false;
             }
-
+            
 #ifdef ENABLE_TREND
             /* emit a signal to the hmi with the new item to display */
             info_msg.CtIndex = StoreArrayF[iF].CtIndex;
             info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
             if (strcmp(value, TAG_NAN) == 0)
             {
-                    info_msg.value = NAN;
-                    LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
+                info_msg.value = NAN;
+                LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
             }
             else
             {
@@ -1207,7 +1210,7 @@ bool Logger::dumpStorage()
         }
         iF = 0;
     }
-
+    
     if (iF == 0 && iS == 0)
     {
         LOG_PRINT(warning_e, "No signal emitted\n");
@@ -1232,59 +1235,59 @@ bool Logger::dumpStorage()
 #endif
 
 int sum(__attribute__((unused)) const char *fpath, const struct stat *sb, __attribute__((unused)) int typeflag) {
-	    total += sb->st_size;
-		    return 0;
+    total += sb->st_size;
+    return 0;
 }
 
 int Logger::checkSpace( void )
 {
     struct statvfs fiData;
-
+    
     if((statvfs(LOCAL_ROOT_DIR,&fiData)) < 0 )
     {
         LOG_PRINT(error_e,"Failed to stat %s:\n", LOCAL_ROOT_DIR);
         return -1;
     }
-
-	if (fiData.f_bfree * fiData.f_bsize < 1024)
-	{
+    
+    if (fiData.f_bfree * fiData.f_bsize < 1024)
+    {
         LOG_PRINT(info_e,"Free %ld [minimum free %d]\n", fiData.f_bfree * fiData.f_bsize, 1024);
-		return 1;
-	}
-
-	total = 0;
-	if (getSizeDir(STORE_DIR) != 0)
-	{
-		LOG_PRINT(error_e,"Failed to get size of %s:\n", LOCAL_ROOT_DIR);
-		return -1;
-	}
-
-	LOG_PRINT(info_e, "total %ld limit %d avaliable %ld free %ld used %d%%\n",
-			fiData.f_blocks - fiData.f_bavail,
-			MaxLogUsageMb,
-			fiData.f_bavail,
-			fiData.f_bfree,
-			(unsigned int)( (float)(fiData.f_blocks - fiData.f_bavail) / fiData.f_blocks * 100)
-			);
-
-	if (total >= (unsigned int)MaxLogUsageMb * 1024 * 1024)
-	{
+        return 1;
+    }
+    
+    total = 0;
+    if (getSizeDir(STORE_DIR) != 0)
+    {
+        LOG_PRINT(error_e,"Failed to get size of %s:\n", LOCAL_ROOT_DIR);
+        return -1;
+    }
+    
+    LOG_PRINT(info_e, "total %ld limit %d avaliable %ld free %ld used %d%%\n",
+              fiData.f_blocks - fiData.f_bavail,
+              MaxLogUsageMb,
+              fiData.f_bavail,
+              fiData.f_bfree,
+              (unsigned int)( (float)(fiData.f_blocks - fiData.f_bavail) / fiData.f_blocks * 100)
+              );
+    
+    if (total >= (unsigned int)MaxLogUsageMb * 1024 * 1024)
+    {
         LOG_PRINT(info_e,"total %d > MaxLogUsageMb %d\n", total, MaxLogUsageMb * 1024 * 1024);
-		return 1;
-	}
-	return 0;
+        return 1;
+    }
+    return 0;
 }
 
 int Logger::getSizeDir(const char *dirname) {
-	if (access(dirname, R_OK)) {
-		return 1;
-	}
-	if (ftw(dirname, &sum, 1)) {
-		perror("ftw");
-		return 2;
-	}
-	LOG_PRINT(info_e, "%s: %u\n", dirname, total);
-	return 0;
+    if (access(dirname, R_OK)) {
+        return 1;
+    }
+    if (ftw(dirname, &sum, 1)) {
+        perror("ftw");
+        return 2;
+    }
+    LOG_PRINT(info_e, "%s: %u\n", dirname, total);
+    return 0;
 }
 
 int Logger::removeOldest( const char * dir)
@@ -1294,16 +1297,16 @@ int Logger::removeOldest( const char * dir)
     int i = 0;
     char filename[FILENAME_MAX];
     int retval = 0;
-
+    
     fcount = scandir(dir, &filelist, 0, alphasort);
-
+    
     if(fcount < 0) {
-		LOG_PRINT (error_e, "No file to remove\n");
+        LOG_PRINT (error_e, "No file to remove\n");
         perror(dir);
         return 1;
     }
     if(fcount == 1) {
-		LOG_PRINT (error_e, " Only the actual file is available to remove.\n");
+        LOG_PRINT (error_e, " Only the actual file is available to remove.\n");
         perror(dir);
         return 1;
     }
@@ -1325,8 +1328,9 @@ int Logger::removeOldest( const char * dir)
             break;
         }
     }
-
+    
     free(filelist);
     return (retval == 0);
 }
+
 

@@ -98,8 +98,11 @@ public:
     bool bringFront(int pen);
     void enableZoomMode(bool);
     void disableUpdate();
-    
+
 private slots:
+#ifdef TRANSLATION
+    void changeEvent(QEvent * event);
+#endif
     void refreshEvent(trend_msg_t item_trend);
     void moved(const QPoint &pos);
     void selected(const QPolygon &pol);

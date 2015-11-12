@@ -14,6 +14,7 @@ INCLUDEPATH += .\
 			   /imx_mect/trunk/imx28/ltib/rootfs_full_qt/usr/include \
                            ../ATCMutility \
                            ../ATCMcommunication \
+                           ../ATCMcommon \
                            ../ATCMinputdialog
 
 QMAKE_LIBDIR += \

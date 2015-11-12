@@ -34,8 +34,8 @@
 
 Custom class wizard example configuration file. -->
 <wizard version="1" kind="class" id="A.PageBrowser" category="B.CustomClasses">
-    <description>Creates a QPageBrowser implementation for ATCM plugin for TPAC1008 (800x480).</description>
-    <displayname>QPageBrowser for TPAC1008</displayname>;
+    <description>Creates a QPageBrowser implementation for MECT products.</description>
+    <displayname>QPageBrowser for TPAC</displayname>;
     <displaycategory>Custom Classes</displaycategory>
     <files>
         <file source="page.cpp" target="%ClassName:l%.%CppSourceSuffix%" openeditor="false"/>
@@ -48,7 +48,7 @@ Custom class wizard example configuration file. -->
         <field name="ClassName">
     		<!-- validation: the string must start with 'page' and after that must be a hex nuber -->
             <fieldcontrol class="QLineEdit" validator="^page[A-Fa-f0-9]+$" defaulttext="page100" />
-            <fielddescription>Class name (must start with 'page' and end with an HEX identifyer):</fielddescription>
+            <fielddescription>Class name (must start with 'page' and end with an HEX identifier):</fielddescription>
         </field>
     </fields>
     <!-- Example of a validation rule -->
@@ -63,7 +63,7 @@ Custom class wizard example configuration file. -->
         <argument value="--project-name=%ProjectName%"/>
         <argument value="--header-suffix=%CppHeaderSuffix%" omit-empty="true"/>
         <argument value="--source-suffix=%CppSourceSuffix%" omit-empty="true"/>
-	 <!-- Multi-line description passed as temporary file unless empty -->
+ <!-- Multi-line description passed as temporary file unless empty -->
         <argument value="--description=%Description%" omit-empty="true" write-file="true"/>
     </generatorscript>
 </wizard>

@@ -44,10 +44,6 @@ Custom project wizard configuration example file. Note that by convention,
 	   <files>
 	   <file source="main.cpp" openeditor="false"/>
 	   <file source="main.h" openeditor="false"/>
-	   <file source="hmi_logger.cpp" openeditor="false"/>
-	   <file source="hmi_logger.h" openeditor="false"/>
-	   <file source="pagebrowser.cpp" openeditor="false"/>
-	   <file source="pagebrowser.h" openeditor="false"/>
 	   <file source="page0.cpp" openeditor="false"/>
 	   <file source="page0.h" openeditor="false"/>
 	   <file source="page0.ui" openeditor="true"/>
@@ -86,9 +82,9 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="menu.cpp" openeditor="false"/>
 	   <file source="menu.h" openeditor="false"/>
 	   <file source="menu.ui" openeditor="false"/>
-	   <file source="option.cpp" openeditor="false"/>
-	   <file source="option.h" openeditor="false"/>
-	   <file source="option.ui" openeditor="false"/>
+	   <file source="options.cpp" openeditor="false"/>
+	   <file source="options.h" openeditor="false"/>
+	   <file source="options.ui" openeditor="false"/>
 	   <file source="pages.cpp" openeditor="false"/>
 	   <file source="pages.h" openeditor="false"/>
 	   <file source="recipe.cpp" openeditor="false"/>
@@ -373,6 +369,7 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
 	   <file source="config/Alarms.csv" target="config/Alarms.csv" openproject="false" binary="false"/>
 	   <file source="config/application.conf" target="config/application.conf" openproject="false" binary="false"/>
+	   <file source="config/lang_table.csv" target="config/lang_table.csv" openproject="false" binary="false"/>
 	   <!-- 
 	   <file source="project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
 	   -->
@@ -380,6 +377,86 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="template.pri" target="template.pri" openproject="false"/>
 	   <file source="languages.pri" target="languages.pri" openproject="false"/>
 	   <file source="qt_environment.pri" target="qt_environment.pri" openproject="false"/>
-	   <file source="cleanmissingpage.pl" target="cleanmissingpage.pl" openproject="false"/>
 	   </files>
+	    <!-- Create a 2nd wizard page with parameters -->
+	    <fieldpagetitle>Add extra funtionality</fieldpagetitle>
+	    <fields>
+		<field name="STORE">
+	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="true"/>
+	            <fielddescription>Include Storage Funtionality</fielddescription>
+	        </field>
+		<field name="ALARMS">
+	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="true"/>
+	            <fielddescription>Include Alarms Funtionality</fielddescription>
+	        </field>
+		<field name="TREND">
+	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="true"/>
+	            <fielddescription>Include Trend Funtionality</fielddescription>
+	        </field>
+		<field name="RECIPE">
+	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="false"/>
+	            <fielddescription>Include Recipe Funtionality</fielddescription>
+	        </field>
+		<field name="LANGUAGE">
+	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="false"/>
+	            <fielddescription>Include Internationalization Funtionality</fielddescription>
+	        </field>
+	    </fields>
+		    <fields>
+		<field name="Model">
+			<fieldcontrol class="QComboBox" defaultindex="2">
+				<comboentries>
+					<comboentry value="&lt;width&gt;320&lt;&#47;width&gt;&lt;height&gt;240&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1006 Horizontal</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;240&lt;&#47;width&gt;&lt;height&gt;320&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1006 Vertical</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1007_03 Horizontal</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1007_03 Vertical</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1007_04_AA Horizontal</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1007_04_AA Vertical</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1007_04_AB Horizontal</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1007_04_AB Vertical</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;800&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1008 Horizontal</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;800&lt;&#47;height&gt;">
+						<comboentrytext>TPAC1008 Vertical</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;320&lt;&#47;width&gt;&lt;height&gt;240&lt;&#47;height&gt;">
+						<comboentrytext>TP1057 Horizontal</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;240&lt;&#47;width&gt;&lt;height&gt;320&lt;&#47;height&gt;">
+						<comboentrytext>TP1057 Vertical</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
+						<comboentrytext>TP1043 Horizontal</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+						<comboentrytext>TP1043 Vertical</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;800&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+						<comboentrytext>TP1070 Horizontal</comboentrytext>
+					</comboentry>
+					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;800&lt;&#47;height&gt;">
+						<comboentrytext>TP1070 Vertical</comboentrytext>
+					</comboentry>
+			</comboentries>
+			</fieldcontrol>
+			<fielddescription>Choose the MECT panel model:</fielddescription>
+		</field>
+    </fields>
 	</wizard>

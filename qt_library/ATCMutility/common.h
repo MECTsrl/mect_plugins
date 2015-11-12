@@ -27,6 +27,7 @@ extern "C" {
 #undef  COMPACT_ALARM      /* show the start and the end of an alarm in the same line */
 #undef  ENABLE_AUTODUMP    /* enable the automatic dump when you insert the USB key */
 #define ENABLE_DEVICE_DISCONNECT /* enable the device disconnected management */
+#define ENABLE_TRANSLATION
 
 /* this compilation warnig is shown cause the DUMPSCREEN option is quite heavy, so if it is not necessary is better turn it off */
 #ifdef DUMPSCREEN
@@ -300,6 +301,12 @@ enum protocol_e
 	prot_none_e
 };
 
+enum error_kind_e
+{
+    error_blacklist_e = 0,
+    error_other_e
+};
+
 typedef struct udp_msg
 {
 	unsigned short int dataLen;
@@ -338,10 +345,12 @@ typedef struct store_s
 
 enum type_e
 {
-	bit_e,
-	uint_e,
-	int_e,
-	udint_abcd_e,
+    bit_e,
+    uintab_e,
+    uintba_e,
+    intab_e,
+    intba_e,
+    udint_abcd_e,
 	udint_badc_e,
 	udint_cdab_e,
 	udint_dcba_e,
@@ -352,11 +361,14 @@ enum type_e
 	fabcd_e,
 	fbadc_e,
 	fcdab_e,
-	fdcba_e
+    fdcba_e,
+    bytebit_e,
+    wordbit_e,
+    dwordbit_e
 };
 
 #if defined(ENABLE_TREND)
-#define PEN_NB 2 /* into the qt 6.1 only 2 pen instead of 4 are supported */
+#define PEN_NB 4
 #define PORTRAIT 'P'
 #define LANDSCAPE 'L'
 #endif
@@ -418,6 +430,7 @@ typedef union {
 #define LOG_PERIOD_MS 5000
 #define SAMPLE_PERIOD_SEC LOG_PERIOD_MS
 #define MAX_SAMPLE_NB 10240
+#define DEFAULT_MAX_MB 5
 #endif
 
 #ifdef ENABLE_ALARMS

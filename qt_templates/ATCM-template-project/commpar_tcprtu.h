@@ -25,9 +25,13 @@ public:
     ~commpar_tcprtu();
     virtual void reload(void);
     virtual void updateData();
-    
+
 private slots:
+#ifdef TRANSLATION
+    void changeEvent(QEvent * event);
+#endif
     void on_pushButtonRTU_clicked();
+
     void on_pushButtonTCP_clicked();
 
     void on_pushButtonTimeOutTCPRTU_clicked();

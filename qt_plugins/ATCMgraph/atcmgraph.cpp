@@ -224,6 +224,14 @@ ATCMgraph::~ATCMgraph()
         refresh_timer->stop();
         delete refresh_timer;
     }
+    free(m_x1ArrayValue);
+    m_x1ArrayValue = NULL;
+    free(m_x2ArrayValue);
+    m_x2ArrayValue = NULL;
+    free(m_y1ArrayValue);
+    m_y1ArrayValue = NULL;
+    free(m_y2ArrayValue);
+    m_y2ArrayValue = NULL;
 }
 
 #if 0
@@ -638,33 +646,47 @@ void ATCMgraph::setLegendVisible(bool status)
 #ifdef TARGET_ARM
 bool ATCMgraph::addSample(double *samples_x, double *samples_y, double x, double y, double min_x, double max_x, int * sample)
 {
-    double temp_x[MAX_SAMPLES];
-    double temp_y[MAX_SAMPLES];
+    if (samples_x != NULL && samples_y != NULL)
+    {
+        double temp_x[MAX_SAMPLES];
+        double temp_y[MAX_SAMPLES];
 
-    /* if the new sample is in bound add it */
-    int j = MAX_SAMPLES - 1;
-    if (x != VAR_NAN && min_x <= x && x <= max_x) {
-        temp_x[j] = x;
-        temp_y[j] = y;
-        --j;
-    }
+        sample_mutex.lock();
 
-    /* skip the sample out of bound */
-    for (int i = MAX_SAMPLES - 1; i >= 0; --i) {
-        if (samples_x[i] != VAR_NAN && min_x <= samples_x[i] && samples_x[i] <= max_x) {
-            temp_x[j] = samples_x[i];
-            temp_y[j] = samples_y[i];
+        /* if the new sample is in bound add it */
+        int j = MAX_SAMPLES - 1;
+        if (x != VAR_NAN && min_x <= x && x <= max_x) {
+            temp_x[j] = x;
+            temp_y[j] = y;
             --j;
         }
-    }
-    for (; j >= 0; --j) {
-        temp_x[j] = VAR_NAN;
-        temp_y[j] = VAR_NAN;
-    }
-    memcpy(samples_x, temp_x, MAX_SAMPLES * sizeof(double));
-    memcpy(samples_y, temp_y, MAX_SAMPLES * sizeof(double));
 
-    return true;
+        /* skip the sample out of bound */
+        for (int i = MAX_SAMPLES - 1; i >= 0 && j >= 0; --i) {
+            if (samples_x[i] != VAR_NAN && min_x <= samples_x[i] && samples_x[i] <= max_x) {
+                temp_x[j] = samples_x[i];
+                temp_y[j] = samples_y[i];
+                --j;
+            }
+        }
+        /* fill the other point with NAN value */
+        for (; j >= 0; --j) {
+            temp_x[j] = VAR_NAN;
+            temp_y[j] = VAR_NAN;
+        }
+
+        /* update the pen data */
+        memcpy(samples_x, temp_x, MAX_SAMPLES * sizeof(double));
+        memcpy(samples_y, temp_y, MAX_SAMPLES * sizeof(double));
+
+        sample_mutex.unlock();
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 #endif
 
@@ -1002,8 +1024,17 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
         return false;
     }
 
-    /* activate the variable */
 #ifdef TARGET_ARM
+    /* check if the variable is a constant number */
+    bool valid;
+    variable.toDouble(&valid);
+    if (valid)
+    {
+        *CtIndex = -1;
+        *destination = variable;
+        return true;
+    }
+    /* activate the variable */
     if (activateVar(variable.trimmed().toAscii().data()) == 0)
     {
         int myCtIndex = -1;
@@ -1107,8 +1138,14 @@ bool ATCMgraph::read4Variables(int CtIndex1, int CtIndex1, int CtIndex1, int CtI
 bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
 {
     double myvalue;
+    /* it is empty */
+    if (variable.length() == 0)
+    {
+        *value = VAR_NAN;
+        return false;
+    }
     /* it is a constant value */
-    if (CtIndex < 0 && variable.length() > 0)
+    else if (CtIndex < 0)
     {
         bool valid;
         myvalue = variable.toDouble(&valid);

@@ -25,8 +25,11 @@ public:
     ~time_set();
     virtual void reload(void);
     virtual void updateData();
-    
+
 private slots:
+#ifdef TRANSLATION
+    void changeEvent(QEvent * event);
+#endif
     void on_pushButtonOk_clicked();
 
     void on_pushButton_clicked();

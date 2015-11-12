@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QTime>
 #include <QGridLayout>
+#include <QMutex>
 
 #define FRAMEPLOT
 #ifdef FRAMEPLOT
@@ -24,7 +25,7 @@
 #include <qwt_scale_draw.h>
 #include <qwt_legend.h>
 
-#define MAX_SAMPLES 256
+#define MAX_SAMPLES 1024
 
 class ATCMInterruptedCurve : public QwtPlotCurve
 {
@@ -551,6 +552,7 @@ private:
 private:
     QTimer * refresh_timer;
     bool m_run_stop;
+    QMutex sample_mutex;
 };
 
 #endif

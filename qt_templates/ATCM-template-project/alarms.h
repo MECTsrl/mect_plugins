@@ -28,31 +28,34 @@ public:
     virtual void updateData();
     
 private slots:
+#ifdef TRANSLATION
+    void changeEvent(QEvent * event);
+#endif
     void on_pushButtonHome_clicked();
-
+    
     void on_pushButtonBack_clicked();
-
+    
     void addEvent(char * line, bool visibility, char * id, char * style = NULL);
-
+    
     void addEvent(event_descr_e * msg, bool visibility);
-
+    
     void on_pushButtonHistory_clicked();
-
+    
     void on_comboBoxLevel_currentIndexChanged(int index);
-
+    
     void on_comboBoxType_currentIndexChanged(int index);
-
+    
     void on_pushButtonACK_clicked();
-
+    
     void on_pushButtonACKall_clicked();
-
+    
     void receiveEvent(char * msg);
-
+    
     void on_pushButtonHornACK_clicked();
-
+    
 signals:
     void new_ack(event_msg_t * msg);
-
+    
 private:
     void refreshEvent();
 private:
@@ -66,4 +69,5 @@ private:
 #define DATETIME_IS_ALARM_RISE
 
 #endif // ALARMS_H
+
 

@@ -9,6 +9,7 @@ include(../qt_designer_environment.pri)
 INCLUDEPATH += . \
 			   /imx_mect/trunk/imx28/ltib/rootfs/usr/src/linux/include \
 			   /imx_mect/trunk/imx28/ltib/rootfs/usr/include \
+                           ../qt_library/ATCMcommon \
                            ../qt_library/ATCMutility \
                            ../qt_library/ATCMcommunication \
                            ../qt_library/ATCMinputdialog \
@@ -18,11 +19,13 @@ QMAKE_LIBDIR += ../../lib \
 		   /usr/local/Trolltech/Qt-qvfb-version/lib \
 		   /imx_mect/trunk/imx28/ltib/rootfs/usr/lib \
                    $${ATCM_ARM_LIBRARY_LIBPATH} \
-                   $${ATCM_SRC_LIBRARY_LIBPATH}ATCMutility \
-                   $${ATCM_SRC_LIBRARY_LIBPATH}ATCMcommunication \
-		   $${ATCM_SRC_LIBRARY_LIBPATH}ATCMinputdialog
+                   ../qt_library/ATCMcommon \
+                   ../qt_library/ATCMutility \
+                   ../qt_library/ATCMcommunication \
+                   ../qt_library/ATCMinputdialog
 
 LIBS += \
+-lATCMcommon \
 -lATCMutility \
 -lATCMcommunication \
 -lATCMinputdialog

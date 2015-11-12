@@ -26,11 +26,14 @@ class page0 : public page
 		virtual void reload(void);
 
 	private slots:
-			void changePage();
+#ifdef TRANSLATION
+		void changeEvent(QEvent * event);
+#endif
+		void changePage();
 
 	private:
 		Ui::page0 *ui;
-        bool first_time;
+		bool first_time;
 };
 
 #endif // PAGE0_H

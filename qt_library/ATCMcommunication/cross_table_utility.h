@@ -79,17 +79,18 @@ int isBlockActive(const char * varname, char * varblockhead);
 int getHeadBlock(int CtIndex, char * varblockhead);
 int getHeadBlockName(const char * varname, char * varblockhead);
 char * mystrtok(char * string, char * token, const char * separator);
-int disconnectDevice(const char * protocol, int node);
+int disconnectDevice(enum protocol_e protocol, int node);
 int disconnectDeviceByVarname(const char * varname);
 
-int connectDevice(const char * protocol, int node);
+int connectDevice(enum protocol_e protocol, int node);
 int connectDeviceByVarname(const char * varname);
 
-int isDeviceConnected(const char * protocol, int node);
+int isDeviceConnected(enum protocol_e protocol, int node);
 int isDeviceConnectedByVarname(const char * varname);
 int isDeviceConnectedByCtIndex(int CtIndex);
 
-int setupConnectedDevice(const char * protocol, int node);
+int setupConnectedDevice(enum protocol_e protocol, int node);
+int setupConnectedDeviceByName(const char * protocol, int node);
 
 extern char DeviceReconnected;
 
@@ -110,7 +111,7 @@ extern int writeVarByCtIndex(const int ctIndex, void * value);
 extern int writeVarByCtIndex_nowait(const int ctIndex, void * value);
 extern int writeBlock(const char * varname);
 extern int deleteUnusedSynIndex(int SynIndex);
-extern int getVarDecimalByCtIndex(const int ctIndex);
+extern int getVarDecimal(const int ctIndex);
 extern int getVarDecimalByName(const char * varname);
 
 /**
@@ -169,10 +170,14 @@ extern pthread_mutex_t sync_send_mutex;
 
 unsigned short int getCommunicationEngineMainRevision(void);
 unsigned short int getCommunicationEngineMinorRevision(void);
-int resetError(const char *protocol);
-short int getErrorCounter(const char *protocol, int node);
-short int getErrorStatus(const char *protocol, char *kind);
-short int getErrorBit(const char *protocol, const char *kind, int node);
+int resetErrorByName(const char *protocol);
+int resetError(enum protocol_e protocol);
+short int getErrorCounterByName(const char *protocol, int node);
+short int getErrorCounter(enum protocol_e protocol, int node);
+short int getErrorStatusByName(const char *protocol, const char *kind);
+short int getErrorStatus(enum protocol_e protocol, enum error_kind_e kind);
+short int getErrorBitByName(const char *protocol, const char *kind, int node);
+short int getErrorBit(enum protocol_e protocol, enum error_kind_e kind, int node);
 int writePending();
 int writePendingInorder();
 
@@ -184,8 +189,10 @@ int checkRecipeWriting(void);
 void cleanRecipeWriting(void);
 void checkWriting(void);
 char prepareFormattedVar(const char * varname, char * formattedVar);
-int  getVarDivisor(const char * varname);
-int  getVarDecimal(const char * varname);
+int  getVarDivisorByName(const char * varname);
+int  getVarDivisor(const int ctIndex);
+int  getVarDecimalByName(const char * varname);
+int  getVarDecimal(const int ctIndex);
 
 typedef struct write_queue_elem_s {
     int ctIndex;

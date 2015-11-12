@@ -95,7 +95,7 @@ void comm_status::updateData()
         /* Error counters */
         ui->labelConuterTCPval->setText(QString("%1").arg(getErrorCounter(TAG_TCP, ui->pushButtonNodeTCP->text().toInt())));
         /* Node status */
-        switch(getErrorBit(TAG_TCP, ui->comboBoxTypeTCP->currentText().toAscii().data(), ui->pushButtonNodeTCP->text().toInt()))
+        switch(getErrorBit(prot_tcp_e, ui->comboBoxTypeTCP->currentText().toAscii().data(), ui->pushButtonNodeTCP->text().toInt()))
         {
         case 0:
             ui->labelErrorBitTCPval->setStyleSheet("border-radius: 10px; background-color: "LED_ON";");
@@ -136,7 +136,7 @@ void comm_status::updateData()
         /* Error counters */
         ui->labelConuterRTUval->setText(QString("%1").arg(getErrorCounter(TAG_RTU, ui->comboBoxNodeRTU->currentText().toInt())));
         /* Node status */
-        switch(getErrorBit(TAG_RTU, ui->comboBoxTypeRTU->currentText().toAscii().data(),  ui->comboBoxNodeRTU->currentText().toInt()))
+        switch(getErrorBit(prot_rtu_e, ui->comboBoxTypeRTU->currentText().toAscii().data(),  ui->comboBoxNodeRTU->currentText().toInt()))
         {
         case 0:
             ui->labelErrorBitRTUval->setStyleSheet("border-radius: 10px; background-color: "LED_ON";");
@@ -176,7 +176,7 @@ void comm_status::updateData()
         /* Error counters */
         ui->labelConuterTCPRTUval->setText(QString("%1").arg(getErrorCounter(TAG_TCPRTU, ui->comboBoxNodeTCPRTU->currentText().toInt())));
         /* Node status */
-        switch(getErrorBit(TAG_TCPRTU, ui->comboBoxTypeTCPRTU->currentText().toAscii().data(), ui->comboBoxNodeTCPRTU->currentText().toInt()))
+        switch(getErrorBit(prot_tcprtu_e, ui->comboBoxTypeTCPRTU->currentText().toAscii().data(), ui->comboBoxNodeTCPRTU->currentText().toInt()))
         {
         case 0:
             ui->labelErrorBitTCPRTUval->setStyleSheet("border-radius: 10px; background-color: "LED_ON";");
@@ -212,6 +212,19 @@ void comm_status::updateData()
         ui->labelErrorStatusTCPRTUval->setStyleSheet("border-radius: 10px; background-color: "LED_UNK";");
     }
 }
+
+#ifdef TRANSLATION
+/**
+ * @brief This is the event slot to detect new language translation.
+ */
+void comm_status::changeEvent(QEvent * event)
+{
+    if (event->type() == QEvent::LanguageChange)
+    {
+        ui->retranslateUi(this);
+    }
+}
+#endif
 
 /**
  * @brief This is the distructor member. The operation written here, are executed only one time when the page will be deleted.

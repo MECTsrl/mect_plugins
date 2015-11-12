@@ -4,6 +4,8 @@ include(../qt_environment.pri)
 
 TEMPLATE      = subdirs
 SUBDIRS       =	\
-				ATCMutility \
+                                ATCMcommon \
+                                ATCMutility \
 				ATCMcommunication \
-				ATCMinputdialog \
+                                ATCMinputdialog \
+                                ATCMlogger

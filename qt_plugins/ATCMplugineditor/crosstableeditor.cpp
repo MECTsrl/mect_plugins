@@ -113,7 +113,7 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
 
 QSize CrossTableEditor::sizeHint() const
 {
-    return QSize(500, 250);
+    return QSize(500, 500);
 }
 
 void CrossTableEditor::selectCTVariable(QTableWidgetItem* item)

@@ -42,6 +42,7 @@ my $optProjectName = 'MyProject';
 my $optCppHeaderSuffix = 'h';
 my $optCppSourceSuffix = 'cpp';
 my $optDescription = '';
+my $optTarget = 'TPAC1007';
 
 # -- Read in a file and return its lines
 sub readFile
@@ -90,18 +91,72 @@ my $headerFileName = $baseFileName . '.' . $optCppHeaderSuffix;
 my $mainSourceFileName = 'main.' . $optCppSourceSuffix;
 my $projectFileName = lc($optProjectName) . '.pro';
 
+my $Height=0;
+my $Width=0;
+
 if ($optDryRun) {
 #   -- Step 1) Dry run: Print file names along with attributes
-    print "pages.cpp",",openeditor\n";
-    print "pages.h",",openeditor\n";
+    print "pages.cpp\n";
+    print "pages.h\n";
 } else {
+
+	open FILE, "<", "template.pri" or die $! . $projectFileName;
+
+	while (<FILE>) {
+		if ($_ =~/MODEL/)
+		{
+			my (@display_size) = $_ =~ /(\d+)/g;
+			$Width  = $display_size[0];
+			$Height = $display_size[1];
+			last;
+		}
+	}
+	close FILE;
+
+	my $found = 0;
+
+	open FILE, "<", "$optClassName.ui" or die $!;
+	open TMP, "+>", undef or die $!;
+	while (<FILE>) {
+		if ($_ =~/<width>XXX<\/width>/)
+		{
+			$found = 1;
+			$_ =~ s/XXX/$Width/g;
+			print TMP $_;
+		}
+		elsif ($_ =~/<height>XXX<\/height>/)
+		{
+			$found = 1;
+			$_ =~ s/XXX/$Height/g;
+			print TMP $_;
+		}
+		else
+		{
+			print TMP $_;
+		}
+	}
+	if ($found == 1)
+	{
+		close FILE;
+		open FILE, ">", "$optClassName.ui" or die $!;
+
+		# Move to the beginning of file
+		seek(TMP,0,0);
+		# Read contents of the anonymous file
+		while (<TMP>) {
+			print FILE $_;
+		}
+		close TMP;
+		close FILE;
+	}
+
 	open FILE, "<", "pages.h" or die $!;
 	open TMP, "+>", undef or die $!;
 
 	my $ClassiIndex = $optClassName;
 	$ClassiIndex =~ s/page//;
 	
-	my $found = 0;
+	$found = 0;
 
 	while (<FILE>) {
 		if ($_ =~/#include \"page$ClassiIndex.h/)

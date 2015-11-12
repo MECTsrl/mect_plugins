@@ -1,7 +1,6 @@
 #ifndef ATCMLABEL_H
 #define ATCMLABEL_H
 
-//#include <QtGui/QWidget>
 #include <QLocale>
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
@@ -81,11 +80,23 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		Q_PROPERTY(int borderRadius READ borderRadius WRITE setBorderRadius)
 		/* set the apparence */
         Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence RESET unsetApparence)
+        Q_ENUMS(ATCMLabelFormat)
+        Q_PROPERTY(enum ATCMLabelFormat format READ format WRITE setFormat)
 
-	public:
-		ATCMlabel(QWidget *parent = 0);
+    public:
+        enum ATCMLabelFormat
+        {
+            Dec,
+            Hex,
+            Bin
+        };
+        ATCMlabel(QWidget *parent = 0);
 		~ATCMlabel();
-		QString value()    const { return m_value; }
+        enum ATCMLabelFormat format() const
+        {
+            return m_format;
+        }
+        QString value()    const { return m_value; }
 		QString variable() const { return m_variable; }
 		QString prefix() { return m_prefix; }
 		QString suffix() { return m_suffix; }
@@ -130,6 +141,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		void setBorderRadius(int radius);
 
         void setApparence(const enum QFrame::Shadow apparence);
+        void setFormat(const enum ATCMLabelFormat format);
 
         void unsetVariable();
         void unsetPrefix();
@@ -172,6 +184,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		int m_borderradius;
 
         enum QFrame::Shadow m_apparence;
+        enum ATCMLabelFormat m_format;
 
 	protected:
 		void paintEvent(QPaintEvent *event);

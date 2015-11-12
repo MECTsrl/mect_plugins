@@ -17,8 +17,12 @@
 #include "numpad.h"
 #include "atcmstyle.h"
 #ifdef TARGET_ARM
+#include <stdio.h>
 #include "app_logprint.h"
 #include "cross_table_utility.h"
+extern bool _trend_data_reload_;
+extern char _actual_trend_[FILENAME_MAX];
+extern char _actual_store_[FILENAME_MAX];
 #endif
 
 #define RETRY_NB 20
@@ -731,6 +735,15 @@ void  ATCMbutton::goToPage()
 #ifdef TARGET_ARM
     if (m_pagename.length() > 0)
     {
+        if (m_pagename.startsWith("trend"))
+        {
+            strncpy(_actual_trend_, m_pagename.toAscii().data(), FILENAME_MAX);
+            _trend_data_reload_ = true;
+        }
+        else if (m_pagename.startsWith("store"))
+        {
+            strncpy(_actual_store_, m_pagename.toAscii().data(), FILENAME_MAX);
+        }
         LOG_PRINT(info_e, "Going to page %s\n", m_pagename.toAscii().data());
         emit newPage(m_pagename.toAscii().data(), m_remember);
     }

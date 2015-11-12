@@ -25,8 +25,11 @@ public:
     ~recipe();
     virtual void reload(void);
     virtual void updateData();
-    
+
 private slots:
+#ifdef TRANSLATION
+    void changeEvent(QEvent * event);
+#endif
     void on_pushButtonHome_clicked();
 
     void on_pushButtonBack_clicked();

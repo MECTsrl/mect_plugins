@@ -107,16 +107,13 @@ numpad::numpad(float* value, float def, int decimal, float min, float max, bool 
 		_minf = min;
 		_maxf = max;
 		_valuef = value;
+        if (def != NO_DEFAULT)
+        {
+            ui->lineEditVal->setText(QString("%1").setNum(def, 'f', decimal));
+        }
 	}
 
-    if (password == false && def != NO_DEFAULT)
-    {
-        ui->lineEditVal->setText(QString("%1").setNum(def, 'f', decimal));
-        ui->lineEditVal->selectAll();
-    }
-
 	reload();
-    ui->lineEditVal->setFocus();
 }
 
 numpad::numpad(int* value, int def, int min, int max, bool password, QWidget *parent) :
@@ -147,16 +144,13 @@ numpad::numpad(int* value, int def, int min, int max, bool password, QWidget *pa
 		_mini = min;
 		_maxi = max;
 		_valuei = value;
+        if (def != NO_DEFAULT)
+        {
+            ui->lineEditVal->setText(QString("%1").arg(def));
+        }
 	}
 
-    if (password == false && def != NO_DEFAULT)
-    {
-        ui->lineEditVal->setText(QString("%1").arg(def));
-        ui->lineEditVal->selectAll();
-    }
-
     reload();
-    ui->lineEditVal->setFocus();
 }
 
 numpad::numpad(char* value, char* def, char* min, char* max, bool password, QWidget *parent) :
@@ -223,16 +217,13 @@ numpad::numpad(char* value, char* def, char* min, char* max, bool password, QWid
 			strcpy(_maxs, max);
 		}
 		_values = value;
-	}
-
-    if (password == false && def != NULL)
-    {
-        ui->lineEditVal->setText(def);
-        ui->lineEditVal->selectAll();
+	    if (def != NULL)
+        {
+            ui->lineEditVal->setText(def);
+        }
     }
 
     reload();
-    ui->lineEditVal->setFocus();
 }
 
 void numpad::reload()
@@ -262,12 +253,8 @@ void numpad::reload()
 		ui->labelMax->hide();
 		ui->labelMin->hide();
 	}
-#if 0
-	if (*_value != 0)
-	{
-		ui->lineEditVal->setText(QString("%1").arg(*_value));
-	}
-#endif
+    ui->lineEditVal->setFocus();
+    ui->lineEditVal->selectAll();
 }
 
 numpad::~numpad()
@@ -345,6 +332,11 @@ void numpad::on_pushButtonEnter_clicked()
 	}
 	else
 #endif
+    if (ui->lineEditVal->text().length() == 0)
+    {
+        reject();
+    }
+    else
 	{
 		if (inputtype == DECIMAL && _valuef != NULL)
 		{
