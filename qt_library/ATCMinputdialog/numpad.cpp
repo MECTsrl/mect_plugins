@@ -10,7 +10,6 @@
  */
 
 #include "app_logprint.h"
-//#include "main.h"
 #include "numpad.h"
 #include "ui_numpad.h"
 

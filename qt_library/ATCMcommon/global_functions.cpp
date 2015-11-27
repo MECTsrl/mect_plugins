@@ -285,7 +285,7 @@ bool loadTagTable()
     fp = fopen(TAG_TABLE, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", TAG_TABLE);
+        LOG_PRINT(info_e, "Cannot open '%s'\n", TAG_TABLE);
         return false;
     }
     LOG_PRINT(info_e, "opened '%s'\n", TAG_TABLE);

@@ -1,28 +1,23 @@
 TARGET = ATCMplugin
 TEMPLATE = lib
-CONFIG += staticlib
 
 DEFINES+="TARGET_ARM"
 
-include(../qt_designer_environment.pri)
+#include(../qt_environment.pri)
 
 INCLUDEPATH += . \
-			   /imx_mect/trunk/imx28/ltib/rootfs/usr/src/linux/include \
-			   /imx_mect/trunk/imx28/ltib/rootfs/usr/include \
-                           ../qt_library/ATCMcommon \
-                           ../qt_library/ATCMutility \
-                           ../qt_library/ATCMcommunication \
-                           ../qt_library/ATCMinputdialog \
-                           ./ATCMstyle
+               ../qt_library/ATCMcommon \
+               ../qt_library/ATCMutility \
+               ../qt_library/ATCMcommunication \
+               ../qt_library/ATCMinputdialog \
+               ./ATCMstyle
 
 QMAKE_LIBDIR += ../../lib \
-		   /usr/local/Trolltech/Qt-qvfb-version/lib \
-		   /imx_mect/trunk/imx28/ltib/rootfs/usr/lib \
-                   $${ATCM_ARM_LIBRARY_LIBPATH} \
-                   ../qt_library/ATCMcommon \
-                   ../qt_library/ATCMutility \
-                   ../qt_library/ATCMcommunication \
-                   ../qt_library/ATCMinputdialog
+               $${ATCM_ARM_LIBRARY_LIBPATH} \
+               ../qt_library/ATCMcommon \
+               ../qt_library/ATCMutility \
+               ../qt_library/ATCMcommunication \
+               ../qt_library/ATCMinputdialog
 
 LIBS += \
 -lATCMcommon \
@@ -40,10 +35,10 @@ HEADERS += \
 		   ./ATCMprogressbar/atcmprogressbar.h \
 		   ./ATCMled/atcmled.h \
 		   ./ATCManimation/atcmanimation.h \
-                   ./ATCMstyle/atcmstyle.h \
-                   ./ATCMgraph/atcmgraph.h \
-                   ./ATCMdate/atcmdate.h \
-                   ./ATCMtime/atcmtime.h
+		   ./ATCMstyle/atcmstyle.h \
+		   ./ATCMgraph/atcmgraph.h \
+		   ./ATCMdate/atcmdate.h \
+		   ./ATCMtime/atcmtime.h
 
 SOURCES += \
 		   ./ATCMlabel/atcmlabel.cpp \
@@ -55,10 +50,10 @@ SOURCES += \
 		   ./ATCMprogressbar/atcmprogressbar.cpp \
 		   ./ATCMled/atcmled.cpp \
 		   ./ATCManimation/atcmanimation.cpp \
-                   ./ATCMstyle/atcmstyle.cpp \
-                   ./ATCMgraph/atcmgraph.cpp \
-                   ./ATCMdate/atcmdate.cpp \
-                   ./ATCMtime/atcmtime.cpp
+		   ./ATCMstyle/atcmstyle.cpp \
+		   ./ATCMgraph/atcmgraph.cpp \
+		   ./ATCMdate/atcmdate.cpp \
+		   ./ATCMtime/atcmtime.cpp
 
 RESOURCES += atcmicons.qrc 
 

@@ -30,7 +30,7 @@
 #include "hmi_logger.h"
 #include "app_logprint.h"
 #include "cross_table_utility.h"
-#include "../../qt_templates/ATCM-template-project/alarms.h"
+#include "../ATCMalarms/alarms.h"
 #include "common.h"
 
 Logger * logger = NULL;

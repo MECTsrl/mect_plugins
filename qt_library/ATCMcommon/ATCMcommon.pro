@@ -1,23 +1,25 @@
 #-------------------------------------------------
 #
-# Project for ATCMcommunication library 
+# Project for ATCMcommon library 
 #
 #-------------------------------------------------
 
 TARGET = ATCMcommon
+
 include (../qt_library.pri)
 
 INCLUDEPATH += ../ATCMutility \
                 ../ATCMlogger
 
 LIBS += \
-ATCMutility
+-lATCMutility
 
 SOURCES += \
 global_var.cpp \
 pagebrowser.cpp \
 screensaver.cpp \
-    global_functions.cpp
+    global_functions.cpp \
+    setstyle.cpp
 
 
 HEADERS += \
@@ -25,7 +27,8 @@ global_var.h \
 pagebrowser.h \
 screensaver.h \
     defines.h \
-    global_functions.h
+    global_functions.h \
+    setstyle.h
 
 
 FORMS += \

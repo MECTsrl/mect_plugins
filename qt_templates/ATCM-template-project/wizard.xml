@@ -42,87 +42,11 @@ Custom project wizard configuration example file. Note that by convention,
 	   <displayname>ATCM plugin template</displayname>;
 	   <displaycategory>Mect Projects</displaycategory>
 	   <files>
-	   <file source="main.cpp" openeditor="false"/>
-	   <file source="main.h" openeditor="false"/>
-	   <file source="page0.cpp" openeditor="false"/>
-	   <file source="page0.h" openeditor="false"/>
-	   <file source="page0.ui" openeditor="true"/>
-	   <file source="alarms.cpp" openeditor="false"/>
-	   <file source="alarms.h" openeditor="false"/>
-	   <file source="alarms.ui" openeditor="false"/>
-	   <file source="alarms_history.cpp" openeditor="false"/>
-	   <file source="alarms_history.h" openeditor="false"/>
-	   <file source="alarms_history.ui" openeditor="false"/>
-	   <file source="screensaver.cpp" openeditor="false"/>
-	   <file source="screensaver.h" openeditor="false"/>
-	   <file source="display_settings.cpp" openeditor="false"/>
-	   <file source="display_settings.h" openeditor="false"/>
-	   <file source="display_settings.ui" openeditor="false"/>
-	   <file source="commpar_rtu.cpp" openeditor="false"/>
-	   <file source="commpar_rtu.h" openeditor="false"/>
-	   <file source="commpar_rtu.ui" openeditor="false"/>
-	   <file source="commpar_tcp.cpp" openeditor="false"/>
-	   <file source="commpar_tcp.h" openeditor="false"/>
-	   <file source="commpar_tcprtu.cpp" openeditor="false"/>
-	   <file source="commpar_tcprtu.h" openeditor="false"/>
-	   <file source="commpar_tcprtu.ui" openeditor="false"/>
-	   <file source="commpar_tcp.ui" openeditor="false"/>
-	   <file source="comm_status.cpp" openeditor="false"/>
-	   <file source="comm_status.h" openeditor="false"/>
-	   <file source="comm_status.ui" openeditor="false"/>
-	   <file source="datalog_set.cpp" openeditor="false"/>
-	   <file source="datalog_set.h" openeditor="false"/>
-	   <file source="datalog_set.ui" openeditor="false"/>
-	   <file source="info.cpp" openeditor="false"/>
-	   <file source="info.h" openeditor="false"/>
-	   <file source="info.ui" openeditor="false"/>
-	   <file source="item_selector.cpp" openeditor="false"/>
-	   <file source="item_selector.h" openeditor="false"/>
-	   <file source="item_selector.ui" openeditor="false"/>
-	   <file source="menu.cpp" openeditor="false"/>
-	   <file source="menu.h" openeditor="false"/>
-	   <file source="menu.ui" openeditor="false"/>
-	   <file source="options.cpp" openeditor="false"/>
-	   <file source="options.h" openeditor="false"/>
-	   <file source="options.ui" openeditor="false"/>
 	   <file source="pages.cpp" openeditor="false"/>
 	   <file source="pages.h" openeditor="false"/>
-	   <file source="recipe.cpp" openeditor="false"/>
-	   <file source="recipe.h" openeditor="false"/>
-	   <file source="recipe_select.cpp" openeditor="false"/>
-	   <file source="recipe_select.h" openeditor="false"/>
-	   <file source="recipe_select.ui" openeditor="false"/>
-	   <file source="recipe.ui" openeditor="false"/>
-	   <file source="sgdd.cpp" openeditor="false"/>
-	   <file source="sgdd.h" openeditor="false"/>
-	   <file source="sgdd.ui" openeditor="false"/>
-	   <file source="time_set.cpp" openeditor="false"/>
-	   <file source="time_set.h" openeditor="false"/>
-	   <file source="time_set.ui" openeditor="false"/>
-	   <file source="trend.cpp" openeditor="false"/>
-	   <file source="trend.h" openeditor="false"/>
-	   <file source="trend.ui" openeditor="false"/>
-	   <file source="trend_option.cpp" openeditor="false"/>
-	   <file source="trend_option.h" openeditor="false"/>
-	   <file source="trend_option.ui" openeditor="false"/>
-	   <file source="trend_other.cpp" openeditor="false"/>
-	   <file source="trend_other.h" openeditor="false"/>
-	   <file source="trend_other.ui" openeditor="false"/>
-	   <file source="trend_range.cpp" openeditor="false"/>
-	   <file source="trend_range.h" openeditor="false"/>
-	   <file source="trend_range.ui" openeditor="false"/>
-	   <file source="buzzer_settings.cpp" openeditor="false"/>
-	   <file source="buzzer_settings.h" openeditor="false"/>
-	   <file source="buzzer_settings.ui" openeditor="false"/>
-	   <file source="data_manager.cpp" openeditor="false"/>
-	   <file source="data_manager.h" openeditor="false"/>
-	   <file source="data_manager.ui" openeditor="false"/>
-	   <file source="store.cpp" openeditor="false"/>
-	   <file source="store.h" openeditor="false"/>
-	   <file source="store.ui" openeditor="false"/>
-	   <file source="store_filter.cpp" openeditor="false"/>
-	   <file source="store_filter.h" openeditor="false"/>
-	   <file source="store_filter.ui" openeditor="false"/>
+	   <file source="page100.cpp" openeditor="false"/>
+	   <file source="page100.h" openeditor="false"/>
+	   <file source="page100.ui" openeditor="true"/>
 	   <file source="style.h" target="style.h" openproject="false"/>
 	   <file source="resources.qrc" target="resources.qrc" openproject="false"/>
 	   <file source="systemicons.qrc" target="systemicons.qrc" openproject="false"/>
@@ -380,83 +304,61 @@ Custom project wizard configuration example file. Note that by convention,
 	   </files>
 	    <!-- Create a 2nd wizard page with parameters -->
 	    <fieldpagetitle>Add extra funtionality</fieldpagetitle>
-	    <fields>
-		<field name="STORE">
-	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="true"/>
-	            <fielddescription>Include Storage Funtionality</fielddescription>
-	        </field>
-		<field name="ALARMS">
-	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="true"/>
-	            <fielddescription>Include Alarms Funtionality</fielddescription>
-	        </field>
-		<field name="TREND">
-	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="true"/>
-	            <fielddescription>Include Trend Funtionality</fielddescription>
-	        </field>
-		<field name="RECIPE">
-	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="false"/>
-	            <fielddescription>Include Recipe Funtionality</fielddescription>
-	        </field>
-		<field name="LANGUAGE">
-	            <fieldcontrol class="QCheckBox" truevalue="" falsevalue="# " defaultvalue="false"/>
-	            <fielddescription>Include Internationalization Funtionality</fielddescription>
-	        </field>
-	    </fields>
-		    <fields>
-		<field name="Model">
-			<fieldcontrol class="QComboBox" defaultindex="2">
-				<comboentries>
-					<comboentry value="&lt;width&gt;320&lt;&#47;width&gt;&lt;height&gt;240&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1006 Horizontal</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;240&lt;&#47;width&gt;&lt;height&gt;320&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1006 Vertical</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1007_03 Horizontal</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1007_03 Vertical</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1007_04_AA Horizontal</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1007_04_AA Vertical</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1007_04_AB Horizontal</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1007_04_AB Vertical</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;800&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1008 Horizontal</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;800&lt;&#47;height&gt;">
-						<comboentrytext>TPAC1008 Vertical</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;320&lt;&#47;width&gt;&lt;height&gt;240&lt;&#47;height&gt;">
-						<comboentrytext>TP1057 Horizontal</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;240&lt;&#47;width&gt;&lt;height&gt;320&lt;&#47;height&gt;">
-						<comboentrytext>TP1057 Vertical</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
-						<comboentrytext>TP1043 Horizontal</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
-						<comboentrytext>TP1043 Vertical</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;800&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
-						<comboentrytext>TP1070 Horizontal</comboentrytext>
-					</comboentry>
-					<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;800&lt;&#47;height&gt;">
-						<comboentrytext>TP1070 Vertical</comboentrytext>
-					</comboentry>
-			</comboentries>
-			</fieldcontrol>
-			<fielddescription>Choose the MECT panel model:</fielddescription>
-		</field>
-    </fields>
+		<fields>
+			<field name="Model">
+				<fieldcontrol class="QComboBox" defaultindex="2">
+					<comboentries>
+						<comboentry value="&lt;width&gt;320&lt;&#47;width&gt;&lt;height&gt;240&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1006 Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;240&lt;&#47;width&gt;&lt;height&gt;320&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1006 Vertical</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1007_03 Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1007_03 Vertical</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1007_04_AA Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1007_04_AA Vertical</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1007_04_AB Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1007_04_AB Vertical</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;800&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1008 Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;800&lt;&#47;height&gt;">
+							<comboentrytext>TPAC1008 Vertical</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;320&lt;&#47;width&gt;&lt;height&gt;240&lt;&#47;height&gt;">
+							<comboentrytext>TP1057 Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;240&lt;&#47;width&gt;&lt;height&gt;320&lt;&#47;height&gt;">
+							<comboentrytext>TP1057 Vertical</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;272&lt;&#47;height&gt;">
+							<comboentrytext>TP1043 Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;272&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+							<comboentrytext>TP1043 Vertical</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;800&lt;&#47;width&gt;&lt;height&gt;480&lt;&#47;height&gt;">
+							<comboentrytext>TP1070 Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;480&lt;&#47;width&gt;&lt;height&gt;800&lt;&#47;height&gt;">
+							<comboentrytext>TP1070 Vertical</comboentrytext>
+						</comboentry>
+				</comboentries>
+				</fieldcontrol>
+				<fielddescription>Choose the MECT panel model:</fielddescription>
+			</field>
+		</fields>
 	</wizard>

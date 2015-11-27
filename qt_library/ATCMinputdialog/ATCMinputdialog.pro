@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project for ATCMcommunication library 
+# Project for ATCMinputdialog library 
 #
 #-------------------------------------------------
 
@@ -11,7 +11,7 @@ include (../qt_library.pri)
 INCLUDEPATH += ../ATCMutility
 
 LIBS += \
-ATCMutility
+-lATCMutility
 
 SOURCES += \
 alphanumpad.cpp \

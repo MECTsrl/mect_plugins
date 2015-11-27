@@ -11,7 +11,7 @@ include (../qt_library.pri)
 INCLUDEPATH += ../ATCMutility
 
 LIBS += \
-ATCMutility
+-lATCMutility
 
 SOURCES += \
 cross_table_utility.c \

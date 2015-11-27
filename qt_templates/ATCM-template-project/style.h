@@ -10,6 +10,8 @@
 #ifndef STYLE_H
 #define STYLE_H
 
+#include "defines.h"
+
 /**
  * @brief this macro is used to set the style for all the pages: this macro will be called in the constuctor of every pages
  * if you need to customize the style of a particular page, you must to setup the stylesheet of that page

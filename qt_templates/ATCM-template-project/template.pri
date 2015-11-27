@@ -72,167 +72,38 @@ LIBS += \
 -lATCMcommunication \
 -lATCMplugin \
 -lATCMinputdialog \
--lATCMlogger
+-lATCMlogger \
+-lATCMstore \
+-lATCMalarms \
+-lATCMrecipe \
+-lATCMtrend \
+-lATCMsystem
 
 # Input
 HEADERS += \
-		   commpar_rtu.h \
-		   commpar_tcp.h \
-		   commpar_tcprtu.h \
-		   display_settings.h \
-		   info.h \
-		   main.h \
-		   menu.h \
-		   page0.h \
-		   pages.h \
-		   sgdd.h \
-		   item_selector.h \
 		   style.h \
-		   time_set.h \
-		   data_manager.h \
-		   buzzer_settings.h \
-		   comm_status.h \
-    options.h
+                   pages.h
 
 FORMS += \
-		 commpar_rtu.ui \
-		 commpar_tcp.ui \
-		 commpar_tcprtu.ui \
-		 display_settings.ui \
-		 info.ui \
-		 menu.ui \
-		 page0.ui \
-		 sgdd.ui \
-		 item_selector.ui \
-		 time_set.ui \
-		 data_manager.ui \
-		 buzzer_settings.ui \
-		 comm_status.ui \
-    options.ui
+
 
 SOURCES += \
-		   commpar_rtu.cpp \
-		   commpar_tcp.cpp \
-		   commpar_tcprtu.cpp \
-		   display_settings.cpp \
-		   info.cpp \
-		   main.cpp \
-		   menu.cpp \
-		   page0.cpp \
-		   pages.cpp \
-		   sgdd.cpp \
-		   item_selector.cpp \
-		   time_set.cpp \
-		   data_manager.cpp \
-		   buzzer_settings.cpp \
-		   comm_status.cpp \
-    options.cpp
+                   pages.cpp
 
 store {
 	DEFINES+=ENABLE_STORE
-
-	HEADERS -= \
-			   datalog_set.h
-
-	HEADERS += \
-			   datalog_set.h \
-			   store.h \
-			   store_filter.h
-
-	FORMS -= \
-              datalog_set.ui
-
-	FORMS += \
-			   datalog_set.ui \
-			   store.ui \
-			   store_filter.ui
-
-	SOURCES -= \
-               datalog_set.cpp
-
-  	SOURCES += \
-			   datalog_set.cpp \
-			   store.cpp \
-			   store_filter.cpp
 }
 
 alarms {
 	DEFINES+=ENABLE_ALARMS
-
-	HEADERS -= \
-			   datalog_set.h
-
-	HEADERS += \
-			   datalog_set.h \
-			   alarms.h \
-			   alarms_history.h
-
-	FORMS -= \
-              datalog_set.ui
-
-	FORMS += \
-			   datalog_set.ui \
-			   alarms.ui \
-			   alarms_history.ui
-
-	SOURCES -= \
-               datalog_set.cpp
-
-  	SOURCES += \
-			   datalog_set.cpp \
-			   alarms.cpp \
-			   alarms_history.cpp
 }
 
 trend {
 	DEFINES+=ENABLE_TREND
-
-	HEADERS -= \
-			   datalog_set.h
-
-	HEADERS += \
-			   datalog_set.h \
-			   trend.h \
-			   trend_other.h \
-			   trend_option.h \
-			   trend_range.h
-
-	FORMS -= \
-              datalog_set.ui
-
-	FORMS += \
-			   datalog_set.ui \
-			   trend.ui \
-			   trend_other.ui \
-			   trend_option.ui \
-			   trend_range.ui
-
-	SOURCES -= \
-               datalog_set.cpp
-
-  	SOURCES += \
-			   datalog_set.cpp \
-			   trend.cpp \
-			   trend_other.cpp \
-			   trend_option.cpp \
-			   trend_range.cpp
 }
 
 recipe {
-	
         DEFINES+=ENABLE_RECIPE
-
-	HEADERS += \
-			   recipe.h \
-			   recipe_select.h
-
-	FORMS += \
-			   recipe.ui \
-			   recipe_select.ui
-
-	SOURCES += \
-			   recipe.cpp \
-			   recipe_select.cpp
 }
 
 RESOURCES += \

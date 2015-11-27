@@ -4,9 +4,6 @@
 #include <string.h>
 #include "common.h"
 
-
-
-
 void ScreenSaver::restore()
 {
     //turn backlight on
@@ -63,4 +60,3 @@ bool ScreenSaver::save(__attribute__((unused)) int level)
     return true;
     
 }
-

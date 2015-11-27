@@ -25,7 +25,7 @@
 #include <QComboBox>
 #include <QHash>
 
-//#include "style.h"
+#include "setstyle.h"
 #include "common.h"
 #include "cross_table_utility.h"
 #include "app_cfg_file.h"

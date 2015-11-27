@@ -1321,15 +1321,23 @@ bool page::goto_page(const char * page_name, bool remember)
     
     if (p != this) {
         /* deactivate the old variables */
-        if (this->variableList.count() == 0 || deactivateVarList(this->variableList) == false)
+        if (this->variableList.count() == 0)
+        {
+            LOG_PRINT(info_e, "No variable to deactivate.\n");
+        }
+        else if (deactivateVarList(this->variableList) == false)
         {
             LOG_PRINT(error_e, "cannot deactivate the variable list\n");
         }
-        
+
         /* activate the new variables */
         /* send to the plc the active flag for the active variable */
         /* this code will be active only if the variable VAR_TO_DISPLAY is not empty */
-        if (p->variableList.count() == 0 || activateVarList(p->variableList) == false)
+        if (p->variableList.count() == 0)
+        {
+            LOG_PRINT(info_e, "No variable to activate.\n");
+        }
+        else if (activateVarList(p->variableList) == false)
         {
             LOG_PRINT(error_e, "cannot activate the variable list\n");
         }

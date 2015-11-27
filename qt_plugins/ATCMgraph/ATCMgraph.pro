@@ -1,6 +1,7 @@
 TARGET      = $$qtLibraryTarget(atcmgraphplugin)
 
 include (../qt_plugins.pri)
+include (../../qt_designer_environment.pri)
 
 LIBS += -lqwt
 

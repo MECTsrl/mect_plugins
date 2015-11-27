@@ -5,20 +5,17 @@
 #-------------------------------------------------
 
 TEMPLATE = lib
-CONFIG += staticlib
+#CONFIG += staticlib
 
 include(../qt_designer_environment.pri)
 
 INCLUDEPATH += .\
-			   /imx_mect/trunk/imx28/ltib/rootfs_full_qt/usr/src/linux/include \
-			   /imx_mect/trunk/imx28/ltib/rootfs_full_qt/usr/include \
-                           ../ATCMutility \
-                           ../ATCMcommunication \
-                           ../ATCMcommon \
-                           ../ATCMinputdialog
+                   ../ATCMutility \
+                   ../ATCMcommunication \
+                   ../ATCMcommon \
+                   ../ATCMinputdialog
 
 QMAKE_LIBDIR += \
-		   /imx_mect/trunk/imx28/ltib/rootfs_full_qt/usr/lib \
 		   $${ATCM_SRC_LIBRARY_INCPATH}ATCMutility \
 		   $${ATCM_SRC_LIBRARY_INCPATH}ATCMcommunication \
 		   $${ATCM_SRC_LIBRARY_INCPATH}ATCMinputdialog

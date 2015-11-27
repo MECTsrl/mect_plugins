@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project for ATCMcommunication library 
+# Project for ATCMlogger library 
 #
 #-------------------------------------------------
 
@@ -11,7 +11,7 @@ include (../qt_library.pri)
 INCLUDEPATH += ../ATCMcommon
 
 LIBS += \
-ATCMutility
+-lATCMutility
 
 SOURCES += \
 hmi_logger.cpp

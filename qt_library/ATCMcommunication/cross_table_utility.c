@@ -505,6 +505,7 @@ size_t fillSyncroArea(void)
             /* the actual variable is into the same block of the previous variable */
             if (varNameArray[elem_nb].block != 0 && varNameArray[elem_nb].block == varNameArray[elem_nb - 1].block)
             {
+#if 0
                 /* check if the block is omogenous */
                 if (varNameArray[elem_nb].block != 0 && elem_nb > 0 && varNameArray[elem_nb].type != varNameArray[elem_nb - 1].type)
                 {
@@ -512,7 +513,7 @@ size_t fillSyncroArea(void)
                     LOG_PRINT(error_e, "%s at line %d. %d -> %d\n", CrossTableErrorMsg, elem_nb, varNameArray[elem_nb].type, varNameArray[elem_nb - 1].type);
                     return elem_nb;
                 }
-
+#endif
                 if (varNameArray[elem_nb].type == bytebit_e)
                 {
                     bytebitperblock++;
@@ -3718,6 +3719,11 @@ int getVarDivisorByName(const char * varname)
     }
 
     return getVarDivisor(ctIndex);
+}
+
+int getVarDecimalByCtIndex(const int ctIndex)
+{
+    return getVarDecimal(ctIndex);
 }
 
 int getVarDecimal(const int ctIndex)

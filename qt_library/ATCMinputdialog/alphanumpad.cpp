@@ -9,7 +9,6 @@
  */
 
 #include "app_logprint.h"
-//#include "main.h"
 #include "alphanumpad.h"
 #include "ui_alphanumpad.h"
 

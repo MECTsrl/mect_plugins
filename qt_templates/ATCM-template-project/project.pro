@@ -11,13 +11,17 @@
 include(./template.pri)
 
 HEADERS += \
+    page100.h
 
 
 FORMS += \
+    page100.ui
 
 
 SOURCES += \
+    page100.cpp
 
 
 RESOURCES += \
     resources.qrc
+

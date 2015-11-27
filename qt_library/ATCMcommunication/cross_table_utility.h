@@ -112,6 +112,7 @@ extern int writeVarByCtIndex_nowait(const int ctIndex, void * value);
 extern int writeBlock(const char * varname);
 extern int deleteUnusedSynIndex(int SynIndex);
 extern int getVarDecimal(const int ctIndex);
+extern int getVarDecimalByCtIndex(const int ctIndex);
 extern int getVarDecimalByName(const char * varname);
 
 /**
