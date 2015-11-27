@@ -9,7 +9,7 @@
  */
 
 #include <QHash>
-#include <QMessagebox>
+#include <QMessageBox>
 #include <QApplication>
 #include <QFile>
 #include "common.h"
