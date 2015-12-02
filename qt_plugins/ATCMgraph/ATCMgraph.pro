@@ -3,14 +3,14 @@ TARGET      = $$qtLibraryTarget(atcmgraphplugin)
 include (../qt_plugins.pri)
 include (../../qt_designer_environment.pri)
 
-LIBS += -lqwt
-
-CONFIG += QwtDll
-
 INCLUDEPATH += $${ATCM_QWT_INCL}
 QMAKE_LIBDIR += $${ATCM_QWT_LIB}
 
 INCLUDEPATH += 	../ATCMplugineditor
+
+LIBS += -lqwt
+
+CONFIG += QwtDll
 
 HEADERS     = atcmgraphplugin.h \
     atcmgraphdialog.h \

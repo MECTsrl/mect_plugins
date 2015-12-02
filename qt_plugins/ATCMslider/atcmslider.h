@@ -4,14 +4,21 @@
 #include <QtGui/QWidget>
 #include <QtGui/QSlider>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 #include <QIcon>
 
-class QDESIGNER_WIDGET_EXPORT ATCMslider : public QSlider
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMslider : public QSlider
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
@@ -67,7 +74,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMslider : public QSlider
 		Q_PROPERTY(int borderRadius READ borderRadius WRITE setBorderRadius)
 		/* set the apparence */
         Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence RESET unsetApparence)
-
+#endif
 	public:
 		ATCMslider(QWidget *parent = 0);
 		~ATCMslider();

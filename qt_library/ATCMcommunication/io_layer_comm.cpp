@@ -8,6 +8,7 @@
  * @brief HMI-FCM communication class
  */
 #include <errno.h>
+#include <pthread.h>
 
 #include "app_logprint.h"
 #include "common.h"

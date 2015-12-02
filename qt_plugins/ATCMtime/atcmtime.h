@@ -4,7 +4,9 @@
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 
@@ -12,9 +14,14 @@
 #define TIME_12 "hh:mm:ss ap"
 #define DEFAULT_TIME TIME_24
 
-class QDESIGNER_WIDGET_EXPORT ATCMtime : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMtime : public QPushButton
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -72,7 +79,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMtime : public QPushButton
 		/* set the format */
         Q_ENUMS(ATCMTimeFormat)
         Q_PROPERTY(enum ATCMTimeFormat format READ format WRITE setFormat)
-
+#endif
 	public:
         enum ATCMTimeFormat
         {

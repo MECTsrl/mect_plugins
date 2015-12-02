@@ -8,8 +8,12 @@ TARGET = ATCMsystem
 
 include (../qt_library.pri)
 
-INCLUDEPATH += \
-../ATCMlogger
+INCLUDEPATH += .\
+../ATCMlogger \
+../ATCMalarms \
+../ATCMstore \
+../ATCMtrend \
+../ATCMrecipe
 
 QMAKE_LIBDIR += \
 ../ATCMlogger

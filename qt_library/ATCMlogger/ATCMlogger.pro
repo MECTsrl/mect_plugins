@@ -8,8 +8,6 @@ TARGET = ATCMlogger
 
 include (../qt_library.pri)
 
-INCLUDEPATH += ../ATCMcommon
-
 LIBS += \
 -lATCMutility
 

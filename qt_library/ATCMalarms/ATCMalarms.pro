@@ -8,13 +8,12 @@ TARGET = ATCMalarms
 
 include (../qt_library.pri)
 
-INCLUDEPATH += \
+INCLUDEPATH += .\
 ../ATCMlogger \
-../ATCMcommon
+../ATCMsystem
 
 QMAKE_LIBDIR += \
-../ATCMlogger \
-../ATCMcommon
+../ATCMlogger
 
 LIBS += \
 -lATCMlogger \

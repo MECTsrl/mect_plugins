@@ -28,7 +28,6 @@ store_extract.h \
     utility.h
 
 #target.path = $$[QT_INSTALL_PLUGINS]/designer
-#INSTALLS    += target
 
 # install
 target.path = $${ATCM_ARM_LIBRARY_LIBPATH}

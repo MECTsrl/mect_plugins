@@ -3,15 +3,23 @@
 
 #include <QtGui/QWidget>
 #include <QtGui/QLCDNumber>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 
-class QDESIGNER_WIDGET_EXPORT ATCMlcdnumber : public QLCDNumber
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMlcdnumber : public QLCDNumber
 {
     Q_OBJECT
+#ifndef TARGET_ARM
     Q_PROPERTY(QString variable READ variable WRITE setVariable)
     Q_PROPERTY(int refresh READ refresh WRITE setRefresh)
     Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus)
+#endif
 
 public:
     ATCMlcdnumber(QWidget *parent = 0);

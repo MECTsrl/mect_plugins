@@ -1,11 +1,18 @@
-TARGET = ATCMplugin
-TEMPLATE = lib
+#-------------------------------------------------
+#
+# Project file for plugins library
+#
+#-------------------------------------------------
 
+include(../qt_environment.pri)
+
+TARGET = ATCMplugin
+
+TEMPLATE    = lib
 DEFINES+="TARGET_ARM"
 
-#include(../qt_environment.pri)
-
 INCLUDEPATH += . \
+        	$${QT_ROOTFS}/usr/include \
                ../qt_library/ATCMcommon \
                ../qt_library/ATCMutility \
                ../qt_library/ATCMcommunication \

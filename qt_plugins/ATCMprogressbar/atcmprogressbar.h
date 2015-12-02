@@ -4,13 +4,20 @@
 #include <QtGui/QWidget>
 #include <QtGui/QProgressBar>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 
-class QDESIGNER_WIDGET_EXPORT ATCMprogressbar : public QProgressBar
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMprogressbar : public QProgressBar
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
@@ -61,7 +68,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMprogressbar : public QProgressBar
 		Q_PROPERTY(int borderRadius READ borderRadius WRITE setBorderRadius)
 		/* set the apparence */
         Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence RESET unsetApparence)
-
+#endif
 	public:
 		ATCMprogressbar(QWidget *parent = 0);
 		~ATCMprogressbar();

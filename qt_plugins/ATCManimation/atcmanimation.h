@@ -4,12 +4,19 @@
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 
-class QDESIGNER_WIDGET_EXPORT ATCManimation : public QLabel
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCManimation : public QLabel
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         //Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -56,7 +63,7 @@ class QDESIGNER_WIDGET_EXPORT ATCManimation : public QLabel
         Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set the crosstable variable to associate the object visibility */
         Q_PROPERTY(QString visibilityVar READ visibilityVar WRITE setVisibilityVar RESET unsetVisibilityVar)
-
+#endif
 	public:
 		ATCManimation(QWidget *parent = 0);
 		~ATCManimation();

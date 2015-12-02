@@ -4,7 +4,9 @@
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 
@@ -12,9 +14,14 @@
 #define ENGLISH_DATE "yyyy/MM/dd"
 #define DEFAULT_DATE ITALIAN_DATE
 
-class QDESIGNER_WIDGET_EXPORT ATCMdate : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMdate : public QPushButton
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -72,7 +79,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMdate : public QPushButton
 		/* set the format */
 		Q_ENUMS(ATCMDateFormat)
         Q_PROPERTY(enum ATCMDateFormat format READ format WRITE setFormat)
-
+ #endif
 	public:
         enum ATCMDateFormat
         {

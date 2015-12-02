@@ -8,8 +8,6 @@ TARGET = ATCMinputdialog
 
 include (../qt_library.pri)
 
-INCLUDEPATH += ../ATCMutility
-
 LIBS += \
 -lATCMutility
 

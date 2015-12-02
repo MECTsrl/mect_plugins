@@ -3,7 +3,9 @@
 
 #include <QtGui/QWidget>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QTime>
 #include <QGridLayout>
@@ -114,9 +116,14 @@ private:
 Q_DECLARE_METATYPE(descriptor::atcm_axisDescriptor)
 #endif
 
-class QDESIGNER_WIDGET_EXPORT ATCMgraph : public MAINWIGET
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMgraph : public MAINWIGET
 {
     Q_OBJECT
+#ifndef TARGET_ARM
     /************* property to hide *************/
 	Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
     // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -238,7 +245,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMgraph : public MAINWIGET
     Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
     /* set background color */
     Q_PROPERTY(QColor bgColor READ bgColor WRITE setBgColor)
-
+#endif
 public:
     enum ATCMAxisFormat
     {

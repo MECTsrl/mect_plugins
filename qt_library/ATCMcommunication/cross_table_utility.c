@@ -98,7 +98,7 @@ static write_queue_elem_t * queue_head = NULL, * queue_tail = NULL;
  * Enable:   Flag 0/1
  * PLC:      Flag 0/1
  * Tag:      char[16]
- * type:     UINT|INT|UDINTABCD|UDINTBADC|UDINTCDAB|UDINTDCBA|DINTABCD|DINTBADC|DINTCDAB|DINTDCBA|FABCD|FBADC|FCDAB|FDCBA
+ * type:     UINT|INT|UDINTABCD|UDINTBADC|UDINTCDAB|UDINTDCBA|DINTABCD|DINTBADC|DINTCDAB|DINTDCBA|RABCD|RBADC|RCDAB|RDCBA
  * Decimal:  0-4|address
  * Protocol: RTU|TCP|TCPRTU
  * Port:     char[N]
@@ -306,19 +306,19 @@ size_t fillSyncroArea(void)
         {
             varNameArray[elem_nb].type = dint_dcba_e;
         }
-        else if (strcmp(token, "FABCD") == 0)
+        else if (strcmp(token, "FABCD") == 0 || strcmp(token, "FLOAT") == 0 || strcmp(token, "RABCD") == 0 || strcmp(token, "REAL") == 0)
         {
             varNameArray[elem_nb].type = fabcd_e;
         }
-        else if (strcmp(token, "FBADC") == 0)
+        else if (strcmp(token, "FBADC") == 0 || strcmp(token, "RBADC") == 0)
         {
             varNameArray[elem_nb].type = fbadc_e;
         }
-        else if (strcmp(token, "FCDAB") == 0)
+        else if (strcmp(token, "FCDAB") == 0 || strcmp(token, "RCDAB") == 0)
         {
             varNameArray[elem_nb].type = fcdab_e;
         }
-        else if (strcmp(token, "FDCBA") == 0)
+        else if (strcmp(token, "FDCBA") == 0 || strcmp(token, "RDCBA") == 0)
         {
             varNameArray[elem_nb].type = fdcba_e;
         }

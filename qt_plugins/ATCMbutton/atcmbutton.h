@@ -4,14 +4,21 @@
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 #include <QMutex>
 
-class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMbutton : public QPushButton
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
@@ -89,7 +96,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		//Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus)
 		/* set the apparence */
 		Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence)
-
+#endif
 	public:
 		ATCMbutton(QWidget * parent = 0);
 		~ATCMbutton();

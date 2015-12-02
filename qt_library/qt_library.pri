@@ -10,15 +10,17 @@ TEMPLATE = lib
 include(../qt_designer_environment.pri)
 
 INCLUDEPATH += .\
+		   $${ATCM_QWT_INCL} \
                    ../ATCMutility \
                    ../ATCMcommunication \
                    ../ATCMcommon \
                    ../ATCMinputdialog
 
 QMAKE_LIBDIR += \
-		   $${ATCM_SRC_LIBRARY_INCPATH}ATCMutility \
-		   $${ATCM_SRC_LIBRARY_INCPATH}ATCMcommunication \
-		   $${ATCM_SRC_LIBRARY_INCPATH}ATCMinputdialog
+                   ../ATCMutility \
+                   ../ATCMcommunication \
+                   ../ATCMcommon \
+                   ../ATCMinputdialog
 
 store {
 	DEFINES+=ENABLE_STORE

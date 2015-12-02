@@ -4,13 +4,20 @@
 #include <QLocale>
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 
-class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMlabel : public QPushButton
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -82,6 +89,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
         Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence RESET unsetApparence)
         Q_ENUMS(ATCMLabelFormat)
         Q_PROPERTY(enum ATCMLabelFormat format READ format WRITE setFormat)
+#endif
 
     public:
         enum ATCMLabelFormat

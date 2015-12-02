@@ -8,7 +8,7 @@ TARGET = ATCMtrend
 
 include (../qt_library.pri)
 
-INCLUDEPATH += \
+INCLUDEPATH += .\
 ../ATCMlogger \
 ../ATCMsystem
 

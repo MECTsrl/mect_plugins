@@ -17,7 +17,7 @@
 #include "app_usb.h"
 #include "cross_table_utility.h"
 #include "app_logprint.h"
-#include "hmi_logger.h"
+//#include "hmi_logger.h"
 #include "defines.h"
 #ifdef TARGET
 #include <QWSServer>

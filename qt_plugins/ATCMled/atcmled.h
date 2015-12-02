@@ -4,13 +4,20 @@
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QIcon>
 #include <QTimer>
 
-class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMled : public QLabel
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
 		Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -65,7 +72,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
 		Q_PROPERTY(QIcon onIcon READ onIcon WRITE setOnIcon RESET unsetOnIcon )
 		/* set the icon led when it is off */
 		Q_PROPERTY(QIcon offIcon READ offIcon WRITE setOffIcon RESET unsetOffIcon)
-
+#endif
 	public:
 		ATCMled(QWidget *parent = 0);
 		~ATCMled();

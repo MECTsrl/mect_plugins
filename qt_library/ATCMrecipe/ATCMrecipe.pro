@@ -8,7 +8,7 @@ TARGET = ATCMrecipe
 
 include (../qt_library.pri)
 
-INCLUDEPATH += \
+INCLUDEPATH += .\
 ../ATCMlogger
 
 QMAKE_LIBDIR += \

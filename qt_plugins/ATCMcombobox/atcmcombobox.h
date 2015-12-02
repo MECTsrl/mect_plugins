@@ -4,14 +4,21 @@
 #include <QtGui/QWidget>
 #include <QLocale>
 #include <QtGui/QComboBox>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 //#include "atcmcomboboxtaskmenu.h"
 
-class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMcombobox : public QComboBox
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
@@ -66,7 +73,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 		/* set mapping string */
 		Q_PROPERTY(QString mapping READ mapping WRITE setMapping RESET unsetMapping)
 		//Q_PROPERTY(atcmcomboboxTaskMenu * prova READ prova WRITE setProva)
-
+#endif
 	public:
 		ATCMcombobox(QWidget *parent = 0);
 		~ATCMcombobox();
