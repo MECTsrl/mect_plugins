@@ -11,7 +11,7 @@ contains(QMAKE_HOST.os,Windows){
         ATCM_TEMPLATE_BASE_DIR = C:/Qt485/desktop/share/qtcreator/templates/wizards
 }
 !contains(QMAKE_HOST.os,Windows){
-        QT_ROOTFS = $$(RFSDIR)
+        QT_ROOTFS = $$(MECT_RFSDIR)
         QT_CREATOR = C:/Qt485/desktop
         ATCM_DIR_COPY = "cp -rf"
         QT_LUPDATE_PATH = C:/Qt485/desktop/bin

@@ -10,7 +10,7 @@ contains(QMAKE_HOST.os,Windows){
         ATCM_DIR_COPY = "cmd /c xcopy /Q /Y /E /S /I"
 }
 !contains(QMAKE_HOST.os,Windows){
-        QT_ROOTFS = $$(RFSDIR)
+        QT_ROOTFS = $$(MECT_RFSDIR)
         QT_CREATOR = C:/Qt485/desktop
         ATCM_DIR_COPY = "cp -rf"
 }
