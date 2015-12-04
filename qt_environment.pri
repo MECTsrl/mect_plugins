@@ -20,6 +20,6 @@ ATCM_ARM_PLUGINS_LIBPATH = $$QT_ROOTFS/usr/lib
 ATCM_ARM_LIBRARY_INCPATH = $$QT_ROOTFS/usr/include
 ATCM_ARM_PLUGINS_INCPATH = $$QT_ROOTFS/usr/include
 
-INCLUDEPATH += $$QT_ROOTFS/usr/src/include
+INCLUDEPATH += $$QT_ROOTFS/usr/include
 INCLUDEPATH += $$QT_ROOTFS/usr/src/linux/include
 QMAKE_LIBDIR += $$QT_ROOTFS/usr/lib

@@ -1,6 +1,6 @@
 # /usr/local/Trolltech/Qt-4.6.0/bin/qmake -set QT_INSTALL_PLUGINS /home/mect/QtSDK/QtCreator/lib/qtcreator/plugins -o Makefile
 
-include(../qt_environment.pri)
+include(../qt_designer_environment.pri)
 
 TEMPLATE      = subdirs
 
