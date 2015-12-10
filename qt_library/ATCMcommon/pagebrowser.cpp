@@ -35,6 +35,7 @@
 #include "page0.h"
 #include "sgdd.h"
 #include "time_set.h"
+#include "defines.h"
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 #include "datalog_set.h"
@@ -1402,7 +1403,7 @@ bool page::go_home(void)
 #endif
     if (goto_page(HomePage) == false)
     {
-        return goto_page(HOMEPAGE);
+        return goto_page(HOMEPAGE_DEF);
     }
     return true;
 }
