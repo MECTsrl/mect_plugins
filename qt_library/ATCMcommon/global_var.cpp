@@ -17,7 +17,6 @@
 #include "app_usb.h"
 #include "cross_table_utility.h"
 #include "app_logprint.h"
-//#include "hmi_logger.h"
 #include "defines.h"
 #ifdef TARGET
 #include <QWSServer>
@@ -51,7 +50,7 @@ int LogPeriodSecF = LOG_PERIOD_MS / 1000;
 int MaxWindowSec = MAX_SAMPLE_NB * ((LogPeriodSecF>LogPeriodSecS)?LogPeriodSecF:LogPeriodSecS);
 QDateTime StoreInit;
 QDateTime StoreFinal;
-int MaxLogUsageMb = DEFAULT_MAX_MB;
+int MaxLogUsageMb = MAX_SPACE_AVAILABLE_DEF;
 #endif //defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 
 #ifdef ENABLE_ALARMS
@@ -72,8 +71,8 @@ char _last_layout_ = LANDSCAPE;
 bool _trend_data_reload_ = true;
 
 /* Communication parameters */
-int FailNb = MBMAXRETRY_DEFAULT;
-int FailDivisor = MBERRORRATE_DEFAULT;
+int FailNb = RETRIES_DEF;
+int FailDivisor = BLACKLIST_DEF;
 int HighPriorityTimerMsec;
 int MediumPriorityTimerMsec;
 int LowPriorityTimerMsec;

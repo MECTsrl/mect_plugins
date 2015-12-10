@@ -28,7 +28,6 @@
 #include "setstyle.h"
 #include "common.h"
 #include "cross_table_utility.h"
-#include "app_cfg_file.h"
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 #include "hmi_logger.h"
 #endif
@@ -90,6 +89,7 @@ protected:
         QPainter p (this);
         style ()->drawPrimitive (QStyle::PE_Widget, &opt, &p, this);
     };
+    bool create_next_page(page ** p, const char * t);
 #ifdef HW_KEY_ENABLED
     void keyPressEvent(QKeyEvent * event);
     void keyReleaseEvent(QKeyEvent *event);
@@ -163,6 +163,8 @@ private:
 
 extern QHash<QString, page *> ScreenHash;
 extern QStack<page *> History;
-extern bool create_next_page(page ** p, const char * t);
+extern int create_page_nb(page ** p, int pageNb);
+extern int update_all(void);
+extern void printVncDisplayString(char * vncString);
 
 #endif

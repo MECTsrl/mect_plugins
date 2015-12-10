@@ -1,11 +1,13 @@
 #include <QMessageBox>
 #include <QFile>
+#include <QSettings>
 #include "global_functions.h"
 #include "app_logprint.h"
 #include "screensaver.h"
 #include "hmi_logger.h"
 #include "cross_table_utility.h"
 #include "app_usb.h"
+#include "defines.h"
 
 /**
  * @brief load the passwords
@@ -63,133 +65,61 @@ int dumpPasswords()
  */
 int readCfgFile(void)
 {
-    char value[32];
+    QSettings settings(CONFIG_FILE, QSettings::IniFormat);
 
     LOG_PRINT(info_e, "Reading configuration...\n");
 
-    if (readCfgVal(CONFIG_FILE, HOME, value) != 0)
-    {
-        strcpy(HomePage, HOMEPAGE);
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default '%s'\n", HOME, HomePage);
-    }
-    else
-    {
-        strcpy(HomePage, value);
-        LOG_PRINT(info_e, "'%s' = %s\n", HOME, HomePage);
-    }
+    strcpy(HomePage, settings.value(HOMEPAGE_TAG, HOMEPAGE_DEF).toString().toAscii().data());
+    LOG_PRINT(info_e, "'%s' = %s\n", HOMEPAGE_TAG, HomePage);
 
-    if (readCfgVal(CONFIG_FILE, STARTPAGE, value) != 0)
-    {
-        strcpy(StartPage, HOMEPAGE);
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default '%s'\n", STARTPAGE, StartPage);
-    }
-    else
-    {
-        strcpy(StartPage, value);
-        LOG_PRINT(info_e, "'%s' = %s\n", STARTPAGE, StartPage);
-    }
+    strcpy(HomePage, settings.value(STARTPAGE_TAG, STARTPAGE_DEF).toString().toAscii().data());
+    LOG_PRINT(info_e, "'%s' = %s\n", STARTPAGE_TAG, StartPage);
 
-    if (readCfgVal(CONFIG_FILE, BUZZER_ALARM, value) != 0)
-    {
-        BuzzerAlarm = true;
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default %d\n", BUZZER_ALARM, BuzzerAlarm);
-    }
-    else
-    {
-        BuzzerAlarm = atoi(value);
-        LOG_PRINT(info_e, "'%s' = %d\n", BUZZER_ALARM, BuzzerAlarm);
-    }
+    BuzzerAlarm = settings.value(BUZZER_ALARM_TAG, BUZZER_ALARM_DEF).toBool();
+    LOG_PRINT(info_e, "'%s' = %d\n", BUZZER_ALARM_TAG, BuzzerAlarm);
 
-    if (readCfgVal(CONFIG_FILE, BUZZER_TOUCH, value) != 0)
-    {
-        BuzzerTouch = true;
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default %d\n", BUZZER_TOUCH, BuzzerTouch);
-    }
-    else
-    {
-        BuzzerTouch = atoi(value);
-        LOG_PRINT(info_e, "'%s' = %d\n", BUZZER_TOUCH, BuzzerTouch);
-    }
+    BuzzerTouch = settings.value(BUZZER_TOUCH_TAG, BUZZER_TOUCH_DEF).toBool();
+    LOG_PRINT(info_e, "'%s' = %d\n", BUZZER_TOUCH_TAG, BuzzerTouch);
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
-    if (readCfgVal(CONFIG_FILE, LOG_PERIOD_SLOW, value) != 0)
-    {
-        LogPeriodSecS = LOG_PERIOD_MS/1000;
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default %d\n", LOG_PERIOD_SLOW, LogPeriodSecS);
-    }
-    else
-    {
-        LogPeriodSecS = atoi(value);
-        LOG_PRINT(info_e, "'%s' = %d\n", LOG_PERIOD_SLOW, LogPeriodSecS);
-    }
+    LogPeriodSecS = settings.value(LOG_PERIOD_SLOW_TAG, LOG_PERIOD_SLOW_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", LOG_PERIOD_SLOW_TAG, LogPeriodSecS);
 
-    if (readCfgVal(CONFIG_FILE, LOG_PERIOD_FAST, value) != 0)
-    {
-        LogPeriodSecF = LOG_PERIOD_MS/1000;
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default %d\n", LOG_PERIOD_FAST, LogPeriodSecF);
-    }
-    else
-    {
-        LogPeriodSecF = atoi(value);
-        LOG_PRINT(info_e, "'%s' = %d\n", LOG_PERIOD_FAST, LogPeriodSecF);
-    }
+    LogPeriodSecF = settings.value(LOG_PERIOD_FAST_TAG, LOG_PERIOD_FAST_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", LOG_PERIOD_FAST_TAG, LogPeriodSecF);
 
-    if (readCfgVal(CONFIG_FILE, WINDOW_SEC, value) != 0)
-    {
-        MaxWindowSec = MAX_SAMPLE_NB * ((LogPeriodSecF>LogPeriodSecS)?LogPeriodSecF:LogPeriodSecS);
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default %d\n", WINDOW_SEC, MaxWindowSec);
-    }
-    else
-    {
-        MaxWindowSec = atoi(value);
-        LOG_PRINT(info_e, "'%s' = %d\n", WINDOW_SEC, MaxWindowSec);
-    }
+    MaxWindowSec = settings.value(WINDOW_SEC_TAG, MAX_SAMPLE_NB * ((LogPeriodSecF>LogPeriodSecS)?LogPeriodSecF:LogPeriodSecS)).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", WINDOW_SEC_TAG, MaxWindowSec);
 
-    if (readCfgVal(CONFIG_FILE, MAX_SPACE_AVAILABLE_TAG, value) != 0)
-    {
-        MaxLogUsageMb = DEFAULT_MAX_MB;
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default '%d'\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
-    }
-    else
-    {
-        MaxLogUsageMb = atoi(value);
-        LOG_PRINT(info_e, "'%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
-    }
+    MaxLogUsageMb = settings.value(MAX_SPACE_AVAILABLE_TAG, MAX_SPACE_AVAILABLE_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
 #endif
+
 #ifdef ENABLE_SCREENSAVER
-    if (readCfgVal(CONFIG_FILE, SCREENSAVER, value) != 0)
-    {
-        ScreenSaverSec = SCREENSAVER_DEFAULT_TIME/1000;
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default %d\n", SCREENSAVER, ScreenSaverSec);
-    }
-    else
-    {
-        ScreenSaverSec = atoi(value);
-        LOG_PRINT(info_e, "'%s' = %d\n", SCREENSAVER, ScreenSaverSec);
-    }
+    ScreenSaverSec = settings.value(SCREENSAVER_TAG, SCREENSAVER_DEFAULT_TIME/1000).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", SCREENSAVER_TAG, ScreenSaverSec);
 #endif
 
-    if (readCfgVal(CONFIG_FILE, PWD_TIMEOUT_SEC, value) != 0)
-    {
-        PwdTimeoutSec = 0;
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default %d\n", PWD_TIMEOUT_SEC, PwdTimeoutSec);
-    }
-    else
-    {
-        PwdTimeoutSec = atoi(value);
-        LOG_PRINT(info_e, "'%s' = %d\n", PWD_TIMEOUT_SEC, PwdTimeoutSec);
-    }
+    PwdTimeoutSec = settings.value(PWD_TIMEOUT_SEC_TAG, PWD_TIMEOUT_SEC_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", PWD_TIMEOUT_SEC_TAG, PwdTimeoutSec);
 
-    if (readCfgVal(CONFIG_FILE, PWD_LOGOUT_PAGE, value) != 0)
-    {
-        PwdLogoutPage[0] = '\0';
-        LOG_PRINT(warning_e, "Cannot read '%s' setting default '%s'\n", PWD_LOGOUT_PAGE, PwdLogoutPage);
-    }
-    else
-    {
-        strcpy(PwdLogoutPage, value);
-        LOG_PRINT(info_e, "'%s' = %s\n", PWD_LOGOUT_PAGE, PwdLogoutPage);
-    }
+    strcpy(PwdLogoutPage, settings.value(PWD_LOGOUT_PAGE_TAG, PWD_LOGOUT_PAGE_DEF).toString().toAscii().data());
+    LOG_PRINT(info_e, "'%s' = %s\n", PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
+
+    FailNb = settings.value(RETRIES_TAG, RETRIES_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", RETRIES_TAG, FailNb);
+
+    FailDivisor = settings.value(BLACKLIST_TAG, BLACKLIST_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", BLACKLIST_TAG, FailDivisor);
+
+    FailDivisor = settings.value(HIGH_PRIORITY_TAG, HIGH_PRIORITY_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", HIGH_PRIORITY_TAG, HighPriorityTimerMsec);
+
+    FailDivisor = settings.value(MIDDLE_PRIORITY_TAG, MIDDLE_PRIORITY_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", MIDDLE_PRIORITY_TAG, MediumPriorityTimerMsec);
+
+    FailDivisor = settings.value(LOW_PRIORITY_TAG, LOW_PRIORITY_DEF).toInt();
+    LOG_PRINT(info_e, "'%s' = %d\n", LOW_PRIORITY_TAG, LowPriorityTimerMsec);
 
     return 0;
 }
@@ -199,77 +129,28 @@ int readCfgFile(void)
  */
 int writeCfgFile(void)
 {
-    char value[32] = "";
+    QSettings settings(CONFIG_FILE, QSettings::IniFormat);
 
     LOG_PRINT(info_e, "Dumping configuration...\n");
 
-    if (writeCfgVal(CONFIG_FILE, HOME, HomePage) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %s\n", HOME, HomePage);
-    }
-
-    if (writeCfgVal(CONFIG_FILE, STARTPAGE, StartPage) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %s\n", STARTPAGE, StartPage);
-    }
-
-    sprintf(value, "%d", BuzzerAlarm);
-    if (writeCfgVal(CONFIG_FILE, BUZZER_ALARM, value) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %s\n", BUZZER_ALARM, value);
-    }
-
-    sprintf(value, "%d", BuzzerTouch);
-    if (writeCfgVal(CONFIG_FILE, BUZZER_TOUCH, value) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %s\n", BUZZER_TOUCH, value);
-    }
+    settings.setValue(HOMEPAGE_TAG, HomePage);
+    settings.setValue(STARTPAGE_TAG, StartPage);
+    settings.setValue(BUZZER_ALARM_TAG, BuzzerAlarm);
+    settings.setValue(BUZZER_TOUCH_TAG, BuzzerTouch);
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
-    sprintf(value, "%d", LogPeriodSecS);
-    if (writeCfgVal(CONFIG_FILE, LOG_PERIOD_SLOW, value) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", LOG_PERIOD_SLOW, LogPeriodSecS);
-    }
-
-    sprintf(value, "%d", LogPeriodSecF);
-    if (writeCfgVal(CONFIG_FILE, LOG_PERIOD_FAST, value) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", LOG_PERIOD_FAST, LogPeriodSecF);
-    }
-
-    sprintf(value, "%d", MaxWindowSec);
-    if (writeCfgVal(CONFIG_FILE, WINDOW_SEC, value) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", WINDOW_SEC, MaxWindowSec);
-    }
-
-    sprintf(value, "%d", MaxLogUsageMb);
-    if (writeCfgVal(CONFIG_FILE, MAX_SPACE_AVAILABLE_TAG, value) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %s\n", MAX_SPACE_AVAILABLE_TAG, value);
-    }
-
+    settings.setValue(LOG_PERIOD_SLOW_TAG, LogPeriodSecS);
+    settings.setValue(LOG_PERIOD_FAST_TAG, LogPeriodSecF);
+    settings.setValue(WINDOW_SEC_TAG, MaxWindowSec);
+    settings.setValue(MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
 #endif
+
 #ifdef ENABLE_SCREENSAVER
-    sprintf(value, "%d", ScreenSaverSec);
-    if (writeCfgVal(CONFIG_FILE, SCREENSAVER, value) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", SCREENSAVER, ScreenSaverSec);
-    }
-
+    settings.setValue(SCREENSAVER_TAG, ScreenSaverSec);
 #endif
 
-    sprintf(value, "%d", PwdTimeoutSec);
-    if (writeCfgVal(CONFIG_FILE, PWD_TIMEOUT_SEC, value) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %s\n", PWD_TIMEOUT_SEC, value);
-    }
-
-    if (writeCfgVal(CONFIG_FILE, PWD_LOGOUT_PAGE, PwdLogoutPage) < 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %s\n", PWD_LOGOUT_PAGE, PwdLogoutPage);
-    }
+    settings.setValue(PWD_TIMEOUT_SEC_TAG, PwdTimeoutSec);
+    settings.setValue(PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
 
     return 0;
 }

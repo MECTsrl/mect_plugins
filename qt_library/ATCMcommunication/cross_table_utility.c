@@ -16,7 +16,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "app_cfg_file.h"
 #include "app_logprint.h"
 #include "app_var_list.h"
 #include "common.h"
@@ -79,7 +78,6 @@ int getCtIndexHeadBlock(int CtIndex);
 static void localCheckWriting(void);
 int setStatusVar(const char * varname, char Status);
 int setStatusVarBySynIndex(int SynIndex, char Status);
-char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, int dowait);
 
 pthread_mutex_t data_recv_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t data_send_mutex = PTHREAD_MUTEX_INITIALIZER;

@@ -287,13 +287,14 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="config/splash.png" target="config/splash.png" openproject="false" binary="true"/>
 	   <file source="config/systool.png" target="config/systool.png" openproject="false" binary="true"/>
 	   <file source="config/Crosstable.csv" target="config/Crosstable.csv" openproject="false" binary="false"/>
-	   <file source="config/Commpar.csv" target="config/Commpar.csv" openproject="false" binary="false"/>
-	   <file source="config/atn01.conf" target="config/atn01.conf" openproject="false" binary="false"/>
+	   <file source="config/crosstable.cpp" target="config/crosstable.cpp" openproject="false" binary="false"/>
+	   <file source="config/crosstable.h" target="config/crosstable.h" openproject="false" binary="false"/>
+	   <file source="config/system.ini" target="config/system.ini" openproject="false" binary="false"/>
 	   <file source="config/store1.csv" target="config/store1.csv" openproject="false" binary="false"/>
 	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
 	   <file source="config/Alarms.csv" target="config/Alarms.csv" openproject="false" binary="false"/>
-	   <file source="config/application.conf" target="config/application.conf" openproject="false" binary="false"/>
 	   <file source="config/lang_table.csv" target="config/lang_table.csv" openproject="false" binary="false"/>
+	   <file source="config/dont_run_safe_hmi" target="config/dont_run_safe_hmi" openproject="false" binary="false"/>
 	   <!-- 
 	   <file source="project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
 	   -->

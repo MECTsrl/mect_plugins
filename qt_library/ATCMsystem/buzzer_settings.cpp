@@ -7,7 +7,7 @@
  *
  * @brief Generic page
  */
-#include "app_cfg_file.h"
+#include <QSettings>
 #include "app_logprint.h"
 #include "buzzer_settings.h"
 #include "ui_buzzer_settings.h"
@@ -116,12 +116,8 @@ void buzzer_settings::on_pushButtonTouchBuzzer_toggled(bool checked)
 	ui->pushButtonTouchBuzzer->setText(((checked==false)?"ON":"OFF"));
 	BuzzerTouch = !checked;
 
-	char valuestr[32] = "";
-	sprintf(valuestr, "%d", BuzzerTouch);
-	if (writeCfgVal(CONFIG_FILE, BUZZER_TOUCH, valuestr) <= 0)
-	{
-		LOG_PRINT(error_e, "Cannot write '%s' = %d\n", BUZZER_TOUCH, BuzzerTouch);
-	}
+    QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+    settings.setValue(BUZZER_TOUCH_TAG, BuzzerTouch);
 }
 
 void buzzer_settings::on_pushButtonAlarmBuzzer_toggled(bool checked)
@@ -129,12 +125,8 @@ void buzzer_settings::on_pushButtonAlarmBuzzer_toggled(bool checked)
 	ui->pushButtonAlarmBuzzer->setText(((checked==false)?"ON":"OFF"));
 	BuzzerAlarm = !checked;
 
-	char valuestr[32] = "";
-	sprintf(valuestr, "%d", BuzzerAlarm);
-	if (writeCfgVal(CONFIG_FILE, BUZZER_ALARM, valuestr) <= 0)
-	{
-		LOG_PRINT(error_e, "Cannot write '%s' = %d\n", BUZZER_ALARM, BuzzerAlarm);
-	}
+    QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+    settings.setValue(BUZZER_ALARM_TAG, BuzzerAlarm);
 }
 
 void buzzer_settings::on_pushButtonHome_clicked()

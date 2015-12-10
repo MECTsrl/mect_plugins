@@ -24,9 +24,7 @@ LIBS += \
 SOURCES += \
 buzzer_settings.cpp \
 comm_status.cpp \
-commpar_rtu.cpp \
-commpar_tcp.cpp \
-commpar_tcprtu.cpp \
+system_ini.cpp \
 data_manager.cpp \
 datalog_set.cpp \
 display_settings.cpp \
@@ -42,9 +40,7 @@ main.cpp
 HEADERS += \
 buzzer_settings.h \
 comm_status.h \
-commpar_rtu.h \
-commpar_tcp.h \
-commpar_tcprtu.h \
+system_ini.h \
 data_manager.h \
 datalog_set.h \
 display_settings.h \
@@ -60,9 +56,7 @@ main.h
 FORMS += \
 buzzer_settings.ui \
 comm_status.ui \
-commpar_rtu.ui \
-commpar_tcp.ui \
-commpar_tcprtu.ui \
+system_ini.ui \
 data_manager.ui \
 datalog_set.ui \
 display_settings.ui \

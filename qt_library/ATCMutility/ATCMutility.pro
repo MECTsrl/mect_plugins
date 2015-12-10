@@ -11,7 +11,6 @@ TARGET = ATCMutility
 include (../qt_library.pri)
 
 SOURCES += \
-app_cfg_file.c	\
 app_config.c	\
 app_logprint.c	\
 app_usb.c       \
@@ -20,7 +19,6 @@ store_extract.c \
 
 HEADERS += \
 common.h		\
-app_cfg_file.h	\
 app_config.h	\
 app_logprint.h	\
 app_usb.h       \

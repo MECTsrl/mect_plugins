@@ -28,9 +28,6 @@
 extern io_layer_comm * ioComm;
 
 /* Pages*/
-#define HOMEPAGE "menu"
-
-#define PAGE_NAME_LEN 32
 extern char StartPage[PAGE_NAME_LEN];
 extern char HomePage[PAGE_NAME_LEN];
 extern char PwdLogoutPage[PAGE_NAME_LEN];
@@ -61,8 +58,6 @@ extern struct timespec LastTouch;
 
 /* Communication parameters */
 #define MAX_PRIORITY_NUMBER 3
-#define MBMAXRETRY_DEFAULT  3
-#define MBERRORRATE_DEFAULT 10
 #define MBTIMEOUT_DEFAULT  1000
 #define MBDELAY_DEFAULT     1000
 
@@ -138,25 +133,6 @@ extern QHash<QString, QString> TagTable;
     )
 
 extern unsigned short int FirstCy;
-
-/* Configuration file Tags */
-#define HOME "HomePage:"
-#define STARTPAGE "StartPage:"
-#define LOG_PERIOD_SLOW "LogPeriodSecS:"
-#define LOG_PERIOD_FAST "LogPeriodSecF:"
-#define WINDOW_SEC "WindowSizeSec:"
-#define PWD1 "Password1:"
-#define PWD2 "Password2:"
-#define PWD3 "Password3:"
-#define SCREENSAVER "ScreenSaverSec:"
-#define BUZZER_ALARM "BuzzerAlarm:"
-#define BUZZER_TOUCH "BuzzerTouch:"
-#define USB_MODE "USBmode:"
-#define DEVICE_TAG "Device"
-#define HOST_TAG "Host"
-#define PWD_TIMEOUT_SEC "PwdTimeoutSec:"
-#define PWD_LOGOUT_PAGE "PwdLogoutPage:"
-#define MAX_SPACE_AVAILABLE_TAG "SpaceAvailableMb:"
 
 #ifdef ENABLE_ALARMS
 typedef struct event_descr_e
@@ -240,7 +216,6 @@ extern int ScreenSaverSec;
 
 /* Logger */
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
-#define DEFAULT_MAX_MB 5
 
 //extern Logger * logger;
 extern int LogPeriodSecS;

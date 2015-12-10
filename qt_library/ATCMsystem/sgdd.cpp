@@ -10,7 +10,6 @@
 #include <QMessageBox>
 
 #include "app_logprint.h"
-#include "app_cfg_file.h"
 #include "numpad.h"
 #include "sgdd.h"
 #include "ui_sgdd.h"

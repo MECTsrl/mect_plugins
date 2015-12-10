@@ -268,7 +268,7 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define CROSS_TABLE        LOCAL_ETC_DIR"/Crosstable.csv"
 #define ERROR_TABLE        LOCAL_ETC_DIR"/Alarms.csv"
 #define COMMUNICATION_FILE LOCAL_ETC_DIR"/Commpar.csv"
-#define CONFIG_FILE        LOCAL_ETC_DIR"/atn01.conf"
+#define CONFIG_FILE        LOCAL_ETC_DIR"/system.ini"
 #define PASSFILE           LOCAL_ETC_DIR"/.pwd"
 #define TAG_TABLE          LOCAL_ETC_DIR"/Tags_Table.csv"
 
@@ -427,10 +427,8 @@ typedef union {
 /**
  * @brief Log setup and define
  */
-#define LOG_PERIOD_MS 5000
 #define SAMPLE_PERIOD_SEC LOG_PERIOD_MS
 #define MAX_SAMPLE_NB 10240
-#define DEFAULT_MAX_MB 5
 #endif
 
 #ifdef ENABLE_ALARMS

@@ -7,13 +7,13 @@
  *
  * @brief Main page
  */
-#include "app_cfg_file.h"
 #include "app_logprint.h"
 #include "numpad.h"
 #include "display_settings.h"
 #include "ui_display_settings.h"
 #include <QMessageBox>
 #include <QWSServer>
+#include <QSettings>
 
 /* this define set the window title */
 #define WINDOW_TITLE ""
@@ -222,12 +222,8 @@ void display_settings::on_pushButtonON_clicked()
         ScreenSaverSec = value;
         QWSServer::setScreenSaverInterval(ScreenSaverSec*1000); //msec
         
-        char valuestr[32] = "";
-        sprintf(valuestr, "%d", ScreenSaverSec);
-        if (writeCfgVal(CONFIG_FILE, SCREENSAVER, valuestr) <= 0)
-        {
-            LOG_PRINT(error_e, "Cannot write '%s' = %d\n", SCREENSAVER, ScreenSaverSec);
-        }
+        QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+        settings.setValue(SCREENSAVER_TAG, ScreenSaverSec);
     }
     delete dk;
 }
@@ -242,12 +238,8 @@ void display_settings::on_pushButtonOFF_clicked()
     ScreenSaverSec = 0;
     QWSServer::setScreenSaverInterval(ScreenSaverSec*1000); //msec
     
-    char valuestr[32] = "";
-    sprintf(valuestr, "%d", ScreenSaverSec);
-    if (writeCfgVal(CONFIG_FILE, SCREENSAVER, valuestr) <= 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", SCREENSAVER, ScreenSaverSec);
-    }
+    QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+    settings.setValue(SCREENSAVER_TAG, ScreenSaverSec);
 }
 
 void display_settings::on_pushButtonHome_clicked()

@@ -161,7 +161,7 @@ void options::on_pushButtonPasswords_clicked()
 
 void options::on_pushButtonModbus_clicked()
 {
-    goto_page("commpar_rtu");
+    goto_page("system_ini");
 }
 
 void options::on_pushButtonErrorsStrategy_clicked()

@@ -7,7 +7,7 @@
 TEMPLATE = lib
 #CONFIG += staticlib
 
-include(../qt_designer_environment.pri)
+include(../qt_environment.pri)
 
 INCLUDEPATH += .\
 		   $${ATCM_QWT_INCL} \

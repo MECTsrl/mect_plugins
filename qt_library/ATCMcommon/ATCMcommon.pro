@@ -9,8 +9,9 @@ TARGET = ATCMcommon
 include (../qt_library.pri)
 
 INCLUDEPATH += .\
-../ATCMlogger
- 
+../ATCMlogger \
+../ATCMsystem
+
 LIBS += \
 -lATCMutility
 

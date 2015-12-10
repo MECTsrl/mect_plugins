@@ -16,7 +16,6 @@
 #include <QDateTime>
 #include "common.h"
 #include "global_var.h"
-#include "app_cfg_file.h"
 
 #define RECORD_SIZE_BYTE 100
 #define MAX_RECORD_PER_DAY (24 * 3600 / 5)

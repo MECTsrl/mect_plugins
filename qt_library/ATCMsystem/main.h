@@ -22,6 +22,7 @@
     QDate::fromString(__DATE__, "MMM  d yyyy").toString("yyyyMMdd").toAscii().data() \
     )
 
+extern void printVncDisplayString(char * vncString);
 #endif
 
 

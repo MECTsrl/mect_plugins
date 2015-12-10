@@ -8,9 +8,9 @@
  * @brief data log setting
  */
 
+#include <QSettings>
 #include <QMessageBox>
 
-#include "app_cfg_file.h"
 #include "app_logprint.h"
 #include "datalog_set.h"
 #include "ui_datalog_set.h"
@@ -139,53 +139,19 @@ void datalog_set::on_pushButtonBack_clicked()
 /* save the actual log period */
 void datalog_set::on_pushButtonOk_clicked()
 {
-    char value[DESCR_LEN];
-    sprintf(value, "%d", LogPeriodSecS);
-    if (writeCfgVal(CONFIG_FILE, LOG_PERIOD_SLOW, value) <= 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", LOG_PERIOD_SLOW, LogPeriodSecS);
-    }
-    else
-    {
-        LOG_PRINT(info_e, "Written '%s' = %d\n", LOG_PERIOD_SLOW, LogPeriodSecS);
-    }
-    
-    sprintf(value, "%d", LogPeriodSecF);
-    if (writeCfgVal(CONFIG_FILE, LOG_PERIOD_FAST, value) <= 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", LOG_PERIOD_FAST, LogPeriodSecF);
-    }
-    else
-    {
-        LOG_PRINT(info_e, "Written '%s' = %d\n", LOG_PERIOD_FAST, LogPeriodSecF);
-    }
-    
+    QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+    settings.setValue(LOG_PERIOD_SLOW_TAG, LogPeriodSecS);
+    settings.setValue(LOG_PERIOD_FAST_TAG, LogPeriodSecF);
+
     MaxWindowSec =
             ui->spinBoxSeconds->value() +
             ui->spinBoxMinutes->value() * 60 +
             ui->spinBoxHours->value() * 3600 +
             ui->spinBoxDays->value() * 3600 * 24;
     
-    sprintf(value, "%d", MaxWindowSec);
-    if (writeCfgVal(CONFIG_FILE, WINDOW_SEC, value) <= 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", WINDOW_SEC, MaxWindowSec);
-    }
-    else
-    {
-        LOG_PRINT(info_e, "Written '%s' = %d\n", WINDOW_SEC, MaxWindowSec);
-    }
-    
-    sprintf(value, "%d", MaxLogUsageMb);
-    if (writeCfgVal(CONFIG_FILE, MAX_SPACE_AVAILABLE_TAG, value) <= 0)
-    {
-        LOG_PRINT(error_e, "Cannot write '%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
-    }
-    else
-    {
-        LOG_PRINT(info_e, "Written '%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
-    }
-    
+    settings.setValue(WINDOW_SEC_TAG, MaxWindowSec);
+    settings.setValue(MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
+
     go_back();
 }
 
