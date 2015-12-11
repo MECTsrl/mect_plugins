@@ -17,6 +17,7 @@ INCLUDEPATH += .\
 ../ATCMstore \
 ../ATCMtrend \
 ../ATCMrecipe \
+../../qt_plugins \
 ../../qt_plugins/ATCMlabel \
 ../../qt_plugins/ATCMcombobox \
 ../../qt_plugins/ATCMspinbox \

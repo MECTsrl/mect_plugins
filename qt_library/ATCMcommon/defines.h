@@ -12,6 +12,7 @@
 
 /* HMI setting values */
 #define STR_LEN 128
+#define MAX_LINE 256
 #define PAGE_NAME_LEN 32
 #define MAX_LEN_UPDATE_MSG 5
 #define DEFAULT_LANGUAGE "it"
