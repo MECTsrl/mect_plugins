@@ -15,13 +15,13 @@ QMAKE_CXXFLAGS_DEBUG   += -Wno-psabi
 TARGET = hmi
 TEMPLATE = app
 
-target.path = /local/root
+target.path = /upload
 INSTALLS += target
 
 config.files = config/Crosstable.csv config/system.ini
 config.files += config/Alarms.csv
 config.files += config/lang_table.csv
-config.path = /local/etc/sysconfig
+config.path = /upload
 
 splash.files = config/splash.png config/systool.png
 splash.path = /local/etc/sysconfig/img

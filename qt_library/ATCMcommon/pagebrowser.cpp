@@ -24,20 +24,21 @@
 #include "app_config.h"
 #include "app_usb.h"
 
-#include "system_ini.h"
-#include "comm_status.h"
-#include "buzzer_settings.h"
-#include "data_manager.h"
-#include "display_settings.h"
-#include "info.h"
-#include "menu.h"
-#include "options.h"
+#include "ATCMsystem/system_ini.h"
+#include "ATCMsystem/comm_status.h"
+#include "ATCMsystem/buzzer_settings.h"
+#include "ATCMsystem/data_manager.h"
+#include "ATCMsystem/display_settings.h"
+#include "ATCMsystem/info.h"
+#include "ATCMsystem/menu.h"
+#include "ATCMsystem/options.h"
 #include "page0.h"
-#include "sgdd.h"
-#include "time_set.h"
+#include "ATCMsystem/sgdd.h"
+#include "ATCMsystem/time_set.h"
+#include "defines.h"
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
-#include "datalog_set.h"
+#include "ATCMsystem/datalog_set.h"
 #endif
 
 #ifdef ENABLE_ALARMS
@@ -1402,7 +1403,7 @@ bool page::go_home(void)
 #endif
     if (goto_page(HomePage) == false)
     {
-        return goto_page(HOMEPAGE);
+        return goto_page(HOMEPAGE_DEF);
     }
     return true;
 }

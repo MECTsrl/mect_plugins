@@ -6,6 +6,9 @@
 
 TARGET = ATCMsystem
 
+DEFINES+="TARGET_ARM"
+
+
 include (../qt_library.pri)
 
 INCLUDEPATH += .\
@@ -13,7 +16,20 @@ INCLUDEPATH += .\
 ../ATCMalarms \
 ../ATCMstore \
 ../ATCMtrend \
-../ATCMrecipe
+../ATCMrecipe \
+../../qt_plugins \
+../../qt_plugins/ATCMlabel \
+../../qt_plugins/ATCMcombobox \
+../../qt_plugins/ATCMspinbox \
+../../qt_plugins/ATCMbutton \
+../../qt_plugins/ATCMslider \
+../../qt_plugins/ATCMprogressbar \
+../../qt_plugins/ATCMled \
+../../qt_plugins/ATCManimation \
+../../qt_plugins/ATCMgraph \
+../../qt_plugins/ATCMdate \
+../../qt_plugins/ATCMtime
+
 
 QMAKE_LIBDIR += \
 ../ATCMlogger

@@ -9,8 +9,13 @@ TARGET = ATCMcommon
 include (../qt_library.pri)
 
 INCLUDEPATH += .\
+.. \
 ../ATCMlogger \
-../ATCMsystem
+../ATCMsystem \
+../ATCMalarms \
+../ATCMstore \
+../ATCMtrend \
+../ATCMrecipe
 
 LIBS += \
 -lATCMutility

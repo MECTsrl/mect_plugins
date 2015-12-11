@@ -72,7 +72,7 @@ int readCfgFile(void)
     strcpy(HomePage, settings.value(HOMEPAGE_TAG, HOMEPAGE_DEF).toString().toAscii().data());
     LOG_PRINT(info_e, "'%s' = %s\n", HOMEPAGE_TAG, HomePage);
 
-    strcpy(HomePage, settings.value(STARTPAGE_TAG, STARTPAGE_DEF).toString().toAscii().data());
+    strcpy(StartPage, settings.value(STARTPAGE_TAG, STARTPAGE_DEF).toString().toAscii().data());
     LOG_PRINT(info_e, "'%s' = %s\n", STARTPAGE_TAG, StartPage);
 
     BuzzerAlarm = settings.value(BUZZER_ALARM_TAG, BUZZER_ALARM_DEF).toBool();
