@@ -35,7 +35,7 @@ extern "C" {
 #define CLR_SYNCRO_FLAG(index, flag) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
 
 #define beginWrite() {}
-#define endWrite()  {}
+#define endWrite()  writePending()
 
 /**
  * Open the cross table and fill the syncro vector with the Mirror variables and the PLC variables
