@@ -34,6 +34,9 @@ extern "C" {
 #define SET_SYNCRO_FLAG(index, flag) {CLR_SYNCRO_FLAG(index, flag); pIOSyncroAreaO[index] |= (flag << 13);}
 #define CLR_SYNCRO_FLAG(index, flag) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
 
+#define beginWrite() {}
+#define endWrite()  {}
+
 /**
  * Open the cross table and fill the syncro vector with the Mirror variables and the PLC variables
  *

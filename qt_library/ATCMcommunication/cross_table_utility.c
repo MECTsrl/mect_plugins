@@ -74,7 +74,6 @@ static int blockSize = 1;
 
 int cmpSyncroCtIndex(WORD address, int CtIndex);
 int setSyncroCtIndex(WORD * address, int CtIndex);
-int getCtIndexHeadBlock(int CtIndex);
 static void localCheckWriting(void);
 int setStatusVar(const char * varname, char Status);
 int setStatusVarBySynIndex(int SynIndex, char Status);
@@ -477,6 +476,23 @@ size_t fillSyncroArea(void)
         }
         varNameArray[elem_nb].block = atoi(token);
         LOG_PRINT(verbose_e, "BLOCK %d VAR %s, line %s, token %s\n", varNameArray[elem_nb].block, varNameArray[elem_nb].tag, line, token);
+
+        /* extract the block head */
+        if ( elem_nb == 0)
+        {
+            varNameArray[elem_nb].blockhead = 0;
+        }
+        else
+        {
+            if (varNameArray[elem_nb].block == varNameArray[elem_nb - 1].block)
+            {
+                varNameArray[elem_nb].blockhead = varNameArray[elem_nb - 1].blockhead;
+            }
+            else
+            {
+                varNameArray[elem_nb].blockhead = varNameArray[elem_nb].block;
+            }
+        }
 
         /* NReg */
         p = mystrtok(p, token, SEPARATOR);
@@ -1206,7 +1222,7 @@ int formattedReadFromDb(int ctIndex, char * value)
     if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
     {
         /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
-        myCtIndex = getCtIndexHeadBlock(ctIndex);
+        myCtIndex = varNameArray[ctIndex].blockhead;
         if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
         {
             if (activateVar(varNameArray[myCtIndex].tag) != 0)
@@ -1422,7 +1438,7 @@ int formattedWriteToDb(int ctIndex, void * value)
     if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
     {
         /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
-        int myCtIndex = getCtIndexHeadBlock(ctIndex);
+        int myCtIndex = varNameArray[ctIndex].blockhead;
         if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
         {
             if (activateVar(varNameArray[myCtIndex].tag) != 0)
@@ -2036,7 +2052,7 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
     if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
     {
         /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
-        int myCtIndex = getCtIndexHeadBlock(ctIndex);
+        int myCtIndex = varNameArray[ctIndex].blockhead;
         if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
         {
             if (activateVar(varNameArray[myCtIndex].tag) != 0)
@@ -2192,7 +2208,7 @@ int isBlockActiveByCtIndex(const int CtIndex, char * varblockhead)
 {
     int CtIndexHead;
 
-    CtIndexHead = getCtIndexHeadBlock(CtIndex);
+    CtIndexHead = varNameArray[CtIndex].blockhead;
     if (CtIndexHead > 0)
     {
         strcpy(varblockhead, varNameArray[CtIndexHead].tag);
@@ -2270,40 +2286,6 @@ char * mystrtok(char * string, char * token, const char * separator)
 }
 
 /**
- * @brief get the block head CtIndex of variable at position CtIndex
- * @param int CtIndex : variable position
- * @param char * varblockhead : string where will be put the variable's block name
- * @return > 0 CtIndex of block
- * @return < 0 if an error occured
- */
-int getCtIndexHeadBlock(int CtIndex)
-{
-    int i;
-    int HeadCtIndex = -1;
-
-    if (CtIndex < 0 || CtIndex > DB_SIZE_ELEM)
-    {
-        LOG_PRINT(verbose_e, "Returning -1\n");
-        return -1;
-    }
-
-    for (i = CtIndex; i > 0; i--)
-    {
-        if (varNameArray[i].block == varNameArray[CtIndex].block)
-        {
-            HeadCtIndex = i;
-        }
-    }
-
-    if (HeadCtIndex == -1)
-    {
-        HeadCtIndex = CtIndex;
-    }
-
-    return HeadCtIndex;
-}
-
-/**
  * @brief get the block head and the block number of variable at position CtIndex
  * @param int CtIndex : variable position
  * @param char * varblockhead : string where will be put the variable's block name
@@ -2313,7 +2295,7 @@ int getCtIndexHeadBlock(int CtIndex)
 int getHeadBlock(int CtIndex, char * varblockhead)
 {
     int i;
-    i = getCtIndexHeadBlock(CtIndex);
+    i = varNameArray[CtIndex].blockhead;
     strcpy(varblockhead, varNameArray[i].tag);
     LOG_PRINT(verbose_e, "Returning block number %d\n", varNameArray[CtIndex].block);
     return varNameArray[CtIndex].block;
@@ -2741,7 +2723,7 @@ char getStatusVarByCtIndex(int CtIndex, char * msg)
     if (CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
     {
         /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
-        myCtIndex = getCtIndexHeadBlock(CtIndex);
+        myCtIndex = varNameArray[CtIndex].blockhead;
         if (CtIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
         {
             Status = ERROR;
