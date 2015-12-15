@@ -327,8 +327,9 @@ typedef struct variable_s
 {
 	char tag[TAG_LEN];
 	int type;
-	int block;
-	int decimal;
+    int block;
+    int blockhead;
+    int decimal;
     int active;
     int visible;
     int node;
