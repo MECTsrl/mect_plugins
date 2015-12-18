@@ -6,7 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    %Model%
+    <width>354</width>
+    <height>255</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -469,7 +470,7 @@
       <number>6</number>
      </property>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pushButtonHome">
        <property name="minimumSize">
         <size>
          <width>40</width>
@@ -511,7 +512,7 @@ border: 2px solid  rgb(194, 194, 194);
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="pushButtonBack">
        <property name="minimumSize">
         <size>
          <width>40</width>

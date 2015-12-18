@@ -30,11 +30,17 @@ private slots:
 #ifdef TRANSLATION
     void changeEvent(QEvent * event);
 #endif
+    void on_pushButton_PwdLogoutPage_clicked();
+
+    void on_pushButton_StartPage_clicked();
+
+    void on_pushButton_HomePage_clicked();
+
     void on_pushButtonOk_clicked();
 
-    void on_pushButton_clicked();
+    void on_pushButtonHome_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_pushButtonBack_clicked();
 
 private:
     Ui::time_set *ui;

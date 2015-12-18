@@ -29,7 +29,17 @@ public:
 private slots:
     void changeEvent(QEvent * event);
     
-    void on_pushButton_Save_clicked();
+    void on_pushButtonSave_clicked();
+
+    void on_pushButtonHome_clicked();
+
+    void on_pushButtonBack_clicked();
+
+    void on_pushButton_PwdLogoutPage_clicked();
+
+    void on_pushButton_StartPage_clicked();
+
+    void on_pushButton_HomePage_clicked();
 
 private:
     Ui::system_ini *ui;

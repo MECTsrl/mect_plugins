@@ -9,8 +9,9 @@ foreach $file (glob( 'page*.ui' ))
 	my $page_name = '';
 	my $button_name = '';
 	my $line = '';
+	my $modified = 0;
 	my @buttonlist;
-	print "Elaborating file '" . $file . "'\n";
+	print "Check for AtcmButton connection into file '" . $file . "'\n";
 	open INFILE, "<", $file or die $!;
 	open TMP, "+>", undef or die $!;
 	while (<INFILE>)
@@ -51,8 +52,8 @@ foreach $file (glob( 'page*.ui' ))
 				if ($line =~ /<sender>([A-z0-9]+)<\/sender>/)
 				{
 					my @buttonlist2;
-					print "INIZIO" . join(", ", @buttonlist) . "\n";
-					print "removing " . $1 . "\n";
+					#print "INIZIO" . join(", ", @buttonlist) . "\n";
+					#print "removing " . $1 . "\n";
 					foreach $button (@buttonlist)
 					{
 						if ($button ne $1)
@@ -61,7 +62,7 @@ foreach $file (glob( 'page*.ui' ))
 						}
 					}
 					@buttonlist = @buttonlist2;
-					print "FINE" . join(", ", @buttonlist) . "\n";
+					#print "FINE" . join(", ", @buttonlist) . "\n";
 				}
 				print TMP $line . "\n";
 				$line = <INFILE>;
@@ -73,6 +74,10 @@ foreach $file (glob( 'page*.ui' ))
 		}
 		if (($line =~ /<\/connections>/ || $line =~ /<connections\/>/) && scalar(@buttonlist) != 0 )
 		{
+			if ($line =~ /<connections\/>/)
+			{
+				print TMP " <connections>\n";
+			}
 			foreach $button (@buttonlist)
 			{
 				print "Connetting button '" . $button . "'\n";
@@ -82,6 +87,7 @@ foreach $file (glob( 'page*.ui' ))
 				print TMP "   <receiver>" . $page_name . "</receiver>\n";
 				print TMP "   <slot>goto_page(const char*,bool)</slot>\n";
 				print TMP "  </connection>\n";
+				$modified = 1;
 			}
 			print TMP " </connections>\n";
 		}
@@ -92,14 +98,17 @@ foreach $file (glob( 'page*.ui' ))
 	}
 	close INFILE;
 
-	open INFILE, ">", $file or die $!;
+	if ($modified == 1)
+	{
+		open INFILE, ">", $file or die $!;
 
-	# Move to the beginning of file
-	seek(TMP,0,0);
-	# Read contents of the anonymous file
-	while (<TMP>) {
-		print INFILE $_;
+		# Move to the beginning of file
+		seek(TMP,0,0);
+		# Read contents of the anonymous file
+		while (<TMP>) {
+			print INFILE $_;
+		}
+		close INFILE;
 	}
 	close TMP;
-	close INFILE;
 }

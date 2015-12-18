@@ -171,12 +171,12 @@ void time_set::on_pushButtonOk_clicked()
 
 }
 
-void time_set::on_pushButton_clicked()
+void time_set::on_pushButtonHome_clicked()
 {
     go_home();
 }
 
-void time_set::on_pushButton_2_clicked()
+void time_set::on_pushButtonBack_clicked()
 {
     go_back();
 }
