@@ -22,7 +22,7 @@
 ATCMgraph::ATCMgraph(QWidget *parent) :
     MAINWIGET(parent)
 {
-    m_refresh = 1000;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
     m_x1Variable = "";
     m_CtX1Index = -1;
     m_x1status = UNK;
@@ -965,7 +965,7 @@ void ATCMgraph::unsetTitle()
 
 void ATCMgraph::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMgraph::unsetViewStatus()

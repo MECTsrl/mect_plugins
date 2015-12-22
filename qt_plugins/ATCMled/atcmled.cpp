@@ -163,7 +163,7 @@ void ATCMled::unsetVariable()
 
 void ATCMled::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMled::unsetViewStatus()
@@ -206,7 +206,7 @@ bool ATCMled::setVisibilityVar(QString visibilityVar)
             m_visibilityvar = visibilityVar.trimmed();
 			if (m_refresh == 0)
 			{
-				setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
 			}
 			return true;
 #ifdef TARGET_ARM

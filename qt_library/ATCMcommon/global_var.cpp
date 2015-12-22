@@ -192,3 +192,5 @@ char _actual_recipe_[FILENAME_MAX] = "";
 #endif // ENABLE_RECIPE
 
 QHash<char *, int *> NameMap;
+
+QStringList userPageList;

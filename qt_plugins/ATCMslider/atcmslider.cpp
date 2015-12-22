@@ -192,7 +192,7 @@ bool ATCMslider::setVisibilityVar(QString visibilityVar)
             m_visibilityvar = visibilityVar.trimmed();
             if (m_refresh == 0)
             {
-                setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
             }
             return true;
 #ifdef TARGET_ARM
@@ -468,7 +468,7 @@ void ATCMslider::unsetVariable()
 
 void ATCMslider::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMslider::unsetViewStatus()

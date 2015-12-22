@@ -96,7 +96,6 @@ page::page(QWidget *parent) :
  */
 void page::updateData()
 {
-    update_all();
 #ifdef ENABLE_ALARMS
     setAlarmsBuzzer();
 #endif

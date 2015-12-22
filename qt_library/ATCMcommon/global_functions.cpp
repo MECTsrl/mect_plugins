@@ -19,17 +19,17 @@ int loadPasswords()
     out = fopen(PASSFILE, "rb");
     if (out == NULL)
     {
-        printf("Cannot open password file\n");
+        LOG_PRINT(info_e,"Cannot open password file\n");
         return 1;
     }
     for (i = 0; i < PASSWORD_NB; i++)
     {
         if (fread(&passwords[i], 4,1, out)==0)
         {
-            printf("Cannot read password %d\n", i);
+            LOG_PRINT(info_e,"Cannot read password %d\n", i);
             return 1;
         }
-        printf("password[%d] = %d\n", i, passwords[i]);
+        LOG_PRINT(info_e,"password[%d] = %d\n", i, passwords[i]);
     }
     fclose(out);
     return 0;
@@ -48,14 +48,14 @@ int dumpPasswords()
         for (i = 0; i < PASSWORD_NB; i++)
         {
             fwrite(&passwords[i], 4,1, out);
-            printf("dump password[%d] = %d\n", i, passwords[i]);
+            LOG_PRINT(info_e,"dump password[%d] = %d\n", i, passwords[i]);
         }
         fclose(out);
         return 0;
     }
     else
     {
-        printf("Cannot create password file\n");
+        LOG_PRINT(info_e,"Cannot create password file\n");
         return 1;
     }
 }

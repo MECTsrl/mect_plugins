@@ -26,7 +26,7 @@ ATCManimation::ATCManimation(QWidget *parent) :
 	m_status = UNK;
 	m_CtIndex = -1;
 	m_CtVisibilityIndex = -1;
-	m_refresh = DEFAULT_REFRESH;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 	m_visibilityvar = "";
 	m_viewstatus = false;
 
@@ -140,7 +140,7 @@ bool ATCManimation::setVisibilityVar(QString visibilityVar)
             m_visibilityvar = visibilityVar.trimmed();
 			if (m_refresh == 0)
 			{
-				setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
 			}
 			return true;
 #ifdef TARGET_ARM
@@ -217,7 +217,7 @@ void ATCManimation::unsetVariable()
 
 void ATCManimation::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCManimation::unsetViewStatus()

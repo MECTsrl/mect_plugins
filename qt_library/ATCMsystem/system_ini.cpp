@@ -59,49 +59,49 @@ void system_ini::reload()
     QSettings settings(SYSTEM_INI, QSettings::IniFormat);
 
     ui->atcmLabel_Retries->setText(settings.value("SYSTEM/retries").toString());
-       ui->atcmLabel_Blacklist->setText(settings.value("SYSTEM/blacklist").toString());
-       ui->atcmLabel_ReadPeriod1->setText(settings.value("SYSTEM/read_period_ms_1").toString());
-       ui->atcmLabel_ReadPeriod2->setText(settings.value("SYSTEM/read_period_ms_2").toString());
-       ui->atcmLabel_ReadPeriod3->setText(settings.value("SYSTEM/read_period_ms_3").toString());
-       ui->pushButton_HomePage->setText(settings.value("SYSTEM/home_page").toString());
-       ui->pushButton_StartPage->setText(settings.value("SYSTEM/start_page").toString());
-       ui->checkBox_BuzzerTouch->setChecked(settings.value("SYSTEM/buzzer_touch").toBool());
-       ui->checkBox_BuzzerAlarm->setChecked(settings.value("SYSTEM/buzzer_alarm").toBool());
-       ui->atcmLabel_PwdTimeout->setText(settings.value("SYSTEM/pwd_timeout_s").toString());
-       ui->pushButton_PwdLogoutPage->setText(settings.value("SYSTEM/pwd_logout_page").toString());
-       ui->atcmLabel_ScreenSaver->setText(settings.value("SYSTEM/screen_saver_s").toString());
-       ui->atcmLabel_SlowLogPeriod->setText(settings.value("SYSTEM/slow_log_period_s").toString());
-       ui->atcmLabel_FastLogPeriod->setText(settings.value("SYSTEM/fast_log_period_s").toString());
-       ui->atcmLabel_MaxLogSpace->setText(settings.value("SYSTEM/max_log_space_MB").toString());
-       ui->atcmLabel_TraceWindow->setText(settings.value("SYSTEM/trace_window_s").toString());
-       ui->comboBox_Baudrate_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/baudrate").toString()));
-       ui->comboBox_Databits_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/databits").toString()));
-       ui->comboBox_Parity_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/parity").toString()));
-       ui->comboBox_Stopbits_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/stopbits").toString()));
-       ui->atcmLabel_Silence_SERIAL_PORT_0->setText(settings.value("SERIAL_PORT_0/silence_ms").toString());
-       ui->atcmLabel_Timeout_SERIAL_PORT_0->setText(settings.value("SERIAL_PORT_0/timeout_ms").toString());
-       ui->comboBox_Baudrate_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/baudrate").toString()));
-       ui->comboBox_Databits_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/databits").toString()));
-       ui->comboBox_Parity_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/parity").toString()));
-       ui->comboBox_Stopbits_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/stopbits").toString()));
-       ui->atcmLabel_Silence_SERIAL_PORT_1->setText(settings.value("SERIAL_PORT_1/silence_ms").toString());
-       ui->atcmLabel_Timeout_SERIAL_PORT_1->setText(settings.value("SERIAL_PORT_1/timeout_ms").toString());
-       ui->comboBox_Baudrate_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/baudrate").toString()));
-       ui->comboBox_Databits_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/databits").toString()));
-       ui->comboBox_Parity_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/parity").toString()));
-       ui->comboBox_Stopbits_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/stopbits").toString()));
-       ui->atcmLabel_Silence_SERIAL_PORT_2->setText(settings.value("SERIAL_PORT_2/silence_ms").toString());
-       ui->atcmLabel_Timeout_SERIAL_PORT_2->setText(settings.value("SERIAL_PORT_2/timeout_ms").toString());
-       ui->comboBox_Baudrate_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/baudrate").toString()));
-       ui->comboBox_Databits_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/databits").toString()));
-       ui->comboBox_Parity_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/parity").toString()));
-       ui->comboBox_Stopbits_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/stopbits").toString()));
-       ui->atcmLabel_Silence_SERIAL_PORT_3->setText(settings.value("SERIAL_PORT_3/silence_ms").toString());
-       ui->atcmLabel_Timeout_SERIAL_PORT_3->setText(settings.value("SERIAL_PORT_3/timeout_ms").toString());
-       ui->atcmLabel_Silence_TCP_IP_PORT->setText(settings.value("TCP_IP_PORT/silence_ms").toString());
-       ui->atcmLabel_Timeout_TCP_IP_PORT->setText(settings.value("TCP_IP_PORT/timeout_ms").toString());
-       ui->comboBox_Baudrate_CANOPEN_0->setCurrentIndex(ui->comboBox_Baudrate_CANOPEN_0->findText(settings.value("CANOPEN_0/baudrate").toString()));
-       ui->comboBox_Baudrate_CANOPEN_1->setCurrentIndex(ui->comboBox_Baudrate_CANOPEN_1->findText(settings.value("CANOPEN_1/baudrate").toString()));
+    ui->atcmLabel_Blacklist->setText(settings.value("SYSTEM/blacklist").toString());
+    ui->atcmLabel_ReadPeriod1->setText(settings.value("SYSTEM/read_period_ms_1").toString());
+    ui->atcmLabel_ReadPeriod2->setText(settings.value("SYSTEM/read_period_ms_2").toString());
+    ui->atcmLabel_ReadPeriod3->setText(settings.value("SYSTEM/read_period_ms_3").toString());
+    ui->pushButton_HomePage->setText(settings.value("SYSTEM/home_page").toString());
+    ui->pushButton_StartPage->setText(settings.value("SYSTEM/start_page").toString());
+    ui->checkBox_BuzzerTouch->setChecked(settings.value("SYSTEM/buzzer_touch").toBool());
+    ui->checkBox_BuzzerAlarm->setChecked(settings.value("SYSTEM/buzzer_alarm").toBool());
+    ui->atcmLabel_PwdTimeout->setText(settings.value("SYSTEM/pwd_timeout_s").toString());
+    ui->pushButton_PwdLogoutPage->setText(settings.value("SYSTEM/pwd_logout_page").toString());
+    ui->atcmLabel_ScreenSaver->setText(settings.value("SYSTEM/screen_saver_s").toString());
+    ui->atcmLabel_SlowLogPeriod->setText(settings.value("SYSTEM/slow_log_period_s").toString());
+    ui->atcmLabel_FastLogPeriod->setText(settings.value("SYSTEM/fast_log_period_s").toString());
+    ui->atcmLabel_MaxLogSpace->setText(settings.value("SYSTEM/max_log_space_MB").toString());
+    ui->atcmLabel_TraceWindow->setText(settings.value("SYSTEM/trace_window_s").toString());
+    ui->comboBox_Baudrate_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/baudrate").toString()));
+    ui->comboBox_Databits_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/databits").toString()));
+    ui->comboBox_Parity_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/parity").toString()));
+    ui->comboBox_Stopbits_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/stopbits").toString()));
+    ui->atcmLabel_Silence_SERIAL_PORT_0->setText(settings.value("SERIAL_PORT_0/silence_ms").toString());
+    ui->atcmLabel_Timeout_SERIAL_PORT_0->setText(settings.value("SERIAL_PORT_0/timeout_ms").toString());
+    ui->comboBox_Baudrate_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/baudrate").toString()));
+    ui->comboBox_Databits_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/databits").toString()));
+    ui->comboBox_Parity_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/parity").toString()));
+    ui->comboBox_Stopbits_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/stopbits").toString()));
+    ui->atcmLabel_Silence_SERIAL_PORT_1->setText(settings.value("SERIAL_PORT_1/silence_ms").toString());
+    ui->atcmLabel_Timeout_SERIAL_PORT_1->setText(settings.value("SERIAL_PORT_1/timeout_ms").toString());
+    ui->comboBox_Baudrate_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/baudrate").toString()));
+    ui->comboBox_Databits_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/databits").toString()));
+    ui->comboBox_Parity_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/parity").toString()));
+    ui->comboBox_Stopbits_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/stopbits").toString()));
+    ui->atcmLabel_Silence_SERIAL_PORT_2->setText(settings.value("SERIAL_PORT_2/silence_ms").toString());
+    ui->atcmLabel_Timeout_SERIAL_PORT_2->setText(settings.value("SERIAL_PORT_2/timeout_ms").toString());
+    ui->comboBox_Baudrate_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/baudrate").toString()));
+    ui->comboBox_Databits_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/databits").toString()));
+    ui->comboBox_Parity_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/parity").toString()));
+    ui->comboBox_Stopbits_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/stopbits").toString()));
+    ui->atcmLabel_Silence_SERIAL_PORT_3->setText(settings.value("SERIAL_PORT_3/silence_ms").toString());
+    ui->atcmLabel_Timeout_SERIAL_PORT_3->setText(settings.value("SERIAL_PORT_3/timeout_ms").toString());
+    ui->atcmLabel_Silence_TCP_IP_PORT->setText(settings.value("TCP_IP_PORT/silence_ms").toString());
+    ui->atcmLabel_Timeout_TCP_IP_PORT->setText(settings.value("TCP_IP_PORT/timeout_ms").toString());
+    ui->comboBox_Baudrate_CANOPEN_0->setCurrentIndex(ui->comboBox_Baudrate_CANOPEN_0->findText(settings.value("CANOPEN_0/baudrate").toString()));
+    ui->comboBox_Baudrate_CANOPEN_1->setCurrentIndex(ui->comboBox_Baudrate_CANOPEN_1->findText(settings.value("CANOPEN_1/baudrate").toString()));
 }
 
 /**
@@ -161,7 +161,6 @@ void system_ini::save_all()
     QSettings settings(SYSTEM_INI, QSettings::IniFormat);
 
     /* SYSTEM */
-
     settings.setValue("SYSTEM/retries", ui->atcmLabel_Retries->text());
     settings.setValue("SYSTEM/blacklist", ui->atcmLabel_Blacklist->text());
     settings.setValue("SYSTEM/read_period_ms_1", ui->atcmLabel_ReadPeriod1->text());
@@ -178,6 +177,7 @@ void system_ini::save_all()
     settings.setValue("SYSTEM/fast_log_period_s", ui->atcmLabel_FastLogPeriod->text());
     settings.setValue("SYSTEM/max_log_space_MB", ui->atcmLabel_MaxLogSpace->text());
     settings.setValue("SYSTEM/trace_window_s", ui->atcmLabel_TraceWindow->text());
+    /* SERIAL */
     settings.setValue("SERIAL_PORT_0/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_0->currentText());
     settings.setValue("SERIAL_PORT_0/databits", ui->comboBox_Databits_SERIAL_PORT_0->currentText());
     settings.setValue("SERIAL_PORT_0/parity", ui->comboBox_Parity_SERIAL_PORT_0->currentText());
@@ -202,14 +202,14 @@ void system_ini::save_all()
     settings.setValue("SERIAL_PORT_3/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_3->currentText());
     settings.setValue("SERIAL_PORT_3/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_3->text());
     settings.setValue("SERIAL_PORT_3/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_3->text());
+    /* TCP_IP */
     settings.setValue("TCP_IP_PORT/silence_ms", ui->atcmLabel_Silence_TCP_IP_PORT->text());
     settings.setValue("TCP_IP_PORT/timeout_ms", ui->atcmLabel_Timeout_TCP_IP_PORT->text());
+    /* CANOPEN */
     settings.setValue("CANOPEN_0/baudrate", ui->comboBox_Baudrate_CANOPEN_0->currentText());
     settings.setValue("CANOPEN_1/baudrate", ui->comboBox_Baudrate_CANOPEN_1->currentText());
 }
 
-
-//Apertura tastiera alfanumerica
 void system_ini::on_pushButton_PwdLogoutPage_clicked()
 {
     char value_pwd [32];

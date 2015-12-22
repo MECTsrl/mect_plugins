@@ -31,7 +31,7 @@ ATCMprogressbar::ATCMprogressbar(QWidget *parent) :
 	m_bgcolor = QColor(230,230,230);
 	m_barColor = QColor(255,127,80);
 	m_bordercolor = QColor(0,0,0);
-	m_refresh = DEFAULT_REFRESH;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 	m_borderwidth = 1;
 	m_borderradius = 0;
 	m_visibilityvar = "";
@@ -187,7 +187,7 @@ bool ATCMprogressbar::setVisibilityVar(QString visibilityVar)
             m_visibilityvar = visibilityVar.trimmed();
             if (m_refresh == 0)
             {
-                setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
             }
             return true;
 #ifdef TARGET_ARM
@@ -419,7 +419,7 @@ void ATCMprogressbar::unsetVariable()
 
 void ATCMprogressbar::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMprogressbar::unsetViewStatus()

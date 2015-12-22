@@ -10,6 +10,7 @@
 #include <QTimer>
 #include <QFile>
 #include <QMessageBox>
+#include <QProcess>
 
 #include "page0.h"
 #include "app_logprint.h"
@@ -74,6 +75,12 @@ void page0::changePage()
 {
     if (first_time == true)
     {
+        if (system("ps | grep fcrts | grep -v grep"))
+        {
+            QProcess *myProcess = new QProcess();
+            myProcess->start("/local/root/fcrts");
+        }
+
         /* load the tag table if it is present */
         loadTagTable();
         if(CommStart() == false)
@@ -81,9 +88,22 @@ void page0::changePage()
             exit(0);
         }
         first_time = false;
-    }
     
-    LOG_PRINT(info_e, "CHANGE PAGE\n");
+        /* pre-load */
+        page * p;
+        for (int pageIndex = 0; pageIndex < userPageList.count(); pageIndex++)
+        {
+            create_next_page(&p, userPageList.at(pageIndex).toAscii().data());
+            if (p != NULL)
+            {
+                ScreenHash.insert(userPageList.at(pageIndex).toAscii().data(), p);
+            }
+            else
+            {
+                LOG_PRINT(error_e,"Cannot create page '%s'\n", userPageList.at(pageIndex).toAscii().data());
+            }
+        }
+    }
 
     /* Check the date. if it is unset 01 Jan 1970 start with time_set page*/
     time_t rt = 0;
@@ -104,5 +124,3 @@ void page0::changePage()
     }
     this->hide();
 }
-
-

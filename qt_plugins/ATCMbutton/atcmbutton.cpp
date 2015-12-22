@@ -46,7 +46,7 @@ ATCMbutton::ATCMbutton(QWidget * parent):
     m_text_press = "";
     m_icon = QIcon();
     m_icon_press = QIcon();
-    m_refresh = DEFAULT_REFRESH / 2;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
     m_borderwidth = 1;
     m_borderradius = 0;
     m_visibilityvar = "";
@@ -305,7 +305,7 @@ bool ATCMbutton::setVisibilityVar(QString visibilityVar)
             m_visibilityvar = visibilityVar.trimmed();
             if (m_refresh == 0)
             {
-                setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
             }
             return true;
 #ifdef TARGET_ARM
@@ -341,7 +341,7 @@ void ATCMbutton::unsetStatusvar()
 
 void ATCMbutton::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMbutton::unsetViewStatus()
@@ -494,7 +494,7 @@ bool ATCMbutton::setRefresh(int refresh)
 {
     Q_UNUSED( refresh );
     m_refresh = refresh;
-    //m_refresh = DEFAULT_REFRESH / 2;
+    //m_refresh = DEFAULT_PLUGIN_REFRESH;
 #ifdef TARGET_ARM
     if (refresh_timer == NULL && m_refresh > 0)
     {
@@ -892,7 +892,7 @@ bool ATCMbutton::setPasswordVar(QString password)
             m_passwordVar = password.trimmed();
             if (m_refresh == 0)
             {
-                setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
             }
             return true;
 #ifdef TARGET_ARM

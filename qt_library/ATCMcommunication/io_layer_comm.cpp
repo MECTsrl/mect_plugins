@@ -91,6 +91,7 @@ void io_layer_comm::run()
         notifySetSyncro();
         notifyGetData();
         notifyGetSyncro();
+        update_all();
     }
     LOG_PRINT(info_e, "Finish ioLayer syncronization\n");
 }

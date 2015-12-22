@@ -39,7 +39,7 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
     m_fontcolor = QColor(10,10,10);
     m_bordercolor = QColor(0,0,0);
     m_objectstatus = false;
-    m_refresh = DEFAULT_REFRESH;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
     m_borderwidth = 1;
     m_borderradius = 0;
     m_visibilityvar = "";
@@ -206,7 +206,7 @@ void ATCMcombobox::unsetVariable()
 
 void ATCMcombobox::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMcombobox::unsetViewStatus()
@@ -264,7 +264,7 @@ bool ATCMcombobox::setVisibilityVar(QString visibilityVar)
             m_visibilityvar = visibilityVar.trimmed();
             if (m_refresh == 0)
             {
-                setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
             }
             return true;
 #ifdef TARGET_ARM

@@ -225,4 +225,6 @@ extern QDateTime StoreFinal;
 extern int MaxLogUsageMb;
 #endif //defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 
+extern QStringList userPageList;
+
 #endif

@@ -164,7 +164,6 @@ private:
 extern QHash<QString, page *> ScreenHash;
 extern QStack<page *> History;
 extern int create_page_nb(page ** p, int pageNb);
-extern int update_all(void);
 extern void printVncDisplayString(char * vncString);
 
 #endif

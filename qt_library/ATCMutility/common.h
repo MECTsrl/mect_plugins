@@ -239,6 +239,7 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 
 #define IOLAYER_PERIOD_ms 100
 #define DEFAULT_REFRESH 500
+#define DEFAULT_PLUGIN_REFRESH 200
 #define WAITING_PERIOD_US 10000
 
 #define MAX_MSG 1024
