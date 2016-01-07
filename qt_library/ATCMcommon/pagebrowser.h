@@ -127,8 +127,6 @@ protected:
     
     int checkLicence(QString * message);
     
-    int saveModbusOption(void);
-    int loadModbusOption(void);
     int countLine(const char * filename);
     bool zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir = false);
     

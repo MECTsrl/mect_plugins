@@ -35,20 +35,12 @@ private slots:
     void on_pushButtonModbus_clicked();
     
     void on_pushButtonPasswords_clicked();
-    
-    void on_pushButtonErrorsStrategy_clicked();
-    
-    void on_pushButtonHomePage_clicked();
-    
+        
     void on_pushButtonHome_clicked();
     
     void on_pushButtonBack_clicked();
-    
-    void on_pushButtonDatalog_clicked();
-    
+        
     void on_pushButtonDisplaySettings_clicked();
-    
-    void on_pushButtonBuzzerSettings_clicked();
     
     void on_pushButtonLanguage_clicked();
     

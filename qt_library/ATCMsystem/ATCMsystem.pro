@@ -38,49 +38,40 @@ LIBS += \
 -lATCMlogger
 
 SOURCES += \
-buzzer_settings.cpp \
 comm_status.cpp \
 system_ini.cpp \
 data_manager.cpp \
-datalog_set.cpp \
 display_settings.cpp \
 info.cpp \
 item_selector.cpp \
 menu.cpp \
 options.cpp \
-sgdd.cpp \
 time_set.cpp \
 page0.cpp \
 main.cpp
 
 HEADERS += \
-buzzer_settings.h \
 comm_status.h \
 system_ini.h \
 data_manager.h \
-datalog_set.h \
 display_settings.h \
 info.h \
 item_selector.h \
 menu.h \
 options.h \
-sgdd.h \
 time_set.h \
 page0.h \
 main.h
 
 FORMS += \
-buzzer_settings.ui \
 comm_status.ui \
 system_ini.ui \
 data_manager.ui \
-datalog_set.ui \
 display_settings.ui \
 info.ui \
 item_selector.ui \
 menu.ui \
 options.ui \
-sgdd.ui \
 time_set.ui \
 page0.ui
 

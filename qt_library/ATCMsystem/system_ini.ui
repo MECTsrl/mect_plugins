@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>449</width>
-    <height>426</height>
+    <height>462</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1159,8 +1159,13 @@ QComboBox
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>0</number>
            </property>
+           <item>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </item>
            <item>
             <property name="text">
              <string>9600</string>
@@ -1449,8 +1454,13 @@ QComboBox
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>0</number>
            </property>
+           <item>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </item>
            <item>
             <property name="text">
              <string>9600</string>
@@ -1790,8 +1800,13 @@ QComboBox
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>0</number>
            </property>
+           <item>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </item>
            <item>
             <property name="text">
              <string>9600</string>
@@ -2160,8 +2175,13 @@ QComboBox
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="currentIndex">
-            <number>5</number>
+            <number>0</number>
            </property>
+           <item>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </item>
            <item>
             <property name="text">
              <string>9600</string>

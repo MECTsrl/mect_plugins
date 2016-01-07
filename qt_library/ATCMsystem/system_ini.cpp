@@ -14,11 +14,7 @@
 #include "ui_system_ini.h"
 #include <QSettings>
 
-#ifdef TARGET
 #define SYSTEM_INI "/local/etc/sysconfig/system.ini"
-#else
-#define SYSTEM_INI "config/system.ini"
-#endif
 
 /**
  * @brief this macro is used to set the system_ini style.
@@ -158,6 +154,319 @@ system_ini::~system_ini()
 //funzione salvataggio del file
 void system_ini::save_all()
 {
+    bool OK;
+
+    if (ui->atcmLabel_Retries->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Retries' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Retries' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Blacklist->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Blacklist' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Blacklist' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_ReadPeriod1->text().toInt(&OK) < 1 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Read Period 1' parameter must be greater than 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Read Period 1' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_ReadPeriod2->text().toInt(&OK) < 2 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Read Period 2' parameter must be greater than 1."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Read Period 2' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_ReadPeriod3->text().toInt(&OK) < 3 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Read Period 3' parameter must be greater than 2."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Read Period 3' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_ReadPeriod3->text().toInt() < ui->atcmLabel_ReadPeriod2->text().toInt())
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Read Period 3' parameter must be greater than 'Read Period 2' parameter."));
+        return;
+    }
+
+    if (ui->atcmLabel_ReadPeriod2->text().toInt() < ui->atcmLabel_ReadPeriod1->text().toInt())
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Read Period 2' parameter must be greater than 'Read Period 1' parameter."));
+        return;
+    }
+
+    /* if (ui->pushButton_HomePage->text().length() == 0)
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, tr("Error"), tr("'Home Page' parameter can not be empty. Do you want to automatically set the 'Home Page' parameter equal to 'Start Page' parameter?"));
+        QMessageBox::Yes|QMessageBox::No;
+        if (reply == QMessageBox::Yes) {
+            ui->pushButton_HomePage->setText(ui->pushButton_StartPage->text());
+        } else {
+            return;
+        }
+    }*/
+    if (ui->atcmLabel_PwdTimeout->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Pwd Timeout' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Pwd Timeout' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_ScreenSaver->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Screen Saver' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Screen Saver' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_SlowLogPeriod->text().toInt(&OK) < 2 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Slow Log Period' parameter must be greater than 1."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Slow Log Period' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_FastLogPeriod->text().toInt(&OK) < 1 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Fast Log Period' parameter must be greater than 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Fast Log Period' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_SlowLogPeriod->text().toInt() < ui->atcmLabel_FastLogPeriod->text().toInt())
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Slow Log Period' parameter must be greater than 'Fast Log Period' parameter."));
+        return;
+    }
+    if (ui->atcmLabel_MaxLogSpace->text().toInt(&OK) < 1 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Max Log Space' parameter must be greater than 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Max Log Space' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_TraceWindow->text().toInt(&OK) < 3 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Trace Window' parameter must be greater than 2."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Trace Window' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_TraceWindow->text().toInt() < (ui->atcmLabel_FastLogPeriod->text().toInt()* 3))
+    {
+        QMessageBox::critical(0,tr("Error"),tr("'Trace Window' parameter must be at least three times 'Fast Log Period' parameter."));
+        return;
+    }
+    if (ui->atcmLabel_Silence_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_SERIAL_PORT_0->text().toInt(&OK) < 1 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_SERIAL_PORT_0->text().toInt() <= ui->atcmLabel_Silence_SERIAL_PORT_0->text().toInt())
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+        return;
+    }
+    if (ui->atcmLabel_Silence_SERIAL_PORT_1->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_SERIAL_PORT_1->text().toInt(&OK) < 1 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_SERIAL_PORT_1->text().toInt() <= ui->atcmLabel_Silence_SERIAL_PORT_1->text().toInt())
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+        return;
+    }
+    if (ui->atcmLabel_Silence_SERIAL_PORT_2->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_SERIAL_PORT_2->text().toInt(&OK) < 1 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_SERIAL_PORT_2->text().toInt() <= ui->atcmLabel_Silence_SERIAL_PORT_2->text().toInt())
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+        return;
+    }
+    if (ui->atcmLabel_Silence_SERIAL_PORT_3->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_SERIAL_PORT_3->text().toInt(&OK) < 1 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be greater than 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_SERIAL_PORT_3->text().toInt() <= ui->atcmLabel_Silence_SERIAL_PORT_3->text().toInt())
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+        return;
+    }
+    if (ui->atcmLabel_Silence_TCP_IP_PORT->text().toInt(&OK) < 0 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be greater than or egual 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_TCP_IP_PORT->text().toInt(&OK) < 1 && OK == true)
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 0."));
+        return;
+    }
+
+    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be a number."));
+        return;
+    }
+
+    if (ui->atcmLabel_Timeout_TCP_IP_PORT->text().toInt() <= ui->atcmLabel_Silence_TCP_IP_PORT->text().toInt())
+    {
+        QMessageBox::critical(0,tr("Error"),tr("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+        return;
+    }
+
     QSettings settings(SYSTEM_INI, QSettings::IniFormat);
 
     /* SYSTEM */
@@ -178,36 +487,68 @@ void system_ini::save_all()
     settings.setValue("SYSTEM/max_log_space_MB", ui->atcmLabel_MaxLogSpace->text());
     settings.setValue("SYSTEM/trace_window_s", ui->atcmLabel_TraceWindow->text());
     /* SERIAL */
-    settings.setValue("SERIAL_PORT_0/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_0->currentText());
-    settings.setValue("SERIAL_PORT_0/databits", ui->comboBox_Databits_SERIAL_PORT_0->currentText());
-    settings.setValue("SERIAL_PORT_0/parity", ui->comboBox_Parity_SERIAL_PORT_0->currentText());
-    settings.setValue("SERIAL_PORT_0/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_0->currentText());
-    settings.setValue("SERIAL_PORT_0/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_0->text());
-    settings.setValue("SERIAL_PORT_0/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_0->text());
-    settings.setValue("SERIAL_PORT_1/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_1->currentText());
-    settings.setValue("SERIAL_PORT_1/databits", ui->comboBox_Databits_SERIAL_PORT_1->currentText());
-    settings.setValue("SERIAL_PORT_1/parity", ui->comboBox_Parity_SERIAL_PORT_1->currentText());
-    settings.setValue("SERIAL_PORT_1/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_1->currentText());
-    settings.setValue("SERIAL_PORT_1/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_1->text());
-    settings.setValue("SERIAL_PORT_1/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_1->text());
-    settings.setValue("SERIAL_PORT_2/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_2->currentText());
-    settings.setValue("SERIAL_PORT_2/databits", ui->comboBox_Databits_SERIAL_PORT_2->currentText());
-    settings.setValue("SERIAL_PORT_2/parity", ui->comboBox_Parity_SERIAL_PORT_2->currentText());
-    settings.setValue("SERIAL_PORT_2/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_2->currentText());
-    settings.setValue("SERIAL_PORT_2/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_2->text());
-    settings.setValue("SERIAL_PORT_2/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_2->text());
-    settings.setValue("SERIAL_PORT_3/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_3->currentText());
-    settings.setValue("SERIAL_PORT_3/databits", ui->comboBox_Databits_SERIAL_PORT_3->currentText());
-    settings.setValue("SERIAL_PORT_3/parity", ui->comboBox_Parity_SERIAL_PORT_3->currentText());
-    settings.setValue("SERIAL_PORT_3/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_3->currentText());
-    settings.setValue("SERIAL_PORT_3/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_3->text());
-    settings.setValue("SERIAL_PORT_3/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_3->text());
+    if (ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)
+    {
+        settings.setValue("SERIAL_PORT_0/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_0->currentText());
+        settings.setValue("SERIAL_PORT_0/databits", ui->comboBox_Databits_SERIAL_PORT_0->currentText());
+        settings.setValue("SERIAL_PORT_0/parity", ui->comboBox_Parity_SERIAL_PORT_0->currentText());
+        settings.setValue("SERIAL_PORT_0/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_0->currentText());
+        settings.setValue("SERIAL_PORT_0/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_0->text());
+        settings.setValue("SERIAL_PORT_0/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_0->text());
+    }
+    else
+    {
+        settings.remove("SERIAL_PORT_0");
+    }
+    if (ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)
+    {
+        settings.setValue("SERIAL_PORT_1/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_1->currentText());
+        settings.setValue("SERIAL_PORT_1/databits", ui->comboBox_Databits_SERIAL_PORT_1->currentText());
+        settings.setValue("SERIAL_PORT_1/parity", ui->comboBox_Parity_SERIAL_PORT_1->currentText());
+        settings.setValue("SERIAL_PORT_1/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_1->currentText());
+        settings.setValue("SERIAL_PORT_1/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_1->text());
+        settings.setValue("SERIAL_PORT_1/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_1->text());
+    }
+    else
+    {
+        settings.remove("SERIAL_PORT_1");
+    }
+    if (ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)
+    {
+        settings.setValue("SERIAL_PORT_2/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_2->currentText());
+        settings.setValue("SERIAL_PORT_2/databits", ui->comboBox_Databits_SERIAL_PORT_2->currentText());
+        settings.setValue("SERIAL_PORT_2/parity", ui->comboBox_Parity_SERIAL_PORT_2->currentText());
+        settings.setValue("SERIAL_PORT_2/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_2->currentText());
+        settings.setValue("SERIAL_PORT_2/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_2->text());
+        settings.setValue("SERIAL_PORT_2/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_2->text());
+    }
+    else
+    {
+        settings.remove("SERIAL_PORT_2");
+    }
+    if (ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)
+    {
+        settings.setValue("SERIAL_PORT_3/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_3->currentText());
+        settings.setValue("SERIAL_PORT_3/databits", ui->comboBox_Databits_SERIAL_PORT_3->currentText());
+        settings.setValue("SERIAL_PORT_3/parity", ui->comboBox_Parity_SERIAL_PORT_3->currentText());
+        settings.setValue("SERIAL_PORT_3/stopbits", ui->comboBox_Stopbits_SERIAL_PORT_3->currentText());
+        settings.setValue("SERIAL_PORT_3/silence_ms", ui->atcmLabel_Silence_SERIAL_PORT_3->text());
+        settings.setValue("SERIAL_PORT_3/timeout_ms", ui->atcmLabel_Timeout_SERIAL_PORT_3->text());
+    }
+    else
+    {
+        settings.remove("SERIAL_PORT_3");
+    }
     /* TCP_IP */
     settings.setValue("TCP_IP_PORT/silence_ms", ui->atcmLabel_Silence_TCP_IP_PORT->text());
     settings.setValue("TCP_IP_PORT/timeout_ms", ui->atcmLabel_Timeout_TCP_IP_PORT->text());
     /* CANOPEN */
     settings.setValue("CANOPEN_0/baudrate", ui->comboBox_Baudrate_CANOPEN_0->currentText());
     settings.setValue("CANOPEN_1/baudrate", ui->comboBox_Baudrate_CANOPEN_1->currentText());
+
+    readCfgFile();
+
+    QMessageBox::information(0,tr("Information"),tr("Configuration has been successfully saved."));
 }
 
 void system_ini::on_pushButton_PwdLogoutPage_clicked()

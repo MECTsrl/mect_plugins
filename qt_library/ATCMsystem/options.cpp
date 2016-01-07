@@ -164,24 +164,6 @@ void options::on_pushButtonModbus_clicked()
     goto_page("system_ini");
 }
 
-void options::on_pushButtonErrorsStrategy_clicked()
-{
-    goto_page("sgdd");
-}
-
-void options::on_pushButtonDatalog_clicked()
-{
-    goto_page("datalog_set");
-}
-
-void options::on_pushButtonHomePage_clicked()
-{
-    if (setAsStartPage(HomePage))
-    {
-        QMessageBox::information(this,tr("Intal page"), tr("The initial page is resetted."));
-    }
-}
-
 void options::on_pushButtonHome_clicked()
 {
     go_home();
@@ -197,13 +179,6 @@ void options::on_pushButtonDisplaySettings_clicked()
 {
     goto_page("display_settings");
 }
-
-void options::on_pushButtonBuzzerSettings_clicked()
-{
-    goto_page("buzzer_settings");
-}
-
-
 
 void options::on_pushButtonLanguage_clicked()
 {

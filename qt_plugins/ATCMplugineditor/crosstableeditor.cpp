@@ -48,11 +48,11 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
                 QString line = in.readLine();
                 QStringList fields = line.split(";");
 #if 1
-		if (j >= DB_SIZE_ELEM - 1)
-		{
+        if (j >= DB_SIZE_ELEM - 1)
+        {
                     //QMessageBox::critical(0, "Crosstable error", tr("Too many line into cross table. Maximum line is %1.").arg(DB_SIZE_ELEM));
                     break;
-		}
+        }
 #endif
                 if (fields.count() != 13)
                 {
@@ -63,10 +63,10 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
                 {
                     if (fields.at(0).toInt() != 0)
                     {
-			if (i > 0)
-			{
-				table->insertRow(i);
-			}
+            if (i > 0)
+            {
+                table->insertRow(i);
+            }
                         item = new QTableWidgetItem(fields.at(1));
                         table->setItem(i,0,item);
                         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
@@ -84,7 +84,7 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
                         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
                         i++;
                     }
-		    j++;
+            j++;
                 }
             }
             file.close();

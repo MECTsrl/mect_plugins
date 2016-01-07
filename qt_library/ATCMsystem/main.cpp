@@ -22,7 +22,6 @@
 #include "system_ini.h"
 #include "comm_status.h"
 #include "cross_table_utility.h"
-#include "buzzer_settings.h"
 #include "data_manager.h"
 #include "display_settings.h"
 #include "info.h"
@@ -30,12 +29,7 @@
 #include "menu.h"
 #include "options.h"
 #include "page0.h"
-#include "sgdd.h"
 #include "time_set.h"
-
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
-#include "datalog_set.h"
-#endif
 
 #ifdef ENABLE_ALARMS
 #include "alarms.h"

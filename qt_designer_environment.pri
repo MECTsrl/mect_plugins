@@ -1,5 +1,5 @@
 #include (qt_environment.pri)
-DEFINES += ATCM_VERSION=7.0rc6
+DEFINES += ATCM_VERSION=7.0rc7
 win32 {
 	ATCM_QWT_LIB = C:/Qt485/desktop/lib
 	ATCM_QWT_INCL = C:/Qt485/desktop/include/Qwt

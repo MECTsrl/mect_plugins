@@ -146,52 +146,8 @@
      <property name="rightMargin">
       <number>8</number>
      </property>
-     <item row="3" column="1">
-      <widget class="QPushButton" name="pushButtonBuzzerSettings">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>34</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>34</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>BUZZER</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QPushButton" name="pushButtonDateAndTime">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>34</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>34</height>
-        </size>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>DATE AND TIME</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
-      <widget class="QPushButton" name="pushButtonHomePage">
+      <widget class="QPushButton" name="pushButtonModbus">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -208,7 +164,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>RESET HOME PAGE</string>
+        <string>SYSTEM INI</string>
        </property>
       </widget>
      </item>
@@ -234,8 +190,8 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="pushButtonModbus">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pushButtonDateAndTime">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -252,61 +208,11 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>SYSTEM INI</string>
+        <string>DATE AND TIME</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QPushButton" name="pushButtonErrorsStrategy">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>34</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>34</height>
-        </size>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>SGDD</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="pushButtonDatalog">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>40</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>34</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>34</height>
-        </size>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>LOG TIMINGS</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
       <widget class="QPushButton" name="pushButtonDisplaySettings">
        <property name="minimumSize">
         <size>
@@ -325,7 +231,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="2" column="0">
       <widget class="QPushButton" name="pushButtonLanguage">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
