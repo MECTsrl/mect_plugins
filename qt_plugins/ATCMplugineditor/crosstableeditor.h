@@ -11,7 +11,7 @@ class CrossTableEditor : public QDialog
 	Q_OBJECT
 
 	public:
-		CrossTableEditor(QWidget *parent = 0, QString * selection = NULL);
+        CrossTableEditor(QWidget *parent = 0, QString * selection = NULL);
 
 		QSize sizeHint() const;
 
@@ -22,7 +22,7 @@ class CrossTableEditor : public QDialog
 	private:
 		QTableWidget *table;
 		QDialogButtonBox *buttonBox;
-		QString * m_selection;
+        QString * m_selection;
 };
 
 #endif // CROSSTABLEEDITOR_H

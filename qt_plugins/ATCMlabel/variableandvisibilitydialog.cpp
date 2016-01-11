@@ -41,7 +41,7 @@
     mainLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Minimum, QSizePolicy::Expanding));
     mainLayout->addWidget(buttonBox);
 
-	setLayout(mainLayout);
+    setLayout(mainLayout);
     setWindowTitle(tr("ATCM Label Variables"));
 }
 
@@ -58,7 +58,7 @@ void variableandvisibilityDialog::saveState()
         formWindow->cursor()->setProperty("variable", lineVariable->text().trimmed());
         formWindow->cursor()->setProperty("visibilityVar", lineVisibility->text().trimmed());
     }
-	accept();
+    accept();
 }
 
 void variableandvisibilityDialog::chooseCtVariable()

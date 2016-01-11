@@ -301,7 +301,6 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="project.pro" target="%ProjectName%.pro" openproject="true"/>
 	   <file source="template.pri" target="template.pri" openproject="false"/>
 	   <file source="languages.pri" target="languages.pri" openproject="false"/>
-	   <file source="qt_environment.pri" target="qt_environment.pri" openproject="false"/>
 	   </files>
 	    <!-- Create a 2nd wizard page with parameters -->
 	    <fieldpagetitle>Add extra funtionality</fieldpagetitle>

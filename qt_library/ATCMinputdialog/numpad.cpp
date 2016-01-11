@@ -314,7 +314,7 @@ void numpad::on_pushButton9_clicked()
 
 void numpad::on_pushButtonClear_clicked()
 {
-	ui->lineEditVal->clear();
+    ui->lineEditVal->backspace();
 }
 
 void numpad::on_pushButtonEsc_clicked()

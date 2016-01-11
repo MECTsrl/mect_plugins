@@ -189,8 +189,8 @@ void atcmanimationDialog::chooseResource(QTableWidgetItem* item)
 void atcmanimationDialog::chooseCtVariable()
 {
 	QString value;
-	CrossTableEditor dialog(animation, &value);
-	if (dialog.exec() == Accepted)
+    CrossTableEditor dialog(animation, &value);
+    if (dialog.exec() == Accepted)
 	{
 		lineVariable->setText(value);
 	}
@@ -199,8 +199,8 @@ void atcmanimationDialog::chooseCtVariable()
 void atcmanimationDialog::chooseCtVisibility()
 {
 	QString value;
-	CrossTableEditor dialog(animation, &value);
-	if (dialog.exec() == Accepted)
+    CrossTableEditor dialog(animation, &value);
+    if (dialog.exec() == Accepted)
 	{
 		lineVisibility->setText(value);
 	}

@@ -75,9 +75,12 @@ void page0::changePage()
 {
     if (first_time == true)
     {
+        /* if fcrts is not running, start it */
         if (system("ps | grep fcrts | grep -v grep"))
         {
+            char command[LINE_SIZE] = "";
             QProcess *myProcess = new QProcess();
+            sprintf(command, "%s/fcrts", LOCAL_ROOT_DIR);
             myProcess->start("/local/root/fcrts");
         }
 

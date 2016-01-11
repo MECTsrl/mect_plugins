@@ -29,67 +29,65 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
     item = new QTableWidgetItem(tr("Description"));
     table->setHorizontalHeaderItem(4, item);
 
-    QDirIterator it(":", QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QString itemstring = it.next();
-        if(itemstring.endsWith("Crosstable.csv"))
-        {
-            /* open and load crosstable file */
-            QFile file(itemstring);
-            if(!file.open(QIODevice::ReadOnly)) {
-                QMessageBox::information(0, "error", file.errorString());
-            }
+    /* extract the Project dir */
+    QDesignerFormWindowInterface *formWindow
+            = QDesignerFormWindowInterface::findFormWindow(parent);
 
-            QTextStream in(&file);
+    QString XtableFileName = formWindow->absoluteDir().absolutePath() + QString("/config/Crosstable.csv");
+    /* open and load crosstable file */
+    QFile file(XtableFileName);
+    if(!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(0, "error", file.errorString());
+    }
 
-            int i = 0;
-            int j = 0;
-            while(!in.atEnd()) {
-                QString line = in.readLine();
-                QStringList fields = line.split(";");
+    QTextStream in(&file);
+
+    int i = 0;
+    int j = 0;
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+        QStringList fields = line.split(";");
 #if 1
         if (j >= DB_SIZE_ELEM - 1)
         {
-                    //QMessageBox::critical(0, "Crosstable error", tr("Too many line into cross table. Maximum line is %1.").arg(DB_SIZE_ELEM));
-                    break;
+            //QMessageBox::critical(0, "Crosstable error", tr("Too many line into cross table. Maximum line is %1.").arg(DB_SIZE_ELEM));
+            break;
         }
 #endif
-                if (fields.count() != 13)
-                {
-                    QMessageBox::critical(0, "Crosstable error", tr("Wrong number of fields at line %1: found %2 expecting 13.").arg(j).arg(fields.count()));
-                    break;
-                }
-                else
-                {
-                    if (fields.at(0).toInt() != 0)
-                    {
-            if (i > 0)
+        if (fields.count() != 13)
+        {
+            QMessageBox::critical(0, "Crosstable error", tr("Wrong number of fields at line %1: found %2 expecting 13.").arg(j).arg(fields.count()));
+            break;
+        }
+        else
+        {
+            if (fields.at(0).toInt() != 0)
             {
-                table->insertRow(i);
-            }
-                        item = new QTableWidgetItem(fields.at(1));
-                        table->setItem(i,0,item);
-                        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                        item = new QTableWidgetItem(fields.at(2));
-                        table->setItem(i,1,item);
-                        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                        item = new QTableWidgetItem(fields.at(3));
-                        table->setItem(i,2,item);
-                        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                        item = new QTableWidgetItem(fields.at(5));
-                        table->setItem(i,3,item);
-                        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                        item = new QTableWidgetItem(fields.at(12));
-                        table->setItem(i,4,item);
-                        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                        i++;
-                    }
-            j++;
+                if (i > 0)
+                {
+                    table->insertRow(i);
                 }
+                item = new QTableWidgetItem(fields.at(1));
+                table->setItem(i,0,item);
+                item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+                item = new QTableWidgetItem(fields.at(2));
+                table->setItem(i,1,item);
+                item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+                item = new QTableWidgetItem(fields.at(3));
+                table->setItem(i,2,item);
+                item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+                item = new QTableWidgetItem(fields.at(5));
+                table->setItem(i,3,item);
+                item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+                item = new QTableWidgetItem(fields.at(12));
+                table->setItem(i,4,item);
+                item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+                i++;
             }
-            file.close();
+            j++;
         }
     }
+    file.close();
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
                                      | QDialogButtonBox::Cancel);
