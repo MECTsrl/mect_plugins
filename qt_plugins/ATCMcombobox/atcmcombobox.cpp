@@ -35,15 +35,17 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
     m_initialization = true;
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
-    m_bgcolor = QColor(230,230,230);
-    m_fontcolor = QColor(10,10,10);
-    m_bordercolor = QColor(0,0,0);
     m_objectstatus = false;
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
-    m_borderwidth = 1;
-    m_borderradius = 0;
     m_visibilityvar = "";
     m_writeAcknowledge = false;
+
+    m_bgcolor = BG_COLOR_DEF;
+    m_fontcolor = FONT_COLOR_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
+
 #if 0
 #ifndef TARGET_ARM
     CrossTableManager *filePathManager;

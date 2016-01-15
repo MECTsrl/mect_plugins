@@ -65,4 +65,14 @@ class ATCMStyle : public QMotifStyle
 extern int _diameter_;
 extern double _penWidth_;
 extern QIcon _icon_;
+
+#define BG_COLOR_DEF        QColor(255,255,255)
+#define BG_COLOR_SEL_DEF    QColor(230,230,230)
+#define FONT_COLOR_DEF      QColor(0,0,0)
+#define FONT_COLOR_SEL_DEF  QColor(10,10,10)
+#define BORDER_COLOR_DEF    QColor(0,0,0)
+#define BORDER_COLOR_SEL_DEF QColor(0,0,0)
+#define BORDER_WIDTH_DEF    0
+#define BORDER_RADIUS_DEF   0
+
 #endif

@@ -2208,7 +2208,8 @@ int isBlockActiveByCtIndex(const int CtIndex, char * varblockhead)
 {
     int CtIndexHead;
 
-    CtIndexHead = varNameArray[CtIndex].blockhead;
+    CtIndexHead = (varNameArray[CtIndex].blockhead == 0) ? CtIndex : varNameArray[CtIndex].blockhead;
+
     if (CtIndexHead > 0)
     {
         strcpy(varblockhead, varNameArray[CtIndexHead].tag);
@@ -2217,6 +2218,7 @@ int isBlockActiveByCtIndex(const int CtIndex, char * varblockhead)
     {
         LOG_PRINT(error_e, "Cannot found the head block of '%s'\n", varNameArray[CtIndex].tag);
     }
+
     int SynIndex = 0;
     if (CtIndex2SynIndex(CtIndexHead, &SynIndex) == 0)
     {

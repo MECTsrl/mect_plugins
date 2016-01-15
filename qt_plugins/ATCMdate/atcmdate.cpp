@@ -23,14 +23,15 @@ ATCMdate::ATCMdate(QWidget *parent) :
     QPushButton(parent)
 {
 
-    m_bgcolor = QColor(255,255,255);
-    m_bgcolor_select = QColor(230,230,230);
-    m_fontcolor = QColor(130,130,130);
-    m_fontcolor_select = QColor(10,10,10);
-    m_bordercolor = QColor(0,0,0);
-    m_bordercolor_select = QColor(0,0,0);
-    m_borderwidth = 1;
-    m_borderradius = 0;
+    m_bgcolor_select = BG_COLOR_SEL_DEF;
+    m_fontcolor_select = FONT_COLOR_SEL_DEF;
+    m_bordercolor_select = BORDER_COLOR_SEL_DEF;
+    m_bgcolor = BG_COLOR_DEF;
+    m_fontcolor = FONT_COLOR_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
+
     m_format = DEFAULT_DATE;
 
     //setMinimumSize(QSize(150,50));

@@ -7,7 +7,8 @@ sub strip_comments {
 	$string =~ s#/\*.*?\*/##sg; #strip multiline C comments
 	return $string;
 }
-my @uifiles = glob( './*.ui' );
+my $srcdirname = $ARGV[0];
+my @uifiles = glob( $srcdirname . '/*.ui' );
 my @ui_keyword = (
 "variable",
 "visibilityVar",
@@ -32,7 +33,7 @@ my @ui_keyword = (
 "Display2"
 );
 
-my @cppfiles = glob( './*.cpp' );
+my @cppfiles = glob( $srcdirname . '/*.cpp' );
 my @cpp_keyword = (
 "isBlockActive",
 "getHeadBlockName",
@@ -58,13 +59,14 @@ my @cpp_keyword = (
 
 # extract extract all variable from the crosstable
 #print "Loading crosstable variables...\n";
-my $srcdirname = $ARGV[0];
 open(INFILE, $srcdirname."/config/Crosstable.csv") or die  "'".$srcdirname."/config/Crosstable.csv" . "': ". $!;
 my $line;
 my $file;
+my $linenb;
 my $keyword;
 my $string;
 my @crosstable;
+my $retval = 0;
 while ($line = <INFILE>)
 {
 	if ($line =~ /^[1-3];/)
@@ -78,14 +80,17 @@ close INFILE;
 
 # extract from *.cpp *.ui files all possible crosstable variable used
 
-#print "Checking for crosstable variables mismatch...\n";
+print "Checking for crosstable variables mismatch...\n";
 
+#print "UI:" . join("', '", @uifiles) . "\n";
 foreach $file (sort @uifiles)
 {
-	#print "$file\n";
+	#print "#" . $file . "#\n";
 	open(INFILE, $file) or die $!;
+	$linenb = 0;
 	while ($line = <INFILE>)
 	{
+		$linenb = $linenb + 1;
 		foreach $keyword (@ui_keyword)
 		{
 			if ($line =~ /<property name=\"$keyword\">/)
@@ -93,17 +98,16 @@ foreach $file (sort @uifiles)
 				$line = <INFILE>;
 				if($line =~ m/<string>(\w+)<\/string>/g)
 				{
-				if ( $1 ~~ @crosstable)
-				{
-					#print "#$1 DONE#\n";
-				}
-				elsif ($1 ne '' && !($1 =~ /^-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][-+]?[0-9]+)?$/))
-				{
-					print "Error3: Undeclared variable '$1' into the Crosstable\n";
-					print join("', '", @crosstable);
-					close INFILE;
-					exit 1;
-				}
+					if ( $1 ~~ @crosstable)
+					{
+						#print "#$1 DONE#\n";
+					}
+					elsif ($1 ne '' && !($1 =~ /^-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][-+]?[0-9]+)?$/))
+					{
+						print "Error: Undeclared variable '$1' into the Crosstable [" . $file . ":" . $linenb . "]\n";
+						#print join("', '", @crosstable);
+						$retval = 1;
+					}
 				}
 			}
 		}
@@ -111,10 +115,9 @@ foreach $file (sort @uifiles)
 	close INFILE;
 }
 
+#print "CPP:" . join("', '", @cppfiles) . "\n";
 foreach $file (sort @cppfiles)
 {
-	#print "$file\n";
-
 	open(INFILE, $file) or die $!;
 	$string = "";
 	while ($line = <INFILE>)
@@ -131,8 +134,10 @@ foreach $file (sort @cppfiles)
 	print TMP "$line";
 	seek(TMP,0,0);
 
+	$linenb = 0;
 	while ($line = <TMP>)
 	{
+		$linenb = $linenb + 1;
 		my @values = split('//', $line);
 		$line = $values[0];
 		foreach $keyword (@cpp_keyword)
@@ -150,16 +155,14 @@ foreach $file (sort @cppfiles)
 					# so it will be cheked
 					if ($1 ne $line)
 					{
-						#print "#$1#\n";
 						if ( $1 ~~ @crosstable)
 						{
 							#print "#$1 DONE#\n";
 						}
 						elsif ($1 ne '' && !($1 =~ /^-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][-+]?[0-9]+)?$/))
 						{
-							print "Error1: Undeclared variable '$1' into the Crosstable [" . $file . "]\n";
-							close TMP;
-							exit 1;
+							print "Error: Undeclared variable '$1' into the Crosstable [" . $file . ":" . $linenb . "]\n";
+							$retval = 1;
 						}
 					}
 				}
@@ -180,20 +183,28 @@ foreach $file (sort @cppfiles)
 
 				if ($val ne "variableList")
 				{
-				if ( $val ~~ @crosstable )
-				{
-					#print "#$val DONE#\n";
-				}
-				elsif ($val ne '' && !($val =~ /^-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][-+]?[0-9]+)?$/))
-				{
-					print "Error2: Undeclared variable '$val' into the Crosstable [" . $file . "]\n";
-					close TMP;
-					exit 1;
-				}
+					if ( $val ~~ @crosstable )
+					{
+						#print "#$val DONE#\n";
+					}
+					elsif ($val ne '' && !($val =~ /^-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][-+]?[0-9]+)?$/))
+					{
+						print "Error: Undeclared variable '$val' into the Crosstable [" . $file . ":" . $linenb . "]\n";
+						$retval = 1;
+					}
 				}
 			}
 		}
 	}
 	close TMP;
 }
+if ($retval == 0)
+{
+	print "Check for crosstable variables mismatch done.\n";
+}
+else
+{
+	print "Check for crosstable variables mismatch fail.\n";
+}
+exit $retval;
 

@@ -33,18 +33,19 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
     m_status = UNK;
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
-    m_bgcolor = QColor(255,255,255);
-    m_bgcolor_select = QColor(230,230,230);
-    m_fontcolor = QColor(130,130,130);
-    m_fontcolor_select = QColor(10,10,10);
-    m_bordercolor = QColor(0,0,0);
-    m_bordercolor_select = QColor(0,0,0);
     m_objectstatus = false;
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
-    m_borderwidth = 1;
-    m_borderradius = 0;
     m_visibilityvar = "";
     m_format = Dec;
+
+    m_bgcolor = BG_COLOR_DEF;
+    m_bgcolor_select = BG_COLOR_SEL_DEF;
+    m_fontcolor = FONT_COLOR_DEF;
+    m_fontcolor_select = FONT_COLOR_SEL_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_bordercolor_select = BORDER_COLOR_SEL_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);

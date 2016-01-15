@@ -28,16 +28,17 @@ ATCMprogressbar::ATCMprogressbar(QWidget *parent) :
 	m_status = UNK;
 	m_CtIndex = -1;
 	m_CtVisibilityIndex = -1;
-	m_bgcolor = QColor(230,230,230);
 	m_barColor = QColor(255,127,80);
-	m_bordercolor = QColor(0,0,0);
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
-	m_borderwidth = 1;
-	m_borderradius = 0;
 	m_visibilityvar = "";
 	m_viewstatus = false;
 
-	//setMinimumSize(QSize(150,50));
+    m_bgcolor = BG_COLOR_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
+
+    //setMinimumSize(QSize(150,50));
 	setFocusPolicy(Qt::NoFocus);
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 

@@ -36,19 +36,10 @@ ATCMbutton::ATCMbutton(QWidget * parent):
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
     m_CtPasswordVarIndex = -1;
-    m_bgcolor = QColor(230,230,230);
-    m_bgcolor_press = QColor(230,230,230);
-    m_fontcolor = QColor(0,0,0);
-    m_fontcolor_press = QColor(10,10,10);
-    m_bordercolor = QColor(0,0,0);
-    m_bordercolor_press = QColor(0,0,0);
     m_text = "";
     m_text_press = "";
     m_icon = QIcon();
     m_icon_press = QIcon();
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
-    m_borderwidth = 1;
-    m_borderradius = 0;
     m_visibilityvar = "";
     m_passwordVar = "";
     m_passwordValue = "";
@@ -58,6 +49,16 @@ ATCMbutton::ATCMbutton(QWidget * parent):
     m_justchanged = 0;
     m_forcedAction = false;
     m_statusactualval = m_statusreleaseval;
+
+    m_bgcolor = BG_COLOR_SEL_DEF;
+    m_bgcolor_press = BG_COLOR_SEL_DEF;
+    m_fontcolor = FONT_COLOR_DEF;
+    m_fontcolor_press = FONT_COLOR_SEL_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_bordercolor_press = BORDER_COLOR_SEL_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
