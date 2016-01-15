@@ -128,7 +128,12 @@ void atcmcomboboxDialog::saveState()
                     m_mapping = m_mapping + table->item(i,0)->text() + ";" + table->item(i,0)->text();
                 }
 			}
-		}
+            else if (table->item(i,1) && table->item(i,1)->text().length() > 0)
+            {
+                QMessageBox::critical(this,tr("Invalid item"), tr("The item '%1' have a description ('%2') but not a value.").arg(i+1).arg(table->item(i,1)->text()));
+                return;
+            }
+        }
 		formWindow->cursor()->setProperty("mapping", m_mapping.trimmed());
 		formWindow->cursor()->setProperty("variable", lineVariable->text().trimmed());
 		formWindow->cursor()->setProperty("visibilityVar", lineVisibility->text().trimmed());

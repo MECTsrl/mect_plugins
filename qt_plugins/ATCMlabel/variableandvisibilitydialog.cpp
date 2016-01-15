@@ -63,7 +63,7 @@ void variableandvisibilityDialog::saveState()
 
 void variableandvisibilityDialog::chooseCtVariable()
 {
-    QString value;
+    QString value = lineVariable->text();
     CrossTableEditor dialog(m_widget, &value);
     if (dialog.exec() == Accepted)
     {

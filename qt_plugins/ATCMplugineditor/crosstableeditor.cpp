@@ -107,6 +107,13 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
                 "    /*background-color: rgb(221;221;221);*/\n"
                 "    /*background-image: url();*/\n"
                 );
+
+    QList<QTableWidgetItem*> items = table->findItems(*selection, Qt::MatchExactly);
+    if (items.count() > 0)
+    {
+       items.at(0)->setSelected(true);
+       table->scrollToItem(items.at(0),QAbstractItemView::PositionAtCenter);
+    }
 }
 
 QSize CrossTableEditor::sizeHint() const
