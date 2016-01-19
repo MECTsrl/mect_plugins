@@ -81,8 +81,8 @@ page::page(QWidget *parent) :
     labelTitle = NULL;
     /* set the default protection level */
     protection_level = pwd_operator_e;
-    char vncDisplay[64];
-    printVncDisplayString(vncDisplay);
+    //char vncDisplay[64];
+    //printVncDisplayString(vncDisplay);
 }
 
 /**
@@ -1421,7 +1421,7 @@ bool page::go_back()
     }
     else
     {
-        LOG_PRINT(info_e, "No history\n");
+        LOG_PRINT(warning_e, "History empty\n");
         go_home();
         //mymutex.unlock();
         return false;
@@ -1850,10 +1850,10 @@ bool page::rotateShowError(QLineEdit * line, int period_ms)
     }
     else if (bannerStr.length() != 0)
     {
-        LOG_PRINT(error_e, "rewind %d >= %d\n", line->width(), fm.width(bannerStr.right(bannerStr.length() - shift)));
+        LOG_PRINT(info_e, "rewind %d >= %d\n", line->width(), fm.width(bannerStr.right(bannerStr.length() - shift)));
         if (line->width() < fm.width(bannerStr.right(bannerStr.length() - shift)))
         {
-            LOG_PRINT(error_e, "rewind %d >= %d\n", line->width(), fm.width(bannerStr.right(bannerStr.length() - shift)));
+            LOG_PRINT(info_e, "rewind %d >= %d\n", line->width(), fm.width(bannerStr.right(bannerStr.length() - shift)));
             shift++;
         }
         else
@@ -1864,13 +1864,13 @@ bool page::rotateShowError(QLineEdit * line, int period_ms)
     if (bannerStr.length() == 0)
     {
         line->clear();
-        LOG_PRINT(error_e, "nothing to show\n");
+        LOG_PRINT(info_e, "nothing to show\n");
     }
     else
     {
         line->setText(bannerStr.right(bannerStr.length() - shift));
         line->setCursorPosition(0);
-        LOG_PRINT(error_e, "show '%s'\n", line->text().toAscii().data());
+        LOG_PRINT(info_e, "show '%s'\n", line->text().toAscii().data());
     }
     QTimer::singleShot(_period_ms, this, SLOT(rotateShowErrorSlot()));
     return true;

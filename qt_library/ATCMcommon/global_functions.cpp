@@ -63,7 +63,7 @@ int dumpPasswords()
 /**
  * @brief readCfgFile: read the config file and fill the service area into the ioLayer
  */
-int readCfgFile(void)
+int readIniFile(void)
 {
     QSettings settings(CONFIG_FILE, QSettings::IniFormat);
 
@@ -125,9 +125,9 @@ int readCfgFile(void)
 }
 
 /**
- * @brief writeCfgFile: write into the config file the data into the ioLayer service area
+ * @brief writeIniFile: write into the config file the data into the ioLayer service area
  */
-int writeCfgFile(void)
+int writeIniFile(void)
 {
     QSettings settings(CONFIG_FILE, QSettings::IniFormat);
 
@@ -153,6 +153,53 @@ int writeCfgFile(void)
     settings.setValue(PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
 
     return 0;
+}
+
+int LoadRecipe(const QString filename)
+{
+    FILE * fp = fopen(filename.toAscii().data(), "r");
+    if (fp == NULL)
+    {
+        LOG_PRINT(info_e, "Cannot open '%s'\n", filename.toAscii().data());
+        return -1;
+    }
+    char varname[TAG_LEN] = "";
+    char value[TAG_LEN] = "";
+    char line[MAX_LINE] = "";
+    char * p;
+    int number_of_variables = 0;
+    while (fgets(line, LINE_SIZE, fp) != NULL)
+    {
+        p = line;
+        /* tag */
+        p = mystrtok(p, varname, SEPARATOR);
+        if (p == NULL || varname[0] == '\0')
+        {
+            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
+            continue;
+        }
+        int decimal = getVarDecimalByName(varname);
+        /* value */
+        p = mystrtok(p, value, SEPARATOR);
+        if (value[0] != '\0')
+        {
+            float val_f = 0;
+            val_f = atof(value);
+            sprintf(value, "%.*f", decimal, val_f );
+            if (prepareFormattedVar(varname, value) == BUSY)
+            {
+                LOG_PRINT(warning_e, "busy, waiting to write the variable '%s' with the value '%s'\n", varname, value);
+            }
+            LOG_PRINT(info_e, "value '%s'\n", value);
+            number_of_variables++;
+        }
+    }
+    fclose(fp);
+    if (number_of_variables > 0)
+    {
+        writePendingInorder();
+    }
+    return number_of_variables;
 }
 
 bool loadTagTable()
@@ -384,9 +431,7 @@ bool CommStart()
 int initialize()
 {
     /* load the saved configuration value */
-    readCfgFile();
-    /* dump the value (if is the first time write the default value */
-    writeCfgFile();
+    readIniFile();
 
 #ifdef TARGET
     /* set the cursor as invisible */

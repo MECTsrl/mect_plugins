@@ -94,6 +94,7 @@ void page0::changePage()
     
         /* pre-load */
         page * p;
+        userPageList.removeDuplicates();
         for (int pageIndex = 0; pageIndex < userPageList.count(); pageIndex++)
         {
             create_next_page(&p, userPageList.at(pageIndex).toAscii().data());

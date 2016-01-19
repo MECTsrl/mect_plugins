@@ -187,6 +187,10 @@ sub filter
 
 	$stop = 0;
 	while (<FILE>) {
+		if ($_ =~/<< \"page$ClassiIndex\"/)
+		{
+			next;
+		}
 		if ($_ =~/case 0x$ClassiIndex:/)
 		{
 			$stop = 1;

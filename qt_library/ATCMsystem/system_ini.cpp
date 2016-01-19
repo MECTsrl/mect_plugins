@@ -546,7 +546,7 @@ void system_ini::save_all()
     settings.setValue("CANOPEN_0/baudrate", ui->comboBox_Baudrate_CANOPEN_0->currentText());
     settings.setValue("CANOPEN_1/baudrate", ui->comboBox_Baudrate_CANOPEN_1->currentText());
 
-    readCfgFile();
+    readIniFile();
 
     QMessageBox::information(0,tr("Information"),tr("Configuration has been successfully saved."));
 }

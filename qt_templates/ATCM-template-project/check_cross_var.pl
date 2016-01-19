@@ -96,6 +96,7 @@ foreach $file (sort @uifiles)
 			if ($line =~ /<property name=\"$keyword\">/)
 			{
 				$line = <INFILE>;
+				$linenb = $linenb + 1;
 				if($line =~ m/<string>(\w+)<\/string>/g)
 				{
 					if ( $1 ~~ @crosstable)

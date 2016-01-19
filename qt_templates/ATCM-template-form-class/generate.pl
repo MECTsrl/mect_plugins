@@ -198,6 +198,15 @@ if ($optDryRun) {
 			close(FILE);
 			$found = 1;
 		}
+		if ($_ =~/<< \"$optClassName\"/)
+		{
+			close(FILE);
+			$found = 1;
+		}
+		if ($_ =~/add here the label of the new page/)
+		{
+            print TMP "            << \"$optClassName\"\n";
+		}
 		if ($_ =~/add here the case labeled with the HEX id of the new pages/)
 		{
 			print TMP "    case 0x$ClassiIndex:\n";

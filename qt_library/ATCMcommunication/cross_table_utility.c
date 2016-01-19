@@ -478,20 +478,13 @@ size_t fillSyncroArea(void)
         LOG_PRINT(verbose_e, "BLOCK %d VAR %s, line %s, token %s\n", varNameArray[elem_nb].block, varNameArray[elem_nb].tag, line, token);
 
         /* extract the block head */
-        if ( elem_nb == 0)
+        if (elem_nb > 0 && varNameArray[elem_nb].block == varNameArray[elem_nb - 1].block)
         {
-            varNameArray[elem_nb].blockhead = 0;
+            varNameArray[elem_nb].blockhead = varNameArray[elem_nb - 1].blockhead;
         }
         else
         {
-            if (varNameArray[elem_nb].block == varNameArray[elem_nb - 1].block)
-            {
-                varNameArray[elem_nb].blockhead = varNameArray[elem_nb - 1].blockhead;
-            }
-            else
-            {
-                varNameArray[elem_nb].blockhead = varNameArray[elem_nb].block;
-            }
+            varNameArray[elem_nb].blockhead = elem_nb;
         }
 
         /* NReg */
@@ -2210,13 +2203,13 @@ int isBlockActiveByCtIndex(const int CtIndex, char * varblockhead)
 
     CtIndexHead = (varNameArray[CtIndex].blockhead == 0) ? CtIndex : varNameArray[CtIndex].blockhead;
 
-    if (CtIndexHead > 0)
+    if (CtIndexHead > 0 && strlen(varNameArray[CtIndexHead].tag))
     {
         strcpy(varblockhead, varNameArray[CtIndexHead].tag);
     }
     else
     {
-        LOG_PRINT(error_e, "Cannot found the head block of '%s'\n", varNameArray[CtIndex].tag);
+        LOG_PRINT(error_e, "Cannot found the head block of '%s' ('%s', %d)\n", varNameArray[CtIndex].tag, varNameArray[CtIndexHead].tag, CtIndexHead);
     }
 
     int SynIndex = 0;

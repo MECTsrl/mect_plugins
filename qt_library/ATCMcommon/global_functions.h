@@ -22,14 +22,14 @@ int dumpPasswords();
  *
  * @return 0 success, error otherwise
  */
-int writeCfgFile(void);
+int writeIniFile(void);
 
 /**
  * @brief read all data from config file
  *
  * @return 0 success, error otherwise
  */
-int readCfgFile(void);
+int readIniFile(void);
 
 /**
  * @brief read all data from tag table
