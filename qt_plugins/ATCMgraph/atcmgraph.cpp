@@ -23,14 +23,14 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     MAINWIGET(parent)
 {
     m_refresh = DEFAULT_PLUGIN_REFRESH;
-    m_x1Variable = "";
-    m_CtX1Index = -1;
+    m_x1Variable = "PLC_time";
+    m_CtX1Index = 5390;
     m_x1status = UNK;
-    m_x1MinVariable = "0";
-    m_CtX1MinIndex = -1;
+    m_x1MinVariable = "PLC_timeMin";
+    m_CtX1MinIndex = 5391;
     m_x1MinValue = 0;
-    m_x1MaxVariable = "100";
-    m_CtX1MaxIndex = -1;
+    m_x1MaxVariable = "PLC_timeMax";
+    m_CtX1MaxIndex = 5392;
     m_x1MaxValue = 100;
     m_x1step = 10;
     m_x1label = "";
@@ -53,14 +53,14 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     m_sample_nb1 = 0;
     m_current_sample1 = 0;
 
-    m_x2Variable = "";
-    m_CtX2Index = -1;
+    m_x2Variable = "PLC_time";
+    m_CtX2Index = 5390;
     m_x2status = UNK;
-    m_x2MinVariable = "0";
-    m_CtX2MinIndex = -1;
+    m_x2MinVariable = "PLC_timeMin";
+    m_CtX2MinIndex = 5391;
     m_x2MinValue = 0;
-    m_x2MaxVariable = "100";
-    m_CtX2MaxIndex = -1;
+    m_x2MaxVariable = "PLC_timeMax";
+    m_CtX2MaxIndex = 5392;
     m_x2MaxValue = 100;
     m_x2step = 10;
     m_x2label = "";
