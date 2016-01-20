@@ -9,12 +9,13 @@ TEMPLATE = lib
 
 include(../qt_environment.pri)
 
-INCLUDEPATH += .\
+INCLUDEPATH = .\
 		   $${ATCM_QWT_INCL} \
                    ../ATCMutility \
                    ../ATCMcommunication \
                    ../ATCMcommon \
-                   ../ATCMinputdialog
+                   ../ATCMinputdialog \
+		   $${INCLUDEPATH}
 
 QMAKE_LIBDIR += \
                    ../ATCMutility \
