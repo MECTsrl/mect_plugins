@@ -12,6 +12,7 @@
 #include <QDir>
 #include <errno.h>
 
+#include "global_functions.h"
 #include "app_logprint.h"
 #include "app_usb.h"
 #include "store.h"

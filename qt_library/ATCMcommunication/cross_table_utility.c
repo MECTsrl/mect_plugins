@@ -1599,7 +1599,7 @@ int writeVarByCtIndex(const int ctIndex, void * value)
 {
     int SynIndex = 0;
 
-    if (prepareWriteVarByCtIndex(ctIndex, value, &SynIndex,1) == DONE || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
+    if (prepareWriteVarByCtIndex(ctIndex, value, &SynIndex,1,1) == DONE || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
     {
         setStatusVarBySynIndex(SynIndex, BUSY);
 
@@ -1626,7 +1626,7 @@ int writeVarByCtIndex_nowait(const int ctIndex, void * value)
 {
     int SynIndex = 0;
 
-    if (prepareWriteVarByCtIndex(ctIndex, value, &SynIndex,0) == DONE || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
+    if (prepareWriteVarByCtIndex(ctIndex, value, &SynIndex,0,1) == DONE || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
     {
         setStatusVarBySynIndex(SynIndex, BUSY);
 
@@ -1804,7 +1804,7 @@ char prepareFormattedVar(const char * varname, char * formattedVar)
  * to perform the write request, you need to enable the write flag.
  */
 
-char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, int dowait)
+char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, int dowait, int formatted)
 {
     int mySynIndex = 0;
     int *pSynIndex = NULL;
@@ -1884,10 +1884,21 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
     }
 
     /* update the value into the Data area */
-    if (formattedWriteToDb(ctIndex, value) != 0)
+    if (formatted == 1)
     {
-        LOG_PRINT(error_e, "formattedWriteToDb\n");
-        return ERROR;
+        if (formattedWriteToDb(ctIndex, value) != 0)
+        {
+            LOG_PRINT(error_e, "formattedWriteToDb\n");
+            return ERROR;
+        }
+    }
+    else
+    {
+        if (writeToDb(ctIndex, value) != 0)
+        {
+            LOG_PRINT(error_e, "formattedWriteToDb\n");
+            return ERROR;
+        }
     }
 
     LOG_PRINT(info_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex], ctIndex, ctIndex);
@@ -1904,7 +1915,7 @@ char prepareWriteVar(const char * varname, void * value, int * SynIndex)
         LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
         return -1;
     }
-    return prepareWriteVarByCtIndex(CtIndex, value, SynIndex, 1);
+    return prepareWriteVarByCtIndex(CtIndex, value, SynIndex, 1, 1);
 }
 
 /**
@@ -3748,4 +3759,41 @@ int getVarDecimalByName(const char * varname)
 
     decimal = getVarDecimal(ctIndex);
     return decimal;
+}
+
+int doWrite(int ctIndex, void * value)
+{
+    int SynIndex = 0;
+
+    if (prepareWriteVarByCtIndex(ctIndex, value, &SynIndex,1, 0) == DONE || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
+    {
+        setStatusVarBySynIndex(SynIndex, BUSY);
+
+        /* update the write flag */
+        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+#ifdef ENABLE_MUTEX
+        pthread_mutex_lock(&sync_send_mutex);
+#endif
+        CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
+        SET_SYNCRO_FLAG(SynIndex, WRITE_MASK);
+        /*rise write interrupt*/
+        SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
+#ifdef ENABLE_MUTEX
+        pthread_mutex_unlock(&sync_send_mutex);
+#endif
+        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        return 0;
+    }
+
+    return 1;
+}
+
+int getStatus(int CtIndex)
+{
+    return getStatusVarByCtIndex(CtIndex, NULL);
+}
+
+int addWrite(int ctIndex, void * value)
+{
+    return (prepareWriteVarByCtIndex(ctIndex, &value, NULL, 0, 0) == ERROR);
 }

@@ -26,7 +26,6 @@ void printVncDisplayString(char * vncString)
 
 int create_page_nb(page ** p, int pageNb)
 {
-    update_all();
     switch (pageNb)
     {
     case 0x0:

@@ -263,9 +263,10 @@ extern "C" {
 
     int getIP(char * ip);
     int getMAC(char * mac);
-	int SDCheck();
-	int getSdCID(char * cid);
+    int getSdCID(char * cid);
 	int getSdSN(char * sn);
+    int SDCheck();
+    extern char sd_mnt_point[256];
 
 #ifdef __cplusplus
 }

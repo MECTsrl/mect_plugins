@@ -1,6 +1,6 @@
 @echo off
 
-SET REVISION="7.0rc9"
+SET REVISION="7.0rc10"
 SET MECT_CONFIGURATOR_REVISION="1.8"
 
 SET SETUP_DIR=%~dp0
@@ -11,7 +11,7 @@ SET QTPROJECT=0
 SET BUILD=0
 SET INSTALL=1
 SET REPAIR=0
-SET UPDATE=1
+SET UPDATE=0
 
 echo.
 echo Revision: %REVISION%
@@ -143,7 +143,9 @@ IF %QTPROJECT% == 1 (
 rem ##############################################
 rem UPDATE
 rem ##############################################
-IF %UPDATE% == 1 (
+IF %INSTALL% == 1 set PREPARE_UPDATE=1
+IF %UPDATE% == 1 set PREPARE_UPDATE=1
+IF %PREPARE_UPDATE% == 1 (
 	echo Creating the update
 	time /t
 	echo Copying dll...
@@ -171,6 +173,7 @@ IF %UPDATE% == 1 (
 		exit
 	)
 
+	echo Copying rootfs...
 	xcopy C:\Qt485\imx28\rootfs %OUT_DIR%\Qt485\imx28\rootfs	/Q /Y /E /S /I > %OUT_DIR%\error.log 2>&1
 	IF ERRORLEVEL 1 (
 		echo problem during template.
@@ -204,15 +207,17 @@ IF %UPDATE% == 1 (
 		exit
 	)
 
-	cd /D "%SETUP_DIR%"
-	"c:\Program Files\NSIS\makensis.exe" /DREVISION=%REVISION% /DMECT_CONFIGURATOR_REVISION=%MECT_CONFIGURATOR_REVISION% UPDATE_MECT_QT.nsi > %OUT_DIR%\error.log 2>&1
-	IF ERRORLEVEL 1 (
-		echo problem during creation of update.
-		pause
-		exit
+	IF %UPDATE% == 1 (
+		echo Creating setup...
+		cd /D "%SETUP_DIR%"
+		"c:\Program Files\NSIS\makensis.exe" /DREVISION=%REVISION% /DMECT_CONFIGURATOR_REVISION=%MECT_CONFIGURATOR_REVISION% UPDATE_MECT_QT.nsi > %OUT_DIR%\error.log 2>&1
+		IF ERRORLEVEL 1 (
+			echo problem during creation of update.
+			pause
+			exit
+		)
 	)
-
-	del Qt485_upd_rev%REVISION%.7z
+	
 	RD /S /Q Qt485
 	time /t
 )
@@ -226,24 +231,28 @@ IF %INSTALL% == 1 (
 
 	echo Preparing files...
 	time /t
+	echo   Target files...
 	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\imx28" > %OUT_DIR%\error.log
 	IF ERRORLEVEL 1 (
 	 	echo problem during creation 7z file
 	 	pause
 	  	exit
 	)
+	echo   PC files...
 	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\Desktop" > %OUT_DIR%\error.log
 	IF ERRORLEVEL 1 (
 	  	echo problem during creation 7z file
 	  	pause
 	  	exit
 	)
+	echo   Configurator files...
 	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\MectConfigurator.7z" "%OUT_DIR%\MectConfigurator" > %OUT_DIR%\error.log
 	IF ERRORLEVEL 1 (
 	 	echo problem during creation 7z file
 	 	pause
 	  	exit
 	)
+	echo   Fonts files...
 	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Fonts.7z" "%OUT_DIR%\Fonts" > %OUT_DIR%\error.log
 	IF ERRORLEVEL 1 (
 	 	echo problem during creation 7z file
@@ -286,6 +295,9 @@ IF EXIST %OUT_DIR%\error.log del %OUT_DIR%\error.log
 
 IF EXIST %OUT_DIR%\Qt485 RD /S /Q %OUT_DIR%\Qt485
 
+IF EXIST %OUT_DIR%\Qt485_upd_rev%REVISION%.7z del %OUT_DIR%\Qt485_upd_rev%REVISION%.7z
+
+echo Setup done.
 @echo on
 
 pause

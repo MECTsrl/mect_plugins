@@ -196,6 +196,40 @@ SectionGroup "QT"
 
 	SectionEnd
 
+	Section "Mect plugins ${REVISION}"
+		SectionIn 1
+		
+		SetOutPath "C:\Qt485"
+		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project"
+		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-form-class"
+		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TP1057HR-template-form-class"
+		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TP1057-template-form-class"
+		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TPAC1007-template-form-class"
+		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TPAC1008-template-form-class"
+		RMDir "C:\Qt485\imx28\rootfs"
+		SetOverwrite on
+		SetCompress off
+		File "Qt485_upd_rev${REVISION}.7z"
+		Nsis7z::ExtractWithDetails "Qt485_upd_rev${REVISION}.7z" "Installing update %..."
+		Delete "Qt485_upd_rev${REVISION}.7z"
+		
+		SetOutPath "$APPDATA"
+		SetOverwrite on
+		SetCompress off
+		File "QtProject.7z"
+		Nsis7z::ExtractWithDetails "QtProject.7z"  "Installing QtProject files %..."
+		Delete "QtProject.7z"
+
+		SetOutPath "C:\Qt485"
+		SetOverwrite on
+
+		nsExec::ExecToLog 'echo "%PATH%"|findstr /i /c:"C:\Perl\bin">nul || C:\Qt485\Desktop\bin\pathman /au "C:\Perl\bin"'
+		nsExec::ExecToLog 'echo "%PATH%"|findstr /i /c:"C:\Qt485\imx28\mingw\bin">nul || C:\Qt485\Desktop\bin\pathman /au "C:\Qt485\imx28\mingw\bin"'
+
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MectSuite" "DisplayVersion" '${REVISION}'
+
+	SectionEnd
+
 SectionGroupEnd
 
 Section "Uninstall"

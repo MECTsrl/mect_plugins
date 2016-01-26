@@ -27,6 +27,8 @@
 #include "common.h"
 
 extern int update_all(void);
+extern void setup(void);
+extern void loop(void);
 
 /**
  * @brief This class implement an interface with a 4C IO Layer

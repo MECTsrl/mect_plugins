@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QSettings>
+#include <errno.h>
 #include "global_functions.h"
 #include "app_logprint.h"
 #include "screensaver.h"
@@ -8,6 +9,8 @@
 #include "cross_table_utility.h"
 #include "app_usb.h"
 #include "defines.h"
+#include "app_usb.h"
+//#include "app_config.h"
 
 /**
  * @brief load the passwords
@@ -510,3 +513,179 @@ int initialize()
     delete ioComm;
     return 0;
 }
+
+ bool setUSBmode(enum usb_mode_e mode)
+ {
+     QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+
+     if (mode == usb_device_e)
+     {
+         settings.setValue(USB_MODE, DEVICE_TAG);
+     }
+     else if (mode == usb_host_e)
+     {
+         settings.setValue(USB_MODE, HOST_TAG);
+     }
+     else
+     {
+         return false;
+     }
+     return true;
+ }
+
+ enum usb_mode_e USBmode()
+ {
+     static enum usb_mode_e mode = usb_undefined_e;
+
+     if (mode == usb_undefined_e)
+     {
+         if (system ("lsmod | grep -qc g_file_storage >/dev/null 2>&1") == 0)
+         {
+             return usb_device_e;
+         }
+         else
+         {
+             return usb_host_e;
+         }
+     }
+     else
+     {
+         return mode;
+     }
+ }
+
+ bool USBCheck()
+ {
+     if (USBmode() == usb_device_e)
+     {
+         return true;
+     }
+     else
+     {
+         /*USBstatus*/
+         int i;
+         int usb = 1;
+         usb = app_usb_status_read();
+         if ( usb == 0 )
+         {
+             for (i = 0; i < APP_USB_MAX+1; i++ )
+             {
+                 USBstatus[i]= (int)app_usb_status[i];
+             }
+         }
+         else if	( usb == -1 )
+         {
+             USBstatus[APP_USB_MAX]= 30;
+         }
+
+         USBfeedback[0]= (int)app_usb_feedback[0];
+         USBfeedback[1]= (int)app_usb_feedback[1];
+
+         return  USBstatus[0] != 0;
+     }
+ }
+
+#define RETRY_NB 5
+ bool USBmount()
+ {
+     if (usb_mnt_point[0] != '\0')
+     {
+         LOG_PRINT(info_e, "Usb already mounted to '%s'\n", usb_mnt_point);
+         return true;
+     }
+
+     if (USBmode() == usb_device_e)
+     {
+         char command[256];
+         sprintf(command,"LOOP=`losetup -f` && losetup -o 4096 $LOOP %s && mount -t vfat $LOOP %s", BACKING_FILE, MOUNT_POINT);
+         if (system (command) == 0)
+         {
+             strcpy(usb_mnt_point, MOUNT_POINT);
+             return true;
+         }
+         else
+         {
+             usb_mnt_point[0] = '\0';
+             return false;
+         }
+     }
+     else
+     {
+         static int last_usb_status = 0;
+
+         last_usb_status = USBstatus[0];
+
+         if (USBCheck() == false)
+         {
+             LOG_PRINT(error_e, "Usb Check fail\n");
+             return false;
+         }
+
+         /* check if a usb key is inserted */
+         if (USBstatus[0] != 0 && strlen(usb_mnt_point) == 0)
+         {
+             int retry_nb = 0;
+             /* wait that is not busy */
+             do {
+                 usleep(5000);
+                 LOG_PRINT (info_e, "usb waiting free \n");
+                 retry_nb++;
+             }
+             while(USBfeedback[0] != 0 /*|| strlen(Usb_mpoint(1)) != 0*/ && retry_nb < RETRY_NB);
+             LOG_PRINT (info_e, "found usb USBfeedback[1] %d\n", USBfeedback[1]);
+             /* mount the key */
+             if (USBfeedback[1] != 0 || Usb_on(1) != 0)
+             {
+                 LOG_PRINT (error_e, "cannot mount the USB! USBfeedback[1] = %d\n", USBfeedback[1]);
+                 usb_mnt_point[0] = '\0';
+                 return false;
+             }
+             strcpy(usb_mnt_point, Usb_mpoint(1));
+             LOG_PRINT (info_e, "Found USB. Mountpint: '%s'\n", usb_mnt_point);
+             return true;
+         }
+         else if (strlen(usb_mnt_point) != 0)
+         {
+             LOG_PRINT (verbose_e, "Already mounted to '%s'\n", usb_mnt_point);
+             return true;
+         }
+         else
+         {
+             LOG_PRINT (info_e, "Cannot found USB.\n");
+         }
+
+         if (last_usb_status != USBstatus[0])
+         {
+             LOG_PRINT(info_e, "extracted USB\n");
+             usb_mnt_point[0] = '\0';
+         }
+
+         usb_mnt_point[0] = '\0';
+         return false;
+     }
+ }
+
+ bool USBumount()
+ {
+     if (usb_mnt_point[0] == '\0')
+     {
+         LOG_PRINT (warning_e, "USB already unmounted cause usb_mnt_point = '%s'\n", usb_mnt_point);
+         return false;
+     }
+     if (USBmode() == usb_device_e)
+     {
+         char command[256];
+         sprintf(command,"LOOP=`losetup -f | tr \"\\/dev\\/loop\" \" \" | awk '{printf(\"%%d\\n\", $1 - 1);}'` && umount %s && losetup -d /dev/loop$LOOP", MOUNT_POINT);
+         if (system (command) == 0)
+         {
+             LOG_PRINT(error_e, "Cannot unmount: %s\n", strerror(errno));
+         }
+     }
+     else
+     {
+         Usb_off(1);
+     }
+     LOG_PRINT(verbose_e, "unmount\n");
+     usb_mnt_point[0] = '\0';
+     return true;
+ }

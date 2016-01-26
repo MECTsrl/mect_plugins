@@ -700,68 +700,83 @@ QComboBox
          <property name="spacing">
           <number>3</number>
          </property>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_StartPage">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Start Page</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QPushButton" name="pushButton_StartPage">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
          <item>
-          <widget class="QLabel" name="label_HomePage">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="font">
+            <font>
+             <family>DejaVu Sans</family>
+             <pointsize>12</pointsize>
+            </font>
            </property>
-           <property name="text">
-            <string>Home Page</string>
+           <property name="title">
+            <string>Pages</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QPushButton" name="pushButton_HomePage">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
+           <layout class="QGridLayout" name="gridLayout_14">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_StartPage">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Start</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_HomePage">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Home</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="pushButton_StartPage">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QPushButton" name="pushButton_HomePage">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
@@ -840,172 +855,187 @@ QComboBox
            </property>
           </widget>
          </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_ReadPeriod1">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="font">
+            <font>
+             <family>DejaVu Sans</family>
+             <pointsize>12</pointsize>
+            </font>
            </property>
-           <property name="text">
-            <string>Read Period 1 [ms]</string>
+           <property name="title">
+            <string>Read Period [ms]</string>
            </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="ATCMlabel" name="atcmLabel_ReadPeriod1">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>10</string>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="whatsThis">
-            <string>ATCMlabel widget</string>
-           </property>
-           <property name="variable">
-            <string/>
-           </property>
-           <property name="refresh">
-            <number>500</number>
-           </property>
-           <property name="max">
-            <string>65535</string>
-           </property>
-           <property name="min">
-            <string>1</string>
-           </property>
-           <property name="viewStatus">
-            <bool>false</bool>
-           </property>
-           <property name="visibilityVar">
-            <string/>
-           </property>
-           <property name="borderWidth">
-            <number>1</number>
-           </property>
-           <property name="borderRadius">
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_ReadPeriod2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Read Period 2 [ms]</string>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="ATCMlabel" name="atcmLabel_ReadPeriod2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>100</string>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="whatsThis">
-            <string>ATCMlabel widget</string>
-           </property>
-           <property name="variable">
-            <string/>
-           </property>
-           <property name="refresh">
-            <number>500</number>
-           </property>
-           <property name="max">
-            <string>65535</string>
-           </property>
-           <property name="min">
-            <string>1</string>
-           </property>
-           <property name="viewStatus">
-            <bool>false</bool>
-           </property>
-           <property name="visibilityVar">
-            <string/>
-           </property>
-           <property name="borderWidth">
-            <number>1</number>
-           </property>
-           <property name="borderRadius">
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_ReadPeriod3">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Read Period 3 [ms]</string>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="ATCMlabel" name="atcmLabel_ReadPeriod3">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>1000</string>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="whatsThis">
-            <string>ATCMlabel widget</string>
-           </property>
-           <property name="variable">
-            <string/>
-           </property>
-           <property name="refresh">
-            <number>500</number>
-           </property>
-           <property name="max">
-            <string>65535</string>
-           </property>
-           <property name="min">
-            <string>1</string>
-           </property>
-           <property name="viewStatus">
-            <bool>false</bool>
-           </property>
-           <property name="visibilityVar">
-            <string/>
-           </property>
-           <property name="borderWidth">
-            <number>1</number>
-           </property>
-           <property name="borderRadius">
-            <number>0</number>
-           </property>
+           <layout class="QGridLayout" name="gridLayout_13">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_ReadPeriod1">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Period 1</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="ATCMlabel" name="atcmLabel_ReadPeriod1">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>10</string>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>ATCMlabel widget</string>
+              </property>
+              <property name="variable">
+               <string/>
+              </property>
+              <property name="refresh">
+               <number>500</number>
+              </property>
+              <property name="max">
+               <string>65535</string>
+              </property>
+              <property name="min">
+               <string>1</string>
+              </property>
+              <property name="viewStatus">
+               <bool>false</bool>
+              </property>
+              <property name="visibilityVar">
+               <string/>
+              </property>
+              <property name="borderWidth">
+               <number>1</number>
+              </property>
+              <property name="borderRadius">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_ReadPeriod2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Period 2</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="ATCMlabel" name="atcmLabel_ReadPeriod2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>100</string>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>ATCMlabel widget</string>
+              </property>
+              <property name="variable">
+               <string/>
+              </property>
+              <property name="refresh">
+               <number>500</number>
+              </property>
+              <property name="max">
+               <string>65535</string>
+              </property>
+              <property name="min">
+               <string>1</string>
+              </property>
+              <property name="viewStatus">
+               <bool>false</bool>
+              </property>
+              <property name="visibilityVar">
+               <string/>
+              </property>
+              <property name="borderWidth">
+               <number>1</number>
+              </property>
+              <property name="borderRadius">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_ReadPeriod3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Period 3</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="ATCMlabel" name="atcmLabel_ReadPeriod3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>1000</string>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>ATCMlabel widget</string>
+              </property>
+              <property name="variable">
+               <string/>
+              </property>
+              <property name="refresh">
+               <number>500</number>
+              </property>
+              <property name="max">
+               <string>65535</string>
+              </property>
+              <property name="min">
+               <string>1</string>
+              </property>
+              <property name="viewStatus">
+               <bool>false</bool>
+              </property>
+              <property name="visibilityVar">
+               <string/>
+              </property>
+              <property name="borderWidth">
+               <number>1</number>
+              </property>
+              <property name="borderRadius">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>

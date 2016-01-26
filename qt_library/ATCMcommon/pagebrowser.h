@@ -44,13 +44,6 @@
 
 #define PAGE_PREFIX "page"
 
-enum usb_mode_e
-{
-    usb_host_e,
-    usb_device_e,
-    usb_undefined_e
-};
-
 /**
  * @brief This defines describe the LED stylesheets
  */
@@ -129,12 +122,6 @@ protected:
     
     int countLine(const char * filename);
     bool zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir = false);
-    
-    bool USBmount();
-    bool USBumount();
-    bool setUSBmode(enum usb_mode_e mode);
-    enum usb_mode_e USBmode();
-    bool USBCheck();
     
 #ifdef ENABLE_ALARMS
     char * getDescription(char* tag);

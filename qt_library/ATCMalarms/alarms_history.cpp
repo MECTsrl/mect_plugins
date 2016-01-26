@@ -14,6 +14,7 @@
 #include "alarms_history.h"
 #include "hmi_logger.h"
 #include "ui_alarms_history.h"
+#include "global_functions.h"
 
 /* this define set the window title */
 #define WINDOW_TITLE "ALARM HISTORY"

@@ -108,7 +108,7 @@ extern int deactivateVar(const char * varname);
 extern int activateVar(const char * varname);
 extern char prepareWriteVar(const char * varname, void * value, int * SynIndex);
 extern char prepareWriteBlock(const char * varname, void * value, int * SynIndex);
-extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, int dowait);
+extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, int dowait, int formatted);
 extern int readVar(const char * varname, void * value);
 extern int writeVar(const char * varname, void * value);
 extern int writeVarByCtIndex(const int ctIndex, void * value);
@@ -118,6 +118,9 @@ extern int deleteUnusedSynIndex(int SynIndex);
 extern int getVarDecimal(const int ctIndex);
 extern int getVarDecimalByCtIndex(const int ctIndex);
 extern int getVarDecimalByName(const char * varname);
+extern int doWrite(int ctIndex, void * value);
+extern int getStatus(int CtIndex);
+extern int addWrite(int ctIndex, void * value);
 
 /**
  * @brief enable the update of a variable into internal database

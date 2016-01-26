@@ -14,6 +14,7 @@
 #include "item_selector.h"
 #include "trend_option.h"
 #include "ui_trend_option.h"
+#include "global_functions.h"
 
 #define DEFAULT_YMIN -1000
 #define DEFAULT_YMAX  1000

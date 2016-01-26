@@ -18,6 +18,21 @@
 #define TIMEOUT_MS 100
 #define RETRY_NB 3
 
+static pthread_t theThread;
+static pthread_cond_t condvar;
+static pthread_mutex_t mutex;
+static void *automation_thread(void *arg);
+
+void *automation_thread(void *arg)
+{
+    pthread_cond_wait(&condvar, &mutex);
+    setup();
+    while (pthread_cond_wait(&condvar, &mutex) == 0) {
+        loop();
+    }
+    return arg;
+}
+
 /**
  * @brief create the communication class
  */
@@ -62,6 +77,11 @@ void io_layer_comm::run()
     int recompute_abstime = true;
     struct timespec abstime;
     sem_init(&theWritingSem, 0, 0);
+
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&condvar, NULL);
+    pthread_create(&theThread, NULL, automation_thread, NULL);
+
     while (1)
     {
         if (recompute_abstime) {
@@ -92,6 +112,7 @@ void io_layer_comm::run()
         notifyGetData();
         notifyGetSyncro();
         update_all();
+        pthread_cond_signal(&condvar);
     }
     LOG_PRINT(info_e, "Finish ioLayer syncronization\n");
 }

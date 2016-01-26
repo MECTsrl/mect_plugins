@@ -13,6 +13,7 @@
 #include "app_logprint.h"
 #include "recipe_select.h"
 #include "ui_recipe_select.h"
+#include "global_functions.h"
 
 /* this define set the variables list to be to displayed in this page */
 #undef VAR_TO_DISPLAY

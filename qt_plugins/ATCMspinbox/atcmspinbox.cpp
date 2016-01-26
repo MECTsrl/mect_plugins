@@ -261,7 +261,7 @@ bool ATCMspinbox::setVariable(QString variable)
     }
 
     /* if the acual variable is empty activate it */
-    if (variable.trimmed() > 0)
+    if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
         if (activateVar(variable.trimmed().toAscii().data()) == 0)

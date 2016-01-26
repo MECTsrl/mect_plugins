@@ -1402,6 +1402,7 @@ int getIP(char * ip)
     return 0;
 }
 
+char sd_mnt_point[256];
 int SDCheck()
 {
     return system("dmesg | grep -q mmcblk >/dev/null 2>&1");

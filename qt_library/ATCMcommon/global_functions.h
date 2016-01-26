@@ -3,6 +3,13 @@
 
 #include "global_var.h"
 
+enum usb_mode_e
+{
+    usb_host_e,
+    usb_device_e,
+    usb_undefined_e
+};
+
 /**
  * @brief load the passwords
  *
@@ -99,5 +106,11 @@ public:
         return false;
     }
 };
+
+bool USBmount();
+bool USBumount();
+bool setUSBmode(enum usb_mode_e mode);
+enum usb_mode_e USBmode();
+bool USBCheck();
 
 #endif // GLOBAL_FUNCTIONS_H
