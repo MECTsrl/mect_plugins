@@ -48,6 +48,8 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="page100.h" openeditor="false"/>
 	   <file source="page100.ui" openeditor="true"/>
 	   <file source="style.h" target="style.h" openproject="false"/>
+	   <file source="automation.cpp" openeditor="false"/>
+	   <file source="automation.h" openeditor="false"/>
 	   <file source="resources.qrc" target="resources.qrc" openproject="false"/>
 	   <file source="systemicons.qrc" target="systemicons.qrc" openproject="false"/>
 	   <file source="languages.qrc" target="languages.qrc" openproject="false"/>
@@ -294,7 +296,6 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
 	   <file source="config/Alarms.csv" target="config/Alarms.csv" openproject="false" binary="false"/>
 	   <file source="config/lang_table.csv" target="config/lang_table.csv" openproject="false" binary="false"/>
-	   <file source="config/dont_run_safe_hmi" target="config/dont_run_safe_hmi" openproject="false" binary="false"/>
 	   <!-- 
 	   <file source="project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
 	   -->

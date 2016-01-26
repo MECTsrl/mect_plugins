@@ -81,7 +81,7 @@ void page0::changePage()
             char command[LINE_SIZE] = "";
             QProcess *myProcess = new QProcess();
             sprintf(command, "%s/fcrts", LOCAL_ROOT_DIR);
-            myProcess->start("/local/root/fcrts");
+            myProcess->start("fcrts.sh");
         }
 
         /* load the tag table if it is present */
