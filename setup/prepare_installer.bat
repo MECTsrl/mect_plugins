@@ -232,14 +232,25 @@ IF %INSTALL% == 1 (
 	echo Preparing files...
 	time /t
 	echo   Target files...
-	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\imx28" > %OUT_DIR%\error.log
+	IF %UPDATE% == 1 (
+		"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\imx28" > %OUT_DIR%\error.log
+	)
+	IF %UPDATE% == 0 (
+		"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\imx28" -xr!rootfs > %OUT_DIR%\error.log
+	)
 	IF ERRORLEVEL 1 (
 	 	echo problem during creation 7z file
 	 	pause
 	  	exit
 	)
 	echo   PC files...
-	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\Desktop" > %OUT_DIR%\error.log
+	IF %UPDATE% == 1 (
+		"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\Desktop" > %OUT_DIR%\error.log
+	)
+	IF %UPDATE% == 0 (
+		"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\Desktop"  -xr!atcm*.dll -xr!ATCM-template-* > %OUT_DIR%\error.log
+	)
+
 	IF ERRORLEVEL 1 (
 	  	echo problem during creation 7z file
 	  	pause

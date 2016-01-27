@@ -136,21 +136,6 @@ SectionGroup "QT"
 		RMDir /r  "$TEMP\Fonts"
 	SectionEnd
 
-	Section "Mect Configurator"
-		SectionIn 1
-		SetOutPath "$TEMP"
-		SetOverwrite on
-		SetCompress off
-		RMDir /r  "$TEMP\MectConfigurator"
-
-		File "MectConfigurator.7z"
-		Nsis7z::ExtractWithDetails "MectConfigurator.7z" "Installing MectConfigurator %..."
-		Delete "MectConfigurator.7z"
-
-		ExecWait "MectConfigurator\MectConfiguratorInstaller\Volume\setup.exe /q /acceptlicenses yes /r:n"
-		RMDir /r  "$TEMP\MectConfigurator"
-	SectionEnd
-
 	Section "Qt Creator"
 		SectionIn 1
 		
@@ -166,7 +151,7 @@ SectionGroup "QT"
 		SetOutPath "$APPDATA"
 		SetOverwrite on
 		SetCompress off
-		RMDir /r  "$APPDATA/QtProject/qtcreator/externaltools"
+		RMDir /r  "$APPDATA\QtProject\qtcreator\externaltools"
 		File "QtProject.7z"
 		Nsis7z::ExtractWithDetails "QtProject.7z" "Installing QtProject files %..."
 		Delete "QtProject.7z"
@@ -186,27 +171,19 @@ SectionGroup "QT"
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MectSuite" "DisplayIcon" '$INSTDIR\MectSuite.ico'
 		WriteUninstaller $INSTDIR\uninstall.exe
 
-		;MessageBox MB_YESNO|MB_ICONQUESTION "To finish the installation you need to Reboot. Do you wish to Reboot now?" IDYES true IDNO false
-		MessageBox MB_YESNO|MB_ICONQUESTION "Per terminare correttamente l'installazione e' necessario riavviare il PC. Vuoi riavviare ora?" IDYES true IDNO false
-		true:
-			nsExec::ExecToLog 'Shutdown /L'
-			Reboot
-		false:
-		next:
-
 	SectionEnd
 
 	Section "Mect plugins ${REVISION}"
 		SectionIn 1
 		
 		SetOutPath "C:\Qt485"
-		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project"
-		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-form-class"
-		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TP1057HR-template-form-class"
-		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TP1057-template-form-class"
-		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TPAC1007-template-form-class"
-		RMDir "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TPAC1008-template-form-class"
-		RMDir "C:\Qt485\imx28\rootfs"
+		RMDir /r "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project"
+		RMDir /r "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-form-class"
+		RMDir /r "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TP1057HR-template-form-class"
+		RMDir /r "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TP1057-template-form-class"
+		RMDir /r "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TPAC1007-template-form-class"
+		RMDir /r "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-TPAC1008-template-form-class"
+		RMDir /r "C:\Qt485\imx28\rootfs"
 		SetOverwrite on
 		SetCompress off
 		File "Qt485_upd_rev${REVISION}.7z"
@@ -230,6 +207,30 @@ SectionGroup "QT"
 
 	SectionEnd
 
+	Section "Mect Configurator"
+		SectionIn 1
+		SetOutPath "$TEMP"
+		SetOverwrite on
+		SetCompress off
+		RMDir /r  "$TEMP\MectConfigurator"
+
+		File "MectConfigurator.7z"
+		Nsis7z::ExtractWithDetails "MectConfigurator.7z" "Installing MectConfigurator %..."
+		Delete "MectConfigurator.7z"
+
+		ExecWait "MectConfigurator\MectConfiguratorInstaller\Volume\setup.exe /q /acceptlicenses yes /r:n"
+		RMDir /r  "$TEMP\MectConfigurator"
+
+		;MessageBox MB_YESNO|MB_ICONQUESTION "To finish the installation you need to Reboot. Do you wish to Reboot now?" IDYES true IDNO false
+		MessageBox MB_YESNO|MB_ICONQUESTION "Per terminare correttamente l'installazione e' necessario riavviare il PC. Vuoi riavviare ora?" IDYES true IDNO false
+		true:
+			nsExec::ExecToLog 'Shutdown /L'
+			Reboot
+		false:
+		next:
+
+SectionEnd
+
 SectionGroupEnd
 
 Section "Uninstall"
@@ -237,7 +238,7 @@ Section "Uninstall"
 		DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MectSuite"
 
 		RMDir /r $INSTDIR
-		RMDir /r  "$APPDATA/QtProject"
+		RMDir /r  "$APPDATA\QtProject"
 
 		ExecWait "C:\Program Files\CodeSourcery\Sourcery G++ Lite\uninstall\Uninstall Sourcery G++ Lite for ARM GNU Linux\Uninstall Sourcery G++ Lite for ARM GNU Linux.exe"
 		; TODO: uninstall perl
