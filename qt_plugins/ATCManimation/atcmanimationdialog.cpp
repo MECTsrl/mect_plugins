@@ -10,7 +10,7 @@
 : QDialog(parent)
 {
 	animation = anim;
-	editor = new QTableWidget(1,2);
+    editor = new QTableWidget(0,2);
 
 	editor->setIconSize(QSize(30,30));
 	//editor->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -143,16 +143,12 @@ void atcmanimationDialog::addMapItem()
 {
     QTableWidgetItem * item;
     int i = editor->currentRow();
-    if (i < 0)
+    if (i < 0 || editor->selectedItems().count() <= 0)
     {
         i = editor->rowCount();
     }
-    else
-    {
-        i++;
-    }
     editor->insertRow(i);
-    item = new QTableWidgetItem("");
+    item = new QTableWidgetItem(QString("%1").setNum(i+1));
     editor->setItem(i,0,item);
     item = new QTableWidgetItem("");
     editor->setItem(i,1,item);

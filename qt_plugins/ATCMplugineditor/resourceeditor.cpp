@@ -101,6 +101,7 @@ ResourceEditor::ResourceEditor(QWidget *parent, QString * selection)
 
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(chooseCTresource()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(chooseCTresource()));
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(list);

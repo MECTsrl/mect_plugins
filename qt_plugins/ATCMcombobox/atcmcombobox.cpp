@@ -560,15 +560,15 @@ QString ATCMcombobox::value2mapped( QString value )
 #ifdef TARGET_ARM
         LOG_PRINT(verbose_e, "compare '%s' [%s] vs '%s'\n", map.at(i).toAscii().data(), map.at(i+1).toAscii().data(), value.toAscii().data());
 #endif
-        if (map.at(i).compare(value) == 0)
+        if (map.at(i).trimmed().compare(value) == 0)
         {
 #ifdef TARGET_ARM
             LOG_PRINT(verbose_e, "Found mapping '%s' -> '%s'.\n", map.at(i).toAscii().data(), map.at(i + 1).toAscii().data());
 #endif
-            return map.at(i + 1);
+            return map.at(i);
         }
     }
-    return QString("");
+    return QString(value);
 }
 
 QString ATCMcombobox::mapped2value( QString mapped )
@@ -597,79 +597,43 @@ QString ATCMcombobox::mapped2value( QString mapped )
 bool ATCMcombobox::setcomboValue()
 {
     QString mapped = value2mapped(m_value);
-#ifdef TARGET_ARM
-    /* no mapping */
-    if (mapped.length() == 0)
+
+    int index = this->findText(mapped);
+    if (index >= 0)
     {
-        int index = this->findText(m_value);
-        if (index >= 0)
-        {
-            this->setEditable(false);
-            if(this->currentIndex() != index)
-            {
-                m_initialization = true;
-                this->setCurrentIndex(index);
-                m_initialization = false;
-            }
-            else
-            {
-                LOG_PRINT(verbose_e,"Value not changed\n");
-            }
-        }
-        else
-        {
-            LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
-            /* if is not managed, put an empty string */
-            this->setEditable(true);
-            /* if the actual status is an error, display error message */
-            if (m_status == ERROR)
-            {
-                this->setEditText(m_value);
-                LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
-            }
-            /* if the actual status is not expected, display an empty value */
-            else
-            {
-                LOG_PRINT(warning_e, "Cannot found data '%s' into selection '%s'.\n", m_value.toAscii().data(), m_mapping.toAscii().data());
-                this->setEditText("");
-                LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
-            }
-            return false;
-        }
+        this->setEditable(false);
+        m_initialization = true;
+        this->setCurrentIndex(index);
+        m_initialization = false;
     }
-    /* mapping */
     else
     {
-        int index = this->findText(mapped);
-        if (index >= 0)
+#ifdef TARGET_ARM
+        LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
+#endif
+        /* if is not managed, put an empty string */
+        this->setEditable(true);
+        /* if the actual status is an error, display error message */
+        if (m_status == ERROR)
         {
-            this->setEditable(false);
-            m_initialization = true;
-            this->setCurrentIndex(index);
-            m_initialization = false;
+            this->setEditText(mapped);
+#ifdef TARGET_ARM
+            LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
+#endif
         }
+        /* if the actual status is not expected, display an empty value */
         else
         {
-            LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
-            /* if is not managed, put an empty string */
-            this->setEditable(true);
-            /* if the actual status is an error, display error message */
-            if (m_status == ERROR)
-            {
-                this->setEditText(mapped);
-                LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
-            }
-            /* if the actual status is not expected, display an empty value */
-            else
-            {
-                LOG_PRINT(warning_e, "Cannot found data '%s' into selection '%s'.\n", mapped.toAscii().data(), m_mapping.toAscii().data());
-                this->setEditText("");
-                LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
-            }
-            return false;
-        }
-    }
+#ifdef TARGET_ARM
+            LOG_PRINT(warning_e, "Cannot found data '%s' into selection '%s'.\n", mapped.toAscii().data(), m_mapping.toAscii().data());
 #endif
+            this->setEditText("");
+#ifdef TARGET_ARM
+            LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
+#endif
+        }
+        return false;
+    }
     return true;
 }
 

@@ -9,7 +9,7 @@
 : QDialog(parent)
 {
 	combobox = anim;
-	table = new QTableWidget(1,2);
+    table = new QTableWidget(0,2);
 
 	//table->setSelectionBehavior(QAbstractItemView::SelectRows);
 	table->setEditTriggers(QAbstractItemView::DoubleClicked);
@@ -145,17 +145,13 @@ void atcmcomboboxDialog::addMapItem()
 {
 	QTableWidgetItem * item;
     int i = table->currentRow();
-    if (i < 0)
+    if (i < 0 || table->selectedItems().count() <= 0)
     {
         i = table->rowCount();
     }
-    else
-    {
-        i++;
-    }
-	table->insertRow(i);
-	item = new QTableWidgetItem("");
-	table->setItem(i,0,item);
+    table->insertRow(i);
+    item = new QTableWidgetItem(QString("%1").setNum(i+1));
+    table->setItem(i,0,item);
 	item = new QTableWidgetItem("");
 	table->setItem(i,1,item);
 }
