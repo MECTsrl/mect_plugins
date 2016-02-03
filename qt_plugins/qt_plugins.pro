@@ -11,20 +11,20 @@ TARGET = ATCMplugin
 TEMPLATE    = lib
 DEFINES+="TARGET_ARM"
 
-INCLUDEPATH += . \
-        	$${QT_ROOTFS}/usr/include \
+INCLUDEPATH = . \
                ../qt_library/ATCMcommon \
                ../qt_library/ATCMutility \
                ../qt_library/ATCMcommunication \
                ../qt_library/ATCMinputdialog \
-               ./ATCMstyle
+               ./ATCMstyle \
+		$${INCLUDEPATH}
 
 QMAKE_LIBDIR += ../../lib \
-               $${ATCM_ARM_LIBRARY_LIBPATH} \
                ../qt_library/ATCMcommon \
                ../qt_library/ATCMutility \
                ../qt_library/ATCMcommunication \
-               ../qt_library/ATCMinputdialog
+               ../qt_library/ATCMinputdialog \
+               $${ATCM_ARM_LIBRARY_LIBPATH}
 
 LIBS += \
 -lATCMcommon \

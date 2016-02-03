@@ -1,7 +1,7 @@
 CONFIG      += designer plugin
 TEMPLATE    = lib
 
-include(../qt_designer_environment.pri)
+#include(../qt_designer_environment.pri)
 
 INCLUDEPATH = . \
                ../../qt_library/ATCMcommon \
