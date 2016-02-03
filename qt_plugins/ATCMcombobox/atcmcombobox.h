@@ -21,7 +21,7 @@ class
 #ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
-        Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
+        // Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
 		Q_PROPERTY(bool mouseTracking READ hasMouseTracking WRITE setMouseTracking DESIGNABLE false)
 		Q_PROPERTY(QPalette palette READ palette WRITE setPalette DESIGNABLE false)

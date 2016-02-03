@@ -83,10 +83,20 @@ numpad::numpad(float* value, float def, int decimal, float min, float max, bool 
 	ui(new Ui::numpad)
 {
 	ui->setupUi(this);
+
     //SET_DIALOG_STYLE();
 	SET_NUMPAD_STYLE();
 
-	inputtype = DECIMAL;
+    ui->pushButtonA->hide();
+    ui->pushButtonB->hide();
+    ui->pushButtonC->hide();
+    ui->pushButtonD->hide();
+    ui->pushButtonE->hide();
+    ui->pushButtonF->hide();
+
+    base = 10;
+
+    inputtype = DECIMAL;
 	_mini = 0;
 	_maxi = 0;
 	_minf = 0;
@@ -115,15 +125,39 @@ numpad::numpad(float* value, float def, int decimal, float min, float max, bool 
 	reload();
 }
 
-numpad::numpad(int* value, int def, int min, int max, bool password, QWidget *parent) :
+numpad::numpad(int* value, int def, int min, int max, enum input_fmt_e fmt, bool password, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::numpad)
 {
 	ui->setupUi(this);
+
     //SET_DIALOG_STYLE();
 	SET_NUMPAD_STYLE();
 
-	inputtype = INTEGER;
+    ui->pushButtonA->setVisible(fmt == input_hex);
+    ui->pushButtonB->setVisible(fmt == input_hex);
+    ui->pushButtonC->setVisible(fmt == input_hex);
+    ui->pushButtonD->setVisible(fmt == input_hex);
+    ui->pushButtonE->setVisible(fmt == input_hex);
+    ui->pushButtonF->setVisible(fmt == input_hex);
+
+    switch (fmt)
+    {
+    case input_dec:
+        base = 10;
+        break;
+    case input_hex:
+        base = 16;
+        break;
+    case input_bin:
+        base = 2;
+        break;
+    default:
+        base = 10;
+        break;
+    }
+
+    inputtype = INTEGER;
 	_mini = 0;
 	_maxi = 0;
 	_minf = 0;
@@ -145,7 +179,7 @@ numpad::numpad(int* value, int def, int min, int max, bool password, QWidget *pa
 		_valuei = value;
         if (def != NO_DEFAULT)
         {
-            ui->lineEditVal->setText(QString("%1").arg(def));
+            ui->lineEditVal->setText(QString("%1").setNum(def, base));
         }
 	}
 
@@ -157,10 +191,20 @@ numpad::numpad(char* value, char* def, char* min, char* max, bool password, QWid
 	ui(new Ui::numpad)
 {
 	ui->setupUi(this);
+
     //SET_DIALOG_STYLE();
 	SET_NUMPAD_STYLE();
 
-	inputtype = STRING;
+    ui->pushButtonA->hide();
+    ui->pushButtonB->hide();
+    ui->pushButtonC->hide();
+    ui->pushButtonD->hide();
+    ui->pushButtonE->hide();
+    ui->pushButtonF->hide();
+
+    base = 10;
+
+    inputtype = STRING;
 	_mini = 0;
 	_maxi = 0;
 	_minf = 0;
@@ -337,19 +381,27 @@ void numpad::on_pushButtonEnter_clicked()
     }
     else
 	{
+        bool ok = true;
 		if (inputtype == DECIMAL && _valuef != NULL)
 		{
-			*_valuef = ui->lineEditVal->text().toFloat();
+            *_valuef = ui->lineEditVal->text().toFloat(&ok);
 		}
 		else if (inputtype == INTEGER && _valuei != NULL)
 		{
-			*_valuei = ui->lineEditVal->text().toInt();
+            *_valuei = ui->lineEditVal->text().toInt(&ok, base);
 		}
 		else
 		{
 			strcpy(_values, ui->lineEditVal->text().toAscii().data());
 		}
-		accept();
+        if (ok)
+        {
+            accept();
+        }
+        else
+        {
+            reject();
+        }
 	}
 }
 
@@ -373,3 +425,32 @@ void numpad::on_pushButtonMinus_clicked()
 	}
 }
 
+void numpad::on_pushButtonA_clicked()
+{
+    ui->lineEditVal->insert("A");
+}
+
+void numpad::on_pushButtonB_clicked()
+{
+    ui->lineEditVal->insert("B");
+}
+
+void numpad::on_pushButtonC_clicked()
+{
+    ui->lineEditVal->insert("C");
+}
+
+void numpad::on_pushButtonD_clicked()
+{
+    ui->lineEditVal->insert("D");
+}
+
+void numpad::on_pushButtonE_clicked()
+{
+    ui->lineEditVal->insert("E");
+}
+
+void numpad::on_pushButtonF_clicked()
+{
+    ui->lineEditVal->insert("F");
+}

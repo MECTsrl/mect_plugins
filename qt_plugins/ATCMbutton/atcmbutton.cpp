@@ -762,7 +762,7 @@ bool ATCMbutton::checkPassword()
         int value = 0;
 
         refresh_timer->stop();
-        dk = new numpad(&value, NO_DEFAULT, 0, 0, 1, 0);
+        dk = new numpad(&value, NO_DEFAULT, 0, 0, input_dec, true, 0);
 
         dk->showFullScreen();
 

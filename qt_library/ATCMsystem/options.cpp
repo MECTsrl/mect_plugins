@@ -131,7 +131,7 @@ void options::on_pushButtonPasswords_clicked()
     numpad * dk;
     
     int password;
-    dk = new numpad(&password, NO_DEFAULT, min, max,true);
+    dk = new numpad(&password, NO_DEFAULT, min, max, input_dec, true);
     dk->showFullScreen();
     
     if (dk->exec() == QDialog::Accepted)

@@ -7,8 +7,6 @@
  *
  * @brief Generic page
  */
-#include <QDir>
-#include <QFileInfo>
 #include "app_logprint.h"
 #include "item_selector.h"
 #include "trend_range.h"
@@ -191,5 +189,3 @@ void trend_range::on_pushButtonOk_clicked()
     _trend_data_reload_ = false;
     go_back();
 }
-
-

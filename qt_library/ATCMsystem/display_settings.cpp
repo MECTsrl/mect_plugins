@@ -205,7 +205,7 @@ void display_settings::on_pushButtonON_clicked()
     int min = 1; //min time allowed for the screensaver start expressed in seconds
     int max = 3600; //max time allowed for the screensaver start expressed in seconds
     
-    dk = new numpad(&value, ScreenSaverSec, min, max, false);
+    dk = new numpad(&value, ScreenSaverSec, min, max);
     dk->showFullScreen();
     
     if (dk->exec() == QDialog::Accepted)

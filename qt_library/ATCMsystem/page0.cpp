@@ -8,7 +8,6 @@
  * @brief display the file SPLASH_FILE for SPLASH_TIMEOUT_MS milliseconds
  */
 #include <QTimer>
-#include <QFile>
 #include <QMessageBox>
 #include <QProcess>
 

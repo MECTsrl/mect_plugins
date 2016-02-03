@@ -626,7 +626,7 @@ void ATCMlabel::writeAction()
             if (decimal == 0)
             {
                 int value  = 0, min = m_min.toInt(), max = m_max.toInt();
-                dk = new numpad(&value, m_value.toInt(), min, max);
+                dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
                 dk->showFullScreen();
 
                 if (dk->exec() == QDialog::Accepted)
@@ -704,7 +704,8 @@ void ATCMlabel::writeAction()
         default:
         {
             int value  = 0, min = 0, max = 1;
-            dk = new numpad(&value, m_value.toInt(), min, max);
+            dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
+            dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
             dk->showFullScreen();
 
             if (dk->exec() == QDialog::Accepted)
@@ -749,7 +750,7 @@ bool ATCMlabel::writeValue(QString value)
         return false;
     }
 #ifdef TARGET_ARM
-    if (setFormattedVar(m_variable.toAscii().data(), value.toAscii().data()))
+    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, value.toAscii().data()) == 0)
     {
         m_value = value;
         this->setText(m_value);

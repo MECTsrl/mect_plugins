@@ -9,7 +9,6 @@
  */
 #include <QApplication>
 #include <QDate>
-#include <QFile>
 #include <getopt.h>
 
 #include "page0.h"

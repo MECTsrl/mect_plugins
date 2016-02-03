@@ -223,7 +223,7 @@ bool ATCMspinbox::writeValue(double value)
         return true;
     }
 #ifdef TARGET_ARM
-    if (setFormattedVar(m_variable.toAscii().data(), QString().setNum(value).toAscii().data()))
+    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString().setNum(value).toAscii().data()) == 0)
     {
         LOG_PRINT(info_e, "WRITE %f \n", m_value);
         m_value = (float)value;

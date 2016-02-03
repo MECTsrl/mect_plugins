@@ -7,9 +7,6 @@
  *
  * @brief Main page
  */
-#include <QDir>
-#include <QFileInfo>
-
 #include "app_logprint.h"
 #include "trend_other.h"
 #include "trend.h"

@@ -7,9 +7,6 @@
  *
  * @brief Item selector dialog
  */
-#include <QDir>
-#include <QFileInfo>
-
 #include "app_logprint.h"
 #include "item_selector.h"
 #include "ui_item_selector.h"

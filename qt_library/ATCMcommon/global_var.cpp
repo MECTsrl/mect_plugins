@@ -11,7 +11,6 @@
 #include <QHash>
 #include <QMessageBox>
 #include <QApplication>
-#include <QFile>
 #include "common.h"
 #include "global_var.h"
 #include "app_usb.h"

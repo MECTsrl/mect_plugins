@@ -223,7 +223,14 @@ bool ATCMslider::writeValue(int value)
 	m_value = value;
 	//this->setValue(m_value);
 #ifdef TARGET_ARM
-	return setFormattedVar(m_variable.toAscii().data(), QString().setNum(m_value).toAscii().data());
+    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString().setNum(m_value).toAscii().data()) == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 #else
 	return true;
 #endif

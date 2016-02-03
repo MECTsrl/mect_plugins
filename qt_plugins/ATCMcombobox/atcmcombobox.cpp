@@ -299,7 +299,8 @@ bool ATCMcombobox::writeValue(QString value)
     if (m_writeAcknowledge == false || QMessageBox::question(this, tr("Conferma Scrittura"), tr("Si vuole procedere alla scrittura del valore '%1'?").arg(value), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
     {
         m_value = mapped2value(value);
-        ret_val =  setFormattedVar(m_variable.toAscii().data(), m_value.toAscii().data());
+        ret_val =  setFormattedVarByCtIndex(m_CtIndex, m_value.toAscii().data());
+        //fprintf(stderr, "WRITING %d %s -> %s\n", m_CtIndex, value.toAscii().data(), m_value.toAscii().data());
     }
 
     setcomboValue();
@@ -565,10 +566,10 @@ QString ATCMcombobox::value2mapped( QString value )
 #ifdef TARGET_ARM
             LOG_PRINT(verbose_e, "Found mapping '%s' -> '%s'.\n", map.at(i).toAscii().data(), map.at(i + 1).toAscii().data());
 #endif
-            return map.at(i);
+            return map.at(i + 1);
         }
     }
-    return QString(value);
+    return QString("");
 }
 
 QString ATCMcombobox::mapped2value( QString mapped )
@@ -597,8 +598,8 @@ QString ATCMcombobox::mapped2value( QString mapped )
 bool ATCMcombobox::setcomboValue()
 {
     QString mapped = value2mapped(m_value);
-
     int index = this->findText(mapped);
+
     if (index >= 0)
     {
         this->setEditable(false);

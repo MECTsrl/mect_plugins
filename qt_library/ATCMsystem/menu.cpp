@@ -136,7 +136,7 @@ void menu::on_pushButtonLogin_clicked()
     }
     else
     {
-        dk = new numpad(&password, min, max,true);
+        dk = new numpad(&password, NO_DEFAULT, min, max, input_dec, true);
         dk->showFullScreen();
         
         if (dk->exec() == QDialog::Accepted)
