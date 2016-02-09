@@ -13,7 +13,6 @@
     editor = new QTableWidget(0,2);
 
 	editor->setIconSize(QSize(30,30));
-	//editor->setSelectionBehavior(QAbstractItemView::SelectRows);
 
 	QTableWidgetItem * item;
 
@@ -37,12 +36,10 @@
 	if (m_mapping.length() > 0)
 	{
 		m_maplist = m_mapping.split(";");
-		//printf("%d\n", m_maplist.count());
 		for (int i = 0; i < m_maplist.count() - 1; i+=2)
 		{
 			if (m_maplist.at(i).length() > 0 && m_maplist.at(i+1).length() > 0)
 			{
-				//printf("%d - '%s' -> '%s'\n", i/2, m_maplist.at(i).toAscii().data(),  m_maplist.at(i+1).toAscii().data());
 				editor->insertRow(i/2);
 				item = new QTableWidgetItem(m_maplist.at(i));
 				editor->setItem(i/2,0,item);
@@ -50,7 +47,6 @@
 				editor->setItem(i/2,1,item);
 			}
 		}
-        editor->removeRow(editor->rowCount() - 1);
     }
 
 	QLabel * labelVariable = new QLabel("Variable:");
@@ -142,11 +138,16 @@ void atcmanimationDialog::saveState()
 void atcmanimationDialog::addMapItem()
 {
     QTableWidgetItem * item;
-    int i = editor->currentRow();
-    if (i < 0 || editor->selectedItems().count() <= 0)
+
+    int i;
+    if (editor->selectionModel()->selectedRows().count() > 0) {
+        i = editor->currentRow();
+    }
+    else
     {
         i = editor->rowCount();
     }
+
     editor->insertRow(i);
     item = new QTableWidgetItem(QString("%1").setNum(i+1));
     editor->setItem(i,0,item);

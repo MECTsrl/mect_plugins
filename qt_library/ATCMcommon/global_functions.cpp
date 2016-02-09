@@ -181,7 +181,15 @@ int LoadRecipe(const QString filename)
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             continue;
         }
-        int decimal = getVarDecimalByName(varname);
+
+        int ctIndex;
+        if (Tag2CtIndex(varname, &ctIndex) != 0)
+        {
+            LOG_PRINT(error_e, "cannot extract ctIndex for variable '%s'\n", varname);
+            return -1;
+
+        }
+        int decimal = getVarDecimal(ctIndex);
         /* value */
         p = mystrtok(p, value, SEPARATOR);
         if (value[0] != '\0')
@@ -189,18 +197,22 @@ int LoadRecipe(const QString filename)
             float val_f = 0;
             val_f = atof(value);
             sprintf(value, "%.*f", decimal, val_f );
-            if (prepareFormattedVar(varname, value) == BUSY)
+            if (prepareFormattedVarByCtIndex (ctIndex, value) == BUSY)
             {
                 LOG_PRINT(warning_e, "busy, waiting to write the variable '%s' with the value '%s'\n", varname, value);
             }
             LOG_PRINT(info_e, "value '%s'\n", value);
+            if (number_of_variables == 0)
+            {
+                beginWrite();
+            }
             number_of_variables++;
         }
     }
     fclose(fp);
     if (number_of_variables > 0)
     {
-        writePendingInorder();
+        endWrite();
     }
     return number_of_variables;
 }

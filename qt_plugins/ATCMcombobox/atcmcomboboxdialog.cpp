@@ -11,7 +11,6 @@
 	combobox = anim;
     table = new QTableWidget(0,2);
 
-	//table->setSelectionBehavior(QAbstractItemView::SelectRows);
 	table->setEditTriggers(QAbstractItemView::DoubleClicked);
 
 	QTableWidgetItem * item;
@@ -27,12 +26,10 @@
 	if (m_mapping.length() > 0)
 	{
 		m_maplist = m_mapping.split(";");
-		//printf("%d\n", m_maplist.count());
 		for (int i = 0; i < m_maplist.count() - 1; i+=2)
 		{
 			if (m_maplist.at(i).length() > 0 && m_maplist.at(i+1).length() > 0)
 			{
-				//printf("%d - '%s' -> '%s'\n", i/2, m_maplist.at(i).toAscii().data(),  m_maplist.at(i+1).toAscii().data());
 				table->insertRow(i/2);
 				item = new QTableWidgetItem(m_maplist.at(i));
 				table->setItem(i/2,0,item);
@@ -40,7 +37,6 @@
 				table->setItem(i/2,1,item);
 			}
 		}
-        table->removeRow(table->rowCount() - 1);
     }
 
 	QLabel * labelVariable = new QLabel("Variable:");
@@ -109,10 +105,8 @@ void atcmcomboboxDialog::saveState()
 
 		/* set the mapping property using the content of the table widget */
 		m_mapping.clear();
-		//printf("%d\n", table->rowCount());
 		for (int i = 0; i < table->rowCount(); i++)
 		{
-			//printf("%d\n", i);
             if (table->item(i,0) && table->item(i,0)->text().length() > 0)
 			{
 				if (i > 0)
@@ -144,8 +138,11 @@ void atcmcomboboxDialog::saveState()
 void atcmcomboboxDialog::addMapItem()
 {
 	QTableWidgetItem * item;
-    int i = table->currentRow();
-    if (i < 0 || table->selectedItems().count() <= 0)
+    int i;
+    if (table->selectionModel()->selectedRows().count() > 0) {
+        i = table->currentRow();
+    }
+    else
     {
         i = table->rowCount();
     }

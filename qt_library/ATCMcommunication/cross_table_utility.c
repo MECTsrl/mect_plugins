@@ -1401,59 +1401,59 @@ int formattedReadFromDb(int ctIndex, char * value)
 int formattedWriteToDb(int ctIndex, void * value)
 {
     int decimal = 0;
-    if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
-    {
-        LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
-        return -1;
-    }
-
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByCtIndex(ctIndex) != 1)
-    {
-        return -1;
-    }
-#endif
-#if 0
-    /* fieldbus in error */
-    if (getErrorBit(varNameArray[ctIndex].protocol, TAG_BLACKLIST, varNameArray[ctIndex].node) == 1)
-    {
-        LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
-        return -1;
-    }
-
-#endif
-    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
-
-    /* be sure that the variable is active */
-    int SynIndex = -1;
-
-    /* get the variable address from syncrovector*/
-    if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
-    {
-        /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
-        int myCtIndex = varNameArray[ctIndex].blockhead;
-        if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
-        {
-            if (activateVar(varNameArray[myCtIndex].tag) != 0)
-            {
-                LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
-                return 1;
-            }
-            else
-            {
-                if (CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
-                {
-                    LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
-                    return 1;
-                }
-            }
-        }
-    }
-
     decimal = getVarDecimal(ctIndex);
 
     if (decimal > 0 || varNameArray[ctIndex].decimal > 4)
     {
+        if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
+        {
+            LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
+            return -1;
+        }
+
+#ifdef ENABLE_DEVICE_DISCONNECT
+        if (isDeviceConnectedByCtIndex(ctIndex) != 1)
+        {
+            return -1;
+        }
+#endif
+#if 0
+        /* fieldbus in error */
+        if (getErrorBit(varNameArray[ctIndex].protocol, TAG_BLACKLIST, varNameArray[ctIndex].node) == 1)
+        {
+            LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
+            return -1;
+        }
+
+#endif
+        LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+
+        /* be sure that the variable is active */
+        int SynIndex = -1;
+
+        /* get the variable address from syncrovector*/
+        if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
+        {
+            /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
+            int myCtIndex = varNameArray[ctIndex].blockhead;
+            if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
+            {
+                if (activateVar(varNameArray[myCtIndex].tag) != 0)
+                {
+                    LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
+                    return 1;
+                }
+                else
+                {
+                    if (CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
+                    {
+                        LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
+                        return 1;
+                    }
+                }
+            }
+        }
+
         switch(varNameArray[ctIndex].type)
         {
         case uintab_e:
@@ -1665,18 +1665,16 @@ int writeVar(const char * varname, void * value)
  */
 int writePending()
 {
-    int SynIndex = -1;
-    unsigned int i;
-
-    for (i = 0; i < SyncroAreaSize; i++)
+    unsigned int SynIndex;
+    for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
     {
-        if (GET_SYNCRO_FLAG(i, PREPARE_MASK))
+        if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
         {
             setStatusVarBySynIndex(SynIndex, BUSY);
-            LOG_PRINT(info_e, "Writing the PREPARE FLAG %d -> %X\n", i, pIOSyncroAreaO[i]);
-            CLR_SYNCRO_FLAG(i, PREPARE_MASK);
+            LOG_PRINT(info_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
+            CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
             SET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK);
-            LOG_PRINT(info_e, "Writing the PREPARE FLAG %d -> %X\n", i, pIOSyncroAreaO[i]);
+            LOG_PRINT(info_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
         }
     }
     return 0;
@@ -1690,7 +1688,6 @@ int writePendingInorder()
     unsigned int SynIndex;
     for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
     {
-        LOG_PRINT(info_e, "%d -> %d\n", SynIndex, SyncroAreaSize);
         if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
         {
             setStatusVarBySynIndex(SynIndex, BUSY);
@@ -1706,9 +1703,8 @@ int writePendingInorder()
     return 0;
 }
 
-char prepareFormattedVar(const char * varname, char * formattedVar)
+char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
 {
-    int ctIndex;
     void * value = NULL;
 
     short int var_int;
@@ -1719,12 +1715,6 @@ char prepareFormattedVar(const char * varname, char * formattedVar)
     BYTE var_bit;
 
     int decimal = 0;
-
-    if (Tag2CtIndex(varname, &ctIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex for variable '%s'\n", varname);
-        return ERROR;
-    }
 
     decimal = getVarDecimal(ctIndex);
 
@@ -1742,13 +1732,12 @@ char prepareFormattedVar(const char * varname, char * formattedVar)
         case intba_e:
             var_int = atoi(formattedVar);
             value = &var_int;
-            LOG_PRINT(info_e,"INT %s = %d\n", varname, var_int);
             break;
         case uintab_e:
         case uintba_e:
             var_uint = atoi(formattedVar);
             value = &var_uint;
-            LOG_PRINT(info_e,"UINT %s = %d\n", varname, var_uint);
+            LOG_PRINT(info_e,"UINT %s = %d\n", varNameArray[ctIndex].tag, var_uint);
             break;
         case dint_abcd_e:
         case dint_badc_e:
@@ -1756,7 +1745,7 @@ char prepareFormattedVar(const char * varname, char * formattedVar)
         case dint_dcba_e:
             var_dint = atoi(formattedVar);
             value = &var_dint;
-            LOG_PRINT(info_e,"DINT %s = %d\n", varname, var_dint);
+            LOG_PRINT(info_e,"DINT %s = %d\n", varNameArray[ctIndex].tag, var_dint);
             break;
         case udint_abcd_e:
         case udint_badc_e:
@@ -1764,7 +1753,7 @@ char prepareFormattedVar(const char * varname, char * formattedVar)
         case udint_dcba_e:
             var_udint = atoi(formattedVar);
             value = &var_udint;
-            LOG_PRINT(info_e,"UDINT %s = %d\n", varname, var_udint);
+            LOG_PRINT(info_e,"UDINT %s = %d\n", varNameArray[ctIndex].tag, var_udint);
             break;
         case fabcd_e:
         case fbadc_e:
@@ -1772,20 +1761,20 @@ char prepareFormattedVar(const char * varname, char * formattedVar)
         case fdcba_e:
             var_float = atof(formattedVar);
             value = &var_float;
-            LOG_PRINT(info_e,"FLOAT %s = %f\n", varname, var_float);
+            LOG_PRINT(info_e,"FLOAT %s = %f\n", varNameArray[ctIndex].tag, var_float);
             break;
         default:
             var_bit = (atoi(formattedVar) == 1);
             value = &var_bit;
-            LOG_PRINT(info_e,"BIT %s = %d\n", varname, var_bit);
+            LOG_PRINT(info_e,"BIT %s = %d\n", varNameArray[ctIndex].tag, var_bit);
             break;
         }
     }
 
-    switch(prepareWriteVar(varname, value, NULL))
+    switch(prepareWriteVarByCtIndex(ctIndex, value, NULL,1,1))
     {
     case DONE:
-        LOG_PRINT(info_e,"################### Prepared VAR: %s = %s\n", varname, formattedVar);
+        LOG_PRINT(info_e,"################### Prepared VAR: %s = %s\n", varNameArray[ctIndex].tag, formattedVar);
         return DONE;
     case ERROR:
         LOG_PRINT(error_e,"status ERROR\n");
@@ -1796,7 +1785,17 @@ char prepareFormattedVar(const char * varname, char * formattedVar)
     default:
         return ERROR;
     }
+}
 
+char prepareFormattedVar(const char * varname, char * formattedVar)
+{
+    int ctIndex;
+    if (Tag2CtIndex(varname, &ctIndex) != 0)
+    {
+        LOG_PRINT(error_e, "cannot extract ctIndex for variable '%s'\n", varname);
+        return ERROR;
+    }
+    return prepareFormattedVarByCtIndex(ctIndex, formattedVar);
 }
 
 /**
@@ -3795,5 +3794,5 @@ int getStatus(int CtIndex)
 
 int addWrite(int ctIndex, void * value)
 {
-    return (prepareWriteVarByCtIndex(ctIndex, &value, NULL, 0, 0) == ERROR);
+    return (prepareWriteVarByCtIndex(ctIndex, value, NULL, 0, 0) == ERROR);
 }

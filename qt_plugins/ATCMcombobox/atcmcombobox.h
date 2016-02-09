@@ -47,7 +47,13 @@ class
 		Q_PROPERTY(Qt::InputMethodHints inputMethodHints READ inputMethodHints WRITE setInputMethodHints DESIGNABLE false)
 		Q_PROPERTY(int modelColumn READ modelColumn WRITE setModelColumn DESIGNABLE false)
 		Q_PROPERTY(InsertPolicy insertPolicy READ insertPolicy WRITE setInsertPolicy DESIGNABLE false)
-		/************* new property ************ */
+        Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex DESIGNABLE false)
+        Q_PROPERTY(int maxVisibleItems READ maxVisibleItems WRITE setMaxVisibleItems DESIGNABLE false)
+        Q_PROPERTY(int maxCount READ maxCount WRITE setMaxCount DESIGNABLE false)
+        Q_PROPERTY(SizeAdjustPolicy sizeAdjustPolicy READ sizeAdjustPolicy WRITE setSizeAdjustPolicy DESIGNABLE false)
+        Q_PROPERTY(int minimumContentsLength READ minimumContentsLength WRITE setMinimumContentsLength DESIGNABLE false)
+        Q_PROPERTY(bool duplicatesEnabled READ duplicatesEnabled WRITE setDuplicatesEnabled DESIGNABLE false)
+        /************* new property ************ */
 		/* name of the cross table variable associated */
 		Q_PROPERTY(QString variable READ variable WRITE setVariable RESET unsetVariable)
 		/* refresh time of the crosstable variables */

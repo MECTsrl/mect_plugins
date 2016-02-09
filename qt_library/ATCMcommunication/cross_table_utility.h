@@ -35,7 +35,7 @@ extern "C" {
 #define CLR_SYNCRO_FLAG(index, flag) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
 
 #define beginWrite() {}
-#define endWrite()  writePending()
+#define endWrite()  writePendingInorder()
 
 /**
  * Open the cross table and fill the syncro vector with the Mirror variables and the PLC variables
@@ -197,6 +197,7 @@ int checkRecipeWriting(void);
 void cleanRecipeWriting(void);
 void checkWriting(void);
 char prepareFormattedVar(const char * varname, char * formattedVar);
+char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
 int  getVarDivisorByName(const char * varname);
 int  getVarDivisor(const int ctIndex);
 int  getVarDecimalByName(const char * varname);

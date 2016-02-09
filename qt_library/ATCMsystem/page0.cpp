@@ -74,12 +74,10 @@ void page0::changePage()
 {
     if (first_time == true)
     {
-        /* if fcrts is not running, start it */
-        if (system("ps | grep fcrts | grep -v grep"))
+        /* if fcrts is not running or if it is in Zombie status, start it */
+        if (system("PID=`pidof fcrts` && test $PID != '' &&  test  `grep -c zombie /proc/$PID/status` -eq 0"))
         {
-            char command[LINE_SIZE] = "";
             QProcess *myProcess = new QProcess();
-            sprintf(command, "%s/fcrts", LOCAL_ROOT_DIR);
             myProcess->start("fcrts.sh");
         }
 
