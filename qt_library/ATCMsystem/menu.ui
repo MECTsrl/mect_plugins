@@ -6,8 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>253</width>
-    <height>279</height>
+    %Model%
    </rect>
   </property>
   <property name="minimumSize">
@@ -161,7 +160,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>PAGES300</string>
+        <string>PAGES3</string>
        </property>
       </widget>
      </item>
@@ -186,7 +185,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>PAGES400</string>
+        <string>PAGES4</string>
        </property>
       </widget>
      </item>
@@ -208,7 +207,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>PAGES200</string>
+        <string>PAGES2</string>
        </property>
       </widget>
      </item>
@@ -230,7 +229,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>PAGES100</string>
+        <string>PAGES1</string>
        </property>
       </widget>
      </item>
