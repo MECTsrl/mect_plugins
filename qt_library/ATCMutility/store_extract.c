@@ -17,6 +17,18 @@
 #define SIGN_APP "/usr/bin/sign"
 #define UNDEFINED "UNDEFINED"
 
+#define LINE2STR(line) \
+{ \
+    if (strchr(line, '\r')) \
+    { \
+        *strchr(line, '\r') = '\0'; \
+    } \
+    else if (strchr(line, '\n')) \
+    { \
+        *strchr(line, '\n') = '\0'; \
+    } \
+}
+
 char FieldsMap[MAX_FIELDS_NB][LINE_SIZE];
 
 int LoadFilterFields(const char * fieldsfile, char * titleline, int ** filterflags)
@@ -39,9 +51,8 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int ** filterfla
 
 	while (fgets(field, LINE_SIZE, fpfieldsfile) != NULL)
 	{
-
-		field[strlen(field) - 1] = '\0';
-		found = 0;
+        LINE2STR(field);
+        found = 0;
 		for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
 		{
 			if (*p == ';')
@@ -137,7 +148,7 @@ int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const ch
 	{
 		while (fgets(line, LINE_SIZE, fpin) != NULL)
 		{
-
+            LINE2STR(line);
 			strcpy(token, line);
 			p = strchr(token, ';');
 			if (p == NULL)
@@ -325,8 +336,9 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                     continue;
                 }
 				else
-				{
-					fclose(fpin);
+                {
+                    LINE2STR(titleline);
+                    fclose(fpin);
                     break;
 				}
 			}
@@ -419,7 +431,8 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 				/* extract the selected columns from the actual log file */
 				while (fgets(line, LINE_SIZE, fpin) != NULL)
 				{
-					first = 1;
+                    LINE2STR(line);
+                    first = 1;
 					for (j = 0, p = line; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
 					{
 						if (*p == ';')
@@ -511,6 +524,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 					/* extract the selected columns from the actual log file */
 					while (fgets(line, LINE_SIZE, fpin) != NULL)
 					{
+                        LINE2STR(line);
 						first = 1;
 						for (j = 0, p = line; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
 						{

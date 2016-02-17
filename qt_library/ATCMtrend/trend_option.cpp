@@ -170,8 +170,10 @@ void trend_option::on_pushButtonBack_clicked()
     ui->labelInfo->setText(tr("loading..."));
     ui->labelInfo->setStyleSheet("color: rgb(255,0,0);");
     ui->labelInfo->repaint();
+#if 0
     /* force a online */
     actualVisibleWindowSec = 0;
+#endif
     go_back();
 }
 
@@ -294,8 +296,8 @@ void trend_option::on_pushButtonYmin_clicked()
             return;
         }
         pens[actualPen].yMin = value;
-        int decimal =  getVarDecimalByName(pens[actualPen].tag);
-        ui->pushButtonYmin->setText(QString().setNum(pens[actualPen].yMin,'f',decimal));
+        //int decimal =  getVarDecimalByName(pens[actualPen].tag);
+        ui->pushButtonYmin->setText(QString().setNum(pens[actualPen].yMin,'f',3));
     }
     else
     {
@@ -322,8 +324,8 @@ void trend_option::on_pushButtonYmax_clicked()
             return;
         }
         pens[actualPen].yMax = value;
-        int decimal =  getVarDecimalByName(pens[actualPen].tag);
-        ui->pushButtonYmax->setText(QString().setNum(pens[actualPen].yMax,'f',decimal));
+        //int decimal =  getVarDecimalByName(pens[actualPen].tag);
+        ui->pushButtonYmax->setText(QString().setNum(pens[actualPen].yMax,'f',3));
     }
     else
     {

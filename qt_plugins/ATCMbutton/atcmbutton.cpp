@@ -568,7 +568,13 @@ void ATCMbutton::updateData()
         {
             if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
             {
-                if (m_statusactualval != value)
+                LOG_PRINT(error_e, "'%s' value %s status %s isDown %d\n", m_statusvar.toAscii().data(), value, m_statusactualval.toAscii().data(), isDown());
+                if (m_statusactualval != value
+                        ||
+                        (m_statusactualval == m_statuspressval && isDown() == false)
+                        ||
+                        (m_statusactualval != m_statuspressval && isDown() == true)
+                        )
                 {
                     m_statusactualval = value;
                     doAction(m_statusactualval == m_statuspressval);
@@ -740,13 +746,20 @@ void  ATCMbutton::goToPage()
         {
             strncpy(_actual_trend_, m_pagename.toAscii().data(), FILENAME_MAX);
             _trend_data_reload_ = true;
+            LOG_PRINT(info_e, "Going to page %s loading file '%s'\n", "trend", m_pagename.toAscii().data());
+            emit newPage(QString("trend").toAscii().data(), m_remember);
         }
         else if (m_pagename.startsWith("store"))
         {
             strncpy(_actual_store_, m_pagename.toAscii().data(), FILENAME_MAX);
+            LOG_PRINT(info_e, "Going to page %s loading file '%s'\n", "store", m_pagename.toAscii().data());
+            emit newPage(QString("store").toAscii().data(), m_remember);
         }
-        LOG_PRINT(info_e, "Going to page %s\n", m_pagename.toAscii().data());
-        emit newPage(m_pagename.toAscii().data(), m_remember);
+        else
+        {
+            LOG_PRINT(info_e, "Going to page %s\n", m_pagename.toAscii().data());
+            emit newPage(m_pagename.toAscii().data(), m_remember);
+        }
     }
 #endif
 }

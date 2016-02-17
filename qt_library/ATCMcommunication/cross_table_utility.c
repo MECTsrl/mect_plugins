@@ -2714,7 +2714,6 @@ int deactivateVar(const char * varname)
 char getStatusVarByCtIndex(int CtIndex, char * msg)
 {
     char Status = DONE;
-    int SynIndex;
     int myCtIndex = CtIndex;
 
     if(myCtIndex < 0 || myCtIndex > DB_SIZE_ELEM )
@@ -2723,7 +2722,12 @@ char getStatusVarByCtIndex(int CtIndex, char * msg)
         Status = ERROR;
         return Status;
     }
-
+#ifndef CHECK_SYNCRO
+#ifdef ENABLE_MUTEX
+    pthread_mutex_lock(&sync_recv_mutex);
+#endif
+#else
+    int SynIndex;
     /* get the variable address from syncrovector*/
     if (CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
     {
@@ -2768,6 +2772,7 @@ char getStatusVarByCtIndex(int CtIndex, char * msg)
     }
     /* the variable is not into the syncro vector */
     else
+#endif
     {
         Status = pIODataStatusAreaI[myCtIndex];
         if (Status == DONE)
@@ -2800,7 +2805,6 @@ char getStatusVarByCtIndex(int CtIndex, char * msg)
 #ifdef ENABLE_MUTEX
     pthread_mutex_unlock(&sync_recv_mutex);
 #endif
-    LOG_PRINT(verbose_e, "CtIndex '%d' Syncro %d Status %d\n", myCtIndex, pIOSyncroAreaI[SynIndex], pIODataStatusAreaI[myCtIndex]);
 
     return Status;
 }

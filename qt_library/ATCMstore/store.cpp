@@ -179,6 +179,7 @@ int store::getLogColumnNb(const char * filename)
     
     if (fgets(line, LINE_SIZE, fp) != NULL)
     {
+        LINE2STR(line);
         headerList = QString(line).simplified().replace(QString(" "), QString("")).split(SEPARATOR);
 #if 0
         for (int i = 0; i < headerList.count(); i++)
@@ -233,12 +234,13 @@ bool store::LoadStoreFilter(const char * filename)
      */
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
+        LINE2STR(line);
         p = line;
         /* tag */
         p = mystrtok(p, token, SEPARATOR);
         if (p == NULL && token[0] == '\0')
         {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
+            LOG_PRINT(warning_e, "skipping empty line\n");
             continue;
         }
         
@@ -328,6 +330,7 @@ bool store::LoadStore(const char * filename)
     int colnb = 0;
     while (rownb < LINE_BUFFER_SIZE && fgets(line, LINE_SIZE, logfp) != NULL)
     {
+        LINE2STR(line);
         LOG_PRINT(info_e, "LINE %s\n", line);
         ui->tableWidget->insertRow(rownb);
         colnb = 0;
@@ -340,7 +343,7 @@ bool store::LoadStore(const char * filename)
             p = mystrtok(p, token, SEPARATOR);
             if (p == NULL && token[0] == '\0')
             {
-                LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
+                LOG_PRINT(warning_e, "skipping empty line\n");
                 continue;
             }
             
@@ -418,6 +421,7 @@ bool store::readLine()
     
     if (fgets(line, LINE_SIZE, logfp) != NULL)
     {
+        LINE2STR(line);
         LOG_PRINT(verbose_e, "LINE %s\n", line);
         int colnb = 0;
         int colfilternb = 0;
@@ -430,7 +434,7 @@ bool store::readLine()
             p = mystrtok(p, token, SEPARATOR);
             if (p == NULL && token[0] == '\0')
             {
-                LOG_PRINT(verbose_e, "Invalid tag '%s'\n", line);
+                LOG_PRINT(warning_e, "skipping empty line\n");
                 continue;
             }
             

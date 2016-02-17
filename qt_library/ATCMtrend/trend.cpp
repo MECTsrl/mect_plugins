@@ -12,6 +12,7 @@
 #include "item_selector.h"
 #include "ui_trend.h"
 
+#include <QList>
 #include <QDate>
 #include <QDir>
 #include <QStringList>
@@ -157,7 +158,8 @@ void trend::reload()
     
     LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADING\n");
     reloading = true;
-    
+    d_qwtplot->hide();
+
     /* disable all button during loading */
     ui->pushButtonUp->setEnabled(false);
     ui->pushButtonDown->setEnabled(false);
@@ -188,7 +190,7 @@ void trend::reload()
             LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADED\n");
             return;
         }
-        
+
         LOG_PRINT(verbose_e, "_trend_data_reload_\n");
         
         d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotCurve);
@@ -225,7 +227,9 @@ void trend::reload()
         d_marker->attach(d_qwtplot);
 #endif
     }
-    
+
+    d_qwtplot->show();
+
     LOG_PRINT(verbose_e, "Calling setOnline  _trend_data_reload_ %d\n",  _trend_data_reload_);
     enableZoomMode(false);
     
@@ -290,12 +294,12 @@ void trend::reload()
             if (_layout_ == PORTRAIT)
             {
                 LOG_PRINT(verbose_e, "################## PORTRAIT\n");
-                pens[i].curve->setAxes(valueAxisId + i, timeAxisId);
+                pens[i].curve->setAxes(QwtAxisId( valueAxisId, i ), QwtAxisId( timeAxisId, 0 ));
             }
             else
             {
                 LOG_PRINT(verbose_e, "################## LANDSCAPE\n");
-                pens[i].curve->setAxes(timeAxisId, valueAxisId + i);
+                pens[i].curve->setAxes(QwtAxisId( timeAxisId, 0 ), QwtAxisId( valueAxisId, i ));
             }
             pens[i].curve->setPen(QPen(QColor(QString("#%1").arg(pens[i].color)),2));
         }
@@ -318,12 +322,6 @@ void trend::reload()
         d_qwtplot->setAxisScaleDraw(QwtPlot::yLeft + i, NULL);
         d_qwtplot->setAxisMaxMajor(QwtPlot::yLeft + i, 0);
         d_qwtplot->setAxisMaxMinor(QwtPlot::yLeft + i, 0);
-#if 0
-        d_qwtplot->axisWidget(QwtPlot::yLeft + i)->setMargin(0);
-        d_qwtplot->axisWidget(QwtPlot::yLeft + i)->setMaximumWidth(80);
-        d_qwtplot->axisWidget(QwtPlot::yLeft + i)->setMinimumWidth(80);
-        d_qwtplot->axisWidget(QwtPlot::yLeft + i)->setSpacing(0);
-#endif
         
         d_qwtplot->setAxisVisible( QwtAxisId( QwtPlot::yRight, i ), false);
         d_qwtplot->setAxisScaleDraw(QwtPlot::yRight + i, NULL);
@@ -337,7 +335,7 @@ void trend::reload()
     if (timeScale == NULL)
     {
         timeScale = new TimeScaleDraw(TzeroLoaded.time());
-        d_qwtplot->setAxisScaleDraw(timeAxisId, timeScale);
+        d_qwtplot->setAxisScaleDraw(QwtAxisId( timeAxisId, 0 ), timeScale);
     }
     else
     {
@@ -479,7 +477,6 @@ void trend::updateData()
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
         LOG_PRINT(verbose_e, "-----> CONNECT!!!!!\n");
         connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
-        
     }
     
     LOG_PRINT(verbose_e, "UPDATE\n");
@@ -489,8 +486,7 @@ void trend::updateData()
         popup->show();
         popup->raise();
     }
-    
-}
+ }
 
 #ifdef TRANSLATION
 /**
@@ -621,7 +617,6 @@ void trend::refreshEvent(trend_msg_t item_trend)
                                                 "}");
         }
         ui->pushButtonOnline->repaint();
-        LOG_PRINT(error_e,"##################################\n");
         
         /* update the graph only if the status is online or if the new sample are visible */
         if (
@@ -752,6 +747,8 @@ void trend::on_pushButtonSelect_clicked()
     {
         ui->pushButtonPenColor->setStyleSheet(QString("background-color: %1;").arg(QString("#%1").arg(pens[actualPen].color)));
         ui->pushButtonPenColor->setAutoFillBackground(true);
+        ui->pushButtonPenColor->repaint();
+        LOG_PRINT(verbose_e, "COLOR %s\n", pens[actualPen].color);
     }
     
     /* enable the actual axis */
@@ -759,25 +756,7 @@ void trend::on_pushButtonSelect_clicked()
     {
         LOG_PRINT(verbose_e, "####### axis curve %d set status %d\n", i, (i == actualPen));
         d_qwtplot->setAxisVisible( QwtAxisId( valueAxisId, i ), (i == actualPen));
-#if 0
-        //if (i == actualPen)
-        {
-            d_qwtplot->axisWidget(QwtPlot::yLeft + i)->setMinimumWidth(60);
-            d_qwtplot->axisWidget(QwtPlot::yLeft + i)->setMaximumWidth(60);
-            d_qwtplot->axisWidget(QwtPlot::xTop + i)->setMinimumWidth(d_qwtplot->width() - 60);
-            d_qwtplot->axisWidget(QwtPlot::xTop + i)->setMaximumWidth(d_qwtplot->width() - 60);
-            d_qwtplot->axisWidget(QwtPlot::xTop + i)->setMinBorderDist(60,0);
-            d_qwtplot->axisWidget(QwtPlot::xBottom + i)->setMinimumWidth(d_qwtplot->width() - 60);
-            d_qwtplot->axisWidget(QwtPlot::xBottom + i)->setMaximumWidth(d_qwtplot->width() - 60);
-            d_qwtplot->axisWidget(QwtPlot::xBottom + i)->setMinBorderDist(60,0);
-        }
-#endif
     }
-#if 0
-    d_qwtplot->setFixedSize(300,200);
-    d_qwtplot->canvas()->setMinimumWidth(d_qwtplot->width() - 60);
-    d_qwtplot->canvas()->setMaximumWidth(d_qwtplot->width() - 60);
-#endif
     d_qwtplot->plotLayout()->setAlignCanvasToScales(true);
     LOG_PRINT(verbose_e, "####### update\n");
     //d_qwtplot->layout()->setMargin(0);
@@ -940,6 +919,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         return false;
     }
     
+    LINE2STR(line);
     //disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
     
     switch(line[0])
@@ -988,6 +968,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         pens[rownb].yMaxActual = 0;
         pens[rownb].yMinActual = 0;
         
+        LINE2STR(line);
         p = line;
         /* visible */
         p = mystrtok(p, token, SEPARATOR);
@@ -1208,7 +1189,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
             return true;
         }
     }
-    LOG_PRINT(error_e, "No visible pen\n");
+    LOG_PRINT(warning_e, "No visible pen\n");
     if (ErrorMsg) *ErrorMsg = QString("No visible pen");
     return false;
 }
@@ -1279,6 +1260,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
                 LOG_PRINT(error_e, "Cannot load '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
                 return false;
             }
+            LOG_PRINT(verbose_e, "PARSED TREND FILE '%s'\n", QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data());
             logfound++;
         }
     }
@@ -1302,7 +1284,6 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
 {
     char line[LINE_SIZE] = "";
     int found = -1;
-    QList<int> filter;
     char * p;
     char token[32] = "";
     
@@ -1315,6 +1296,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     fp = fopen (filename, "r");
     if (fp != 0)
     {
+        QList<int> * filter = new QList<int>;
         LOG_PRINT(verbose_e, "FOUND LOG FILE '%s'\n", filename);
         /*
          * File format:
@@ -1326,9 +1308,11 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         {
             fclose(fp);
             LOG_PRINT(error_e, "Cannot extract the title from '%s'\n", filename);
+            delete filter;
             return false;
         }
         
+        LINE2STR(line);
         p = line;
         
         /* date */
@@ -1337,6 +1321,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         {
             LOG_PRINT(error_e, "Invalid tag '%s' '%s'\n", line, token);
             fclose(fp);
+            delete filter;
             return false;
         }
         
@@ -1346,6 +1331,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         {
             LOG_PRINT(error_e, "Invalid tag '%s' '%s'\n", line, token);
             fclose(fp);
+            delete filter;
             return false;
         }
         
@@ -1377,10 +1363,9 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                 }
             }
             
-            filter << found;
-            
+            filter->append(found);
         }
-        
+
         /* extract data */
         QString dateandtime;
         int count = 0;
@@ -1403,6 +1388,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             bool finish = false;
             count = 0;
             
+            LINE2STR(line);
             int i;
             int len;
             for (i = 0, p = line; p != NULL; p = strchr(p, ';'), i++)
@@ -1465,12 +1451,11 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                     }
                     else if (i > 1)
                     {
-                        if (filter.at(i-2) != -1)
+                        if (i-2 < filter->count() && filter->at(i-2) != -1)
                         {
-                            
                             for( int j = 0; j < PEN_NB; j++)
                             {
-                                if (((filter.at(i-2) >> j) & 0x1) == 0x1 && token[0] != '-')
+                                if (((filter->at(i-2) >> j) & 0x1) == 0x1 && token[0] != '-')
                                 {
                                     LOG_PRINT(verbose_e, "tag '%s', '%d'\n", token, j);
                                     pens[j].y[pens[j].sample] = atof(token);
@@ -1484,6 +1469,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                                         //LOG_PRINT(info_e, "actual_date_time %s end %s\n", actual_date_time.toString(DATE_TIME_FMT).toAscii().data(), end->toString(DATE_TIME_FMT).toAscii().data());
                                         LOG_PRINT(error_e, "Too many sample\n");
                                         fclose(fp);
+                                        filter->clear();
+                                        delete filter;
                                         return false;
                                     }
                                 }
@@ -1504,6 +1491,9 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             }
         }
         fclose(fp);
+        LOG_PRINT(verbose_e, "CLOSE TREND FILE '%s'\n", filename);
+        filter->clear();
+        delete filter;
     }
     else
     {
@@ -1658,12 +1648,13 @@ bool trend::loadFromFile(QDateTime Ti)
         LOG_PRINT(error_e, "Cannot load data\n");
         return false;
     }
-    
+    LOG_PRINT(verbose_e, "PARSED2 TREND FILE\n");
+
 #ifdef TIME_SCALE
     if (timeScale == NULL)
     {
         timeScale = new TimeScaleDraw(TzeroLoaded.time());
-        d_qwtplot->setAxisScaleDraw(timeAxisId, timeScale);
+        d_qwtplot->setAxisScaleDraw(QwtAxisId( timeAxisId, 0 ), timeScale);
     }
     else
     {
@@ -1685,7 +1676,7 @@ bool trend::loadFromFile(QDateTime Ti)
         }
 #endif
         
-        d_qwtplot->setAxisScaleDraw(valueAxisId + i, valueScale[i]);
+        d_qwtplot->setAxisScaleDraw(QwtAxisId( valueAxisId, i ), valueScale[i]);
         //d_qwtplot->setAxisScaleDraw(valueAxisId + i, new NormalScaleDraw(decimal));
         //LOG_PRINT(info_e, "decimals %d\n", decimal);
     }
@@ -1730,9 +1721,9 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             
             int decimal = getVarDecimalByCtIndex(pens[pen_index].CtIndex);
             
-            if (pens[pen_index].yMaxActual - pens[pen_index].yMinActual < 1)
+            if ((pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS < 1)
             {
-                int mindecimal = ceil(-log10(((double)(pens[pen_index].yMaxActual - pens[pen_index].yMinActual))));
+                int mindecimal = ceil(-log10(((double)(pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS)));
                 decimal = (decimal < mindecimal) ? mindecimal : decimal;
             }
             if (valueScale[pen_index]->getDecimalNb() != decimal)
@@ -1741,7 +1732,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             }
             
             /* prepare the value axis tick */
-            LOG_PRINT(verbose_e, "SCALE %d, min %f max %f\n", valueAxisId + pen_index, pens[pen_index].yMinActual, pens[pen_index].yMaxActual);
+            LOG_PRINT(verbose_e, "SCALE %d, min %f max %f decimal %d\n", valueAxisId + pen_index, pens[pen_index].yMinActual, pens[pen_index].yMaxActual, decimal);
             QList<double> arrayTicks;
             arrayTicks << pens[pen_index].yMinActual;
             for (int i = 0; i < VERT_TICKS; i++)
@@ -1752,6 +1743,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             QwtScaleDiv scale = QwtScaleDiv(pens[pen_index].yMinActual,pens[pen_index].yMaxActual);
             //scale = d_qwtplot->axisScaleDiv(valueAxisId + pen_index);
             scale.setTicks(QwtScaleDiv::MajorTick, (arrayTicks));
+            d_qwtplot->setAxisAutoScale(QwtAxisId( valueAxisId, pen_index ), false);
             d_qwtplot->setAxisScaleDiv( QwtAxisId( valueAxisId, pen_index ), scale);
             
             /* if online, the last sample is pens[pen_index].sample */
@@ -2081,13 +2073,13 @@ void trend::moved(const QPoint &pos)
     QString x, y;
     if (_layout_ == PORTRAIT)
     {
-        x = QString().setNum(d_qwtplot->invTransform(valueAxisId + actualPen, pos.x()), 'f', decimal);
-        y = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(timeAxisId, pos.y()))).toString("HH:mm:ss");
+        x = QString().setNum(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.x()), 'f', decimal);
+        y = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.y()))).toString("HH:mm:ss");
     }
     else
     {
-        x = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(timeAxisId, pos.x()))).toString("HH:mm:ss");
-        y = QString().setNum(d_qwtplot->invTransform(valueAxisId + actualPen, pos.y()), 'f', decimal);
+        x = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.x()))).toString("HH:mm:ss");
+        y = QString().setNum(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.y()), 'f', decimal);
     }
     
     ui->labelvalue->setText(x + "; " + y);
@@ -2109,13 +2101,13 @@ void trend::selected(const QPolygon &pol)
     {
         if (_layout_ == PORTRAIT)
         {
-            myXin = (int)(d_qwtplot->invTransform(timeAxisId, pol.boundingRect().y()));
-            myXfin = (int)(d_qwtplot->invTransform(timeAxisId, pol.boundingRect().y() + pol.boundingRect().height()));
+            myXin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pol.boundingRect().y()));
+            myXfin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pol.boundingRect().y() + pol.boundingRect().height()));
         }
         else
         {
-            myXin = (int)(d_qwtplot->invTransform(timeAxisId, pol.boundingRect().x()));
-            myXfin = (int)(d_qwtplot->invTransform(timeAxisId, pol.boundingRect().x() + pol.boundingRect().width()));
+            myXin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pol.boundingRect().x()));
+            myXfin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pol.boundingRect().x() + pol.boundingRect().width()));
         }
         
         /* if necessary swap the selection */
@@ -2140,13 +2132,13 @@ void trend::selected(const QPolygon &pol)
         {
             if (_layout_ == PORTRAIT)
             {
-                pens[i].yMinActual = d_qwtplot->invTransform(valueAxisId + i, pol.boundingRect().x());
-                pens[i].yMaxActual = d_qwtplot->invTransform(valueAxisId + i, pol.boundingRect().x() + pol.boundingRect().width());
+                pens[i].yMinActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), pol.boundingRect().x());
+                pens[i].yMaxActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), pol.boundingRect().x() + pol.boundingRect().width());
             }
             else
             {
-                pens[i].yMinActual = d_qwtplot->invTransform(valueAxisId + i, pol.boundingRect().y());
-                pens[i].yMaxActual = d_qwtplot->invTransform(valueAxisId + i, pol.boundingRect().y() + pol.boundingRect().height());
+                pens[i].yMinActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), pol.boundingRect().y());
+                pens[i].yMaxActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), pol.boundingRect().y() + pol.boundingRect().height());
             }
             
             /* if necessary swap the selection */

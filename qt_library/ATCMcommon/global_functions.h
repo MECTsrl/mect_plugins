@@ -107,10 +107,39 @@ public:
     }
 };
 
+/**
+ * @brief mount USB pen drive
+ *
+ * @return true success, error false
+ */
 bool USBmount();
+
+/**
+ * @brief unmount USB pen drive
+ *
+ * @return true success, error false
+ */
 bool USBumount();
+
+/**
+ * @brief set the USB port usage (host or device)
+ *
+ * @return true success, error false
+ */
 bool setUSBmode(enum usb_mode_e mode);
+
+/**
+ * @brief get the USB port usage (host or device)
+ *
+ * @return usb_mode_e
+ */
 enum usb_mode_e USBmode();
+
+/**
+ * @brief check if a USB pen drive is inserted
+ *
+ * @return true inserted, false not inserted
+ */
 bool USBCheck();
 
 #endif // GLOBAL_FUNCTIONS_H

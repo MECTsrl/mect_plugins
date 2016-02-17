@@ -394,6 +394,18 @@ enum type_e
 #define FLOAT2CDAB(doubleword) CDAB2FLOAT(doubleword)
 #define FLOAT2DCBA(doubleword) DCBA2FLOAT(doubleword)
 
+#define LINE2STR(line) \
+{ \
+    if (strchr(line, '\r')) \
+    { \
+        *strchr(line, '\r') = '\0'; \
+    } \
+    else if (strchr(line, '\n')) \
+    { \
+        *strchr(line, '\n') = '\0'; \
+    } \
+}
+
 /**
  * @brief type bits
  */

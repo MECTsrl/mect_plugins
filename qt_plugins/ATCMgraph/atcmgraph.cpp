@@ -810,17 +810,17 @@ void ATCMgraph::setY2TickLabelFormat(enum ATCMAxisFormat fmt)
 
 void ATCMgraph::unsetX1Variable()
 {
-    setX1Variable("");
+    setX1Variable("PLC_time");
 }
 
 void ATCMgraph::unsetX1Min()
 {
-    setX1Min("0");
+    setX1Min("PLC_timeMin");
 }
 
 void ATCMgraph::unsetX1Max()
 {
-    setX1Max("100");
+    setX1Max("PLC_timeMax");
 }
 
 void ATCMgraph::unsetX1Step()
@@ -880,17 +880,17 @@ void ATCMgraph::unsetY1Label()
 
 void ATCMgraph::unsetX2Variable()
 {
-    setX2Variable("");
+    setX2Variable("PLC_time");
 }
 
 void ATCMgraph::unsetX2Min()
 {
-    setX2Min("0");
+    setX2Min("PLC_timeMin");
 }
 
 void ATCMgraph::unsetX2Max()
 {
-    setX2Max("100");
+    setX2Max("PLC_timeMax");
 }
 
 void ATCMgraph::unsetX2Step()

@@ -323,7 +323,7 @@ void Logger::run()
                     LOG_PRINT(error_e, "Cannot open the store\n");
                     return;
                 }
-                LOG_PRINT(error_e, "open the store\n");
+                LOG_PRINT(info_e, "store opened\n");
             }
             else if (LogPeriodSecS <= 0 && LogPeriodSecF <= 0)
             {

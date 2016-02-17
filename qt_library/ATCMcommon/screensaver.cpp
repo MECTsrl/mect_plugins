@@ -11,7 +11,6 @@ void ScreenSaver::restore()
     int brightness_level;
     char command[256]="";
     
-    
     //get current settings for backlight
     FILE * fp = fopen(BACKLIGHT_FILE_LOCAL, "r");
     
@@ -43,8 +42,6 @@ void ScreenSaver::restore()
     system(command);
     
     LOG_PRINT(info_e, "EXITING SCREENSAVER\n");
-    
-    
 }
 
 bool ScreenSaver::save(__attribute__((unused)) int level)
@@ -58,5 +55,4 @@ bool ScreenSaver::save(__attribute__((unused)) int level)
     
     LOG_PRINT(info_e, "ENTERING SCREENSAVER\n");
     return true;
-    
 }

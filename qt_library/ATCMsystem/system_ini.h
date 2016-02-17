@@ -41,6 +41,48 @@ private slots:
 
     void on_pushButton_HomePage_clicked();
 
+    void on_pushButton_PwdTimeout_clicked();
+
+    void on_pushButton_ScreenSaver_clicked();
+
+    void on_pushButton_SlowLogPeriod_clicked();
+
+    void on_pushButton_FastLogPeriod_clicked();
+
+    void on_pushButton_MaxLogSpace_clicked();
+
+    void on_pushButton_TraceWindow_clicked();
+
+    void on_pushButton_Retries_clicked();
+
+    void on_pushButton_Blacklist_clicked();
+
+    void on_pushButton_ReadPeriod1_clicked();
+
+    void on_pushButton_ReadPeriod2_clicked();
+
+    void on_pushButton_ReadPeriod3_clicked();
+
+    void on_pushButton_Timeout_SERIAL_PORT_0_clicked();
+
+    void on_pushButton_Silence_SERIAL_PORT_0_clicked();
+
+    void on_pushButton_Timeout_SERIAL_PORT_1_clicked();
+
+    void on_pushButton_Silence_SERIAL_PORT_1_clicked();
+
+    void on_pushButton_Timeout_SERIAL_PORT_2_clicked();
+
+    void on_pushButton_Silence_SERIAL_PORT_2_clicked();
+
+    void on_pushButton_Timeout_SERIAL_PORT_3_clicked();
+
+    void on_pushButton_Silence_SERIAL_PORT_3_clicked();
+
+    void on_pushButton_Timeout_TCP_IP_PORT_clicked();
+
+    void on_pushButton_Silence_TCP_IP_PORT_clicked();
+
 private:
     Ui::system_ini *ui;
     void save_all();
