@@ -207,7 +207,7 @@ SectionGroup "QT"
 
 	SectionEnd
 
-	Section "Mect Configurator"
+	Section "Mect Configurator ${MECT_CONFIGURATOR_REVISION}"
 		SectionIn 1
 		SetOutPath "$TEMP"
 		SetOverwrite on

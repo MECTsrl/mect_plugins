@@ -1,11 +1,12 @@
 @echo off
 
 SET REVISION="7.0rc11"
-SET MECT_CONFIGURATOR_REVISION="1.8"
-
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\Users\UserName\Documents\GitHub\mect_plugins"
+
+rem extract MECT_CONFIGURATOR_REVISION
+FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\MectConfigurator\MectConfiguratorInstaller\Volume\nidist.id') DO SET MECT_CONFIGURATOR_REVISION=%%a
 
 SET QTPROJECT=0
 SET BUILD=1
@@ -14,7 +15,8 @@ SET REPAIR=0
 SET UPDATE=0
 
 echo.
-echo Revision: %REVISION%
+echo Mect plugin Revision: %REVISION%
+echo MectConfigurator Revision %MECT_CONFIGURATOR_REVISION%
 echo.
 echo Building: %BUILD%
 echo Install: %INSTALL%
