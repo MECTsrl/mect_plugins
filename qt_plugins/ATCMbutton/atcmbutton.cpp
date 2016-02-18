@@ -568,7 +568,6 @@ void ATCMbutton::updateData()
         {
             if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
             {
-                LOG_PRINT(error_e, "'%s' value %s status %s isDown %d\n", m_statusvar.toAscii().data(), value, m_statusactualval.toAscii().data(), isDown());
                 if (m_statusactualval != value
                         ||
                         (m_statusactualval == m_statuspressval && isDown() == false)
