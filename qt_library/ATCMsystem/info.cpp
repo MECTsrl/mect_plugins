@@ -260,7 +260,7 @@ bool info::getVersion(const char * command, char * version, int maxsize)
     fp = popen(command, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(error_e, "Failed to run command '%s'\n", command );
+        LOG_PRINT(info_e, "Failed to run command '%s'\n", command );
         return false;
     }
 
@@ -273,11 +273,16 @@ bool info::getVersion(const char * command, char * version, int maxsize)
     else
     {
         pclose(fp);
-        LOG_PRINT(error_e, "Failed to run command '%s': '%s'\n", command, version );
+        LOG_PRINT(info_e, "Failed to run command '%s': '%s'\n", command, version );
         return false;
     }
 
     /* close */
     pclose(fp);
     return true;
+}
+
+void info::on_pushButtonBack_clicked()
+{
+    go_back();
 }

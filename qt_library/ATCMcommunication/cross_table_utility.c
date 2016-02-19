@@ -2267,9 +2267,10 @@ char * mystrtok(char * string, char * token, const char * separator)
     }
 
     strcpy(token, string);
-    if (strstr(token, separator) != NULL)
+    p = strstr(token, separator);
+    if (p != NULL)
     {
-        *strstr(token, separator) = '\0';
+        *p = '\0';
     }
 #if 1
     for (i = strlen(token) - 1; i > 0 && isspace(token[i]); i--);

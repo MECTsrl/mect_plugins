@@ -30,8 +30,9 @@
 }
 
 char FieldsMap[MAX_FIELDS_NB][LINE_SIZE];
+int  FilterFlags[MAX_FIELDS_NB];
 
-int LoadFilterFields(const char * fieldsfile, char * titleline, int ** filterflags)
+int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflags)
 {
 	char field[LINE_SIZE];
 	char token[LINE_SIZE];
@@ -82,11 +83,16 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int ** filterfla
 			}
 			if (strcmp(field, token) == 0)
 			{
-                LOG_PRINT(info_e, "add new field %d %s\n", j, field);
-				(*filterflags)[j] = 1;
+                LOG_PRINT(error_e, "########## add new field %d %s\n", j, field);
+                filterflags[j] = 1;
 				strcpy(FieldsMap[j], token);
 				found = 1;
 			}
+            else
+            {
+                LOG_PRINT(error_e, "########## skipping field %d %s\n", j, field);
+                filterflags[j] = 1;
+            }
 		}
 		if (found == 0)
 		{
@@ -95,7 +101,7 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int ** filterfla
 			{
 				strcpy(FieldsMap[j], field);
                 LOG_PRINT(info_e, "add new field %d %s\n", j, field);
-				(*filterflags)[j] = 1;
+                filterflags[j] = 1;
 			}
 		}
 	}
@@ -240,8 +246,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 {
     int retval;
 	LOG_PRINT(info_e, "fieldsfile %s logdir %s\n", fieldsfile, logdir);
-    int * FilterFlags = NULL;
-	FILE * fpin = NULL, * fpout = NULL;
+    FILE * fpin = NULL, * fpout = NULL;
 #ifdef STANDALONE
 	char * outdir = NULL, * logdir = NULL, * fieldsfile = NULL;
 	char * datein = NULL, * timein = NULL, * datefin = NULL, * timefin = NULL;
@@ -317,6 +322,9 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         goto exit_function;
     }
 
+    bzero(FieldsMap, MAX_FIELDS_NB * LINE_SIZE * sizeof(char));
+    bzero(FilterFlags, MAX_FIELDS_NB * sizeof(int));
+
     for (i = fcount - 1; i >= 0; i--)
 	{
 		/* skip the '.' and '..' files */
@@ -331,13 +339,13 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 				/* extract the selected columns from the actual log file */
 				if (fgets(titleline, LINE_SIZE, fpin) == NULL)
 				{
+                    LINE2STR(titleline);
                     LOG_PRINT(info_e, "Cannot read title line from '%s'\n", inFullPathFileName);
                     fclose(fpin);
                     continue;
                 }
 				else
                 {
-                    LINE2STR(titleline);
                     fclose(fpin);
                     break;
 				}
@@ -363,14 +371,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     }
 
 	/* load the filter file */
-    FilterFlags = (int*)calloc(MAX_FIELDS_NB, sizeof(int));
-    if (FilterFlags == NULL)
-    {
-        LOG_PRINT(error_e, "out of memory\n");
-        retval = 4;
-        goto exit_function;
-    }
-    if (LoadFilterFields(fieldsfile, titleline, &FilterFlags) != 0)
+    if (LoadFilterFields(fieldsfile, titleline, FilterFlags) != 0)
 	{
         LOG_PRINT(info_e, "invalid fields file '%s'\n", fieldsfile);
         retval = 5;
@@ -472,7 +473,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 				fclose(fpin);
 #ifdef SIGN_APP
 				/* create the sign file for the actual extracted log file */
-				sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
+                sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
 				if (system(command) != 0)
 				{
                     LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
@@ -569,7 +570,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 
 #ifdef SIGN_APP
 					/* create the sign file for the actual extracted log file */
-					sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
+                    sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
 					if (system(command) != 0)
 					{
                         LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
@@ -725,9 +726,6 @@ exit_function:
             free(filelist[n]);
         }
         free(filelist);
-    }
-    if (FilterFlags != NULL) {
-            free(FilterFlags);
     }
     return retval;
 }

@@ -33,6 +33,8 @@ private slots:
 #endif
     void on_pushButtonHome_clicked();
 
+    void on_pushButtonBack_clicked();
+
 private:
     Ui::info *ui;
 };

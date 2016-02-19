@@ -12,7 +12,7 @@
 
 #include "pagebrowser.h"
 
-#define TMPDIR "/tmp"
+#define TMPDIR "/tmp/ram"
 
 namespace Ui {
 class store;

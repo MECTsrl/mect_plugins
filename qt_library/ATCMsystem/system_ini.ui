@@ -71,7 +71,7 @@
      <property name="styleSheet">
       <string notr="true">QTabBar::scroller { /* the width of the scroll buttons */
     width: 30px;
-    heigh: 30px;
+    height: 30px;
 }
 
 QTabWidget

@@ -201,3 +201,8 @@ void data_manager::on_pushButtonComm_clicked()
 {
     goto_page("comm_status");
 }
+
+void data_manager::on_pushButtonBack_clicked()
+{
+    go_back();
+}

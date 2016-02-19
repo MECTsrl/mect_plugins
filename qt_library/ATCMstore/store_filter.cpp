@@ -111,10 +111,9 @@ store_filter::~store_filter()
 
 #undef VAR_TO_DISPLAY
 
-
 void store_filter::on_pushButtonCancel_clicked()
 {
-    goto_page("store");
+    goto_page("store",false);
 }
 
 void store_filter::on_pushButtonOk_clicked()
@@ -127,7 +126,7 @@ void store_filter::on_pushButtonOk_clicked()
                 QDate(ui->spinBoxYearFin->value(),ui->spinBoxMonthFin->value(), ui->spinBoxDayFin->value()),
                 QTime(ui->spinBoxHoursFin->value(), ui->spinBoxMinutesFin->value(), ui->spinBoxSecondsFin->value())
                 );
-    goto_page("store");
+    goto_page("store",false);
 }
 
 void store_filter::on_pushButtonReset_clicked()

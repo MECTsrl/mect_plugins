@@ -156,8 +156,6 @@ void store::reload()
     ui->pushButtonRight->setEnabled(current_column < sizeof_filter);
     ui->pushButtonUp->setEnabled(current_row > 0);
     ui->pushButtonDown->setEnabled(logfp != NULL || (current_row < ui->tableWidget->rowCount()));
-    
-    
 }
 
 /** @brief count the column of a csv file
@@ -181,12 +179,6 @@ int store::getLogColumnNb(const char * filename)
     {
         LINE2STR(line);
         headerList = QString(line).simplified().replace(QString(" "), QString("")).split(SEPARATOR);
-#if 0
-        for (int i = 0; i < headerList.count(); i++)
-        {
-            LOG_PRINT(info_e, "%d - '%s'\n", i, headerList.at(i).toAscii().data());
-        }
-#endif
         fclose(fp);
     }
     else
@@ -203,9 +195,7 @@ bool store::LoadStoreFilter(const char * filename)
     int columnnb = 0;
     FILE * fp;
     char line[LINE_SIZE] = "";
-    char token[LINE_SIZE] = "";
-    char * p;
-    
+
     sprintf(line, "%s/%s", STORE_DIR, QDate::currentDate().toString("yyyy_MM_dd.log").toAscii().data());
     sizeof_filter = getLogColumnNb(line);
     if (sizeof_filter == 0)
@@ -232,25 +222,34 @@ bool store::LoadStoreFilter(const char * filename)
      * ...
      * <TagN>
      */
+    QStringList wrongVariables;
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
-        LINE2STR(line);
-        p = line;
-        /* tag */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        QString linestr = QString(line).simplified();
+        if (QString(line).simplified().length() == 0)
         {
             LOG_PRINT(warning_e, "skipping empty line\n");
             continue;
         }
         
-        columnnb = headerList.indexOf(token);
+        columnnb = headerList.indexOf(linestr);
         if (columnnb>=0 && columnnb <= sizeof_filter)
         {
             actual_filter[columnnb] = 1;
+            LOG_PRINT(verbose_e, "tag '%s' actual_filter[%d] = %d\n", linestr.toAscii().data(), columnnb, actual_filter[columnnb]);
         }
-        LOG_PRINT(verbose_e, "tag '%s' actual_filter[%d] = %d\n", token, columnnb, actual_filter[columnnb]);
+        else
+        {
+            wrongVariables << linestr;
+            LOG_PRINT(error_e, "Cannot find tag '%s' into the log header (%s).\n", linestr.toAscii().data(), headerList.join("|").toAscii().data());
+        }
         rownb++;
+    }
+    if (wrongVariables.length() > 0)
+    {
+        QMessageBox::information(this,tr("Variables not found."),
+                                 tr("Cannot find the variables:\n%1\ninto the log header:\n%2.").arg(wrongVariables.join(",")).arg(headerList.join("|"))
+                                 );
     }
     fclose(fp);
     return (rownb > 0);
@@ -258,10 +257,18 @@ bool store::LoadStoreFilter(const char * filename)
 
 bool store::LoadStore(QDateTime init, QDateTime final)
 {
+    char command[256];
     outputfile[0] = '\0';
     
     LOG_PRINT(info_e, "outputfile '%s'\n", outputfile);
-    
+
+    mkdir(TMPDIR, S_IRWXU | S_IRWXG);
+    sprintf(command, "mount -t tmpfs -o size=32M tmpfs %s", TMPDIR);
+    if (system (command) != 0)
+    {
+        LOG_PRINT(error_e, "cannot execute '%s'\n", command);
+    }
+
     /* remove TMPDIR */
     if (StoreFilter(
                 outputfile,
@@ -298,7 +305,16 @@ bool store::LoadStore(const char * filename)
     char * p;
     QTableWidgetItem * item;
     
-    ui->tableWidget->clear();
+    /* delete all the e*/
+    while(ui->tableWidget->columnCount())
+    {
+        ui->tableWidget->removeColumn(0);
+    }
+    while(ui->tableWidget->rowCount())
+    {
+        ui->tableWidget->removeRow(0);
+    }
+
     current_row = 0;
     current_column = 0;
     
@@ -364,7 +380,7 @@ bool store::LoadStore(const char * filename)
             }
             else
             {
-                LOG_PRINT(info_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, token, colfilternb, actual_filter[colfilternb]);
+                LOG_PRINT(warning_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, token, colfilternb, actual_filter[colfilternb]);
             }
             colfilternb++;
         }
@@ -704,6 +720,7 @@ void store::on_pushButtonSaveUSB_clicked()
         
         char srcfilename[FILENAME_MAX];
         char dstfilename[FILENAME_MAX];
+        char command[256];
         /* compose the source file name ans the destination file name */
         sprintf(srcfilename, "%s/%s", TMPDIR, outputfile);
         sprintf(dstfilename, "%s/%s_%s.zip",
@@ -722,6 +739,12 @@ void store::on_pushButtonSaveUSB_clicked()
         QFile::remove(srcfilename);
         QFile::remove(QString("%1.sign").arg(srcfilename));
         
+        sprintf(command, "umount %s", TMPDIR);
+        if (system (command) != 0)
+        {
+            LOG_PRINT(error_e, "cannot execute '%s'\n", command);
+        }
+
         /* unmount USB key */
         USBumount();
         LOG_PRINT(info_e, "DOWNLOADED\n");
@@ -733,4 +756,3 @@ void store::on_pushButtonFilter_clicked()
 {
     goto_page("store_filter");
 }
-

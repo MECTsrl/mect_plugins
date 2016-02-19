@@ -6,7 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    %Model%
+    <width>236</width>
+    <height>323</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -878,6 +879,54 @@
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
 qproperty-icon: url(:/systemicons/img/Home.png);
+qproperty-iconSize: 24px 24px;
+qproperty-focusPolicy: NoFocus;
+}
+QPushButton:pressed
+{
+border: 2px solid  rgb(194, 194, 194);
+background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+border: 2px solid  rgb(194, 194, 194);
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonBack">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>60</horstretch>
+         <verstretch>60</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+border: 2px solid  rgb(94, 94, 94);
+border-radius: 8px;
+qproperty-icon: url(:/systemicons/img/Go_back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

@@ -376,53 +376,49 @@ void trend::updateData()
         force_back = false;
         LOG_PRINT(verbose_e, "UPDATE\n");
         /* select a new trend from CUSTOM_TREND_DIR directory */
+        item_selector * sel;
+        QString value;
+        QStringList trendList;
+        QDir trendDir(CUSTOM_TREND_DIR, "*.csv");
+
+        if (trendDir.entryList(QDir::Files).count() > 1)
         {
-            item_selector * sel;
-            QString value;
-            QStringList trendList;
-            QDir trendDir(CUSTOM_TREND_DIR, "*.csv");
-            
-            if (trendDir.entryList(QDir::Files).count() > 1)
+            trendList = trendDir.entryList(QDir::Files);
+            sel = new item_selector(trendList, &value, tr("TREND SELECTOR"));
+            sel->showFullScreen();
+
+            if (sel->exec() == QDialog::Accepted)
             {
-                trendList = trendDir.entryList(QDir::Files);
-                sel = new item_selector(trendList, &value, tr("TREND SELECTOR"));
-                sel->showFullScreen();
-                
-                if (sel->exec() == QDialog::Accepted)
+                strcpy(_actual_trend_, QFileInfo(value).baseName().toAscii().data());
+                LOG_PRINT(verbose_e, "FULL NAME %s\n", QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data());
+                if (LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg) == false)
                 {
-                    strcpy(_actual_trend_, QFileInfo(value).baseName().toAscii().data());
-                    LOG_PRINT(verbose_e, "FULL NAME %s\n", QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data());
-                    if (LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg) == false)
-                    {
-                        refresh_timer->stop();
-                        QMessageBox::critical(0,tr("Invalid data"), tr("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg));
-                        force_back = true;
-                        delete sel;
-                        return;
-                    }
-                    else
-                    {
-                        delete sel;
-                        reload();
-                        refresh_timer->start(REFRESH_MS);
-                        return;
-                    }
+                    refresh_timer->stop();
+                    QMessageBox::critical(0,tr("Invalid data"), tr("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg));
+                    force_back = true;
+                    delete sel;
+                    return;
                 }
                 else
                 {
-                    LOG_PRINT(error_e, "No trend selected\n");
+                    delete sel;
+                    reload();
+                    refresh_timer->start(REFRESH_MS);
+                    return;
                 }
-                delete sel;
             }
             else
             {
-                LOG_PRINT(error_e, "No trend to show\n");
+                LOG_PRINT(error_e, "No trend selected\n");
             }
-            LOG_PRINT(verbose_e, "UPDATE\n");
+            delete sel;
         }
+        else
+        {
+            LOG_PRINT(error_e, "No trend to show\n");
+        }
+        LOG_PRINT(verbose_e, "UPDATE\n");
         actualVisibleWindowSec = 0;
-        this->show();
-        QMessageBox::critical(0,tr("Invalid data"), tr("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg));
         errormsg.clear();
         go_back();
         return;
@@ -486,7 +482,7 @@ void trend::updateData()
         popup->show();
         popup->raise();
     }
- }
+}
 
 #ifdef TRANSLATION
 /**
