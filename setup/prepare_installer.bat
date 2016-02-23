@@ -1,6 +1,6 @@
 @echo off
 
-SET REVISION="7.0rc13"
+SET REVISION="7.0rc14"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\Users\UserName\Documents\GitHub\mect_plugins"

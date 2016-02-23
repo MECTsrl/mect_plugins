@@ -103,7 +103,7 @@ ATCMslider::~ATCMslider()
 
 void ATCMslider::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
     QPainter painter(this);
 	QPalette palette = this->palette();
 
@@ -414,8 +414,10 @@ void ATCMslider::updateData()
 #endif
 	if (m_status == DONE)
 	{
-		this->setValue(m_value);
-	}
+        disconnect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+        this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    }
 	this->update();
 }
 

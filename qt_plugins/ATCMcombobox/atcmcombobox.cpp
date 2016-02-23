@@ -147,7 +147,7 @@ ATCMcombobox::~ATCMcombobox()
 
 void ATCMcombobox::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
     QPalette palette = this->palette();
 
     QStyleOptionComboBox opt;
@@ -308,7 +308,7 @@ bool ATCMcombobox::writeValue(QString value)
     refresh_timer->start(m_refresh);
     return ret_val;
 #else
-    Q_UNUSED( value )
+    Q_UNUSED( value );
     return true;
 #endif
 }
@@ -604,7 +604,10 @@ bool ATCMcombobox::setcomboValue()
     {
         this->setEditable(false);
         m_initialization = true;
+        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( indexChanged(QString) ) );
         this->setCurrentIndex(index);
+        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( indexChanged(QString) ) );
+        setcomboValue();
         m_initialization = false;
     }
     else

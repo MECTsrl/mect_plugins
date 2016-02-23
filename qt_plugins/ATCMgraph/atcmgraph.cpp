@@ -237,7 +237,7 @@ ATCMgraph::~ATCMgraph()
 #if 0
 void ATCMgraph::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
 
 #if 0
     QPainter p(this);

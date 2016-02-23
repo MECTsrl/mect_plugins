@@ -576,7 +576,25 @@ void ATCMbutton::updateData()
                         )
                 {
                     m_statusactualval = value;
-                    doAction(m_statusactualval == m_statuspressval);
+                    bool press = (m_statusactualval == m_statuspressval);
+                    {
+                        if (isCheckable())
+                        {
+                            disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+                            setChecked(press); // emit toggled(true);
+                            LOG_PRINT(verbose_e, "setChecked(%d)\n", press);
+                            connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+                        }
+                        else
+                        {
+                            disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) );
+                            disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
+                            setDown(press); // emit pressed();
+                            LOG_PRINT(verbose_e, "setDown(%d)\n", press);
+                            connect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) , Qt::DirectConnection);
+                            connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
+                        }
+                    }
                 }
             }
         }
@@ -591,23 +609,6 @@ exit_function:
     this->update();
 #endif
 }
-
-void ATCMbutton::doAction(bool press)
-{
-#ifdef TARGET_ARM
-    if (isCheckable())
-    {
-        setChecked(press); // emit toggled(true);
-        LOG_PRINT(verbose_e, "setChecked(%d)\n", press);
-    }
-    else
-    {
-        setDown(press); // emit pressed();
-        LOG_PRINT(verbose_e, "setDown(%d)\n", press);
-    }
-#endif
-}
-
 
 bool ATCMbutton::startAutoReading()
 {

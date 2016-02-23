@@ -155,7 +155,7 @@ ATCMlabel::~ATCMlabel()
 
 void ATCMlabel::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
     QPainter painter(this);
     QPalette palette = this->palette();
 

@@ -207,6 +207,38 @@ SectionGroup "QT"
 
 	SectionEnd
 
+;	Section "Can Builder"
+;		SectionIn 1
+;		SetOutPath "$TEMP"
+;		SetOverwrite on
+;		SetCompress off
+;		RMDir /r  "$TEMP\CanBuilder"
+;
+;		File "CanBuilder.7z"
+;		Nsis7z::ExtractWithDetails "CanBuilder.7z" "Installing Can Builder %..."
+;		Delete "CanBuilder.7z"
+;
+;		ExecWait "CanBuilder\setup.exe"
+;		RMDir /r  "$TEMP\CanBuilder"
+;
+;	SectionEnd
+
+;	Section "ATCM Control"
+;		SectionIn 1
+;		SetOutPath "$TEMP"
+;		SetOverwrite on
+;		SetCompress off
+;		RMDir /r  "$TEMP\ATCMControl"
+;
+;		File "ATCMControl.7z"
+;		Nsis7z::ExtractWithDetails "ATCMControl.7z" "Installing ATCMControl %..."
+;		Delete "ATCMControl.7z"
+;
+;		ExecWait "ATCMControl\setup.exe"
+;		RMDir /r  "$TEMP\ATCMControl"
+;
+;	SectionEnd
+
 	Section "Mect Configurator ${MECT_CONFIGURATOR_REVISION}"
 		SectionIn 1
 		SetOutPath "$TEMP"
@@ -215,7 +247,7 @@ SectionGroup "QT"
 		RMDir /r  "$TEMP\MectConfigurator"
 
 		File "MectConfigurator.7z"
-		Nsis7z::ExtractWithDetails "MectConfigurator.7z" "Installing MectConfigurator %..."
+		Nsis7z::ExtractWithDetails "MectConfigurator.7z" "Installing MectConfigurator ${MECT_CONFIGURATOR_REVISION} %..."
 		Delete "MectConfigurator.7z"
 
 		ExecWait "MectConfigurator\MectConfiguratorInstaller\Volume\setup.exe /q /acceptlicenses yes /r:n"
@@ -229,7 +261,7 @@ SectionGroup "QT"
 		false:
 		next:
 
-SectionEnd
+	SectionEnd
 
 SectionGroupEnd
 

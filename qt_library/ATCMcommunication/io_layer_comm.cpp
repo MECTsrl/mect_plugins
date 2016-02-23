@@ -25,11 +25,16 @@ static void *automation_thread(void *arg);
 
 void *automation_thread(void *arg)
 {
+    pthread_mutex_lock(&mutex);
     pthread_cond_wait(&condvar, &mutex);
     setup();
-    while (pthread_cond_wait(&condvar, &mutex) == 0) {
+    do
+    {
+        pthread_cond_wait(&condvar, &mutex);
         loop();
     }
+    while (1);
+    pthread_mutex_unlock(&mutex);
     return arg;
 }
 

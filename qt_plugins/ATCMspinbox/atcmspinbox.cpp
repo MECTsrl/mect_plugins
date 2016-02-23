@@ -112,7 +112,7 @@ ATCMspinbox::~ATCMspinbox()
 
 void ATCMspinbox::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
     _diameter_ = m_borderradius;
     _penWidth_ = m_borderwidth;
     QPalette palette = this->palette();
@@ -214,7 +214,9 @@ bool ATCMspinbox::writeValue(double value)
     if (m_variable.length() == 0)
     {
         m_value = (float)value;
+        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         return false;
     }
     if (m_initialization)
@@ -227,13 +229,17 @@ bool ATCMspinbox::writeValue(double value)
     {
         LOG_PRINT(info_e, "WRITE %f \n", m_value);
         m_value = (float)value;
+        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         return true;
     }
     else
     {
         LOG_PRINT(info_e, "WRITE\n");
+        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         return false;
     }
 #else
@@ -483,7 +489,9 @@ void ATCMspinbox::updateData()
 #endif
         if (m_status == DONE)
         {
+            disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
             this->setValue(m_value);
+            connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         }
     this->update();
 }

@@ -36,7 +36,7 @@ void ATCMStyle::polish(QPalette &palette)
 
 void ATCMStyle::polish(QWidget *widget)
 {
-    Q_UNUSED( widget )
+    Q_UNUSED( widget );
 #ifdef ATCMSPINBOX_H
     if (qobject_cast<QAbstractButton *>(widget)
             || qobject_cast<QAbstractSpinBox *>(widget))
@@ -50,7 +50,7 @@ void ATCMStyle::polish(QWidget *widget)
 
 void ATCMStyle::unpolish(QWidget *widget)
 {
-    Q_UNUSED( widget )
+    Q_UNUSED( widget );
 #ifdef ATCMSPINBOX_H
     if (qobject_cast<QAbstractButton *>(widget)
             || qobject_cast<QAbstractSpinBox *>(widget))

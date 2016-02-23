@@ -176,7 +176,6 @@ class
 		void releaseAction();
 		void toggleAction(bool);
         void goToPage();
-        void doAction(bool press);
 
 		protected Q_SLOTS:
 
