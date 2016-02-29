@@ -226,7 +226,6 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
 void alarms::addEvent(char * line, bool visibility, char * id, char * style)
 {
     QString text = line;
-    LOG_PRINT(error_e, "##################################\n")
         #if 0
             if (ui->listWidget->findItems(text,Qt::MatchCaseSensitive).count() != 0)
     {
@@ -265,7 +264,6 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
                 LOG_PRINT(info_e, "Hide item '%s'\n", item->text().toAscii().data());
                 QListWidgetItem* item = ui->listWidget->takeItem(i);
                 delete item;
-                LOG_PRINT(error_e, "##################################\n");
                 return;
             }
         }
@@ -282,7 +280,6 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
         }
         else
         {
-            LOG_PRINT(error_e, "##################################\n");
             return;
         }
         LOG_PRINT(info_e, "'%s'\n",style);
@@ -304,7 +301,6 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
     {
         LOG_PRINT(error_e, "Not visible into the banner\n")
     }
-    LOG_PRINT(error_e, "##################################\n")
 }
 
 void alarms::on_pushButtonHome_clicked()

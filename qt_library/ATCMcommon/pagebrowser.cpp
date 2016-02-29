@@ -1845,7 +1845,7 @@ bool page::rotateShowError(QLineEdit * line, int period_ms)
     
     if (bannerStrOld.compare(bannerStr) != 0)
     {
-        LOG_PRINT(error_e, "new error\n");
+        LOG_PRINT(info_e, "new error\n");
         bannerStrOld = bannerStr;
         shift = 0;
     }

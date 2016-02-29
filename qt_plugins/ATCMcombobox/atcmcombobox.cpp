@@ -600,13 +600,17 @@ bool ATCMcombobox::setcomboValue()
     QString mapped = value2mapped(m_value);
     int index = this->findText(mapped);
 
+    if (index == this->currentIndex() )
+    {
+        return true;
+    }
     if (index >= 0)
     {
         this->setEditable(false);
         m_initialization = true;
-        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( indexChanged(QString) ) );
+        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
         this->setCurrentIndex(index);
-        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( indexChanged(QString) ) );
+        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
         setcomboValue();
         m_initialization = false;
     }
