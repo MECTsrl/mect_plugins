@@ -10,7 +10,7 @@ SOURCES     = atcmtimeplugin.cpp
 
 RESOURCES   = icons.qrc
 
-target.path = $$[QT_INSTALL_PLUGINS]/designer
+target.path = $${MECT_INSTALL_PLUGINS}/designer
 INSTALLS    += target
 
 include(atcmtime.pri)
