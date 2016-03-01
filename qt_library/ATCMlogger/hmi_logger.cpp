@@ -836,7 +836,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         }
         else
         {
-            strcpy(event, "UNK");
+            strcpy(event, TAG_UNK);
             LOG_PRINT(warning_e, "Unknown event\n");
         }
         

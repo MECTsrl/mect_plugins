@@ -52,4 +52,6 @@ export(copytemplateprj.commands)
 export(copytemplateformclass.commands)
 QMAKE_EXTRA_TARGETS += first copytemplateprj copytemplateformclass
 
+unix {
 QT_INSTALL_PLUGINS = qtcreator-2.8.1/bin/plugins/designer
+}

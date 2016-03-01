@@ -133,10 +133,7 @@ trend::trend(QWidget *parent) :
     grid->setMajorPen(QPen(Qt::black, 0, Qt::DotLine));
     grid->setMinorPen(QPen(Qt::gray, 0 , Qt::DotLine));
     grid->attach(d_qwtplot);
-    //ui->horizontalLayoutPlot->insertWidget(2, d_qwtplot);
     d_qwtplot->setAutoReplot(true);
-    //d_qwtplot->setSizePolicy(QSizePolicy::Expanding , QSizePolicy::Expanding);
-    //d_qwtplot->canvas()->setFixedSize(335,252);
     
     _trend_data_reload_ = true;
     _load_window_busy = false;
@@ -754,8 +751,6 @@ void trend::on_pushButtonSelect_clicked()
         d_qwtplot->setAxisVisible( QwtAxisId( valueAxisId, i ), (i == actualPen));
     }
     d_qwtplot->plotLayout()->setAlignCanvasToScales(true);
-    LOG_PRINT(verbose_e, "####### update\n");
-    //d_qwtplot->layout()->setMargin(0);
     
     d_qwtplot->replot();
     ui->pushButtonSelect->setEnabled(true);
@@ -997,13 +992,13 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         }
         else if (token[0] == '\0')
         {
-            LOG_PRINT(error_e, "Empty tag '%s'\n", token);
+            LOG_PRINT(error_e, "Empty tag '%s' at line %d\n", token, rownb);
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
         }
         else if (Tag2CtIndex(token, &index) != 0)
         {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", token);
+            LOG_PRINT(error_e, "Invalid tag '%s' at line %d\n", token, rownb);
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
             pens[rownb].CtIndex = -1;
@@ -1167,16 +1162,10 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         }
     }
     
-    int i;
-    
-    for (i = 0; i < PEN_NB; i++)
+    actualPen = 0;
+    for (int i = 0; i < PEN_NB; i++)
     {
         LOG_PRINT(verbose_e, "pen '%s' position %d color %s min %f max %f\n", pens[i].tag, i, pens[i].color, pens[i].yMin, pens[i].yMax);
-    }
-    
-    actualPen = 0;
-    for (i = 0; i < PEN_NB; i++)
-    {
         if (pens[i].visible)
         {
             actualPen = i;
@@ -1250,7 +1239,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
         LOG_PRINT(verbose_e, "looking for '%s' (%s)\n", iterator.toString("yyyy_MM_dd.log").toAscii().data(), end.toString("yyyy_MM_dd.log").toAscii().data());
         if (QFileInfo(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log").toAscii().data())).exists())
         {
-            LOG_PRINT(info_e, "found '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
+            LOG_PRINT(verbose_e, "found '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
             if (Load(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data(), &begin, &end, skip) == false)
             {
                 LOG_PRINT(error_e, "Cannot load '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
@@ -1281,8 +1270,9 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     char line[LINE_SIZE] = "";
     int found = -1;
     char * p;
-    char token[32] = "";
+    char token[LINE_SIZE] = "";
     
+    LOG_PRINT(verbose_e, "LOG_FILE '%s'\n", filename);
     LOG_PRINT(verbose_e, "######################### '%s' -> '%s'\n",
               begin->toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
               end->toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
@@ -1292,7 +1282,6 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     fp = fopen (filename, "r");
     if (fp != 0)
     {
-        QList<int> * filter = new QList<int>;
         LOG_PRINT(verbose_e, "FOUND LOG FILE '%s'\n", filename);
         /*
          * File format:
@@ -1304,7 +1293,6 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         {
             fclose(fp);
             LOG_PRINT(error_e, "Cannot extract the title from '%s'\n", filename);
-            delete filter;
             return false;
         }
         
@@ -1317,7 +1305,6 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         {
             LOG_PRINT(error_e, "Invalid tag '%s' '%s'\n", line, token);
             fclose(fp);
-            delete filter;
             return false;
         }
         
@@ -1327,10 +1314,11 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         {
             LOG_PRINT(error_e, "Invalid tag '%s' '%s'\n", line, token);
             fclose(fp);
-            delete filter;
             return false;
         }
         
+        QList<int> filter;
+
         while (p != NULL || token[0] != '\0')
         {
             p = mystrtok(p, token, SEPARATOR);
@@ -1359,7 +1347,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                 }
             }
             
-            filter->append(found);
+            filter.append(found);
         }
 
         /* extract data */
@@ -1447,11 +1435,11 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                     }
                     else if (i > 1)
                     {
-                        if (i-2 < filter->count() && filter->at(i-2) != -1)
+                        if (i-2 < filter.count() && filter.at(i-2) != -1)
                         {
                             for( int j = 0; j < PEN_NB; j++)
                             {
-                                if (((filter->at(i-2) >> j) & 0x1) == 0x1 && token[0] != '-')
+                                if (((filter.at(i-2) >> j) & 0x1) == 0x1 && token[0] != '-')
                                 {
                                     LOG_PRINT(verbose_e, "tag '%s', '%d'\n", token, j);
                                     pens[j].y[pens[j].sample] = atof(token);
@@ -1465,8 +1453,6 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                                         //LOG_PRINT(info_e, "actual_date_time %s end %s\n", actual_date_time.toString(DATE_TIME_FMT).toAscii().data(), end->toString(DATE_TIME_FMT).toAscii().data());
                                         LOG_PRINT(error_e, "Too many sample\n");
                                         fclose(fp);
-                                        filter->clear();
-                                        delete filter;
                                         return false;
                                     }
                                 }
@@ -1488,14 +1474,13 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         }
         fclose(fp);
         LOG_PRINT(verbose_e, "CLOSE TREND FILE '%s'\n", filename);
-        filter->clear();
-        delete filter;
     }
     else
     {
         LOG_PRINT(error_e, "NO TREND FILE '%s'\n", filename);
         return false;
     }
+    LOG_PRINT(verbose_e, "LOADED TREND FILE '%s'\n", filename);
     return true;
 }
 
@@ -1565,7 +1550,6 @@ void trend::incrementTime(int direction)
               );
     
     /* update the actual window parameters */
-    //actualVisibleWindowSec += (increment * direction);
     actualTzero = actualTzero.addSecs(increment * direction);
     if (actualTzero > QDateTime::currentDateTime())
     {
@@ -2259,5 +2243,3 @@ void trend::on_pushButtonOnline_clicked()
 {
     setOnline(!(getOnline()));
 }
-
-
