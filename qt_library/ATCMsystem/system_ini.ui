@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>451</width>
+    <width>477</width>
     <height>462</height>
    </rect>
   </property>
@@ -106,7 +106,7 @@ QComboBox
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>6</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
