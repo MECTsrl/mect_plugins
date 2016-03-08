@@ -45,6 +45,7 @@ system_ini::system_ini(QWidget *parent) :
     /* set the style described into the macro SET_system_ini_STYLE */
     SET_system_ini_STYLE();
     translateFontSize(this);
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 /**

@@ -70,16 +70,16 @@ private slots:
     void on_p_clicked();
     void on_a_clicked();
     void on_pushButtonBackspace_clicked();
-
     void on_pushButtonSingleQuote_clicked();
-
     void on_pushButtonUnderscore_clicked();
-
     void on_pushButtonSpace_clicked();
+    void on_pushButtonCapsLock_clicked(bool checked);
+    void showUpper(bool checked);
 
 private:
     Ui::alphanumpad *ui;
     char * _value;
+    bool capsLock;
 };
 
 #endif // alphanumpad

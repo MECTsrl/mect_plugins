@@ -9,6 +9,7 @@
  */
 #include <QMessageBox>
 #include <QTableWidget>
+#include <QStringList>
 #include <QDir>
 #include <errno.h>
 
@@ -102,6 +103,10 @@ void store::reload()
     }
     
     char filename[FILENAME_MAX];
+    if (_actual_store_[0] == '\0')
+    {
+        filename[0] = '\0';
+    }
     if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
     {
         sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
@@ -196,7 +201,13 @@ bool store::LoadStoreFilter(const char * filename)
     FILE * fp;
     char line[LINE_SIZE] = "";
 
-    sprintf(line, "%s/%s", STORE_DIR, QDate::currentDate().toString("yyyy_MM_dd.log").toAscii().data());
+    QDir logDir(STORE_DIR);
+    QStringList fileList = logDir.entryList(QStringList("*.log"), QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
+    if (fileList.count() == 0)
+    {
+        return false;
+    }
+    sprintf(line, "%s/%s", STORE_DIR, fileList.at(0).toAscii().data());
     sizeof_filter = getLogColumnNb(line);
     if (sizeof_filter == 0)
     {
@@ -209,49 +220,60 @@ bool store::LoadStoreFilter(const char * filename)
     }
     actual_filter = (int*)calloc(sizeof_filter, sizeof(int));
     
-    fp = fopen(filename, "r");
-    if (fp == NULL)
+    if (filename[0] != '\0')
     {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
-        return false;
-    }
-    LOG_PRINT(info_e, "opened '%s'\n", line);
-    /*
+        fp = fopen(filename, "r");
+        if (fp == NULL)
+        {
+            LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
+            return false;
+        }
+        LOG_PRINT(info_e, "opened '%s'\n", line);
+        /*
      * the file is formatted as
      * <Tag1>
      * ...
      * <TagN>
      */
-    QStringList wrongVariables;
-    while (fgets(line, LINE_SIZE, fp) != NULL)
-    {
-        QString linestr = QString(line).simplified();
-        if (QString(line).simplified().length() == 0)
+        QStringList wrongVariables;
+        while (fgets(line, LINE_SIZE, fp) != NULL)
         {
-            LOG_PRINT(warning_e, "skipping empty line\n");
-            continue;
+            QString linestr = QString(line).simplified();
+            if (QString(line).simplified().length() == 0)
+            {
+                LOG_PRINT(warning_e, "skipping empty line\n");
+                continue;
+            }
+
+            columnnb = headerList.indexOf(linestr);
+            if (columnnb>=0 && columnnb <= sizeof_filter)
+            {
+                actual_filter[columnnb] = 1;
+                LOG_PRINT(verbose_e, "tag '%s' actual_filter[%d] = %d\n", linestr.toAscii().data(), columnnb, actual_filter[columnnb]);
+            }
+            else
+            {
+                wrongVariables << linestr;
+                LOG_PRINT(error_e, "Cannot find tag '%s' into the log header (%s).\n", linestr.toAscii().data(), headerList.join("|").toAscii().data());
+            }
+            rownb++;
         }
-        
-        columnnb = headerList.indexOf(linestr);
-        if (columnnb>=0 && columnnb <= sizeof_filter)
+        if (wrongVariables.length() > 0)
         {
-            actual_filter[columnnb] = 1;
-            LOG_PRINT(verbose_e, "tag '%s' actual_filter[%d] = %d\n", linestr.toAscii().data(), columnnb, actual_filter[columnnb]);
+            QMessageBox::information(this,tr("Variables not found."),
+                                     tr("Cannot find the variables:\n%1\ninto the log header:\n%2.").arg(wrongVariables.join(",")).arg(headerList.join("|"))
+                                     );
         }
-        else
-        {
-            wrongVariables << linestr;
-            LOG_PRINT(error_e, "Cannot find tag '%s' into the log header (%s).\n", linestr.toAscii().data(), headerList.join("|").toAscii().data());
-        }
-        rownb++;
+        fclose(fp);
     }
-    if (wrongVariables.length() > 0)
+    /* no filter, load all variables */
+    else
     {
-        QMessageBox::information(this,tr("Variables not found."),
-                                 tr("Cannot find the variables:\n%1\ninto the log header:\n%2.").arg(wrongVariables.join(",")).arg(headerList.join("|"))
-                                 );
+        for (int i = 0; i <= sizeof_filter; i++)
+        {
+            actual_filter[i] = 1;
+        }
     }
-    fclose(fp);
     return (rownb > 0);
 }
 
@@ -260,8 +282,6 @@ bool store::LoadStore(QDateTime init, QDateTime final)
     char command[256];
     outputfile[0] = '\0';
     
-    LOG_PRINT(info_e, "outputfile '%s'\n", outputfile);
-
     mkdir(TMPDIR, S_IRWXU | S_IRWXG);
     sprintf(command, "mount -t tmpfs -o size=32M tmpfs %s", TMPDIR);
     if (system (command) != 0)
@@ -269,12 +289,25 @@ bool store::LoadStore(QDateTime init, QDateTime final)
         LOG_PRINT(error_e, "cannot execute '%s'\n", command);
     }
 
+    char filename[FILENAME_MAX];
+    if (_actual_store_[0] == '\0')
+    {
+        filename[0] = '\0';
+    }
+    if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
+    {
+        sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
+    }
+    else
+    {
+        sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
+    }
     /* remove TMPDIR */
     if (StoreFilter(
                 outputfile,
                 STORE_DIR,
                 TMPDIR,
-                QString("%1/%2").arg(CUSTOM_STORE_DIR).arg(_actual_store_).toAscii().data(),
+                filename,
                 init.date().toString("yyyy/MM/dd").toAscii().data(),
                 init.time().toString("hh:mm:ss").toAscii().data(),
                 final.date().toString("yyyy/MM/dd").toAscii().data(),
@@ -282,7 +315,7 @@ bool store::LoadStore(QDateTime init, QDateTime final)
                 ) != 0)
     {
         LOG_PRINT(info_e, "outputfile '%s'\n", outputfile);
-        return false;;
+        return false;
     }
     LOG_PRINT(info_e, "outputfile '%s'\n", outputfile);
     return LoadStore(QString("%1/%2").arg(TMPDIR).arg(outputfile).toAscii().data());
@@ -419,7 +452,7 @@ bool store::LoadStore(const char * filename)
     else
     {
         LOG_PRINT(error_e, "EMPTY FILE ROW %d COLUMN %d\n", rownb, colnb);
-        return false;
+        return true;
     }
 }
 

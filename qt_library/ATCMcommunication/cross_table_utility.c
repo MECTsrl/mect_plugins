@@ -60,8 +60,10 @@ variable_t varNameArray[DB_SIZE_ELEM + 1];
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
 store_t StoreArrayS[DB_SIZE_ELEM];
 store_t StoreArrayF[DB_SIZE_ELEM];
+store_t StoreArrayV[DB_SIZE_ELEM];
 int store_elem_nb_S = 0;
 int store_elem_nb_F = 0;
+int store_elem_nb_V = 0;
 #endif
 
 char CrossTableErrorMsg[256];
@@ -123,6 +125,7 @@ size_t fillSyncroArea(void)
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
     int isstores = 0;
     int isstoref = 0;
+    int isstorev = 0;
 #endif
 
 #ifdef ENABLE_DEVICE_DISCONNECT
@@ -190,8 +193,9 @@ size_t fillSyncroArea(void)
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
         isstores = 0;
         isstoref = 0;
+        isstorev = 0;
 #endif
-        if (token[0] == TAG_PLC || token[0] == TAG_STORED_SLOW || token[0] == TAG_STORED_FAST || IS_MIRROR(elem_nb))
+        if (token[0] == TAG_PLC || token[0] == TAG_STORED_SLOW || token[0] == TAG_STORED_FAST || token[0] == TAG_STORED_ON_VAR || IS_MIRROR(elem_nb))
         {
             LOG_PRINT(verbose_e, "%s ELEMENT %d [%s]\n", (IS_MIRROR(elem_nb) == 1) ? "MIRROR": "PLC", elem_nb, line);
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
@@ -202,6 +206,10 @@ size_t fillSyncroArea(void)
             if (token[0] == TAG_STORED_FAST)
             {
                 isstoref = 1;
+            }
+            if (token[0] == TAG_STORED_ON_VAR)
+            {
+                isstorev = 1;
             }
 #endif
             isreading = 1;
@@ -669,6 +677,19 @@ size_t fillSyncroArea(void)
                 store_elem_nb_F++;
             }
         }
+        if (isstorev == 1)
+        {
+            strcpy(StoreArrayV[store_elem_nb_V].tag, varNameArray[elem_nb].tag);
+            if (Tag2CtIndex(StoreArrayV[store_elem_nb_V].tag, &(StoreArrayV[store_elem_nb_V].CtIndex)) != 0)
+            {
+                LOG_PRINT(error_e, "cannot find variable '%s'", StoreArrayV[store_elem_nb_V].tag);
+            }
+            else
+            {
+                LOG_PRINT(verbose_e, "a new store variable is inserted '%s' at position %d\n", StoreArrayV[store_elem_nb_V].tag, store_elem_nb_V);
+                store_elem_nb_V++;
+            }
+        }
 #endif
 
         LOG_PRINT(info_e, "'%s' %d\n", varNameArray[elem_nb].tag, elem_nb);
@@ -677,7 +698,7 @@ size_t fillSyncroArea(void)
     }
     fclose(fp);
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
-    LOG_PRINT(info_e, "Loaded %d record stored record S: %d F: %d\n", elem_nb, store_elem_nb_S, store_elem_nb_F);
+    LOG_PRINT(info_e, "Loaded %d record stored record S: %d F: %d V: %d\n", elem_nb, store_elem_nb_S, store_elem_nb_F, store_elem_nb_V);
 #else
     LOG_PRINT(info_e, "Loaded %d record\n", elem_nb);
 #endif

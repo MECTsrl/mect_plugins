@@ -28,3 +28,5 @@ target.path = $${ATCM_ARM_LIBRARY_LIBPATH}
 include.files = $$HEADERS
 include.path = $${ATCM_ARM_LIBRARY_INCPATH}
 INSTALLS += target include
+
+RESOURCES +=

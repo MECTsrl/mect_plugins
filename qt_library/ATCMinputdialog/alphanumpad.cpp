@@ -93,11 +93,13 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
         }
     }
     
+    capsLock = false;
     reload();
 }
 
 void alphanumpad::reload()
 {
+    showUpper(capsLock);
 }
 
 alphanumpad::~alphanumpad()
@@ -180,132 +182,132 @@ void alphanumpad::on_pushButtonEnter_clicked()
 
 void alphanumpad::on_q_clicked()
 {
-    ui->lineEditVal->insert("Q");
+    ui->lineEditVal->insert(ui->q->text());
 }
 
 void alphanumpad::on_w_clicked()
 {
-    ui->lineEditVal->insert("W");
+    ui->lineEditVal->insert(ui->w->text());
 }
 
 void alphanumpad::on_e_clicked()
 {
-    ui->lineEditVal->insert("E");
+    ui->lineEditVal->insert(ui->e->text());
 }
 
 void alphanumpad::on_r_clicked()
 {
-    ui->lineEditVal->insert("R");
+    ui->lineEditVal->insert(ui->r->text());
 }
 
 void alphanumpad::on_t_clicked()
 {
-    ui->lineEditVal->insert("T");
+    ui->lineEditVal->insert(ui->t->text());
 }
 
 void alphanumpad::on_y_clicked()
 {
-    ui->lineEditVal->insert("Y");
+    ui->lineEditVal->insert(ui->y->text());
 }
 
 void alphanumpad::on_u_clicked()
 {
-    ui->lineEditVal->insert("U");
+    ui->lineEditVal->insert(ui->u->text());
 }
 
 void alphanumpad::on_i_clicked()
 {
-    ui->lineEditVal->insert("I");
+    ui->lineEditVal->insert(ui->i->text());
 }
 
 void alphanumpad::on_o_clicked()
 {
-    ui->lineEditVal->insert("O");
+    ui->lineEditVal->insert(ui->o->text());
 }
 
 void alphanumpad::on_p_clicked()
 {
-    ui->lineEditVal->insert("P");
+    ui->lineEditVal->insert(ui->p->text());
 }
 
 void alphanumpad::on_a_clicked()
 {
-    ui->lineEditVal->insert("A");
+    ui->lineEditVal->insert(ui->a->text());
 }
 
 void alphanumpad::on_s_clicked()
 {
-    ui->lineEditVal->insert("S");
+    ui->lineEditVal->insert(ui->s->text());
 }
 
 void alphanumpad::on_d_clicked()
 {
-    ui->lineEditVal->insert("D");
+    ui->lineEditVal->insert(ui->d->text());
 }
 
 void alphanumpad::on_f_clicked()
 {
-    ui->lineEditVal->insert("F");
+    ui->lineEditVal->insert(ui->f->text());
 }
 
 void alphanumpad::on_g_clicked()
 {
-    ui->lineEditVal->insert("G");
+    ui->lineEditVal->insert(ui->g->text());
 }
 
 void alphanumpad::on_h_clicked()
 {
-    ui->lineEditVal->insert("H");
+    ui->lineEditVal->insert(ui->h->text());
 }
 
 void alphanumpad::on_j_clicked()
 {
-    ui->lineEditVal->insert("J");
+    ui->lineEditVal->insert(ui->j->text());
 }
 
 void alphanumpad::on_k_clicked()
 {
-    ui->lineEditVal->insert("K");
+    ui->lineEditVal->insert(ui->k->text());
 }
 
 void alphanumpad::on_l_clicked()
 {
-    ui->lineEditVal->insert("L");
+    ui->lineEditVal->insert(ui->l->text());
 }
 
 void alphanumpad::on_z_clicked()
 {
-    ui->lineEditVal->insert("Z");
+    ui->lineEditVal->insert(ui->z->text());
 }
 
 void alphanumpad::on_x_clicked()
 {
-    ui->lineEditVal->insert("X");
+    ui->lineEditVal->insert(ui->x->text());
 }
 
 void alphanumpad::on_c_clicked()
 {
-    ui->lineEditVal->insert("C");
+    ui->lineEditVal->insert(ui->c->text());
 }
 
 void alphanumpad::on_v_clicked()
 {
-    ui->lineEditVal->insert("V");
+    ui->lineEditVal->insert(ui->v->text());
 }
 
 void alphanumpad::on_b_clicked()
 {
-    ui->lineEditVal->insert("B");
+    ui->lineEditVal->insert(ui->b->text());
 }
 
 void alphanumpad::on_n_clicked()
 {
-    ui->lineEditVal->insert("N");
+    ui->lineEditVal->insert(ui->n->text());
 }
 
 void alphanumpad::on_m_clicked()
 {
-    ui->lineEditVal->insert("M");
+    ui->lineEditVal->insert(ui->m->text());
 }
 
 
@@ -329,3 +331,70 @@ void alphanumpad::on_pushButtonSpace_clicked()
     ui->lineEditVal->insert(" ");
 }
 
+void alphanumpad::on_pushButtonCapsLock_clicked(bool checked)
+{
+    capsLock = checked;
+    showUpper(checked);
+}
+
+void alphanumpad::showUpper(bool checked)
+{
+    if (checked)
+    {
+        ui->a->setText("a");
+        ui->b->setText("b");
+        ui->c->setText("c");
+        ui->d->setText("d");
+        ui->e->setText("e");
+        ui->f->setText("f");
+        ui->g->setText("g");
+        ui->h->setText("h");
+        ui->i->setText("i");
+        ui->j->setText("j");
+        ui->k->setText("k");
+        ui->l->setText("l");
+        ui->m->setText("m");
+        ui->n->setText("n");
+        ui->o->setText("o");
+        ui->p->setText("p");
+        ui->q->setText("q");
+        ui->r->setText("r");
+        ui->s->setText("s");
+        ui->t->setText("t");
+        ui->t->setText("u");
+        ui->t->setText("v");
+        ui->x->setText("x");
+        ui->y->setText("y");
+        ui->w->setText("w");
+        ui->z->setText("z");
+    }
+    else
+    {
+        ui->a->setText("A");
+        ui->b->setText("B");
+        ui->c->setText("C");
+        ui->d->setText("D");
+        ui->e->setText("E");
+        ui->f->setText("F");
+        ui->g->setText("G");
+        ui->h->setText("H");
+        ui->i->setText("I");
+        ui->j->setText("J");
+        ui->k->setText("K");
+        ui->l->setText("L");
+        ui->m->setText("M");
+        ui->n->setText("N");
+        ui->o->setText("O");
+        ui->p->setText("P");
+        ui->q->setText("Q");
+        ui->r->setText("R");
+        ui->s->setText("S");
+        ui->t->setText("T");
+        ui->t->setText("U");
+        ui->t->setText("V");
+        ui->x->setText("X");
+        ui->y->setText("Y");
+        ui->w->setText("W");
+        ui->z->setText("Z");
+    }
+}

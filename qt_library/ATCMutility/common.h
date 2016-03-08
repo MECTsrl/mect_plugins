@@ -276,10 +276,11 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define APP_SIGN           "/usr/bin/sign"
 #define ZIP_BIN            "/usr/bin/zip"
 
-#define TAG_ONDEMAND    'H'
-#define TAG_PLC         'P'
-#define TAG_STORED_SLOW 'S'
-#define TAG_STORED_FAST 'F'
+#define TAG_ONDEMAND      'H'
+#define TAG_PLC           'P'
+#define TAG_STORED_SLOW   'S'
+#define TAG_STORED_FAST   'F'
+#define TAG_STORED_ON_VAR 'V'
 
 #define HIGH_PRIORITY	1
 #define MEDIUM_PRIORITY	2
@@ -342,6 +343,7 @@ typedef struct store_s
 {
     char tag[TAG_LEN];
     int CtIndex;
+    char value[TAG_LEN];
 } store_t;
 #endif
 

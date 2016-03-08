@@ -148,6 +148,11 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     timeinfo = localtime (&Now);
     strftime (CurrentDate, 32, "%Y_%m_%d", timeinfo);
     
+    for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
+    {
+        StoreArrayV[i].value[0] = '\0';
+    }
+
 #ifdef ENABLE_ALARMS
     if (loadErrorTable() <= 0)
     {
@@ -295,9 +300,9 @@ void Logger::run()
             }
 #endif
 #ifdef ENABLE_STORE
-            if (store_elem_nb_S > 0 || store_elem_nb_F > 0)
+            if (store_elem_nb_S > 0 || store_elem_nb_F > 0 || store_elem_nb_V > 0)
             {
-                if (LogPeriodSecS > 0 || LogPeriodSecF > 0)
+                if (LogPeriodSecS > 0 || LogPeriodSecF > 0 || store_elem_nb_V > 0)
                 {
                     closeStorageFile();
                     if (openStorageFile() == false)
@@ -312,7 +317,7 @@ void Logger::run()
         
 #ifdef ENABLE_STORE
         /* if there is something to dump */
-        if (store_elem_nb_S > 0 || store_elem_nb_F > 0)
+        if (store_elem_nb_S > 0 || store_elem_nb_F > 0 || store_elem_nb_V > 0)
         {
             /* if a log frequency is not 0 */
             if (LogPeriodSecS > 0 || LogPeriodSecF > 0)
@@ -325,7 +330,7 @@ void Logger::run()
                 }
                 LOG_PRINT(info_e, "store opened\n");
             }
-            else if (LogPeriodSecS <= 0 && LogPeriodSecF <= 0)
+            else if (LogPeriodSecS <= 0 && LogPeriodSecF <= 0 && store_elem_nb_V <= 0)
             {
                 if (closeStorageFile() == true)
                 {
@@ -397,9 +402,17 @@ void Logger::run()
 #ifdef ENABLE_STORE
         LOG_PRINT(info_e, "store_elem_nb_S %d counterS %d LogPeriodSecS %d store_elem_nb_F %d counterF %d LogPeriodSecF %d \n",
                   store_elem_nb_S, counterS, LogPeriodSecS, store_elem_nb_F, counterF, LogPeriodSecF);
-        if (LogPeriodSecS > 0 || LogPeriodSecF > 0)
+        variation = checkVariation();
+        if (variation == 1 || LogPeriodSecS > 0 || LogPeriodSecF > 0)
         {
+            if (LogPeriodSecS > 0 || LogPeriodSecF > 0)
+            {
+                counterS++;
+                counterF++;
+            }
             if (
+                    variation
+                    ||
                     (store_elem_nb_S > 0 && (counterS * ALARMS_PERIOD_MS) >= (LogPeriodSecS * 1000))
                     ||
                     (store_elem_nb_F > 0 && (counterF * ALARMS_PERIOD_MS) >= (LogPeriodSecF * 1000))
@@ -408,8 +421,6 @@ void Logger::run()
                 /* log the store variables */
                 dumpStorage();
             }
-            counterS++;
-            counterF++;
         }
 #endif
         usleep(ALARMS_PERIOD_MS * 1000);
@@ -1044,7 +1055,17 @@ bool Logger::openStorageFile()
                 return false;
             }
         }
-        
+        for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
+        {
+            LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayV[i].tag);
+            nb_of_char = fprintf(storefp, "; %s", StoreArrayV[i].tag);
+            if (nb_of_char != (int)strlen(StoreArrayV[i].tag) + 2)
+            {
+                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", StoreArrayV[i].tag, nb_of_char, (int)strlen(StoreArrayV[i].tag) + 2);
+                return false;
+            }
+        }
+
         if (fprintf(storefp, "\n") != 1)
         {
             LOG_PRINT(error_e, "Cannot dump: '%s'\n", strerror(errno));
@@ -1070,11 +1091,34 @@ bool Logger::closeStorageFile()
     }
 }
 
+bool Logger::checkVariation()
+{
+    char value [TAG_LEN] = "";
+    for ( int iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
+    {
+        /* if is active, dump if it is necessary and emit the signal */
+        LOG_PRINT(verbose_e, "Reading '%s'\n", StoreArrayV[iV].tag);
+        if (formattedReadFromDb(StoreArrayV[iV].CtIndex, value) != 0)
+        {
+            LOG_PRINT(error_e, "cannot read variable %d '%s'\n", StoreArrayV[iV].CtIndex, StoreArrayV[iV].tag );
+            continue;
+        }
+
+        /* dump only if the last value was different */
+        if (strcmp(StoreArrayV[iV].value, value) != 0)
+        {
+            LOG_PRINT(info_e, "Found variation for '%s' [%s -> %s]\n", StoreArrayV[iV].tag, StoreArrayV[iV].value, value );
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Logger::dumpStorage()
 {
     char buffer [FILENAME_MAX] = "";
     char value [TAG_LEN] = "";
-    int iF, iS;
+    int iF, iS, iV;
 #ifdef ENABLE_TREND
     trend_msg_t info_msg;
 #endif
@@ -1106,7 +1150,7 @@ bool Logger::dumpStorage()
         LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", buffer, nb_of_char, (int)strlen(buffer));
         return false;
     }
-    
+
     if (store_elem_nb_S > 0  && (counterS * ALARMS_PERIOD_MS) >= (LogPeriodSecS * 1000))
     {
         counterS = 0;
@@ -1145,7 +1189,7 @@ bool Logger::dumpStorage()
 #endif
         }
     }
-    else
+    else if (variation || store_elem_nb_F > 0  || (counterF * ALARMS_PERIOD_MS) >= (LogPeriodSecF * 1000))
     {
         for ( iS = 0; StoreArrayS[iS].tag[0] != '\0'; iS++)
         {
@@ -1197,7 +1241,7 @@ bool Logger::dumpStorage()
 #endif
         }
     }
-    else
+    else if (variation || store_elem_nb_S > 0  || (counterS * ALARMS_PERIOD_MS) >= (LogPeriodSecS * 1000))
     {
         for ( iF = 0; StoreArrayF[iF].tag[0] != '\0'; iF++)
         {
@@ -1210,8 +1254,73 @@ bool Logger::dumpStorage()
         }
         iF = 0;
     }
-    
-    if (iF == 0 && iS == 0)
+
+    if (store_elem_nb_V > 0 && variation)
+    {
+        for ( iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
+        {
+            /* if is active, dump if it is necessary and emit the signal */
+            LOG_PRINT(verbose_e, "Reading '%s'\n", StoreArrayV[iV].tag);
+            if (formattedReadFromDb(StoreArrayV[iV].CtIndex, value) != 0)
+            {
+                LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayV[iV].tag );
+                strcpy(value, TAG_NAN);
+            }
+
+            /* dump only if the last value was different */
+            if (strcmp(StoreArrayV[iV].value, value) != 0)
+            {
+                strcpy(StoreArrayV[iV].value, value);
+                nb_of_char = fprintf(storefp, "; %s", value);
+                if (nb_of_char != (int)strlen(value) + 2)
+                {
+                    LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
+                    return false;
+                }
+            }
+            else
+            {
+                nb_of_char = fprintf(storefp, "; %s", "-");
+                if (nb_of_char != (int)strlen("-") + 2)
+                {
+                    LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
+                    return false;
+                }
+            }
+
+#ifdef ENABLE_TREND
+            /* emit a signal to the hmi with the new item to display */
+            info_msg.CtIndex = StoreArrayV[iV].CtIndex;
+            info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
+            if (strcmp(value, TAG_NAN) == 0)
+            {
+                info_msg.value = NAN;
+                LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
+            }
+            else
+            {
+                info_msg.value = atof(value);
+            }
+            emit new_trend(info_msg);
+            LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
+#endif
+        }
+    }
+    else
+    {
+        for ( iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
+        {
+            nb_of_char = fprintf(storefp, "; %s", "-");
+            if (nb_of_char != (int)strlen("-") + 2)
+            {
+                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
+                return false;
+            }
+        }
+        iV = 0;
+    }
+
+    if (iF == 0 && iS == 0 && iV == 0)
     {
         LOG_PRINT(warning_e, "No signal emitted\n");
 #if 0

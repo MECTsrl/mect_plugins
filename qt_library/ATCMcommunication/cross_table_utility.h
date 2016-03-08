@@ -165,8 +165,10 @@ extern char CrossTableErrorMsg[256];
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
 extern store_t StoreArrayS[DB_SIZE_ELEM];
 extern store_t StoreArrayF[DB_SIZE_ELEM];
+extern store_t StoreArrayV[DB_SIZE_ELEM];
 extern int store_elem_nb_S;
 extern int store_elem_nb_F;
+extern int store_elem_nb_V;
 #endif
 
 extern short int device_status[prot_none_e][MAX_DEVICE_NB];

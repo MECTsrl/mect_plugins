@@ -88,7 +88,15 @@ info::info(QWidget *parent) :
 void info::reload()
 {
     char version[LINE_SIZE] = "";
-    char command[LINE_SIZE] = "";
+
+    /* SN:
+     * BLD: "Release:"
+     * MOD: "Target:"
+     * LIB: "MectPlugin:"
+     * RT:  "RunTime:"
+     * PLC:
+     * HMI: "MectApps:"
+     */
 
     /* SN */
     if (app_build_serial_get() != NULL)
@@ -99,8 +107,8 @@ void info::reload()
     {
         ui->labelSNval->setText("-");
     }
-    /* SO */
-    if (getVersion("cat /etc/factory.info", version, LINE_SIZE))
+    /* BLD */
+    if (getVersion("grep Release: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
     {
         ui->labelSOval->setText(version);
     }
@@ -108,20 +116,28 @@ void info::reload()
     {
         ui->labelSOval->setText("-");
     }
-    /* show the actual build version */
-    sprintf(command, "%s/systool -v | cut -d: -f2", LOCAL_ROOT_DIR);
-    if (getVersion(command, version, LINE_SIZE))
+    /* MOD */
+    if (getVersion("grep Target: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
     {
-        ui->labelSystoolval->setText(version);
+        ui->labelTargetval->setText(version);
     }
     else
     {
-        ui->labelSystoolval->setText("-");
+        ui->labelTargetval->setText("-");
     }
 
-    /* RUNTIME */
-    sprintf(command, "%s/fcrts -v | cut -d: -f2", LOCAL_ROOT_DIR);
-    if (getVersion(command, version, LINE_SIZE))
+    /* LIB */
+    if (getVersion("grep MectPlugin: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
+    {
+        ui->labelMectLib->setText(version);
+    }
+    else
+    {
+        ui->labelMectLib->setText("-");
+    }
+
+    /* RT */
+    if (getVersion("grep RunTime: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
     {
         ui->labelFcrtsval->setText(version);
     }
@@ -129,11 +145,21 @@ void info::reload()
     {
         ui->labelFcrtsval->setText("-");
     }
+
     /* PLC */
     sprintf(version, "%d.%d", getCommunicationEngineMainRevision(), getCommunicationEngineMinorRevision());
     ui->labelPLCval->setText(version);
+
     /* HMI */
-    ui->labelHMIval->setText(FW_RELEASE);
+    // ui->labelHMIval->setText(FW_RELEASE);
+    if (getVersion("grep MectApps: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
+    {
+        ui->labelFcrtsval->setText(version);
+    }
+    else
+    {
+        ui->labelFcrtsval->setText("-");
+    }
 
     char string[32];
     /* MAC */

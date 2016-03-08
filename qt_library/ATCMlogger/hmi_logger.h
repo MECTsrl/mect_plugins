@@ -132,6 +132,7 @@ private:
     bool openStorageFile();
     bool closeStorageFile();
 #endif
+    bool checkVariation();
     int checkSpace( void );
     int removeOldest(const char * dir);
     int getSizeDir(const char *dirname);
@@ -148,6 +149,7 @@ private:
     int counterS;
     int counterF;
 #endif
+    bool variation;
 #ifdef ENABLE_ALARMS
 private slots:
     bool dumpAck(event_msg_t * info_msg);
