@@ -16,10 +16,11 @@
 #include <QDateTime>
 #include "common.h"
 #include "global_var.h"
+#include <semaphore.h>
 
 #define RECORD_SIZE_BYTE 100
 #define MAX_RECORD_PER_DAY (24 * 3600 / 5)
-#define ALARMS_PERIOD_MS 500
+#define ALARMS_PERIOD_MS 100
 
 typedef struct event_msg_e
 {
@@ -112,11 +113,14 @@ class Logger : public QThread
 {
     Q_OBJECT
 public:
-    explicit Logger(const char * alarms_dir = NULL, const char * store_dir = NULL, int period_msec = LOG_PERIOD_MS, QObject *parent = 0);
+    explicit Logger(const char * alarms_dir = NULL, const char * store_dir = NULL, int period_msec = ALARMS_PERIOD_MS, QObject *parent = 0);
     ~Logger();
     virtual void run();
 #ifdef ENABLE_ALARMS
     bool connectToPage(QWidget * p);
+    bool logstart();
+    bool logstop();
+    bool logshot();
 #endif
 private:
     FILE * openFile(int * newfile, const char * basedir, const char * subdir = NULL);
@@ -139,6 +143,7 @@ private:
 private:
     time_t Now;
     struct tm * timeinfo;
+    struct tm * CurrentTimeInfo;
     FILE * alarmsfp;
     FILE * storefp;
     int _period_msec;
@@ -148,6 +153,8 @@ private:
 #ifdef ENABLE_STORE
     int counterS;
     int counterF;
+    bool logger_start;
+    bool logger_shot;
 #endif
     bool variation;
 #ifdef ENABLE_ALARMS
@@ -169,7 +176,9 @@ extern QHash<QString, event_t *> EventHash;
 #endif
 
 extern Logger * logger;
+extern sem_t theLoggingSem;
 
+#define logStart() logger->logstart()
+#define logStop()  logger->logstop()
+#define logShot()  logger->logshot()
 #endif // HMI_LOGGER_H
-
-

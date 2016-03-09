@@ -61,9 +61,11 @@ variable_t varNameArray[DB_SIZE_ELEM + 1];
 store_t StoreArrayS[DB_SIZE_ELEM];
 store_t StoreArrayF[DB_SIZE_ELEM];
 store_t StoreArrayV[DB_SIZE_ELEM];
+store_t StoreArrayX[DB_SIZE_ELEM];
 int store_elem_nb_S = 0;
 int store_elem_nb_F = 0;
 int store_elem_nb_V = 0;
+int store_elem_nb_X = 0;
 #endif
 
 char CrossTableErrorMsg[256];
@@ -126,6 +128,7 @@ size_t fillSyncroArea(void)
     int isstores = 0;
     int isstoref = 0;
     int isstorev = 0;
+    int isstorex = 0;
 #endif
 
 #ifdef ENABLE_DEVICE_DISCONNECT
@@ -194,8 +197,9 @@ size_t fillSyncroArea(void)
         isstores = 0;
         isstoref = 0;
         isstorev = 0;
+        isstorex = 0;
 #endif
-        if (token[0] == TAG_PLC || token[0] == TAG_STORED_SLOW || token[0] == TAG_STORED_FAST || token[0] == TAG_STORED_ON_VAR || IS_MIRROR(elem_nb))
+        if (token[0] == TAG_PLC || token[0] == TAG_STORED_SLOW || token[0] == TAG_STORED_FAST || token[0] == TAG_STORED_ON_VAR || token[0] == TAG_STORED_ON_SHOT || IS_MIRROR(elem_nb))
         {
             LOG_PRINT(verbose_e, "%s ELEMENT %d [%s]\n", (IS_MIRROR(elem_nb) == 1) ? "MIRROR": "PLC", elem_nb, line);
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
@@ -210,6 +214,10 @@ size_t fillSyncroArea(void)
             if (token[0] == TAG_STORED_ON_VAR)
             {
                 isstorev = 1;
+            }
+            if (token[0] == TAG_STORED_ON_SHOT)
+            {
+                isstorex = 1;
             }
 #endif
             isreading = 1;
@@ -688,6 +696,19 @@ size_t fillSyncroArea(void)
             {
                 LOG_PRINT(verbose_e, "a new store variable is inserted '%s' at position %d\n", StoreArrayV[store_elem_nb_V].tag, store_elem_nb_V);
                 store_elem_nb_V++;
+            }
+        }
+        if (isstorex == 1)
+        {
+            strcpy(StoreArrayX[store_elem_nb_X].tag, varNameArray[elem_nb].tag);
+            if (Tag2CtIndex(StoreArrayX[store_elem_nb_X].tag, &(StoreArrayX[store_elem_nb_X].CtIndex)) != 0)
+            {
+                LOG_PRINT(error_e, "cannot find variable '%s'", StoreArrayX[store_elem_nb_X].tag);
+            }
+            else
+            {
+                LOG_PRINT(verbose_e, "a new store variable is inserted '%s' at position %d\n", StoreArrayX[store_elem_nb_X].tag, store_elem_nb_X);
+                store_elem_nb_X++;
             }
         }
 #endif

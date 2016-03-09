@@ -276,11 +276,12 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define APP_SIGN           "/usr/bin/sign"
 #define ZIP_BIN            "/usr/bin/zip"
 
-#define TAG_ONDEMAND      'H'
-#define TAG_PLC           'P'
-#define TAG_STORED_SLOW   'S'
-#define TAG_STORED_FAST   'F'
-#define TAG_STORED_ON_VAR 'V'
+#define TAG_ONDEMAND       'H'
+#define TAG_PLC            'P'
+#define TAG_STORED_SLOW    'S'
+#define TAG_STORED_FAST    'F'
+#define TAG_STORED_ON_VAR  'V'
+#define TAG_STORED_ON_SHOT 'X'
 
 #define HIGH_PRIORITY	1
 #define MEDIUM_PRIORITY	2

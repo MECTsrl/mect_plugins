@@ -166,9 +166,11 @@ extern char CrossTableErrorMsg[256];
 extern store_t StoreArrayS[DB_SIZE_ELEM];
 extern store_t StoreArrayF[DB_SIZE_ELEM];
 extern store_t StoreArrayV[DB_SIZE_ELEM];
+extern store_t StoreArrayX[DB_SIZE_ELEM];
 extern int store_elem_nb_S;
 extern int store_elem_nb_F;
 extern int store_elem_nb_V;
+extern int store_elem_nb_X;
 #endif
 
 extern short int device_status[prot_none_e][MAX_DEVICE_NB];
