@@ -1,4 +1,4 @@
-/** 
+/**
  * @file
  * @author Emiliano Bergamaschini <ebergamaschini@mect.it>
  *
@@ -110,7 +110,7 @@ extern "C" {
  */
 #define SYNCRO_BASE_BYTE 0
 // #define SYNCRO_SIZE_BYTE (DB_SIZE_ELEM * 2)
-#define SYNCRO_EXCHANGE_BASE_BYTE	11000 /*The Queue array fills the syncro Io starting from 0 to 10946*/	
+#define SYNCRO_EXCHANGE_BASE_BYTE	11000 /*The Queue array fills the syncro Io starting from 0 to 10946*/
 #define SYNCRO_EXCHANGE_DWORD_SIZE	4 /*Exported var is a DWORD*/
 #define SYNCRO_EXCHANGE_DWORD_NB	12 /*Number of DWORD exported var*/
 #define SYNCRO_EXCHANGE_WORD_SIZE	2 /*Exported var is a WORD*/
@@ -123,16 +123,16 @@ extern "C" {
 #define IS_RETENTIVE(index) (index >= 0                         && index < (RET_REG_NB + RET_BIT_NB))
 
 #define GET_FLAG(data, flag) ((((data) >> (flag)) & 0x1) == 0x1)
-#define SET_FLAG(data, flag) { (data) =  (  (data)  | (0x1 << (flag)));} 
+#define SET_FLAG(data, flag) { (data) =  (  (data)  | (0x1 << (flag)));}
 #define CLR_FLAG(data, flag) { (data) = ~((~(data)) | (0x1 << (flag)));}
 
 #define SET_SIZE_BYTE(area, size) { \
-	(area)[1] = ((size) >> 8); \
-	(area)[0] = ((size) & 0x00FF); \
+    (area)[1] = ((size) >> 8); \
+    (area)[0] = ((size) & 0x00FF); \
 }
 
 #define SET_SIZE_WORD(area, size) { \
-	(area)[0] = (size); \
+    (area)[0] = (size); \
 }
 /*
 Used when getting a value on the IOSyncroArea which is a WORD area.
@@ -155,16 +155,17 @@ The values are defined as WORD on the plc side
 Index is the index used to access the IOSyncroArea as array of byte hence to access it as WORD it must halved
 */
 #define GET_WORD_FROM_WORD(value, area, index) { \
-	value = ((area)[(index)/2] ); \
+    value = ((area)[(index)/2] ); \
 }
 #define SET_WORD_FROM_WORD(value, area, index) { \
-	((area)[(index)/2] ) = value; \
+    ((area)[(index)/2] ) = value; \
 }
 
 #define WRITE_IRQ_VAR SYNCRO_EXCHANGE_BASE_BYTE //11000
 #define WRITE_IRQ_ON	0x1
 #define WRITE_IRQ_OFF	0x0
 
+#if 0
 #define RESET_ERROR_ON	0x1
 #define RESET_ERROR_OFF	0x0
 
@@ -191,17 +192,15 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define OTHER_TCP_BIT_ERROR  		( BLACKLIST_TCP_BIT_ERROR  + ERROR_BIT_DWORD_NUMBER * SYNCRO_EXCHANGE_DWORD_SIZE ) //11428
 #define BLACKLIST_TCPRTU_BIT_ERROR  	( OTHER_TCP_BIT_ERROR  + ERROR_BIT_DWORD_NUMBER * SYNCRO_EXCHANGE_DWORD_SIZE ) //11432
 #define OTHER_TCPRTU_BIT_ERROR  	( BLACKLIST_TCPRTU_BIT_ERROR  + ERROR_BIT_DWORD_NUMBER * SYNCRO_EXCHANGE_DWORD_SIZE ) //11436
-
-#define IS_RTU_ERROR ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x01) == 0x01)
-#define IS_TCP_ERROR ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x02) == 0x02)
-#define IS_TCPRTU_ERROR ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x04) == 0x04)
-#define IS_COMMPAR_ERROR ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x08) == 0x08)
-#define IS_ALARMSTBL_ERROR ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x10) == 0x10)
-#define IS_CROSSTABLE_ERROR ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x20) == 0x20)
-#define IS_ENGINE_READY ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x40) == 0x40)
-#define IS_RTU_ENABLED ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x80) == 0x80)
-#define IS_TCP_ENABLED ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x100) == 0x100)
-#define IS_TCPRTU_ENABLED ((((IOSyncroAreaI)[(ERRORS_SUMMARY)/2]) & 0x200) == 0x200)
+#endif
+/* (IOSyncroAreaI)[5707])
+ * hidle 0
+ * inizialised 1
+ * running 2
+ * error 3
+ * exit 4
+ */
+#define IS_ENGINE_READY ((((IOSyncroAreaI)[5707]) & 0x02) == 0x02)
 
 /**
  * @brief Status description
@@ -298,10 +297,10 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define INTERNAL_VARIABLE_FAKE_NODEID	256
 enum protocol_e
 {
-	prot_rtu_e = 0,
-	prot_tcp_e,
-	prot_tcprtu_e,
-	prot_none_e
+    prot_rtu_e = 0,
+    prot_tcp_e,
+    prot_tcprtu_e,
+    prot_none_e
 };
 
 enum error_kind_e
@@ -312,31 +311,31 @@ enum error_kind_e
 
 typedef struct udp_msg
 {
-	unsigned short int dataLen;
-	char type;
-	char elemNb;
-	//char Data[MAX_MSG];
-	char Data[1];
+    unsigned short int dataLen;
+    char type;
+    char elemNb;
+    //char Data[MAX_MSG];
+    char Data[1];
 } udp_msg_t;
 
 typedef struct var_s
 {
-	char name[NAME_LEN];
-	int status;
-	char value[2];
+    char name[NAME_LEN];
+    int status;
+    char value[2];
 } var_t;
 
 typedef struct variable_s
 {
-	char tag[TAG_LEN];
-	int type;
+    char tag[TAG_LEN];
+    int type;
     int block;
     int blockhead;
     int decimal;
     int active;
     int visible;
     int node;
-	enum protocol_e protocol;
+    enum protocol_e protocol;
 } variable_t;
 
 #if defined(ENABLE_TREND) || defined(ENABLE_STORE)
@@ -356,16 +355,16 @@ enum type_e
     intab_e,
     intba_e,
     udint_abcd_e,
-	udint_badc_e,
-	udint_cdab_e,
-	udint_dcba_e,
-	dint_abcd_e,
-	dint_badc_e,
-	dint_cdab_e,
-	dint_dcba_e,
-	fabcd_e,
-	fbadc_e,
-	fcdab_e,
+    udint_badc_e,
+    udint_cdab_e,
+    udint_dcba_e,
+    dint_abcd_e,
+    dint_badc_e,
+    dint_cdab_e,
+    dint_dcba_e,
+    fabcd_e,
+    fbadc_e,
+    fcdab_e,
     fdcba_e,
     bytebit_e,
     wordbit_e,
@@ -412,32 +411,32 @@ enum type_e
 /**
  * @brief type bits
  */
-struct bits { 
-	unsigned char bit0 : 1;
-	unsigned char bit1 : 1;
-	unsigned char bit2 : 1;
-	unsigned char bit3 : 1;
-	unsigned char bit4 : 1;
-	unsigned char bit5 : 1;
-	unsigned char bit6 : 1;
-	unsigned char bit7 : 1;
-	unsigned char bit8 : 1;
-	unsigned char bit9 : 1;
-	unsigned char bi10 : 1;
-	unsigned char bit11 : 1;
-	unsigned char bit12 : 1;
-	unsigned char bit13 : 1;
-	unsigned char bit14 : 1;
-	unsigned char bit15 : 1;
+struct bits {
+    unsigned char bit0 : 1;
+    unsigned char bit1 : 1;
+    unsigned char bit2 : 1;
+    unsigned char bit3 : 1;
+    unsigned char bit4 : 1;
+    unsigned char bit5 : 1;
+    unsigned char bit6 : 1;
+    unsigned char bit7 : 1;
+    unsigned char bit8 : 1;
+    unsigned char bit9 : 1;
+    unsigned char bi10 : 1;
+    unsigned char bit11 : 1;
+    unsigned char bit12 : 1;
+    unsigned char bit13 : 1;
+    unsigned char bit14 : 1;
+    unsigned char bit15 : 1;
 };
 
 /**
  * @brief type elem. this union allow to use this elem_t as word, and bit
  */
 typedef union {
-	unsigned int word;
-	char byte[2];
-	struct bits bits;
+    unsigned int word;
+    char byte[2];
+    struct bits bits;
 } elem_t;
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
@@ -454,10 +453,10 @@ typedef union {
 
 enum alarm_event_e
 {
-	alarm_fall_e,
-	alarm_rise_e,
-	alarm_ack_e,
-	alarm_none_e
+    alarm_fall_e,
+    alarm_rise_e,
+    alarm_ack_e,
+    alarm_none_e
 };
 
 #define DUMP   1
@@ -472,15 +471,15 @@ enum alarm_event_e
 
 typedef struct event_s
 {
-	char type;
-	//char tag[TAG_LEN];
-	char description[DESCR_LEN];
-	int level;
-	int persistence;
-	int dump;
-	int filtertime;
-	time_t begin; /* this i s used to compare with filter time */
-	int CtIndex;
+    char type;
+    //char tag[TAG_LEN];
+    char description[DESCR_LEN];
+    int level;
+    int persistence;
+    int dump;
+    int filtertime;
+    time_t begin; /* this i s used to compare with filter time */
+    int CtIndex;
 } event_t;
 #endif
 

@@ -235,6 +235,11 @@ FILE * Logger::openFile(int * newfile, const char * basedir, const char * subdir
 bool Logger::openAlarmsFile()
 {
     int newfile = 0;
+    if (alarmsfp != NULL)
+    {
+        LOG_PRINT(info_e, "the log file is already open\n");
+        return true;
+    }
     /*  open the log file */
     alarmsfp = openFile(&newfile, AlarmsDir);
     if (alarmsfp == NULL)

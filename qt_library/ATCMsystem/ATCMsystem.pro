@@ -38,7 +38,6 @@ LIBS += \
 -lATCMlogger
 
 SOURCES += \
-comm_status.cpp \
 system_ini.cpp \
 data_manager.cpp \
 display_settings.cpp \
@@ -51,7 +50,6 @@ page0.cpp \
 main.cpp
 
 HEADERS += \
-comm_status.h \
 system_ini.h \
 data_manager.h \
 display_settings.h \
@@ -64,7 +62,6 @@ page0.h \
 main.h
 
 FORMS += \
-comm_status.ui \
 system_ini.ui \
 data_manager.ui \
 display_settings.ui \

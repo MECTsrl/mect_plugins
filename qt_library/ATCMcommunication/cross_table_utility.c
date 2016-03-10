@@ -1065,12 +1065,14 @@ int readFromDb(int ctIndex, void * value)
     }
 #endif
 
+#if 0
     /* fieldbus in error */
     if (getErrorBit(varNameArray[ctIndex].protocol, error_blacklist_e, varNameArray[ctIndex].node) == 1)
     {
         LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
         return -1;
     }
+#endif
 
     int byte_nb = (ctIndex - 1) * 4;
     LOG_PRINT(verbose_e, "'%s': %X\n", varNameArray[ctIndex].tag, pIODataAreaI[byte_nb]);
@@ -1151,12 +1153,14 @@ int writeToDb(int ctIndex, void * value)
     }
 #endif
 
+#if 0
     /* fieldbus in error */
     if (getErrorBit(varNameArray[ctIndex].protocol, error_blacklist_e, varNameArray[ctIndex].node) == 1)
     {
         LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
         return -1;
     }
+#endif
 
     int type = CtIndex2Type(ctIndex);
 
@@ -1243,12 +1247,14 @@ int formattedReadFromDb(int ctIndex, char * value)
     }
 #endif
 
+#if 0
     /* fieldbus in error */
     if (getErrorBit(varNameArray[ctIndex].protocol, error_blacklist_e, varNameArray[ctIndex].node) == 1)
     {
         LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
         return -1;
     }
+#endif
 
     /* be sure that the variable is active */
     int SynIndex = -1;
@@ -2390,7 +2396,11 @@ int isDeviceConnected(enum protocol_e protocol, int node)
         return -1;
     }
 
-    return device_status[protocol][node] && !getErrorBit(protocol, error_blacklist_e, node);
+    return device_status[protocol][node]
+#if 0
+            && !getErrorBit(protocol, error_blacklist_e, node)
+#endif
+            ;
 }
 
 int disconnectDevice(enum protocol_e protocol, int node)
@@ -3141,6 +3151,7 @@ void checkTagWriting(const char * varname)
     checkSynIndexWriting(SynIndex);
 }
 
+#if 0
 unsigned short int getCommunicationEngineMainRevision(void)
 {
     unsigned short int value;
@@ -3553,7 +3564,7 @@ short int getErrorBitByName(const char *protocol, const char *kind, int node)
 
     return getErrorBit(protocol_e, kind_e,  node);
 }
-
+#endif
 /**
  * @brief check the syncro data input to verify if all pending recipe write are finished.
  *

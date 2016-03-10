@@ -25,7 +25,6 @@
 #include "app_usb.h"
 
 #include "ATCMsystem/system_ini.h"
-#include "ATCMsystem/comm_status.h"
 #include "ATCMsystem/data_manager.h"
 #include "ATCMsystem/display_settings.h"
 #include "ATCMsystem/info.h"
@@ -187,24 +186,15 @@ void page::updateData()
 #endif
     
     checkWriting();
-    
-    LOG_PRINT(verbose_e, "%x INDEX %d -> %d\n", (IOSyncroAreaI)[(ERRORS_SUMMARY)/2], ERRORS_SUMMARY, (ERRORS_SUMMARY)/2);
-    if (IS_RTU_ERROR)
+
+/*
+ *    if(IS_ENGINE_READY == 0)
     {
-        LOG_PRINT(warning_e, "IS_RTU_ERROR %X\n", (IOSyncroAreaI)[(ERRORS_SUMMARY)/2]);
-        SET_WORD_FROM_WORD(RESET_ERROR_OFF, IOSyncroAreaO, RESET_RTU_ERROR);
+        QMessageBox::critical(0, "Communication Error", QString("Problem to start communication engine [0x%1].").arg(QString().setNum((IOSyncroAreaI)[5707]),16));
     }
-    if (IS_TCP_ERROR)
-    {
-        LOG_PRINT(warning_e, "IS_TCP_ERROR %X\n", (IOSyncroAreaI)[(ERRORS_SUMMARY)/2]);
-        SET_WORD_FROM_WORD(RESET_ERROR_OFF, IOSyncroAreaO, RESET_TCP_ERROR);
-    }
-    if (IS_TCPRTU_ERROR)
-    {
-        LOG_PRINT(warning_e, "IS_TCPRTU_ERROR %X\n", (IOSyncroAreaI)[(ERRORS_SUMMARY)/2]);
-        SET_WORD_FROM_WORD(RESET_ERROR_OFF, IOSyncroAreaO, RESET_TCPRTU_ERROR);
-    }
-    
+
+    LOG_PRINT(info_e, "Communication engine started\n");
+*/
 #ifdef DUMPSCREEN
     QPixmap::grabWidget(this).save(this->windowTitle().append(".png").prepend("/local/root/"));
 #endif
@@ -2183,10 +2173,6 @@ bool page::create_next_page(page ** p, const char * t)
         if (strcmp(t, "system_ini") == 0)
         {
             *p = (page *)(new system_ini);
-        }
-        else if (strcmp(t, "comm_status") == 0)
-        {
-            *p = (page *)(new comm_status);
         }
         else if (strcmp(t, "info") == 0)
         {

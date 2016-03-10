@@ -371,66 +371,6 @@ bool CommStart()
             QFile::remove(KINDOFUPDATE_FILE);
         }
 
-        int retry = 0;
-        while(IS_ENGINE_READY == 0)
-        {
-            LOG_PRINT(info_e, "Waiting communication engine\n");
-            if(retry > WAIT_COMM_RETRY_NB)
-            {
-                retry = 0;
-                QMessageBox::critical(0, "Communication Error", "Problem to start communication engine.");
-            }
-            retry++;
-            sleep(1);
-        }
-
-        LOG_PRINT(info_e, "Communication engine started\n");
-
-        if (IS_COMMPAR_ERROR)
-        {
-            LOG_PRINT(error_e, "Commpar error\n");
-            QMessageBox::critical(0,QApplication::tr("Commpar Table Check"), QApplication::tr("A problem occour when the communication paramenters are loading"));
-            return false;
-        }
-        if (IS_CROSSTABLE_ERROR)
-        {
-            LOG_PRINT(error_e, "CrossTable error\n");
-            QMessageBox::critical(0,QApplication::tr("Cross Table Check"), QApplication::tr("A problem occour when the CrossTable variables are loading"));
-            return false;
-        }
-        if (IS_ALARMSTBL_ERROR)
-        {
-            if (QFile::exists(ERROR_TABLE))
-            {
-                LOG_PRINT(error_e, "Alarms error\n");
-                QMessageBox::critical(0,QApplication::tr("Alarms Table Check"), QApplication::tr("A problem occour when the alarms are loading"));
-                return false;
-            }
-        }
-
-        /* disable the device connected to a protocol not started */
-        if (IS_RTU_ENABLED == 0)
-        {
-            for (int node = 0; node < MAX_DEVICE_NB; node++)
-            {
-                device_status[prot_rtu_e][node] = 0;
-            }
-        }
-        if (IS_TCP_ENABLED == 0)
-        {
-            for (int node = 0; node < MAX_DEVICE_NB; node++)
-            {
-                device_status[prot_tcp_e][node] = 0;
-            }
-        }
-        if (IS_TCPRTU_ENABLED == 0)
-        {
-            for (int node = 0; node < MAX_DEVICE_NB; node++)
-            {
-                device_status[prot_tcprtu_e][node] = 0;
-            }
-        }
-
         /* load the passwords */
         loadPasswords();
 #ifdef LOG_DISABLED

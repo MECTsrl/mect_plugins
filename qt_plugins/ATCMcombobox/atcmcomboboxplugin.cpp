@@ -108,7 +108,7 @@ QString ATCMcomboboxPlugin::domXml() const
 			" <string></string>\n"
 			" </property>\n"
 			" <property name=\"refresh\" >\n"
-			" <number>500</number>\n"
+			" <number>200</number>\n"
 			" </property>\n"
 			" <property name=\"viewStatus\" >\n"
 			" <bool>false</bool>\n"

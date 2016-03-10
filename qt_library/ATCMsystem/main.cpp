@@ -19,7 +19,6 @@
 #include "global_var.h"
 
 #include "system_ini.h"
-#include "comm_status.h"
 #include "cross_table_utility.h"
 #include "data_manager.h"
 #include "display_settings.h"

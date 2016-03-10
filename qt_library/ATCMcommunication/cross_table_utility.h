@@ -180,6 +180,7 @@ extern pthread_mutex_t data_send_mutex;
 extern pthread_mutex_t sync_recv_mutex;
 extern pthread_mutex_t sync_send_mutex;
 
+#if 0
 unsigned short int getCommunicationEngineMainRevision(void);
 unsigned short int getCommunicationEngineMinorRevision(void);
 int resetErrorByName(const char *protocol);
@@ -190,6 +191,7 @@ short int getErrorStatusByName(const char *protocol, const char *kind);
 short int getErrorStatus(enum protocol_e protocol, enum error_kind_e kind);
 short int getErrorBitByName(const char *protocol, const char *kind, int node);
 short int getErrorBit(enum protocol_e protocol, enum error_kind_e kind, int node);
+#endif
 int writePending();
 int writePendingInorder();
 

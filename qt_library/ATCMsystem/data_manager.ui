@@ -131,28 +131,6 @@
      <property name="spacing">
       <number>4</number>
      </property>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="pushButtonRecipe">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>RECIPE</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QPushButton" name="pushButtonAlarms">
        <property name="minimumSize">
@@ -175,8 +153,8 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="pushButtonStore">
+     <item row="2" column="0">
+      <widget class="QPushButton" name="pushButtonRecipe">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -193,7 +171,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>STORE</string>
+        <string>RECIPE</string>
        </property>
       </widget>
      </item>
@@ -219,8 +197,8 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QPushButton" name="pushButtonComm">
+     <item row="1" column="1">
+      <widget class="QPushButton" name="pushButtonStore">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -237,7 +215,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>COMMUNICATION</string>
+        <string>STORE</string>
        </property>
       </widget>
      </item>

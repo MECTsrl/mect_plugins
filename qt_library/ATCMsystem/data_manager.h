@@ -40,8 +40,6 @@ private slots:
 
     void on_pushButtonHome_clicked();
 
-    void on_pushButtonComm_clicked();
-
     void on_pushButtonBack_clicked();
 
 private:
