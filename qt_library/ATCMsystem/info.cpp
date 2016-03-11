@@ -147,7 +147,9 @@ void info::reload()
     }
 
     /* PLC */
-    sprintf(version, "%d.%d", getCommunicationEngineMainRevision(), getCommunicationEngineMinorRevision());
+    float versionf;
+    readFromDb(5394, &versionf);
+    sprintf(version, "%.3f", versionf);
     ui->labelPLCval->setText(version);
 
     /* HMI */
