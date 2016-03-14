@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QWSServer>
 #include <QSettings>
+#include <unistd.h>
 
 /* this define set the window title */
 #define WINDOW_TITLE ""

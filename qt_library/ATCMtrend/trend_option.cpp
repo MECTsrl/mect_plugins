@@ -9,6 +9,7 @@
  */
 #include <QDir>
 #include <QFileInfo>
+#include <QMessageBox>
 #include "alphanumpad.h"
 #include "app_logprint.h"
 #include "item_selector.h"

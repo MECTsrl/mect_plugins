@@ -9,6 +9,7 @@
  */
 #include <QDir>
 #include <QFileInfo>
+#include <QMessageBox>
 
 #include "app_logprint.h"
 #include "recipe_select.h"

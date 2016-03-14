@@ -9,6 +9,7 @@
  */
 #include <errno.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "app_logprint.h"
 #include "common.h"

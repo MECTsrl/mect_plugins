@@ -11,6 +11,7 @@
 #include "global_functions.h"
 #include "options.h"
 #include "ui_options.h"
+#include <QMessageBox>
 #ifdef TRANSLATION
 #include "item_selector.h"
 #include <QDirIterator>

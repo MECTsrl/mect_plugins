@@ -13,6 +13,7 @@
 #include "system_ini.h"
 #include "ui_system_ini.h"
 #include <QSettings>
+#include <QMessageBox>
 
 #define SYSTEM_INI "/local/etc/sysconfig/system.ini"
 

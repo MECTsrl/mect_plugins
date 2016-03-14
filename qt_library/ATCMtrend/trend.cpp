@@ -23,6 +23,8 @@
 #include <pthread.h>
 #include <ctype.h>
 #include <assert.h>
+#include <QMessageBox>
+#include <unistd.h>
 
 #define TIME_SCALE
 

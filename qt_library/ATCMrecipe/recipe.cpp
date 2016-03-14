@@ -9,6 +9,8 @@
  */
 #include <QTableWidget>
 #include <QFileInfo>
+#include <QMessageBox>
+#include <unistd.h>
 
 #include "app_logprint.h"
 #include "recipe.h"

@@ -2,6 +2,7 @@
 #define GLOBAL_FUNCTIONS_H
 
 #include "global_var.h"
+#include <unistd.h>
 
 enum usb_mode_e
 {

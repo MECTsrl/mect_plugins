@@ -8,6 +8,7 @@
  * @brief Alarm History
  */
 #include <QDir>
+#include <QMessageBox>
 #include "app_logprint.h"
 #include "app_usb.h"
 #include "alarms_history.h"
