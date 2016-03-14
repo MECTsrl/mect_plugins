@@ -14,9 +14,10 @@
 #include <QThread>
 #include <QHash>
 #include <QDateTime>
+#include <semaphore.h>
+
 #include "common.h"
 #include "global_var.h"
-#include <semaphore.h>
 
 #define RECORD_SIZE_BYTE 100
 #define MAX_RECORD_PER_DAY (24 * 3600 / 5)

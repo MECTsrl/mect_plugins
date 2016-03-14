@@ -46,10 +46,6 @@ private slots:
 
     void on_pushButtonPages4_clicked();
 
-#ifdef DEMO
-    void on_pushButton_clicked();
-#endif
-
 private:
     Ui::menu *ui;
 };

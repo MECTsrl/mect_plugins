@@ -13,7 +13,6 @@
 #include "pagebrowser.h"
 #include "trend_other.h"
 
-#include <QMouseEvent>
 #include <qwt_plot.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_picker.h>

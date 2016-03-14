@@ -266,7 +266,6 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 
 /* WARNING this value is used also into the run time, so if you change the value here you must change it also into vmLib/libHW119.c */
 #define CROSS_TABLE        LOCAL_ETC_DIR"/Crosstable.csv"
-#define ERROR_TABLE        LOCAL_ETC_DIR"/Alarms.csv"
 #define COMMUNICATION_FILE LOCAL_ETC_DIR"/Commpar.csv"
 #define CONFIG_FILE        LOCAL_ETC_DIR"/system.ini"
 #define PASSFILE           LOCAL_ETC_DIR"/.pwd"

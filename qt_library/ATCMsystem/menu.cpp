@@ -64,12 +64,6 @@ menu::menu(QWidget *parent) :
     SET_PAGE1_STYLE();
     labelDataOra = ui->labelDataOra;
     
-    /* the demo button is visible only if this program is build with DEMO define */
-#ifdef DEMO
-    ui->pushButton->setVisible(true);
-#else
-    ui->pushButton->setVisible(false);
-#endif
     reload();
 }
 
@@ -212,12 +206,3 @@ void menu::on_pushButtonPages4_clicked()
 {
     goto_page("page400");
 }
-
-/* this section is enabled only if this program is build with DEMO define */
-#ifdef DEMO
-void menu::on_pushButton_clicked()
-{
-    exit(0);
-}
-#endif
-

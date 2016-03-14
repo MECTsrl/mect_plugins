@@ -8,15 +8,9 @@
  * @brief HMI Main function
  */
 
-#include <QHash>
-#include <QMessageBox>
-#include <QApplication>
-#include "common.h"
 #include "global_var.h"
 #include "app_usb.h"
-#include "cross_table_utility.h"
-#include "app_logprint.h"
-#include "defines.h"
+
 #ifdef TARGET
 #include <QWSServer>
 #ifdef ENABLE_SCREENSAVER
@@ -65,92 +59,11 @@ bool BuzzerAlarm = true;
 struct timespec LastTouch = { 0 ,0 };
 
 /* Trend */
+#ifdef ENABLE_TREND
 char _layout_ = LANDSCAPE;
 char _last_layout_ = LANDSCAPE;
 bool _trend_data_reload_ = true;
-
-/* Communication parameters */
-int FailNb = RETRIES_DEF;
-int FailDivisor = BLACKLIST_DEF;
-int HighPriorityTimerMsec;
-int MediumPriorityTimerMsec;
-int LowPriorityTimerMsec;
-
-/**
- * @section Serial paramenters
- */
-/**
- * @brief Bauderate array
- */
-int BaudRateArray[7] =
-{
-    9600,
-    14400,
-    19200,
-    28800,
-    38400,
-    57600,
-    115200
-};
-
-/**
- * @brief Stop bit array
- */
-int StopBitArray[2] =
-{
-    1,
-    2
-};
-
-/**
- * @brief Bit number array
- */
-int BitNbArray[4] =
-{
-    5,
-    6,
-    7,
-    8
-};
-
-/**
- * @brief Parity array
- */
-char ParityArray[3][8] =
-{
-    "none",
-    "even", /*pari*/
-    "odd",  /*dispari*/
-};
-
-/**
- * @brief Parity array
- */
-char ParityArrayShort[3] =
-{
-    'N',
-    'E', /*pari*/
-    'O',  /*dispari*/
-};
-
-
-char RTUDevice[FILENAME_MAX] = RTU_DEVICE;
-int BaudRate = MBBAUD_DEFAULT;
-char Parity = 'N';
-int DataBit = MBBITNB_DEFAULT;
-int StopBit = MBSTOP_DEFAULT;
-int QueryIntervalRTU = MBDELAY_DEFAULT;
-int TimeoutRTU = MBTIMEOUT_DEFAULT;
-
-char IpTCP[32] =  "127.0.0.1";
-int PortTCP = 0;
-int QueryIntervalTCP = 100;
-int TimeoutTCP = MBTIMEOUT_DEFAULT;
-
-char IpTCPRTU[32] = "127.0.0.1";
-int PortTCPRTU = 0;
-int QueryIntervalTCPRTU = 100;
-int TimeoutTCPRTU = MBTIMEOUT_DEFAULT;
+#endif
 
 /* Tag table */
 QHash<QString, QString> TagTable;

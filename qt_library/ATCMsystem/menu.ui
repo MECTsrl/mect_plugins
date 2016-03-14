@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>253</width>
+    <width>281</width>
     <height>279</height>
    </rect>
   </property>
@@ -161,7 +161,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>PAGES300</string>
+        <string>page300</string>
        </property>
       </widget>
      </item>
@@ -186,7 +186,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>PAGES400</string>
+        <string>page400</string>
        </property>
       </widget>
      </item>
@@ -208,7 +208,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>PAGES200</string>
+        <string>page200</string>
        </property>
       </widget>
      </item>
@@ -230,7 +230,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>PAGES100</string>
+        <string>page100</string>
        </property>
       </widget>
      </item>
@@ -342,20 +342,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">text-align: center;
-</string>
-     </property>
-     <property name="text">
-      <string>Back to demo menu</string>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

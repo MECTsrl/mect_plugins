@@ -361,8 +361,8 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         goto exit_function;
     }
 
-    bzero(FieldsMap, MAX_FIELDS_NB * LINE_SIZE * sizeof(char));
-    bzero(FilterFlags, MAX_FIELDS_NB * sizeof(int));
+    memset(FieldsMap, 0x0, MAX_FIELDS_NB * LINE_SIZE * sizeof(char));
+    memset(FilterFlags, 0x0, MAX_FIELDS_NB * sizeof(int));
 
     for (i = fcount - 1; i >= 0; i--)
     {
@@ -634,7 +634,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     {
         LOG_PRINT(info_e, "TIME\n");
         int skipline = 0;
-        char baseFileName[LINE_SIZE] = "";
 
         /* extract the log file */
         sprintf(tmp, "%s 00:00:00", datefin);
@@ -677,85 +676,71 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 
         while (difftime(datetimefin, datetimein) >  - 24*60*60)
         {
-            int fcount = scandir(logdir, &filelist, 0, alphasort);
-            int i = 0;
             strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
-            sprintf(baseFileName, "%s", tmp);
-            for (i = 0; i < fcount; i++)
+            sprintf(inFullPathFileName, "%s/%s.log", logdir, tmp);
+            fpin = fopen(inFullPathFileName, "r");
+            if (fpin)
             {
-                if (strncmp(filelist[i]->d_name, baseFileName, strlen(baseFileName)) == 0)
+                if (skipline == 0)
                 {
-                    LOG_PRINT(info_e, "OK for '%s*.log' '%s'\n", inFullPathFileName, filelist[i]->d_name);
-                    sprintf(inFullPathFileName, "%s/%s", logdir, filelist[i]->d_name);
-                    fpin = fopen(inFullPathFileName, "r");
-                    if (fpin)
+                    skipline = 1;
+                    for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
                     {
-                        if (skipline == 0)
+                        if (*p == ';')
                         {
+                            p++;
+                        }
+                        if (*p =='\0')
+                        {
+                            break;
+                        }
 
-                            skipline = 1;
-                            for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
+                        if (FilterFlags[j] == 1)
+                        {
+                            strcpy(token, p);
+                            LOG_PRINT(info_e, "token %s, p %s", token, p);
+                            if (strstr(token, ";") != NULL)
                             {
-                                if (*p == ';')
-                                {
-                                    p++;
-                                }
-                                if (*p =='\0')
-                                {
-                                    break;
-                                }
-
-                                if (FilterFlags[j] == 1)
-                                {
-                                    strcpy(token, p);
-                                    LOG_PRINT(info_e, "token %s, p %s", token, p);
-                                    if (strstr(token, ";") != NULL)
-                                    {
-                                        *strstr(token, ";") = '\0';
-                                    }
-                                    for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-                                    token[k + 1] = '\0';
-                                    for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-                                    if (k > 0)
-                                    {
-                                        strcpy(token, &(token[k]));
-                                    }
-                                    fprintf(fpout, "%s", token);
-                                    if (firstline == 0)
-                                    {
-                                        fprintf(fpout, "; ");
-                                    }
-
-                                    LOG_PRINT(info_e, "su file %s\n", token);
-                                    firstline = 0;
-                                }
+                                *strstr(token, ";") = '\0';
                             }
-                            fprintf(fpout, "\n");
+                            for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
+                            token[k + 1] = '\0';
+                            for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
+                            if (k > 0)
+                            {
+                                strcpy(token, &(token[k]));
+                            }
+                            fprintf(fpout, "%s", token);
+                            if (firstline == 0)
+                            {
+                                fprintf(fpout, "; ");
+                            }
 
-                            //occorre filtrare anche la riga di titolo
-                            //fprintf(fpout, "%s", titleline);
-                        }
-
-                        /* open the log file and filter by time and by field */
-                        if (Extract(fpin, fpout, skipline, FilterFlags, datein, timein, datefin, timefin) != 0)
-                        {
-                            LOG_PRINT(info_e, "Error\n");
-                            retval = 15;
-                            goto exit_function;
+                            LOG_PRINT(info_e, "su file %s\n", token);
+                            firstline = 0;
                         }
                     }
-                    else
-                    {
-                        LOG_PRINT(info_e,"Cannot open %s\n", inFullPathFileName);
-                    }
-                    if(fpin)
-                        fclose(fpin);
+                    fprintf(fpout, "\n");
+
+                    //occorre filtrare anche la riga di titolo
+                    //fprintf(fpout, "%s", titleline);
                 }
-                else
+
+                /* open the log file and filter by time and by field */
+                if (Extract(fpin, fpout, skipline, FilterFlags, datein, timein, datefin, timefin) != 0)
                 {
-                    LOG_PRINT(info_e, "KO for '%s' '%s'\n", baseFileName, filelist[i]->d_name);
+                    LOG_PRINT(info_e, "Error\n");
+                    retval = 15;
+                    goto exit_function;
                 }
             }
+            else
+            {
+                LOG_PRINT(info_e,"Cannot open %s\n", inFullPathFileName);
+            }
+            if(fpin)
+                fclose(fpin);
+
             mytime.tm_mday++;
             datetimein = mktime(&mytime);
         }

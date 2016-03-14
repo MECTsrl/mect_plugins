@@ -15,7 +15,6 @@
 #include <QKeyEvent>
 #endif
 #include <QPainter>
-#include <QMessageBox>
 #include <QStack>
 #include <QStyleOption>
 #include <QTimer>

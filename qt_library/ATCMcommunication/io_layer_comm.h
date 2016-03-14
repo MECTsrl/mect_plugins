@@ -11,18 +11,15 @@
 #define IO_LAYER_COMM_H
 
 #include <QThread>
-#include <arpa/inet.h>
 #include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h> /* for exit() */
 #include <string.h> /* memset() */
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/time.h> /* select() */ 
 #include <sys/types.h>
-#include <unistd.h>
 
 #include "common.h"
 

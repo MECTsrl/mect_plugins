@@ -106,7 +106,7 @@ void page0::changePage()
         }
     }
 
-    /* Check the date. if it is unset 01 Jan 1970 start with time_set page*/
+    /* Check the date. if it is unset 01 Jan 1970 start with time_set page */
     time_t rt = 0;
     struct tm *pt = NULL;
     rt = time(NULL);
@@ -118,6 +118,7 @@ void page0::changePage()
             QMessageBox::critical(0,QApplication::tr("Invalid Page"), QApplication::tr("Cannot show any of Default pages '%1', '%2' and home pages '%3'. '%4'").arg("time_set").arg(STARTPAGE_DEF).arg(HomePage).arg(HOMEPAGE_DEF));
         }
     }
+
     /* go to the home page */
     else if (goto_page(StartPage, false) == false && goto_page(STARTPAGE_DEF, false) == false && goto_page(HomePage, false) == false && goto_page(HOMEPAGE_DEF, false) == false )
     {

@@ -66,6 +66,7 @@ int finalize();
  */
 bool CommStart();
 
+#ifdef BUZZER
 class MyEventFilter: public QObject
 {
 public:
@@ -106,6 +107,7 @@ public:
         return false;
     }
 };
+#endif
 
 /**
  * @brief mount USB pen drive

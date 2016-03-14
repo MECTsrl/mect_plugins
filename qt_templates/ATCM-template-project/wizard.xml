@@ -294,7 +294,6 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="config/system.ini" target="config/system.ini" openproject="false" binary="false"/>
 	   <file source="config/store1.csv" target="config/store1.csv" openproject="false" binary="false"/>
 	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
-	   <file source="config/Alarms.csv" target="config/Alarms.csv" openproject="false" binary="false"/>
 	   <file source="config/lang_table.csv" target="config/lang_table.csv" openproject="false" binary="false"/>
 	   <!-- 
 	   <file source="project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>

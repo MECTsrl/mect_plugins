@@ -8,48 +8,10 @@
  * @brief HMI Main function
  */
 #include <QApplication>
-#include <QDate>
 #include <getopt.h>
-
-#include "page0.h"
-#include "common.h"
 #include "main.h"
 #include "app_logprint.h"
-#include "utility.h"
-#include "global_var.h"
-
-#include "system_ini.h"
-#include "cross_table_utility.h"
-#include "data_manager.h"
-#include "display_settings.h"
-#include "info.h"
-#include "main.h"
-#include "menu.h"
-#include "options.h"
 #include "page0.h"
-#include "time_set.h"
-
-#ifdef ENABLE_ALARMS
-#include "alarms.h"
-#include "alarms_history.h"
-#endif
-
-#ifdef ENABLE_STORE
-#include "store.h"
-#include "store_filter.h"
-#endif
-
-#ifdef ENABLE_TREND
-#include "trend.h"
-#include "trend_other.h"
-#include "trend_option.h"
-#include "trend_range.h"
-#endif
-
-#ifdef ENABLE_RECIPE
-#include "recipe.h"
-#include "recipe_select.h"
-#endif
 
 /* Long options */
 static struct option long_options[] = {

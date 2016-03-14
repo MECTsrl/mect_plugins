@@ -109,21 +109,6 @@ int readIniFile(void)
     strcpy(PwdLogoutPage, settings.value(PWD_LOGOUT_PAGE_TAG, PWD_LOGOUT_PAGE_DEF).toString().toAscii().data());
     LOG_PRINT(info_e, "'%s' = %s\n", PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
 
-    FailNb = settings.value(RETRIES_TAG, RETRIES_DEF).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", RETRIES_TAG, FailNb);
-
-    FailDivisor = settings.value(BLACKLIST_TAG, BLACKLIST_DEF).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", BLACKLIST_TAG, FailDivisor);
-
-    FailDivisor = settings.value(HIGH_PRIORITY_TAG, HIGH_PRIORITY_DEF).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", HIGH_PRIORITY_TAG, HighPriorityTimerMsec);
-
-    FailDivisor = settings.value(MIDDLE_PRIORITY_TAG, MIDDLE_PRIORITY_DEF).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", MIDDLE_PRIORITY_TAG, MediumPriorityTimerMsec);
-
-    FailDivisor = settings.value(LOW_PRIORITY_TAG, LOW_PRIORITY_DEF).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", LOW_PRIORITY_TAG, LowPriorityTimerMsec);
-
     return 0;
 }
 

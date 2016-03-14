@@ -1,4 +1,4 @@
-/** 
+/**
  * @file
  * @author Emiliano Bergamaschini <ebergamaschini@mect.it>
  *
@@ -9,20 +9,12 @@
  */
 #ifndef _GLOBAL_VAR_H_
 #define _GLOBAL_VAR_H_
-
-#include <QApplication>
-#include <QStringList>
-#include <QList>
-#include <QHash>
-#include <QDateTime>
 #include <stdio.h>
+#include <QDateTime>
 #include <QEvent>
-
-#include "common.h"
-#include "io_layer_comm.h"
+#include <QHash>
 #include "defines.h"
-#include "app_var_list.h"
-//#include "pagebrowser.h"
+#include "io_layer_comm.h"
 
 /** @brief io layer to syncronize the data with the PLC */
 extern io_layer_comm * ioComm;
@@ -55,48 +47,6 @@ extern int Buzzerfd;
 extern bool BuzzerTouch;
 extern bool BuzzerAlarm;
 extern struct timespec LastTouch;
-
-/* Communication parameters */
-#define MAX_PRIORITY_NUMBER 3
-#define MBTIMEOUT_DEFAULT  1000
-#define MBDELAY_DEFAULT     1000
-
-extern int FailNb;
-extern int FailDivisor;
-extern int PriorityCounter[MAX_PRIORITY_NUMBER];
-extern int HighPriorityTimerMsec;
-extern int MediumPriorityTimerMsec;
-extern int LowPriorityTimerMsec;
-
-#define BAUDRATE_NB 7
-#define STOPBIT_NB 2
-#define BITNB_NB 4
-#define PARITY_NB 3
-
-#define MBBAUD_DEFAULT      9600
-#define MBBITNB_DEFAULT     8
-#define MBPARITY_DEFAULT    "none"
-#define MBSTOP_DEFAULT      0
-
-#define RTU_DEVICE "/dev/ttySP0"
-
-extern char RTUDevice[FILENAME_MAX];
-extern int BaudRate;
-extern char Parity;
-extern int DataBit;
-extern int StopBit;
-extern int QueryIntervalRTU;
-extern int TimeoutRTU;
-
-extern char IpTCP[32];
-extern int PortTCP;
-extern int QueryIntervalTCP;
-extern int TimeoutTCP;
-
-extern char IpTCPRTU[32];
-extern int PortTCPRTU;
-extern int QueryIntervalTCPRTU;
-extern int TimeoutTCPRTU;
 
 extern int MaxWindowSec;
 

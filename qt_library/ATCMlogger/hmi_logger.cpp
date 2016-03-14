@@ -453,7 +453,7 @@ bool Logger::logshot()
 }
 
 #ifdef ENABLE_ALARMS
-
+#ifdef ERROR_TABLE
 size_t Logger::loadErrorTable()
 {
     FILE * fp;
@@ -642,6 +642,130 @@ size_t Logger::loadErrorTable()
     
     return elem_nb;
 }
+#else
+size_t Logger::loadErrorTable()
+{
+    FILE * fp;
+    int elem_nb = 0;
+    char line[LINE_SIZE];
+    char token[LINE_SIZE] = "";
+    char tag[LINE_SIZE] = "";
+    char * p = NULL;
+
+    /* read the error cross table */
+    fp = fopen(CROSS_TABLE, "r");
+    if (fp == NULL)
+    {
+        sprintf(CrossTableErrorMsg, "Cannot open The error cross table '%s': [%s]", CROSS_TABLE, strerror(errno));
+        LOG_PRINT(error_e, "%s\n", CrossTableErrorMsg);
+        return -1;
+    }
+
+    EventHash.clear();
+
+    int index = -1;
+    while (fgets(line, LINE_SIZE, fp) != NULL)
+    {
+        event_t * item = (event_t*)calloc(1, sizeof(event_t));
+        LOG_PRINT(verbose_e, "%s\n", line);
+
+        index++;
+        p = strrchr(line, ';');
+        if (p == NULL)
+        {
+            sprintf(CrossTableErrorMsg, "Malformed line");
+            LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
+            free(item);
+            fclose(fp);
+            return elem_nb;
+        }
+
+        /*
+         *[RW] <comments>
+         *[RO] <comments>
+         *[AL <source> <operator> <value to compare>] <comments>
+         *[EV <source> <operator> <value to compare>] <comments>
+         *
+         *<operator>: '>' '>=' '<' '<='  '==' '!=' 'RISING' 'FALLING'
+         *<value to compare> only if <value to compare> is not 'RISING' or 'FALLING'
+         */
+
+        p = strrchr(p, '[');
+        if (p == NULL)
+        {
+            sprintf(CrossTableErrorMsg, "Malformed line missing '['");
+            LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
+            free(item);
+            fclose(fp);
+            return elem_nb;
+        }
+        /* alarm */
+        if (strncmp(p, "AL", 2) == 0)
+        {
+            item->type = ALARM;
+        }
+        /* event */
+        else if (strncmp(p, "AL", 2) == 0)
+        {
+            item->type = EVENT;
+        }
+        /* other */
+        else
+        {
+            continue;
+        }
+
+        strcpy(tag, varNameArray[index].tag);
+        LOG_PRINT(verbose_e, "FOUND ALARM '%s'\n", token);
+
+        /* skip - source tag */
+
+        /* skip - reference tag */
+
+        /* skip - fix value */
+
+        /* skip - operator */
+
+        /* extract the time filter before sho the alarm/event */
+        item->filtertime = 0;
+
+        /* extract the description of the alarm/event */
+        p = strrchr(p, ']');
+        if (p == NULL)
+        {
+            sprintf(CrossTableErrorMsg, "Malformed line missing ']'");
+            LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
+            free(item);
+            fclose(fp);
+            return elem_nb;
+        }
+        if (QString(p + 1).simplified().length() == 0)
+        {
+            strcpy(item->description, varNameArray[index].tag);
+        }
+        else
+        {
+            strcpy(item->description, QString(p + 1).simplified().toAscii().data());
+        }
+
+        /* extract the level of the alarm/event */
+        item->level = 0;
+
+        /* extract the persistence of the alarm/event */
+        item->persistence = 0;
+
+        /* extract the dump flag of the alarm/event */
+        item->dump = 1;
+
+        EventHash.insert(tag, item);
+        elem_nb++;
+    }
+    fclose(fp);
+    LOG_PRINT(verbose_e, "Loaded %d record\n", elem_nb);
+
+    return elem_nb;
+}
+#endif
 
 /**
  * @brief return false if the alarm is tagged as INVISIBLE into the LevelColorTable or into the StatusColorTable

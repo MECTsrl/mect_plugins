@@ -19,7 +19,6 @@ target.path = /local/root
 INSTALLS += target
 
 config.files = config/Crosstable.csv config/system.ini
-config.files += config/Alarms.csv
 config.files += config/lang_table.csv
 config.path = /local/etc/sysconfig
 
