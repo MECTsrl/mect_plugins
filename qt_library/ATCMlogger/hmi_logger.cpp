@@ -693,11 +693,7 @@ size_t Logger::loadErrorTable()
         p = strrchr(p, '[');
         if (p == NULL)
         {
-            sprintf(CrossTableErrorMsg, "Malformed line missing '['");
-            LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
-            free(item);
-            fclose(fp);
-            return elem_nb;
+            continue;
         }
         /* alarm */
         if (strncmp(p, "AL", 2) == 0)
