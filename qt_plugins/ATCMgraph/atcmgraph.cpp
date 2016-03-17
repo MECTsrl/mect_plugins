@@ -87,7 +87,7 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     m_legendvisible = false;
     m_bgcolor = QColor(255,255,255);
     m_pen1color = QColor(255,0,0);
-    m_pen2color = QColor(0,255,0);
+    m_pen2color = QColor(0,0,255);
 
     m_run_stop = true;
 

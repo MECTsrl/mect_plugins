@@ -177,13 +177,6 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
             return;
         }
     }
-#ifdef ENABLE_ALARMS
-    if (openAlarmsFile() == false)
-    {
-        LOG_PRINT(error_e, "Cannot open the log\n");
-        return;
-    }
-#endif
 #ifdef ENABLE_STORE
     counterS = 0;
     counterF = 0;
@@ -285,6 +278,8 @@ void Logger::run()
     struct timespec abstime;
     sem_init(&theLoggingSem, 0, 0);
 
+    logger_start = false;
+
     while (1)
     {
         if (recompute_abstime) {
@@ -337,12 +332,6 @@ void Logger::run()
         }
 
 #ifdef ENABLE_ALARMS
-        if (openAlarmsFile() == false)
-        {
-            LOG_PRINT(error_e, "Cannot open the log\n");
-            return;
-        }
-
         /* check each event */
         for ( i = EventHash.begin(); i != EventHash.end() && i.value() != NULL ; i++)
         {
@@ -367,6 +356,11 @@ void Logger::run()
                 {
                     i.value()->begin = 0;
                     LOG_PRINT(verbose_e, "%s - dumpEvent %d\n", i.key().toAscii().data(), var);
+                    if (openAlarmsFile() == false)
+                    {
+                        LOG_PRINT(error_e, "Cannot open the log\n");
+                        return;
+                    }
                     dumpEvent(i.key(), i.value(), (var == 1) ? alarm_rise_e : alarm_fall_e);
                 }
                 else

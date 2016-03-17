@@ -1728,6 +1728,7 @@ void page::setAlarmsBuzzer(int period_ms)
     
     for (; index < _active_alarms_events_.count() && _active_alarms_events_.at(index)->isack == true; index++);
     
+#ifdef BUZZER
     if (index < _active_alarms_events_.count() && _active_alarms_events_.at(index)->isack == false)
     {
         LOG_PRINT(info_e, "BEEEEEEP '%d'\n", period_ms/2);
@@ -1740,6 +1741,7 @@ void page::setAlarmsBuzzer(int period_ms)
     {
         LOG_PRINT(info_e, "NO ACTIVE ALARM FOUND\n");
     }
+#endif
 }
 
 void page::sequentialShowError(QLineEdit * line, int period_ms)

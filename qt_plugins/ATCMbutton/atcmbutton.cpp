@@ -20,9 +20,13 @@
 #include <stdio.h>
 #include "app_logprint.h"
 #include "cross_table_utility.h"
+#ifdef ENABLE_TREND
 extern bool _trend_data_reload_;
 extern char _actual_trend_[FILENAME_MAX];
+#endif
+#ifdef ENABLE_STORE
 extern char _actual_store_[FILENAME_MAX];
+#endif
 #endif
 
 #define RETRY_NB 20
@@ -742,6 +746,7 @@ void  ATCMbutton::goToPage()
 #ifdef TARGET_ARM
     if (m_pagename.length() > 0)
     {
+#ifdef ENABLE_TREND
         if (m_pagename.startsWith("trend"))
         {
             strncpy(_actual_trend_, m_pagename.toAscii().data(), FILENAME_MAX);
@@ -749,13 +754,17 @@ void  ATCMbutton::goToPage()
             LOG_PRINT(info_e, "Going to page %s loading file '%s'\n", "trend", m_pagename.toAscii().data());
             emit newPage(QString("trend").toAscii().data(), m_remember);
         }
-        else if (m_pagename.startsWith("store"))
+        else
+#endif
+#ifdef ENABLE_STORE
+            if (m_pagename.startsWith("store"))
         {
             strncpy(_actual_store_, m_pagename.toAscii().data(), FILENAME_MAX);
             LOG_PRINT(info_e, "Going to page %s loading file '%s'\n", "store", m_pagename.toAscii().data());
             emit newPage(QString("store").toAscii().data(), m_remember);
         }
         else
+#endif
         {
             LOG_PRINT(info_e, "Going to page %s\n", m_pagename.toAscii().data());
             emit newPage(m_pagename.toAscii().data(), m_remember);

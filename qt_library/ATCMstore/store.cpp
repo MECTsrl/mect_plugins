@@ -107,13 +107,18 @@ void store::reload()
     {
         filename[0] = '\0';
     }
-    if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
+    else if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
     {
         sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
     }
     else
     {
         sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
+    }
+
+    if (!QFile::exists(filename))
+    {
+        filename[0] = '\0';
     }
 
     /* load the actual store filter  */
@@ -234,7 +239,7 @@ bool store::LoadStoreFilter(const char * filename)
      * <Tag1>
      * ...
      * <TagN>
-     */
+     */        
         QStringList wrongVariables;
         while (fgets(line, LINE_SIZE, fp) != NULL)
         {
@@ -265,6 +270,7 @@ bool store::LoadStoreFilter(const char * filename)
                                      );
         }
         fclose(fp);
+        return (rownb > 0);
     }
     /* no filter, load all variables */
     else
@@ -273,8 +279,8 @@ bool store::LoadStoreFilter(const char * filename)
         {
             actual_filter[i] = 1;
         }
+        return true;
     }
-    return (rownb > 0);
 }
 
 bool store::LoadStore(QDateTime init, QDateTime final)
@@ -283,6 +289,11 @@ bool store::LoadStore(QDateTime init, QDateTime final)
     outputfile[0] = '\0';
     
     mkdir(TMPDIR, S_IRWXU | S_IRWXG);
+    sprintf(command, "umount %s", TMPDIR);
+    if (system (command) != 0)
+    {
+        LOG_PRINT(error_e, "cannot execute '%s'\n", command);
+    }
     sprintf(command, "mount -t tmpfs -o size=32M tmpfs %s", TMPDIR);
     if (system (command) != 0)
     {
@@ -301,6 +312,10 @@ bool store::LoadStore(QDateTime init, QDateTime final)
     else
     {
         sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
+    }
+    if (!QFile::exists(filename))
+    {
+        filename[0] = '\0';
     }
     /* remove TMPDIR */
     if (StoreFilter(
@@ -753,12 +768,11 @@ void store::on_pushButtonSaveUSB_clicked()
         
         char srcfilename[FILENAME_MAX];
         char dstfilename[FILENAME_MAX];
-        char command[256];
         /* compose the source file name ans the destination file name */
         sprintf(srcfilename, "%s/%s", TMPDIR, outputfile);
         sprintf(dstfilename, "%s/%s_%s.zip",
                 usb_mnt_point,
-                QDateTime::currentDateTime().toString("yy_MM_dd_hh_mm_ss").toAscii().data(),
+                QDateTime::currentDateTime().toString("yyMMddhhmmss").toAscii().data(),
                 outputfile);
         
         /* zip the file, the sign file and delete them */
@@ -769,19 +783,13 @@ void store::on_pushButtonSaveUSB_clicked()
             return;
         }
         
-        QFile::remove(srcfilename);
-        QFile::remove(QString("%1.sign").arg(srcfilename));
+        //QFile::remove(srcfilename);
+        //QFile::remove(QString("%1.sign").arg(srcfilename));
         
-        sprintf(command, "umount %s", TMPDIR);
-        if (system (command) != 0)
-        {
-            LOG_PRINT(error_e, "cannot execute '%s'\n", command);
-        }
-
         /* unmount USB key */
         USBumount();
         LOG_PRINT(info_e, "DOWNLOADED\n");
-        QMessageBox::information(this,tr("USB info"), tr("File '%1' saved.").arg(dstfilename));
+        QMessageBox::information(this,tr("USB info"), tr("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
     }
 }
 

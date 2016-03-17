@@ -290,8 +290,9 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     char * outdir = NULL, * logdir = NULL, * fieldsfile = NULL;
     char * datein = NULL, * timein = NULL, * datefin = NULL, * timefin = NULL;
     char outFileName[LINE_SIZE] = "";
+#else
+    outFileName[0] = '\0';
 #endif
-    char * p = NULL;
     char token[LINE_SIZE] = "";
 #ifdef SIGN_APP
     char command[LINE_SIZE] = "";
@@ -301,7 +302,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     char titleline[LINE_SIZE] = "";
     char inFullPathFileName[LINE_SIZE] = "";
     char outFullPathFileName[LINE_SIZE] = "";
-    char *outBasename;
     int i, j, k;
     struct dirent **filelist = NULL;
     int fcount = -1;
@@ -311,30 +311,43 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     int firstline = 0;
 
 #ifdef STANDALONE
+    char empty[2] = ""
     switch (argc)
     {
     case 4:
         logdir     = argv[1];
         outdir     = argv[2];
-        fieldsfile = argv[3];
+        if (strcmp(argv[3], ALL_VARIABLE) == 0)
+        {
+            fieldsfile = empty;
+        }
         break;
     case 5:
         logdir     = argv[1];
         outdir     = argv[2];
-        fieldsfile = argv[3];
+        if (strcmp(argv[3], ALL_VARIABLE) == 0)
+        {
+            fieldsfile = empty;
+        }
         datein     = argv[4];
         break;
     case 6:
         logdir     = argv[1];
         outdir     = argv[2];
-        fieldsfile = argv[3];
+        if (strcmp(argv[3], ALL_VARIABLE) == 0)
+        {
+            fieldsfile = empty;
+        }
         datein     = argv[4];
         datefin    = argv[5];
         break;
     case 8:
         logdir     = argv[1];
         outdir     = argv[2];
-        fieldsfile = argv[3];
+        if (strcmp(argv[3], ALL_VARIABLE) == 0)
+        {
+            fieldsfile = empty;
+        }
         datein     = argv[4];
         timein     = argv[5];
         datefin    = argv[6];
@@ -364,6 +377,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     memset(FieldsMap, 0x0, MAX_FIELDS_NB * LINE_SIZE * sizeof(char));
     memset(FilterFlags, 0x0, MAX_FIELDS_NB * sizeof(int));
 
+    /* extract the title line */
     for (i = fcount - 1; i >= 0; i--)
     {
         /* skip the '.' and '..' files */
@@ -395,7 +409,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     /* load the filter file */
     if (i < 0 || fpin == NULL)
     {
-        LOG_PRINT(info_e, "no file %s.\n", fieldsfile);
+        LOG_PRINT(info_e, "no file %s.\n", inFullPathFileName);
         retval = 2;
         goto exit_function;
     }
@@ -446,91 +460,108 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         while (difftime(datetimefin, datetimein) > 0)
         {
             strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
-            sprintf(inFullPathFileName, "%s/%s.log", logdir, tmp);
-            fpin = fopen(inFullPathFileName, "r");
-            if (fpin)
+            for(i = 0; i < fcount; i++)
             {
-                /*extracting the basename without extension*/
-                outBasename = strrchr(fieldsfile, '/' ) + 1;
-                strcpy(token, outBasename);
-                outBasename = strchr(token, '.');
-                *outBasename ='\0';
-
-                sprintf(outFileName, "%s_%s.log", tmp, token );
-                LOG_PRINT(info_e, "outFileName  '%s'\n", outFileName);
-                sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
-                fpout = fopen(outFullPathFileName, "w");
-                if (fpout == NULL)
+                if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0 && strncmp(tmp, filelist[i]->d_name, strlen(tmp)) == 0)
                 {
-                    LOG_PRINT(info_e, "Cannot open '%s'\n", outFullPathFileName);
-                    retval = 8;
-                    goto exit_function;
-                }
-#ifdef STANDALONE
-                fprintf(stdout, "%s\n", outFullPathFileName);
-#endif
-                /* extract the selected columns from the actual log file */
-                while (fgets(line, LINE_SIZE, fpin) != NULL)
-                {
-                    LINE2STR(line);
-                    first = 1;
-                    for (j = 0, p = line; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
+                    sprintf(inFullPathFileName, "%s/%s", logdir, filelist[i]->d_name);
+                    fpin = fopen(inFullPathFileName, "r");
+                    if (fpin)
                     {
-                        if (*p == ';')
+                        /* creating the name of the output file */
+                        char * p = strrchr(fieldsfile, '/' );
+                        if (p)
                         {
-                            p++;
+                            strcpy(token, p + 1);
                         }
-                        if (*p =='\0')
+                        else
                         {
-                            break;
+                            strcpy(token, fieldsfile);
                         }
+                        p = strrchr(token, '.' );
+                        if (p)
+                        {
+                            *p = '\0';
+                        }
+                        strftime(tmp, sizeof(token), "%Y_%m_%d_%H_%M_%S", &mytime);
+                        sprintf(outFileName, "%s_%s.log", tmp, token );
+                        sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
 
-                        if (FilterFlags[j] == 1)
+
+                        fpout = fopen(outFullPathFileName, "w");
+                        if (fpout == NULL)
                         {
-                            strcpy(token, p);
-                            if (strstr(token, ";") != NULL)
-                            {
-                                *strstr(token, ";") = '\0';
-                            }
-                            for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-                            token[k + 1] = '\0';
-                            for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-                            if (k > 0)
-                            {
-                                strcpy(token, &(token[k]));
-                            }
-                            if (first == 0)
-                            {
-                                fprintf(fpout, "; ");
-                            }
-                            fprintf(fpout, "%s", token);
-                            first = 0;
+                            LOG_PRINT(info_e, "Cannot open '%s'\n", outFullPathFileName);
+                            retval = 8;
+                            goto exit_function;
                         }
-                    }
-                    fprintf(fpout, "\n");
-                }
-                fclose(fpout);
-                fclose(fpin);
-#ifdef SIGN_APP
-                /* create the sign file for the actual extracted log file */
-                sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
-                if (system(command) != 0)
-                {
-                    LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
-                    retval = 9;
-                    goto exit_function;
-                }
 #ifdef STANDALONE
-                fprintf(stdout, "%s.sign\n", outFullPathFileName);
+                        fprintf(stdout, "%s\n", outFullPathFileName);
+#endif
+                        /* extract the selected columns from the actual log file */
+                        while (fgets(line, LINE_SIZE, fpin) != NULL)
+                        {
+                            LINE2STR(line);
+                            first = 1;
+                            for (j = 0, p = line; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
+                            {
+                                if (*p == ';')
+                                {
+                                    p++;
+                                }
+                                if (*p =='\0')
+                                {
+                                    break;
+                                }
+
+                                if (FilterFlags[j] == 1)
+                                {
+                                    strcpy(token, p);
+                                    if (strstr(token, ";") != NULL)
+                                    {
+                                        *strstr(token, ";") = '\0';
+                                    }
+                                    for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
+                                    token[k + 1] = '\0';
+                                    for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
+                                    if (k > 0)
+                                    {
+                                        strcpy(token, &(token[k]));
+                                    }
+                                    if (first == 0)
+                                    {
+                                        fprintf(fpout, "; ");
+                                    }
+                                    fprintf(fpout, "%s", token);
+                                    first = 0;
+                                }
+                            }
+                            fprintf(fpout, "\n");
+                        }
+                        fclose(fpout);
+                        fclose(fpin);
+#ifdef SIGN_APP
+                        /* create the sign file for the actual extracted log file */
+                        sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
+                        if (system(command) != 0)
+                        {
+                            LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
+                            retval = 9;
+                            goto exit_function;
+                        }
+#ifdef STANDALONE
+                        fprintf(stdout, "%s.sign\n", outFullPathFileName);
 #endif
 #endif
+                    }
+                    else
+                    {
+                        LOG_PRINT(info_e, "Warning cannot open field file '%s'\n", inFullPathFileName);
+                    }
+                    mytime.tm_mday++;
+                    datetimein = mktime(&mytime);
+                }
             }
-            else
-            {
-                LOG_PRINT(info_e, "Warning cannot open field file '%s'\n", inFullPathFileName);
-            }
-            mytime.tm_mday++;
-            datetimein = mktime(&mytime);
         }
     }
     /* all logs */
@@ -546,14 +577,31 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                 fpin = fopen(inFullPathFileName, "r");
                 if (fpin)
                 {
-                    /*extracting the basename without extension*/
-                    outBasename = strrchr(fieldsfile, '/' ) + 1;
-                    strcpy(token, outBasename);
-                    outBasename = strchr(token, '.');
-                    *outBasename ='\0';
-                    sprintf(outFileName, "%s_%s.log", filelist[i]->d_name, token );
-                    LOG_PRINT(info_e, "outFileName  '%s'\n", outFileName);
-                    sprintf(outFullPathFileName, "%s/%s", outdir, outFileName);
+                    /* creating the name of the output file */
+                    char * p = strrchr(fieldsfile, '/' );
+                    if (p)
+                    {
+                        strcpy(token, p + 1);
+                    }
+                    else
+                    {
+                        strcpy(token, fieldsfile);
+                    }
+                    p = strrchr(token, '.' );
+                    if (p)
+                    {
+                        *p = '\0';
+                    }
+                    strcpy(outFileName, filelist[i]->d_name);
+                    p = strrchr(outFileName, '.' );
+                    if (p)
+                    {
+                        *p = '\0';
+                    }
+                    sprintf(outFileName, "%s_%s.log", outFileName, token );
+
+                    sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
+
                     fpout = fopen(outFullPathFileName, "w");
                     if (fpout == NULL)
                     {
@@ -654,15 +702,29 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         }
         datetimein = mktime(&mytime);
 
-        /* cut field extension */
-        if (strchr(fieldsfile, '.'))
+        /* creating the name of the output file */
+        char * p = strrchr(fieldsfile, '/' );
+        if (p)
         {
-            *strchr(fieldsfile, '.') = '\0';
+            strcpy(token, p + 1);
         }
-        outBasename = strrchr(fieldsfile, '/' ) + 1;
-        sprintf(outFileName, "%s.log", outBasename);
-        sprintf(outFullPathFileName, "%s/%s", outdir, outFileName);
-        LOG_PRINT(info_e, "outFileName  '%s'\n", outFileName);
+        else
+        {
+            strcpy(token, fieldsfile);
+        }
+        p = strrchr(token, '.' );
+        if (p)
+        {
+            *p = '\0';
+        }
+        if (strlen(token) == 0)
+        {
+            strftime(token, sizeof(token), "%Y_%m_%d_%H_%M_%S", &mytime);
+        }
+
+        sprintf(outFileName, "%s.log", token );
+        sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
+
         fpout = fopen(outFullPathFileName, "w");
         if (fpout == NULL)
         {
@@ -677,72 +739,78 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         while (difftime(datetimefin, datetimein) >  - 24*60*60)
         {
             strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
-            sprintf(inFullPathFileName, "%s/%s.log", logdir, tmp);
-            fpin = fopen(inFullPathFileName, "r");
-            if (fpin)
+            for(i = 0; i < fcount; i++)
             {
-                if (skipline == 0)
+                if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0 && strncmp(tmp, filelist[i]->d_name, strlen(tmp)) == 0)
                 {
-                    skipline = 1;
-                    for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
+                    sprintf(inFullPathFileName, "%s/%s", logdir, filelist[i]->d_name);
+                    fpin = fopen(inFullPathFileName, "r");
+
+                    if (fpin)
                     {
-                        if (*p == ';')
+                        if (skipline == 0)
                         {
-                            p++;
-                        }
-                        if (*p =='\0')
-                        {
-                            break;
+                            skipline = 1;
+                            for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
+                            {
+                                if (*p == ';')
+                                {
+                                    p++;
+                                }
+                                if (*p =='\0')
+                                {
+                                    break;
+                                }
+
+                                if (FilterFlags[j] == 1)
+                                {
+                                    strcpy(token, p);
+                                    LOG_PRINT(info_e, "token %s, p %s", token, p);
+                                    if (strstr(token, ";") != NULL)
+                                    {
+                                        *strstr(token, ";") = '\0';
+                                    }
+                                    for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
+                                    token[k + 1] = '\0';
+                                    for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
+                                    if (k > 0)
+                                    {
+                                        strcpy(token, &(token[k]));
+                                    }
+                                    fprintf(fpout, "%s", token);
+                                    if (firstline == 0)
+                                    {
+                                        fprintf(fpout, "; ");
+                                    }
+
+                                    LOG_PRINT(info_e, "su file %s\n", token);
+                                    firstline = 0;
+                                }
+                            }
+                            fprintf(fpout, "\n");
+
+                            //occorre filtrare anche la riga di titolo
+                            //fprintf(fpout, "%s", titleline);
                         }
 
-                        if (FilterFlags[j] == 1)
+                        /* open the log file and filter by time and by field */
+                        if (Extract(fpin, fpout, skipline, FilterFlags, datein, timein, datefin, timefin) != 0)
                         {
-                            strcpy(token, p);
-                            LOG_PRINT(info_e, "token %s, p %s", token, p);
-                            if (strstr(token, ";") != NULL)
-                            {
-                                *strstr(token, ";") = '\0';
-                            }
-                            for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-                            token[k + 1] = '\0';
-                            for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-                            if (k > 0)
-                            {
-                                strcpy(token, &(token[k]));
-                            }
-                            fprintf(fpout, "%s", token);
-                            if (firstline == 0)
-                            {
-                                fprintf(fpout, "; ");
-                            }
-
-                            LOG_PRINT(info_e, "su file %s\n", token);
-                            firstline = 0;
+                            LOG_PRINT(info_e, "Error\n");
+                            retval = 15;
+                            goto exit_function;
                         }
+                        fclose(fpin);
                     }
-                    fprintf(fpout, "\n");
+                    else
+                    {
+                        LOG_PRINT(info_e,"Cannot open %s\n", inFullPathFileName);
+                    }
 
-                    //occorre filtrare anche la riga di titolo
-                    //fprintf(fpout, "%s", titleline);
-                }
-
-                /* open the log file and filter by time and by field */
-                if (Extract(fpin, fpout, skipline, FilterFlags, datein, timein, datefin, timefin) != 0)
-                {
-                    LOG_PRINT(info_e, "Error\n");
-                    retval = 15;
-                    goto exit_function;
+                    mytime.tm_mday++;
+                    datetimein = mktime(&mytime);
                 }
             }
-            else
-            {
-                LOG_PRINT(info_e,"Cannot open %s\n", inFullPathFileName);
-            }
-            if(fpin)
-                fclose(fpin);
-
-            mytime.tm_mday++;
-            datetimein = mktime(&mytime);
         }
         fclose(fpout);
 #ifdef SIGN_APP
