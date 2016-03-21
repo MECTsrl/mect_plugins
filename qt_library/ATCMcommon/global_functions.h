@@ -40,13 +40,6 @@ int writeIniFile(void);
 int readIniFile(void);
 
 /**
- * @brief read all data from tag table
- *
- * @return 0 success, error otherwise
- */
-bool loadTagTable();
-
-/**
  * @brief do the initalization step for the communication before start HMI
  *
  * @return 0 success, error otherwise

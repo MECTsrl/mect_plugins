@@ -10,6 +10,7 @@
 #include "app_usb.h"
 #include "defines.h"
 #include "app_usb.h"
+#include "utility.h"
 //#include "app_config.h"
 
 /**
@@ -154,33 +155,32 @@ int LoadRecipe(const QString filename)
     char varname[TAG_LEN] = "";
     char value[TAG_LEN] = "";
     char line[MAX_LINE] = "";
-    char * p;
+    char * p = NULL, *r = NULL;
     int number_of_variables = 0;
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
-        p = line;
         /* tag */
-        p = mystrtok(p, varname, SEPARATOR);
-        if (p == NULL || varname[0] == '\0')
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             continue;
         }
 
         int ctIndex;
-        if (Tag2CtIndex(varname, &ctIndex) != 0)
+        if (Tag2CtIndex(p, &ctIndex) != 0)
         {
-            LOG_PRINT(error_e, "cannot extract ctIndex for variable '%s'\n", varname);
+            LOG_PRINT(error_e, "cannot extract ctIndex for variable '%s'\n", p);
             return -1;
 
         }
         int decimal = getVarDecimal(ctIndex);
         /* value */
-        p = mystrtok(p, value, SEPARATOR);
-        if (value[0] != '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             float val_f = 0;
-            val_f = atof(value);
+            val_f = atof(p);
             sprintf(value, "%.*f", decimal, val_f );
             if (prepareFormattedVarByCtIndex (ctIndex, value) == BUSY)
             {
@@ -200,75 +200,6 @@ int LoadRecipe(const QString filename)
         endWrite();
     }
     return number_of_variables;
-}
-
-bool loadTagTable()
-{
-    FILE * fp;
-    char line[LINE_SIZE] = "";
-    char token[LINE_SIZE] = "";
-    char reference[LINE_SIZE] = "";
-    char * p;
-
-    fp = fopen(TAG_TABLE, "r");
-    if (fp == NULL)
-    {
-        LOG_PRINT(info_e, "Cannot open '%s'\n", TAG_TABLE);
-        return false;
-    }
-    LOG_PRINT(info_e, "opened '%s'\n", TAG_TABLE);
-    /*
-     * the file is formatted as
-     *   Page's Type;ID Page;Tag Reference;Chars num;Description
-     */
-    while (fgets(line, LINE_SIZE, fp) != NULL)
-    {
-        p = line;
-        /* Page's Type */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            continue;
-        }
-
-        /* ID Page */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            continue;
-        }
-
-        /* Tag Reference */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            continue;
-        }
-        strcpy(reference, token);
-
-        /* Chars num */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            continue;
-        }
-
-        /* Description */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            continue;
-        }
-        TagTable.insert(reference,token);
-        LOG_PRINT(verbose_e, "New tag '%s' - '%s'\n", reference,token);
-    }
-    LOG_PRINT(error_e, "Loaded '%d' Tag\n", TagTable.count());
-    return true;
 }
 
 bool CommStart()

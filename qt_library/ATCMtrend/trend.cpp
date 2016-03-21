@@ -11,6 +11,7 @@
 #include "trend.h"
 #include "item_selector.h"
 #include "ui_trend.h"
+#include "utility.h"
 
 #include <QList>
 #include <QDate>
@@ -884,8 +885,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
 {
     FILE * fp;
     char line[LINE_SIZE] = "";
-    char token[LINE_SIZE] = "";
-    char * p;
+    char * p = NULL, *r = NULL;
     
     fp = fopen(filename, "r");
     if (fp == NULL)
@@ -912,7 +912,6 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         return false;
     }
     
-    LINE2STR(line);
     //disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
     
     switch(line[0])
@@ -961,118 +960,116 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         pens[rownb].yMaxActual = 0;
         pens[rownb].yMinActual = 0;
         
-        LINE2STR(line);
-        p = line;
         /* visible */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL)
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
             if (ErrorMsg) *ErrorMsg = QString("Invalid visible tag");
             return false;
         }
-        else if (token[0] == '\0')
+        else if (p[0] == '\0')
         {
             pens[rownb].visible = false;
         }
         else
         {
-            pens[rownb].visible = (atoi(token) == 1);
-            LOG_PRINT(verbose_e, "tag '%s'\n", token);
+            pens[rownb].visible = (atoi(p) == 1);
+            LOG_PRINT(verbose_e, "tag '%s'\n", p);
         }
         
         /* tag */
-        p = mystrtok(p, token, SEPARATOR);
         int index;
-        if (p == NULL)
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
             if (ErrorMsg) *ErrorMsg = QString("Invalid variale tag '%1'").arg(line);
             return false;
         }
-        else if (token[0] == '\0')
+        else if (p[0] == '\0')
         {
-            LOG_PRINT(error_e, "Empty tag '%s' at line %d\n", token, rownb);
+            LOG_PRINT(error_e, "Empty tag '%s' at line %d\n", p, rownb);
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
         }
-        else if (Tag2CtIndex(token, &index) != 0)
+        else if (Tag2CtIndex(p, &index) != 0)
         {
-            LOG_PRINT(error_e, "Invalid tag '%s' at line %d\n", token, rownb);
+            LOG_PRINT(error_e, "Invalid tag '%s' at line %d\n", p, rownb);
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
             pens[rownb].CtIndex = -1;
-            QMessageBox::critical(this,tr("Invalid data"), tr("Cannot find the variable %1 into the Crosstable. The pen will be disabled.").arg(token));
+            QMessageBox::critical(this,tr("Invalid data"), tr("Cannot find the variable %1 into the Crosstable. The pen will be disabled.").arg(p));
         }
         else
         {
             pens[rownb].CtIndex = index;
-            strcpy(pens[rownb].tag, token);
-            LOG_PRINT(verbose_e, "tag '%s'\n", token);
+            strcpy(pens[rownb].tag, p);
+            LOG_PRINT(verbose_e, "tag '%s'\n", p);
         }
         
         /* color */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL)
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
             if (ErrorMsg)*ErrorMsg = QString("Invalid color tag '%1'").arg(line);
             return false;
         }
-        else if (token[0] == '\0')
+        else if (p[0] == '\0')
         {
             strcpy(pens[rownb].color, "000000");
-            LOG_PRINT(warning_e, "Empty color tag. set default as '%s'\n", token);
+            LOG_PRINT(warning_e, "Empty color tag. set default as '%s'\n", p);
         }
         else
         {
-            strcpy(pens[rownb].color, token);
-            LOG_PRINT(verbose_e, "tag '%s'\n", token);
+            strcpy(pens[rownb].color, p);
+            LOG_PRINT(verbose_e, "tag '%s'\n", p);
         }
         
         /* Ymin */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL)
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
             if (ErrorMsg)* ErrorMsg = QString("Invalid Ymin tag '%1'").arg(line);
             return false;
         }
-        else if (token[0] == '\0')
+        else if (p[0] == '\0')
         {
             pens[rownb].yMin = 0;
             pens[rownb].yMinActual = 0;
         }
         else
         {
-            pens[rownb].yMin = atof(token);
+            pens[rownb].yMin = atof(p);
             pens[rownb].yMinActual = pens[rownb].yMin;
-            LOG_PRINT(verbose_e, "tag '%s'\n", token);
+            LOG_PRINT(verbose_e, "tag '%s'\n", p);
         }
         
         /* Ymax */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL)
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
             if (ErrorMsg) *ErrorMsg = QString("Invalid Ymax tag '%1'").arg(line);
             return false;
         }
-        else if (token[0] == '\0')
+        else if (p[0] == '\0')
         {
             pens[rownb].yMax = 0;
             pens[rownb].yMaxActual = 0;
         }
         else
         {
-            pens[rownb].yMax = atof(token);
+            pens[rownb].yMax = atof(p);
             pens[rownb].yMaxActual = pens[rownb].yMax;
-            LOG_PRINT(verbose_e, "tag '%s'\n", token);
+            LOG_PRINT(verbose_e, "tag '%s'\n", p);
         }
         
         if (pens[rownb].visible && pens[rownb].yMin >= pens[rownb].yMax)
@@ -1083,15 +1080,17 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         }
         
         /* description */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             LOG_PRINT(warning_e, "Empty tag '%s'\n", line);
-            token[0] = '\0';
+            pens[rownb].description[0] = '\0';
         }
-        strcpy(pens[rownb].description, token);
-        LOG_PRINT(verbose_e, "tag '%s'\n", token);
-        
+        else
+        {
+            strcpy(pens[rownb].description, p);
+        }
+
         pens[rownb].curve = new InterruptedCurve();
         //pens[rownb].curve = new QwtPlotCurve();
         pens[rownb].y = new double [MAX_SAMPLE_NB + 1];
@@ -1271,9 +1270,9 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
 {
     char line[LINE_SIZE] = "";
     int found = -1;
-    char * p;
+    char * p = NULL, * r = NULL;
     char token[LINE_SIZE] = "";
-    
+
     LOG_PRINT(verbose_e, "LOG_FILE '%s'\n", filename);
     LOG_PRINT(verbose_e, "######################### '%s' -> '%s'\n",
               begin->toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
@@ -1298,12 +1297,9 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             return false;
         }
         
-        LINE2STR(line);
-        p = line;
-        
         /* date */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL || token[0] == '\0' || strcmp(token, "date") != 0)
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0' || strcmp(token, "date") != 0)
         {
             LOG_PRINT(error_e, "Invalid tag '%s' '%s'\n", line, token);
             fclose(fp);
@@ -1311,8 +1307,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         }
         
         /* time */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL || token[0] == '\0' || strcmp(token, "time") != 0)
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0' || strcmp(token, "time") != 0)
         {
             LOG_PRINT(error_e, "Invalid tag '%s' '%s'\n", line, token);
             fclose(fp);
@@ -1321,14 +1317,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         
         QList<int> filter;
 
-        while (p != NULL || token[0] != '\0')
+        while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL)
         {
-            p = mystrtok(p, token, SEPARATOR);
-            if (p == NULL && token[0] == '\0')
-            {
-                LOG_PRINT(verbose_e, "Last tag '%s' '%s'\n", p, token);
-                break;
-            }
             found = -1;
             for (int i = 0; i < PEN_NB; i++)
             {
@@ -1336,8 +1326,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                 {
                     continue;
                 }
-                LOG_PRINT(verbose_e, "looking for '%s'' vs '%s'\n", pens[i].tag, token);
-                if (strcmp(pens[i].tag, token) == 0)
+                LOG_PRINT(verbose_e, "looking for '%s'' vs '%s'\n", pens[i].tag, p);
+                if (strcmp(pens[i].tag, p) == 0)
                 {
                     if (found == -1)
                     {
@@ -1345,7 +1335,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                     }
                     found |=(0x1<< i);
                     
-                    LOG_PRINT(verbose_e, "found tag '%s' filter %x\n", token, found);
+                    LOG_PRINT(verbose_e, "found tag '%s' filter %x\n", p, found);
                 }
             }
             

@@ -46,6 +46,7 @@ item_selector.cpp \
 menu.cpp \
 options.cpp \
 time_set.cpp \
+net_conf.cpp \
 page0.cpp \
 main.cpp
 
@@ -58,6 +59,7 @@ item_selector.h \
 menu.h \
 options.h \
 time_set.h \
+net_conf.h \
 page0.h \
 main.h
 
@@ -70,6 +72,7 @@ item_selector.ui \
 menu.ui \
 options.ui \
 time_set.ui \
+net_conf.ui \
 page0.ui
 
 # install

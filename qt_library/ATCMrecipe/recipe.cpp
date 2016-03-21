@@ -14,6 +14,7 @@
 
 #include "app_logprint.h"
 #include "recipe.h"
+#include "utility.h"
 #include "ui_recipe.h"
 
 #define RETRY_NB 4
@@ -124,9 +125,8 @@ bool recipe::LoadRecipe(const char * filename)
 {
     FILE * fp;
     char line[LINE_SIZE] = "";
-    char token[LINE_SIZE] = "";
     char tokenNormalized[LINE_SIZE] = "";
-    char * p;
+    char * p = NULL, * r = NULL;
     QTableWidgetItem * item;
     
     ui->tableWidget->clear();
@@ -164,30 +164,28 @@ bool recipe::LoadRecipe(const char * filename)
     int rownb = 0;
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
-        p = line;
         /* tag */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL || token[0] == '\0')
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             continue;
         }
         ui->tableWidget->insertRow(rownb);
         
-        item = new QTableWidgetItem(token);
+        item = new QTableWidgetItem(p);
         ui->tableWidget->setItem(rownb,tag_column_e,item);
         
-        int decimal = getVarDecimalByName(token);
+        int decimal = getVarDecimalByName(p);
         
-        LOG_PRINT(info_e, "tag '%s'\n", token);
+        LOG_PRINT(info_e, "tag '%s'\n", p);
         
         /* value */
-        token[0] = '\0';
-        p = mystrtok(p, token, SEPARATOR);
-        if (token[0] != '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             /*Check for the number of decimals to be used for that particular token*/
-            float val_f = atof(token);
+            float val_f = atof(p);
             sprintf(tokenNormalized, "%.*f",decimal,val_f );
             item = new QTableWidgetItem(tokenNormalized);
             ui->tableWidget->setItem(rownb,value_column_e,item);
@@ -195,22 +193,20 @@ bool recipe::LoadRecipe(const char * filename)
         }
 #ifdef MIN_MAX
         /* min */
-        token[0] = '\0';
-        p = mystrtok(p, token, SEPARATOR);
-        if (token[0] != '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
-            item = new QTableWidgetItem(token);
+            item = new QTableWidgetItem(p);
             ui->tableWidget->setItem(rownb,min_column_e,item);
-            LOG_PRINT(info_e, "min '%s'\n", token);
+            LOG_PRINT(info_e, "min '%s'\n", p);
         }
         /* max */
-        token[0] = '\0';
-        p = mystrtok(p, token, SEPARATOR);
-        if (token[0] != '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
-            item = new QTableWidgetItem(token);
+            item = new QTableWidgetItem(p);
             ui->tableWidget->setItem(rownb,max_column_e,item);
-            LOG_PRINT(info_e, "max '%s'\n", token);
+            LOG_PRINT(info_e, "max '%s'\n", p);
         }
 #endif
         rownb++;

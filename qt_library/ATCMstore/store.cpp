@@ -20,6 +20,7 @@
 #include "store_extract.h"
 #include "app_usb.h"
 #include "ui_store.h"
+#include "utility.h"
 
 #define LINE_BUFFER_SIZE 5
 
@@ -239,7 +240,7 @@ bool store::LoadStoreFilter(const char * filename)
      * <Tag1>
      * ...
      * <TagN>
-     */        
+     */
         QStringList wrongVariables;
         while (fgets(line, LINE_SIZE, fp) != NULL)
         {
@@ -349,8 +350,7 @@ bool store::LoadStore(int fileNb)
 bool store::LoadStore(const char * filename)
 {
     char line[LINE_SIZE] = "";
-    char token[LINE_SIZE] = "";
-    char * p;
+    char * p = NULL, * r = NULL;
     QTableWidgetItem * item;
     
     /* delete all the e*/
@@ -394,43 +394,39 @@ bool store::LoadStore(const char * filename)
     int colnb = 0;
     while (rownb < LINE_BUFFER_SIZE && fgets(line, LINE_SIZE, logfp) != NULL)
     {
-        LINE2STR(line);
         LOG_PRINT(info_e, "LINE %s\n", line);
         ui->tableWidget->insertRow(rownb);
         colnb = 0;
         colfilternb = 0;
         
-        p = line;
-        while (p != NULL)
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p != NULL)
         {
-            /* tag */
-            p = mystrtok(p, token, SEPARATOR);
-            if (p == NULL && token[0] == '\0')
+            do
             {
-                LOG_PRINT(warning_e, "skipping empty line\n");
-                continue;
-            }
-            
-            if (actual_filter[colfilternb] == 1)
-            {
-                item = new QTableWidgetItem(token);
-                if (rownb == 0)
+                /* tag */
+                if (actual_filter[colfilternb] == 1)
                 {
-                    ui->tableWidget->setHorizontalHeaderItem(colnb, item);
+                    item = new QTableWidgetItem(p);
+                    if (rownb == 0)
+                    {
+                        ui->tableWidget->setHorizontalHeaderItem(colnb, item);
+                    }
+                    else
+                    {
+                        ui->tableWidget->setItem(rownb - 1,colnb,item);
+                    }
+
+                    LOG_PRINT(info_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
+                    colnb++;
                 }
                 else
                 {
-                    ui->tableWidget->setItem(rownb - 1,colnb,item);
+                    LOG_PRINT(warning_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
                 }
-                
-                LOG_PRINT(info_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, token, colfilternb, actual_filter[colfilternb]);
-                colnb++;
+                colfilternb++;
             }
-            else
-            {
-                LOG_PRINT(warning_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, token, colfilternb, actual_filter[colfilternb]);
-            }
-            colfilternb++;
+            while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL);
         }
         if (colnb > 0)
         {
@@ -474,8 +470,7 @@ bool store::LoadStore(const char * filename)
 bool store::readLine()
 {
     char line[LINE_SIZE] = "";
-    char token[LINE_SIZE] = "";
-    char * p;
+    char * p = NULL, * r = NULL;
     QTableWidgetItem * item;
     
     if (logfp == NULL)
@@ -485,36 +480,32 @@ bool store::readLine()
     
     if (fgets(line, LINE_SIZE, logfp) != NULL)
     {
-        LINE2STR(line);
         LOG_PRINT(verbose_e, "LINE %s\n", line);
         int colnb = 0;
         int colfilternb = 0;
         
-        p = line;
         ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-        while (p != NULL)
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p != NULL)
+        {
+        do
         {
             /* tag */
-            p = mystrtok(p, token, SEPARATOR);
-            if (p == NULL && token[0] == '\0')
-            {
-                LOG_PRINT(warning_e, "skipping empty line\n");
-                continue;
-            }
-            
             if (actual_filter[colfilternb] == 1)
             {
-                item = new QTableWidgetItem(token);
+                item = new QTableWidgetItem(p);
                 ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1,colnb,item);
                 
-                LOG_PRINT(verbose_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, token, colfilternb, actual_filter[colfilternb]);
+                LOG_PRINT(verbose_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
                 colnb++;
             }
             else
             {
-                LOG_PRINT(verbose_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, token, colfilternb, actual_filter[colfilternb]);
+                LOG_PRINT(verbose_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
             }
             colfilternb++;
+        }
+        while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL);
         }
         LOG_PRINT(verbose_e, "ROW %d\n", ui->tableWidget->rowCount() - 1);
         //ui->tableWidget->insertRow(ui->tableWidget->rowCount());

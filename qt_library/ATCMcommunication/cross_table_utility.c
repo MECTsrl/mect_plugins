@@ -20,6 +20,7 @@
 #include "app_var_list.h"
 #include "common.h"
 #include "cross_table_utility.h"
+#include "utility.h"
 
 #define RETRY_NB 10
 
@@ -118,12 +119,11 @@ size_t fillSyncroArea(void)
     FILE * fp;
     int elem_nb = 1;
     char line[LINE_SIZE];
-    char token[LINE_SIZE] = "";
-    char * p = NULL;
-    int isreading = 0;
+    char * p = NULL, * r = NULL;
     int bytebitperblock = 0;
     int wordbitperblock = 0;
     int dwordbitperblock = 0;
+    int isreading = 0;
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
     int isstores = 0;
     int isstoref = 0;
@@ -157,27 +157,17 @@ size_t fillSyncroArea(void)
 
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
-        p = line;
         LOG_PRINT(verbose_e, "%s\n", line);
+
         /* extract the enable/disable field */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(line, SEPARATOR, &r);        
+        if (p == NULL)
         {
-            unsigned int i;
-            for (i = 0; i < strlen(line) && isspace(line[i]); i++);
-            if (i == strlen(line))
-            {
-                LOG_PRINT(warning_e, "Empty line skipped\n");
-                continue;
-            }
-            else
-            {
-                sprintf(CrossTableErrorMsg, "Malformed element 'enabled/disabled'");
-                LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
-                return elem_nb;
-            }
+            sprintf(CrossTableErrorMsg, "Malformed element 'enabled/disabled'");
+            LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
+            return elem_nb;
         }
-        if (atoi(token) == 0)
+        if (atoi(p) == 0 || p[0] == '\0')
         {
             LOG_PRINT(verbose_e, "element %d disabled [%s]\n", elem_nb, line);
             elem_nb++;
@@ -185,10 +175,10 @@ size_t fillSyncroArea(void)
         }
 
         /* extract PLC flag */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
-            sprintf(CrossTableErrorMsg, "Malformed element 'Promoted'");
+            sprintf(CrossTableErrorMsg, "Malformed element 'enabled/disabled'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
@@ -199,23 +189,23 @@ size_t fillSyncroArea(void)
         isstorev = 0;
         isstorex = 0;
 #endif
-        if (token[0] == TAG_PLC || token[0] == TAG_STORED_SLOW || token[0] == TAG_STORED_FAST || token[0] == TAG_STORED_ON_VAR || token[0] == TAG_STORED_ON_SHOT || IS_MIRROR(elem_nb))
+        if (p[0] == TAG_PLC || p[0] == TAG_STORED_SLOW || p[0] == TAG_STORED_FAST || p[0] == TAG_STORED_ON_VAR || p[0] == TAG_STORED_ON_SHOT || IS_MIRROR(elem_nb))
         {
             LOG_PRINT(verbose_e, "%s ELEMENT %d [%s]\n", (IS_MIRROR(elem_nb) == 1) ? "MIRROR": "PLC", elem_nb, line);
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
-            if (token[0] == TAG_STORED_SLOW)
+            if (p[0] == TAG_STORED_SLOW)
             {
                 isstores = 1;
             }
-            if (token[0] == TAG_STORED_FAST)
+            if (p[0] == TAG_STORED_FAST)
             {
                 isstoref = 1;
             }
-            if (token[0] == TAG_STORED_ON_VAR)
+            if (p[0] == TAG_STORED_ON_VAR)
             {
                 isstorev = 1;
             }
-            if (token[0] == TAG_STORED_ON_SHOT)
+            if (p[0] == TAG_STORED_ON_SHOT)
             {
                 isstorex = 1;
             }
@@ -229,16 +219,16 @@ size_t fillSyncroArea(void)
         }
 
         /* Tag */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
-            sprintf(CrossTableErrorMsg, "Malformed element 'Tag'");
+            sprintf(CrossTableErrorMsg, "Malformed element 'enabled/disabled'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
-        if (strlen(token) > TAG_LEN)
+        if (strlen(p) > TAG_LEN)
         {
-            sprintf(CrossTableErrorMsg, "Tag '%s' too long, maximum lenght is %d", token, TAG_LEN - 1);
+            sprintf(CrossTableErrorMsg, "Tag '%s' too long, maximum lenght is %d", p, TAG_LEN - 1);
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
@@ -246,122 +236,115 @@ size_t fillSyncroArea(void)
         int i;
         for (i = 0; i < elem_nb; i++)
         {
-            if (strcmp(token, varNameArray[i].tag) == 0)
+            if (strcmp(p, varNameArray[i].tag) == 0)
             {
-                sprintf(CrossTableErrorMsg, "Duplicated tag '%s' at lines %d and %d ", token, i, elem_nb);
+                sprintf(CrossTableErrorMsg, "Duplicated tag '%s' at lines %d and %d ", p, i, elem_nb);
                 LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
                 return elem_nb;
             }
         }
-
-        if (strlen(token) >= TAG_LEN)
-        {
-            sprintf(CrossTableErrorMsg, "Tag len '%s' too long (%d vs %d)", token, strlen(token), TAG_LEN);
-            LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
-            return elem_nb;
-        }
-        strcpy(varNameArray[elem_nb].tag, token);
+        strcpy(varNameArray[elem_nb].tag, p);
 
         /* type */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'Type'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
 
-        if (strcmp(token, "UINT") == 0 || strcmp(token, "UINTAB") == 0)
+        if (strcmp(p, "UINT") == 0 || strcmp(p, "UINTAB") == 0)
         {
             varNameArray[elem_nb].type = uintab_e;
         }
-        else if (strcmp(token, "UINTBA") == 0)
+        else if (strcmp(p, "UINTBA") == 0)
         {
             varNameArray[elem_nb].type = uintba_e;
         }
-        else if (strcmp(token, "INT") == 0 || strcmp(token, "INTAB") == 0)
+        else if (strcmp(p, "INT") == 0 || strcmp(p, "INTAB") == 0)
         {
             varNameArray[elem_nb].type = intab_e;
         }
-        else if (strcmp(token, "INTBA") == 0)
+        else if (strcmp(p, "INTBA") == 0)
         {
             varNameArray[elem_nb].type = intba_e;
         }
-        else if (strcmp(token, "UDINT") == 0 || strcmp(token, "UDINTABCD") == 0)
+        else if (strcmp(p, "UDINT") == 0 || strcmp(p, "UDINTABCD") == 0)
         {
             varNameArray[elem_nb].type = udint_abcd_e;
         }
-        else if (strcmp(token, "UDINTBADC") == 0)
+        else if (strcmp(p, "UDINTBADC") == 0)
         {
             varNameArray[elem_nb].type = udint_badc_e;
         }
-        else if (strcmp(token, "UDINTCDAB") == 0)
+        else if (strcmp(p, "UDINTCDAB") == 0)
         {
             varNameArray[elem_nb].type = udint_cdab_e;
         }
-        else if (strcmp(token, "UDINTDCBA") == 0)
+        else if (strcmp(p, "UDINTDCBA") == 0)
         {
             varNameArray[elem_nb].type = udint_dcba_e;
         }
-        else if (strcmp(token, "DINT") == 0 || strcmp(token, "DINTABCD") == 0)
+        else if (strcmp(p, "DINT") == 0 || strcmp(p, "DINTABCD") == 0)
         {
             varNameArray[elem_nb].type = dint_abcd_e;
         }
-        else if (strcmp(token, "DINTBADC") == 0)
+        else if (strcmp(p, "DINTBADC") == 0)
         {
             varNameArray[elem_nb].type = dint_badc_e;
         }
-        else if (strcmp(token, "DINTCDAB") == 0)
+        else if (strcmp(p, "DINTCDAB") == 0)
         {
             varNameArray[elem_nb].type = dint_cdab_e;
         }
-        else if (strcmp(token, "DINTDCBA") == 0)
+        else if (strcmp(p, "DINTDCBA") == 0)
         {
             varNameArray[elem_nb].type = dint_dcba_e;
         }
-        else if (strcmp(token, "FABCD") == 0 || strcmp(token, "FLOAT") == 0 || strcmp(token, "RABCD") == 0 || strcmp(token, "REAL") == 0)
+        else if (strcmp(p, "FABCD") == 0 || strcmp(p, "FLOAT") == 0 || strcmp(p, "RABCD") == 0 || strcmp(p, "REAL") == 0)
         {
             varNameArray[elem_nb].type = fabcd_e;
         }
-        else if (strcmp(token, "FBADC") == 0 || strcmp(token, "RBADC") == 0)
+        else if (strcmp(p, "FBADC") == 0 || strcmp(p, "RBADC") == 0)
         {
             varNameArray[elem_nb].type = fbadc_e;
         }
-        else if (strcmp(token, "FCDAB") == 0 || strcmp(token, "RCDAB") == 0)
+        else if (strcmp(p, "FCDAB") == 0 || strcmp(p, "RCDAB") == 0)
         {
             varNameArray[elem_nb].type = fcdab_e;
         }
-        else if (strcmp(token, "FDCBA") == 0 || strcmp(token, "RDCBA") == 0)
+        else if (strcmp(p, "FDCBA") == 0 || strcmp(p, "RDCBA") == 0)
         {
             varNameArray[elem_nb].type = fdcba_e;
         }
-        else if (strcmp(token, "BIT") == 0)
+        else if (strcmp(p, "BIT") == 0)
         {
             varNameArray[elem_nb].type = bit_e;
         }
-        else if (strcmp(token, "BYTE_BIT") == 0)
+        else if (strcmp(p, "BYTE_BIT") == 0)
         {
             varNameArray[elem_nb].type = bytebit_e;
         }
-        else if (strcmp(token, "WORD_BIT") == 0)
+        else if (strcmp(p, "WORD_BIT") == 0)
         {
             varNameArray[elem_nb].type = wordbit_e;
         }
-        else if (strcmp(token, "DWORD_BIT") == 0)
+        else if (strcmp(p, "DWORD_BIT") == 0)
         {
             varNameArray[elem_nb].type = dwordbit_e;
         }
         else
         {
-            sprintf(CrossTableErrorMsg, "Malformed element 'TYPE' '%s'", token);
+            sprintf(CrossTableErrorMsg, "Malformed element 'TYPE' '%s'", p);
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
         LOG_PRINT(info_e, "Variable %s Type BIT %d\n", varNameArray[elem_nb].tag, varNameArray[elem_nb].type);
 
         /* Decimal */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'Decimal'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
@@ -378,28 +361,28 @@ size_t fillSyncroArea(void)
         }
         else
         {
-            varNameArray[elem_nb].decimal = atoi(token);
+            varNameArray[elem_nb].decimal = atoi(p);
         }
 
 
         /* Protocol */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'Protocol'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
 
-        if(strcmp(TAG_RTU, token) == 0)
+        if(strcmp(TAG_RTU, p) == 0)
         {
             varNameArray[elem_nb].protocol = prot_rtu_e;
         }
-        else if(strcmp(TAG_TCP, token)==0)
+        else if(strcmp(TAG_TCP, p)==0)
         {
             varNameArray[elem_nb].protocol = prot_tcp_e;
         }
-        else if(strcmp(TAG_TCPRTU, token)==0)
+        else if(strcmp(TAG_TCPRTU, p)==0)
         {
             varNameArray[elem_nb].protocol = prot_tcprtu_e;
         }
@@ -409,8 +392,8 @@ size_t fillSyncroArea(void)
         }
 
         /* Port */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL)
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'Port'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
@@ -418,8 +401,8 @@ size_t fillSyncroArea(void)
         }
 
         /* IP */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL)
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'IP'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
@@ -427,14 +410,14 @@ size_t fillSyncroArea(void)
         }
 
         /* NodeId */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL)
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'NodeId'");
-            LOG_PRINT(error_e, "%s at line %d. - p %p token %s\n", CrossTableErrorMsg, elem_nb, p, token);
+            LOG_PRINT(error_e, "%s at line %d. - p %s\n", CrossTableErrorMsg, elem_nb, p);
             return elem_nb;
         }
-        if (p != NULL && token[0] == '\0')
+        if (p[0] == '\0')
         {
             /* it no node is set and is TCP protocol, force it to 1 */
             if (varNameArray[elem_nb].protocol == prot_tcp_e)
@@ -457,7 +440,7 @@ size_t fillSyncroArea(void)
             }
             else
             {
-                varNameArray[elem_nb].node = atoi(token);
+                varNameArray[elem_nb].node = atoi(p);
                 if (varNameArray[elem_nb].node <= 0 || varNameArray[elem_nb].node > MAX_DEVICE_NB)
                 {
                     sprintf(CrossTableErrorMsg, "invalid node %d for variable '%s'\n", varNameArray[elem_nb].node, varNameArray[elem_nb].tag);
@@ -466,11 +449,11 @@ size_t fillSyncroArea(void)
                 }
             }
         }
-        LOG_PRINT(verbose_e, "Node %d [%s].\n", varNameArray[elem_nb].node, token);
+        LOG_PRINT(verbose_e, "Node %d [%s].\n", varNameArray[elem_nb].node, p);
 
         /* Address */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL)
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'Address'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
@@ -479,19 +462,19 @@ size_t fillSyncroArea(void)
         if (varNameArray[elem_nb].node != INTERNAL_VARIABLE_FAKE_NODEID)
         {
             LastAddress = ActualAddress;
-            ActualAddress = atoi(token);
+            ActualAddress = atoi(p);
         }
 
         /* Block */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'Block'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
-        varNameArray[elem_nb].block = atoi(token);
-        LOG_PRINT(verbose_e, "BLOCK %d VAR %s, line %s, token %s\n", varNameArray[elem_nb].block, varNameArray[elem_nb].tag, line, token);
+        varNameArray[elem_nb].block = atoi(p);
+        LOG_PRINT(verbose_e, "BLOCK %d VAR %s, line %s, p %s\n", varNameArray[elem_nb].block, varNameArray[elem_nb].tag, line, p);
 
         /* extract the block head */
         if (elem_nb > 0 && varNameArray[elem_nb].block == varNameArray[elem_nb - 1].block)
@@ -504,15 +487,15 @@ size_t fillSyncroArea(void)
         }
 
         /* NReg */
-        p = mystrtok(p, token, SEPARATOR);
-        if (p == NULL && token[0] == '\0')
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL || p[0] == '\0')
         {
             sprintf(CrossTableErrorMsg, "Malformed element 'Nreg'");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
         LastNreg = ActualNreg;
-        ActualNreg = atoi(token);
+        ActualNreg = atoi(p);
         LOG_PRINT(verbose_e, "NREG %d VAR %s\n", ActualNreg, varNameArray[elem_nb].tag);
 
         /* if the handle tag is not present, a field is missing and the cross table is malformed */
@@ -2298,45 +2281,6 @@ int isBlockActive(const char * varname, char * varblockhead)
         return -1;
     }
     return isBlockActiveByCtIndex(CtIndex, varblockhead);
-}
-
-char * mystrtok(char * string, char * token, const char * separator)
-{
-    char * p;
-    int i;
-
-    if (string == NULL)
-    {
-        if (token != NULL)
-        {
-            token[0] = '\0';
-        }
-        return NULL;
-    }
-
-    strcpy(token, string);
-    p = strstr(token, separator);
-    if (p != NULL)
-    {
-        *p = '\0';
-    }
-#if 1
-    for (i = strlen(token) - 1; i > 0 && isspace(token[i]); i--);
-    token[i + 1] = '\0';
-    for (i = 0; (unsigned int) i < strlen(token) && isspace(token[i]); i++);
-    if (i > 0)
-    {
-        strcpy(token, &(token[i]));
-    }
-#else
-    sscanf(token, "%s", token);
-#endif
-    p = strstr(string, separator);
-    if (p!= NULL)
-    {
-        p++;
-    }
-    return p;
 }
 
 /**

@@ -326,6 +326,11 @@ void alphanumpad::on_pushButtonUnderscore_clicked()
     ui->lineEditVal->insert("_");
 }
 
+void alphanumpad::on_pushButtonDot_clicked()
+{
+    ui->lineEditVal->insert(".");
+}
+
 void alphanumpad::on_pushButtonSpace_clicked()
 {
     ui->lineEditVal->insert(" ");

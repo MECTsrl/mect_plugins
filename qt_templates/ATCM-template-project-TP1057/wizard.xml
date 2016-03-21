@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/****************************************************************************
+ **
+ ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+ ** Contact: http://www.qt-project.org/legal
+ **
+ ** This file is part of Qt Creator.
+ **
+ ** Commercial License Usage
+ ** Licensees holding valid commercial Qt licenses may use this file in
+ ** accordance with the commercial license agreement provided with the
+ ** Software or, alternatively, in accordance with the terms contained in
+ ** a written agreement between you and Digia.  For licensing terms and
+ ** conditions see http://qt.digia.com/licensing.  For further information
+ ** use the contact form at http://qt.digia.com/contact-us.
+ **
+ ** GNU Lesser General Public License Usage
+ ** Alternatively, this file may be used under the terms of the GNU Lesser
+ ** General Public License version 2.1 as published by the Free Software
+ ** Foundation and appearing in the file LICENSE.LGPL included in the
+ ** packaging of this file.  Please review the following information to
+ ** ensure the GNU Lesser General Public License version 2.1 requirements
+ ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+ **
+ ** In addition, as a special exception, Digia gives you certain additional
+ ** rights.  These rights are described in the Digia Qt LGPL Exception
+ ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+ **
+ ****************************************************************************/
+
+Custom project wizard configuration example file. Note that by convention,
+	   the project file goes last.
+	   The "class" and "firstpage" attributes specify that it is a Qt 4 wizard and
+	   leave room for the Qt 4 target page.
+	   -->
+	   <wizard version="1" kind="project"
+	   class="qt4project" firstpage="10"
+	   id="A.customqtproject" category="B.CustomProjects">
+	   <icon>console.png</icon>
+	   <description>Creates an empty Qt project for TP1057 with the template used by ATCM Applications and by QTCMplugin.</description>
+	   <displayname>TP1057</displayname>;
+	   <displaycategory>Mect Projects</displaycategory>
+	   <files>
+	   <file source="../ATCM-template-project/pages.cpp" openeditor="false"/>
+	   <file source="../ATCM-template-project/pages.h" openeditor="false"/>
+	   <file source="../ATCM-template-project/page100.cpp" openeditor="false"/>
+	   <file source="../ATCM-template-project/page100.h" openeditor="false"/>
+	   <file source="../ATCM-template-project/page100.ui" openeditor="true"/>
+	   <file source="../ATCM-template-project/style.h" target="style.h" openproject="false"/>
+	   <file source="../ATCM-template-project/automation.cpp" openeditor="false"/>
+	   <file source="../ATCM-template-project/automation.h" openeditor="false"/>
+	   <file source="../ATCM-template-project/resources.qrc" target="resources.qrc" openproject="false"/>
+	   <file source="../ATCM-template-project/systemicons.qrc" target="systemicons.qrc" openproject="false"/>
+	   <file source="../ATCM-template-project/languages.qrc" target="languages.qrc" openproject="false"/>
+	   <file source="../ATCM-template-project/img/3d_bar_chart.png" target="img/3d_bar_chart.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Abort.png" target="img/Abort.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/About.png" target="img/About.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Accounting.png" target="img/Accounting.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Add.png" target="img/Add.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Address_book.png" target="img/Address_book.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Alarm_clock.png" target="img/Alarm_clock.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Alarm.png" target="img/Alarm.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Alert.png" target="img/Alert.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Alien.png" target="img/Alien.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Anchor.png" target="img/Anchor.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Application.png" target="img/Application.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Apply.png" target="img/Apply.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Back.png" target="img/Back.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Bad_mark.png" target="img/Bad_mark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Bee.png" target="img/Bee.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Black_bookmark.png" target="img/Black_bookmark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Black_pin.png" target="img/Black_pin.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Black_tag.png" target="img/Black_tag.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Blog.png" target="img/Blog.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Blue_bookmark.png" target="img/Blue_bookmark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Blue_key.png" target="img/Blue_key.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Blue_pin.png" target="img/Blue_pin.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Blue_tag.png" target="img/Blue_tag.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Bomb.png" target="img/Bomb.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Bookmark.png" target="img/Bookmark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Boss.png" target="img/Boss.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Bottom.png" target="img/Bottom.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Briefcase.png" target="img/Briefcase.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Brush.png" target="img/Brush.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Bubble.png" target="img/Bubble.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Buy.png" target="img/Buy.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Calculator.png" target="img/Calculator.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Calendar.png" target="img/Calendar.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Camera.png" target="img/Camera.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Car_key.png" target="img/Car_key.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Chess.png" target="img/Chess.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Chess1.png" target="img/Chess1.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Chess2.png" target="img/Chess2.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/CD.png" target="img/CD.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Clipboard.png" target="img/Clipboard.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Clock.png" target="img/Clock.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Close.png" target="img/Close.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Coin.png" target="img/Coin.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Comment.png" target="img/Comment.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Company.png" target="img/Company.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Compass.png" target="img/Compass.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Component.png" target="img/Component.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Computer.png" target="img/Computer.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Copy.png" target="img/Copy.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Create.png" target="img/Create.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Cut.png" target="img/Cut.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Danger.png" target="img/Danger.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Database.png" target="img/Database.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Delete.png" target="img/Delete.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Delivery.png" target="img/Delivery.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Diagram.png" target="img/Diagram.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Dial.png" target="img/Dial.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Disaster.png" target="img/Disaster.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Display.png" target="img/Display.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Dollar.png" target="img/Dollar.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Door.png" target="img/Door.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Download.png" target="img/Download.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Downloads_folder.png" target="img/Downloads_folder.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Down.png" target="img/Down.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Earth.png" target="img/Earth.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Eject.png" target="img/Eject.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/E-mail.png" target="img/E-mail.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Equipment.png" target="img/Equipment.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Erase.png" target="img/Erase.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Error.png" target="img/Error.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Euro.png" target="img/Euro.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Exit.png" target="img/Exit.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Expand.png" target="img/Expand.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Eye.png" target="img/Eye.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Fall.png" target="img/Fall.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Fast-forward.png" target="img/Fast-forward.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Favourites.png" target="img/Favourites.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Female.png" target="img/Female.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Female_symbol.png" target="img/Female_symbol.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Film.png" target="img/Film.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Filter.png" target="img/Filter.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Find.png" target="img/Find.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/First.png" target="img/First.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/First_record.png" target="img/First_record.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Flag.png" target="img/Flag.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Flash_drive.png" target="img/Flash_drive.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Folder.png" target="img/Folder.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Forbidden.png" target="img/Forbidden.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Forward.png" target="img/Forward.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Free_bsd.png" target="img/Free_bsd.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Gift.png" target="img/Gift.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Globe.png" target="img/Globe.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Go_back.png" target="img/Go_back.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Go_forward.png" target="img/Go_forward.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Good_mark.png" target="img/Good_mark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Go.png" target="img/Go.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Green_bookmark.png" target="img/Green_bookmark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Green_pin.png" target="img/Green_pin.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Green_tag.png" target="img/Green_tag.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Hard_disk.png" target="img/Hard_disk.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Heart.png" target="img/Heart.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Help_book_3d.png" target="img/Help_book_3d.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Help_book.png" target="img/Help_book.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Help.png" target="img/Help.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Hint.png" target="img/Hint.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/History.png" target="img/History.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Home.png" target="img/Home.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Hourglass.png" target="img/Hourglass.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/How-to.png" target="img/How-to.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Hungup.png" target="img/Hungup.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Info.png" target="img/Info.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/In-yang.png" target="img/In-yang.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Iphone.png" target="img/Iphone.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Key.png" target="img/Key.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Last.png" target="img/Last.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Last_recor.png" target="img/Last_recor.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Left-right.png" target="img/Left-right.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Letter.png" target="img/Letter.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Lightning.png" target="img/Lightning.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Liner.png" target="img/Liner.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Linux.png" target="img/Linux.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/List.png" target="img/List.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Load.png" target="img/Load.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Lock.png" target="img/Lock.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Low_rating.png" target="img/Low_rating.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Magic_wand.png" target="img/Magic_wand.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Mail.png" target="img/Mail.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Male.png" target="img/Male.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Male_symbol.png" target="img/Male_symbol.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Medium_rating.png" target="img/Medium_rating.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Message.png" target="img/Message.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Minus.png" target="img/Minus.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Mobile-phone.png" target="img/Mobile-phone.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Modify.png" target="img/Modify.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Move.png" target="img/Move.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Movie.png" target="img/Movie.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Music.png" target="img/Music.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Mute.png" target="img/Mute.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Network_connection.png" target="img/Network_connection.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/New_document.png" target="img/New_document.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/New.png" target="img/New.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Next.png" target="img/Next.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Next_track.png" target="img/Next_track.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/No-entry.png" target="img/No-entry.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/No.png" target="img/No.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Notes.png" target="img/Notes.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/OK.png" target="img/OK.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Paste.png" target="img/Paste.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Pause.png" target="img/Pause.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/People.png" target="img/People.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Percent.png" target="img/Percent.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Person.png" target="img/Person.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Phone_number.png" target="img/Phone_number.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Phone.png" target="img/Phone.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Picture.png" target="img/Picture.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Pie_chart.png" target="img/Pie_chart.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Pinion.png" target="img/Pinion.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Playback.png" target="img/Playback.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Play-music.png" target="img/Play-music.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Play.png" target="img/Play.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Plus.png" target="img/Plus.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Previous.png" target="img/Previous.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Previous_record.png" target="img/Previous_record.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Print.png" target="img/Print.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Problem.png" target="img/Problem.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Question.png" target="img/Question.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Radiation.png" target="img/Radiation.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Raise.png" target="img/Raise.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Record.png" target="img/Record.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Red_bookmark.png" target="img/Red_bookmark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Red_mark.png" target="img/Red_mark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Redo.png" target="img/Redo.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Red_pin.png" target="img/Red_pin.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Red_star.png" target="img/Red_star.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Red_tag.png" target="img/Red_tag.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Refresh.png" target="img/Refresh.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Remove.png" target="img/Remove.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Repair.png" target="img/Repair.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Report.png" target="img/Report.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Retort.png" target="img/Retort.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Rewind.png" target="img/Rewind.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Sad.png" target="img/Sad.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Save.png" target="img/Save.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Schedule.png" target="img/Schedule.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Script.png" target="img/Script.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Search.png" target="img/Search.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Shield.png" target="img/Shield.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Shopping_cart.png" target="img/Shopping_cart.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Silence.png" target="img/Silence.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Smile.png" target="img/Smile.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Sound.png" target="img/Sound.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Stock_graph.png" target="img/Stock_graph.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Stop.png" target="img/Stop.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Stop_sign.png" target="img/Stop_sign.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Stopwatch.png" target="img/Stopwatch.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Sum.png" target="img/Sum.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Sync.png" target="img/Sync.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/SDcard.png" target="img/SDcard.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Table.png" target="img/Table.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Target.png" target="img/Target.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Taxi.png" target="img/Taxi.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Terminate.png" target="img/Terminate.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Text.png" target="img/Text.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Text_preview.png" target="img/Text_preview.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Thumbs_down.png" target="img/Thumbs_down.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Thumbs_up.png" target="img/Thumbs_up.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Toolbox.png" target="img/Toolbox.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Top.png" target="img/Top.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Trackback.png" target="img/Trackback.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Trash.png" target="img/Trash.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Tune.png" target="img/Tune.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Turn_off.png" target="img/Turn_off.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Twitter.png" target="img/Twitter.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Undo.png" target="img/Undo.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Unlock.png" target="img/Unlock.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Update.png" target="img/Update.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Up-down.png" target="img/Up-down.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Upload.png" target="img/Upload.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Up.png" target="img/Up.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/User_group.png" target="img/User_group.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/View.png" target="img/View.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Volume.png" target="img/Volume.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Wallet.png" target="img/Wallet.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Warning.png" target="img/Warning.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Wrench.png" target="img/Wrench.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Yellow_bookmark.png" target="img/Yellow_bookmark.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Yellow_pin.png" target="img/Yellow_pin.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Yellow_tag.png" target="img/Yellow_tag.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Yes.png" target="img/Yes.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/Zoom.png" target="img/Zoom.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/LedOn.png" target="img/LedOn.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/img/LedOff.png" target="img/LedOff.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/config/splash.png" target="config/splash.png" openproject="false" binary="true"/>
+	   <file source="../ATCM-template-project/config/lang_table.csv" target="config/lang_table.csv" openproject="false" binary="false"/>
+	   <file source="config/Crosstable.csv" target="config/Crosstable.csv" openproject="false" binary="false"/>
+	   <file source="config/crosstable.cpp" target="config/crosstable.cpp" openproject="false" binary="false"/>
+	   <file source="config/crosstable.h" target="config/crosstable.h" openproject="false" binary="false"/>
+	   <file source="config/system.ini" target="config/system.ini" openproject="false" binary="false"/>
+	   <file source="config/store1.csv" target="config/store1.csv" openproject="false" binary="false"/>
+	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
+	   <!-- 
+	   <file source="../ATCM-template-project/project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
+	   -->
+	   <file source="../ATCM-template-project/project.pro" target="%ProjectName%.pro" openproject="true"/>
+	   <file source="../ATCM-template-project/template.pri" target="template.pri" openproject="false"/>
+	   <file source="../ATCM-template-project/languages.pri" target="languages.pri" openproject="false"/>
+	   </files>
+	    <!-- Create a 2nd wizard page with parameters -->
+	    <fieldpagetitle>Add extra funtionality</fieldpagetitle>
+		<fields>
+			<field name="Model">
+				<fieldcontrol class="QComboBox" defaultindex="2">
+					<comboentries>
+						<comboentry value="&lt;width&gt;320&lt;&#47;width&gt;&lt;height&gt;240&lt;&#47;height&gt;">
+							<comboentrytext>Horizontal</comboentrytext>
+						</comboentry>
+						<comboentry value="&lt;width&gt;240&lt;&#47;width&gt;&lt;height&gt;320&lt;&#47;height&gt;">
+							<comboentrytext>Vertical</comboentrytext>
+						</comboentry>
+				</comboentries>
+				</fieldcontrol>
+				<fielddescription>Choose the panel orientation:</fielddescription>
+			</field>
+		</fields>
+	</wizard>

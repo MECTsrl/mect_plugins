@@ -12,8 +12,10 @@ extern "C" {
 #define APP_CONFIG_DIR_TEMP             "./"
 #define APP_CONFIG_FILE                 APP_CONFIG_DIR "application.conf"
 #define APP_CONFIG_BUILD_ID_FILE        APP_CONFIG_DIR ".fw_versions"
-#define APP_CONFIG_SERIAL_FILE          APP_CONFIG_DIR "serial.conf"
+#define APP_CONFIG_SERIAL_FILE          "/etc/serial.conf"
+#define APP_CONFIG_SERIAL_FILE2        APP_CONFIG_DIR "serial.conf"
 #define APP_CONFIG_IPADDR_FILE	        APP_CONFIG_DIR "net.conf"
+#define APP_CONFIG_MAC_FILE             "/etc/mac.conf"
 #define APP_CONFIG_VERSIONS_FILE	        APP_CONFIG_DIR "versions.info"
 #define	APP_CONFIG_LASTUPD_FILE		    APP_CONFIG_DIR "lastupdate.info"
 
@@ -153,6 +155,18 @@ extern "C" {
     char *app_version_item_get(char ** item_pointer, const char * item_name);
 
     /**
+     * @brief Set a net conf item
+     *
+     * @param char * item_name : item name;
+     * @param char * item : item value to set;
+     *
+     * @return          != 0 if error
+     *
+     * @ingroup config
+     */
+    int app_netconf_item_set(char * item, const char * item_name);
+
+    /**
 	 * @brief Grab the serial number
 	 *
 	 * @return          NULL if error or pointer to serial number string
@@ -180,7 +194,7 @@ extern "C" {
 	 *
 	 * @ingroup config
 	 */
-	char *app_build_mac_get(void);
+    char *app_macconf_item_get(char ** item_pointer, const char * item_name);
 
 	/**
 	 * @brief Grab the ip address
@@ -261,7 +275,7 @@ extern "C" {
 #define CID_LEN 33
 #define SN_LEN 8
 
-    int getIP(char * ip);
+    int getIP(char * interface, char * ip);
     int getMAC(char * mac);
     int getSdCID(char * cid);
 	int getSdSN(char * sn);

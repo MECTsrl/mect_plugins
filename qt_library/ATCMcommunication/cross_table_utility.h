@@ -81,7 +81,6 @@ int formattedWriteToDb(int ctIndex, void * value);
 int isBlockActive(const char * varname, char * varblockhead);
 int getHeadBlock(int CtIndex, char * varblockhead);
 int getHeadBlockName(const char * varname, char * varblockhead);
-char * mystrtok(char * string, char * token, const char * separator);
 int disconnectDevice(enum protocol_e protocol, int node);
 int disconnectDeviceByVarname(const char * varname);
 

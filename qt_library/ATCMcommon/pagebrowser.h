@@ -15,6 +15,7 @@
 #include <QKeyEvent>
 #endif
 #include <QPainter>
+#include <QMessageBox>
 #include <QStack>
 #include <QStyleOption>
 #include <QTimer>
@@ -58,7 +59,7 @@
 class page : public QWidget
 {
     Q_OBJECT
-    
+
 public:
     explicit page(QWidget *parent = 0);
     ~page();
@@ -114,14 +115,15 @@ protected:
     bool setStatusVar(int SynIndex, char Status);
     bool isBlockFullUsed(int block, QStringList variablelist);
     QStringList getBlocksToFill(QStringList variablelist);
-    
+
     bool setAsStartPage(char * window);
-    
+
     int checkLicence(QString * message);
-    
+    int checkSDusage();
+
     int countLine(const char * filename);
     bool zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir = false);
-    
+
 #ifdef ENABLE_ALARMS
     char * getDescription(char* tag);
     void setAlarmsBuzzer(int period_ms = ERROR_LABEL_PERIOD_MS);
@@ -142,7 +144,7 @@ private:
     bool hideAll(void);
     QLineEdit * _line;
     int _period_ms;
-    
+
 };
 
 extern QHash<QString, page *> ScreenHash;

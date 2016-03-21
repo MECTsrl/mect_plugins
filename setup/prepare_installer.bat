@@ -1,22 +1,25 @@
 @echo off
 
-SET REVISION="7.0rc16"
+SET REVISION="7.0rc17"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\Users\UserName\Documents\GitHub\mect_plugins"
 
+rem SET TARGET_LIST='TP1043_CAN TP1043_485 TP1043_CAN TPAC1007_3 TPAC1007_LV TPAC1007_4AA TPAC1007_4AB TPAC1007_4AC TPLC100 TPAC150 TPAC1006 TP1057 TPAC1006_GSM TPAC1006_HR TPAC1057_HR TPAC1008 TP1070'
+SET TARGET_LIST='TP1043 TPAC1007_3 TPAC1007_4AA TPAC1007_4AB TPLC100 TPAC150 TPAC1006 TP1057 TPAC1006_HR TPAC1057_HR TPAC1008 TP1070'
+
 rem extract MECT_CONFIGURATOR_REVISION
-FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\MectConfigurator\MectConfiguratorInstaller\Volume\nidist.id') DO SET MECT_CONFIGURATOR_REVISION=%%a
+FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\MectConfigurator\MectConfiguratorInstaller\Volume\nidist.id') DO SET MECT_CONFIGURATOR_REVISION="%%a"
 
 SET QTPROJECT=0
-SET BUILD=1
+SET BUILD=0
 SET INSTALL=1
 SET REPAIR=0
 SET UPDATE=0
 
 echo.
 echo Mect plugin Revision: %REVISION%
-echo MectConfigurator Revision %MECT_CONFIGURATOR_REVISION%
+echo MectConfigurator Revision: %MECT_CONFIGURATOR_REVISION%
 echo.
 echo Building: %BUILD%
 echo Install: %INSTALL%
@@ -86,6 +89,7 @@ IF %TEMPLATE% == 1 (
 	time /t
 	for /d %%a in ("C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-*") do rd /s /q "%%~a"
 	mkdir %OUT_DIR%\Qt485\desktop\share\qtcreator\templates\wizards
+	
 	xcopy %IN_DIR%\qt_templates\ATCM-template-project C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project /Q /Y /E /S /I > %OUT_DIR%\error.log 2>&1
 	IF ERRORLEVEL 1 (
 		echo problem during template.
@@ -101,6 +105,17 @@ IF %TEMPLATE% == 1 (
 		cd %ORIGINAL%
 		exit
 	)
+
+	for /d %%a in (%TARGET_LIST%) do (
+	xcopy "%IN_DIR%\qt_templates\ATCM-template-form-class-%%~a" "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a" /Q /Y /E /S /I > %OUT_DIR%\error.log 2>&1
+	IF ERRORLEVEL 1 (
+		echo problem during template.
+		pause
+		cd %ORIGINAL%
+		exit
+	)
+	)
+
 	time /t
 )
 

@@ -70,7 +70,7 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
                 item = new QTableWidgetItem(fields.at(1));
                 table->setItem(i,0,item);
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                item = new QTableWidgetItem(fields.at(2));
+                item = new QTableWidgetItem(fields.at(2).simplified());
                 table->setItem(i,1,item);
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable);
                 item = new QTableWidgetItem(fields.at(3));
@@ -108,12 +108,13 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
                 "    /*background-image: url();*/\n"
                 );
 
-    QList<QTableWidgetItem*> items = table->findItems(*selection, Qt::MatchExactly);
+    QList<QTableWidgetItem*> items = table->findItems(*m_selection, Qt::MatchExactly);
     if (items.count() > 0)
     {
        items.at(0)->setSelected(true);
        table->scrollToItem(items.at(0),QAbstractItemView::PositionAtCenter);
     }
+    table->resizeColumnsToContents();
 }
 
 QSize CrossTableEditor::sizeHint() const

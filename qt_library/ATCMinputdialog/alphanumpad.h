@@ -76,6 +76,8 @@ private slots:
     void on_pushButtonCapsLock_clicked(bool checked);
     void showUpper(bool checked);
 
+    void on_pushButtonDot_clicked();
+
 private:
     Ui::alphanumpad *ui;
     char * _value;

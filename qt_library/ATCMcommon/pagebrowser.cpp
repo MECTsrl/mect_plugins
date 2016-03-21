@@ -25,6 +25,7 @@
 #include "app_usb.h"
 
 #include "ATCMsystem/system_ini.h"
+#include "ATCMsystem/net_conf.h"
 #include "ATCMsystem/data_manager.h"
 #include "ATCMsystem/display_settings.h"
 #include "ATCMsystem/info.h"
@@ -2024,6 +2025,26 @@ bool page::setTag(QString * label, QString value)
     return false;
 }
 
+int page::checkSDusage()
+{
+    if (SDCheck() == 0)
+    {
+        char filename[256];
+        sprintf(filename, "%s/%s", SD_MOUNT_POINT, ".application");
+        if (QFile::exists(filename))
+        {
+            return 1;
+        }
+        sprintf(filename, "%s/%s", SD_MOUNT_POINT, ".extrastorage");
+        if (QFile::exists(filename))
+        {
+            return 2;
+        }
+        return 0;
+    }
+    return -1;
+}
+
 /*
    -1 error
    0 no sdcard
@@ -2175,6 +2196,10 @@ bool page::create_next_page(page ** p, const char * t)
         if (strcmp(t, "system_ini") == 0)
         {
             *p = (page *)(new system_ini);
+        }
+        else if (strcmp(t, "net_conf") == 0)
+        {
+            *p = (page *)(new net_conf);
         }
         else if (strcmp(t, "info") == 0)
         {

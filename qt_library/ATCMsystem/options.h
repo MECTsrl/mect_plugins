@@ -44,6 +44,8 @@ private slots:
     
     void on_pushButtonLanguage_clicked();
     
+    void on_pushButtonNetworkCfg_clicked();
+
 private:
     Ui::options *ui;
 };

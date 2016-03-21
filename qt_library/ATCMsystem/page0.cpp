@@ -81,8 +81,6 @@ void page0::changePage()
             myProcess->start("fcrts.sh");
         }
 
-        /* load the tag table if it is present */
-        loadTagTable();
         if(CommStart() == false)
         {
             exit(0);

@@ -267,3 +267,8 @@ void options::on_pushButtonLanguage_clicked()
     QMessageBox::critical(this,tr("Language"), tr("No language translation are available"));
 #endif
 }
+
+void options::on_pushButtonNetworkCfg_clicked()
+{
+    goto_page("net_conf");
+}

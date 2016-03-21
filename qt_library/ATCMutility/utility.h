@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 int atoh(const char * string);
-int countLine(const char * filename);
+char *strtok_csv(char *string, const char *separators, char **savedptr);
 
 #ifdef __cplusplus
 }

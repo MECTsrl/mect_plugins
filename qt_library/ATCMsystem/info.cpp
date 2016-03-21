@@ -174,7 +174,7 @@ void info::reload()
         ui->labelMACval->setText("-");
     }
     /* IP */
-    if (getIP(string) == 0)
+    if (getIP("eth0", string) == 0)
     {
         ui->labelIPval->setText(string);
     }
@@ -219,6 +219,7 @@ void info::reload()
         ui->labelDNS2val->setText("-");
     }
 
+#if 0
     char serial[SN_LEN] = "-";
     if (getSdSN(serial) == 0)
     {
@@ -242,6 +243,27 @@ void info::reload()
         ui->labelLICval->setText("-");
         break;
     }
+#else
+
+    ui->labelLICval->hide();
+    ui->labelLICtxt->hide();
+    switch (checkSDusage())
+    {
+    case 0:
+    ui->labelSDval->setText("Unused");
+        break;
+    case 1:
+    ui->labelSDval->setText("Application");
+        break;
+    case 2:
+    ui->labelSDval->setText("Storage");
+        break;
+    default:
+    ui->labelSDval->setText("-");
+        break;
+    }
+
+#endif
 }
 
 /**
