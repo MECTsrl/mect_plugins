@@ -8,8 +8,8 @@ TARGET = ATCMinputdialog
 
 include (../qt_library.pri)
 
-LIBS += \
--lATCMutility
+#LIBS += \
+#-lATCMutility
 
 SOURCES += \
 alphanumpad.cpp \

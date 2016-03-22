@@ -1566,7 +1566,7 @@ int getMAC(char * mac)
     return 0;
 }
 
-int getIP(char * interface, char * ip)
+int getIP(const char * interface, char * ip)
 {
     int fd;
     struct ifreq ifr;

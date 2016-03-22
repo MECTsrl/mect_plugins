@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "common.h"
 #include "app_logprint.h"
 #include "defines.h"

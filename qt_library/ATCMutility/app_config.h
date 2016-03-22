@@ -275,7 +275,7 @@ extern "C" {
 #define CID_LEN 33
 #define SN_LEN 8
 
-    int getIP(char * interface, char * ip);
+    int getIP(const char * interface, char * ip);
     int getMAC(char * mac);
     int getSdCID(char * cid);
 	int getSdSN(char * sn);
