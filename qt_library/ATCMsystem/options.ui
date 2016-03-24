@@ -28,7 +28,7 @@
   <property name="styleSheet">
    <string notr="true">QPushButton
 {
-	font: 20pt &quot;Ubuntu&quot;;
+	font: 20pt &quot;DejaVu Sans Mono&quot;;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -141,10 +141,13 @@
    <item>
     <layout class="QGridLayout" name="gridLayout">
      <property name="leftMargin">
-      <number>8</number>
+      <number>0</number>
      </property>
      <property name="rightMargin">
-      <number>8</number>
+      <number>0</number>
+     </property>
+     <property name="spacing">
+      <number>4</number>
      </property>
      <item row="0" column="1">
       <widget class="QPushButton" name="pushButtonModbus">
@@ -283,6 +286,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">
        <property name="sizePolicy">

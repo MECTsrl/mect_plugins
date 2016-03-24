@@ -46,6 +46,10 @@ private slots:
 
     void on_pushButtonPages4_clicked();
 
+    void on_pushButtonHome_clicked();
+
+    void on_pushButtonBack_clicked();
+
 private:
     Ui::menu *ui;
 };

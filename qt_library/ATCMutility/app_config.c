@@ -20,8 +20,6 @@
  * Constant definitions
  */
 
-
-
 enum app_conf_section_e {
     APP_CONF_NONE = 0,
     APP_CONF_IRQ0,              /* IRQ0 section */
@@ -169,7 +167,6 @@ app_conf_build_ids_t app_conf_build_ids = {
     }
 };
 
-static char *app_conf_mac = NULL;
 static char *app_conf_serial = NULL;
 static char *app_conf_ipaddr = NULL;
 static char *app_conf_netmask = NULL;
@@ -213,11 +210,15 @@ char *app_netconf_item_get(char ** item_pointer, const char * item_name)
     while ((fgets(line, MAX_LINE_SIZE, cf))!= NULL ) {
 
         if (strstr(line, item_name) != NULL)
+        {
+            len = strlen(line);
             break;
+        }
     }
     fclose(cf);
 
-    len = strlen(line);
+    if (len == 0)
+        return NULL;
 
     if (line[len - 1] == '\n')
         line[len - 1] = '\0';
@@ -251,7 +252,7 @@ char *app_netconf_item_get(char ** item_pointer, const char * item_name)
  *
  * @ingroup config
  */
-int app_netconf_item_set(char * item, const char * item_name)
+int app_netconf_item_set(const char * item, const char * item_name)
 {
 #define MAX_LINE_SIZE       81
     FILE *fp, * fptmp;
@@ -402,22 +403,22 @@ char *app_macconf_item_get(char ** item_pointer, const char * item_name)
 
     cf = fopen(APP_CONFIG_MAC_FILE, "r");
     if (cf == NULL) {
-        cf = fopen(APP_CONFIG_IPADDR_FILE, "r");
-        if (cf == NULL) {
-            perror(APP_CONFIG_IPADDR_FILE);
-
-            return NULL;
-        }
+        perror(APP_CONFIG_MAC_FILE);
+        return NULL;
     }
 
     while ((fgets(line, MAX_LINE_SIZE, cf))!= NULL ) {
 
         if (strstr(line, item_name) != NULL)
+        {
+            len = strlen(line);
             break;
+        }
     }
     fclose(cf);
 
-    len = strlen(line);
+    if (len == 0)
+        return NULL;
 
     if (line[len - 1] == '\n')
         line[len - 1] = '\0';
@@ -1508,61 +1509,34 @@ char *app_version_item_get(char ** item_pointer, const char * item_name)
 #undef MAX_LINE_SIZE
 }
 
-int getMAC(char * mac)
+int getMAC(const char *interface, char * mac)
 {
+    int fd;
     struct ifreq ifr;
-    struct ifconf ifc;
-    char buf[1024];
-    int success = 0;
 
-    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    if (sock == -1) {
-        return -1;
-    };
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
 
-    ifc.ifc_len = sizeof(buf);
-    ifc.ifc_buf = buf;
-    if (ioctl(sock, SIOCGIFCONF, &ifc) == -1) {
+    /* I want to get an IPv4 IP address */
+    ifr.ifr_addr.sa_family = AF_INET;
+
+    /* I want IP address attached to "eth0" */
+    strncpy(ifr.ifr_name, interface, IFNAMSIZ-1);
+    if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0)
+    {
         return -1;
     }
 
-    struct ifreq* it = ifc.ifc_req;
-    const struct ifreq* const end = it + (ifc.ifc_len / sizeof(struct ifreq));
-
-    for (; it != end; ++it) {
-        strcpy(ifr.ifr_name, it->ifr_name);
-        if (ioctl(sock, SIOCGIFFLAGS, &ifr) == 0) {
-            if (! (ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
-                if (ioctl(sock, SIOCGIFHWADDR, &ifr) == 0) {
-                    success = 1;
-                    break;
-                }
-            }
-        }
-        else {
-            return -1;
-        }
-    }
-
+    close(fd);
     unsigned char mac_address[6]= "";
-
-    if (success)
+    memcpy(mac_address, ifr.ifr_hwaddr.sa_data, 6);
+    int j = 0;
+    int i = 0;
+    for (i = 0; i < 6; i++)
     {
-        memcpy(mac_address, ifr.ifr_hwaddr.sa_data, 6);
-        int j = 0;
-        int i = 0;
-        for (i = 0; i < 6; i++)
-        {
-            sprintf(&(mac[j]), "%02X:", mac_address[i]);
-            j+=3;
-        }
-        mac[j-1]= '\0';
-        printf("MAC:'%s'\n", mac);
+        sprintf(&(mac[j]), "%02X:", mac_address[i]);
+        j+=3;
     }
-    else
-    {
-        return -1;
-    }
+    mac[j-1]= '\0';
     return 0;
 }
 
@@ -1588,7 +1562,6 @@ int getIP(const char * interface, char * ip)
 
     /* display result */
     strcpy(ip, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-    printf("%s\n", ip);
 
     return 0;
 }

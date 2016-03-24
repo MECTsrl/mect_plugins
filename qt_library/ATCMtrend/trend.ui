@@ -6,7 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    %Model%
+    <width>243</width>
+    <height>256</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -118,9 +119,16 @@ QPushButton:pressed
          <bool>false</bool>
         </property>
        </widget>
-       <zorder>qwtPlot</zorder>
-       <zorder>pushButtonSelect</zorder>
-       <zorder>labelvalue</zorder>
+      </widget>
+     </item>
+     <item>
+      <widget class="QwtTextLabel" name="lbelInfo">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="plainText">
+        <string/>
+       </property>
       </widget>
      </item>
      <item>
@@ -243,13 +251,6 @@ border: 2px solid  rgb(194, 194, 194);
          </property>
          <property name="text">
           <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QwtTextLabel" name="TextLabel">
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
          </property>
         </widget>
        </item>

@@ -6,7 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    %Model%
+    <width>265</width>
+    <height>248</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -425,6 +426,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">
        <property name="sizePolicy">

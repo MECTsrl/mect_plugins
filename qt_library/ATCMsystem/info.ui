@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>236</width>
-    <height>323</height>
+    <width>293</width>
+    <height>352</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -28,15 +28,15 @@
   <property name="styleSheet">
    <string notr="true">QPushButton
 {
-	font: 20pt &quot;Ubuntu&quot;;
+        font: 20pt &quot;DejaVu Sans Mono&quot;;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>2</number>
+    <number>4</number>
    </property>
    <property name="margin">
-    <number>2</number>
+    <number>4</number>
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -639,7 +639,7 @@
         </font>
        </property>
        <property name="text">
-        <string>NETWORK</string>
+        <string>NETWORK ETH0</string>
        </property>
       </widget>
      </item>
@@ -734,7 +734,7 @@
         </font>
        </property>
        <property name="text">
-        <string>LIC:</string>
+        <string>USED AS:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -897,6 +897,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">
        <property name="sizePolicy">

@@ -206,3 +206,13 @@ void menu::on_pushButtonPages4_clicked()
 {
     goto_page("page400");
 }
+
+void menu::on_pushButtonHome_clicked()
+{
+    go_home();
+}
+
+void menu::on_pushButtonBack_clicked()
+{
+    go_back();
+}

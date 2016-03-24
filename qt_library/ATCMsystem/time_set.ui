@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>354</width>
+    <width>385</width>
     <height>255</height>
    </rect>
   </property>
@@ -28,11 +28,11 @@
   <property name="styleSheet">
    <string notr="true">QPushButton
 {
-	font: 20pt &quot;Ubuntu&quot;;
+	font: 20pt &quot;DejaVu Sans Mono&quot;;
 }
 
  QSpinBox {
-	font: 1000 18pt &quot;Ubuntu&quot;;
+	font: 1000 18pt &quot;DejaVu Sans Mono&quot;;
  }
 
  QSpinBox::up-button {
@@ -64,16 +64,10 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>2</number>
+    <number>4</number>
    </property>
-   <property name="leftMargin">
-    <number>9</number>
-   </property>
-   <property name="topMargin">
-    <number>2</number>
-   </property>
-   <property name="bottomMargin">
-    <number>2</number>
+   <property name="margin">
+    <number>4</number>
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -177,7 +171,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>16</pointsize>
          <weight>50</weight>
          <italic>false</italic>
@@ -208,7 +202,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>16</pointsize>
          <weight>50</weight>
          <italic>false</italic>
@@ -248,7 +242,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>18</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -300,7 +294,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>18</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -349,7 +343,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>18</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -398,7 +392,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>18</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -441,7 +435,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>18</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -467,7 +461,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <property name="spacing">
-      <number>6</number>
+      <number>4</number>
      </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">

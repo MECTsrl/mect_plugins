@@ -6,7 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    %Model%
+    <width>286</width>
+    <height>205</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -27,7 +28,7 @@
   <property name="styleSheet">
    <string notr="true">QPushButton
 {
-	font: 20pt &quot;Ubuntu&quot;;
+	font: 20pt &quot;DejaVu Sans Mono&quot;;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -125,7 +126,7 @@
     <widget class="QListWidget" name="listWidget">
      <property name="font">
       <font>
-       <family>Ubuntu</family>
+       <family>DejaVu Sans Mono</family>
        <pointsize>32</pointsize>
        <weight>50</weight>
        <italic>false</italic>
@@ -138,7 +139,7 @@
      <property name="styleSheet">
       <string notr="true">QListWidget
 {
-	font: 32pt &quot;Ubuntu&quot;;
+	font: 32pt &quot;DejaVu Sans Mono&quot;;
 }
 QScrollBar:vertical
 {
@@ -241,6 +242,9 @@ QScrollBar::sub-line:vertical
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">
        <property name="sizePolicy">

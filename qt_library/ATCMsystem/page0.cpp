@@ -40,6 +40,7 @@ page0::page0(QWidget *parent) :
         LOG_PRINT(info_e, "Cannot load splash file: '%s'\n", SPLASH_FILE);
     }
     
+    ui->progressBar->setValue(0);
     first_time = true;
 }
 
@@ -63,6 +64,13 @@ page0::~page0()
 
 void page0::reload()
 {
+    ui->progressBar->setVisible(first_time);
+    if (first_time == true)
+    {
+        userPageList.removeDuplicates();
+        ui->progressBar->setMaximum(userPageList.count() + 1);
+        ui->progressBar->setMinimum(0);
+    }
     /* stop the unused refresh timer */
     refresh_timer->stop();
     
@@ -89,7 +97,7 @@ void page0::changePage()
     
         /* pre-load */
         page * p;
-        userPageList.removeDuplicates();
+        ui->progressBar->setValue(1);
         for (int pageIndex = 0; pageIndex < userPageList.count(); pageIndex++)
         {
             create_next_page(&p, userPageList.at(pageIndex).toAscii().data());
@@ -101,6 +109,7 @@ void page0::changePage()
             {
                 LOG_PRINT(error_e,"Cannot create page '%s'\n", userPageList.at(pageIndex).toAscii().data());
             }
+            ui->progressBar->setValue(pageIndex + 1);
         }
     }
 

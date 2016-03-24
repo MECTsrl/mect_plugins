@@ -164,7 +164,7 @@ extern "C" {
      *
      * @ingroup config
      */
-    int app_netconf_item_set(char * item, const char * item_name);
+    int app_netconf_item_set(const char * item, const char * item_name);
 
     /**
 	 * @brief Grab the serial number
@@ -276,7 +276,7 @@ extern "C" {
 #define SN_LEN 8
 
     int getIP(const char * interface, char * ip);
-    int getMAC(char * mac);
+    int getMAC(const char *interface, char * mac);
     int getSdCID(char * cid);
 	int getSdSN(char * sn);
     int SDCheck();

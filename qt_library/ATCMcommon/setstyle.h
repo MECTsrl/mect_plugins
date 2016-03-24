@@ -21,7 +21,7 @@
 #ifdef FONT_TYPE
 #undef FONT_TYPE
 #endif
-#define FONT_TYPE "Ubuntu"
+#define FONT_TYPE "DejaVu Sans Mono"
 
 #ifdef FONT_SIZE
 #undef FONT_SIZE

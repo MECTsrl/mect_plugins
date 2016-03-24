@@ -27,15 +27,15 @@
   </property>
   <property name="styleSheet">
    <string notr="true"> QLabel#labelPen {
-	font: 1000 12pt &quot;Ubuntu&quot;;
+	font: 1000 12pt &quot;DejaVu Sans Mono&quot;;
  }
 
  QLabel {
-	font: 1000  8pt &quot;Ubuntu&quot;;
+	font: 1000  8pt &quot;DejaVu Sans Mono&quot;;
  }
 
  QSpinBox {
-	font: 1000 14pt &quot;Ubuntu&quot;;
+	font: 1000 14pt &quot;DejaVu Sans Mono&quot;;
  }
 
  QSpinBox::up-button {
@@ -65,7 +65,7 @@
  }
 
  QDoubleSpinBox {
-	font: 1000 12pt &quot;Ubuntu&quot;;
+	font: 1000 12pt &quot;DejaVu Sans Mono&quot;;
  }
 
  QDoubleSpinBox::up-button {
@@ -117,7 +117,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -238,7 +238,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -266,7 +266,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -294,7 +294,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -492,7 +492,7 @@ border: 2px solid  rgb(194, 194, 194);
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -700,7 +700,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -725,7 +725,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -874,7 +874,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>
@@ -916,7 +916,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="font">
         <font>
-         <family>Ubuntu</family>
+         <family>DejaVu Sans Mono</family>
          <pointsize>8</pointsize>
          <weight>99</weight>
          <italic>false</italic>

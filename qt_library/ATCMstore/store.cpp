@@ -103,6 +103,13 @@ void store::reload()
         logfp = NULL;
     }
     
+    QStringList fileList = QDir(STORE_DIR).entryList(QStringList("*.log"), QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
+    if (fileList.count() == 0)
+    {
+        ui->labelFilter->setText(tr("No log to show."));
+        return;
+    }
+
     char filename[FILENAME_MAX];
     if (_actual_store_[0] == '\0')
     {

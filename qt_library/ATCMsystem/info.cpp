@@ -34,7 +34,7 @@
 	mystyle.append(this->styleSheet()); \
 	mystyle.append("QLabel"); \
 	mystyle.append("{"); \
-	mystyle.append("    font: 20pt \"Ubuntu\";"); \
+    mystyle.append("    font: 20pt \""FONT_TYPE"\";"); \
 	mystyle.append("}"); \
 	mystyle.append("QWidget"); \
 	mystyle.append("{"); \
@@ -147,10 +147,7 @@ void info::reload()
     }
 
     /* PLC */
-    float versionf;
-    readFromDb(5394, &versionf);
-    sprintf(version, "%.3f", versionf);
-    ui->labelPLCval->setText(version);
+    getFormattedVar("PLC_Version", ui->labelPLCval, NULL);
 
     /* HMI */
     // ui->labelHMIval->setText(FW_RELEASE);
@@ -165,7 +162,7 @@ void info::reload()
 
     char string[32];
     /* MAC */
-    if (getMAC(string) == 0)
+    if (getMAC("eth0", string) == 0)
     {
         ui->labelMACval->setText(string);
     }
@@ -219,7 +216,6 @@ void info::reload()
         ui->labelDNS2val->setText("-");
     }
 
-#if 0
     char serial[SN_LEN] = "-";
     if (getSdSN(serial) == 0)
     {
@@ -230,40 +226,21 @@ void info::reload()
         ui->labelSDval->setText("-");
     }
 
-    QString message;
-    switch (checkLicence(&message))
-    {
-    case 2:
-        ui->labelLICval->setText("Storage");
-        break;
-    case 3:
-        ui->labelLICval->setText("System");
-        break;
-    default:
-        ui->labelLICval->setText("-");
-        break;
-    }
-#else
-
-    ui->labelLICval->hide();
-    ui->labelLICtxt->hide();
     switch (checkSDusage())
     {
     case 0:
-    ui->labelSDval->setText("Unused");
+    ui->labelLICval->setText("Unused");
         break;
     case 1:
-    ui->labelSDval->setText("Application");
+    ui->labelLICval->setText("Application");
         break;
     case 2:
-    ui->labelSDval->setText("Storage");
+    ui->labelLICval->setText("Storage");
         break;
     default:
-    ui->labelSDval->setText("-");
+    ui->labelLICval->setText("-");
         break;
     }
-
-#endif
 }
 
 /**

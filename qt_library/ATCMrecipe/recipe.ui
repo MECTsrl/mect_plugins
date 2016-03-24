@@ -6,7 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    %Model%
+    <width>384</width>
+    <height>220</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -120,7 +121,7 @@
     <widget class="QTableWidget" name="tableWidget">
      <property name="font">
       <font>
-       <family>Ubuntu</family>
+       <family>DejaVu Sans Mono</family>
        <pointsize>22</pointsize>
        <weight>50</weight>
        <italic>false</italic>
@@ -130,7 +131,7 @@
      <property name="styleSheet">
       <string notr="true">QTableWidget
 {
-	font: 22pt &quot;Ubuntu&quot;;
+	font: 22pt &quot;DejaVu Sans Mono&quot;;
 }
 QScrollBar:vertical
 {
@@ -188,6 +189,9 @@ QScrollBar::sub-line:vertical
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">
        <property name="sizePolicy">

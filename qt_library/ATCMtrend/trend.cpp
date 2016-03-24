@@ -58,7 +58,7 @@
     mystyle.append("  background-color: rgb(255, 255, 255);"); \
     mystyle.append("  color: rgb(0, 0, 0);"); \
     mystyle.append("  background-image: url();"); \
-    mystyle.append("  font: 12pt \"Ubuntu\";"); \
+    mystyle.append("  font: 12pt \"DejaVu Sans Mono\";"); \
     d_qwtplot->setStyleSheet(mystyle); \
     }
 
@@ -155,10 +155,12 @@ void trend::reload()
 {
     LOG_PRINT(verbose_e, "DISCONNECT!!!!!\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-    
+
     LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADING\n");
     reloading = true;
     d_qwtplot->hide();
+
+    ui->lbelInfo->setVisible(false);
 
     /* disable all button during loading */
     ui->pushButtonUp->setEnabled(false);
@@ -184,7 +186,8 @@ void trend::reload()
             LOG_PRINT(info_e, "DISCONNECT!!!!!\n");
             disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
             refresh_timer->stop();
-            QMessageBox::critical(this,tr("Invalid data"), tr("No trend description specified."));
+            errormsg = (tr("No trend description specified."));
+            //QMessageBox::critical(this,tr("Invalid data"), tr("No trend description specified."));
             force_back = true;
             reloading = false;
             LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADED\n");
@@ -394,7 +397,15 @@ void trend::updateData()
                 if (LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg) == false)
                 {
                     refresh_timer->stop();
-                    QMessageBox::critical(0,tr("Invalid data"), tr("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg));
+                    errormsg = tr("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg);
+                    //QMessageBox::critical(0,tr("Invalid data"), tr("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg));
+                    ui->lbelInfo->setText(errormsg);
+                    ui->lbelInfo->setVisible(true);
+                    ui->lbelInfo->repaint();
+                    ui->labelDate->setText(tr("Error..."));
+                    ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
+                    ui->labelDate->repaint();
+                    errormsg.clear();
                     force_back = true;
                     delete sel;
                     return;
@@ -419,11 +430,18 @@ void trend::updateData()
         }
         LOG_PRINT(verbose_e, "UPDATE\n");
         actualVisibleWindowSec = 0;
+        ui->lbelInfo->setText(errormsg);
+        ui->lbelInfo->setVisible(true);
+        ui->lbelInfo->repaint();
+        ui->labelDate->setText(tr("Error..."));
+        ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
+        ui->labelDate->repaint();
         errormsg.clear();
-        go_back();
+        //go_back();
         return;
     }
-    
+    ui->lbelInfo->setVisible(false);
+
     LOG_PRINT(verbose_e, "UPDATE\n");
     if(first_time == true)
     {
@@ -891,7 +909,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
     if (fp == NULL)
     {
         LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
-        if (ErrorMsg) *ErrorMsg = QString("Cannot open '%1'").arg(filename);
+        if (ErrorMsg) *ErrorMsg = tr("Cannot open '%1'").arg(filename);
         return false;
     }
     LOG_PRINT(verbose_e, "opened '%s'\n", filename);
@@ -908,7 +926,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
     {
         LOG_PRINT(error_e, "Invalid Layout '%s'\n", line);
         fclose(fp);
-        if (ErrorMsg) *ErrorMsg = QString("Invalid Layout '%1'").arg(line);
+        if (ErrorMsg) *ErrorMsg = tr("Invalid Layout '%1'").arg(line);
         return false;
     }
     
@@ -966,7 +984,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg) *ErrorMsg = QString("Invalid visible tag");
+            if (ErrorMsg) *ErrorMsg = tr("Invalid visible tag");
             return false;
         }
         else if (p[0] == '\0')
@@ -982,11 +1000,11 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         /* tag */
         int index;
         p = strtok_csv(NULL, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0')
+        if (p == NULL)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg) *ErrorMsg = QString("Invalid variale tag '%1'").arg(line);
+            if (ErrorMsg) *ErrorMsg = tr("Invalid variable tag '%1'").arg(line);
             return false;
         }
         else if (p[0] == '\0')
@@ -1001,7 +1019,8 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
             pens[rownb].CtIndex = -1;
-            QMessageBox::critical(this,tr("Invalid data"), tr("Cannot find the variable %1 into the Crosstable. The pen will be disabled.").arg(p));
+            if (ErrorMsg) *ErrorMsg = tr("Cannot find the variable %1 into the Crosstable. The pen will be disabled.").arg(p);
+            return false;
         }
         else
         {
@@ -1016,7 +1035,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg)*ErrorMsg = QString("Invalid color tag '%1'").arg(line);
+            if (ErrorMsg)*ErrorMsg = tr("Invalid color tag '%1'").arg(line);
             return false;
         }
         else if (p[0] == '\0')
@@ -1036,7 +1055,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg)* ErrorMsg = QString("Invalid Ymin tag '%1'").arg(line);
+            if (ErrorMsg)* ErrorMsg = tr("Invalid Ymin tag '%1'").arg(line);
             return false;
         }
         else if (p[0] == '\0')
@@ -1057,7 +1076,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg) *ErrorMsg = QString("Invalid Ymax tag '%1'").arg(line);
+            if (ErrorMsg) *ErrorMsg = tr("Invalid Ymax tag '%1'").arg(line);
             return false;
         }
         else if (p[0] == '\0')
@@ -1075,7 +1094,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         if (pens[rownb].visible && pens[rownb].yMin >= pens[rownb].yMax)
         {
             LOG_PRINT(warning_e, "Max value must be bigger than min value\n");
-            if (ErrorMsg) *ErrorMsg = QString("Max value must be bigger than min value");
+            if (ErrorMsg) *ErrorMsg = tr("Max value must be bigger than min value");
             return false;
         }
         
@@ -1109,7 +1128,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
     if (rownb != PEN_NB)
     {
         LOG_PRINT(error_e, "Incomplete trend file (%d vs %d)\n", rownb, PEN_NB);
-        if (ErrorMsg) *ErrorMsg = QString("Incomplete trend file (%1 vs %2)").arg(rownb).arg(PEN_NB);
+        if (ErrorMsg) *ErrorMsg = tr("Incomplete trend file (%1 vs %2)").arg(rownb).arg(PEN_NB);
         return false;
     }
     
@@ -1176,7 +1195,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         }
     }
     LOG_PRINT(warning_e, "No visible pen\n");
-    if (ErrorMsg) *ErrorMsg = QString("No visible pen");
+    if (ErrorMsg) *ErrorMsg = tr("No visible pen");
     return false;
 }
 
@@ -2055,7 +2074,7 @@ void trend::moved(const QPoint &pos)
     }
     
     ui->labelvalue->setText(x + "; " + y);
-    ui->labelvalue->setStyleSheet(QString("border: 2px solid #%1;" "font: 14pt \"Ubuntu\";").arg(pens[actualPen].color));
+    ui->labelvalue->setStyleSheet(QString("border: 2px solid #%1;" "font: 14pt \"DejaVu Sans Mono\";").arg(pens[actualPen].color));
     
 #ifdef MARKER
     d_marker->setValue(pos.x(), pos.y());

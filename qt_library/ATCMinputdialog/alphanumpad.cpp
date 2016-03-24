@@ -11,6 +11,7 @@
 #include "app_logprint.h"
 #include "alphanumpad.h"
 #include "ui_alphanumpad.h"
+#include "setstyle.h"
 
 #define SET_ALPHANUMPAD_STYLE() { \
     QString mystyle; \
@@ -23,11 +24,11 @@
     mystyle.append("background-color: rgb(255,255,255);"); \
     mystyle.append("color: rgb(0, 0, 0);"); \
     mystyle.append("background-repeat: no-repeat;"); \
-    mystyle.append("font: 18pt \"Ubuntu\";"); \
+    mystyle.append("font: 18pt \""FONT_TYPE"\";"); \
     mystyle.append("}"); \
     mystyle.append("QMessageBox"); \
     mystyle.append("{"); \
-    mystyle.append("font: 18pt \"Ubuntu\";"); \
+    mystyle.append("font: 18pt \""FONT_TYPE"\";"); \
     mystyle.append("background-color: rgb(0, 0, 0);"); \
     mystyle.append("color: red;"); \
     mystyle.append("}"); \
@@ -39,11 +40,11 @@
     mystyle.append("background-color: rgb(255, 255, 255);"); \
     mystyle.append("color: rgb(81, 81, 81);"); \
     mystyle.append("background-repeat: no-repeat;"); \
-    mystyle.append("font: 26pt \"Ubuntu\";"); \
+    mystyle.append("font: 26pt \""FONT_TYPE"\";"); \
     mystyle.append("}"); \
     mystyle.append("QLabel#labelMax"); \
     mystyle.append("{"); \
-    mystyle.append("    font: 18pt \"Ubuntu\";"); \
+    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
     mystyle.append("    color: rgb(255,255,255);"); \
     mystyle.append("}"); \
     mystyle.append(""); \
@@ -54,7 +55,7 @@
     mystyle.append(""); \
     mystyle.append("QLabel#labelMin"); \
     mystyle.append("{"); \
-    mystyle.append("    font: 18pt \"Ubuntu\";"); \
+    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
     mystyle.append("    color: rgb(255,255,255);"); \
     mystyle.append("}"); \
     mystyle.append(""); \
@@ -64,7 +65,7 @@
     mystyle.append("}"); \
     mystyle.append("QLineEdit#lineEditVal"); \
     mystyle.append("{"); \
-    mystyle.append("    font: 32pt \"Ubuntu\";"); \
+    mystyle.append("    font: 32pt \""FONT_TYPE"\";"); \
     mystyle.append("}"); \
     this->setStyleSheet(mystyle); \
     }
@@ -366,8 +367,8 @@ void alphanumpad::showUpper(bool checked)
         ui->r->setText("r");
         ui->s->setText("s");
         ui->t->setText("t");
-        ui->t->setText("u");
-        ui->t->setText("v");
+        ui->u->setText("u");
+        ui->v->setText("v");
         ui->x->setText("x");
         ui->y->setText("y");
         ui->w->setText("w");
@@ -395,8 +396,8 @@ void alphanumpad::showUpper(bool checked)
         ui->r->setText("R");
         ui->s->setText("S");
         ui->t->setText("T");
-        ui->t->setText("U");
-        ui->t->setText("V");
+        ui->u->setText("U");
+        ui->v->setText("V");
         ui->x->setText("X");
         ui->y->setText("Y");
         ui->w->setText("W");

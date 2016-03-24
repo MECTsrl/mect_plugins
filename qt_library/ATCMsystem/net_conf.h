@@ -42,7 +42,6 @@ private slots:
     void on_pushButton_eth1_DNS2_clicked();
 
     void on_pushButton_wlan0_scan_clicked();
-    void on_pushButton_wlan0_enable_toggled(bool checked);
     void on_pushButton_wlan0_IP_clicked();
     void on_pushButton_wlan0_NM_clicked();
     void on_pushButton_wlan0_GW_clicked();
@@ -51,19 +50,32 @@ private slots:
 
     void on_pushButtonHome_clicked();
     void on_pushButtonBack_clicked();
-    void on_pushButtonSave_clicked();
     void on_pushButtonSaveAll_clicked();
 
     void on_pushButton_wlan0_pwd_clicked();
 
+    void on_checkBox_eth0_DHCP_clicked(bool checked);
+
+    void on_checkBox_eth1_DHCP_clicked(bool checked);
+
+    void on_checkBox_wlan0_DHCP_clicked(bool checked);
+
+    void on_pushButton_wlan0_enable_clicked();
+
 private:
-    bool checkNetAddr();
+    bool checkNetAddr(char * ipaddr);
     bool saveETH0cfg();
     bool saveETH1cfg();
     bool saveWLAN0cfg();
+    bool isWlanOn(char * essid);
 
 private:
     Ui::net_conf *ui;
+    QString wlan0_pwd;
+    bool is_eth0_enabled;
+    bool is_eth1_enabled;
+    bool is_wlan_active;
+    bool setup;
 };
 
 #endif // NET_CONF_H

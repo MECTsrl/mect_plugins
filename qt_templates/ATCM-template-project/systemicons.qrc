@@ -45,5 +45,7 @@
         <file>img/Chess.png</file>
         <file>img/LedOn.png</file>
         <file>img/LedOff.png</file>
+        <file>img/WifiOff.png</file>
+        <file>img/WifiOn.png</file>
     </qresource>
 </RCC>

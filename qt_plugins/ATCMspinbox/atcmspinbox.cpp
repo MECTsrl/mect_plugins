@@ -55,7 +55,7 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
                 "/*\n"
                 "QDoubleSpinBox\n"
                 "{\n"
-                "    font: 18pt \"Ubuntu\";\n"
+                "    font: 18pt \""FONT_TYPE"\";\n"
                 "    background-color: rgb(230, 230, 230);\n"
                 "    border:2px solid black;\n"
                 "    border-radius:4px;\n"

@@ -28,11 +28,11 @@
   <property name="styleSheet">
    <string notr="true">QWidget
 {
-	font: 16pt &quot;Ubuntu&quot;;
+	font: 16pt &quot;DejaVu Sans Mono&quot;;
 }
 QPushButton
 {
-	font: 20pt &quot;Ubuntu&quot;;
+	font: 20pt &quot;DejaVu Sans Mono&quot;;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">

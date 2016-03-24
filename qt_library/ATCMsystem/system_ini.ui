@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <property name="margin">
-    <number>2</number>
+    <number>4</number>
    </property>
    <item>
     <widget class="Line" name="line_7">
@@ -106,7 +106,7 @@ QComboBox
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -134,6 +134,12 @@ QComboBox
        <string>System</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="gridLayout">
          <property name="sizeConstraint">
@@ -786,6 +792,12 @@ QComboBox
        <string>SERIAL PORT 0</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="gridLayout_2">
          <property name="spacing">
@@ -1110,6 +1122,12 @@ QComboBox
        <string>SERIAL PORT 1</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="gridLayout_10">
          <item row="0" column="0">
@@ -1422,6 +1440,12 @@ QComboBox
        <string>SERIAL PORT 2</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="1" column="2" alignment="Qt::AlignHCenter">
@@ -1734,6 +1758,12 @@ QComboBox
        <string>SERIAL PORT 3</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="gridLayout_8">
          <item row="1" column="0" alignment="Qt::AlignHCenter">
@@ -2046,6 +2076,12 @@ QComboBox
        <string>TCP IP PORT</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="gridLayout_12">
          <property name="verticalSpacing">
@@ -2164,6 +2200,12 @@ QComboBox
        <string>CANOPEN 0</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_8">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="1" column="0" alignment="Qt::AlignHCenter">
@@ -2258,6 +2300,12 @@ QComboBox
        <string>CANOPEN 1</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_9">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <property name="margin">
+        <number>4</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="1" column="0" alignment="Qt::AlignHCenter">
@@ -2352,7 +2400,7 @@ QComboBox
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <property name="spacing">
-      <number>6</number>
+      <number>4</number>
      </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">
@@ -2488,7 +2536,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/OK.png);
+qproperty-icon: url(:/systemicons/img/Save.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

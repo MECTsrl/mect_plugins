@@ -26,7 +26,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true"> QDateEdit {
-	font: 1000 14pt &quot;Ubuntu&quot;;
+	font: 1000 14pt &quot;DejaVu Sans Mono&quot;;
  }
 
  QDateEdit::up-button {
@@ -160,7 +160,7 @@
     <widget class="QTableWidget" name="tableWidget">
      <property name="font">
       <font>
-       <family>Ubuntu</family>
+       <family>DejaVu Sans Mono</family>
        <pointsize>22</pointsize>
        <weight>50</weight>
        <italic>false</italic>
@@ -170,7 +170,7 @@
      <property name="styleSheet">
       <string notr="true">QTableWidget
 {
-	font: 22pt &quot;Ubuntu&quot;;
+	font: 22pt &quot;DejaVu Sans Mono&quot;;
 }
 QScrollBar:vertical
 {

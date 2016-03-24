@@ -12,6 +12,7 @@
 #include "app_logprint.h"
 #include "numpad.h"
 #include "ui_numpad.h"
+#include "setstyle.h"
 
 /**
  * @brief this macro is used to set the numpad style.
@@ -28,11 +29,11 @@
 	mystyle.append("background-color: rgb(255,255,255);"); \
 	mystyle.append("color: rgb(0, 255, 255);"); \
 	mystyle.append("background-repeat: no-repeat;"); \
-	mystyle.append("font: 18pt \"Ubuntu\";"); \
+    mystyle.append("font: 18pt \""FONT_TYPE"\";"); \
 	mystyle.append("}"); \
 	mystyle.append("QMessageBox"); \
 	mystyle.append("{"); \
-	mystyle.append("font: 18pt \"Ubuntu\";"); \
+    mystyle.append("font: 18pt \""FONT_TYPE"\";"); \
 	mystyle.append("background-color: rgb(0, 0, 0);"); \
 	mystyle.append("color: red;"); \
 	mystyle.append("}"); \
@@ -44,11 +45,11 @@
 	mystyle.append("background-color: rgb(255, 255, 255);"); \
 	mystyle.append("color: rgb(81, 81, 81);"); \
 	mystyle.append("background-repeat: no-repeat;"); \
-	mystyle.append("font: 26pt \"Ubuntu\";"); \
+    mystyle.append("font: 26pt \""FONT_TYPE"\";"); \
 	mystyle.append("}"); \
 	mystyle.append("QLabel#labelMax"); \
 	mystyle.append("{"); \
-	mystyle.append("    font: 18pt \"Ubuntu\";"); \
+    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
 	mystyle.append("    color: rgb(0,0,0);"); \
 	mystyle.append("}"); \
 	mystyle.append(""); \
@@ -59,7 +60,7 @@
 	mystyle.append(""); \
 	mystyle.append("QLabel#labelMin"); \
 	mystyle.append("{"); \
-	mystyle.append("    font: 18pt \"Ubuntu\";"); \
+    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
 	mystyle.append("    color: rgb(0,0,0);"); \
 	mystyle.append("}"); \
 	mystyle.append(""); \
@@ -69,7 +70,7 @@
 	mystyle.append("}"); \
 	mystyle.append("QLineEdit#lineEditVal"); \
 	mystyle.append("{"); \
-	mystyle.append("    font: 32pt \"Ubuntu\";"); \
+    mystyle.append("    font: 32pt \""FONT_TYPE"\";"); \
 	mystyle.append("    color: rgb(0,0,0);"); \
 	mystyle.append("}"); \
 	this->setStyleSheet(mystyle); \
