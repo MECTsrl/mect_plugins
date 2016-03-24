@@ -4,15 +4,16 @@
 #include <string.h>
 
 #include <stdio.h>
+#include <ctype.h>
 #include <unistd.h>
 
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <net/if.h>
 #include <arpa/inet.h>
-#include <ctype.h>
+
+#include <sys/types.h>
 
 #include "app_config.h"
 
@@ -1519,7 +1520,7 @@ int getMAC(const char *interface, char * mac)
     /* I want to get an IPv4 IP address */
     ifr.ifr_addr.sa_family = AF_INET;
 
-    /* I want IP address attached to "eth0" */
+    /* I want IP address attached to "interface" */
     strncpy(ifr.ifr_name, interface, IFNAMSIZ-1);
     if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0)
     {
@@ -1540,6 +1541,32 @@ int getMAC(const char *interface, char * mac)
     return 0;
 }
 
+int getNetMask(const char * interface, char * nm)
+{
+    int fd;
+    struct ifreq ifr;
+
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    /* I want to get an IPv4 IP address */
+    ifr.ifr_addr.sa_family = AF_INET;
+
+    /* I want IP address attached to "interface" */
+    strncpy(ifr.ifr_name, interface, IFNAMSIZ-1);
+
+    if (ioctl(fd, SIOCGIFNETMASK, &ifr) != 0)
+    {
+        return -1;
+    }
+
+    close(fd);
+
+    /* display result */
+    strcpy(nm, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+
+    return 0;
+}
+
 int getIP(const char * interface, char * ip)
 {
     int fd;
@@ -1550,7 +1577,7 @@ int getIP(const char * interface, char * ip)
     /* I want to get an IPv4 IP address */
     ifr.ifr_addr.sa_family = AF_INET;
 
-    /* I want IP address attached to "eth0" */
+    /* I want IP address attached to "interface" */
     strncpy(ifr.ifr_name, interface, IFNAMSIZ-1);
 
     if (ioctl(fd, SIOCGIFADDR, &ifr) != 0)

@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QStyleOption>
 #include <QMessageBox>
+#include <stdlib.h>
 
 #include "atcmlabel.h"
 #include "common.h"
@@ -446,7 +447,32 @@ void ATCMlabel::updateData()
             }
             else if (m_format == Hex)
             {
-                m_value = QString("0x") + QString().setNum(atoi(value), 16);
+                switch (CtIndex2Type(m_CtIndex))
+                {
+                case intab_e:
+                case intba_e:
+                    m_value = QString("0x") + QString().setNum(strtol(value, NULL, 10), 16);
+                case uintab_e:
+                case uintba_e:
+                    m_value = QString("0x") + QString().setNum(strtoul(value, NULL, 10), 16);
+                case dint_abcd_e:
+                case dint_badc_e:
+                case dint_cdab_e:
+                case dint_dcba_e:
+                    m_value = QString("0x") + QString().setNum(strtoll(value, NULL, 10), 16);
+                case udint_abcd_e:
+                case udint_badc_e:
+                case udint_cdab_e:
+                case udint_dcba_e:
+                    m_value = QString("0x") + QString().setNum(strtoull(value, NULL, 10), 16);
+                case fabcd_e:
+                case fbadc_e:
+                case fcdab_e:
+                case fdcba_e:
+                    m_value = value;
+                default:
+                    m_value = QString("0x") + QString().setNum(atoi(value), 16);
+                }
             }
             else
             {

@@ -84,7 +84,7 @@ bool net_conf::saveETH0cfg()
     /* DHCP */
     if (ui->checkBox_eth0_DHCP->isChecked())
     {
-        if (app_netconf_item_set("[dhcp]", "BOOTPROTO0"))
+        if (app_netconf_item_set("[DHCP]", "BOOTPROTO0"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::tr("Network configuration"), QApplication::tr("Cannot update the network configuration"));
@@ -148,7 +148,7 @@ bool net_conf::saveETH1cfg()
     /* DHCP */
     if (ui->checkBox_eth1_DHCP->isChecked())
     {
-        if (app_netconf_item_set("[dhcp]", "BOOTPROTO1"))
+        if (app_netconf_item_set("[DHCP]", "BOOTPROTO1"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::tr("Network configuration"), QApplication::tr("Cannot update the network configuration"));
@@ -231,7 +231,7 @@ bool net_conf::saveWLAN0cfg()
     /* DHCP */
     if (ui->checkBox_wlan0_DHCP->isChecked())
     {
-        if (app_netconf_item_set("[dhcp]", "BOOTPROTOW0"))
+        if (app_netconf_item_set("[DHCP]", "BOOTPROTOW0"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::tr("Network configuration"), QApplication::tr("Cannot update the network configuration"));
@@ -341,7 +341,7 @@ void net_conf::reload()
     {
         /* ETH0 */
         /* DHCP */
-        if (app_netconf_item_get(&tmp, "BOOTPROTO0") != NULL && strcmp(tmp, "[dhcp]") != 0)
+        if (app_netconf_item_get(&tmp, "BOOTPROTO0") != NULL && strcmp(tmp, "[DHCP]") != 0)
         {
             on_checkBox_eth0_DHCP_clicked(false);
         }
@@ -421,7 +421,7 @@ void net_conf::reload()
     {
         /* ETH1 */
         /* DHCP */
-        if (app_netconf_item_get(&tmp, "BOOTPROTO1") != NULL && strcmp(tmp, "[dhcp]") != 0)
+        if (app_netconf_item_get(&tmp, "BOOTPROTO1") != NULL && strcmp(tmp, "[DHCP]") != 0)
         {
             on_checkBox_eth1_DHCP_clicked(false);
         }
@@ -546,7 +546,7 @@ void net_conf::reload()
     }
 
     /* DHCP */
-    if (app_netconf_item_get(&tmp, "BOOTPROTOW0") != NULL && strcmp(tmp, "[dhcp]") != 0)
+    if (app_netconf_item_get(&tmp, "BOOTPROTOW0") != NULL && strcmp(tmp, "[DHCP]") != 0)
     {
         on_checkBox_wlan0_DHCP_clicked(false);
     }
