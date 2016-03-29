@@ -122,14 +122,14 @@ void page0::changePage()
     {
         if (goto_page("time_set", false) == false && goto_page(STARTPAGE_DEF, false) == false && goto_page(HomePage, false) == false && goto_page(HOMEPAGE_DEF, false) == false )
         {
-            QMessageBox::critical(0,QApplication::tr("Invalid Page"), QApplication::tr("Cannot show any of Default pages '%1', '%2' and home pages '%3'. '%4'").arg("time_set").arg(STARTPAGE_DEF).arg(HomePage).arg(HOMEPAGE_DEF));
+            QMessageBox::critical(0,QApplication::trUtf8("Invalid Page"), QApplication::trUtf8("Cannot show any of Default pages '%1', '%2' and home pages '%3'. '%4'").arg("time_set").arg(STARTPAGE_DEF).arg(HomePage).arg(HOMEPAGE_DEF));
         }
     }
 
     /* go to the home page */
     else if (goto_page(StartPage, false) == false && goto_page(STARTPAGE_DEF, false) == false && goto_page(HomePage, false) == false && goto_page(HOMEPAGE_DEF, false) == false )
     {
-        QMessageBox::critical(0,QApplication::tr("Invalid Page"), QApplication::tr("Cannot show any of Default pages '%1', '%2' and home pages '%3'. '%4'").arg(StartPage).arg(STARTPAGE_DEF).arg(HomePage).arg(HOMEPAGE_DEF));
+        QMessageBox::critical(0,QApplication::trUtf8("Invalid Page"), QApplication::trUtf8("Cannot show any of Default pages '%1', '%2' and home pages '%3'. '%4'").arg(StartPage).arg(STARTPAGE_DEF).arg(HomePage).arg(HOMEPAGE_DEF));
     }
     this->hide();
 }

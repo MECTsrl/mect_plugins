@@ -86,11 +86,11 @@ void menu::updateData()
     page::updateData();
     if (active_password == pwd_operator_e)
     {
-        ui->pushButtonLogin->setText(tr("LOGIN"));
+        ui->pushButtonLogin->setText(trUtf8("LOGIN"));
     }
     else
     {
-        ui->pushButtonLogin->setText(tr("LOGOUT"));
+        ui->pushButtonLogin->setText(trUtf8("LOGOUT"));
     }
 }
 
@@ -126,7 +126,7 @@ void menu::on_pushButtonLogin_clicked()
     if (active_password != pwd_operator_e)
     {
         active_password = pwd_operator_e;
-        ui->pushButtonLogin->setText(tr("LOGIN"));
+        ui->pushButtonLogin->setText(trUtf8("LOGIN"));
     }
     else
     {
@@ -139,7 +139,7 @@ void menu::on_pushButtonLogin_clicked()
             
             if (min < max && (password < min || password > max))
             {
-                QMessageBox::critical(this,tr("Invalid password"), tr("The inserted password is wrong!!!"));
+                QMessageBox::critical(this,trUtf8("Invalid password"), trUtf8("The inserted password is wrong!!!"));
                 delete dk;
                 return;
             }
@@ -155,14 +155,14 @@ void menu::on_pushButtonLogin_clicked()
             }
             if (active_password == pwd_operator_e)
             {
-                QMessageBox::critical(this,tr("Invalid password"), tr("The inserted password is wrong!!!"));
+                QMessageBox::critical(this,trUtf8("Invalid password"), trUtf8("The inserted password is wrong!!!"));
                 delete dk;
                 return;
             }
             else
             {
-                QMessageBox::information(this,tr("Login"), tr("Logged as User: %1.").arg(PasswordsString[active_password]));
-                ui->pushButtonLogin->setText(tr("LOGOUT"));
+                QMessageBox::information(this,trUtf8("Login"), trUtf8("Logged as User: %1.").arg(PasswordsString[active_password]));
+                ui->pushButtonLogin->setText(trUtf8("LOGOUT"));
             }
         }
         else

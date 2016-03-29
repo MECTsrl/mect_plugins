@@ -139,7 +139,7 @@ void options::on_pushButtonPasswords_clicked()
     {
         if (min < max && (password < min || password > max))
         {
-            QMessageBox::critical(this,tr("Invalid data"), tr("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
+            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
             delete dk;
             return;
         }
@@ -147,11 +147,11 @@ void options::on_pushButtonPasswords_clicked()
         passwords[active_password] = password;
         if (dumpPasswords())
         {
-            QMessageBox::information(this,tr("Password changed"), tr("The password is succesfully changed."));
+            QMessageBox::information(this,trUtf8("Password changed"), trUtf8("The password is succesfully changed."));
         }
         else
         {
-            QMessageBox::critical(this,tr("Saving error"), tr("Cannot save the new password."));
+            QMessageBox::critical(this,trUtf8("Saving error"), trUtf8("Cannot save the new password."));
         }
     }
     else
@@ -226,7 +226,7 @@ void options::on_pushButtonLanguage_clicked()
     /* prepare the language selector page */
     if (languageList.count() > 1)
     {
-        sel = new item_selector(languageList, &value, tr("LANGUAGE SELECTOR"));
+        sel = new item_selector(languageList, &value, trUtf8("LANGUAGE SELECTOR"));
         sel->showFullScreen();
 
         if (sel->exec() == QDialog::Accepted)
@@ -244,11 +244,11 @@ void options::on_pushButtonLanguage_clicked()
             {
                 /* install the selected language */
                 qApp->installTranslator(translator);
-                QMessageBox::information(this,tr("Language"), tr("The language selected is '%1'").arg(value));
+                QMessageBox::information(this,trUtf8("Language"), trUtf8("The language selected is '%1'").arg(value));
             }
             else
             {
-                QMessageBox::critical(this,tr("Language"), tr("Error lading translation file '%1'").arg(QString(":/translations/languages_%1.qm").arg(_language_)));
+                QMessageBox::critical(this,trUtf8("Language"), trUtf8("Error lading translation file '%1'").arg(QString(":/translations/languages_%1.qm").arg(_language_)));
                 LOG_PRINT(error_e, "loading language file\n");
             }
         }
@@ -260,11 +260,11 @@ void options::on_pushButtonLanguage_clicked()
     }
     else
     {
-        QMessageBox::critical(this,tr("Language"), tr("No language translation are available"));
+        QMessageBox::critical(this,trUtf8("Language"), trUtf8("No language translation are available"));
         LOG_PRINT(error_e, "No language to show\n");
     }
 #else
-    QMessageBox::critical(this,tr("Language"), tr("No language translation are available"));
+    QMessageBox::critical(this,trUtf8("Language"), trUtf8("No language translation are available"));
 #endif
 }
 

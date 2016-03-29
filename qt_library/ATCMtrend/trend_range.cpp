@@ -99,11 +99,11 @@ void trend_range::reload()
     
     if (strlen(pens[actualPen].description) > 0)
     {
-        ui->labelPen->setText(tr("Pen: %1").arg(pens[actualPen].description));
+        ui->labelPen->setText(trUtf8("Pen: %1").arg(pens[actualPen].description));
     }
     else
     {
-        ui->labelPen->setText(tr("Pen: %1").arg(pens[actualPen].tag));
+        ui->labelPen->setText(trUtf8("Pen: %1").arg(pens[actualPen].tag));
     }
 }
 

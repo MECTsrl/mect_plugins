@@ -82,7 +82,7 @@ recipe_select::recipe_select(QWidget *parent) :
 void recipe_select::reload()
 {
     /*clean the label loading text*/
-    ui->labelLoading->setText(tr(""));
+    ui->labelLoading->setText(trUtf8(""));
 
     /* show the recipe present into the file system */
     ui->listWidget->clear();
@@ -163,7 +163,7 @@ void recipe_select::on_pushButtonView_clicked()
         /* if it is a file, it is already a receipe, so and display it */
         else
         {
-            ui->labelLoading->setText(tr("Loading..."));
+            ui->labelLoading->setText(trUtf8("Loading..."));
             ui->labelLoading->setStyleSheet("color: rgb(255,0,0);");
             ui->labelLoading->repaint();
             sprintf(_actual_recipe_, "%s/%s", _recipe_dir_to_browse, ui->listWidget->currentItem()->text().toAscii().data());
@@ -201,7 +201,7 @@ void recipe_select::on_pushButtonDelete_clicked()
         if (QFileInfo(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text())).isDir())
         {
             LOG_PRINT(info_e, "dir '%s' item '%s'\n",_recipe_dir_to_browse, ui->listWidget->currentItem()->text().toAscii().data() );
-            if (QMessageBox::question(this, tr("Recipe"), tr("Are you sure to delete the family recipe '%1'?").arg(ui->listWidget->currentItem()->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
+            if (QMessageBox::question(this, trUtf8("Recipe"), trUtf8("Are you sure to delete the family recipe '%1'?").arg(ui->listWidget->currentItem()->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
             {
                 bool result = true;
                 QDir dir(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text()));
@@ -210,7 +210,7 @@ void recipe_select::on_pushButtonDelete_clicked()
                     result = QFile::remove(info.absoluteFilePath());
 
                     if (!result) {
-                        QMessageBox::critical(this,tr("Error"), tr("Cannot remove the family recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
+                        QMessageBox::critical(this,trUtf8("Error"), trUtf8("Cannot remove the family recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
                     }
                 }
                 result = dir.rmdir(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text()));
@@ -220,13 +220,13 @@ void recipe_select::on_pushButtonDelete_clicked()
                 }
                 else
                 {
-                    QMessageBox::critical(this,tr("Error"), tr("Cannot remove the family recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
+                    QMessageBox::critical(this,trUtf8("Error"), trUtf8("Cannot remove the family recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
                 }
             }
         }
         else
         {
-            if (QMessageBox::question(this, tr("Recipe"), tr("Are you sure to delete the recipe '%1'?").arg(ui->listWidget->currentItem()->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
+            if (QMessageBox::question(this, trUtf8("Recipe"), trUtf8("Are you sure to delete the recipe '%1'?").arg(ui->listWidget->currentItem()->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
             {
                 if (QFile::remove(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text())))
                 {
@@ -234,7 +234,7 @@ void recipe_select::on_pushButtonDelete_clicked()
                 }
                 else
                 {
-                    QMessageBox::critical(this,tr("Error"), tr("Cannot remove the recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
+                    QMessageBox::critical(this,trUtf8("Error"), trUtf8("Cannot remove the recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
                 }
             }
         }
@@ -259,7 +259,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
 		if (USBmount() == false)
         {
             LOG_PRINT(error_e, "Cannot mount the usb key\n");
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot mount the usb key"));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
 
@@ -296,7 +296,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
         /* zip the file, the sign file and delete them */
         if (zipAndSave(QStringList() << srcfilename, QString(dstfilename)) == false)
         {
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot create the zip file '%1'").arg(dstfilename));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(dstfilename));
             USBumount();
             return;
         }
@@ -305,6 +305,6 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
         USBumount();
 
         LOG_PRINT(info_e, "DOWNLOADED\n");
-        QMessageBox::information(this,tr("USB info"), tr("File '%1' saved.").arg(dstfilename));
+        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
     }
 }

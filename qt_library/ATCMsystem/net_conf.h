@@ -62,6 +62,8 @@ private slots:
 
     void on_pushButton_wlan0_enable_clicked();
 
+    void on_comboBox_wlan0_essid_currentIndexChanged(const QString &arg1);
+
 private:
     bool checkNetAddr(char * ipaddr);
     bool saveETH0cfg();
@@ -72,6 +74,7 @@ private:
 private:
     Ui::net_conf *ui;
     QString wlan0_pwd;
+    QString wlan0_essid;
     bool is_eth0_enabled;
     bool is_eth1_enabled;
     bool is_wlan_active;

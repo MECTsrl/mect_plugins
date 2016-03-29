@@ -114,7 +114,7 @@ void page::updateData()
                 if (USBmount() == false)
                 {
                     LOG_PRINT(error_e, "Cannot mount the usb key\n");
-                    QMessageBox::critical(this,tr("USB error"), tr("Cannot mount the usb key"));
+                    QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
                     return;
                 }
                 
@@ -130,7 +130,7 @@ void page::updateData()
                 if (zipAndSave(QStringList() << srcfilename, QString(dstfilename), true) == false)
                 {
                     USBumount();
-                    QMessageBox::critical(this,tr("USB error"), tr("Cannot create the signature '%1.sign'").arg(srcfilename));
+                    QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(srcfilename));
                     return;
                 }
                 
@@ -140,7 +140,7 @@ void page::updateData()
                 /* unmount USB key */
                 USBumount();
                 LOG_PRINT(info_e, "DOWNLOADED\n");
-                QMessageBox::information(this,tr("USB info"), tr("File '%1' saved.").arg(dstfilename));
+                QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
             }
         }
         else
@@ -175,7 +175,7 @@ void page::updateData()
     {
         char username[TAG_LEN];
         sprintf(username, "%s", PasswordsString[active_password]);
-        labelUserName->setText(tr("User: %1").arg(username));
+        labelUserName->setText(trUtf8("User: %1").arg(username));
     }
 #ifdef ENABLE_DEVICE_DISCONNECT
     /*Re-activate variables local to a page in case of device reconnection*/
@@ -1312,14 +1312,14 @@ bool page::goto_page(const char * page_name, bool remember)
         {
             LOG_PRINT(info_e,"ERRORE GRAVE: fallita create_next_page\n");
             //mymutex.unlock();
-            QMessageBox::critical(this,tr("Access Denied"), tr("The requested page '%1' doesn't exist.").arg(page_name));
+            QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("The requested page '%1' doesn't exist.").arg(page_name));
             refresh_timer->start(REFRESH_MS);
             LOG_PRINT(info_e, " %s TIMER START\n", this->windowTitle().toAscii().data());
             return false;
         }
         if (active_password > p->protection_level)
         {
-            QMessageBox::critical(this,tr("Access Denied"), tr("Impossible to access the desired page '%1': inadequate privilegies. %2 vs %3").arg(p->windowTitle()).arg(p->protection_level).arg(active_password));
+            QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible to access the desired page '%1': inadequate privilegies. %2 vs %3").arg(p->windowTitle()).arg(p->protection_level).arg(active_password));
             delete p;
             LOG_PRINT(info_e,"active %d, protection %d\n", active_password, p->protection_level);
             go_home();
@@ -1336,7 +1336,7 @@ bool page::goto_page(const char * page_name, bool remember)
         LOG_PRINT(info_e, " %s TIMER STOP\n", p->windowTitle().toAscii().data());
         if (active_password > p->protection_level)
         {
-            QMessageBox::critical(this,tr("Access Denied"), tr("Impossible to access the desired page '%1': inadequate privilegies. %2 vs %3").arg(p->windowTitle()).arg(p->protection_level).arg(active_password));
+            QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible to access the desired page '%1': inadequate privilegies. %2 vs %3").arg(p->windowTitle()).arg(p->protection_level).arg(active_password));
             go_home();
             return false;
         }
@@ -2106,7 +2106,7 @@ int page::checkLicence(QString * message)
         if (fp == NULL)
         {
             LOG_PRINT(error_e, "Failed to run command '%s'\n", command );
-            QMessageBox::critical(0,tr("Internal error"), tr("cannot create the code."));
+            QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("cannot create the code."));
             return -1;
         }
         
@@ -2121,7 +2121,7 @@ int page::checkLicence(QString * message)
         {
             pclose(fp);
             LOG_PRINT(error_e, "Failed to run command '%s': '%s'\n", command, signedcode );
-            QMessageBox::critical(0,tr("Internal error"), tr("cannot create the code."));
+            QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("cannot create the code."));
             return -1;
         }
         
@@ -2142,7 +2142,7 @@ int page::checkLicence(QString * message)
         if (fp == NULL)
         {
             LOG_PRINT(error_e, "Failed to run command '%s'\n", command );
-            QMessageBox::critical(0,tr("Internal error"), tr("cannot create the code."));
+            QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("cannot create the code."));
             return -1;
         }
         
@@ -2156,7 +2156,7 @@ int page::checkLicence(QString * message)
         {
             pclose(fp);
             LOG_PRINT(error_e, "Failed to run command '%s': '%s'\n", command, signedcode );
-            QMessageBox::critical(0,tr("Internal error"), tr("cannot create the code."));
+            QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("cannot create the code."));
             return -1;
         }
         

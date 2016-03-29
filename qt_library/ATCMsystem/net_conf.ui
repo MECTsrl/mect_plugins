@@ -653,7 +653,6 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-border-image: url(:/systemicons/img/WifiOff.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

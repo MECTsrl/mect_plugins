@@ -106,7 +106,7 @@ void store::reload()
     QStringList fileList = QDir(STORE_DIR).entryList(QStringList("*.log"), QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
     if (fileList.count() == 0)
     {
-        ui->labelFilter->setText(tr("No log to show."));
+        ui->labelFilter->setText(trUtf8("No log to show."));
         return;
     }
 
@@ -132,7 +132,7 @@ void store::reload()
     /* load the actual store filter  */
     if (LoadStoreFilter(filename) == false)
     {
-        QMessageBox::critical(this,tr("Malformed view"), tr("The view '%1' is malformed.").arg(_actual_store_));
+        QMessageBox::critical(this,trUtf8("Malformed view"), trUtf8("The view '%1' is malformed.").arg(_actual_store_));
         force_back = true;
         return;
     }
@@ -162,7 +162,7 @@ void store::reload()
     /* load the actual daily store */
     if (LoadStore(StoreInit, StoreFinal) == false)
     {
-        QMessageBox::critical(this,tr("Loading problem"), tr("Cannot load the log between %1 and %2.").arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss")).arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
+        QMessageBox::critical(this,trUtf8("Loading problem"), trUtf8("Cannot load the log between %1 and %2.").arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss")).arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
         LOG_PRINT(info_e, "cannot load store, force back\n");
         force_back = true;
         go_back();
@@ -273,8 +273,8 @@ bool store::LoadStoreFilter(const char * filename)
         }
         if (wrongVariables.length() > 0)
         {
-            QMessageBox::information(this,tr("Variables not found."),
-                                     tr("Cannot find the variables:\n%1\ninto the log header:\n%2.").arg(wrongVariables.join(",")).arg(headerList.join("|"))
+            QMessageBox::information(this,trUtf8("Variables not found."),
+                                     trUtf8("Cannot find the variables:\n%1\ninto the log header:\n%2.").arg(wrongVariables.join(",")).arg(headerList.join("|"))
                                      );
         }
         fclose(fp);
@@ -760,7 +760,7 @@ void store::on_pushButtonSaveUSB_clicked()
         if (USBmount() == false)
         {
             LOG_PRINT(error_e, "Cannot mount the usb key\n");
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot mount the usb key"));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
         
@@ -776,7 +776,7 @@ void store::on_pushButtonSaveUSB_clicked()
         /* zip the file, the sign file and delete them */
         if (zipAndSave(QStringList() << srcfilename << QString("%1.sign").arg(srcfilename), QString(dstfilename), true) == false)
         {
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot create the signature '%1.sign'").arg(srcfilename));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(srcfilename));
             USBumount();
             return;
         }
@@ -787,7 +787,7 @@ void store::on_pushButtonSaveUSB_clicked()
         /* unmount USB key */
         USBumount();
         LOG_PRINT(info_e, "DOWNLOADED\n");
-        QMessageBox::information(this,tr("USB info"), tr("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
+        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
     }
 }
 

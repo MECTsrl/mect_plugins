@@ -659,7 +659,7 @@ void ATCMlabel::writeAction()
                 {
                     if (min < max && (value < min || value > max))
                     {
-                        QMessageBox::critical(this,tr("Dato non valido"), tr("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
+                        QMessageBox::critical(this,trUtf8("Dato non valido"), trUtf8("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
                         delete dk;
                         return;
                     }
@@ -683,7 +683,7 @@ void ATCMlabel::writeAction()
                 {
                     if (min < max && (value < min || value > max))
                     {
-                        QMessageBox::critical(this,tr("Dato non valido"), tr("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
+                        QMessageBox::critical(this,trUtf8("Dato non valido"), trUtf8("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
                         delete dk;
                         return;
                     }
@@ -712,7 +712,7 @@ void ATCMlabel::writeAction()
             {
                 if (min < max && (value < min || value > max))
                 {
-                    QMessageBox::critical(this,tr("Dato non valido"), tr("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
+                    QMessageBox::critical(this,trUtf8("Dato non valido"), trUtf8("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
                     delete dk;
                     return;
                 }
@@ -738,7 +738,7 @@ void ATCMlabel::writeAction()
             {
                 if (min < max && (value < min || value > max))
                 {
-                    QMessageBox::critical(this,tr("Dato non valido"), tr("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(min).arg(max));
+                    QMessageBox::critical(this,trUtf8("Dato non valido"), trUtf8("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(min).arg(max));
                     delete dk;
                     return;
                 }

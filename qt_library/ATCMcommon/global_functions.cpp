@@ -209,13 +209,13 @@ bool CommStart()
         if (elem_read < 0)
         {
             LOG_PRINT(error_e, "Cannot found the cross table [%s]\n", CROSS_TABLE);
-            QMessageBox::critical(0,QApplication::tr("Cross Table Check"), QApplication::tr("Cannot found the cross table %1\nMSG: '%2'").arg(CROSS_TABLE).arg(CrossTableErrorMsg));
+            QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Cannot found the cross table %1\nMSG: '%2'").arg(CROSS_TABLE).arg(CrossTableErrorMsg));
             return false;
         }
         else if (elem_read != DB_SIZE_ELEM)
         {
             LOG_PRINT(error_e, "Cannot load completly the cross table [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
-            QMessageBox::critical(0,QApplication::tr("Cross Table Check"), QApplication::tr("Syntax error into the cross table at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
+            QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Syntax error into the cross table at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
             return false;
         }
 
@@ -236,7 +236,7 @@ bool CommStart()
         if (ioComm->initializeData(LOCAL_SERVER_ADDR, LOCAL_SERVER_DATA_RX_PORT, LOCAL_SERVER_DATA_TX_PORT, IODataAreaI, STATUS_BASE_BYTE + DB_SIZE_BYTE, IODataAreaO, STATUS_BASE_BYTE + DB_SIZE_BYTE) == false)
         {
             LOG_PRINT(error_e, "Cannot connect to the Data IOLayer\n");
-            QMessageBox::critical(0,QApplication::tr("Connection"), QApplication::tr("Cannot connect to the Data IOLayer"));
+            QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
             return false;
         }
 
@@ -246,7 +246,7 @@ bool CommStart()
         if (ioComm->initializeSyncro(LOCAL_SERVER_ADDR, LOCAL_SERVER_SYNCRO_RX_PORT, LOCAL_SERVER_SYNCRO_TX_PORT, IOSyncroAreaI, SYNCRO_SIZE_BYTE, IOSyncroAreaO, SYNCRO_SIZE_BYTE) == false)
         {
             LOG_PRINT(error_e, "Cannot connect to the Syncro IOLayer\n");
-            QMessageBox::critical(0,QApplication::tr("Connection"), QApplication::tr("Cannot connect to the Data IOLayer"));
+            QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
             return false;
         }
         ioComm->start();

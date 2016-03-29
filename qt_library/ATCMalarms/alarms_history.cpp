@@ -646,7 +646,7 @@ void alarms_history::on_pushButtonSave_clicked()
         if (USBmount() == false)
         {
             LOG_PRINT(error_e, "Cannot mount the usb key\n");
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot mount the usb key"));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
         
@@ -667,7 +667,7 @@ void alarms_history::on_pushButtonSave_clicked()
         if (fp == NULL)
         {
             LOG_PRINT(error_e, "Cannot open '%s'\n", srcfilename);
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot open the alarm file '%1'").arg(srcfilename));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot open the alarm file '%1'").arg(srcfilename));
             return;
         }
         /* open the dest alarm file */
@@ -675,7 +675,7 @@ void alarms_history::on_pushButtonSave_clicked()
         if (fpout == NULL)
         {
             LOG_PRINT(error_e, "Cannot open '%s'\n", dstfilename);
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot write the alarm file '%1'").arg(srcfilename));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot write the alarm file '%1'").arg(srcfilename));
             return;
         }
         
@@ -746,7 +746,7 @@ void alarms_history::on_pushButtonSave_clicked()
         {
             LOG_PRINT(error_e,"Failed read sign\n");
             QFile::remove(dstfilename);
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot create the signature '%1'").arg(line));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
             USBumount();
             return;
         }
@@ -757,7 +757,7 @@ void alarms_history::on_pushButtonSave_clicked()
         {
             LOG_PRINT(error_e, "Cannot open '%s'\n", line);
             QFile::remove(dstfilename);
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot create the signature '%1'").arg(line));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
             USBumount();
             return;
         }
@@ -767,7 +767,7 @@ void alarms_history::on_pushButtonSave_clicked()
         /* zip the file, the sign file and delete them */
         if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(dstfilename), QString("%1.zip").arg(dstfilename)) == false)
         {
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot save the sip file '%1.zip'").arg(dstfilename));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save the sip file '%1.zip'").arg(dstfilename));
             USBumount();
             return;
         }
@@ -778,7 +778,7 @@ void alarms_history::on_pushButtonSave_clicked()
         /* unmount USB key */
         USBumount();
         LOG_PRINT(info_e, "DOWNLOADED\n");
-        QMessageBox::information(this,tr("USB info"), tr("File '%1' saved.").arg(dstfilename));
+        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
     }
 }
 

@@ -102,7 +102,7 @@ void recipe::reload()
     writing_continue = false;
     clean = false;
     
-    ui->labelStatus->setText(tr(""));
+    ui->labelStatus->setText(trUtf8(""));
     ui->labelStatus->repaint();
     ui->progressBarStatus->setVisible(false);
     ui->progressBarStatus->setMaximum(ui->tableWidget->rowCount());
@@ -111,12 +111,12 @@ void recipe::reload()
     /* load the actual receipt  */
     if (strlen(_actual_recipe_) == 0)
     {
-        QMessageBox::critical(this,tr("Empty recipe name"), tr("No recipe is selected."));
+        QMessageBox::critical(this,trUtf8("Empty recipe name"), trUtf8("No recipe is selected."));
         force_back = true;
     }
     else if (LoadRecipe(_actual_recipe_) == false)
     {
-        QMessageBox::critical(this,tr("Malformed recipe"), tr("The recipe '%1' is malformed.").arg(_actual_recipe_));
+        QMessageBox::critical(this,trUtf8("Malformed recipe"), trUtf8("The recipe '%1' is malformed.").arg(_actual_recipe_));
         force_back = true;
     }
 }
@@ -272,7 +272,7 @@ void recipe::updateData()
         ui->pushButtonLoad->setEnabled(true);
         ui->pushButtonRead->setEnabled(true);
         ui->pushButtonSave->setEnabled(true);
-        ui->labelStatus->setText(tr(""));
+        ui->labelStatus->setText(trUtf8(""));
         ui->labelStatus->repaint();
         ui->progressBarStatus->setVisible(false);
         ui->progressBarStatus->setValue(1);
@@ -395,7 +395,7 @@ void recipe::updateData()
                 else // we are BUSY with max WAIT_CYCLES or ERROR
                 {
                     busy = true;
-                    if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, tr("Recipe Error"), tr("Error in writing Recipe Variable %1 .Continue writing Recipe anyway? ").arg(ui->tableWidget->item(j,tag_column_e)->text().toAscii().data()),
+                    if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, trUtf8("Recipe Error"), trUtf8("Error in writing Recipe Variable %1 .Continue writing Recipe anyway? ").arg(ui->tableWidget->item(j,tag_column_e)->text().toAscii().data()),
                                                         QMessageBox::Yes|QMessageBox::No).exec())
                     {
                         //if we want to go on
@@ -409,13 +409,13 @@ void recipe::updateData()
                     {
                         //if we want to stop with recipe write
                         LOG_PRINT(info_e, "STOPPING\n");
-                        QMessageBox::critical(this,tr("Recipe Error"), tr("Recipe writing Aborted due to previous errors"));
+                        QMessageBox::critical(this,trUtf8("Recipe Error"), trUtf8("Recipe writing Aborted due to previous errors"));
                         writing=false;
                         ui->pushButtonEdit->setEnabled(true);
                         ui->pushButtonLoad->setEnabled(true);
                         ui->pushButtonRead->setEnabled(true);
                         ui->pushButtonSave->setEnabled(true);
-                        ui->labelStatus->setText(tr(""));
+                        ui->labelStatus->setText(trUtf8(""));
                         ui->labelStatus->repaint();
                         ui->progressBarStatus->setVisible(false);
                         ui->progressBarStatus->setValue(1);
@@ -429,14 +429,14 @@ void recipe::updateData()
             else
             {
                 LOG_PRINT(info_e, "cannot read %d variable\n", j);
-                QMessageBox::critical(this,tr("Recipe Error"), tr("Recipe writing Aborted due to previous errors"));
+                QMessageBox::critical(this,trUtf8("Recipe Error"), trUtf8("Recipe writing Aborted due to previous errors"));
                 writing=false;
                 /*prepare everything to exit recipe writing process*/
                 ui->pushButtonEdit->setEnabled(true);
                 ui->pushButtonLoad->setEnabled(true);
                 ui->pushButtonRead->setEnabled(true);
                 ui->pushButtonSave->setEnabled(true);
-                ui->labelStatus->setText(tr(""));
+                ui->labelStatus->setText(trUtf8(""));
                 ui->labelStatus->repaint();
                 ui->progressBarStatus->setVisible(false);
                 ui->progressBarStatus->setValue(1);
@@ -452,12 +452,12 @@ void recipe::updateData()
             writing = false;
             j = 0;
             ui->progressBarStatus->setValue(ui->tableWidget->rowCount());
-            QMessageBox::information(this,tr("Recipe"), tr("Recipe writing Successfully Completed"));
+            QMessageBox::information(this,trUtf8("Recipe"), trUtf8("Recipe writing Successfully Completed"));
             ui->pushButtonEdit->setEnabled(true);
             ui->pushButtonLoad->setEnabled(true);
             ui->pushButtonRead->setEnabled(true);
             ui->pushButtonSave->setEnabled(true);
-            ui->labelStatus->setText(tr(""));
+            ui->labelStatus->setText(trUtf8(""));
             ui->labelStatus->repaint();
             ui->progressBarStatus->setVisible(false);
             ui->progressBarStatus->setValue(1);
@@ -493,7 +493,7 @@ void recipe::on_pushButtonHome_clicked()
 {
     if(writing)
     {
-        if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, tr("Recipe"), tr("You pressed the Home button.Ignore and continue writing Recipe? "),
+        if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, trUtf8("Recipe"), trUtf8("You pressed the Home button.Ignore and continue writing Recipe? "),
                                             QMessageBox::Yes|QMessageBox::No).exec())
         {
             clean= false;
@@ -517,7 +517,7 @@ void recipe::on_pushButtonBack_clicked()
 {
     if(writing)
     {
-        if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, tr("Recipe"), tr("You pressed the Back button.Ignore and continue writing Recipe? "),
+        if (QMessageBox::Yes == QMessageBox(QMessageBox::Information, trUtf8("Recipe"), trUtf8("You pressed the Back button.Ignore and continue writing Recipe? "),
                                             QMessageBox::Yes|QMessageBox::No).exec())
         {
             clean= false;
@@ -567,7 +567,7 @@ void recipe::on_pushButtonEdit_clicked()
     {
         if (min < max && (value < min || value > max))
         {
-            QMessageBox::critical(this,tr("Invalid data"), tr("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
+            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
             delete dk;
             return;
         }
@@ -595,7 +595,7 @@ void recipe::on_pushButtonRead_clicked()
             if (activateVar(ui->tableWidget->item(i,tag_column_e)->text().toAscii().data()) != 0)
             {
                 LOG_PRINT(error_e, "cannot activate the variable '%s'\n", ui->tableWidget->item(i,tag_column_e)->text().toAscii().data());
-                QMessageBox::critical(this,tr("Invalid data"), tr("The variable (%1) doesn't exist.").arg(ui->tableWidget->item(i,tag_column_e)->text().toAscii().data()));
+                QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The variable (%1) doesn't exist.").arg(ui->tableWidget->item(i,tag_column_e)->text().toAscii().data()));
                 ui->pushButtonEdit->setEnabled(true);
                 ui->pushButtonLoad->setEnabled(true);
                 ui->pushButtonRead->setEnabled(true);
@@ -605,7 +605,7 @@ void recipe::on_pushButtonRead_clicked()
         }
     }
     reading = true;
-    ui->labelStatus->setText(tr("Reading..."));
+    ui->labelStatus->setText(trUtf8("Reading..."));
     ui->labelStatus->repaint();
 }
 
@@ -619,7 +619,7 @@ void recipe::on_pushButtonLoad_clicked()
     ui->pushButtonSave->setEnabled(false);
     ui->pushButtonHome->setEnabled(false);
     ui->pushButtonBack->setEnabled(false);
-    ui->labelStatus->setText(tr("Preparing..."));
+    ui->labelStatus->setText(trUtf8("Preparing..."));
     ui->labelStatus->setStyleSheet("color: rgb(255,0,0);");
     ui->labelStatus->repaint();
     
@@ -628,7 +628,7 @@ void recipe::on_pushButtonLoad_clicked()
     {
         if (ui->tableWidget->item(i,tag_column_e) == NULL)
         {
-            QMessageBox::critical(this,tr("Malformed recipe"), tr("The recipe '%1' is malformed.").arg(ui->labelName->text().toAscii().data()));
+            QMessageBox::critical(this,trUtf8("Malformed recipe"), trUtf8("The recipe '%1' is malformed.").arg(ui->labelName->text().toAscii().data()));
             ui->pushButtonEdit->setEnabled(true);
             ui->pushButtonLoad->setEnabled(true);
             ui->pushButtonRead->setEnabled(true);
@@ -637,7 +637,7 @@ void recipe::on_pushButtonLoad_clicked()
         }
         if (ui->tableWidget->item(i,value_column_e) == NULL)
         {
-            QMessageBox::critical(this,tr("Invalid data"), tr("The variable (%1) have an unexpected value.").arg(ui->tableWidget->item(i,tag_column_e)->text().toAscii().data()));
+            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The variable (%1) have an unexpected value.").arg(ui->tableWidget->item(i,tag_column_e)->text().toAscii().data()));
             ui->pushButtonEdit->setEnabled(true);
             ui->pushButtonLoad->setEnabled(true);
             ui->pushButtonRead->setEnabled(true);
@@ -671,7 +671,7 @@ void recipe::on_pushButtonLoad_clicked()
     }
     writePendingInorder();
     usleep(500000);
-    ui->labelStatus->setText(tr("Downloading..."));
+    ui->labelStatus->setText(trUtf8("Downloading..."));
     ui->labelStatus->setStyleSheet("color: rgb(255,0,0);");
     ui->labelStatus->repaint();
     ui->progressBarStatus->setVisible(true);

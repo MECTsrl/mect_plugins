@@ -89,11 +89,11 @@ void trend_option::reload()
     ui->labelInfo->repaint();
     if (_layout_ == PORTRAIT)
     {
-        ui->pushButtonLayout->setText(tr("Portrait"));
+        ui->pushButtonLayout->setText(trUtf8("Portrait"));
     }
     else
     {
-        ui->pushButtonLayout->setText(tr("Landscape"));
+        ui->pushButtonLayout->setText(trUtf8("Landscape"));
     }
     
     ui->labelTrendName->setText(_actual_trend_);
@@ -168,7 +168,7 @@ void trend_option::on_pushButtonHome_clicked()
 
 void trend_option::on_pushButtonBack_clicked()
 {
-    ui->labelInfo->setText(tr("loading..."));
+    ui->labelInfo->setText(trUtf8("loading..."));
     ui->labelInfo->setStyleSheet("color: rgb(255,0,0);");
     ui->labelInfo->repaint();
 #if 0
@@ -182,12 +182,12 @@ void trend_option::on_pushButtonLayout_clicked()
 {
     if (_layout_ == PORTRAIT)
     {
-        ui->pushButtonLayout->setText(tr("Landscape"));
+        ui->pushButtonLayout->setText(trUtf8("Landscape"));
         _layout_ = LANDSCAPE;
     }
     else
     {
-        ui->pushButtonLayout->setText(tr("Portrait"));
+        ui->pushButtonLayout->setText(trUtf8("Portrait"));
         _layout_ = PORTRAIT;
     }
 }
@@ -216,7 +216,7 @@ void trend_option::on_pushButtonChangeTrend_clicked()
         return;
     }
     
-    sel = new item_selector(trendList, &value, tr("TREND SELECTOR"));
+    sel = new item_selector(trendList, &value, trUtf8("TREND SELECTOR"));
     sel->showFullScreen();
     
     if (sel->exec() == QDialog::Accepted)
@@ -248,7 +248,7 @@ void trend_option::on_pushButtonChangePen_clicked()
         list.append(StoreArrayF[i].tag);
     }
     
-    sel = new item_selector(list, &value,tr("VARIABLE SELECTOR"));
+    sel = new item_selector(list, &value,trUtf8("VARIABLE SELECTOR"));
     sel->showFullScreen();
     
     if (sel->exec() == QDialog::Accepted)
@@ -292,7 +292,7 @@ void trend_option::on_pushButtonYmin_clicked()
     {
         if (value < min || value > max)
         {
-            QMessageBox::critical(this,tr("Invalid data"), tr("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
+            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
             delete dk;
             return;
         }
@@ -320,7 +320,7 @@ void trend_option::on_pushButtonYmax_clicked()
     {
         if (value < min || value > max)
         {
-            QMessageBox::critical(this,tr("Invalid data"), tr("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
+            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
             delete dk;
             return;
         }
@@ -424,7 +424,7 @@ void trend_option::Save(const char * fullfilename)
         }
         fclose(fp);
         LOG_PRINT(error_e, "Saved '%s'\n", fullfilename);
-        QMessageBox::information(this,tr("Save"), tr("the trend configuration %1 is saved to %2").arg(_actual_trend_).arg(fullfilename));
+        QMessageBox::information(this,trUtf8("Save"), trUtf8("the trend configuration %1 is saved to %2").arg(_actual_trend_).arg(fullfilename));
     }
     /* force a reload */
     _trend_data_reload_ = true;
@@ -458,7 +458,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         if (USBmount() == false)
         {
             LOG_PRINT(error_e, "Cannot mount the usb key\n");
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot mount the usb key"));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
         
@@ -483,7 +483,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         }
         if (sourcelist.count() == 0)
         {
-            QMessageBox::critical(this,tr("No data"), tr("Nothing to save for trend %1").arg(_actual_trend_));
+            QMessageBox::critical(this,trUtf8("No data"), trUtf8("Nothing to save for trend %1").arg(_actual_trend_));
             USBumount();
             return;
         }
@@ -491,7 +491,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         /* zip the file, the sign file and delete them */
         if (zipAndSave(sourcelist,QString("%1.zip").arg(dstfilename)) == false)
         {
-            QMessageBox::critical(this,tr("USB error"), tr("Cannot create the zip file '%1'").arg(QString("%1.zip").arg(dstfilename)));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(QString("%1.zip").arg(dstfilename)));
             USBumount();
             return;
         }
@@ -499,7 +499,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         /* unmount USB key */
         USBumount();
         LOG_PRINT(info_e, "DOWNLOADED\n");
-        QMessageBox::information(this,tr("USB info"), tr("File '%1' saved.").arg(dstfilename));
+        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
     }
 }
 

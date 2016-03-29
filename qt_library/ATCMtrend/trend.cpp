@@ -171,7 +171,7 @@ void trend::reload()
     ui->pushButtonPenColor->setStyleSheet("");
     ui->pushButtonPenColor->setAutoFillBackground(true);
     /* set the label as loading */
-    ui->labelDate->setText(tr("loading..."));
+    ui->labelDate->setText(trUtf8("loading..."));
     ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
     ui->labelDate->repaint();
     
@@ -186,8 +186,8 @@ void trend::reload()
             LOG_PRINT(info_e, "DISCONNECT!!!!!\n");
             disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
             refresh_timer->stop();
-            errormsg = (tr("No trend description specified."));
-            //QMessageBox::critical(this,tr("Invalid data"), tr("No trend description specified."));
+            errormsg = (trUtf8("No trend description specified."));
+            //QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("No trend description specified."));
             force_back = true;
             reloading = false;
             LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADED\n");
@@ -387,7 +387,7 @@ void trend::updateData()
         if (trendDir.entryList(QDir::Files).count() > 1)
         {
             trendList = trendDir.entryList(QDir::Files);
-            sel = new item_selector(trendList, &value, tr("TREND SELECTOR"));
+            sel = new item_selector(trendList, &value, trUtf8("TREND SELECTOR"));
             sel->showFullScreen();
 
             if (sel->exec() == QDialog::Accepted)
@@ -397,12 +397,12 @@ void trend::updateData()
                 if (LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg) == false)
                 {
                     refresh_timer->stop();
-                    errormsg = tr("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg);
-                    //QMessageBox::critical(0,tr("Invalid data"), tr("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg));
+                    errormsg = trUtf8("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg);
+                    //QMessageBox::critical(0,trUtf8("Invalid data"), trUtf8("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg));
                     ui->lbelInfo->setText(errormsg);
                     ui->lbelInfo->setVisible(true);
                     ui->lbelInfo->repaint();
-                    ui->labelDate->setText(tr("Error..."));
+                    ui->labelDate->setText(trUtf8("Error..."));
                     ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
                     ui->labelDate->repaint();
                     errormsg.clear();
@@ -433,7 +433,7 @@ void trend::updateData()
         ui->lbelInfo->setText(errormsg);
         ui->lbelInfo->setVisible(true);
         ui->lbelInfo->repaint();
-        ui->labelDate->setText(tr("Error..."));
+        ui->labelDate->setText(trUtf8("Error..."));
         ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
         ui->labelDate->repaint();
         errormsg.clear();
@@ -738,22 +738,22 @@ void trend::on_pushButtonSelect_clicked()
     {
         if (strlen(pens[actualPen].description) > 0)
         {
-            ui->pushButtonPen->setText(tr("Pen '%1' is not visible").arg(pens[actualPen].description));
+            ui->pushButtonPen->setText(trUtf8("Pen '%1' is not visible").arg(pens[actualPen].description));
         }
         else
         {
-            ui->pushButtonPen->setText(tr("Pen '%1' is not visible").arg(pens[actualPen].tag));
+            ui->pushButtonPen->setText(trUtf8("Pen '%1' is not visible").arg(pens[actualPen].tag));
         }
     }
     else
     {
         if (strlen(pens[actualPen].description) > 0)
         {
-            ui->pushButtonPen->setText(tr("Pen '%1' is empty").arg(pens[actualPen].description));
+            ui->pushButtonPen->setText(trUtf8("Pen '%1' is empty").arg(pens[actualPen].description));
         }
         else
         {
-            ui->pushButtonPen->setText(tr("Pen '%1' is empty").arg(actualPen + 1));
+            ui->pushButtonPen->setText(trUtf8("Pen '%1' is empty").arg(actualPen + 1));
         }
     }
     
@@ -888,7 +888,7 @@ bool trend::printGraph()
         }
         LOG_PRINT(verbose_e, "Saving to '%s'\n", value);
         QPixmap::grabWidget(this->d_qwtplot).save(fullfilename);
-        QMessageBox::information(this,tr("Saved data"), tr("The trend graph is saved to '%1'.").arg(fullfilename));
+        QMessageBox::information(this,trUtf8("Saved data"), trUtf8("The trend graph is saved to '%1'.").arg(fullfilename));
         delete dk;
         return true;
     }
@@ -909,7 +909,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
     if (fp == NULL)
     {
         LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
-        if (ErrorMsg) *ErrorMsg = tr("Cannot open '%1'").arg(filename);
+        if (ErrorMsg) *ErrorMsg = trUtf8("Cannot open '%1'").arg(filename);
         return false;
     }
     LOG_PRINT(verbose_e, "opened '%s'\n", filename);
@@ -926,7 +926,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
     {
         LOG_PRINT(error_e, "Invalid Layout '%s'\n", line);
         fclose(fp);
-        if (ErrorMsg) *ErrorMsg = tr("Invalid Layout '%1'").arg(line);
+        if (ErrorMsg) *ErrorMsg = trUtf8("Invalid Layout '%1'").arg(line);
         return false;
     }
     
@@ -984,7 +984,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg) *ErrorMsg = tr("Invalid visible tag");
+            if (ErrorMsg) *ErrorMsg = trUtf8("Invalid visible tag");
             return false;
         }
         else if (p[0] == '\0')
@@ -1004,7 +1004,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg) *ErrorMsg = tr("Invalid variable tag '%1'").arg(line);
+            if (ErrorMsg) *ErrorMsg = trUtf8("Invalid variable tag '%1'").arg(line);
             return false;
         }
         else if (p[0] == '\0')
@@ -1019,7 +1019,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
             pens[rownb].CtIndex = -1;
-            if (ErrorMsg) *ErrorMsg = tr("Cannot find the variable %1 into the Crosstable. The pen will be disabled.").arg(p);
+            if (ErrorMsg) *ErrorMsg = trUtf8("Cannot find the variable %1 into the Crosstable. The pen will be disabled.").arg(p);
             return false;
         }
         else
@@ -1035,7 +1035,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg)*ErrorMsg = tr("Invalid color tag '%1'").arg(line);
+            if (ErrorMsg)*ErrorMsg = trUtf8("Invalid color tag '%1'").arg(line);
             return false;
         }
         else if (p[0] == '\0')
@@ -1055,7 +1055,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg)* ErrorMsg = tr("Invalid Ymin tag '%1'").arg(line);
+            if (ErrorMsg)* ErrorMsg = trUtf8("Invalid Ymin tag '%1'").arg(line);
             return false;
         }
         else if (p[0] == '\0')
@@ -1076,7 +1076,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
             fclose(fp);
-            if (ErrorMsg) *ErrorMsg = tr("Invalid Ymax tag '%1'").arg(line);
+            if (ErrorMsg) *ErrorMsg = trUtf8("Invalid Ymax tag '%1'").arg(line);
             return false;
         }
         else if (p[0] == '\0')
@@ -1094,7 +1094,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         if (pens[rownb].visible && pens[rownb].yMin >= pens[rownb].yMax)
         {
             LOG_PRINT(warning_e, "Max value must be bigger than min value\n");
-            if (ErrorMsg) *ErrorMsg = tr("Max value must be bigger than min value");
+            if (ErrorMsg) *ErrorMsg = trUtf8("Max value must be bigger than min value");
             return false;
         }
         
@@ -1128,7 +1128,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
     if (rownb != PEN_NB)
     {
         LOG_PRINT(error_e, "Incomplete trend file (%d vs %d)\n", rownb, PEN_NB);
-        if (ErrorMsg) *ErrorMsg = tr("Incomplete trend file (%1 vs %2)").arg(rownb).arg(PEN_NB);
+        if (ErrorMsg) *ErrorMsg = trUtf8("Incomplete trend file (%1 vs %2)").arg(rownb).arg(PEN_NB);
         return false;
     }
     
@@ -1195,7 +1195,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         }
     }
     LOG_PRINT(warning_e, "No visible pen\n");
-    if (ErrorMsg) *ErrorMsg = tr("No visible pen");
+    if (ErrorMsg) *ErrorMsg = trUtf8("No visible pen");
     return false;
 }
 
@@ -1911,7 +1911,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             ui->pushButtonUp->setEnabled(false);
             ui->pushButtonDown->setEnabled(false);
             
-            ui->labelDate->setText(tr("loading..."));
+            ui->labelDate->setText(trUtf8("loading..."));
             ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
             ui->labelDate->repaint();
             
@@ -1941,7 +1941,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             if (loadFromFile(Ti) == false)
             {
                 LOG_PRINT(error_e, "cannot load the data from files\n");
-                ui->labelDate->setText(tr("Error..."));
+                ui->labelDate->setText(trUtf8("Error..."));
                 ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
                 ui->labelDate->repaint();
                 actualTzero = QDateTime::currentDateTime();

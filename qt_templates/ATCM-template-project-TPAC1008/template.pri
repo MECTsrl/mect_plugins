@@ -72,9 +72,6 @@ SOURCES += \
         config/crosstable.cpp \
         pages.cpp
 
-RESOURCES += \
-	systemicons.qrc
-
 # pre-elabortation
 check_missing_file.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/cleanmissingpage.pl $$_PRO_FILE_ $$_PRO_FILE_PWD_
 check_undeclared_variable.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_cross_var.pl $$_PRO_FILE_PWD_
