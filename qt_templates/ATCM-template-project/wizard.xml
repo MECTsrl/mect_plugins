@@ -58,9 +58,7 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="config/crosstable.cpp" target="config/crosstable.cpp" openproject="false" binary="false"/>
 	   <file source="config/crosstable.h" target="config/crosstable.h" openproject="false" binary="false"/>
 	   <file source="config/system.ini" target="config/system.ini" openproject="false" binary="false"/>
-	   <file source="config/store1.csv" target="config/store1.csv" openproject="false" binary="false"/>
 	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
-	   <file source="config/lang_table.csv" target="config/lang_table.csv" openproject="false" binary="false"/>
 	   <!-- 
 	   <file source="project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
 	   -->

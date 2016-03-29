@@ -42,23 +42,21 @@ Custom project wizard configuration example file. Note that by convention,
 	   <displayname>TP1057</displayname>;
 	   <displaycategory>Mect Projects</displaycategory>
 	   <files>
-	   <file source="../ATCM-template-project/pages.cpp" openeditor="false"/>
-	   <file source="../ATCM-template-project/pages.h" openeditor="false"/>
-	   <file source="../ATCM-template-project/page100.cpp" openeditor="false"/>
-	   <file source="../ATCM-template-project/page100.h" openeditor="false"/>
-	   <file source="../ATCM-template-project/page100.ui" openeditor="true"/>
+	   <file source="../ATCM-template-project/pages.cpp" target="pages.cpp" openeditor="false"/>
+	   <file source="../ATCM-template-project/pages.h" target="pages.h" openeditor="false"/>
+	   <file source="../ATCM-template-project/page100.cpp"  target="page100.cpp" openeditor="false"/>
+	   <file source="../ATCM-template-project/page100.h"  target="page100.h" openeditor="false"/>
+	   <file source="../ATCM-template-project/page100.ui"  target="page100.ui" openeditor="true"/>
 	   <file source="../ATCM-template-project/style.h" target="style.h" openproject="false"/>
 	   <file source="../ATCM-template-project/automation.cpp" openeditor="false"/>
 	   <file source="../ATCM-template-project/automation.h" openeditor="false"/>
 	   <file source="../ATCM-template-project/resources.qrc" target="resources.qrc" openproject="false"/>
 	   <file source="../ATCM-template-project/languages.qrc" target="languages.qrc" openproject="false"/>
 	   <file source="../ATCM-template-project/config/splash.png" target="config/splash.png" openproject="false" binary="true"/>
-	   <file source="../ATCM-template-project/config/lang_table.csv" target="config/lang_table.csv" openproject="false" binary="false"/>
 	   <file source="config/Crosstable.csv" target="config/Crosstable.csv" openproject="false" binary="false"/>
 	   <file source="config/crosstable.cpp" target="config/crosstable.cpp" openproject="false" binary="false"/>
 	   <file source="config/crosstable.h" target="config/crosstable.h" openproject="false" binary="false"/>
 	   <file source="config/system.ini" target="config/system.ini" openproject="false" binary="false"/>
-	   <file source="config/store1.csv" target="config/store1.csv" openproject="false" binary="false"/>
 	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
 	   <!-- 
 	   <file source="../ATCM-template-project/project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
