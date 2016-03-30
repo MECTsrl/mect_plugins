@@ -19,21 +19,16 @@ target.path = /local/root
 INSTALLS += target
 
 config.files = config/Crosstable.csv config/system.ini
-config.files += config/lang_table.csv
 config.path = /local/etc/sysconfig
 
 splash.files = config/splash.png config/systool.png
 splash.path = /local/etc/sysconfig/img
-
-customstore.files = config/store1.csv
-customstore.path = /local/data/customstore
 
 customtrend.files = config/trend1.csv
 customtrend.path = /local/data/customtrend
 
 INSTALLS += config splash
 
-INSTALLS += customstore
 INSTALLS += customtrend
 
 DEFINES+=ENABLE_STORE
