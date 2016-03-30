@@ -24,11 +24,11 @@
     mystyle.append("background-color: rgb(255,255,255);"); \
     mystyle.append("color: rgb(0, 0, 0);"); \
     mystyle.append("background-repeat: no-repeat;"); \
-    mystyle.append("font: 18pt \""FONT_TYPE"\";"); \
+    mystyle.append("font: 12pt \"DejaVu Sans Mono\";"); \
     mystyle.append("}"); \
     mystyle.append("QMessageBox"); \
     mystyle.append("{"); \
-    mystyle.append("font: 18pt \""FONT_TYPE"\";"); \
+    mystyle.append("font: 12pt \"DejaVu Sans Mono\";"); \
     mystyle.append("background-color: rgb(0, 0, 0);"); \
     mystyle.append("color: red;"); \
     mystyle.append("}"); \
@@ -40,11 +40,16 @@
     mystyle.append("background-color: rgb(255, 255, 255);"); \
     mystyle.append("color: rgb(81, 81, 81);"); \
     mystyle.append("background-repeat: no-repeat;"); \
-    mystyle.append("font: 26pt \""FONT_TYPE"\";"); \
+    mystyle.append("font: 26pt \"DejaVu Sans Mono\";"); \
+    mystyle.append("}"); \
+    mystyle.append("QPushButton:pressed"); \
+    mystyle.append("{"); \
+    mystyle.append("border: 2px solid  rgb(194, 194, 194);"); \
+    mystyle.append("background-color:  rgb(255, 255, 127);"); \
     mystyle.append("}"); \
     mystyle.append("QLabel#labelMax"); \
     mystyle.append("{"); \
-    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
+    mystyle.append("    font: 12pt \"DejaVu Sans Mono\";"); \
     mystyle.append("    color: rgb(255,255,255);"); \
     mystyle.append("}"); \
     mystyle.append(""); \
@@ -55,7 +60,7 @@
     mystyle.append(""); \
     mystyle.append("QLabel#labelMin"); \
     mystyle.append("{"); \
-    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
+    mystyle.append("    font: 12pt \"DejaVu Sans Mono\";"); \
     mystyle.append("    color: rgb(255,255,255);"); \
     mystyle.append("}"); \
     mystyle.append(""); \
@@ -65,7 +70,7 @@
     mystyle.append("}"); \
     mystyle.append("QLineEdit#lineEditVal"); \
     mystyle.append("{"); \
-    mystyle.append("    font: 32pt \""FONT_TYPE"\";"); \
+    mystyle.append("    font: 32pt \"DejaVu Sans Mono\";"); \
     mystyle.append("}"); \
     this->setStyleSheet(mystyle); \
     }
@@ -79,7 +84,7 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
     SET_ALPHANUMPAD_STYLE();
     
     _value = value;
-    
+
     if (password)
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Password);
@@ -93,7 +98,7 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
             ui->lineEditVal->selectAll();
         }
     }
-    
+
     capsLock = false;
     reload();
 }
@@ -101,6 +106,8 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
 void alphanumpad::reload()
 {
     showUpper(capsLock);
+    ui->lineEditVal->setFocus();
+    ui->lineEditVal->selectAll();
 }
 
 alphanumpad::~alphanumpad()

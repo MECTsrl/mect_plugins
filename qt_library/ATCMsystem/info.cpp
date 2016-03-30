@@ -34,7 +34,7 @@
 	mystyle.append(this->styleSheet()); \
 	mystyle.append("QLabel"); \
 	mystyle.append("{"); \
-    mystyle.append("    font: 20pt \""FONT_TYPE"\";"); \
+    mystyle.append("    font: 11pt \""FONT_TYPE"\";"); \
 	mystyle.append("}"); \
 	mystyle.append("QWidget"); \
 	mystyle.append("{"); \

@@ -47,6 +47,11 @@
 	mystyle.append("background-repeat: no-repeat;"); \
     mystyle.append("font: 26pt \""FONT_TYPE"\";"); \
 	mystyle.append("}"); \
+    mystyle.append("QPushButton:pressed"); \
+    mystyle.append("{"); \
+    mystyle.append("border: 2px solid  rgb(194, 194, 194);"); \
+    mystyle.append("background-color:  rgb(255, 255, 127);"); \
+    mystyle.append("}"); \
 	mystyle.append("QLabel#labelMax"); \
 	mystyle.append("{"); \
     mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \

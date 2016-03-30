@@ -28,7 +28,7 @@
   <property name="styleSheet">
    <string notr="true">QPushButton
 {
-	font: 20pt &quot;DejaVu Sans Mono&quot;;
+	font: 18pt &quot;DejaVu Sans Mono&quot;;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
