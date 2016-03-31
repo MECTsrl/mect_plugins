@@ -205,15 +205,6 @@ bool net_conf::saveETH1cfg()
 /* WLAN0 */
 bool net_conf::saveWLAN0cfg()
 {
-    /* ONBOOT */
-    char onboot[2];
-    strcpy(onboot, (ui->checkBox_wlan0_BOOT->isChecked() == true) ? "1" : "0");
-    if (app_netconf_item_set(onboot, "ONBOOTW0"))
-    {
-        /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
-        return false;
-    }
     /* ESSID */
     if (wlan0_essid.compare(NONE) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_essid + QString("\"")).toAscii().data(), "ESSIDW0"))
     {
@@ -545,15 +536,6 @@ void net_conf::reload()
         LOG_PRINT(info_e, "setup command %s\n", command)
     }
 
-    /* ONBOOTW0 */
-    if (app_netconf_item_get(&tmp, "ONBOOTW0") != NULL && tmp[0] == '1')
-    {
-        ui->checkBox_wlan0_BOOT->setChecked(true);
-    }
-    else
-    {
-        ui->checkBox_wlan0_BOOT->setChecked(false);
-    }
     /* DHCP */
     if (app_netconf_item_get(&tmp, "BOOTPROTOW0") != NULL && strcmp(tmp, "[DHCP]") != 0)
     {
@@ -945,10 +927,20 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
 {
     if (!is_wlan_active)
     {
+        if (app_netconf_item_set("1", "ONBOOTW0"))
+        {
+            /* error */
+            return;
+        }
         system("/usr/sbin/wifi.sh start");
     }
     else
     {
+        if (app_netconf_item_set("0", "ONBOOTW0"))
+        {
+            /* error */
+            return;
+        }
         system("/usr/sbin/wifi.sh stop");
     }
 

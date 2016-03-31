@@ -348,7 +348,7 @@ IF %INSTALL% == 1 (
 	echo Preparing setup...
 	time /t
 	cd /D "%SETUP_DIR%"
-	"c:\Program Files\NSIS\makensis.exe" /DREVISION=%REVISION% SETUP_MECT_QT.nsi > %OUT_DIR%\error.log 2>&1
+	"c:\Program Files\NSIS\makensis.exe" /DREVISION=%REVISION% /DMECT_CONFIGURATOR_REVISION=%MECT_CONFIGURATOR_REVISION% SETUP_MECT_QT.nsi > %OUT_DIR%\error.log 2>&1
 	IF ERRORLEVEL 1 (
 		echo problem during creation of setup
 		pause
@@ -367,7 +367,7 @@ IF %REPAIR% == 1 (
 	echo Creating the repair...
 	time /t
 	cd /D "%SETUP_DIR%"
-	"c:\Program Files\NSIS\makensis.exe" /DREVISION=%REVISION% SETUP_MECT_QTrepair.nsi > %OUT_DIR%\error.log 2>&1
+	"c:\Program Files\NSIS\makensis.exe" /DREVISION=%REVISION% /DMECT_CONFIGURATOR_REVISION=%MECT_CONFIGURATOR_REVISION% SETUP_MECT_QTrepair.nsi > %OUT_DIR%\error.log 2>&1
 	IF ERRORLEVEL 1 (
 		echo problem during creation of repair
 		pause
