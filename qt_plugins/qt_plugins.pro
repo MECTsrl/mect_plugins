@@ -65,7 +65,7 @@ SOURCES += \
 RESOURCES += atcmicons.qrc 
 
 # install
-target.path = $${ATCM_ARM_PLUGINS_LIBPATH}
+target.path = $${ATCM_ARM_PLUGINS_INSTALL_LIBPATH}
 include.files = $$HEADERS atcmplugin.h
-include.path = $${ATCM_ARM_PLUGINS_INCPATH}
+include.path = $${ATCM_ARM_PLUGINS_INSTALL_INCPATH}
 INSTALLS += target include

@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
     
     /* load the library icons */
     Q_INIT_RESOURCE(atcmicons);
+    Q_INIT_RESOURCE(systemicons);
 
     /* initialize the application (load configurations and start threads) */
     initialize();
