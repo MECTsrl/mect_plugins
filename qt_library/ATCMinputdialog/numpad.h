@@ -24,6 +24,8 @@ class numpad;
 #define INTEGER 0
 #define DECIMAL 1
 #define STRING  2
+#define IPADDR  3
+#define DIALNB  4
 #define NO_DEFAULT 0xFFFF
 
 enum input_fmt_e
@@ -41,6 +43,7 @@ public:
     explicit numpad(float* value, float def = NO_DEFAULT, int decimal = 4   , float min = 0.0 , float max = 0.0, bool password = false, QWidget *parent = 0);
     explicit numpad(int*   value, int   def = NO_DEFAULT, int     min = 0   , int   max = 0   , enum input_fmt_e fmt = input_dec, bool password = false, QWidget *parent = 0);
     explicit numpad(char*  value, char* def = NULL      , char   *min = NULL, char *max = NULL, bool password = false, QWidget *parent = 0);
+    explicit numpad(char*  value, int type, char* def = NULL, QWidget *parent = 0);
 
     ~numpad();
     void reload();

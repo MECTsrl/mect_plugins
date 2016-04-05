@@ -61,6 +61,8 @@ net_conf::net_conf(QWidget *parent) :
     {
         ui->tabWidget->removeTab(0);
     }
+    wlan0_essid = "";
+    wlan0_pwd = "";
 }
 
 void net_conf::on_pushButtonHome_clicked()
@@ -288,12 +290,59 @@ bool net_conf::saveWLAN0cfg()
     return true;
 }
 
+/* WAN0 */
+bool net_conf::saveWAN0cfg()
+{
+    /* DIALNB */
+    if (ui->pushButton_wan0_dialnb->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_dialnb->text().toAscii().data(), "DIALNBP0"))
+    {
+        /* error */
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        return false;
+    }
+    /* APN */
+    if (ui->pushButton_wan0_apn->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_apn->text().toAscii().data(), "APNP0"))
+    {
+        /* error */
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        return false;
+    }
+    /* DNS1 */
+    if (ui->pushButton_wan0_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS1->text().toAscii().data(), "NAMESERVERP01"))
+    {
+        /* error */
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        return false;
+    }
+    /* DNS2 */
+    if (ui->pushButton_wan0_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS2->text().toAscii().data(), "NAMESERVERP02"))
+    {
+        /* error */
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        return false;
+    }
+    char command[256];
+    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\"",
+            ui->pushButton_wan0_dialnb->text().toAscii().data(),
+            ui->pushButton_wan0_apn->text().toAscii().data()
+            );
+    if (system(command))
+    {
+        /* error */
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the ppp network configuration for '%1'").arg(ui->pushButton_wan0_dialnb->text()));
+        return false;
+    }
+    LOG_PRINT(info_e, "setup command %s\n", command)
+            return true;
+}
+
 void net_conf::on_pushButtonSaveAll_clicked()
 {
     /* save all pages */
     saveETH0cfg();
     saveETH1cfg();
     saveWLAN0cfg();
+    saveWAN0cfg();
     if (QMessageBox::question(this, trUtf8("Network config saved"), trUtf8("The network configuration is saved\nTo apply the modification you need to reboot the system.\nReboot now?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
     {
         system("reboot");
@@ -321,6 +370,16 @@ void net_conf::reload()
     else
     {
         ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOff.png"));
+    }
+
+    is_wan_active = isWanOn();
+    if (is_wan_active)
+    {
+        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/Hungup.png"));
+    }
+    else
+    {
+        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/Dial.png"));
     }
 
     setup = false;
@@ -611,6 +670,48 @@ void net_conf::reload()
             ui->label_wlan0_MAC->setText(NONE);
         }
 #endif
+
+        /* WAN0 */
+        /* DIALNB */
+        if (app_netconf_item_get(&tmp, "DIALNBP0") != NULL && tmp[0] != '\0')
+        {
+            ui->pushButton_wan0_dialnb->setText(tmp);
+        }
+        else
+        {
+            ui->pushButton_wan0_dialnb->setText(NONE);
+        }
+
+        /* APN */
+        if (app_netconf_item_get(&tmp, "APNP0") != NULL && tmp[0] != '\0')
+        {
+            ui->pushButton_wan0_apn->setText(tmp);
+        }
+        else
+        {
+            ui->pushButton_wan0_apn->setText(NONE);
+        }
+        /* IP */
+#if 0
+#endif
+        /* DNS1 */
+        if (app_netconf_item_get(&tmp, "NAMESERVERP01") != NULL && tmp[0] != '\0')
+        {
+            ui->pushButton_wan0_DNS1->setText(tmp);
+        }
+        else
+        {
+            ui->pushButton_wan0_DNS1->setText(NONE);
+        }
+        /* DNS2 */
+        if (app_netconf_item_get(&tmp, "NAMESERVERP02") != NULL && tmp[0] != '\0')
+        {
+            ui->pushButton_wan0_DNS2->setText(tmp);
+        }
+        else
+        {
+            ui->pushButton_wan0_DNS2->setText(NONE);
+        }
 }
 
 /**
@@ -676,7 +777,7 @@ bool net_conf::checkNetAddr(char * ipaddr)
 void net_conf::on_pushButton_eth0_IP_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth0_IP->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_IP->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -687,7 +788,7 @@ void net_conf::on_pushButton_eth0_IP_clicked()
 void net_conf::on_pushButton_eth0_NM_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth0_NM->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_NM->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -698,7 +799,7 @@ void net_conf::on_pushButton_eth0_NM_clicked()
 void net_conf::on_pushButton_eth0_GW_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth0_GW->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_GW->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -709,7 +810,7 @@ void net_conf::on_pushButton_eth0_GW_clicked()
 void net_conf::on_pushButton_eth0_DNS1_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth0_DNS1->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_DNS1->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -720,7 +821,7 @@ void net_conf::on_pushButton_eth0_DNS1_clicked()
 void net_conf::on_pushButton_eth0_DNS2_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth0_DNS2->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_DNS2->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -731,7 +832,7 @@ void net_conf::on_pushButton_eth0_DNS2_clicked()
 void net_conf::on_pushButton_eth1_IP_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth1_IP->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_IP->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -742,7 +843,7 @@ void net_conf::on_pushButton_eth1_IP_clicked()
 void net_conf::on_pushButton_eth1_NM_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth1_NM->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_NM->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -753,7 +854,7 @@ void net_conf::on_pushButton_eth1_NM_clicked()
 void net_conf::on_pushButton_eth1_GW_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth1_GW->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_GW->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -764,7 +865,7 @@ void net_conf::on_pushButton_eth1_GW_clicked()
 void net_conf::on_pushButton_eth1_DNS1_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth1_DNS1->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_DNS1->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -775,7 +876,7 @@ void net_conf::on_pushButton_eth1_DNS1_clicked()
 void net_conf::on_pushButton_eth1_DNS2_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_eth1_DNS2->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_DNS2->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -786,7 +887,7 @@ void net_conf::on_pushButton_eth1_DNS2_clicked()
 void net_conf::on_pushButton_wlan0_IP_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_wlan0_IP->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_IP->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -797,7 +898,7 @@ void net_conf::on_pushButton_wlan0_IP_clicked()
 void net_conf::on_pushButton_wlan0_NM_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_wlan0_NM->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_NM->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -808,7 +909,7 @@ void net_conf::on_pushButton_wlan0_NM_clicked()
 void net_conf::on_pushButton_wlan0_GW_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_wlan0_GW->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_GW->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -819,7 +920,7 @@ void net_conf::on_pushButton_wlan0_GW_clicked()
 void net_conf::on_pushButton_wlan0_DNS1_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_wlan0_DNS1->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_DNS1->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -830,7 +931,7 @@ void net_conf::on_pushButton_wlan0_DNS1_clicked()
 void net_conf::on_pushButton_wlan0_DNS2_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_wlan0_DNS2->text().toAscii().data());
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_DNS2->text().toAscii().data());
     tatiera_alfanum.showFullScreen();
     if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
@@ -985,4 +1086,86 @@ void net_conf::on_checkBox_wlan0_DHCP_clicked(bool checked)
 void net_conf::on_comboBox_wlan0_essid_currentIndexChanged(const QString &arg1)
 {
     wlan0_essid = arg1;
+}
+
+void net_conf::on_pushButton_wan0_enable_clicked()
+{
+    if (!is_wan_active)
+    {
+        if (app_netconf_item_set("1", "ONBOOTP0"))
+        {
+            /* error */
+            return;
+        }
+        system("/usr/sbin/usb3g.sh start");
+    }
+    else
+    {
+        if (app_netconf_item_set("0", "ONBOOTP0"))
+        {
+            /* error */
+            return;
+        }
+        system("/usr/sbin/usb3g.sh stop");
+    }
+
+    is_wan_active = isWanOn();
+    if (is_wan_active)
+    {
+        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/Hungup.png"));
+    }
+    else
+    {
+        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/Dial.png"));
+    }
+}
+
+bool net_conf::isWanOn(void)
+{
+    return system("source /var/pppd/up.stat && test -e /proc/$PPPD_PID") == 0;
+}
+
+
+void net_conf::on_pushButton_wan0_dialnb_clicked()
+{
+    char value [32];
+    numpad tatiera_alfanum(value, DIALNB, ui->pushButton_wan0_dialnb->text().toAscii().data());
+    tatiera_alfanum.showFullScreen();
+    if(tatiera_alfanum.exec()==QDialog::Accepted)
+    {
+        ui->pushButton_wan0_dialnb->setText(value);
+    }
+}
+
+void net_conf::on_pushButton_wan0_apn_clicked()
+{
+    char value [32];
+    alphanumpad tatiera_alfanum(value, ui->pushButton_wan0_apn->text().toAscii().data());
+    tatiera_alfanum.showFullScreen();
+    if(tatiera_alfanum.exec()==QDialog::Accepted)
+    {
+        ui->pushButton_wan0_apn->setText(value);
+    }
+}
+
+void net_conf::on_pushButton_wan0_DNS1_clicked()
+{
+    char value [32];
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wan0_DNS1->text().toAscii().data());
+    tatiera_alfanum.showFullScreen();
+    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    {
+        ui->pushButton_wan0_DNS1->setText(value);
+    }
+}
+
+void net_conf::on_pushButton_wan0_DNS2_clicked()
+{
+    char value [32];
+    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wan0_DNS2->text().toAscii().data());
+    tatiera_alfanum.showFullScreen();
+    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    {
+        ui->pushButton_wan0_DNS2->setText(value);
+    }
 }

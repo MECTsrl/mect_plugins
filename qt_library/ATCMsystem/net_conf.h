@@ -53,23 +53,26 @@ private slots:
     void on_pushButtonSaveAll_clicked();
 
     void on_pushButton_wlan0_pwd_clicked();
-
     void on_checkBox_eth0_DHCP_clicked(bool checked);
-
     void on_checkBox_eth1_DHCP_clicked(bool checked);
-
     void on_checkBox_wlan0_DHCP_clicked(bool checked);
-
     void on_pushButton_wlan0_enable_clicked();
-
     void on_comboBox_wlan0_essid_currentIndexChanged(const QString &arg1);
+
+    void on_pushButton_wan0_enable_clicked();
+    void on_pushButton_wan0_dialnb_clicked();
+    void on_pushButton_wan0_apn_clicked();
+    void on_pushButton_wan0_DNS1_clicked();
+    void on_pushButton_wan0_DNS2_clicked();
 
 private:
     bool checkNetAddr(char * ipaddr);
     bool saveETH0cfg();
     bool saveETH1cfg();
     bool saveWLAN0cfg();
+    bool saveWAN0cfg();
     bool isWlanOn(char * essid);
+    bool isWanOn(void);
 
 private:
     Ui::net_conf *ui;
@@ -78,6 +81,7 @@ private:
     bool is_eth0_enabled;
     bool is_eth1_enabled;
     bool is_wlan_active;
+    bool is_wan_active;
     bool setup;
 };
 

@@ -95,7 +95,6 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
         if (def != NULL)
         {
             ui->lineEditVal->setText(def);
-            ui->lineEditVal->selectAll();
         }
     }
 
@@ -107,7 +106,7 @@ void alphanumpad::reload()
 {
     showUpper(capsLock);
     ui->lineEditVal->setFocus();
-    ui->lineEditVal->selectAll();
+    ui->lineEditVal->deselect();
 }
 
 alphanumpad::~alphanumpad()
@@ -354,35 +353,6 @@ void alphanumpad::showUpper(bool checked)
 {
     if (checked)
     {
-        ui->a->setText("a");
-        ui->b->setText("b");
-        ui->c->setText("c");
-        ui->d->setText("d");
-        ui->e->setText("e");
-        ui->f->setText("f");
-        ui->g->setText("g");
-        ui->h->setText("h");
-        ui->i->setText("i");
-        ui->j->setText("j");
-        ui->k->setText("k");
-        ui->l->setText("l");
-        ui->m->setText("m");
-        ui->n->setText("n");
-        ui->o->setText("o");
-        ui->p->setText("p");
-        ui->q->setText("q");
-        ui->r->setText("r");
-        ui->s->setText("s");
-        ui->t->setText("t");
-        ui->u->setText("u");
-        ui->v->setText("v");
-        ui->x->setText("x");
-        ui->y->setText("y");
-        ui->w->setText("w");
-        ui->z->setText("z");
-    }
-    else
-    {
         ui->a->setText("A");
         ui->b->setText("B");
         ui->c->setText("C");
@@ -409,5 +379,34 @@ void alphanumpad::showUpper(bool checked)
         ui->y->setText("Y");
         ui->w->setText("W");
         ui->z->setText("Z");
+    }
+    else
+    {
+        ui->a->setText("a");
+        ui->b->setText("b");
+        ui->c->setText("c");
+        ui->d->setText("d");
+        ui->e->setText("e");
+        ui->f->setText("f");
+        ui->g->setText("g");
+        ui->h->setText("h");
+        ui->i->setText("i");
+        ui->j->setText("j");
+        ui->k->setText("k");
+        ui->l->setText("l");
+        ui->m->setText("m");
+        ui->n->setText("n");
+        ui->o->setText("o");
+        ui->p->setText("p");
+        ui->q->setText("q");
+        ui->r->setText("r");
+        ui->s->setText("s");
+        ui->t->setText("t");
+        ui->u->setText("u");
+        ui->v->setText("v");
+        ui->x->setText("x");
+        ui->y->setText("y");
+        ui->w->setText("w");
+        ui->z->setText("z");
     }
 }
