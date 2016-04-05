@@ -71,8 +71,16 @@ private:
     bool saveETH1cfg();
     bool saveWLAN0cfg();
     bool saveWAN0cfg();
-    bool isWlanOn(char * essid);
+
+    bool getWlanEssid(char * essid);
+
+    bool isWlanOn(void);
     bool isWanOn(void);
+
+    bool checkUSBwanKey();
+    bool checkUSBwlanKey();
+
+    void updateIcons();
 
 private:
     Ui::net_conf *ui;

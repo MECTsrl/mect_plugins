@@ -287,7 +287,7 @@ bool net_conf::saveWLAN0cfg()
         return false;
     }
     LOG_PRINT(info_e, "setup command %s\n", command)
-    return true;
+            return true;
 }
 
 /* WAN0 */
@@ -359,7 +359,7 @@ void net_conf::reload()
 
     char essid[256];
     setup = true;
-    is_wlan_active = isWlanOn(essid);
+    is_wlan_active = getWlanEssid(essid);
     if (is_wlan_active)
     {
         ui->comboBox_wlan0_essid->clear();
@@ -375,11 +375,11 @@ void net_conf::reload()
     is_wan_active = isWanOn();
     if (is_wan_active)
     {
-        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/Hungup.png"));
+        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/GprsOn.png"));
     }
     else
     {
-        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/Dial.png"));
+        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/GprsOff.png"));
     }
 
     setup = false;
@@ -651,67 +651,67 @@ void net_conf::reload()
     }
     /* MAC */
 #if 0
-        if (app_macconf_item_get(&tmp, "MACW0") != NULL && tmp[0] != '\0')
-        {
-            ui->label_wlan0_MAC->setText(tmp);
-        }
-        else
-        {
-            ui->label_wlan0_MAC->setText(NONE);
-        }
+    if (app_macconf_item_get(&tmp, "MACW0") != NULL && tmp[0] != '\0')
+    {
+        ui->label_wlan0_MAC->setText(tmp);
+    }
+    else
+    {
+        ui->label_wlan0_MAC->setText(NONE);
+    }
 #else
-        char string[32];
-        if (getMAC("wlan0", string) == 0)
-        {
-            ui->label_wlan0_MAC->setText(string);
-        }
-        else
-        {
-            ui->label_wlan0_MAC->setText(NONE);
-        }
+    char string[32];
+    if (getMAC("wlan0", string) == 0)
+    {
+        ui->label_wlan0_MAC->setText(string);
+    }
+    else
+    {
+        ui->label_wlan0_MAC->setText(NONE);
+    }
 #endif
 
-        /* WAN0 */
-        /* DIALNB */
-        if (app_netconf_item_get(&tmp, "DIALNBP0") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_wan0_dialnb->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_wan0_dialnb->setText(NONE);
-        }
+    /* WAN0 */
+    /* DIALNB */
+    if (app_netconf_item_get(&tmp, "DIALNBP0") != NULL && tmp[0] != '\0')
+    {
+        ui->pushButton_wan0_dialnb->setText(tmp);
+    }
+    else
+    {
+        ui->pushButton_wan0_dialnb->setText(NONE);
+    }
 
-        /* APN */
-        if (app_netconf_item_get(&tmp, "APNP0") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_wan0_apn->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_wan0_apn->setText(NONE);
-        }
-        /* IP */
+    /* APN */
+    if (app_netconf_item_get(&tmp, "APNP0") != NULL && tmp[0] != '\0')
+    {
+        ui->pushButton_wan0_apn->setText(tmp);
+    }
+    else
+    {
+        ui->pushButton_wan0_apn->setText(NONE);
+    }
+    /* IP */
 #if 0
 #endif
-        /* DNS1 */
-        if (app_netconf_item_get(&tmp, "NAMESERVERP01") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_wan0_DNS1->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_wan0_DNS1->setText(NONE);
-        }
-        /* DNS2 */
-        if (app_netconf_item_get(&tmp, "NAMESERVERP02") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_wan0_DNS2->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_wan0_DNS2->setText(NONE);
-        }
+    /* DNS1 */
+    if (app_netconf_item_get(&tmp, "NAMESERVERP01") != NULL && tmp[0] != '\0')
+    {
+        ui->pushButton_wan0_DNS1->setText(tmp);
+    }
+    else
+    {
+        ui->pushButton_wan0_DNS1->setText(NONE);
+    }
+    /* DNS2 */
+    if (app_netconf_item_get(&tmp, "NAMESERVERP02") != NULL && tmp[0] != '\0')
+    {
+        ui->pushButton_wan0_DNS2->setText(tmp);
+    }
+    else
+    {
+        ui->pushButton_wan0_DNS2->setText(NONE);
+    }
 }
 
 /**
@@ -732,6 +732,56 @@ void net_conf::updateData()
     /* To write 5 into the the cross table variable UINT TEST1:
      *    doWrite_TEST1(5);
      */
+    int static count = 0;
+    if (REFRESH_MS * count > 1000)
+    {
+        count = 0;
+        updateIcons();
+    }
+    else
+    {
+        count ++;
+    }
+
+}
+
+void net_conf::updateIcons()
+{
+    if (checkUSBwanKey())
+    {
+        ui->tab_wan0->setEnabled(true);
+        is_wan_active = isWanOn();
+        if (is_wan_active)
+        {
+            ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/GprsOn.png"));
+        }
+        else
+        {
+            ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/GprsOff.png"));
+        }
+    }
+    else
+    {
+        ui->tab_wan0->setEnabled(false);
+    }
+
+    if (checkUSBwlanKey())
+    {
+        ui->tab_wlan0->setEnabled(true);
+        is_wlan_active = isWlanOn();
+        if (is_wlan_active)
+        {
+            ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOn.png"));
+        }
+        else
+        {
+            ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOff.png"));
+        }
+    }
+    else
+    {
+        ui->tab_wlan0->setEnabled(false);
+    }
 }
 
 /**
@@ -979,7 +1029,7 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
     pclose(fp);
 }
 
-bool net_conf::isWlanOn(char * essid)
+bool net_conf::getWlanEssid(char * essid)
 {
     int quality = 0;
     FILE * fp = popen("/usr/sbin/wifi.sh scan", "r");
@@ -1024,13 +1074,22 @@ bool net_conf::isWlanOn(char * essid)
     return ison;
 }
 
+bool net_conf::isWlanOn(void)
+{
+    return system("ifconfig wlan0 >/dev/null 2>&1") == 0;
+}
+
 void net_conf::on_pushButton_wlan0_enable_clicked()
 {
+    ui->tab_wlan0->setEnabled(false);
+    ui->tab_wlan0->repaint();
     if (!is_wlan_active)
     {
         if (app_netconf_item_set("1", "ONBOOTW0"))
         {
             /* error */
+            ui->tab_wlan0->setEnabled(true);
+            ui->tab_wlan0->repaint();
             return;
         }
         system("/usr/sbin/wifi.sh start");
@@ -1040,20 +1099,16 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
         if (app_netconf_item_set("0", "ONBOOTW0"))
         {
             /* error */
+            ui->tab_wlan0->setEnabled(true);
+            ui->tab_wlan0->repaint();
             return;
         }
         system("/usr/sbin/wifi.sh stop");
     }
 
-    is_wlan_active = isWlanOn(NULL);
-    if (is_wlan_active)
-    {
-        ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOn.png"));
-    }
-    else
-    {
-        ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOff.png"));
-    }
+    ui->tab_wlan0->setEnabled(true);
+    ui->tab_wlan0->repaint();
+    updateIcons();
 }
 
 void net_conf::on_pushButton_wlan0_pwd_clicked()
@@ -1090,11 +1145,15 @@ void net_conf::on_comboBox_wlan0_essid_currentIndexChanged(const QString &arg1)
 
 void net_conf::on_pushButton_wan0_enable_clicked()
 {
+    ui->tab_wan0->setEnabled(false);
+    ui->tab_wan0->repaint();
     if (!is_wan_active)
     {
         if (app_netconf_item_set("1", "ONBOOTP0"))
         {
             /* error */
+            ui->tab_wan0->setEnabled(true);
+            ui->tab_wan0->repaint();
             return;
         }
         system("/usr/sbin/usb3g.sh start");
@@ -1104,20 +1163,16 @@ void net_conf::on_pushButton_wan0_enable_clicked()
         if (app_netconf_item_set("0", "ONBOOTP0"))
         {
             /* error */
+            ui->tab_wan0->setEnabled(true);
+            ui->tab_wan0->repaint();
             return;
         }
         system("/usr/sbin/usb3g.sh stop");
     }
 
-    is_wan_active = isWanOn();
-    if (is_wan_active)
-    {
-        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/Hungup.png"));
-    }
-    else
-    {
-        ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/Dial.png"));
-    }
+    ui->tab_wan0->setEnabled(true);
+    ui->tab_wan0->repaint();
+    updateIcons();
 }
 
 bool net_conf::isWanOn(void)
@@ -1169,3 +1224,14 @@ void net_conf::on_pushButton_wan0_DNS2_clicked()
         ui->pushButton_wan0_DNS2->setText(value);
     }
 }
+
+bool net_conf::checkUSBwanKey()
+{
+    return system("lsmod | grep -q ^usb_wwan && test -e /dev/ttyUSB0") == 0;
+}
+
+bool net_conf::checkUSBwlanKey()
+{
+    return system("ifconfig wlan0 >/dev/null 2>&1") == 0;
+}
+
