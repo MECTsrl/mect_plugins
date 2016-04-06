@@ -70,6 +70,9 @@ ATCMbutton::ATCMbutton(QWidget * parent):
 
     setFlat(true);
     setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
     /*
      * put there a default stylesheet
@@ -418,6 +421,8 @@ bool ATCMbutton::setStatusvar(QString variable)
     {
 #ifndef TARGET_ARM
         setToolTip(m_statusvar);
+#else
+        setToolTip("");
 #endif
         return true;
     }
@@ -737,6 +742,8 @@ void ATCMbutton::setPageName(QString pagename)
     m_pagename = pagename;
 #ifndef TARGET_ARM
     setToolTip(QString("page: %1  status: %2").arg(m_pagename).arg(m_statusvar));
+#else
+    setToolTip("");
 #endif
     update();
 }

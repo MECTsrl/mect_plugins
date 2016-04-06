@@ -201,6 +201,8 @@ bool ATCManimation::setVariable(QString variable)
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
+#else
+        setToolTip("");
 #endif
         return true;
     }

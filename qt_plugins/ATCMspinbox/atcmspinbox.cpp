@@ -44,6 +44,9 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
     /*
      * put there a default stylesheet
@@ -346,6 +349,8 @@ bool ATCMspinbox::setVariable(QString variable)
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
+#else
+        setToolTip("");
 #endif
         return true;
     }

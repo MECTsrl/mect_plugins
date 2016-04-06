@@ -40,6 +40,9 @@ ATCMdate::ATCMdate(QWidget *parent) :
 
     setFlat(true);
     setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
     /*
      * put there a default stylesheet

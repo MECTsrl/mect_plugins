@@ -69,6 +69,9 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
     setMapping(m_mapping);
 
@@ -360,6 +363,8 @@ bool ATCMcombobox::setVariable(QString variable)
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
+#else
+        setToolTip("");
 #endif
         return true;
     }
