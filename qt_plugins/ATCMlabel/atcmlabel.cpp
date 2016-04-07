@@ -447,7 +447,7 @@ void ATCMlabel::updateData()
             m_status = DONE;
             if (m_format == Bin)
             {
-               m_value = QString().setNum(atoi(value), 2) + QString("b");
+                m_value = QString().setNum(atoi(value), 2) + QString("b");
 
             }
             else if (m_format == Hex)
@@ -456,27 +456,45 @@ void ATCMlabel::updateData()
                 {
                 case intab_e:
                 case intba_e:
-                    m_value = QString("0x") + QString().setNum(strtol(value, NULL, 10), 16);
+                {
+                    int16_t val = strtol(value, NULL, 10);
+                    m_value = QString("0x") + QString().setNum(val, 16);
+                    break;
+                }
                 case uintab_e:
                 case uintba_e:
-                    m_value = QString("0x") + QString().setNum(strtoul(value, NULL, 10), 16);
+                {
+                    uint16_t val = strtoul(value, NULL, 10);
+                    m_value = QString("0x") + QString().setNum(val, 16);
+                    break;
+                }
                 case dint_abcd_e:
                 case dint_badc_e:
                 case dint_cdab_e:
                 case dint_dcba_e:
-                    m_value = QString("0x") + QString().setNum(strtoll(value, NULL, 10), 16);
+                {
+                    int32_t val = strtoll(value, NULL, 10);
+                    m_value = QString("0x") + QString().setNum(val, 16);
+                    break;
+                }
                 case udint_abcd_e:
                 case udint_badc_e:
                 case udint_cdab_e:
                 case udint_dcba_e:
-                    m_value = QString("0x") + QString().setNum(strtoull(value, NULL, 10), 16);
+                {
+                    uint32_t val = strtoull(value, NULL, 10);
+                    m_value = QString("0x") + QString().setNum(val, 16);
+                    break;
+                }
                 case fabcd_e:
                 case fbadc_e:
                 case fcdab_e:
                 case fdcba_e:
                     m_value = value;
+                    break;
                 default:
                     m_value = QString("0x") + QString().setNum(atoi(value), 16);
+                    break;
                 }
             }
             else
