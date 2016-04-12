@@ -137,6 +137,12 @@ bool net_conf::saveETH0cfg()
             return false;
         }
     }
+    if (system("/etc/rc.d/init.d/network restart"))
+    {
+        /* error */
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the eth0 network configuration."));
+        return false;
+    }
     return true;
 }
 
@@ -204,7 +210,7 @@ bool net_conf::saveETH1cfg()
     if (system("/etc/rc.d/init.d/network restart"))
     {
         /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the wifi network configuration for '%1'").arg(wlan0_essid));
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the eth0 network configuration"));
         return false;
     }
     return true;
