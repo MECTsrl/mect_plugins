@@ -39,6 +39,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="styleSheet">
       <string notr="true">QTabBar::scroller { /* the width of the scroll buttons */
     width: 30px;
@@ -71,11 +74,11 @@ QComboBox
 }  </string>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_eth0">
       <attribute name="title">
-       <string>ETH 0</string>
+       <string>Ethernet 0</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="spacing">
@@ -94,6 +97,9 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>MAC:</string>
            </property>
@@ -106,6 +112,9 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
            </property>
            <property name="text">
             <string>-</string>
@@ -129,6 +138,9 @@ QComboBox
              <height>30</height>
             </size>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>DHCP</string>
            </property>
@@ -138,6 +150,9 @@ QComboBox
        </item>
        <item>
         <widget class="QFrame" name="frame_eth0">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -162,6 +177,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -174,6 +192,9 @@ QComboBox
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>DNS2:</string>
@@ -188,6 +209,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -200,6 +224,9 @@ QComboBox
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>-</string>
@@ -214,6 +241,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>NETMASK:</string>
             </property>
@@ -226,6 +256,9 @@ QComboBox
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>GATEWAY:</string>
@@ -240,6 +273,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>IP ADDR:</string>
             </property>
@@ -252,6 +288,9 @@ QComboBox
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>-</string>
@@ -266,6 +305,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -279,6 +321,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>DNS1:</string>
             </property>
@@ -291,7 +336,7 @@ QComboBox
      </widget>
      <widget class="QWidget" name="tab_eth1">
       <attribute name="title">
-       <string>ETH 1</string>
+       <string>Ethernet 1</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <property name="spacing">
@@ -313,6 +358,9 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>MAC:</string>
            </property>
@@ -325,6 +373,9 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
            </property>
            <property name="text">
             <string>-</string>
@@ -348,6 +399,9 @@ QComboBox
              <height>30</height>
             </size>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>DHCP</string>
            </property>
@@ -357,6 +411,9 @@ QComboBox
        </item>
        <item>
         <widget class="QFrame" name="frame_eth1">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -381,6 +438,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -393,6 +453,9 @@ QComboBox
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>DNS1:</string>
@@ -407,6 +470,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -419,6 +485,9 @@ QComboBox
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>-</string>
@@ -433,6 +502,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>GATEWAY:</string>
             </property>
@@ -445,6 +517,9 @@ QComboBox
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>DNS2:</string>
@@ -459,6 +534,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>IP ADDR:</string>
             </property>
@@ -471,6 +549,9 @@ QComboBox
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>-</string>
@@ -485,6 +566,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>NETMASK:</string>
             </property>
@@ -498,6 +582,9 @@ QComboBox
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -510,7 +597,7 @@ QComboBox
      </widget>
      <widget class="QWidget" name="tab_wlan0">
       <attribute name="title">
-       <string>WLAN 0</string>
+       <string>Wi-Fi</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
@@ -537,6 +624,9 @@ QComboBox
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="text">
               <string>ESSID:</string>
              </property>
@@ -550,6 +640,9 @@ QComboBox
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
             </widget>
            </item>
            <item row="1" column="0">
@@ -559,6 +652,9 @@ QComboBox
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="text">
               <string>PASSWORD:</string>
@@ -573,6 +669,9 @@ QComboBox
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="text">
               <string>-</string>
              </property>
@@ -585,6 +684,9 @@ QComboBox
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="text">
               <string>MAC:</string>
@@ -605,6 +707,9 @@ QComboBox
                <height>30</height>
               </size>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="text">
               <string>DHCP</string>
              </property>
@@ -620,6 +725,9 @@ QComboBox
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="text">
               <string>-</string>
@@ -655,6 +763,9 @@ QComboBox
                <width>40</width>
                <height>40</height>
               </size>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="styleSheet">
               <string notr="true">QPushButton
@@ -694,6 +805,9 @@ border: 2px solid  rgb(194, 194, 194);
                <width>40</width>
                <height>40</height>
               </size>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
              </property>
              <property name="styleSheet">
               <string notr="true">QPushButton
@@ -740,6 +854,9 @@ border: 2px solid  rgb(194, 194, 194);
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="frameShape">
           <enum>QFrame::StyledPanel</enum>
          </property>
@@ -764,6 +881,9 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>IP ADDR:</string>
             </property>
@@ -776,6 +896,9 @@ border: 2px solid  rgb(194, 194, 194);
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>DNS1:</string>
@@ -790,6 +913,9 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -802,6 +928,9 @@ border: 2px solid  rgb(194, 194, 194);
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>NETMASK:</string>
@@ -816,6 +945,9 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -828,6 +960,9 @@ border: 2px solid  rgb(194, 194, 194);
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>DNS2:</string>
@@ -842,6 +977,9 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -854,6 +992,9 @@ border: 2px solid  rgb(194, 194, 194);
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>GATEWAY:</string>
@@ -868,6 +1009,9 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -881,6 +1025,9 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string>-</string>
             </property>
@@ -893,16 +1040,19 @@ border: 2px solid  rgb(194, 194, 194);
      </widget>
      <widget class="QWidget" name="tab_wan0">
       <attribute name="title">
-       <string>PPP0</string>
+       <string>Mobile</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="2" column="0">
-        <widget class="QLabel" name="label_wan0_MACtxt">
+        <widget class="QLabel" name="label_wan0_IPtxt">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>IP ADDR:</string>
@@ -917,6 +1067,9 @@ border: 2px solid  rgb(194, 194, 194);
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>DNS2:</string>
          </property>
@@ -929,6 +1082,9 @@ border: 2px solid  rgb(194, 194, 194);
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>Dial Nb.:</string>
@@ -943,6 +1099,9 @@ border: 2px solid  rgb(194, 194, 194);
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>-</string>
          </property>
@@ -955,6 +1114,9 @@ border: 2px solid  rgb(194, 194, 194);
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>APN</string>
@@ -969,6 +1131,9 @@ border: 2px solid  rgb(194, 194, 194);
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>-</string>
          </property>
@@ -982,18 +1147,24 @@ border: 2px solid  rgb(194, 194, 194);
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>-</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1" colspan="3">
-        <widget class="QLabel" name="label_wan0_MAC">
+        <widget class="QLabel" name="label_wan0_IP">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>-</string>
@@ -1010,6 +1181,9 @@ border: 2px solid  rgb(194, 194, 194);
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>DNS1:</string>
@@ -1029,6 +1203,9 @@ border: 2px solid  rgb(194, 194, 194);
            <width>40</width>
            <height>40</height>
           </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton
@@ -1067,6 +1244,9 @@ border: 2px solid  rgb(194, 194, 194);
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>-</string>

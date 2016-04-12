@@ -1,4 +1,4 @@
-CONFIG      += designer plugin
+CONFIG      += designer plugin resources
 TEMPLATE    = lib
 
 include(../qt_designer_environment.pri)

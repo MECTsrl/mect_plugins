@@ -201,6 +201,12 @@ bool net_conf::saveETH1cfg()
             return false;
         }
     }
+    if (system("/etc/rc.d/init.d/network restart"))
+    {
+        /* error */
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the wifi network configuration for '%1'").arg(wlan0_essid));
+        return false;
+    }
     return true;
 }
 
@@ -343,10 +349,6 @@ void net_conf::on_pushButtonSaveAll_clicked()
     saveETH1cfg();
     saveWLAN0cfg();
     saveWAN0cfg();
-    if (QMessageBox::question(this, trUtf8("Network config saved"), trUtf8("The network configuration is saved\nTo apply the modification you need to reboot the system.\nReboot now?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
-    {
-        system("reboot");
-    }
 }
 
 
@@ -357,14 +359,11 @@ void net_conf::reload()
 {
     char *tmp = NULL;
 
-    char essid[256];
     setup = true;
-    is_wlan_active = getWlanEssid(essid);
+    on_pushButton_wlan0_scan_clicked();
+    is_wlan_active = isWlanOn();
     if (is_wlan_active)
     {
-        ui->comboBox_wlan0_essid->clear();
-        ui->comboBox_wlan0_essid->addItem(NONE);
-        ui->comboBox_wlan0_essid->addItem(essid);
         ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOn.png"));
     }
     else
@@ -551,20 +550,50 @@ void net_conf::reload()
     if (app_netconf_item_get(&tmp, "ESSIDW0") != NULL && tmp[0] != '\0')
     {
         wlan0_essid = QString(tmp).mid(1, strlen(tmp)-2);
-        int index = ui->comboBox_wlan0_essid->findText(essid);
+        if (wlan0_essid.length() == 0 && is_wlan_active)
+        {
+            FILE * fp = popen("iwconfig wlan0 | grep ESSID: | cut -d: -f2", "r");
+            if (fp == NULL)
+            {
+                QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Problem during wifi network scanning"));
+                return;
+            }
+
+            if (fscanf(fp, tmp) != EOF)
+            {
+                wlan0_essid = QString(tmp).mid(1, strlen(tmp)-2);
+            }
+
+            pclose(fp);
+        }
+        int index;
+        if (wlan0_essid.length())
+        {
+            index = ui->comboBox_wlan0_essid->findText(wlan0_essid);
+            LOG_PRINT(none_e,  "SET INDEX %d\n", index);
+        }
+        else
+        {
+            index = 0;
+            LOG_PRINT(none_e,  "SET INDEX %d\n", index);
+        }
+        LOG_PRINT(none_e,  "ESSID: '%s' at index %d\n", wlan0_essid.toAscii().data(), index );
         if (index < 0)
         {
-            ui->comboBox_wlan0_essid->addItem(essid);
-            index = ui->comboBox_wlan0_essid->findText(essid);
+            ui->comboBox_wlan0_essid->addItem(wlan0_essid);
+            index = ui->comboBox_wlan0_essid->findText(wlan0_essid);
         }
         if (index != ui->comboBox_wlan0_essid->currentIndex())
         {
             ui->comboBox_wlan0_essid->setCurrentIndex(index);
+            LOG_PRINT(none_e,  "SET INDEX %d\n", index);
         }
+        LOG_PRINT(none_e,  "SET INDEX ?\n");
     }
     else
     {
         ui->comboBox_wlan0_essid->setCurrentIndex(0);
+        LOG_PRINT(none_e,  "SET INDEX 0\n");
     }
 
     /* PASSWORD */
@@ -751,9 +780,15 @@ void net_conf::updateIcons()
     {
         ui->tab_wan0->setEnabled(true);
         is_wan_active = isWanOn();
+        char ip[32];
+        ui->label_wan0_IP->setText("-");
         if (is_wan_active)
         {
             ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/GprsOn.png"));
+            if (getIP("ppp0", ip) == 0)
+            {
+                ui->label_wan0_IP->setText(ip);
+            }
         }
         else
         {
@@ -1029,54 +1064,9 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
     pclose(fp);
 }
 
-bool net_conf::getWlanEssid(char * essid)
-{
-    int quality = 0;
-    FILE * fp = popen("/usr/sbin/wifi.sh scan", "r");
-    bool ison = false;
-    char line[256];
-
-    if (fp == NULL)
-    {
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Problem during wifi network scanning"));
-        LOG_PRINT(error_e, "Failed to run command '%s'\n", "/usr/sbin/wifi.sh scan" );
-        return false;
-    }
-
-    while (fgets(line, LINE_SIZE, fp) != NULL)
-    {
-        char * p = strrchr(line, '\t');
-        if (p == NULL)
-        {
-            continue;
-        }
-        *p = '\0';
-        p = strrchr(line, '\t');
-        if (p == NULL)
-        {
-            continue;
-        }
-        quality = atoi(p + 1);
-        if (essid != NULL)
-        {
-            *p = '\0';
-            strncpy(essid, line, 256);
-        }
-        if (quality < 0)
-        {
-            ison = true;
-            break;
-        }
-    }
-
-    pclose(fp);
-    LOG_PRINT(none_e, "is on %d quality: '%d'\n", ison, quality);
-    return ison;
-}
-
 bool net_conf::isWlanOn(void)
 {
-    return system("ifconfig wlan0 >/dev/null 2>&1") == 0;
+    return system("iwconfig wlan0 | grep -q 'Access Point: Not-Associate'");
 }
 
 void net_conf::on_pushButton_wlan0_enable_clicked()

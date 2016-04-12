@@ -352,7 +352,6 @@ void numpad::reload()
         ui->labelMin->hide();
     }
     ui->lineEditVal->setFocus();
-    ui->lineEditVal->deselect();
 }
 
 numpad::~numpad()

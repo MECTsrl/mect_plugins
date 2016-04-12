@@ -82,6 +82,7 @@ private:
     Ui::alphanumpad *ui;
     char * _value;
     bool capsLock;
+    bool clean;
 };
 
 #endif // alphanumpad

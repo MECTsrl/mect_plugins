@@ -1,12 +1,13 @@
 @echo off
 
-SET REVISION="7.0rc20"
+SET REVISION="7.0rc22"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\Users\UserName\Documents\GitHub\mect_plugins"
 
 rem SET TARGET_LIST='TP1043_CAN TP1043_485 TP1043_CAN TPAC1007_3 TPAC1007_LV TPAC1007_4AA TPAC1007_4AB TPAC1007_4AC TPLC100 TPAC150 TPAC1006 TP1057 TPAC1006_GSM TPAC1006_HR TPAC1057_HR TPAC1008 TP1070'
-SET TARGET_LIST=TP1043 TPAC1007_03 TPAC1007_04_AA TPAC1007_04_AB TPAC1006 TP1057 TPAC1008 TP1070
+
+SET TARGET_LIST=TP1043 TP1057 TP1070 TPAC1006 TPAC1007_03 TPAC1007_04_AA TPAC1007_04_AB TPAC1007_04_AC TPAC1008_01 TPAC1008_02
 
 rem extract MECT_CONFIGURATOR_REVISION
 FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\MectConfigurator\MectConfiguratorInstaller\Volume\nidist.id') DO SET MECT_CONFIGURATOR_REVISION="%%a"
@@ -107,13 +108,14 @@ IF %TEMPLATE% == 1 (
 	)
 
 	for /d %%a in (%TARGET_LIST%) do (
-	xcopy "%IN_DIR%\qt_templates\ATCM-template-project-%%~a" "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a" /Q /Y /E /S /I > %OUT_DIR%\error.log 2>&1
-	IF ERRORLEVEL 1 (
-		echo problem during template.
-		pause
-		cd %ORIGINAL%
-		exit
-	)
+		echo 	Installing %%~a...
+		xcopy "%IN_DIR%\qt_templates\ATCM-template-project-%%~a" "C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a" /Q /Y /E /S /I > %OUT_DIR%\error.log 2>&1
+		IF ERRORLEVEL 1 (
+			echo problem during template.
+			pause
+			cd %ORIGINAL%
+			exit
+		)
 	)
 
 	time /t
@@ -212,6 +214,17 @@ IF %PREPARE_UPDATE% == 1 (
 		pause
 		cd %ORIGINAL%
 		exit
+	)
+
+	for /d %%a in (%TARGET_LIST%) do (
+		echo Installing %%~a...
+		xcopy C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a %OUT_DIR%\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a				/Q /Y /E /S /I > %OUT_DIR%\error.log 2>&1
+		IF ERRORLEVEL 1 (
+			echo problem during template.
+			pause
+			cd %ORIGINAL%
+			exit
+		)
 	)
 
 	echo Copying rootfs...

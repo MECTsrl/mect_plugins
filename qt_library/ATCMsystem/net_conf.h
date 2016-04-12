@@ -72,8 +72,6 @@ private:
     bool saveWLAN0cfg();
     bool saveWAN0cfg();
 
-    bool getWlanEssid(char * essid);
-
     bool isWlanOn(void);
     bool isWanOn(void);
 

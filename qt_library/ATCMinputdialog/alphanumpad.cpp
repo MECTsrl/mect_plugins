@@ -106,7 +106,7 @@ void alphanumpad::reload()
 {
     showUpper(capsLock);
     ui->lineEditVal->setFocus();
-    ui->lineEditVal->deselect();
+    clean = false;
 }
 
 alphanumpad::~alphanumpad()
@@ -167,6 +167,7 @@ void alphanumpad::on_pushButton9_clicked()
 void alphanumpad::on_pushButtonClear_clicked()
 {
     ui->lineEditVal->clear();
+    clean = true;
 }
 
 void alphanumpad::on_pushButtonEsc_clicked()
@@ -176,7 +177,7 @@ void alphanumpad::on_pushButtonEsc_clicked()
 
 void alphanumpad::on_pushButtonEnter_clicked()
 {
-    if (ui->lineEditVal->text().length() == 0)
+    if (ui->lineEditVal->text().length() == 0 && clean == false)
     {
         reject();
     }

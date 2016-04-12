@@ -86,6 +86,9 @@
      </item>
      <item>
       <widget class="QLabel" name="labelUserName">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -238,6 +241,9 @@
          <width>16777215</width>
          <height>34</height>
         </size>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string>DISPLAY</string>
