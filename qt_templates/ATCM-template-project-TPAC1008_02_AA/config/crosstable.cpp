@@ -252,10 +252,10 @@ int16_t PLC_AnOut_1 = 0;
 int16_t PLC_AnOut_2 = 0;
 int16_t PLC_Reserved_4 = 0;
 int16_t PLC_Reserved_5 = 0;
-int16_t PLC_FiltAnIn_1 = 0;
-int16_t PLC_FiltAnIn_2 = 0;
-int16_t PLC_FiltAnIn_3 = 0;
-int16_t PLC_FiltAnIn_4 = 0;
+u_int16_t PLC_FiltAnIn_1 = 0;
+u_int16_t PLC_FiltAnIn_2 = 0;
+u_int16_t PLC_FiltAnIn_3 = 0;
+u_int16_t PLC_FiltAnIn_4 = 0;
 int CH0_NETRUN = 0;
 int CH0_NETGOOD = 0;
 u_int32_t CH0_NETERR = 0;
@@ -4595,13 +4595,13 @@ return getStatus(ID_PLC_Reserved_5);
 }
 
 
-int doWrite_PLC_FiltAnIn_1(int16_t value)
+int doWrite_PLC_FiltAnIn_1(u_int16_t value)
 {
 return doWrite(ID_PLC_FiltAnIn_1,  &value);
 }
 
 
-int addWrite_PLC_FiltAnIn_1(int16_t value)
+int addWrite_PLC_FiltAnIn_1(u_int16_t value)
 {
 return addWrite(ID_PLC_FiltAnIn_1, &value);
 }
@@ -4613,13 +4613,13 @@ return getStatus(ID_PLC_FiltAnIn_1);
 }
 
 
-int doWrite_PLC_FiltAnIn_2(int16_t value)
+int doWrite_PLC_FiltAnIn_2(u_int16_t value)
 {
 return doWrite(ID_PLC_FiltAnIn_2,  &value);
 }
 
 
-int addWrite_PLC_FiltAnIn_2(int16_t value)
+int addWrite_PLC_FiltAnIn_2(u_int16_t value)
 {
 return addWrite(ID_PLC_FiltAnIn_2, &value);
 }
@@ -4631,13 +4631,13 @@ return getStatus(ID_PLC_FiltAnIn_2);
 }
 
 
-int doWrite_PLC_FiltAnIn_3(int16_t value)
+int doWrite_PLC_FiltAnIn_3(u_int16_t value)
 {
 return doWrite(ID_PLC_FiltAnIn_3,  &value);
 }
 
 
-int addWrite_PLC_FiltAnIn_3(int16_t value)
+int addWrite_PLC_FiltAnIn_3(u_int16_t value)
 {
 return addWrite(ID_PLC_FiltAnIn_3, &value);
 }
@@ -4649,13 +4649,13 @@ return getStatus(ID_PLC_FiltAnIn_3);
 }
 
 
-int doWrite_PLC_FiltAnIn_4(int16_t value)
+int doWrite_PLC_FiltAnIn_4(u_int16_t value)
 {
 return doWrite(ID_PLC_FiltAnIn_4,  &value);
 }
 
 
-int addWrite_PLC_FiltAnIn_4(int16_t value)
+int addWrite_PLC_FiltAnIn_4(u_int16_t value)
 {
 return addWrite(ID_PLC_FiltAnIn_4, &value);
 }

@@ -80,7 +80,7 @@ bool net_conf::saveETH0cfg()
 {
     if (!is_eth0_enabled)
     {
-        return false;
+        return true;
     }
 
     /* DHCP */
@@ -151,7 +151,7 @@ bool net_conf::saveETH1cfg()
 {
     if (!is_eth1_enabled)
     {
-        return false;
+        return true;
     }
     /* DHCP */
     if (ui->checkBox_eth1_DHCP->isChecked())
@@ -298,8 +298,7 @@ bool net_conf::saveWLAN0cfg()
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the wifi network configuration for '%1'").arg(wlan0_essid));
         return false;
     }
-    LOG_PRINT(info_e, "setup command %s\n", command)
-            return true;
+    return true;
 }
 
 /* WAN0 */
@@ -344,17 +343,21 @@ bool net_conf::saveWAN0cfg()
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the ppp network configuration for '%1'").arg(ui->pushButton_wan0_dialnb->text()));
         return false;
     }
-    LOG_PRINT(info_e, "setup command %s\n", command)
-            return true;
+    return true;
 }
 
 void net_conf::on_pushButtonSaveAll_clicked()
 {
     /* save all pages */
-    saveETH0cfg();
-    saveETH1cfg();
-    saveWLAN0cfg();
-    saveWAN0cfg();
+    if (
+            saveETH0cfg() &&
+            saveETH1cfg() &&
+            saveWLAN0cfg() &&
+            saveWAN0cfg()
+            )
+    {
+        QMessageBox::information(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("The new configuration is saved and active."));
+    }
 }
 
 
@@ -576,14 +579,11 @@ void net_conf::reload()
         if (wlan0_essid.length())
         {
             index = ui->comboBox_wlan0_essid->findText(wlan0_essid);
-            LOG_PRINT(none_e,  "SET INDEX %d\n", index);
         }
         else
         {
             index = 0;
-            LOG_PRINT(none_e,  "SET INDEX %d\n", index);
         }
-        LOG_PRINT(none_e,  "ESSID: '%s' at index %d\n", wlan0_essid.toAscii().data(), index );
         if (index < 0)
         {
             ui->comboBox_wlan0_essid->addItem(wlan0_essid);
@@ -592,14 +592,11 @@ void net_conf::reload()
         if (index != ui->comboBox_wlan0_essid->currentIndex())
         {
             ui->comboBox_wlan0_essid->setCurrentIndex(index);
-            LOG_PRINT(none_e,  "SET INDEX %d\n", index);
         }
-        LOG_PRINT(none_e,  "SET INDEX ?\n");
     }
     else
     {
         ui->comboBox_wlan0_essid->setCurrentIndex(0);
-        LOG_PRINT(none_e,  "SET INDEX 0\n");
     }
 
     /* PASSWORD */
@@ -627,7 +624,6 @@ void net_conf::reload()
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the wifi network configuration for '%1'").arg(wlan0_essid));
             return;
         }
-        LOG_PRINT(info_e, "setup command %s\n", command)
     }
 
     /* DHCP */
@@ -1041,7 +1037,6 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
     if (fp == NULL)
     {
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Problem during wifi network scanning"));
-        LOG_PRINT(error_e, "Failed to run command '%s'\n", "/usr/sbin/wifi.sh scan" );
         return;
     }
 
@@ -1051,7 +1046,6 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
         if (p)
         {
             *p = '\0';
-            LOG_PRINT(info_e, "essid: '%s'\n", line);
             ui->comboBox_wlan0_essid->addItem(line);
         }
     }

@@ -10,7 +10,7 @@
  */
 int atoh(const char * string)
 {
-    int value;
+    int value = 0;
     sscanf (string, "%x", &value);
     return value;
 }

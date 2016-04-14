@@ -1420,17 +1420,17 @@ int doWrite_PLC_AnOutConf_2(u_int16_t value);
 int addWrite_PLC_AnOutConf_2(u_int16_t value);
 int getStatus_PLC_AnOutConf_2();
  
-#define ID_PLC_Reserved_2 5342
-extern u_int16_t PLC_Reserved_2;
-int doWrite_PLC_Reserved_2(u_int16_t value);
-int addWrite_PLC_Reserved_2(u_int16_t value);
-int getStatus_PLC_Reserved_2();
+#define ID_PLC_AnOutConf_3 5342
+extern u_int16_t PLC_AnOutConf_3;
+int doWrite_PLC_AnOutConf_3(u_int16_t value);
+int addWrite_PLC_AnOutConf_3(u_int16_t value);
+int getStatus_PLC_AnOutConf_3();
  
-#define ID_PLC_Reserved_3 5343
-extern u_int16_t PLC_Reserved_3;
-int doWrite_PLC_Reserved_3(u_int16_t value);
-int addWrite_PLC_Reserved_3(u_int16_t value);
-int getStatus_PLC_Reserved_3();
+#define ID_PLC_AnOutConf_4 5343
+extern u_int16_t PLC_AnOutConf_4;
+int doWrite_PLC_AnOutConf_4(u_int16_t value);
+int addWrite_PLC_AnOutConf_4(u_int16_t value);
+int getStatus_PLC_AnOutConf_4();
  
 #define ID_PLC_AnOut_1 5344
 extern int16_t PLC_AnOut_1;
@@ -1444,40 +1444,40 @@ int doWrite_PLC_AnOut_2(int16_t value);
 int addWrite_PLC_AnOut_2(int16_t value);
 int getStatus_PLC_AnOut_2();
  
-#define ID_PLC_Reserved_4 5346
-extern int16_t PLC_Reserved_4;
-int doWrite_PLC_Reserved_4(int16_t value);
-int addWrite_PLC_Reserved_4(int16_t value);
-int getStatus_PLC_Reserved_4();
+#define ID_PLC_AnOut_3 5346
+extern int16_t PLC_AnOut_3;
+int doWrite_PLC_AnOut_3(int16_t value);
+int addWrite_PLC_AnOut_3(int16_t value);
+int getStatus_PLC_AnOut_3();
  
-#define ID_PLC_Reserved_5 5347
-extern int16_t PLC_Reserved_5;
-int doWrite_PLC_Reserved_5(int16_t value);
-int addWrite_PLC_Reserved_5(int16_t value);
-int getStatus_PLC_Reserved_5();
+#define ID_PLC_AnOut_4 5347
+extern int16_t PLC_AnOut_4;
+int doWrite_PLC_AnOut_4(int16_t value);
+int addWrite_PLC_AnOut_4(int16_t value);
+int getStatus_PLC_AnOut_4();
  
 #define ID_PLC_FiltAnIn_1 5348
-extern int16_t PLC_FiltAnIn_1;
-int doWrite_PLC_FiltAnIn_1(int16_t value);
-int addWrite_PLC_FiltAnIn_1(int16_t value);
+extern u_int16_t PLC_FiltAnIn_1;
+int doWrite_PLC_FiltAnIn_1(u_int16_t value);
+int addWrite_PLC_FiltAnIn_1(u_int16_t value);
 int getStatus_PLC_FiltAnIn_1();
  
 #define ID_PLC_FiltAnIn_2 5349
-extern int16_t PLC_FiltAnIn_2;
-int doWrite_PLC_FiltAnIn_2(int16_t value);
-int addWrite_PLC_FiltAnIn_2(int16_t value);
+extern u_int16_t PLC_FiltAnIn_2;
+int doWrite_PLC_FiltAnIn_2(u_int16_t value);
+int addWrite_PLC_FiltAnIn_2(u_int16_t value);
 int getStatus_PLC_FiltAnIn_2();
  
 #define ID_PLC_FiltAnIn_3 5350
-extern int16_t PLC_FiltAnIn_3;
-int doWrite_PLC_FiltAnIn_3(int16_t value);
-int addWrite_PLC_FiltAnIn_3(int16_t value);
+extern u_int16_t PLC_FiltAnIn_3;
+int doWrite_PLC_FiltAnIn_3(u_int16_t value);
+int addWrite_PLC_FiltAnIn_3(u_int16_t value);
 int getStatus_PLC_FiltAnIn_3();
  
 #define ID_PLC_FiltAnIn_4 5351
-extern int16_t PLC_FiltAnIn_4;
-int doWrite_PLC_FiltAnIn_4(int16_t value);
-int addWrite_PLC_FiltAnIn_4(int16_t value);
+extern u_int16_t PLC_FiltAnIn_4;
+int doWrite_PLC_FiltAnIn_4(u_int16_t value);
+int addWrite_PLC_FiltAnIn_4(u_int16_t value);
 int getStatus_PLC_FiltAnIn_4();
  
 #define ID_CH0_NETRUN 5354
