@@ -1167,7 +1167,7 @@ void net_conf::on_pushButton_wan0_enable_clicked()
 
 bool net_conf::isWanOn(void)
 {
-    return system("source /var/pppd/up.stat && test -e /proc/$PPPD_PID") == 0;
+    return system("test -e /var/pppd/up.stat && source /var/pppd/up.stat && test -e /proc/$PPPD_PID") == 0;
 }
 
 
