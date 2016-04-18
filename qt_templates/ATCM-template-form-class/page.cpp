@@ -12,6 +12,7 @@
 #include "main.h"
 #include "%ClassName%.h"
 #include "ui_%ClassName%.h"
+#include "crosstable.h"
 
 /**
  * @brief this macro is used to set the %ClassName:u% style.
