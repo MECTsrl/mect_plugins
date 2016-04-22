@@ -471,6 +471,17 @@ void net_conf::reload()
         {
             ui->label_eth0_MAC->setText(NONE);
         }
+        if (ui->checkBox_eth0_DHCP->isChecked())
+        {
+            if (getIP("eth0", string) == 0)
+            {
+                ui->label_eth0_IP->setText(string);
+            }
+            else
+            {
+                ui->label_eth0_IP->setText(NONE);
+            }
+        }
 #endif
     }
 
@@ -550,6 +561,17 @@ void net_conf::reload()
         else
         {
             ui->label_eth1_MAC->setText(NONE);
+        }
+        if (ui->checkBox_eth1_DHCP->isChecked())
+        {
+            if (getIP("eth1", string) == 0)
+            {
+                ui->label_eth1_IP->setText(string);
+            }
+            else
+            {
+                ui->label_eth1_IP->setText(NONE);
+            }
         }
 #endif
     }
@@ -791,10 +813,15 @@ void net_conf::updateIcons()
             {
                 ui->label_wan0_IP->setText(ip);
             }
+            else
+            {
+                ui->label_wan0_IP->setText(NONE);
+            }
         }
         else
         {
             ui->pushButton_wan0_enable->setIcon(QIcon(":/systemicons/img/GprsOff.png"));
+            ui->label_wan0_IP->setText(NONE);
         }
     }
     else
@@ -808,11 +835,32 @@ void net_conf::updateIcons()
         is_wlan_active = isWlanOn();
         if (is_wlan_active)
         {
+            char string[32];
             ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOn.png"));
+            if (ui->checkBox_wlan0_DHCP->isChecked())
+            {
+                if (getIP("wlan0", string) == 0)
+                {
+                    ui->label_wlan0_IP->setText(string);
+                }
+            }
+            if (getMAC("wlan0", string) == 0)
+            {
+                ui->label_wlan0_MAC->setText(string);
+            }
+            else
+            {
+                ui->label_wlan0_MAC->setText(NONE);
+            }
         }
         else
         {
             ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOff.png"));
+            if (ui->checkBox_wlan0_DHCP->isChecked())
+            {
+                ui->label_wlan0_IP->setText(NONE);
+            }
+            ui->label_wlan0_MAC->setText(NONE);
         }
     }
     else

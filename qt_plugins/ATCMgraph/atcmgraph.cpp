@@ -277,13 +277,14 @@ void ATCMgraph::paintEvent(QPaintEvent * e)
 /* Activate variable */
 bool ATCMgraph::setX1Variable(QString variable)
 {
+    QString OldLabel = m_x1Variable;
     if (setVariable(variable, &m_x1Variable, &m_CtX1Index) == false)
     {
         m_x1status = ERROR;
     }
     else
     {
-        if (m_x1label.length() == 0)
+        if (m_x1label.length() == 0 || OldLabel == m_x1label)
         {
             setX1Label(variable);
         }
@@ -327,13 +328,14 @@ void ATCMgraph::setX1Label(QString x1Label)
 /* Activate variable */
 bool ATCMgraph::setY1Variable(QString variable)
 {
+    QString OldLabel = m_y1Variable;
     if (setVariable(variable, &m_y1Variable, &m_CtY1Index) == false)
     {
         m_y1status = ERROR;
     }
     else
     {
-        if (m_y1label.length() == 0)
+        if (m_y1label.length() == 0 || OldLabel == m_y1label)
         {
             setY1Label(variable);
         }
@@ -379,13 +381,14 @@ void ATCMgraph::setY1Label(QString y1Label)
 /* Activate variable */
 bool ATCMgraph::setX2Variable(QString variable)
 {
+    QString OldLabel = m_x2Variable;
     if (setVariable(variable, &m_x2Variable, &m_CtX2Index) == false)
     {
         m_x2status = ERROR;
     }
     else
     {
-        if (m_x2label.length() == 0)
+        if (m_x2label.length() == 0 || OldLabel == m_x2label)
         {
             setX2Label(variable);
         }
@@ -429,13 +432,14 @@ void ATCMgraph::setX2Label(QString x2Label)
 /* Activate variable */
 bool ATCMgraph::setY2Variable(QString variable)
 {
+    QString OldLabel = m_y2Variable;
     if (setVariable(variable, &m_y2Variable, &m_CtY2Index) == false)
     {
         m_y2status = ERROR;
     }
     else
     {
-        if (m_y2label.length() == 0)
+        if (m_y2label.length() == 0 || OldLabel == m_y2label)
         {
             setY2Label(variable);
         }
@@ -1142,7 +1146,7 @@ bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
     if (variable.length() == 0)
     {
         *value = VAR_NAN;
-        return false;
+        return true;
     }
     /* it is a constant value */
     else if (CtIndex < 0)
