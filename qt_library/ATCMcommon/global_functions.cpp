@@ -141,6 +141,8 @@ int writeIniFile(void)
     settings.setValue(PWD_TIMEOUT_SEC_TAG, PwdTimeoutSec);
     settings.setValue(PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
 
+    settings.sync();
+
     return 0;
 }
 
@@ -389,10 +391,12 @@ int initialize()
      if (mode == usb_device_e)
      {
          settings.setValue(USB_MODE, DEVICE_TAG);
+         settings.sync();
      }
      else if (mode == usb_host_e)
      {
          settings.setValue(USB_MODE, HOST_TAG);
+         settings.sync();
      }
      else
      {

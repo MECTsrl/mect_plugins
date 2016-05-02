@@ -225,6 +225,7 @@ void display_settings::on_pushButtonON_clicked()
         
         QSettings settings(CONFIG_FILE, QSettings::IniFormat);
         settings.setValue(SCREENSAVER_TAG, ScreenSaverSec);
+        settings.sync();
     }
     delete dk;
 }
@@ -241,6 +242,7 @@ void display_settings::on_pushButtonOFF_clicked()
     
     QSettings settings(CONFIG_FILE, QSettings::IniFormat);
     settings.setValue(SCREENSAVER_TAG, ScreenSaverSec);
+    settings.sync();
 }
 
 void display_settings::on_pushButtonHome_clicked()

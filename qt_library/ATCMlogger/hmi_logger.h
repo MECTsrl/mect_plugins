@@ -127,7 +127,7 @@ private:
     FILE * openFile(int * newfile, const char * basedir, const char * subdir = NULL);
 #ifdef ENABLE_ALARMS
     int getElemAlarmStyleIndex(event_descr_t * event_msg);
-    size_t loadErrorTable();
+    size_t loadAlarmsTable();
     bool dumpEvent(QString varname, event_t * item, int status);
     bool openAlarmsFile();
     bool closeAlarmsFile();

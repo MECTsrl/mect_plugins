@@ -131,6 +131,8 @@ protected:
     bool rotateShowError(QLineEdit * line, int period_ms = ERROR_LABEL_PERIOD_MS);
 protected slots:
     void rotateShowErrorSlot();
+signals:
+    void new_ack(event_msg_t * msg);
 #endif
 protected:
     QTimer * refresh_timer;

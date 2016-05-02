@@ -29,7 +29,7 @@
 #include "hmi_logger.h"
 #include "app_logprint.h"
 #include "cross_table_utility.h"
-#include "../ATCMalarms/alarms.h"
+#include "alarms.h"
 #include "common.h"
 
 Logger * logger = NULL;
@@ -156,7 +156,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     }
 
 #ifdef ENABLE_ALARMS
-    if (loadErrorTable() <= 0)
+    if (loadAlarmsTable() <= 0)
     {
         LOG_PRINT(warning_e, "No event/error found.\n");
     }
@@ -355,7 +355,7 @@ void Logger::run()
                 if (i.value()->filtertime == 0 || Now >= i.value()->begin + i.value()->filtertime)
                 {
                     i.value()->begin = 0;
-                    LOG_PRINT(verbose_e, "%s - dumpEvent %d\n", i.key().toAscii().data(), var);
+                    LOG_PRINT(verbose_e, "%s [%d] = %d - dumpEvent\n", i.key().toAscii().data(), i.value()->CtIndex, var);
                     if (openAlarmsFile() == false)
                     {
                         LOG_PRINT(error_e, "Cannot open the log\n");
@@ -447,7 +447,7 @@ bool Logger::logshot()
 }
 
 #ifdef ENABLE_ALARMS
-size_t Logger::loadErrorTable()
+size_t Logger::loadAlarmsTable()
 {
     FILE * fp;
     int elem_nb = 0;
@@ -474,7 +474,12 @@ size_t Logger::loadErrorTable()
         LOG_PRINT(verbose_e, "%s\n", line);
 
         index++;
-        p = strrchr(line, ';');
+
+        p = strchr(line, ';');
+        *p = '\0';
+        int level = atoi(line);
+
+        p = strrchr(p + 1, ';');
         if (p == NULL)
         {
             sprintf(CrossTableErrorMsg, "Malformed line");
@@ -500,14 +505,18 @@ size_t Logger::loadErrorTable()
             continue;
         }
         /* alarm */
-        if (strncmp(p, "AL", 2) == 0)
+        if (strncmp(p, "[AL", 3) == 0)
         {
             item->type = ALARM;
+            item->persistence = 1;
+            item->dump = 1;
         }
         /* event */
-        else if (strncmp(p, "AL", 2) == 0)
+        else if (strncmp(p, "[EV", 3) == 0)
         {
             item->type = EVENT;
+            item->persistence = 0;
+            item->dump = 0;
         }
         /* other */
         else
@@ -549,13 +558,10 @@ size_t Logger::loadErrorTable()
         }
 
         /* extract the level of the alarm/event */
-        item->level = 0;
+        item->level = level;
 
-        /* extract the persistence of the alarm/event */
-        item->persistence = 0;
-
-        /* extract the dump flag of the alarm/event */
-        item->dump = 1;
+        /* extract the CT index of the alarm/event */
+        item->CtIndex = index + 1;
 
         EventHash.insert(tag, item);
         elem_nb++;

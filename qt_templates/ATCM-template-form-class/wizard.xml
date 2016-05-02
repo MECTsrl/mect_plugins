@@ -35,7 +35,8 @@
 Custom class wizard example configuration file. -->
 <wizard version="1" kind="class" id="A.PageBrowser" category="B.CustomClasses">
     <description>Creates a QPageBrowser implementation for MECT products.</description>
-    <displayname>QPageBrowser for TPAC</displayname>;
+   	<icon>console.png</icon>
+	<displayname>New page for TP/TPAC</displayname>;
     <displaycategory>Custom Classes</displaycategory>
     <files>
         <file source="page.cpp" target="%ClassName:l%.%CppSourceSuffix%" openeditor="false"/>

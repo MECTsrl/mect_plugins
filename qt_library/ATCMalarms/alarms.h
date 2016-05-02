@@ -52,9 +52,6 @@ private slots:
     
     void on_pushButtonHornACK_clicked();
     
-signals:
-    void new_ack(event_msg_t * msg);
-    
 private:
     void refreshEvent();
 private:

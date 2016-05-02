@@ -1699,6 +1699,7 @@ bool page::setAsStartPage(char * window)
     QSettings settings(CONFIG_FILE, QSettings::IniFormat);
     strcpy(StartPage, window);
     settings.setValue(STARTPAGE_TAG, StartPage);
+    settings.sync();
     return true;
 }
 #ifdef ENABLE_ALARMS

@@ -329,11 +329,6 @@ void system_ini::save_all()
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be at least three times 'Fast Log Period' parameter."));
             return;
         }
-        if (ui->pushButton_Silence_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be greater than or egual 0."));
-            return;
-        }
 
         if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
         {
@@ -357,22 +352,11 @@ void system_ini::save_all()
         settings.setValue("SYSTEM/fast_log_period_s", ui->pushButton_FastLogPeriod->text());
         settings.setValue("SYSTEM/max_log_space_MB", ui->pushButton_MaxLogSpace->text());
         settings.setValue("SYSTEM/trace_window_s", ui->pushButton_TraceWindow->text());
+        settings.sync();
     }
     /* SERIAL 0 */
     if (groups.indexOf("SERIAL_PORT_0") >= 0)
     {
-        if (ui->pushButton_Silence_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be greater than or egual 0."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be a number."));
-            return;
-        }
-
         if (ui->pushButton_Timeout_SERIAL_PORT_0->text().toInt(&OK) < 1 && OK == true)
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 0."));
@@ -404,6 +388,7 @@ void system_ini::save_all()
         {
             settings.remove("SERIAL_PORT_0");
         }
+        settings.sync();
     }
     /* SERIAL 1 */
     if (groups.indexOf("SERIAL_PORT_1") >= 0)
@@ -451,6 +436,7 @@ void system_ini::save_all()
         {
             settings.remove("SERIAL_PORT_1");
         }
+        settings.sync();
     }
     /* SERIAL 2 */
     if (groups.indexOf("SERIAL_PORT_2") >= 0)
@@ -497,6 +483,7 @@ void system_ini::save_all()
         {
             settings.remove("SERIAL_PORT_2");
         }
+        settings.sync();
     }
     /* SERIAL 3 */
     if (groups.indexOf("SERIAL_PORT_3") >= 0)
@@ -544,6 +531,7 @@ void system_ini::save_all()
         {
             settings.remove("SERIAL_PORT_3");
         }
+        settings.sync();
     }
     /* TCP_IP */
     if (groups.indexOf("TCP_IP_PORT") >= 0)
@@ -580,6 +568,7 @@ void system_ini::save_all()
 
         settings.setValue("TCP_IP_PORT/silence_ms", ui->pushButton_Silence_TCP_IP_PORT->text());
         settings.setValue("TCP_IP_PORT/timeout_ms", ui->pushButton_Timeout_TCP_IP_PORT->text());
+        settings.sync();
     }
     /* CANOPEN 0 */
     if (groups.indexOf("CANOPEN_0") >= 0)
@@ -592,6 +581,7 @@ void system_ini::save_all()
         {
             settings.remove("CANOPEN_0");
         }
+        settings.sync();
     }
     /* CANOPEN 1 */
     if (groups.indexOf("CANOPEN_1") >= 0)
@@ -604,6 +594,7 @@ void system_ini::save_all()
         {
             settings.remove("CANOPEN_1");
         }
+        settings.sync();
     }
 
     readIniFile();
