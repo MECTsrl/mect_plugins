@@ -9,6 +9,8 @@
  */
 #include <QApplication>
 #include <getopt.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "main.h"
 #include "app_logprint.h"
 #include "page0.h"
@@ -91,13 +93,18 @@ int main(int argc, char *argv[])
     };
 
     QApplication app(myargc, myargv);
-    
+
     /* load the library icons */
     Q_INIT_RESOURCE(atcmicons);
     Q_INIT_RESOURCE(systemicons);
 
     /* initialize the application (load configurations and start threads) */
     initialize();
+
+    struct rlimit rlimit;
+    int retval;
+    rlimit.rlim_cur = rlimit.rlim_max = 128 * 1024;
+    retval = setrlimit(RLIMIT_STACK, &rlimit);
 
     /* start page 0 (the splash screen) */
     page0 w;

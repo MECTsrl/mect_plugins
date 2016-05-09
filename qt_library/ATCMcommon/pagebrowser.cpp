@@ -62,7 +62,7 @@
 
 
 /** @brief variables used for the change page management */
-QStack<page *> History;
+QStack<QString> History;
 QHash<QString, page *> ScreenHash;
 
 /**
@@ -173,9 +173,7 @@ void page::updateData()
     }
     if (labelUserName)
     {
-        char username[TAG_LEN];
-        sprintf(username, "%s", PasswordsString[active_password]);
-        labelUserName->setText(trUtf8("User: %1").arg(username));
+        labelUserName->setText(trUtf8("User: %1").arg(PasswordsString[active_password]));
     }
 #ifdef ENABLE_DEVICE_DISCONNECT
     /*Re-activate variables local to a page in case of device reconnection*/
@@ -1244,12 +1242,12 @@ bool page::hideAll(void)
     {
         if ( i.value()->isVisible())
         {
-            LOG_PRINT(verbose_e,"QUESTA FINESTRA (%s) ERA ATTIVA!!!!\n", i.value()->windowTitle().toAscii().data() );
+            LOG_PRINT(info_e,"QUESTA FINESTRA (%s) ERA ATTIVA!!!!\n", i.value()->windowTitle().toAscii().data() );
             i.value()->hide();
-            LOG_PRINT(verbose_e,"ORA E' NASCOSTA!!!!\n" );
+            LOG_PRINT(info_e,"ORA E' NASCOSTA!!!!\n" );
         }
     }
-    LOG_PRINT(verbose_e,"ORA E' TUTTO NASCOSTO!!!!\n" );
+    LOG_PRINT(info_e,"ORA E' TUTTO NASCOSTO!!!!\n" );
     return 0;
 }
 
@@ -1283,7 +1281,7 @@ bool page::goto_page(const char * page_name, bool remember)
     {
         //LOG_PRINT(info_e,"PUT INTO HISTORY '%s'\n", this->windowTitle().toAscii().data());
         /* update history */
-        History.push((page *)this);
+        History.push(this->windowTitle());
     }
     
     /* clear the variable of the actual page */
@@ -1303,30 +1301,21 @@ bool page::goto_page(const char * page_name, bool remember)
         }
     }
 #endif
-    
+
     /*prepare the next page */
     if(!ScreenHash.contains(page_name))
     {
         create_next_page(&p, page_name);
         if (p == NULL)
         {
-            LOG_PRINT(info_e,"ERRORE GRAVE: fallita create_next_page\n");
+            LOG_PRINT(error_e,"Fail to create page '%s'\n", page_name);
             //mymutex.unlock();
             QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("The requested page '%1' doesn't exist.").arg(page_name));
             refresh_timer->start(REFRESH_MS);
             LOG_PRINT(info_e, " %s TIMER START\n", this->windowTitle().toAscii().data());
             return false;
         }
-        if (active_password > p->protection_level)
-        {
-            QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible to access the desired page '%1': inadequate privilegies. %2 vs %3").arg(p->windowTitle()).arg(p->protection_level).arg(active_password));
-            delete p;
-            LOG_PRINT(info_e,"active %d, protection %d\n", active_password, p->protection_level);
-            go_home();
-            return false;
-        }
         ScreenHash.insert(page_name, p);
-        p->reload();
         LOG_PRINT(info_e,"CREATA NUOVA PAGINA %s\n", page_name);
     }
     else
@@ -1334,17 +1323,18 @@ bool page::goto_page(const char * page_name, bool remember)
         p = ScreenHash.value(page_name);
         p->refresh_timer->stop();
         LOG_PRINT(info_e, " %s TIMER STOP\n", p->windowTitle().toAscii().data());
-        if (active_password > p->protection_level)
-        {
-            QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible to access the desired page '%1': inadequate privilegies. %2 vs %3").arg(p->windowTitle()).arg(p->protection_level).arg(active_password));
-            go_home();
-            return false;
-        }
-        p->reload();
         LOG_PRINT(info_e,"RICARICATA PAGINA ESISTENTE %s\n", page_name);
     }
-    //p->updateData();
-    
+
+    if (active_password > p->protection_level)
+    {
+        QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible to access the desired page '%1': inadequate privilegies. %2 vs %3").arg(p->windowTitle()).arg(p->protection_level).arg(active_password));
+        LOG_PRINT(info_e,"active %d, protection %d\n", active_password, p->protection_level);
+        go_home();
+        return false;
+    }
+    p->reload();
+
     if (p != this) {
         /* deactivate the old variables */
         if (this->variableList.count() == 0)
@@ -1369,6 +1359,8 @@ bool page::goto_page(const char * page_name, bool remember)
         }
     }
     hideAll();
+    //hideOthers(p);
+
     p->refresh_timer->start(REFRESH_MS);
     LOG_PRINT(info_e, " %s TIMER START\n", p->windowTitle().toAscii().data());
     p->SHOW();
@@ -1400,22 +1392,19 @@ bool page::go_back()
 {
     if (isVisible() == false)
     {
-        //LOG_PRINT(info_e,"NOT VISIBE\n");
         return false;
     }
-    //mymutex.lock();
     LOG_PRINT(info_e, " FROM (%s)\n", this->windowTitle().toAscii().data());
     if (!History.isEmpty())
     {
-        page * p = History.pop();
-        LOG_PRINT(info_e, " FROM (%s) BACK TO (%s)\n", this->windowTitle().toAscii().data(), p->windowTitle().toAscii().data());
-        return goto_page (p->windowTitle().toAscii().data(),false);
+        QString page_name = History.pop();
+        LOG_PRINT(info_e, " FROM (%s) BACK TO (%s)\n", this->windowTitle().toAscii().data(), page_name.toAscii().data());
+        return goto_page (page_name.toAscii().data(),false);
     }
     else
     {
         LOG_PRINT(warning_e, "History empty\n");
         go_home();
-        //mymutex.unlock();
         return false;
     }
 }

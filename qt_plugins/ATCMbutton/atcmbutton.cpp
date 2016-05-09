@@ -758,8 +758,8 @@ void  ATCMbutton::goToPage()
         {
             strncpy(_actual_trend_, m_pagename.toAscii().data(), FILENAME_MAX);
             _trend_data_reload_ = true;
-            LOG_PRINT(info_e, "Going to page %s loading file '%s'\n", "trend", m_pagename.toAscii().data());
-            emit newPage(QString("trend").toAscii().data(), m_remember);
+            LOG_PRINT(info_e, "Going to page 'trend' loading file '%s'\n", m_pagename.toAscii().data());
+            emit newPage("trend", m_remember);
         }
         else
 #endif
@@ -767,8 +767,8 @@ void  ATCMbutton::goToPage()
             if (m_pagename.startsWith("store"))
         {
             strncpy(_actual_store_, m_pagename.toAscii().data(), FILENAME_MAX);
-            LOG_PRINT(info_e, "Going to page %s loading file '%s'\n", "store", m_pagename.toAscii().data());
-            emit newPage(QString("store").toAscii().data(), m_remember);
+            LOG_PRINT(info_e, "Going to page 'store' loading file '%s'\n", m_pagename.toAscii().data());
+            emit newPage("store", m_remember);
         }
         else
 #endif

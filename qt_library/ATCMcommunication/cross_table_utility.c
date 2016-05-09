@@ -637,7 +637,7 @@ size_t fillSyncroArea(void)
             }
             else
             {
-                LOG_PRINT(warning_e, "The variable '%s' come from a block already active\n", varNameArray[elem_nb].tag);
+                LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varNameArray[elem_nb].tag);
             }
             varNameArray[elem_nb].active = 1;
         }
@@ -926,6 +926,11 @@ int setSyncroCtIndex(WORD * address, int CtIndex)
 int getSyncroCtIndex(WORD address, int * CtIndex)
 {
     *CtIndex = (int)(address & ADDRESS_MASK);
+    if (*CtIndex < 0 || *CtIndex > DB_SIZE_ELEM)
+    {
+        *CtIndex = -1;
+        return 1;
+    }
     return 0;
 }
 
@@ -985,7 +990,7 @@ int Tag2CtIndex(const char * Tag, int * CtIndex)
     int i;
     *CtIndex = -1;
 
-    if (Tag[0] == '\0')
+    if (Tag == NULL || Tag[0] == '\0')
     {
         LOG_PRINT(error_e, "'%s' Empty variable\n", Tag);
         return -1;
@@ -1541,7 +1546,7 @@ int formattedWriteToDb(int ctIndex, void * value)
     }
     else
     {
-        LOG_PRINT(warning_e, "DONE ctIndex %d value %X\n", ctIndex, *((int*)value));
+        LOG_PRINT(verbose_e, "DONE ctIndex %d value %X\n", ctIndex, *((int*)value));
         return writeToDb(ctIndex, value);
     }
 }
@@ -2622,7 +2627,7 @@ int activateVar(const char * varname)
     retval = isBlockActive(varname, blockhead);
     if (retval == 1)
     {
-        LOG_PRINT(warning_e, "The variable '%s' come from a block already active\n", varname);
+        LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varname);
         return 0;
     }
     else if (retval == 0)

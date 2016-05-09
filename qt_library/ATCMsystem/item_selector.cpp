@@ -92,16 +92,13 @@ item_selector::~item_selector()
     delete ui;
 }
 
-void item_selector::on_pushButtonView_clicked()
-{
-    if ( ui->listWidget->currentIndex().isValid())
-    {
-        *_selection = ui->listWidget->currentItem()->text();
-        accept();
-    }
-}
-
 void item_selector::on_pushButtonBack_clicked()
 {
     reject();
+}
+
+void item_selector::on_listWidget_itemClicked(QListWidgetItem *item)
+{
+    *_selection = item->text();
+    accept();
 }

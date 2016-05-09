@@ -56,7 +56,7 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflag
             }
             if (j > MAX_FIELDS_NB)
             {
-                LOG_PRINT(info_e, "Too many fields %d vs %d\n", j, MAX_FIELDS_NB);
+                LOG_PRINT(error_e, "Too many fields %d vs %d\n", j, MAX_FIELDS_NB);
                 return 1;
             }
             strcpy(token, p);
@@ -434,7 +434,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     /* daily logs */
     if (datein != NULL && timein == NULL && timefin == NULL)
     {
-        LOG_PRINT(info_e, "DAILY\n");
+        LOG_PRINT(info_e, "DAILY\n %s -> %s\n", datein, datefin);
         if (datefin == NULL)
         {
             datefin = datein;
@@ -460,6 +460,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         while (difftime(datetimefin, datetimein) > 0)
         {
             strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
+            LOG_PRINT(info_e, "%s\n", tmp );
             for(i = 0; i < fcount; i++)
             {
                 if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0 && strncmp(tmp, filelist[i]->d_name, strlen(tmp)) == 0)
@@ -558,10 +559,10 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                     {
                         LOG_PRINT(info_e, "Warning cannot open field file '%s'\n", inFullPathFileName);
                     }
-                    mytime.tm_mday++;
-                    datetimein = mktime(&mytime);
                 }
             }
+            datetimein+=(24*60*60);
+            memcpy(&mytime, localtime(&datetimein), sizeof(mytime));
         }
     }
     /* all logs */
@@ -680,7 +681,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     /* time filtered */
     else if (datein != NULL && timein != NULL && datefin != NULL && timefin != NULL)
     {
-        LOG_PRINT(info_e, "TIME\n");
+        LOG_PRINT(info_e, "TIME %s %s -> %s %s\n", datein, timein, datefin, timefin);
         int skipline = 0;
 
         /* extract the log file */
@@ -736,9 +737,10 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         fprintf(stdout, "%s\n", outFullPathFileName);
 #endif
 
-        while (difftime(datetimefin, datetimein) >  - 24*60*60)
+        while (datetimefin >= datetimein)
         {
             strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
+            LOG_PRINT(info_e, "%s\n", tmp );
             for(i = 0; i < fcount; i++)
             {
                 if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0 && strncmp(tmp, filelist[i]->d_name, strlen(tmp)) == 0)
@@ -806,11 +808,10 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                     {
                         LOG_PRINT(info_e,"Cannot open %s\n", inFullPathFileName);
                     }
-
-                    mytime.tm_mday++;
-                    datetimein = mktime(&mytime);
                 }
             }
+            datetimein+=(24*60*60);
+            memcpy(&mytime, localtime(&datetimein), sizeof(mytime));
         }
         fclose(fpout);
 #ifdef SIGN_APP
@@ -829,7 +830,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     }
     else
     {
-        LOG_PRINT(info_e, "invalid paramenter\n");
+        LOG_PRINT(error_e, "invalid paramenter\n");
         retval = 17;
         goto exit_function;
     }

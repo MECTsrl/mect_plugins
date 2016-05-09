@@ -82,6 +82,7 @@ void page0::changePage()
 {
     if (first_time == true)
     {
+        ui->label->update();
         /* if fcrts is not running or if it is in Zombie status, start it */
         if (system("PID=`pidof fcrts` && test $PID != '' &&  test  `grep -c zombie /proc/$PID/status` -eq 0"))
         {

@@ -11,10 +11,20 @@
 #define RECIPE_H
 
 #include "pagebrowser.h"
+#include <QList>
+#include <QTableWidgetItem>
 
 namespace Ui {
 class recipe;
 }
+
+#define MAX_RCP_STEP 64
+#define MAX_RCP_VAR  200
+
+typedef struct {
+        u_int16_t ctIndex;
+        u_int32_t step[MAX_RCP_STEP];
+} row;
 
 class recipe : public page
 {
@@ -31,30 +41,32 @@ private slots:
     void changeEvent(QEvent * event);
 #endif
     void on_pushButtonHome_clicked();
-
     void on_pushButtonBack_clicked();
-
-    void on_pushButtonEdit_clicked();
-
     void on_pushButtonRead_clicked();
-
     void on_pushButtonLoad_clicked();
-
     void on_pushButtonSave_clicked();
-
+    void on_pushButtonUp_clicked();
+    void on_pushButtonDown_clicked();
+    void on_pushButtonLeft_clicked();
+    void on_pushButtonRight_clicked();
+    void on_tableWidget_itemClicked(QTableWidgetItem *item);
+    void horizontalHeaderClicked(int column);
 private:
-    bool LoadRecipe(const char * filename);
+    bool loadRecipe(const char * filename);
+    bool showRecipe(const char * familyName, const char * recipeName);
+    int writeRecipe(int step);
+    int readRecipe(int step);
+    bool getFamilyRecipe(const char * filename, char * familyName, char * recipeName);
 private:
     Ui::recipe *ui;
-    bool reading;
-    bool writing;
-    bool clean;
-    bool back;
-    bool writing_first;
-    bool writing_continue;
-    bool force_back;
-    int readcounter;
+    int current_row;
+    int current_column;
+    char _familyName[LINE_SIZE];
+    char _recipeName[LINE_SIZE];
+    int state;
+    //row recipeMatrix[MAX_RCP_VAR];
+    int stepNbMax;
+    int varNbMax;
 };
 
 #endif // RECIPE_H
-

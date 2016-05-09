@@ -16,7 +16,7 @@
 #include "item_selector.h"
 #include <QDirIterator>
 #include <QHash>
-#define LANGUAGE_MAP_FILE "/local/etc/sysconfig/lang_table.csv"
+#include <QSettings>
 #endif
 
 /* this define set the window title */
@@ -189,15 +189,14 @@ void options::on_pushButtonLanguage_clicked()
     FILE * fp = fopen(LANGUAGE_MAP_FILE, "r");
     if (fp)
     {
-        char line[32];
+        char line[LINE_SIZE];
         while (fgets(line, LINE_SIZE, fp) != NULL)
         {
-            char * key, * value;
-            key = strchr(line, ';') + 1;
-            *strchr(line, ';') = '\0';
-            value = line;
-            LanguageMap.insert(QString(key).trimmed(),QString(value).trimmed());
-            LOG_PRINT(info_e, "tag %s item %s\n", key, value);
+            QStringList strlist = QString(line).split(";");
+            if (strlist.count()==2)
+            {
+                LanguageMap.insert(strlist.at(1).trimmed(),strlist.at(0).trimmed());
+            }
         }
         fclose(fp);
     }
@@ -212,7 +211,7 @@ void options::on_pushButtonLanguage_clicked()
         LOG_PRINT(error_e, " %s\n", item.toAscii().data());
         if (item.endsWith (".qm") == true)
         {
-            if(LanguageMap.count() > 0)
+            if (LanguageMap.count() > 0 && LanguageMap.contains(item.mid(item.indexOf("languages_") + strlen("languages_"),2)))
             {
                 languageList << LanguageMap.value(item.mid(item.indexOf("languages_") + strlen("languages_"), 2));
             }
@@ -245,6 +244,9 @@ void options::on_pushButtonLanguage_clicked()
                 /* install the selected language */
                 qApp->installTranslator(translator);
                 QMessageBox::information(this,trUtf8("Language"), trUtf8("The language selected is '%1'").arg(value));
+                QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+                settings.setValue("SYSTEM/language", _language_);
+                settings.sync();
             }
             else
             {

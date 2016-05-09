@@ -110,6 +110,11 @@ int readIniFile(void)
     strcpy(PwdLogoutPage, settings.value(PWD_LOGOUT_PAGE_TAG, PWD_LOGOUT_PAGE_DEF).toString().toAscii().data());
     LOG_PRINT(info_e, "'%s' = %s\n", PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
 
+#ifdef TRANSLATION
+    strcpy(_language_, settings.value(LANGUAGE_TAG, DEFAULT_LANGUAGE).toString().toAscii().data());
+    LOG_PRINT(info_e, "'%s' = %s\n", LANGUAGE_TAG, _language_);
+#endif
+
     return 0;
 }
 
@@ -141,6 +146,9 @@ int writeIniFile(void)
     settings.setValue(PWD_TIMEOUT_SEC_TAG, PwdTimeoutSec);
     settings.setValue(PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
 
+#ifdef TRANSLATION
+    settings.setValue(LANGUAGE_TAG, _language_);
+#endif
     settings.sync();
 
     return 0;
@@ -347,7 +355,7 @@ int initialize()
     /* if a language is not set, set italian as default */
     if (strlen(_language_) == 0)
     {
-        strcpy(_language_, "it");
+        strcpy(_language_, DEFAULT_LANGUAGE);
     }
 
     /* load the language selected */

@@ -15,7 +15,6 @@
 #define MAX_LINE 256
 #define PAGE_NAME_LEN 32
 #define MAX_LEN_UPDATE_MSG 5
-#define DEFAULT_LANGUAGE "it"
 #define WAIT_COMM_RETRY_NB 20
 #define SPLASH_TIMEOUT_MS 2000
 #define REFRESH_MS 500
@@ -26,6 +25,7 @@
 #define MOUNT_POINT "/tmp/mnt"
 #define SPLASH_FILE LOCAL_ETC_DIR"/img/splash.png"
 #define BACKING_FILE "/local/root/backing_file"
+#define LANGUAGE_MAP_FILE "/local/etc/sysconfig/lang_table.csv"
 
 /* Configuration file Tags */
 //unsigned 16 bit
@@ -61,6 +61,8 @@
 #define MIDDLE_PRIORITY_DEF     100
 #define LOW_PRIORITY_TAG        "SYSTEM/low_priority_ms"
 #define LOW_PRIORITY_DEF        1000
+#define LANGUAGE_TAG            "SYSTEM/language"
+#define DEFAULT_LANGUAGE        "it"
 
 #define USB_MODE                "SYSTEM/usb_mode"
 #define DEVICE_TAG              "Device"

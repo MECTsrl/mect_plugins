@@ -12,10 +12,10 @@
 #include "main.h"
 #include "system_ini.h"
 #include "ui_system_ini.h"
+#include "item_selector.h"
 #include <QSettings>
 #include <QMessageBox>
-
-#define SYSTEM_INI "/local/etc/sysconfig/system.ini"
+#include <QDirIterator>
 
 /**
  * @brief this macro is used to set the system_ini style.
@@ -55,6 +55,52 @@ system_ini::system_ini(QWidget *parent) :
 void system_ini::reload()
 {
     QSettings settings(SYSTEM_INI, QSettings::IniFormat);
+
+
+    /* load the map of the language and his locale abbreviation */
+    FILE * fp = fopen(LANGUAGE_MAP_FILE, "r");
+    if (fp)
+    {
+        char line[LINE_SIZE];
+        while (fgets(line, LINE_SIZE, fp) != NULL)
+        {
+            QStringList strlist = QString(line).split(";");
+            if (strlist.count()==2)
+            {
+                LanguageMap.insert(strlist.at(1).trimmed(),strlist.at(0).trimmed());
+            }
+        }
+        fclose(fp);
+    }
+
+    /* load the translations file list */
+    QDirIterator it(":/translations", QDirIterator::Subdirectories);
+    QString lang = settings.value("SYSTEM/language").toString();
+    int i = 0;
+    int indexlang = 0;
+    while (it.hasNext()) {
+        QString item = it.next();
+        LOG_PRINT(error_e, " %s\n", item.toAscii().data());
+        if (item.endsWith (".qm") == true)
+        {
+            QString tmplang = item.mid(item.indexOf("languages_") + strlen("languages_"), 2);
+            if (lang == tmplang)
+            {
+                indexlang = i;
+            }
+            if (LanguageMap.count() > 0 && LanguageMap.contains(item.mid(item.indexOf("languages_") + strlen("languages_"),2)))
+            {
+                ui->comboBoxLanguage->addItem(LanguageMap.value(item.mid(item.indexOf("languages_") + strlen("languages_"), 2)));
+            }
+            else
+            {
+                ui->comboBoxLanguage->addItem(item.mid(item.indexOf("languages_") + strlen("languages_"), 2));
+            }
+            i++;
+        }
+    }
+
+    ui->comboBoxLanguage->setCurrentIndex(indexlang);
 
     ui->pushButton_Retries->setText(settings.value("SYSTEM/retries").toString());
     ui->pushButton_Blacklist->setText(settings.value("SYSTEM/blacklist").toString());
@@ -336,6 +382,7 @@ void system_ini::save_all()
             return;
         }
 
+        settings.setValue("SYSTEM/language", LanguageMap.key(ui->comboBoxLanguage->currentText(),DEFAULT_LANGUAGE));
         settings.setValue("SYSTEM/retries", ui->pushButton_Retries->text());
         settings.setValue("SYSTEM/blacklist", ui->pushButton_Blacklist->text());
         settings.setValue("SYSTEM/read_period_ms_1", ui->pushButton_ReadPeriod1->text());

@@ -34,10 +34,13 @@ char *strtok_csv(char *string, const char *separators, char **savedptr)
     s = strstr(p, separators);
     if (s == NULL) {
         *savedptr = NULL;
-        return p;
+        s = p + strlen(p);
     }
-    *s = 0;
-    *savedptr = s + 1;
+    else
+    {
+        *s = 0;
+        *savedptr = s + 1;
+    }
 
     // remove spaces at head
     while (p < s && isspace(*p)) {

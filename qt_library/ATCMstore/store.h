@@ -63,7 +63,7 @@ private:
     bool readLine();
 private:
     Ui::store *ui;
-    bool force_back;
+    int status;
     int * actual_filter;
     int sizeof_filter;
     QStringList headerList;

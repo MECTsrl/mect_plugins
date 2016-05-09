@@ -58,6 +58,8 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="config/crosstable.h" target="config/crosstable.h" openproject="false" binary="false"/>
 	   <file source="config/system.ini" target="config/system.ini" openproject="false" binary="false"/>
 	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
+ 	   <file source="config/network0.cmg" target="config/network0.cmg" openproject="false" binary="true"/>
+	   <file source="config/iomap0.cmg" target="config/iomap0.cmg" openproject="false" binary="true"/>
 	   <!-- 
 	   <file source="../ATCM-template-project/project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
 	   -->

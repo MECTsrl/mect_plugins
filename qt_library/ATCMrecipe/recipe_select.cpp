@@ -147,32 +147,6 @@ recipe_select::~recipe_select()
 
 #undef VAR_TO_DISPLAY
 
-
-void recipe_select::on_pushButtonView_clicked()
-{
-
-
-    if ( ui->listWidget->currentIndex().isValid())
-    {
-        /* if it is a directory it is a receipe family, so enter and display the items */
-        if (QFileInfo(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text())).isDir())
-        {
-            strcpy(_recipe_dir_to_browse, QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text()).toAscii().data());
-            reload();
-        }
-        /* if it is a file, it is already a receipe, so and display it */
-        else
-        {
-            ui->labelLoading->setText(trUtf8("Loading..."));
-            ui->labelLoading->setStyleSheet("color: rgb(255,0,0);");
-            ui->labelLoading->repaint();
-            sprintf(_actual_recipe_, "%s/%s", _recipe_dir_to_browse, ui->listWidget->currentItem()->text().toAscii().data());
-            strcpy(_recipe_dir_to_browse, RECIPE_DIR);
-            goto_page("recipe");
-        }
-    }
-}
-
 void recipe_select::on_pushButtonHome_clicked()
 {
     strcpy(_recipe_dir_to_browse, RECIPE_DIR);
@@ -191,53 +165,6 @@ void recipe_select::on_pushButtonBack_clicked()
     {
         strcpy(_recipe_dir_to_browse, RECIPE_DIR);
         reload();
-    }
-}
-
-void recipe_select::on_pushButtonDelete_clicked()
-{
-    if ( ui->listWidget->currentIndex().isValid())
-    {
-        if (QFileInfo(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text())).isDir())
-        {
-            LOG_PRINT(info_e, "dir '%s' item '%s'\n",_recipe_dir_to_browse, ui->listWidget->currentItem()->text().toAscii().data() );
-            if (QMessageBox::question(this, trUtf8("Recipe"), trUtf8("Are you sure to delete the family recipe '%1'?").arg(ui->listWidget->currentItem()->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
-            {
-                bool result = true;
-                QDir dir(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text()));
-                Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
-                {
-                    result = QFile::remove(info.absoluteFilePath());
-
-                    if (!result) {
-                        QMessageBox::critical(this,trUtf8("Error"), trUtf8("Cannot remove the family recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
-                    }
-                }
-                result = dir.rmdir(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text()));
-                if(result)
-                {
-                    reload();
-                }
-                else
-                {
-                    QMessageBox::critical(this,trUtf8("Error"), trUtf8("Cannot remove the family recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
-                }
-            }
-        }
-        else
-        {
-            if (QMessageBox::question(this, trUtf8("Recipe"), trUtf8("Are you sure to delete the recipe '%1'?").arg(ui->listWidget->currentItem()->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
-            {
-                if (QFile::remove(QString("%1/%2").arg(_recipe_dir_to_browse).arg(ui->listWidget->currentItem()->text())))
-                {
-                    reload();
-                }
-                else
-                {
-                    QMessageBox::critical(this,trUtf8("Error"), trUtf8("Cannot remove the recipe '%1'.").arg(ui->listWidget->currentItem()->text()));
-                }
-            }
-        }
     }
 }
 
@@ -307,4 +234,24 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
         LOG_PRINT(info_e, "DOWNLOADED\n");
         QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
     }
+}
+
+void recipe_select::on_listWidget_itemClicked(QListWidgetItem *item)
+{
+        /* if it is a directory it is a receipe family, so enter and display the items */
+        if (QFileInfo(QString("%1/%2").arg(_recipe_dir_to_browse).arg(item->text())).isDir())
+        {
+            strcpy(_recipe_dir_to_browse, QString("%1/%2").arg(_recipe_dir_to_browse).arg(item->text()).toAscii().data());
+            reload();
+        }
+        /* if it is a file, it is already a receipe, so and display it */
+        else
+        {
+            ui->labelLoading->setText(trUtf8("Loading..."));
+            ui->labelLoading->setStyleSheet("color: rgb(255,0,0);");
+            ui->labelLoading->repaint();
+            sprintf(_actual_recipe_, "%s/%s", _recipe_dir_to_browse, item->text().toAscii().data());
+            strcpy(_recipe_dir_to_browse, RECIPE_DIR);
+            goto_page("recipe");
+        }
 }

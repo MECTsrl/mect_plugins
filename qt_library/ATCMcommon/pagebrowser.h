@@ -75,6 +75,7 @@ protected:
     bool setTag(QString * label, QString value = "");
     void translateFontSize( QWidget *ui );
 protected:
+#if 0
     void paintEvent (QPaintEvent *)
     {
         QStyleOption opt;
@@ -82,6 +83,7 @@ protected:
         QPainter p (this);
         style ()->drawPrimitive (QStyle::PE_Widget, &opt, &p, this);
     };
+#endif
     bool create_next_page(page ** p, const char * t);
 #ifdef HW_KEY_ENABLED
     void keyPressEvent(QKeyEvent * event);
@@ -150,7 +152,7 @@ private:
 };
 
 extern QHash<QString, page *> ScreenHash;
-extern QStack<page *> History;
+extern QStack<QString> History;
 extern int create_page_nb(page ** p, int pageNb);
 extern void printVncDisplayString(char * vncString);
 

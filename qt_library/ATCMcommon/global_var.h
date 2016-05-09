@@ -109,6 +109,9 @@ extern char usb_mnt_point[FILENAME_MAX];
 
 #ifdef ENABLE_TRANSLATION
 #include <QTranslator>
+#ifndef TRANSLATION
+#define TRANSLATION
+#endif
 extern char _language_[3];
 extern QTranslator* translator;
 #endif //ENABLE_TRANSLATION

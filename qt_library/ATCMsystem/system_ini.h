@@ -12,6 +12,8 @@
 
 #include "pagebrowser.h"
 
+#define SYSTEM_INI "/local/etc/sysconfig/system.ini"
+
 namespace Ui {
 class system_ini;
 }
@@ -86,6 +88,7 @@ private slots:
 private:
     Ui::system_ini *ui;
     void save_all();
+    QHash<QString, QString> LanguageMap;
 };
 
 #endif // SYSTEM_INI_H

@@ -11,6 +11,7 @@
 #define SELECT_H
 
 #include <QDialog>
+#include <QListWidgetItem>
 
 //#include "style.h"
 #include "../../qt_templates/ATCM-template-project/style.h"
@@ -32,9 +33,9 @@ private slots:
 #ifdef TRANSLATION
     void changeEvent(QEvent * event);
 #endif
-    void on_pushButtonView_clicked();
-
     void on_pushButtonBack_clicked();
+
+    void on_listWidget_itemClicked(QListWidgetItem *item);
 
 private:
     Ui::item_selector *ui;

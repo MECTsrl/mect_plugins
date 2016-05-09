@@ -95,85 +95,8 @@ store::store(QWidget *parent) :
  */
 void store::reload()
 {
-    force_back = false;
+    status = 1;
     
-    if (logfp != NULL)
-    {
-        fclose(logfp);
-        logfp = NULL;
-    }
-    
-    QStringList fileList = QDir(STORE_DIR).entryList(QStringList("*.log"), QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
-    if (fileList.count() == 0)
-    {
-        ui->labelFilter->setText(trUtf8("No log to show."));
-        return;
-    }
-
-    char filename[FILENAME_MAX];
-    if (_actual_store_[0] == '\0')
-    {
-        filename[0] = '\0';
-    }
-    else if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
-    {
-        sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
-    }
-    else
-    {
-        sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
-    }
-
-    if (!QFile::exists(filename))
-    {
-        filename[0] = '\0';
-    }
-
-    /* load the actual store filter  */
-    if (LoadStoreFilter(filename) == false)
-    {
-        QMessageBox::critical(this,trUtf8("Malformed view"), trUtf8("The view '%1' is malformed.").arg(_actual_store_));
-        force_back = true;
-        return;
-    }
-    LOG_PRINT(info_e, "_actual_store_ %s\n", _actual_store_);
-    ui->labelName->setText(_actual_store_);
-    
-    /* get the file list */
-    QDir logDir(STORE_DIR);
-    logFileList = logDir.entryList(QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
-    
-    ui->labelFilter->setText(QString("Filter: [%1 - %2]")
-                             .arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss"))
-                             .arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
-    
-    _current = 0;
-    /* no logfile found */
-    _file_nb = logFileList.count();
-    if (_file_nb == 0)
-    {
-        LOG_PRINT(error_e, "No file to load\n");
-        return;
-    }
-    
-    /* load the current log file */
-    LOG_PRINT(info_e, "_current %d\n",_current);
-    
-    /* load the actual daily store */
-    if (LoadStore(StoreInit, StoreFinal) == false)
-    {
-        QMessageBox::critical(this,trUtf8("Loading problem"), trUtf8("Cannot load the log between %1 and %2.").arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss")).arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
-        LOG_PRINT(info_e, "cannot load store, force back\n");
-        force_back = true;
-        go_back();
-        return;
-    }
-    
-    /* set the arrow button status in funtion of the visible items */
-    ui->pushButtonLeft->setEnabled(current_column > 0);
-    ui->pushButtonRight->setEnabled(current_column < sizeof_filter);
-    ui->pushButtonUp->setEnabled(current_row > 0);
-    ui->pushButtonDown->setEnabled(logfp != NULL || (current_row < ui->tableWidget->rowCount()));
 }
 
 /** @brief count the column of a csv file
@@ -360,7 +283,7 @@ bool store::LoadStore(const char * filename)
     char * p = NULL, * r = NULL;
     QTableWidgetItem * item;
     
-    /* delete all the e*/
+    /* clear the table */
     while(ui->tableWidget->columnCount())
     {
         ui->tableWidget->removeColumn(0);
@@ -469,7 +392,7 @@ bool store::LoadStore(const char * filename)
     }
     else
     {
-        LOG_PRINT(error_e, "EMPTY FILE ROW %d COLUMN %d\n", rownb, colnb);
+        LOG_PRINT(info_e, "EMPTY FILE ROW %d COLUMN %d\n", rownb, colnb);
         return true;
     }
 }
@@ -531,10 +454,86 @@ bool store::readLine()
  */
 void store::updateData()
 {
-    if (force_back == true)
+
+    if (status == 1)
     {
-        go_back();
-        return;
+        status = 0;
+        if (logfp != NULL)
+        {
+            fclose(logfp);
+            logfp = NULL;
+        }
+
+        QStringList fileList = QDir(STORE_DIR).entryList(QStringList("*.log"), QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
+        if (fileList.count() == 0)
+        {
+            ui->labelFilter->setText(trUtf8("No log to show."));
+            return;
+        }
+
+        char filename[FILENAME_MAX];
+        if (_actual_store_[0] == '\0')
+        {
+            filename[0] = '\0';
+        }
+        else if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
+        {
+            sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
+        }
+        else
+        {
+            sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
+        }
+
+        if (!QFile::exists(filename))
+        {
+            filename[0] = '\0';
+        }
+
+        /* load the actual store filter  */
+        if (LoadStoreFilter(filename) == false)
+        {
+            QMessageBox::critical(this,trUtf8("Malformed view"), trUtf8("The view '%1' is malformed.").arg(_actual_store_));
+            go_back();
+            return;
+        }
+        LOG_PRINT(info_e, "_actual_store_ %s\n", _actual_store_);
+        ui->labelName->setText(_actual_store_);
+
+        /* get the file list */
+        QDir logDir(STORE_DIR);
+        logFileList = logDir.entryList(QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
+
+        ui->labelFilter->setText(QString("Filter: [%1 - %2]")
+                                 .arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss"))
+                                 .arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
+
+        _current = 0;
+        /* no logfile found */
+        _file_nb = logFileList.count();
+        if (_file_nb == 0)
+        {
+            LOG_PRINT(info_e, "No file to load\n");
+            return;
+        }
+
+        /* load the current log file */
+        LOG_PRINT(info_e, "_current %d\n",_current);
+
+        /* load the actual daily store */
+        if (LoadStore(StoreInit, StoreFinal) == false)
+        {
+            QMessageBox::critical(this,trUtf8("Loading problem"), trUtf8("Cannot load the log between %1 and %2.").arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss")).arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
+            LOG_PRINT(info_e, "cannot load store, force back\n");
+            go_back();
+            return;
+        }
+
+        /* set the arrow button status in funtion of the visible items */
+        ui->pushButtonLeft->setEnabled(current_column > 0);
+        ui->pushButtonRight->setEnabled(current_column < sizeof_filter);
+        ui->pushButtonUp->setEnabled(current_row > 0);
+        ui->pushButtonDown->setEnabled(logfp != NULL || (current_row < ui->tableWidget->rowCount()));
     }
     if (abs(ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, 0)).x()) + ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, ui->tableWidget->columnCount() - 1)).x() + ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, ui->tableWidget->columnCount() - 1)).width() < ui->tableWidget->width())
     {
@@ -579,19 +578,13 @@ void store::on_pushButtonBack_clicked()
 
 void store::on_pushButtonUp_clicked()
 {
-    LOG_PRINT(info_e, "current_row %d\n", current_row);
-    if (current_row > 0)
-    {
-        /* if we are at the last one correct the index */
-        current_row=((current_row == ui->tableWidget->rowCount() - 1) ? current_row - 1 : current_row);
-        /* decrement */
-        current_row-=1;
-        /* if we are the first one, reset the decrement */
-        current_row = (current_row < 0) ? 0 : current_row;
-        /* go to actual item */
-        ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtTop);
-        LOG_PRINT(info_e, "UP current_row %d\n", current_row);
-    }
+    current_row--;
+    current_row = (current_row < ui->tableWidget->rowCount()) ? current_row : ui->tableWidget->rowCount() - 1;
+    current_column = (current_column < ui->tableWidget->columnCount()) ? current_column : ui->tableWidget->columnCount() - 1;
+    current_row = (current_row > 0) ? current_row : 0;
+    current_column = (current_column > 0) ? current_column : 0;
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
+
     if (current_row > 0)
     {
         ui->pushButtonDown->setEnabled(true);
@@ -612,18 +605,13 @@ void store::on_pushButtonDown_clicked()
         readLine();
     }
     
-    if (current_row < ui->tableWidget->rowCount() - 1)
-    {
-        /* if we are at the first one correct the index */
-        current_row=((current_row == 0) ? current_row + 1 : current_row);
-        /* increment */
-        current_row+=1;
-        /* if we are the last one, reset the decrement */
-        current_row=((current_row > ui->tableWidget->rowCount() - 1) ? ui->tableWidget->rowCount() - 1 : current_row);
-        /* go to actual item */
-        ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtTop);
-        LOG_PRINT(info_e, "DOWN current_row %d\n", current_row);
-    }
+    current_row++;
+    current_row = (current_row < ui->tableWidget->rowCount()) ? current_row : ui->tableWidget->rowCount() - 1;
+    current_column = (current_column < ui->tableWidget->columnCount()) ? current_column : ui->tableWidget->columnCount() - 1;
+    current_row = (current_row > 0) ? current_row : 0;
+    current_column = (current_column > 0) ? current_column : 0;
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
+
     if (current_row < ui->tableWidget->rowCount() - 1)
     {
         ui->pushButtonUp->setEnabled(true);
@@ -636,26 +624,13 @@ void store::on_pushButtonDown_clicked()
 
 void store::on_pushButtonLeft_clicked()
 {
-    QRect lastview;
-    do
-    {
-        if (current_column > 0)
-        {
-            /* if we are at the last one correct the index */
-            current_column=((current_column == ui->tableWidget->columnCount() - 1) ? current_column - 1 : current_column);
-            /* decrement */
-            current_column-=1;
-            lastview = ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,current_column));
-            /* if we are the first one, reset the decrement */
-            current_column = (current_column < 0) ? 0 : current_column;
-            /* go to actual item */
-            ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-            LOG_PRINT(info_e, "LEFT current_column %d\n", current_column);
-        }
-    } while(
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,current_column)).x() == lastview.x() &&
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, ui->tableWidget->columnCount() - 1)).x() + ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, ui->tableWidget->columnCount() - 1)).width() > ui->tableWidget->width());
-    
+    current_column--;
+    current_row = (current_row < ui->tableWidget->rowCount()) ? current_row : ui->tableWidget->rowCount() - 1;
+    current_column = (current_column < ui->tableWidget->columnCount()) ? current_column : ui->tableWidget->columnCount() - 1;
+    current_row = (current_row > 0) ? current_row : 0;
+    current_column = (current_column > 0) ? current_column : 0;
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
+
     if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,0)).x() < 0)
     {
         ui->pushButtonLeft->setEnabled(true);
@@ -679,25 +654,13 @@ void store::on_pushButtonLeft_clicked()
 
 void store::on_pushButtonRight_clicked()
 {
-    LOG_PRINT(info_e, "current_column %d columnCount %d\n", current_column, ui->tableWidget->columnCount());
-    QRect lastview;
-    do
-    {
-        if (current_column <= ui->tableWidget->columnCount() - 1)
-        {
-            /* increment */
-            current_column+=1;
-            lastview = ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,current_column));
-            /* if we are the last one, reset the decrement */
-            current_column=((current_column > ui->tableWidget->columnCount()) ? ui->tableWidget->columnCount() : current_column);
-            /* go to actual item */
-            ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-            LOG_PRINT(info_e, "RIGHT current_column %d\n", current_column);
-        }
-    } while(
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,current_column)).x() == lastview.x() &&
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, ui->tableWidget->columnCount() - 1)).x() + ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, ui->tableWidget->columnCount() - 1)).width() > ui->tableWidget->width());
-    
+    current_column++;
+    current_row = (current_row < ui->tableWidget->rowCount()) ? current_row : ui->tableWidget->rowCount() - 1;
+    current_column = (current_column < ui->tableWidget->columnCount()) ? current_column : ui->tableWidget->columnCount() - 1;
+    current_row = (current_row > 0) ? current_row : 0;
+    current_column = (current_column > 0) ? current_column : 0;
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
+
     if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,0)).x() < 0)
     {
         ui->pushButtonLeft->setEnabled(true);

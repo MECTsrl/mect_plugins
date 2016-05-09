@@ -11,6 +11,7 @@
 #define RECIPE_SELECT_H
 
 #include "pagebrowser.h"
+#include <QListWidgetItem>
 
 namespace Ui {
 class recipe_select;
@@ -30,15 +31,13 @@ private slots:
 #ifdef TRANSLATION
     void changeEvent(QEvent * event);
 #endif
-    void on_pushButtonView_clicked();
-
     void on_pushButtonHome_clicked();
 
     void on_pushButtonBack_clicked();
 
-    void on_pushButtonDelete_clicked();
-
     void on_pushButtonSaveUSB_clicked();
+
+    void on_listWidget_itemClicked(QListWidgetItem *item);
 
 private:
     Ui::recipe_select *ui;
