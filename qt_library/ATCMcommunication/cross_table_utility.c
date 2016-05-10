@@ -435,7 +435,6 @@ size_t fillSyncroArea(void)
             /* if the protocol is not specified, assume that this is an internal variable */
             if (varNameArray[elem_nb].protocol == prot_none_e && varNameArray[elem_nb].node != INTERNAL_VARIABLE_FAKE_NODEID)
             {
-                LOG_PRINT(warning_e, "No protocol is specifyed, force the not from %d to internal node %d. \n", varNameArray[elem_nb].node, INTERNAL_VARIABLE_FAKE_NODEID);
                 varNameArray[elem_nb].node = INTERNAL_VARIABLE_FAKE_NODEID;
             }
             else

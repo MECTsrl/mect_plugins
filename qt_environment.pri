@@ -1,7 +1,7 @@
 QMAKE_CXXFLAGS_RELEASE += -Wno-psabi
 QMAKE_CXXFLAGS_DEBUG   += -Wno-psabi
 
-DEFINES += LOG_LEVEL=warning_e
+DEFINES += LOG_LEVEL=error_e
 
 CONFIG += store alarms recipe trend
 
