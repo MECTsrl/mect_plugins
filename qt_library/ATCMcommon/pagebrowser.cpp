@@ -22,7 +22,9 @@
 #include "app_logprint.h"
 #include "pagebrowser.h"
 #include "app_config.h"
+#ifdef ENABLE_AUTODUMP
 #include "app_usb.h"
+#endif
 
 #include "ATCMsystem/system_ini.h"
 #include "ATCMsystem/net_conf.h"
@@ -84,6 +86,10 @@ page::page(QWidget *parent) :
     protection_level = pwd_operator_e;
     //char vncDisplay[64];
     //printVncDisplayString(vncDisplay);
+    if (ID_FORCE_BUZZER == -1)
+    {
+        Tag2CtIndex("PLC_buzzerOn", &ID_FORCE_BUZZER);
+    }
 }
 
 /**
@@ -94,10 +100,21 @@ void page::updateData()
 #ifdef ENABLE_ALARMS
     setAlarmsBuzzer();
 #endif
-    
+
+    /* FIXME: use the static index of the new fix variable FORCE_BUZZER */
+    if (ID_FORCE_BUZZER != -1)
+    {
+        bool FORCE_BUZZER;
+        if (readFromDb(ID_FORCE_BUZZER, &FORCE_BUZZER) == 0 && FORCE_BUZZER == true)
+        {
+            LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", BUZZER_DURATION_MS);
+            beep(BUZZER_DURATION_MS);
+        }
+    }
+
     if (this->isVisible() == false)
     {
-        LOG_PRINT(warning_e, "NOT VISIBLE BUT RUNNING %s\n", this->windowTitle().toAscii().data());
+        LOG_PRINT(warning_e, "page '%s' not visible but running.\n", this->windowTitle().toAscii().data());
         return;
     }
     LOG_PRINT(info_e, "PAGEBROWSWER %s\n", this->windowTitle().toAscii().data());
@@ -186,7 +203,7 @@ void page::updateData()
     
     checkWriting();
 
-/*
+    /*
  *    if(IS_ENGINE_READY == 0)
     {
         QMessageBox::critical(0, "Communication Error", QString("Problem to start communication engine [0x%1].").arg(QString().setNum((IOSyncroAreaI)[5707]),16));
@@ -214,7 +231,7 @@ bool page::getFormattedVar(const char * varname, bool * formattedVar, QLabel * l
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_DISCONNECT);
         *formattedVar = VAR_DISCONNECT;
         return return_value;
@@ -302,7 +319,7 @@ bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabe
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_DISCONNECT);
         *formattedVar = (short int)VAR_NAN;
         return return_value;
@@ -374,7 +391,7 @@ bool page::getFormattedVar(const char * varname, unsigned short int * formattedV
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_DISCONNECT);
         *formattedVar = (unsigned short int)VAR_NAN;
         return return_value;
@@ -446,7 +463,7 @@ bool page::getFormattedVar(const char * varname, int * formattedVar, QLabel * le
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_DISCONNECT);
         *formattedVar = (int)VAR_NAN;
         return return_value;
@@ -520,7 +537,7 @@ bool page::getFormattedVar(const char * varname, unsigned int * formattedVar, QL
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_DISCONNECT);
         *formattedVar = (unsigned int)VAR_NAN;
         return return_value;
@@ -596,7 +613,7 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_DISCONNECT);
         *formattedVar = (float)VAR_NAN;
         return return_value;
@@ -947,7 +964,7 @@ bool page::getFormattedVar(const char * varname, QString * formattedVar, QLabel 
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_DISCONNECT);
         *formattedVar = VAR_DISCONNECT;
         return false;
@@ -1722,11 +1739,8 @@ void page::setAlarmsBuzzer(int period_ms)
 #ifdef BUZZER
     if (index < _active_alarms_events_.count() && _active_alarms_events_.at(index)->isack == false)
     {
-        LOG_PRINT(info_e, "BEEEEEEP '%d'\n", period_ms/2);
-        if (Buzzerfd == -1 || ioctl(Buzzerfd, BUZZER_BEEP, period_ms/2) != 0)
-        {
-            fprintf(stderr,"CANNOT PLAY\n");
-        }
+        LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", period_ms/2);
+        beep(period_ms/2);
     }
     else
     {

@@ -120,7 +120,7 @@ void alarms_history::reload()
     _file_nb = logFileList.count();
     if (_file_nb == 0)
     {
-        LOG_PRINT(error_e, "No file to load\n");
+        LOG_PRINT(warning_e, "No alarms log file to load.\n");
         return;
     }
     
@@ -179,269 +179,19 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
 {
     FILE * fp;
     char line[LINE_SIZE] = "";
-    char tmp[LINE_SIZE] = "";
+    char fileName[LINE_SIZE] = "";
     char * p = NULL;
     
-    sprintf(line, "%s/%s", ALARMS_DIR, filename);
+    sprintf(fileName, "%s/%s", ALARMS_DIR, filename);
     
-    fp = fopen(line, "r");
+    fp = fopen(fileName, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
+        LOG_PRINT(error_e, "Cannot open '%s'\n", fileName);
         return false;
     }
     LOG_PRINT(info_e, "opened '%s'\n", line);
     
- #if 0        
-    QList<event_descr_e *> alarms_events;
-    event_descr_e * actual_alarm = NULL;
-    bool todump;
-    
-    ui->listWidget->clear();
-    while (fgets(line, LINE_SIZE, fp) != NULL)
-    {
-        todump = false;
-        /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
-        /* type */
-        p = strtok(line, ";");
-        if (p == NULL)
-        {
-            LOG_PRINT(info_e, "Skip empty line'%s'\n", line);
-            continue;
-        }
-        /* skip the alarms */
-        if (atoi(p) == ALARM && alarm == false)
-        {
-            LOG_PRINT(info_e, "Skip alarm '%s'\n", line);
-            continue;
-        }
-        /* skip the events */
-        if (atoi(p) == EVENT && event == false)
-        {
-            LOG_PRINT(info_e, "Skip event '%s'\n", line);
-            continue;
-        }
-        /* level */
-        p = strtok(NULL, ";");
-        if (p == NULL)
-        {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
-            return false;
-        }
-        /* skip the level */
-        if (atoi(p) < level)
-        {
-            LOG_PRINT(info_e, "Skip level '%d %d'\n", atoi(p), level);
-            continue;
-        }
-        /* tag */
-        p = strtok(NULL, ";");
-        if (p == NULL)
-        {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
-            return false;
-        }
-        actual_alarm = NULL;
-        /* looking for an existing event */
-        for (int i = 0; i < alarms_events.count(); i++)
-        {
-            if (strcmp(p, alarms_events.at(i)->tag) == 0)
-            {
-                actual_alarm = alarms_events.at(i);
-                LOG_PRINT(info_e, "Found event [%s] at position %d.\n", p, i);
-                break;
-            }
-        }
-        /* if necessary, create a new event */
-        if (actual_alarm == NULL)
-        {
-            actual_alarm = new event_descr_e;
-            strcpy(actual_alarm->tag, p);
-            actual_alarm->begin = NULL;
-            actual_alarm->ack = NULL;
-            actual_alarm->end = NULL;
-            actual_alarm->status = false;
-            actual_alarm->isack = false;
-            alarms_events.append(actual_alarm);
-            LOG_PRINT(info_e, "New event [%s]\n", p);
-        }
-        
-        char event[32];
-        if (actual_alarm->isack)
-        {
-            strcpy(event, TAG_ACK);
-        }
-        else
-        {
-            if (actual_alarm->status)
-            {
-                strcpy(event, TAG_RISE);
-            }
-            else
-            {
-                strcpy(event, TAG_FALL);
-            }
-        }
-        LOG_PRINT(info_e, "OLD EVENT [%s] %d\n", event, actual_alarm->status);
-        
-        /* event */
-        p = strtok(NULL, ";");
-        if (p == NULL)
-        {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
-            return false;
-        }
-        LOG_PRINT(info_e, "EVENT [%s] vs [%s]\n", p, event);
-        
-        if (strcmp(p, TAG_RISE) == 0)
-        {
-            if (strcmp(event, TAG_RISE) != 0)
-            {
-                if ((strcmp(event, TAG_FALL) == 0 && actual_alarm->end != NULL) || (strcmp(event, TAG_ACK) == 0 && actual_alarm->ack != NULL))
-                {
-                    char * description = getDescription(actual_alarm->tag);
-                    LOG_PRINT(info_e, "dumping event [%s]\n", event);
-                    sprintf(tmp, "%s START:[%s] ACK:[%s] STOP:[%s]",
-                            (description == NULL) ? "-" : description,
-                            (actual_alarm->begin == NULL) ? "-" : actual_alarm->begin->toString("yy/MM/dd-HH:mm:ss").toAscii().data(),
-                            (actual_alarm->ack == NULL) ? "-" : actual_alarm->ack->toString("yy/MM/dd-HH:mm:ss").toAscii().data(),
-                            (actual_alarm->end == NULL) ? "-" : actual_alarm->end->toString("yy/MM/dd-HH:mm:ss").toAscii().data()
-                                                          );
-                    
-                    ui->listWidget->addItem(tmp);
-                    actual_alarm->begin = NULL;
-                    actual_alarm->ack = NULL;
-                    actual_alarm->end = NULL;
-                    actual_alarm->status = false;
-                    actual_alarm->isack = false;
-                    LOG_PRINT(info_e, "add '%s'\n", tmp);
-                }
-            }
-            LOG_PRINT(info_e, "Rise event [%s]\n", p);
-            actual_alarm->status = true;
-        }
-        else if (strcmp(p, TAG_FALL) == 0)
-        {
-            if (strcmp(event, TAG_FALL) != 0)
-            {
-                todump = true;
-            }
-            actual_alarm->status = false;
-            LOG_PRINT(info_e, "Falling event [%s]\n", p);
-        }
-        else if (strcmp(p, TAG_ACK) == 0)
-        {
-            actual_alarm->isack = true;
-            LOG_PRINT(info_e, "ACK event [%s] -> %d\n", p, actual_alarm->status );
-        }
-        else
-        {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
-            return false;
-        }
-        
-        /* YYYY/MM/DD,HH:mm:ss */
-        p = strtok(NULL, ";");
-        if (p == NULL)
-        {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
-            return false;
-        }
-        
-        
-        if (actual_alarm->isack)
-        {
-            if (actual_alarm->ack == NULL)
-            {
-                actual_alarm->ack = new QDateTime();
-            }
-            *(actual_alarm->ack) = QDateTime::fromString(p,"yyyy/MM/dd,HH:mm:ss");
-        }
-        else
-        {
-            if (actual_alarm->status)
-            {
-                if (actual_alarm->begin == NULL)
-                {
-                    actual_alarm->begin = new QDateTime();
-                }
-                *(actual_alarm->begin) = QDateTime::fromString(p,"yyyy/MM/dd,HH:mm:ss");
-            }
-            else
-            {
-                if (actual_alarm->end == NULL)
-                {
-                    actual_alarm->end = new QDateTime();
-                }
-                *(actual_alarm->end) = QDateTime::fromString(p,"yyyy/MM/dd,HH:mm:ss");
-            }
-        }
-        
-        /* description */
-        p = strtok(NULL, ";");
-        if (p == NULL)
-        {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
-            return false;
-        }
-        strcpy(actual_alarm->description, p);
-        if (todump == true)
-        {
-            LOG_PRINT(info_e, "dumping event [%s]\n", event);
-            /*char * description = getDescription(actual_alarm->tag);*/
-            sprintf(tmp, "[%s][%s][%s][%d]|%s|%s|",
-                    (actual_alarm->begin == NULL) ? "-" : actual_alarm->begin->toString("yy/MM/dd-HH:mm:ss").toAscii().data(),
-                    (actual_alarm->ack == NULL) ? "-" : actual_alarm->ack->toString("yy/MM/dd-HH:mm:ss").toAscii().data(),
-                    (actual_alarm->end == NULL) ? "-" : actual_alarm->end->toString("yy/MM/dd-HH:mm:ss").toAscii().data(),
-                    ALARM,
-                    /*(description == NULL) ? "-" : description,*/
-                    actual_alarm->tag,
-                    event
-                    );
-            
-            ui->listWidget->addItem(tmp);
-            alarms_events.removeAt(alarms_events.indexOf(actual_alarm));
-            LOG_PRINT(info_e, "add '%s'\n", tmp);
-        }
-    }
-    for (int i = 0; i < alarms_events.count(); i++)
-    {
-        char event[32];
-        if (actual_alarm->isack)
-        {
-            strcpy(event, TAG_ACK);
-        }
-        else
-        {
-            if (actual_alarm->status)
-            {
-                strcpy(event, TAG_RISE);
-            }
-            else
-            {
-                strcpy(event, TAG_FALL);
-            }
-        }
-        LOG_PRINT(info_e, "dumping event [%s]\n", event);
-        if (alarms_events.at(i)->tag == NULL)
-        {
-            return false;
-        }
-        LOG_PRINT(info_e, "dumping event [%s] at %d\n", alarms_events.at(i)->tag, i);
-        LOG_PRINT(info_e, "begin [%s]\n", (alarms_events.at(i)->begin == NULL) ? "-" : alarms_events.at(i)->begin->toString("yy/MM/dd-HH:mm:ss").toAscii().data());
-        LOG_PRINT(info_e, "ack [%s]\n", (alarms_events.at(i)->ack == NULL) ? "-" : alarms_events.at(i)->ack->toString("yy/MM/dd-HH:mm:ss").toAscii().data());
-        LOG_PRINT(info_e, "end [%s]\n", (alarms_events.at(i)->end == NULL) ? "-" : alarms_events.at(i)->end->toString("yy/MM/dd-HH:mm:ss").toAscii().data());
-        char * description = getDescription(alarms_events.at(i)->tag);
-        sprintf(tmp, "%s START:[%s] ACK:[%s] STOP:[%s]",
-                (description == NULL) ? "-" : description,
-                (alarms_events.at(i)->begin == NULL) ? "-" : alarms_events.at(i)->begin->toString("yy/MM/dd-HH:mm:ss").toAscii().data(),
-                (alarms_events.at(i)->ack == NULL) ? "-" : alarms_events.at(i)->ack->toString("yy/MM/dd-HH:mm:ss").toAscii().data(),
-                (alarms_events.at(i)->end == NULL) ? "-" : alarms_events.at(i)->end->toString("yy/MM/dd-HH:mm:ss").toAscii().data()
-                                                     );
-        ui->listWidget->addItem(tmp);
-        LOG_PRINT(info_e, "add '%s'\n", tmp);
-    }
-#else
     ui->listWidget->clear();
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
@@ -470,7 +220,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         p = strtok(NULL, ";");
         if (p == NULL)
         {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
+            LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", fileName, line);
             return false;
         }
         /* skip the level */
@@ -484,7 +234,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         p = strtok(NULL, ";");
         if (p == NULL)
         {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
+            LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", fileName, line);
             return false;
         }
         char tag[32];
@@ -494,7 +244,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         p = strtok(NULL, ";");
         if (p == NULL)
         {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
+            LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", fileName, line);
             return false;
         }
         char event[32];
@@ -504,7 +254,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         p = strtok(NULL, ";");
         if (p == NULL)
         {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
+            LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", fileName, line);
             return false;
         }
         char date[32];
@@ -514,7 +264,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         p = strtok(NULL, ";");
         if (p == NULL)
         {
-            LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
+            LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", fileName, line);
             return false;
         }
         char description[256];
@@ -525,17 +275,16 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         }
 
         /* change this code in order to change the output into the alarm history widget */
-        sprintf(tmp, "%s - %s - [%s]",
+        sprintf(line, "%s - %s - [%s]",
                 date,
                 description,
                 event);
 
-        ui->listWidget->addItem(tmp);
-        LOG_PRINT(info_e, "add '%s'\n", tmp);
+        ui->listWidget->addItem(line);
+        LOG_PRINT(info_e, "add '%s'\n", line);
     }
     LOG_PRINT(info_e, "COUNT '%d'\n", ui->listWidget->count());
-#endif        
-    
+
     return true;
 }
 
@@ -708,7 +457,7 @@ void alarms_history::on_pushButtonSave_clicked()
             p = strtok(NULL, ";");
             if (p == NULL)
             {
-                LOG_PRINT(error_e, "Malformed log file [%s]\n", line);
+                LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", srcfilename, line);
                 return;
             }
             /* skip the level */

@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <unistd.h>
 
+#include "main.h"
 #include "app_logprint.h"
 #include "recipe.h"
 #include "utility.h"
@@ -36,8 +37,6 @@
     mystyle.append(this->styleSheet()); \
     this->setStyleSheet(mystyle); \
     }
-
-row recipeMatrix[MAX_RCP_VAR];
 
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.

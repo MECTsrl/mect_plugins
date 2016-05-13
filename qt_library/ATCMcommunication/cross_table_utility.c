@@ -1,5 +1,4 @@
 #include <arpa/inet.h>
-#include <assert.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -158,6 +157,11 @@ size_t fillSyncroArea(void)
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
         LOG_PRINT(verbose_e, "%s\n", line);
+        if (line == '\0')
+        {
+            LOG_PRINT(info_e, "skip empty line [%s]\n", line);
+            continue;
+        }
 
         /* extract the enable/disable field */
         p = strtok_csv(line, SEPARATOR, &r);        
@@ -700,6 +704,7 @@ size_t fillSyncroArea(void)
         elem_nb++;
     }
     fclose(fp);
+    elem_nb--;
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
     LOG_PRINT(info_e, "Loaded %d record stored record S: %d F: %d V: %d\n", elem_nb, store_elem_nb_S, store_elem_nb_F, store_elem_nb_V);
 #else
@@ -1538,7 +1543,7 @@ int formattedWriteToDb(int ctIndex, void * value)
         }
             break;
         default:
-            LOG_PRINT(warning_e, "Unkown %d '%s' decimal %d value %x\n", varNameArray[ctIndex].type, varNameArray[ctIndex].tag, decimal, *(int*)value);
+            LOG_PRINT(info_e, "Unkown %d '%s' decimal %d value %x\n", varNameArray[ctIndex].type, varNameArray[ctIndex].tag, decimal, *(int*)value);
             return writeToDb(ctIndex, value);
             break;
         }
@@ -1852,7 +1857,7 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByCtIndex(ctIndex) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varNameArray[ctIndex].tag);
         return ERROR;
     }
 #endif
@@ -1964,7 +1969,7 @@ char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         return ERROR;
     }
 #endif
@@ -2011,7 +2016,7 @@ char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
         retval = isBlockActive(varname, blockhead);
         if (retval == 1)
         {
-            LOG_PRINT(warning_e, "The variable '%s' come from a block already active\n", varname);
+            LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varname);
             if (SynIndex != NULL && Tag2SynIndex(blockhead, pSynIndex) != 0)
             {
                 LOG_PRINT(error_e, "cannot extract SynIndex for variable '%s'\n", varname);
@@ -2187,7 +2192,7 @@ int writeBlock(const char * varname)
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         return 1;
     }
 #endif
@@ -2509,7 +2514,7 @@ int connectDevice(enum protocol_e protocol, int node)
             }
             else
             {
-                LOG_PRINT(warning_e, "The variable '%s' come from a block already active\n", varNameArray[i].tag);
+                LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varNameArray[i].tag);
             }
         }
     }
@@ -2617,7 +2622,7 @@ int activateVar(const char * varname)
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         return 1;
     }
 #endif
@@ -2672,7 +2677,7 @@ int deactivateVar(const char * varname)
         retval = isBlockActive(varname, blockhead);
         if (retval == 1)
         {
-            LOG_PRINT(warning_e, "The variable '%s' come from a block already active\n", varname);
+            LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varname);
             return 0;
         }
         else if (retval == 0)
@@ -2890,7 +2895,7 @@ int getString(const char* varname, int size, char * string)
 #ifdef ENABLE_DEVICE_DISCONNECT
     if (isDeviceConnectedByVarname(varname) != 1)
     {
-        LOG_PRINT(warning_e, "device disconnected\n");
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
         return 1;
     }
 #endif

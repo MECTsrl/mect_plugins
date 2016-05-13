@@ -16,7 +16,6 @@ extern "C" {
 #include <time.h>
 #include <string.h>
 #include <stdint.h>
-#include "app_var_list.h"
 
 /* ----  Configuration Defines:   ----------------------------------------------------- */
 #define ENABLE_SCREENSAVER /* enable screensaver management */
@@ -35,59 +34,12 @@ extern "C" {
 #endif
 
 /* ----  Local Defines:   ----------------------------------------------------- */
-
-#define HW119_MAX_FIELD_LENGHT 256
-#define HW119_MAX_LINE_LEN (HW119_MAX_FIELD_NB * HW119_MAX_FIELD_LENGHT)
-#define HW119_SEPARATOR ";"
-
 #define BYTE  char
 #define DWORD uint32_t
 #define WORD  uint16_t
 
-/**
- * calculate the address
- */
-#define BIT_OCCUPATION_BYTE 4
-#define REG_OCCUPATION_BYTE 4
-
-/*
- * 4Control reserved area (this area is used by 4C to sign the size of the array)
- */
-#define FC_RESERVED_BASE_BYTE   0
-#define FC_RESERVED_SIZE_BYTE   4
-/**
- * Retentive Register
- */
-#define RET_REG_BASE_BYTE   FC_RESERVED_SIZE_BYTE
-#define RET_REG_SIZE_BYTE   RET_REG_NB * REG_OCCUPATION_BYTE
-/**
- * Retentive Bit
- */
-#define RET_BIT_BASE_BYTE   RET_REG_BASE_BYTE + RET_REG_SIZE_BYTE
-#define RET_BIT_SIZE_BYTE   RET_BIT_NB * BIT_OCCUPATION_BYTE
-/**
- * Mirror Register
- */
-#define MIR_REG_BASE_BYTE   RET_BIT_BASE_BYTE + RET_BIT_SIZE_BYTE
-#define MIR_REG_SIZE_BYTE   MIR_REG_NB * REG_OCCUPATION_BYTE
-/**
- * Retentive Bit
- */
-#define MIR_BIT_BASE_BYTE   MIR_REG_BASE_BYTE + MIR_REG_SIZE_BYTE
-#define MIR_BIT_SIZE_BYTE   MIR_BIT_NB * BIT_OCCUPATION_BYTE
-/**
- * Non Retentive Bit
- */
-#define NRE_BIT_BASE_BYTE   MIR_BIT_BASE_BYTE + MIR_BIT_SIZE_BYTE
-#define NRE_BIT_SIZE_BYTE   NRE_BIT_NB * BIT_OCCUPATION_BYTE
-/**
- * Non Retentive Register
- */
-#define NRE_REG_BASE_BYTE   NRE_BIT_BASE_BYTE + NRE_BIT_SIZE_BYTE
-#define NRE_REG_SIZE_BYTE   NRE_REG_NB * REG_OCCUPATION_BYTE
-
-#define DB_SIZE_ELEM ( RET_REG_NB + RET_BIT_NB + MIR_REG_NB + MIR_BIT_NB + NRE_BIT_NB + NRE_REG_NB + 1)
-#define DB_SIZE_BYTE ( FC_RESERVED_SIZE_BYTE + RET_REG_SIZE_BYTE + RET_BIT_SIZE_BYTE + MIR_REG_SIZE_BYTE + MIR_BIT_SIZE_BYTE + NRE_BIT_SIZE_BYTE + NRE_REG_SIZE_BYTE )
+#define DB_SIZE_ELEM 5472
+#define DB_SIZE_BYTE DB_SIZE_ELEM * 4
 
 /**
  * Base input array into PLC IO layer 0 (ioData)
@@ -148,7 +100,6 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
      (area)[(index)/2 + 1] = (((value) & 0xFFFF0000) >> 16); \
 }
 
-
 /*
 Used when getting a value on the IOSyncroArea which is a WORD area.
 The values are defined as WORD on the plc side
@@ -165,34 +116,6 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define WRITE_IRQ_ON	0x1
 #define WRITE_IRQ_OFF	0x0
 
-#if 0
-#define RESET_ERROR_ON	0x1
-#define RESET_ERROR_OFF	0x0
-
-#define PLC_MAIN_REV 			( SYNCRO_EXCHANGE_BASE_BYTE + SYNCRO_EXCHANGE_WORD_SIZE ) //11002
-#define PLC_MINOR_REV 			( SYNCRO_EXCHANGE_BASE_BYTE + ( 2 * SYNCRO_EXCHANGE_WORD_SIZE ) ) //11004
-#define RESET_RTU_ERROR			( SYNCRO_EXCHANGE_BASE_BYTE + ( 3 * SYNCRO_EXCHANGE_WORD_SIZE ) ) //11006
-#define RESET_TCP_ERROR 		( SYNCRO_EXCHANGE_BASE_BYTE + ( 4 * SYNCRO_EXCHANGE_WORD_SIZE ) ) //11008
-#define RESET_TCPRTU_ERROR 		( SYNCRO_EXCHANGE_BASE_BYTE + ( 5 * SYNCRO_EXCHANGE_WORD_SIZE ) ) //11010
-#define ERROR_COUNTER_NUMBER		64
-#define COUNTER_RTU_ERROR  		( SYNCRO_EXCHANGE_BASE_BYTE + ( 6 * SYNCRO_EXCHANGE_WORD_SIZE ) ) //11012
-#define COUNTER_TCP_ERROR  		( COUNTER_RTU_ERROR + ( ERROR_COUNTER_NUMBER * SYNCRO_EXCHANGE_WORD_SIZE ) + 2 ) //11142
-#define COUNTER_TCPRTU_ERROR  		( COUNTER_TCP_ERROR  + ( ERROR_COUNTER_NUMBER * SYNCRO_EXCHANGE_WORD_SIZE ) + 2 ) //11272
-#define BLACKLIST_RTU_ERROR_WORD  	( COUNTER_TCPRTU_ERROR  + ( ERROR_COUNTER_NUMBER * SYNCRO_EXCHANGE_WORD_SIZE ) + 2) //11402
-#define OTHER_RTU_ERROR_WORD  		( BLACKLIST_RTU_ERROR_WORD  + SYNCRO_EXCHANGE_WORD_SIZE )  //11404
-#define BLACKLIST_TCP_ERROR_WORD 	( OTHER_RTU_ERROR_WORD  + SYNCRO_EXCHANGE_WORD_SIZE )  //11406
-#define OTHER_TCP_ERROR_WORD  		( BLACKLIST_TCP_ERROR_WORD  + SYNCRO_EXCHANGE_WORD_SIZE )  //11408
-#define BLACKLIST_TCPRTU_ERROR_WORD 	( OTHER_TCP_ERROR_WORD  + SYNCRO_EXCHANGE_WORD_SIZE )  //11410
-#define OTHER_TCPRTU_ERROR_WORD  	( BLACKLIST_TCPRTU_ERROR_WORD  + SYNCRO_EXCHANGE_WORD_SIZE )  //11412
-#define ERRORS_SUMMARY				( OTHER_TCPRTU_ERROR_WORD  + SYNCRO_EXCHANGE_WORD_SIZE ) //11414
-#define ERROR_BIT_DWORD_NUMBER		2
-#define BLACKLIST_RTU_BIT_ERROR  	( OTHER_TCPRTU_ERROR_WORD  + SYNCRO_EXCHANGE_WORD_SIZE + 2 ) //11416
-#define OTHER_RTU_BIT_ERROR  		( BLACKLIST_RTU_BIT_ERROR  + ERROR_BIT_DWORD_NUMBER * SYNCRO_EXCHANGE_DWORD_SIZE ) //11420
-#define BLACKLIST_TCP_BIT_ERROR  	( OTHER_RTU_BIT_ERROR  + ERROR_BIT_DWORD_NUMBER * SYNCRO_EXCHANGE_DWORD_SIZE ) //11424
-#define OTHER_TCP_BIT_ERROR  		( BLACKLIST_TCP_BIT_ERROR  + ERROR_BIT_DWORD_NUMBER * SYNCRO_EXCHANGE_DWORD_SIZE ) //11428
-#define BLACKLIST_TCPRTU_BIT_ERROR  	( OTHER_TCP_BIT_ERROR  + ERROR_BIT_DWORD_NUMBER * SYNCRO_EXCHANGE_DWORD_SIZE ) //11432
-#define OTHER_TCPRTU_BIT_ERROR  	( BLACKLIST_TCPRTU_BIT_ERROR  + ERROR_BIT_DWORD_NUMBER * SYNCRO_EXCHANGE_DWORD_SIZE ) //11436
-#endif
 /* (IOSyncroAreaI)[5707])
  * hidle 0
  * inizialised 1
@@ -246,7 +169,6 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define NAME_LEN 3
 #define DESCR_LEN 64
 #define TAG_LEN   (16 + 1)
-//#define TAG_LEN   32
 #define LINE_SIZE 1024
 
 #define MAX_DECIMAL_DIGIT 6
@@ -264,12 +186,13 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define CUSTOM_TREND_DIR   LOCAL_DATA_DIR"/customtrend"
 #define SCREENSHOT_DIR     LOCAL_DATA_DIR"/screenshot"
 
+#define PASSFILE           LOCAL_ETC_DIR"/.pwd"
+#define TAG_TABLE          LOCAL_ETC_DIR"/Tags_Table.csv"
+
 /* WARNING this value is used also into the run time, so if you change the value here you must change it also into vmLib/libHW119.c */
 #define CROSS_TABLE        LOCAL_ETC_DIR"/Crosstable.csv"
 #define COMMUNICATION_FILE LOCAL_ETC_DIR"/Commpar.csv"
 #define CONFIG_FILE        LOCAL_ETC_DIR"/system.ini"
-#define PASSFILE           LOCAL_ETC_DIR"/.pwd"
-#define TAG_TABLE          LOCAL_ETC_DIR"/Tags_Table.csv"
 
 #define APP_SIGN           "/usr/bin/sign"
 #define ZIP_BIN            "/usr/bin/zip"
@@ -447,8 +370,12 @@ typedef union {
 #endif
 
 #ifdef ENABLE_ALARMS
+
 #define EVENT 0
+#define TAG_EVENT "E"
+
 #define ALARM 1
+#define TAG_ALARM "A"
 
 enum alarm_event_e
 {
@@ -458,15 +385,12 @@ enum alarm_event_e
     alarm_none_e
 };
 
-#define DUMP   1
-#define NODUMP 0
-
 #define TAG_FALL "FALL"
 #define TAG_RISE "RISE"
-#define TAG_ACK "ACK"
+#define TAG_ACK  "ACK"
 
-#define TAG_EVENT "E"
-#define TAG_ALARM "A"
+#define DUMP   1
+#define NODUMP 0
 
 typedef struct event_s
 {
@@ -486,4 +410,3 @@ typedef struct event_s
 }
 #endif
 #endif
-

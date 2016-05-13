@@ -18,14 +18,6 @@ namespace Ui {
 class recipe;
 }
 
-#define MAX_RCP_STEP 64
-#define MAX_RCP_VAR  200
-
-typedef struct {
-        u_int16_t ctIndex;
-        u_int32_t step[MAX_RCP_STEP];
-} row;
-
 class recipe : public page
 {
     Q_OBJECT
@@ -64,9 +56,6 @@ private:
     char _familyName[LINE_SIZE];
     char _recipeName[LINE_SIZE];
     int state;
-    //row recipeMatrix[MAX_RCP_VAR];
-    int stepNbMax;
-    int varNbMax;
 };
 
 #endif // RECIPE_H

@@ -11,6 +11,15 @@
 #include <getopt.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <unistd.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#ifdef FORCE_CORE_UNLIMITED
+#include <sys/resource.h>
+#endif
+
 #include "main.h"
 #include "app_logprint.h"
 #include "page0.h"
@@ -62,11 +71,40 @@ static int application_options(int argc, char *argv[])
     return 0;
 }
 
+// Define the function to be called when ctrl-c (SIGINT) signal is sent to process
+void
+signal_callback_handler(int signum)
+{
+    struct sigaction new_action;
+
+    fprintf(stderr, "Caught signal %d\n",signum);
+    fflush(stderr);
+
+    /* TODO: Cleanup and close up stuff here */
+
+    /* Forward the signal */
+    new_action.sa_flags = 0;
+    sigemptyset (&new_action.sa_mask);
+    new_action.sa_handler = SIG_DFL;
+
+    sigaction(signum, &new_action, NULL);
+
+    raise(signum);
+}
+
 /**
  * @brief main
  */
 int main(int argc, char *argv[])
 {
+#ifdef FORCE_CORE_UNLIMITED
+    struct rlimit core_limits;
+    // core dumps may be disallowed by parent of this process; change that
+    fprintf(stderr, "set core limit as unlimited\n");
+    core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
+    setrlimit(RLIMIT_CORE, &core_limits);
+#endif
+
     /* parse the command line option */
     if (application_options(argc, argv) != 0) {
         LOG_PRINT(error_e, "%s: command line option error.\n", __func__);
@@ -78,6 +116,12 @@ int main(int argc, char *argv[])
     LOG_PRINT_NO_INFO(info_e, "# Version: %10s #\n", VERSION);
     LOG_PRINT_NO_INFO(info_e, "#######################\n");
     
+    /* Register signal and signal handler */
+    for (int i = 0; i < _NSIG; i++)
+    {
+        signal(i, signal_callback_handler);
+    }
+
     /* instantiate the GUI application object */
 
     char vncDisplay[64];
@@ -100,11 +144,6 @@ int main(int argc, char *argv[])
 
     /* initialize the application (load configurations and start threads) */
     initialize();
-
-    struct rlimit rlimit;
-    int retval;
-    rlimit.rlim_cur = rlimit.rlim_max = 128 * 1024;
-    retval = setrlimit(RLIMIT_STACK, &rlimit);
 
     /* start page 0 (the splash screen) */
     page0 w;

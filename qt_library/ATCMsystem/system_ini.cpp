@@ -80,7 +80,7 @@ void system_ini::reload()
     int indexlang = 0;
     while (it.hasNext()) {
         QString item = it.next();
-        LOG_PRINT(error_e, " %s\n", item.toAscii().data());
+        LOG_PRINT(verbose_e, " %s\n", item.toAscii().data());
         if (item.endsWith (".qm") == true)
         {
             QString tmplang = item.mid(item.indexOf("languages_") + strlen("languages_"), 2);

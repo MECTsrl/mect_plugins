@@ -318,7 +318,7 @@ void Logger::run()
         /* if is different, close the actual log file then open a new one with the new date*/
         if (CurrentTimeInfo->tm_year < timeinfo->tm_year || CurrentTimeInfo->tm_yday < timeinfo->tm_yday)
         {
-            LOG_PRINT(warning_e, "Data changed: '%d/%d' -> '%d/%d'\n",
+            LOG_PRINT(info_e, "Data changed: '%d/%d' -> '%d/%d'\n",
                       CurrentTimeInfo->tm_year, CurrentTimeInfo->tm_yday,
                       timeinfo->tm_year, timeinfo->tm_yday);
             strftime (CurrentDate, 32, "%Y_%m_%d_%H_%M_%S", timeinfo);
@@ -802,7 +802,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         else
         {
             strcpy(event, TAG_UNK);
-            LOG_PRINT(warning_e, "Unknown event\n");
+            LOG_PRINT(warning_e, "Unknown event for variable '%s'\n", info_descr->tag);
         }
         
         /* prepare the event item */
@@ -1142,7 +1142,7 @@ bool Logger::dumpStorage()
             if (strcmp(value, TAG_NAN) == 0)
             {
                 info_msg.value = NAN;
-                LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
+                LOG_PRINT(warning_e, "invalid value for variable '%s'\n", varNameArray[info_msg.CtIndex].tag);
             }
             else
             {
@@ -1194,7 +1194,7 @@ bool Logger::dumpStorage()
             if (strcmp(value, TAG_NAN) == 0)
             {
                 info_msg.value = NAN;
-                LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
+                LOG_PRINT(warning_e, "invalid value for variable '%s'\n", varNameArray[info_msg.CtIndex].tag);
             }
             else
             {
@@ -1259,7 +1259,7 @@ bool Logger::dumpStorage()
             if (strcmp(value, TAG_NAN) == 0)
             {
                 info_msg.value = NAN;
-                LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
+                LOG_PRINT(warning_e, "invalid value for variable '%s'\n", varNameArray[info_msg.CtIndex].tag);
             }
             else
             {
@@ -1310,7 +1310,7 @@ bool Logger::dumpStorage()
             if (strcmp(value, TAG_NAN) == 0)
             {
                 info_msg.value = NAN;
-                LOG_PRINT(warning_e, "INVALID VALUE!!!!!!!!!!!!!!!!!\n");
+                LOG_PRINT(warning_e, "invalid value for variable '%s'\n", varNameArray[info_msg.CtIndex].tag);
             }
             else
             {
@@ -1337,7 +1337,7 @@ bool Logger::dumpStorage()
 
     if (iF == 0 && iS == 0 && iV == 0 && iX == 0)
     {
-        LOG_PRINT(warning_e, "No signal emitted\n");
+        LOG_PRINT(info_e, "No signal emitted\n");
 #if 0
 #ifndef LOG_DISABLED
         for ( int i = 0; i < 10; i++)

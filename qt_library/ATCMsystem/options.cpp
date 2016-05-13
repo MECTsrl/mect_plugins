@@ -208,7 +208,7 @@ void options::on_pushButtonLanguage_clicked()
     QStringList languageList;
     while (it.hasNext()) {
         QString item = it.next();
-        LOG_PRINT(error_e, " %s\n", item.toAscii().data());
+        LOG_PRINT(verbose_e, " %s\n", item.toAscii().data());
         if (item.endsWith (".qm") == true)
         {
             if (LanguageMap.count() > 0 && LanguageMap.contains(item.mid(item.indexOf("languages_") + strlen("languages_"),2)))
@@ -238,7 +238,7 @@ void options::on_pushButtonLanguage_clicked()
             {
                 strcpy(_language_, value.toAscii().data());
             }
-            LOG_PRINT(error_e, "_language_ '%s'\n", _language_);
+            LOG_PRINT(verbose_e, "_language_ '%s'\n", _language_);
             if(translator->load(QString(":/translations/languages_%1.qm").arg(_language_)))
             {
                 /* install the selected language */
@@ -251,12 +251,12 @@ void options::on_pushButtonLanguage_clicked()
             else
             {
                 QMessageBox::critical(this,trUtf8("Language"), trUtf8("Error lading translation file '%1'").arg(QString(":/translations/languages_%1.qm").arg(_language_)));
-                LOG_PRINT(error_e, "loading language file\n");
+                LOG_PRINT(verbose_e, "loading language file\n");
             }
         }
         else
         {
-            LOG_PRINT(error_e, "No language selected\n");
+            LOG_PRINT(warning_e, "No language selected\n");
         }
         delete sel;
     }

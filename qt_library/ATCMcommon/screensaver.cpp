@@ -16,7 +16,7 @@ void ScreenSaver::restore()
     
     if (fp == NULL)
     {
-        LOG_PRINT(warning_e, "no local configuration file for screensaver found using defaults \n");
+        LOG_PRINT(info_e, "no local configuration file for screensaver found using defaults \n");
         brightness_level = DEF_BACKLIGHT_LEVEL;
     }
     else

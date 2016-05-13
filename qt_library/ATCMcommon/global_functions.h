@@ -61,6 +61,14 @@ int finalize();
 bool CommStart();
 
 #ifdef BUZZER
+
+/**
+ * @brief beep the buzzer for a while in milliseconds
+ *
+ * @return true success, false error
+ */
+bool beep(int duration_ms);
+
 class MyEventFilter: public QObject
 {
 public:
@@ -92,9 +100,9 @@ public:
             delay_ms += (LastTouch.tv_nsec - oldTouch.tv_nsec) / 1000000;
             if (delay_ms > BUZZER_DURATION_MS)
             {
-                if (BuzzerTouch == true && Buzzerfd != -1)
+                if (BuzzerTouch == true)
                 {
-                    ioctl(Buzzerfd, BUZZER_BEEP, BUZZER_DURATION_MS);
+                    beep(BUZZER_DURATION_MS);
                 }
             }
         }
@@ -137,5 +145,39 @@ enum usb_mode_e USBmode();
  * @return true inserted, false not inserted
  */
 bool USBCheck();
+
+
+#define MAX_RCP_STEP 64
+#define MAX_RCP_VAR  200
+
+typedef struct {
+        u_int16_t ctIndex;
+        u_int32_t step[MAX_RCP_STEP];
+} row;
+
+extern int stepNbMax;
+extern int varNbMax;
+extern row recipeMatrix[MAX_RCP_VAR];
+
+/**
+ * @brief load a bi-dimensional recipe
+ *
+ * @return true loaded, false not loaded
+ */
+bool loadRecipe(const char * filename);
+
+/**
+ * @brief write a step of bi-dimensional recipe
+ *
+ * @return 0 written, otherwise not written
+ */
+int writeRecipe(int step);
+
+/**
+ * @brief read a step of bi-dimensional recipe
+ *
+ * @return 0 read, otherwise not read
+ */
+int readRecipe(int step);
 
 #endif // GLOBAL_FUNCTIONS_H

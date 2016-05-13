@@ -43,7 +43,7 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflag
 
     if (fieldsfile[0] == '\0')
     {
-        LOG_PRINT(warning_e, "No filter loaded. Load all logs\n");
+        LOG_PRINT(info_e, "No filter loaded. Load all logs\n");
         for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
         {
             if (*p == ';')

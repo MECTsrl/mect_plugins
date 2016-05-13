@@ -169,7 +169,7 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
     else
     {
         strcpy(event, TAG_UNK);
-        LOG_PRINT(warning_e, "Unknown event\n");
+        LOG_PRINT(error_e, "Unknown event '%s' [%s|%s|%s] for variable '%s'\n", event, TAG_ACK, TAG_RISE, TAG_FALL, msg->tag);
     }
     
     event_t * evt = EventHash.find(msg->tag).value();
@@ -184,7 +184,7 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
     else
     {
         strcpy(event, TAG_UNK);
-        LOG_PRINT(warning_e, "Unknown event\n");
+        LOG_PRINT(error_e, "Unknown event type '%d' [%s|%s] for variable '%s'\n", evt->type, TAG_ALARM, TAG_EVENT, msg->tag);
     }
     
     /* description [date - time] */
@@ -226,8 +226,8 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
 void alarms::addEvent(char * line, bool visibility, char * id, char * style)
 {
     QString text = line;
-        #if 0
-            if (ui->listWidget->findItems(text,Qt::MatchCaseSensitive).count() != 0)
+#if 0
+    if (ui->listWidget->findItems(text,Qt::MatchCaseSensitive).count() != 0)
     {
         LOG_PRINT(info_e, "event alredy present '%s'\n", line);
         return;
@@ -293,13 +293,13 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
         }
         else
         {
-            LOG_PRINT(error_e, "cannot set color\n")
+            LOG_PRINT(error_e, "cannot set color for message '%s'\n", line);
         }
         item->setHidden(!visibility);
     }
     else
     {
-        LOG_PRINT(error_e, "Not visible into the banner\n")
+        LOG_PRINT(info_e, "Not visible into the banner\n");
     }
 }
 

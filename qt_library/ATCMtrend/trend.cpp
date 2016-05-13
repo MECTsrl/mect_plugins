@@ -23,7 +23,6 @@
 #include <qwt_plot_layout.h>
 #include <pthread.h>
 #include <ctype.h>
-#include <assert.h>
 #include <QMessageBox>
 #include <unistd.h>
 
@@ -2111,7 +2110,7 @@ void trend::selected(const QPolygon &pol)
         
         if ((myXfin - myXin) / TrendPeriodSec <= 2)
         {
-            LOG_PRINT(warning_e, "ZOOOOOOOOM TOO BIG. NUBER OF SAMPLE %d\n", (myXfin - myXin) / TrendPeriodSec);
+            LOG_PRINT(warning_e, "zoom too big. number of sample %d\n", (myXfin - myXin) / TrendPeriodSec);
             return;
         }
         else
