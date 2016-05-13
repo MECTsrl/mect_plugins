@@ -42,7 +42,7 @@ extern int active_password;
 #define BUZZER      "/dev/buzzer"
 #include <linux/mxs-buzzer.h>
 #define BUZZER_DURATION_MS 120
-extern int ID_FORCE_BUZZER =-1;
+extern int ID_FORCE_BUZZER;
 
 extern int Buzzerfd;
 extern bool BuzzerTouch;

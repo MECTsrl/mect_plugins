@@ -16,6 +16,7 @@ INCLUDEPATH = .\
                    ../ATCMcommon \
                    ../ATCMinputdialog \
                    ../ATCMalarms \
+                   ../ATCMsystem \
 		   $${INCLUDEPATH}
 
 QMAKE_LIBDIR += \
