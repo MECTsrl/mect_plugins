@@ -11,8 +11,15 @@ rem extract MECT_CONFIGURATOR_REVISION
 FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\MectConfigurator\MectConfiguratorInstaller\Volume\nidist.id') DO SET MECT_CONFIGURATOR_REVISION="%%a"
 
 SET QTPROJECT=0
-SET BUILD=1
-SET INSTALL=1
+SET BUILD=0
+SET INSTALL=0
+SET UPDATE=1
+
+IF %UPDATE% == 1 (
+	SET PREPARE_UPDATE=1
+) ELSE (
+	SET PREPARE_UPDATE=0
+)
 
 echo.
 echo Mect plugin Revision: %REVISION%
@@ -168,7 +175,6 @@ IF %QTPROJECT% == 1 (
 rem ##############################################
 rem UPDATE
 rem ##############################################
-SET PREPARE_UPDATE=0
 IF %INSTALL% == 1 (
 	SET PREPARE_UPDATE=1
 )
@@ -268,6 +274,16 @@ IF %PREPARE_UPDATE% == 1 (
 
 	RD /S /Q Qt485
 	time /t
+
+	echo   Configurator files...
+	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\MectConfigurator.7z" "%OUT_DIR%\MectConfigurator" > %OUT_DIR%\error.log
+	IF ERRORLEVEL 1 (
+	 	echo problem during creation 7z file
+	 	pause
+		cd %ORIGINAL%
+	  	exit
+	)
+	time /t
 )
 
 rem ##############################################
@@ -300,14 +316,6 @@ IF %INSTALL% == 1 (
 	)
 	copy "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf"
 
-	echo   Configurator files...
-	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\MectConfigurator.7z" "%OUT_DIR%\MectConfigurator" > %OUT_DIR%\error.log
-	IF ERRORLEVEL 1 (
-	 	echo problem during creation 7z file
-	 	pause
-		cd %ORIGINAL%
-	  	exit
-	)
 	echo   Fonts files...
 	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Fonts.7z" "%OUT_DIR%\Fonts" > %OUT_DIR%\error.log
 	IF ERRORLEVEL 1 (
@@ -329,9 +337,25 @@ IF %INSTALL% == 1 (
 		exit
 	)
 	time /t
-	rem del /q %OUT_DIR%\Qt485.7z
-	del /q %OUT_DIR%\MectConfigurator.7z
 )
+
+IF %UPDATE% == 1 (
+	echo Preparing update...
+	time /t
+	cd /D "%SETUP_DIR%"
+	"c:\Program Files\NSIS\makensis.exe" /DREVISION=%REVISION% /DMECT_CONFIGURATOR_REVISION=%MECT_CONFIGURATOR_REVISION% UPDATE_MECT_QT.nsi > %OUT_DIR%\error.log 2>&1
+	IF ERRORLEVEL 1 (
+		echo problem during creation of setup
+		pause
+		cd %ORIGINAL%
+		exit
+	)
+	time /t
+)
+
+rem IF EXIST %OUT_DIR%\Qt485.7z del /q %OUT_DIR%\Qt485.7z
+
+IF EXIST %OUT_DIR%\MectConfigurator.7z del /q %OUT_DIR%\MectConfigurator.7z
 
 IF EXIST %OUT_DIR%\error.log del /q %OUT_DIR%\error.log
 
