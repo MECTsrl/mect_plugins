@@ -42,7 +42,7 @@
     mainLayout->addWidget(buttonBox);
 
 	setLayout(mainLayout);
-    setWindowTitle(tr("ATCM Slider Variables"));
+    setWindowTitle(tr("ATCM SpinBox Variables"));
 }
 
 QSize variableandvisibilityDialog::sizeHint() const

@@ -1408,7 +1408,31 @@ int doWrite_PLC_EncoderReset(u_int16_t value);
 int addWrite_PLC_EncoderReset(u_int16_t value);
 int getStatus_PLC_EncoderReset();
  
-#define ID_PLC_Heartbeat 5340
+#define ID_PLC_Reserved_16 5340
+extern u_int16_t PLC_Reserved_16;
+int doWrite_PLC_Reserved_16(u_int16_t value);
+int addWrite_PLC_Reserved_16(u_int16_t value);
+int getStatus_PLC_Reserved_16();
+ 
+#define ID_PLC_Reserved_17 5341
+extern u_int16_t PLC_Reserved_17;
+int doWrite_PLC_Reserved_17(u_int16_t value);
+int addWrite_PLC_Reserved_17(u_int16_t value);
+int getStatus_PLC_Reserved_17();
+ 
+#define ID_PLC_Reserved_18 5342
+extern u_int16_t PLC_Reserved_18;
+int doWrite_PLC_Reserved_18(u_int16_t value);
+int addWrite_PLC_Reserved_18(u_int16_t value);
+int getStatus_PLC_Reserved_18();
+ 
+#define ID_PLC_Reserved_19 5343
+extern u_int16_t PLC_Reserved_19;
+int doWrite_PLC_Reserved_19(u_int16_t value);
+int addWrite_PLC_Reserved_19(u_int16_t value);
+int getStatus_PLC_Reserved_19();
+ 
+#define ID_PLC_Heartbeat 5344
 extern u_int16_t PLC_Heartbeat;
 int doWrite_PLC_Heartbeat(u_int16_t value);
 int addWrite_PLC_Heartbeat(u_int16_t value);
@@ -1455,6 +1479,12 @@ extern int PLC_ResetValues;
 int doWrite_PLC_ResetValues(int value);
 int addWrite_PLC_ResetValues(int value);
 int getStatus_PLC_ResetValues();
+ 
+#define ID_PLC_buzzerOn 5397
+extern int PLC_buzzerOn;
+int doWrite_PLC_buzzerOn(int value);
+int addWrite_PLC_buzzerOn(int value);
+int getStatus_PLC_buzzerOn();
  
 #ifdef __cplusplus
 }

@@ -1740,7 +1740,10 @@ void page::setAlarmsBuzzer(int period_ms)
     if (index < _active_alarms_events_.count() && _active_alarms_events_.at(index)->isack == false)
     {
         LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", period_ms/2);
-        beep(period_ms/2);
+        if (_active_alarms_events_.at(index)->type == ALARM)
+        {
+            beep(period_ms/2);
+        }
     }
     else
     {

@@ -5,7 +5,7 @@
 # @section LICENSE
 # Copyright Mect s.r.l. 2013
 #
-# @brief Project file for qmake
+# @brief Qmake project file for TPAC1007_04_AB
 #
 
 contains(QMAKE_HOST.os,Windows){
@@ -99,27 +99,28 @@ SOURCES += \
         pages.cpp
 
 !isEmpty(ATCM_TEMPLATE_BASE_DIR) {
-# pre-elabortation
-check_missing_file.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/cleanmissingpage.pl $$_PRO_FILE_ $$_PRO_FILE_PWD_
-check_undeclared_variable.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_cross_var.pl $$_PRO_FILE_PWD_
-check_gotopage_bind.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/connectbutton.pl $$_PRO_FILE_PWD_
+	# pre-elabortation
+	check_missing_file.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/cleanmissingpage.pl $$_PRO_FILE_ $$_PRO_FILE_PWD_
+	check_undeclared_variable.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_cross_var.pl $$_PRO_FILE_PWD_
+	check_gotopage_bind.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/connectbutton.pl $$_PRO_FILE_PWD_
+	check_systemini.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_systemini.pl $$_PRO_FILE_ $$_PRO_FILE_PWD_
 
-QMAKE_EXTRA_TARGETS += check_missing_file check_undeclared_variable check_gotopage_bind
-PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind
+	QMAKE_EXTRA_TARGETS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini
+	PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini
 }
 
 # language
 !isEmpty(QT_LUPDATE_PATH) {
-update.commands = $${QT_LUPDATE_PATH}/lupdate $$_PRO_FILE_
-updates.depends = $$SOURCES $$HEADERS $$FORMS $$TRANSLATIONS
-release.depends = update
-        QMAKE_EXTRA_TARGETS += update
-        PRE_TARGETDEPS += update
+	update.commands = $${QT_LUPDATE_PATH}/lupdate $$_PRO_FILE_
+	updates.depends = $$SOURCES $$HEADERS $$FORMS $$TRANSLATIONS
+	release.depends = update
+	QMAKE_EXTRA_TARGETS += update
+	PRE_TARGETDEPS += update
 }
 !isEmpty(QT_LRELEASE_PATH) {
-        release.commands = $${QT_LRELEASE_PATH}/lrelease $$_PRO_FILE_
-        QMAKE_EXTRA_TARGETS += release
-        PRE_TARGETDEPS += release
+	release.commands = $${QT_LRELEASE_PATH}/lrelease $$_PRO_FILE_
+	QMAKE_EXTRA_TARGETS += release
+	PRE_TARGETDEPS += release
 }
 
 RESOURCES += \
@@ -130,6 +131,8 @@ OTHER_FILES += \
     languages_en.ts
 
 include(./languages.pri)
+
+TYPE = "TPAC1007_04_AB"
 
 # display size
 MODEL = "%Model%"

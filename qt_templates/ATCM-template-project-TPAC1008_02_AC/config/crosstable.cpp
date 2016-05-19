@@ -233,9 +233,12 @@ int16_t PLC_AnIn_1 = 0;
 int16_t PLC_AnIn_2 = 0;
 int16_t PLC_AnIn_3 = 0;
 int16_t PLC_AnIn_4 = 0;
-u_int32_t PLC_EncoderCount = 0;
-u_int32_t PLC_CaptureTime1 = 0;
-u_int32_t PLC_CaptureTime2 = 0;
+u_int16_t PLC_EncoderCo_Lo = 0;
+u_int16_t PLC_EncoderCo_Hi = 0;
+u_int16_t PLC_CaptureT1_Lo = 0;
+u_int16_t PLC_CaptureT1_Hi = 0;
+u_int16_t PLC_CaptureT2_Lo = 0;
+u_int16_t PLC_CaptureT2_Hi = 0;
 u_int16_t PLC_RPM = 0;
 int16_t PLC_Tamb = 0;
 u_int16_t PLC_EnableEnc = 0;
@@ -273,6 +276,7 @@ float PLC_timeWin = 0;
 u_int16_t PLC_Version = 0;
 u_int16_t PLC_EngineStatus = 0;
 int PLC_ResetValues = 0;
+int PLC_buzzerOn = 0;
 
 
 int doWrite_RTU0_TYPE_PORT(u_int32_t value)
@@ -4253,57 +4257,111 @@ return getStatus(ID_PLC_AnIn_4);
 }
 
 
-int doWrite_PLC_EncoderCount(u_int32_t value)
+int doWrite_PLC_EncoderCo_Lo(u_int16_t value)
 {
-return doWrite(ID_PLC_EncoderCount,  &value);
+return doWrite(ID_PLC_EncoderCo_Lo,  &value);
 }
 
 
-int addWrite_PLC_EncoderCount(u_int32_t value)
+int addWrite_PLC_EncoderCo_Lo(u_int16_t value)
 {
-return addWrite(ID_PLC_EncoderCount, &value);
+return addWrite(ID_PLC_EncoderCo_Lo, &value);
 }
 
 
-int getStatus_PLC_EncoderCount()
+int getStatus_PLC_EncoderCo_Lo()
 {
-return getStatus(ID_PLC_EncoderCount);
+return getStatus(ID_PLC_EncoderCo_Lo);
 }
 
 
-int doWrite_PLC_CaptureTime1(u_int32_t value)
+int doWrite_PLC_EncoderCo_Hi(u_int16_t value)
 {
-return doWrite(ID_PLC_CaptureTime1,  &value);
+return doWrite(ID_PLC_EncoderCo_Hi,  &value);
 }
 
 
-int addWrite_PLC_CaptureTime1(u_int32_t value)
+int addWrite_PLC_EncoderCo_Hi(u_int16_t value)
 {
-return addWrite(ID_PLC_CaptureTime1, &value);
+return addWrite(ID_PLC_EncoderCo_Hi, &value);
 }
 
 
-int getStatus_PLC_CaptureTime1()
+int getStatus_PLC_EncoderCo_Hi()
 {
-return getStatus(ID_PLC_CaptureTime1);
+return getStatus(ID_PLC_EncoderCo_Hi);
 }
 
 
-int doWrite_PLC_CaptureTime2(u_int32_t value)
+int doWrite_PLC_CaptureT1_Lo(u_int16_t value)
 {
-return doWrite(ID_PLC_CaptureTime2,  &value);
+return doWrite(ID_PLC_CaptureT1_Lo,  &value);
 }
 
 
-int addWrite_PLC_CaptureTime2(u_int32_t value)
+int addWrite_PLC_CaptureT1_Lo(u_int16_t value)
 {
-return addWrite(ID_PLC_CaptureTime2, &value);
+return addWrite(ID_PLC_CaptureT1_Lo, &value);
 }
 
 
-int getStatus_PLC_CaptureTime2()
+int getStatus_PLC_CaptureT1_Lo()
 {
-return getStatus(ID_PLC_CaptureTime2);
+return getStatus(ID_PLC_CaptureT1_Lo);
+}
+
+
+int doWrite_PLC_CaptureT1_Hi(u_int16_t value)
+{
+return doWrite(ID_PLC_CaptureT1_Hi,  &value);
+}
+
+
+int addWrite_PLC_CaptureT1_Hi(u_int16_t value)
+{
+return addWrite(ID_PLC_CaptureT1_Hi, &value);
+}
+
+
+int getStatus_PLC_CaptureT1_Hi()
+{
+return getStatus(ID_PLC_CaptureT1_Hi);
+}
+
+
+int doWrite_PLC_CaptureT2_Lo(u_int16_t value)
+{
+return doWrite(ID_PLC_CaptureT2_Lo,  &value);
+}
+
+
+int addWrite_PLC_CaptureT2_Lo(u_int16_t value)
+{
+return addWrite(ID_PLC_CaptureT2_Lo, &value);
+}
+
+
+int getStatus_PLC_CaptureT2_Lo()
+{
+return getStatus(ID_PLC_CaptureT2_Lo);
+}
+
+
+int doWrite_PLC_CaptureT2_Hi(u_int16_t value)
+{
+return doWrite(ID_PLC_CaptureT2_Hi,  &value);
+}
+
+
+int addWrite_PLC_CaptureT2_Hi(u_int16_t value)
+{
+return addWrite(ID_PLC_CaptureT2_Hi, &value);
+}
+
+
+int getStatus_PLC_CaptureT2_Hi()
+{
+return getStatus(ID_PLC_CaptureT2_Hi);
 }
 
 
@@ -4973,6 +5031,24 @@ return getStatus(ID_PLC_ResetValues);
 }
 
 
+int doWrite_PLC_buzzerOn(int value)
+{
+return doWrite(ID_PLC_buzzerOn,  &value);
+}
+
+
+int addWrite_PLC_buzzerOn(int value)
+{
+return addWrite(ID_PLC_buzzerOn, &value);
+}
+
+
+int getStatus_PLC_buzzerOn()
+{
+return getStatus(ID_PLC_buzzerOn);
+}
+
+
 int update_all(void)
 {
 int retval = 0;
@@ -5197,9 +5273,12 @@ retval += readFromDb(ID_PLC_AnIn_1, &PLC_AnIn_1);
 retval += readFromDb(ID_PLC_AnIn_2, &PLC_AnIn_2);
 retval += readFromDb(ID_PLC_AnIn_3, &PLC_AnIn_3);
 retval += readFromDb(ID_PLC_AnIn_4, &PLC_AnIn_4);
-retval += readFromDb(ID_PLC_EncoderCount, &PLC_EncoderCount);
-retval += readFromDb(ID_PLC_CaptureTime1, &PLC_CaptureTime1);
-retval += readFromDb(ID_PLC_CaptureTime2, &PLC_CaptureTime2);
+retval += readFromDb(ID_PLC_EncoderCo_Lo, &PLC_EncoderCo_Lo);
+retval += readFromDb(ID_PLC_EncoderCo_Hi, &PLC_EncoderCo_Hi);
+retval += readFromDb(ID_PLC_CaptureT1_Lo, &PLC_CaptureT1_Lo);
+retval += readFromDb(ID_PLC_CaptureT1_Hi, &PLC_CaptureT1_Hi);
+retval += readFromDb(ID_PLC_CaptureT2_Lo, &PLC_CaptureT2_Lo);
+retval += readFromDb(ID_PLC_CaptureT2_Hi, &PLC_CaptureT2_Hi);
 retval += readFromDb(ID_PLC_RPM, &PLC_RPM);
 retval += readFromDb(ID_PLC_Tamb, &PLC_Tamb);
 retval += readFromDb(ID_PLC_EnableEnc, &PLC_EnableEnc);
@@ -5237,5 +5316,6 @@ retval += readFromDb(ID_PLC_timeWin, &PLC_timeWin);
 retval += readFromDb(ID_PLC_Version, &PLC_Version);
 retval += readFromDb(ID_PLC_EngineStatus, &PLC_EngineStatus);
 retval += readFromDb(ID_PLC_ResetValues, &PLC_ResetValues);
+retval += readFromDb(ID_PLC_buzzerOn, &PLC_buzzerOn);
 return retval;
 }

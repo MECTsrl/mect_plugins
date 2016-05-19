@@ -96,6 +96,7 @@ typedef struct event_descr_e
     QDateTime * ack;
     bool status;
     bool isack;
+    char type;
 } event_descr_t;
 
 extern QList<event_descr_e *> _active_alarms_events_;

@@ -708,6 +708,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         info_descr->end = NULL;
         info_descr->ack = NULL;
         info_descr->status = alarm_fall_e;
+        info_descr->type = item->type;
         _active_alarms_events_.append(info_descr);
         
         LOG_PRINT(verbose_e, "New event for %s\n", info_descr->tag);

@@ -42,7 +42,7 @@
     mainLayout->addWidget(buttonBox);
 
 	setLayout(mainLayout);
-    setWindowTitle(tr("ATCM Label Variables"));
+    setWindowTitle(tr("ATCM Led Variables"));
 }
 
 QSize variableandvisibilityDialog::sizeHint() const

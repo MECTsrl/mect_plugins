@@ -106,7 +106,7 @@ QComboBox
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -1003,6 +1003,11 @@ QComboBox
              <string>230400</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>225000</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item row="1" column="0" alignment="Qt::AlignHCenter">
@@ -1242,6 +1247,11 @@ QComboBox
            <item>
             <property name="text">
              <string>230400</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>225000</string>
             </property>
            </item>
           </widget>
@@ -1534,6 +1544,11 @@ QComboBox
            <item>
             <property name="text">
              <string>230400</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>225000</string>
             </property>
            </item>
           </widget>
@@ -1855,6 +1870,11 @@ QComboBox
            <item>
             <property name="text">
              <string>230400</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>225000</string>
             </property>
            </item>
           </widget>
@@ -2275,31 +2295,11 @@ QComboBox
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <item>
             <property name="text">
-             <string>0</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
              <string>125000</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>250000</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>500000</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>1000000</string>
             </property>
            </item>
           </widget>
@@ -2362,11 +2362,26 @@ QComboBox
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <item>
             <property name="text">
              <string>0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>10000</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>20000</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>50000</string>
             </property>
            </item>
            <item>
@@ -2382,6 +2397,11 @@ QComboBox
            <item>
             <property name="text">
              <string>500000</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>800000</string>
             </property>
            </item>
            <item>

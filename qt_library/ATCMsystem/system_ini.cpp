@@ -118,34 +118,240 @@ void system_ini::reload()
     ui->pushButton_FastLogPeriod->setText(settings.value("SYSTEM/fast_log_period_s").toString());
     ui->pushButton_MaxLogSpace->setText(settings.value("SYSTEM/max_log_space_MB").toString());
     ui->pushButton_TraceWindow->setText(settings.value("SYSTEM/trace_window_s").toString());
-    ui->comboBox_Baudrate_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/baudrate").toString()));
-    ui->comboBox_Databits_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/databits").toString()));
-    ui->comboBox_Parity_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/parity").toString()));
-    ui->comboBox_Stopbits_SERIAL_PORT_0->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_0->findText(settings.value("SERIAL_PORT_0/stopbits").toString()));
+
+    int index;
+    QString value;
+
+    value = settings.value("SERIAL_PORT_0/baudrate").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Baudrate_SERIAL_PORT_0->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'baudrate' parameter for SERIAL_PORT_0 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_SERIAL_PORT_0->itemText(index)));
+        }
+        ui->comboBox_Baudrate_SERIAL_PORT_0->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_0/databits").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Databits_SERIAL_PORT_0->findText(value);
+        if ( index < 0)
+        {
+            index = 3;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'databits' parameter for SERIAL_PORT_0 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Databits_SERIAL_PORT_0->itemText(index)));
+        }
+        ui->comboBox_Databits_SERIAL_PORT_0->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_0/parity").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Parity_SERIAL_PORT_0->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'parity' parameter for SERIAL_PORT_0 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Parity_SERIAL_PORT_0->itemText(index)));
+        }
+        ui->comboBox_Parity_SERIAL_PORT_0->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_0/stopbits").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Stopbits_SERIAL_PORT_0->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for SERIAL_PORT_0 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Stopbits_SERIAL_PORT_0->itemText(index)));
+        }
+        ui->comboBox_Stopbits_SERIAL_PORT_0->setCurrentIndex(index);
+    }
+
     ui->pushButton_Silence_SERIAL_PORT_0->setText(settings.value("SERIAL_PORT_0/silence_ms").toString());
     ui->pushButton_Timeout_SERIAL_PORT_0->setText(settings.value("SERIAL_PORT_0/timeout_ms").toString());
-    ui->comboBox_Baudrate_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/baudrate").toString()));
-    ui->comboBox_Databits_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/databits").toString()));
-    ui->comboBox_Parity_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/parity").toString()));
-    ui->comboBox_Stopbits_SERIAL_PORT_1->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_1->findText(settings.value("SERIAL_PORT_1/stopbits").toString()));
+
+    value = settings.value("SERIAL_PORT_1/baudrate").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Baudrate_SERIAL_PORT_1->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'baudrate' parameter for SERIAL_PORT_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_SERIAL_PORT_1->itemText(index)));
+        }
+        ui->comboBox_Baudrate_SERIAL_PORT_1->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_1/databits").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Databits_SERIAL_PORT_1->findText(value);
+        if ( index < 0)
+        {
+            index = 3;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'databits' parameter for SERIAL_PORT_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Databits_SERIAL_PORT_1->itemText(index)));
+        }
+        ui->comboBox_Databits_SERIAL_PORT_1->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_1/parity").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Parity_SERIAL_PORT_1->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'parity' parameter for SERIAL_PORT_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Parity_SERIAL_PORT_1->itemText(index)));
+        }
+        ui->comboBox_Parity_SERIAL_PORT_1->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_1/stopbits").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Stopbits_SERIAL_PORT_1->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for SERIAL_PORT_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Stopbits_SERIAL_PORT_1->itemText(index)));
+        }
+        ui->comboBox_Stopbits_SERIAL_PORT_1->setCurrentIndex(index);
+    }
+
     ui->pushButton_Silence_SERIAL_PORT_1->setText(settings.value("SERIAL_PORT_1/silence_ms").toString());
     ui->pushButton_Timeout_SERIAL_PORT_1->setText(settings.value("SERIAL_PORT_1/timeout_ms").toString());
-    ui->comboBox_Baudrate_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/baudrate").toString()));
-    ui->comboBox_Databits_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/databits").toString()));
-    ui->comboBox_Parity_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/parity").toString()));
-    ui->comboBox_Stopbits_SERIAL_PORT_2->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_2->findText(settings.value("SERIAL_PORT_2/stopbits").toString()));
+
+    value = settings.value("SERIAL_PORT_2/baudrate").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Baudrate_SERIAL_PORT_2->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'baudrate' parameter for SERIAL_PORT_2 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_SERIAL_PORT_2->itemText(index)));
+        }
+        ui->comboBox_Baudrate_SERIAL_PORT_2->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_2/databits").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Databits_SERIAL_PORT_2->findText(value);
+        if ( index < 0)
+        {
+            index = 3;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'databits' parameter for SERIAL_PORT_2 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Databits_SERIAL_PORT_2->itemText(index)));
+        }
+        ui->comboBox_Databits_SERIAL_PORT_2->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_2/parity").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Parity_SERIAL_PORT_2->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'parity' parameter for SERIAL_PORT_2 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Parity_SERIAL_PORT_2->itemText(index)));
+        }
+        ui->comboBox_Parity_SERIAL_PORT_2->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_2/stopbits").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Stopbits_SERIAL_PORT_2->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for SERIAL_PORT_2 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Stopbits_SERIAL_PORT_2->itemText(index)));
+        }
+        ui->comboBox_Stopbits_SERIAL_PORT_2->setCurrentIndex(index);
+    }
+
     ui->pushButton_Silence_SERIAL_PORT_2->setText(settings.value("SERIAL_PORT_2/silence_ms").toString());
     ui->pushButton_Timeout_SERIAL_PORT_2->setText(settings.value("SERIAL_PORT_2/timeout_ms").toString());
-    ui->comboBox_Baudrate_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Baudrate_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/baudrate").toString()));
-    ui->comboBox_Databits_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Databits_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/databits").toString()));
-    ui->comboBox_Parity_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Parity_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/parity").toString()));
-    ui->comboBox_Stopbits_SERIAL_PORT_3->setCurrentIndex(ui->comboBox_Stopbits_SERIAL_PORT_3->findText(settings.value("SERIAL_PORT_3/stopbits").toString()));
+
+    value = settings.value("SERIAL_PORT_3/baudrate").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Baudrate_SERIAL_PORT_3->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'baudrate' parameter for SERIAL_PORT_3 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_SERIAL_PORT_3->itemText(index)));
+        }
+        ui->comboBox_Baudrate_SERIAL_PORT_3->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_3/databits").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Databits_SERIAL_PORT_3->findText(value);
+        if ( index < 0)
+        {
+            index = 3;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'databits' parameter for SERIAL_PORT_3 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Databits_SERIAL_PORT_3->itemText(index)));
+        }
+        ui->comboBox_Databits_SERIAL_PORT_3->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_3/parity").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Parity_SERIAL_PORT_3->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'parity' parameter for SERIAL_PORT_3 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Parity_SERIAL_PORT_3->itemText(index)));
+        }
+        ui->comboBox_Parity_SERIAL_PORT_3->setCurrentIndex(index);
+    }
+
+    value = settings.value("SERIAL_PORT_3/stopbits").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Stopbits_SERIAL_PORT_3->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for SERIAL_PORT_3 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Stopbits_SERIAL_PORT_3->itemText(index)));
+        }
+        ui->comboBox_Stopbits_SERIAL_PORT_3->setCurrentIndex(index);
+    }
+
     ui->pushButton_Silence_SERIAL_PORT_3->setText(settings.value("SERIAL_PORT_3/silence_ms").toString());
     ui->pushButton_Timeout_SERIAL_PORT_3->setText(settings.value("SERIAL_PORT_3/timeout_ms").toString());
+
     ui->pushButton_Silence_TCP_IP_PORT->setText(settings.value("TCP_IP_PORT/silence_ms").toString());
     ui->pushButton_Timeout_TCP_IP_PORT->setText(settings.value("TCP_IP_PORT/timeout_ms").toString());
-    ui->comboBox_Baudrate_CANOPEN_0->setCurrentIndex(ui->comboBox_Baudrate_CANOPEN_0->findText(settings.value("CANOPEN_0/baudrate").toString()));
-    ui->comboBox_Baudrate_CANOPEN_1->setCurrentIndex(ui->comboBox_Baudrate_CANOPEN_1->findText(settings.value("CANOPEN_1/baudrate").toString()));
+
+    value = settings.value("CANOPEN_0/baudrate").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Baudrate_CANOPEN_0->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for CANOPEN_0 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_CANOPEN_0->itemText(index)));
+        }
+        ui->comboBox_Baudrate_CANOPEN_0->setCurrentIndex(index);
+    }
+
+    value = settings.value("CANOPEN_1/baudrate").toString();
+    if (value.length() > 0)
+    {
+        index = ui->comboBox_Baudrate_CANOPEN_1->findText(value);
+        if ( index < 0)
+        {
+            index = 0;
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for CANOPEN_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_CANOPEN_1->itemText(index)));
+        }
+        ui->comboBox_Baudrate_CANOPEN_1->setCurrentIndex(index);
+    }
 }
 
 /**

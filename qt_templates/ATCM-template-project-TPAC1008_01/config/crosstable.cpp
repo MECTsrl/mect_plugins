@@ -240,9 +240,7 @@ int16_t PLC_AnOut_1 = 0;
 int16_t PLC_AnOut_2 = 0;
 u_int16_t PLC_AnInConf = 0;
 u_int16_t PLC_AnOutConf = 0;
-u_int16_t PLC_ControlWord = 0;
-u_int16_t PLC_EncPreset_Lo = 0;
-u_int16_t PLC_EncPreset_Hi = 0;
+u_int16_t PLC_EnableEnc = 0;
 int CH0_NETRUN = 0;
 int CH0_NETGOOD = 0;
 u_int32_t CH0_NETERR = 0;
@@ -260,6 +258,7 @@ float PLC_timeWin = 0;
 u_int16_t PLC_Version = 0;
 u_int16_t PLC_EngineStatus = 0;
 int PLC_ResetValues = 0;
+int PLC_buzzerOn = 0;
 
 
 int doWrite_RTU0_TYPE_PORT(u_int32_t value)
@@ -4366,57 +4365,21 @@ return getStatus(ID_PLC_AnOutConf);
 }
 
 
-int doWrite_PLC_ControlWord(u_int16_t value)
+int doWrite_PLC_EnableEnc(u_int16_t value)
 {
-return doWrite(ID_PLC_ControlWord,  &value);
+return doWrite(ID_PLC_EnableEnc,  &value);
 }
 
 
-int addWrite_PLC_ControlWord(u_int16_t value)
+int addWrite_PLC_EnableEnc(u_int16_t value)
 {
-return addWrite(ID_PLC_ControlWord, &value);
+return addWrite(ID_PLC_EnableEnc, &value);
 }
 
 
-int getStatus_PLC_ControlWord()
+int getStatus_PLC_EnableEnc()
 {
-return getStatus(ID_PLC_ControlWord);
-}
-
-
-int doWrite_PLC_EncPreset_Lo(u_int16_t value)
-{
-return doWrite(ID_PLC_EncPreset_Lo,  &value);
-}
-
-
-int addWrite_PLC_EncPreset_Lo(u_int16_t value)
-{
-return addWrite(ID_PLC_EncPreset_Lo, &value);
-}
-
-
-int getStatus_PLC_EncPreset_Lo()
-{
-return getStatus(ID_PLC_EncPreset_Lo);
-}
-
-
-int doWrite_PLC_EncPreset_Hi(u_int16_t value)
-{
-return doWrite(ID_PLC_EncPreset_Hi,  &value);
-}
-
-
-int addWrite_PLC_EncPreset_Hi(u_int16_t value)
-{
-return addWrite(ID_PLC_EncPreset_Hi, &value);
-}
-
-
-int getStatus_PLC_EncPreset_Hi()
-{
-return getStatus(ID_PLC_EncPreset_Hi);
+return getStatus(ID_PLC_EnableEnc);
 }
 
 
@@ -4726,6 +4689,24 @@ return getStatus(ID_PLC_ResetValues);
 }
 
 
+int doWrite_PLC_buzzerOn(int value)
+{
+return doWrite(ID_PLC_buzzerOn,  &value);
+}
+
+
+int addWrite_PLC_buzzerOn(int value)
+{
+return addWrite(ID_PLC_buzzerOn, &value);
+}
+
+
+int getStatus_PLC_buzzerOn()
+{
+return getStatus(ID_PLC_buzzerOn);
+}
+
+
 int update_all(void)
 {
 int retval = 0;
@@ -4957,9 +4938,7 @@ retval += readFromDb(ID_PLC_AnOut_1, &PLC_AnOut_1);
 retval += readFromDb(ID_PLC_AnOut_2, &PLC_AnOut_2);
 retval += readFromDb(ID_PLC_AnInConf, &PLC_AnInConf);
 retval += readFromDb(ID_PLC_AnOutConf, &PLC_AnOutConf);
-retval += readFromDb(ID_PLC_ControlWord, &PLC_ControlWord);
-retval += readFromDb(ID_PLC_EncPreset_Lo, &PLC_EncPreset_Lo);
-retval += readFromDb(ID_PLC_EncPreset_Hi, &PLC_EncPreset_Hi);
+retval += readFromDb(ID_PLC_EnableEnc, &PLC_EnableEnc);
 retval += readFromDb(ID_CH0_NETRUN, &CH0_NETRUN);
 retval += readFromDb(ID_CH0_NETGOOD, &CH0_NETGOOD);
 retval += readFromDb(ID_CH0_NETERR, &CH0_NETERR);
@@ -4977,5 +4956,6 @@ retval += readFromDb(ID_PLC_timeWin, &PLC_timeWin);
 retval += readFromDb(ID_PLC_Version, &PLC_Version);
 retval += readFromDb(ID_PLC_EngineStatus, &PLC_EngineStatus);
 retval += readFromDb(ID_PLC_ResetValues, &PLC_ResetValues);
+retval += readFromDb(ID_PLC_buzzerOn, &PLC_buzzerOn);
 return retval;
 }

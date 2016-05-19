@@ -1384,23 +1384,11 @@ int doWrite_PLC_AnOutConf(u_int16_t value);
 int addWrite_PLC_AnOutConf(u_int16_t value);
 int getStatus_PLC_AnOutConf();
  
-#define ID_PLC_ControlWord 5336
-extern u_int16_t PLC_ControlWord;
-int doWrite_PLC_ControlWord(u_int16_t value);
-int addWrite_PLC_ControlWord(u_int16_t value);
-int getStatus_PLC_ControlWord();
- 
-#define ID_PLC_EncPreset_Lo 5337
-extern u_int16_t PLC_EncPreset_Lo;
-int doWrite_PLC_EncPreset_Lo(u_int16_t value);
-int addWrite_PLC_EncPreset_Lo(u_int16_t value);
-int getStatus_PLC_EncPreset_Lo();
- 
-#define ID_PLC_EncPreset_Hi 5338
-extern u_int16_t PLC_EncPreset_Hi;
-int doWrite_PLC_EncPreset_Hi(u_int16_t value);
-int addWrite_PLC_EncPreset_Hi(u_int16_t value);
-int getStatus_PLC_EncPreset_Hi();
+#define ID_PLC_EncReset 5336
+extern u_int16_t PLC_EncReset;
+int doWrite_PLC_EncReset(u_int16_t value);
+int addWrite_PLC_EncReset(u_int16_t value);
+int getStatus_PLC_EncReset();
  
 #define ID_CH0_NETRUN 5342
 extern int CH0_NETRUN;
@@ -1503,6 +1491,12 @@ extern int PLC_ResetValues;
 int doWrite_PLC_ResetValues(int value);
 int addWrite_PLC_ResetValues(int value);
 int getStatus_PLC_ResetValues();
+ 
+#define ID_PLC_buzzerOn 5397
+extern int PLC_buzzerOn;
+int doWrite_PLC_buzzerOn(int value);
+int addWrite_PLC_buzzerOn(int value);
+int getStatus_PLC_buzzerOn();
  
 #ifdef __cplusplus
 }
