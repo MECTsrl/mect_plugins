@@ -74,6 +74,7 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
 #endif
 
     setMapping(m_mapping);
+    m_remapping = false;
 
     /*
      * put there a default stylesheet
@@ -535,6 +536,7 @@ void ATCMcombobox::setApparence(const enum QFrame::Shadow apparence)
 bool ATCMcombobox::setMapping(QString mapping)
 {
     m_mapping = mapping;
+    this->clear();
     if (m_mapping.length() > 0)
     {
         QStringList map = m_mapping.split(";");
@@ -548,7 +550,6 @@ bool ATCMcombobox::setMapping(QString mapping)
     }
     else
     {
-        this->clear();
         return false;
     }
     return true;
@@ -605,6 +606,20 @@ bool ATCMcombobox::setcomboValue()
     QString mapped = value2mapped(m_value);
     int index = this->findText(mapped);
 
+    if (index >= 0)
+    {
+        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        if (m_remapping == true)
+        {
+            m_remapping = false;
+    #ifdef TARGET_ARM
+            LOG_PRINT(info_e, "Remapping...\n");
+    #endif
+            setMapping(m_mapping);
+        }
+        this->setCurrentIndex(index);
+    }
+
     if (index == this->currentIndex() )
     {
         return true;
@@ -625,25 +640,32 @@ bool ATCMcombobox::setcomboValue()
         LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
 #endif
         /* if is not managed, put an empty string */
-        this->setEditable(true);
         /* if the actual status is an error, display error message */
         if (m_status == ERROR)
         {
+            this->setEditable(true);
             this->setEditText(mapped);
 #ifdef TARGET_ARM
             LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
 #endif
         }
-        /* if the actual status is not expected, display an empty value */
+        /* if the actual status is not expected, display the value */
         else
         {
 #ifdef TARGET_ARM
-            LOG_PRINT(warning_e, "Cannot found data '%s' into selection '%s'.\n", mapped.toAscii().data(), m_mapping.toAscii().data());
+            LOG_PRINT(error_e,"unkown value '%s' for variable '%s'\n", m_value.toAscii().data(), m_variable.toAscii().data());
 #endif
-            this->setEditText("");
-#ifdef TARGET_ARM
-            LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
-#endif
+            index = this->findText(m_value);
+            if (index < 0)
+            {
+                this->addItem(m_value);
+                index = this->findText(m_value);
+            }
+            disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+            this->setCurrentIndex(index);
+            connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+            m_remapping = true;
+            //this->setEditText(m_value);
         }
         return false;
     }

@@ -155,6 +155,8 @@ class
 
 		bool m_initialization;
 
+        bool m_remapping;
+
 		//atcmcomboboxTaskMenu * m_prova;
 	protected:
 		void paintEvent(QPaintEvent *event);
