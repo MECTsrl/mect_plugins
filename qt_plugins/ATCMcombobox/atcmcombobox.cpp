@@ -618,6 +618,7 @@ bool ATCMcombobox::setcomboValue()
             setMapping(m_mapping);
         }
         this->setCurrentIndex(index);
+        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
     }
 
     if (index == this->currentIndex() )
