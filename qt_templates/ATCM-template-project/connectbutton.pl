@@ -1,9 +1,12 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
 
 # open page*.ui
 # check if into the section "connections" is presents all buttons with the pageName not empty
 
 # check all the page*.ui files
+my $file;
 foreach $file (glob( 'page*.ui' ))
 {
 	my $page_name = '';
@@ -52,8 +55,7 @@ foreach $file (glob( 'page*.ui' ))
 				if ($line =~ /<sender>([A-z0-9]+)<\/sender>/)
 				{
 					my @buttonlist2;
-					#print "INIZIO" . join(", ", @buttonlist) . "\n";
-					#print "removing " . $1 . "\n";
+					my $button;
 					foreach $button (@buttonlist)
 					{
 						if ($button ne $1)
@@ -62,7 +64,6 @@ foreach $file (glob( 'page*.ui' ))
 						}
 					}
 					@buttonlist = @buttonlist2;
-					#print "FINE" . join(", ", @buttonlist) . "\n";
 				}
 				print TMP $line . "\n";
 				$line = <INFILE>;
@@ -78,6 +79,7 @@ foreach $file (glob( 'page*.ui' ))
 			{
 				print TMP " <connections>\n";
 			}
+			my $button;
 			foreach $button (@buttonlist)
 			{
 				print "Connetting button '" . $button . "'\n";

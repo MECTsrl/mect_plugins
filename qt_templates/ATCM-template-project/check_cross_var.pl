@@ -58,7 +58,6 @@ my @cpp_keyword = (
 );
 
 # extract extract all variable from the crosstable
-#print "Loading crosstable variables...\n";
 open(INFILE, $srcdirname."/config/Crosstable.csv") or die  "'".$srcdirname."/config/Crosstable.csv" . "': ". $!;
 my $line;
 my $file;
@@ -72,7 +71,6 @@ while ($line = <INFILE>)
 	if ($line =~ /^[1-3];/)
 	{
 		$line =~ m/^[1-3];\w+;(\w+)/g;
-		#print "#$1#\n";
 		push (@crosstable, $1);
 	}
 }
@@ -82,10 +80,8 @@ close INFILE;
 
 print "Checking for crosstable variables mismatch...\n";
 
-#print "UI:" . join("', '", @uifiles) . "\n";
 foreach $file (sort @uifiles)
 {
-	#print "#" . $file . "#\n";
 	open(INFILE, $file) or die $!;
 	$linenb = 0;
 	while ($line = <INFILE>)
@@ -105,8 +101,7 @@ foreach $file (sort @uifiles)
 					}
 					elsif ($1 ne '' && !($1 =~ /^-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][-+]?[0-9]+)?$/))
 					{
-						print "Error: Undeclared variable '$1' into the Crosstable [" . $file . ":" . $linenb . "]\n";
-						#print join("', '", @crosstable);
+						print STDERR "Error: Undeclared variable '$1' into the Crosstable [" . $file . ":" . $linenb . "]\n";
 						$retval = 1;
 					}
 				}
@@ -116,7 +111,6 @@ foreach $file (sort @uifiles)
 	close INFILE;
 }
 
-#print "CPP:" . join("', '", @cppfiles) . "\n";
 foreach $file (sort @cppfiles)
 {
 	open(INFILE, $file) or die $!;
@@ -162,7 +156,7 @@ foreach $file (sort @cppfiles)
 						}
 						elsif ($1 ne '' && !($1 =~ /^-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][-+]?[0-9]+)?$/))
 						{
-							print "Error: Undeclared variable '$1' into the Crosstable [" . $file . ":" . $linenb . "]\n";
+							print STDERR "Error: Undeclared variable '$1' into the Crosstable [" . $file . ":" . $linenb . "]\n";
 							$retval = 1;
 						}
 					}
@@ -190,7 +184,7 @@ foreach $file (sort @cppfiles)
 					}
 					elsif ($val ne '' && !($val =~ /^-?(0|([1-9][0-9]*))(\.[0-9]+)?([eE][-+]?[0-9]+)?$/))
 					{
-						print "Error: Undeclared variable '$val' into the Crosstable [" . $file . ":" . $linenb . "]\n";
+						print STDERR "Error: Undeclared variable '$val' into the Crosstable [" . $file . ":" . $linenb . "]\n";
 						$retval = 1;
 					}
 				}

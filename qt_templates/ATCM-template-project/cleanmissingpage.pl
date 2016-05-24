@@ -1,4 +1,6 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
 
 # open project file 
 # check the page#.ui presence for each page#.cpp and page#.h pages
@@ -13,6 +15,8 @@ my $projectfilename = $ARGV[0];
 my $srcdirname = $ARGV[1];
 
 open(INFILE, $projectfilename) or die $!;
+my $line;
+my @list= "";
 foreach $line (<INFILE>)
 {
 	chomp($line);
@@ -25,8 +29,9 @@ foreach $line (<INFILE>)
 	}
 }
 close INFILE;
-my $last;
+my $last = "";
 my $remove;
+my $var;
 foreach $var (sort @list)
 {
 	(my $without_extension = $var) =~ s/\.[^.]+$//;
@@ -158,6 +163,7 @@ print "Check for remove the not existing trend file done.\n";
 sub filter
 {
 	my ($file) = @_;
+	my $ClassiIndex = "";
 
 	open FILE, "<", $srcdirname . "/pages.h" or die $!;
 	open TMP, "+>", undef or die $!;
@@ -185,7 +191,7 @@ sub filter
 	$ClassiIndex = $file;
 	$ClassiIndex =~ s/page//;
 
-	$stop = 0;
+	my $stop = 0;
 	while (<FILE>) {
 		if ($_ =~/<< \"page$ClassiIndex\"/)
 		{

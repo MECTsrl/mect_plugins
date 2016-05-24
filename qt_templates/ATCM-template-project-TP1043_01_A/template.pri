@@ -132,7 +132,7 @@ OTHER_FILES += \
 
 include(./languages.pri)
 
-TYPE = "TP1057_01_A"
+TYPE = "TP1043_01_A"
 
 # display size
 MODEL = "%Model%"
