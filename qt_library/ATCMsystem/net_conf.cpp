@@ -475,11 +475,11 @@ void net_conf::reload()
         {
             if (getIP("eth0", string) == 0)
             {
-                ui->label_eth0_IP->setText(string);
+                ui->pushButton_eth0_IP->setText(string);
             }
             else
             {
-                ui->label_eth0_IP->setText(NONE);
+                ui->pushButton_eth0_IP->setText(NONE);
             }
         }
 #endif
@@ -566,11 +566,11 @@ void net_conf::reload()
         {
             if (getIP("eth1", string) == 0)
             {
-                ui->label_eth1_IP->setText(string);
+                ui->pushButton_eth1_IP->setText(string);
             }
             else
             {
-                ui->label_eth1_IP->setText(NONE);
+                ui->pushButton_eth1_IP->setText(NONE);
             }
         }
 #endif
@@ -841,7 +841,7 @@ void net_conf::updateIcons()
             {
                 if (getIP("wlan0", string) == 0)
                 {
-                    ui->label_wlan0_IP->setText(string);
+                    ui->pushButton_wlan0_IP->setText(string);
                 }
             }
             if (getMAC("wlan0", string) == 0)
@@ -858,7 +858,7 @@ void net_conf::updateIcons()
             ui->pushButton_wlan0_enable->setIcon(QIcon(":/systemicons/img/WifiOff.png"));
             if (ui->checkBox_wlan0_DHCP->isChecked())
             {
-                ui->label_wlan0_IP->setText(NONE);
+                ui->pushButton_wlan0_IP->setText(NONE);
             }
             ui->label_wlan0_MAC->setText(NONE);
         }
