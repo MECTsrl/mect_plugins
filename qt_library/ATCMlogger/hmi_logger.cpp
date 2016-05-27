@@ -476,6 +476,11 @@ size_t Logger::loadAlarmsTable()
         index++;
 
         p = strchr(line, ';');
+        if (p == NULL)
+        {
+            LOG_PRINT(info_e, "skip empty line [%d]\n", elem_nb);
+            continue;
+        }
         *p = '\0';
         int level = atoi(line);
 

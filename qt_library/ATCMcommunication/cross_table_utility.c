@@ -157,12 +157,6 @@ size_t fillSyncroArea(void)
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
         LOG_PRINT(verbose_e, "%s\n", line);
-        if (line == '\0')
-        {
-            LOG_PRINT(info_e, "skip empty line [%s]\n", line);
-            continue;
-        }
-
         /* extract the enable/disable field */
         p = strtok_csv(line, SEPARATOR, &r);        
         if (p == NULL)
@@ -171,6 +165,13 @@ size_t fillSyncroArea(void)
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
+
+        if (p[0] == '\0' && r == NULL)
+        {
+            LOG_PRINT(info_e, "skip empty line [%d]\n", elem_nb);
+            continue;
+        }
+
         if (atoi(p) == 0 || p[0] == '\0')
         {
             LOG_PRINT(verbose_e, "element %d disabled [%s]\n", elem_nb, line);
