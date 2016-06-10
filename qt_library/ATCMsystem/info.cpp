@@ -9,6 +9,7 @@
  */
 #include "app_logprint.h"
 #include "info.h"
+#include "global_var.h"
 #include "ui_info.h"
 #include "app_config.h"
 #if 0
@@ -137,28 +138,14 @@ void info::reload()
     }
 
     /* RT */
-    if (getVersion("grep RunTime: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
-    {
-        ui->labelFcrtsval->setText(version);
-    }
-    else
-    {
-        ui->labelFcrtsval->setText("-");
-    }
+    getFormattedVar("PLC_Version", ui->labelFcrtsval, NULL);
 
     /* PLC */
-    getFormattedVar("PLC_Version", ui->labelPLCval, NULL);
+    //getFormattedVar("PLC_Version", ui->labelPLCval, NULL);
+    ui->labelPLCval->setText("-");
 
     /* HMI */
-    // ui->labelHMIval->setText(FW_RELEASE);
-    if (getVersion("grep MectApps: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
-    {
-        ui->labelFcrtsval->setText(version);
-    }
-    else
-    {
-        ui->labelFcrtsval->setText("-");
-    }
+    ui->labelHMIval->setText(HMIversion);
 
     char string[32];
     /* MAC */

@@ -92,7 +92,7 @@ ATCMslider::ATCMslider(QWidget *parent) :
 		refresh_timer = NULL;
 	}
 
-	connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    //connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
 }
 
 ATCMslider::~ATCMslider()

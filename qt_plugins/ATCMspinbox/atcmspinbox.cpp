@@ -101,7 +101,7 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
         refresh_timer = NULL;
     }
 
-    connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+    //connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 }
 
 ATCMspinbox::~ATCMspinbox()

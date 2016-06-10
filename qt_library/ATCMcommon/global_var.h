@@ -182,4 +182,6 @@ extern int MaxLogUsageMb;
 
 extern QStringList userPageList;
 
+extern QString HMIversion;
+
 #endif

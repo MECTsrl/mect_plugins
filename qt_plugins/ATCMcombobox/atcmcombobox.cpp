@@ -137,7 +137,7 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
         refresh_timer = NULL;
     }
 
-    connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+    //connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
 }
 
 ATCMcombobox::~ATCMcombobox()
@@ -540,6 +540,10 @@ bool ATCMcombobox::setMapping(QString mapping)
     if (m_mapping.length() > 0)
     {
         QStringList map = m_mapping.split(";");
+        if (maxCount() < map.count()/2)
+        {
+            setMaxCount(map.count()/2);
+        }
         for (int i = 1; i < map.count(); i+=2)
         {
 #ifdef TARGET_ARM

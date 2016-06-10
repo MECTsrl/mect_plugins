@@ -14,14 +14,6 @@
 #include "global_functions.h"
 //#include "style.h"
 
-#define VERSION ( \
-    (QDate::fromString(__DATE__, "MMM dd yyyy").toString("yyyyMMdd").length() != 0) \
-    ? \
-    QDate::fromString(__DATE__, "MMM dd yyyy").toString("yyyyMMdd").toAscii().data() \
-    : \
-    QDate::fromString(__DATE__, "MMM  d yyyy").toString("yyyyMMdd").toAscii().data() \
-    )
-
 extern void printVncDisplayString(char * vncString);
 #endif
 

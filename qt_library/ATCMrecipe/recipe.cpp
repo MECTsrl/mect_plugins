@@ -491,7 +491,7 @@ bool recipe::loadRecipe(const char * filename)
     for (int line_nb = 0; fgets(line, 1024, fp) != NULL && varNbMax < MAX_RCP_VAR; line_nb++)
     {
         if (line[0] == '\n' || line[0] == '\r' || line[0] == 0) {
-            LOG_PRINT(error_e, "skipping empty line\n");
+            LOG_PRINT(info_e, "skipping empty line\n");
             continue;
         }
         /* tag */

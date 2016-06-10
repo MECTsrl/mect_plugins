@@ -21,6 +21,20 @@ contains(QMAKE_HOST.os,Windows){
         ATCM_TEMPLATE_BASE_DIR = 
 }
 
+!isEmpty(ATCM_TEMPLATE_BASE_DIR) {
+    eval(LIST = $$replace(PWD,/,' '))
+    for(a, LIST):eval( RELATIVE_PATH += ..)
+
+    #eval(LIST = $$replace(ATCM_TEMPLATE_BASE_DIR,/,' '))
+    #for(a, LIST):!exists($${a}):eval(SYSTEMICON_DIR += $${a})
+
+    SYSTEMICON_DIR = Qt485/desktop/share/qtcreator/templates/wizards
+    #message(BA: -$$join(SYSTEMICON_DIR,/)-)
+
+    #RESOURCES += $$join(RELATIVE_PATH,/)/$${SYSTEMICON_DIR}/ATCM-template-project/systemicons.qrc
+    RESOURCES += $$join(RELATIVE_PATH,/)/$$join(SYSTEMICON_DIR,/)/ATCM-template-project/systemicons.qrc
+}
+
 isEmpty(QT_ROOTFS) {
         error(QT_ROOTFS is empty)
 }
@@ -100,7 +114,7 @@ SOURCES += \
         pages.cpp
 
 !isEmpty(ATCM_TEMPLATE_BASE_DIR) {
-	# pre-elabortation
+	# pre-elaboration
 	check_missing_file.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/cleanmissingpage.pl $$_PRO_FILE_ $$_PRO_FILE_PWD_
 	check_undeclared_variable.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_cross_var.pl $$_PRO_FILE_PWD_
 	check_gotopage_bind.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/connectbutton.pl $$_PRO_FILE_PWD_

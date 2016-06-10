@@ -107,3 +107,5 @@ char _actual_recipe_[FILENAME_MAX] = "";
 QHash<char *, int *> NameMap;
 
 QStringList userPageList;
+
+QString HMIversion;
