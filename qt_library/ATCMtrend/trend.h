@@ -128,6 +128,7 @@ private:
     void incrementValue(int direction);
     void initValue();
     void createElem();
+    void showStatus(QString message, bool iserror);
 private:
     Ui::trend *ui;
     

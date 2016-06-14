@@ -4,7 +4,6 @@
 #include <QWSScreenSaver>
 
 #define BACKLIGHT_FILE_LOCAL  LOCAL_ETC_DIR"/brightness"
-#define BACKLIGHT_FILE_SYSTEM "/sys/devices/platform/mxs-bl.0/backlight/mxs-bl/brightness"
 
 #define MIN_BACKLIGHT_LEVEL 20
 #define MAX_BACKLIGHT_LEVEL 70

@@ -75,7 +75,7 @@ protected:
     bool setTag(QString * label, QString value = "");
     void translateFontSize( QWidget *ui );
 protected:
-#if 0
+    /* this function is necessary to update the background */
     void paintEvent (QPaintEvent *)
     {
         QStyleOption opt;
@@ -83,7 +83,6 @@ protected:
         QPainter p (this);
         style ()->drawPrimitive (QStyle::PE_Widget, &opt, &p, this);
     };
-#endif
     bool create_next_page(page ** p, const char * t);
 #ifdef HW_KEY_ENABLED
     void keyPressEvent(QKeyEvent * event);

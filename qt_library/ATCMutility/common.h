@@ -194,6 +194,8 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define COMMUNICATION_FILE LOCAL_ETC_DIR"/Commpar.csv"
 #define CONFIG_FILE        LOCAL_ETC_DIR"/system.ini"
 
+#define BACKLIGHT_FILE_SYSTEM "/sys/devices/platform/mxs-bl.0/backlight/mxs-bl/brightness"
+
 #define APP_SIGN           "/usr/bin/sign"
 #define ZIP_BIN            "/usr/bin/zip"
 

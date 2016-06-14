@@ -180,4 +180,18 @@ int writeRecipe(int step);
  */
 int readRecipe(int step);
 
+/**
+ * @brief set the backlight level
+ *
+ * @return 0 set, otherwise not set
+ */
+int set_backlight_level(int level);
+
+/**
+ * @brief read the backlight level
+ *
+ * @return 0 read, otherwise not read
+ */
+int get_backlight_level(void);
+
 #endif // GLOBAL_FUNCTIONS_H

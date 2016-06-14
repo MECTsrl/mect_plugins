@@ -122,16 +122,6 @@ QPushButton:pressed
       </widget>
      </item>
      <item>
-      <widget class="QwtTextLabel" name="lbelInfo">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="plainText">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <property name="spacing">
         <number>0</number>
@@ -566,11 +556,6 @@ border: 2px solid  rgb(194, 194, 194);
    <class>QwtPlot</class>
    <extends>QFrame</extends>
    <header>qwt_plot.h</header>
-  </customwidget>
-  <customwidget>
-   <class>QwtTextLabel</class>
-   <extends>QFrame</extends>
-   <header>qwt_text_label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

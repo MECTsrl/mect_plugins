@@ -46,8 +46,6 @@ private slots:
 private:
     bool loadRecipe(const char * filename);
     bool showRecipe(const char * familyName, const char * recipeName);
-    int writeRecipe(int step);
-    int readRecipe(int step);
     bool getFamilyRecipe(const char * filename, char * familyName, char * recipeName);
 private:
     Ui::recipe *ui;

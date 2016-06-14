@@ -9,7 +9,7 @@
  */
 #include "app_logprint.h"
 #include "info.h"
-#include "global_var.h"
+#include "global_functions.h"
 #include "ui_info.h"
 #include "app_config.h"
 #if 0
@@ -24,6 +24,8 @@
         )
 
 #endif
+
+#define REMOVABLE_REFRESH_MS 1000
 
 /* this define set the window title */
 #define WINDOW_TITLE "INFO"
@@ -203,6 +205,26 @@ void info::reload()
         ui->labelDNS2val->setText("-");
     }
 
+}
+
+/**
+ * @brief This is the updateData member. The operation written here, are executed every REFRESH_MS milliseconds.
+ */
+void info::updateData()
+{
+	/* call the parent updateData member */
+	page::updateData();
+
+    static int divisor = 0;
+
+    if (REFRESH_MS * divisor < REMOVABLE_REFRESH_MS)
+    {
+        divisor ++;
+        return;
+    }
+
+    divisor = 0;
+
     char serial[SN_LEN] = "-";
     if (getSdSN(serial) == 0)
     {
@@ -228,15 +250,15 @@ void info::reload()
     ui->labelLICval->setText("-");
         break;
     }
-}
 
-/**
- * @brief This is the updateData member. The operation written here, are executed every REFRESH_MS milliseconds.
- */
-void info::updateData()
-{
-	/* call the parent updateData member */
-	page::updateData();
+    if (USBCheck())
+    {
+        ui->labelUSBval->setText("INSERTED");
+    }
+    else
+    {
+        ui->labelUSBval->setText("-");
+    }
 }
 
 #ifdef TRANSLATION

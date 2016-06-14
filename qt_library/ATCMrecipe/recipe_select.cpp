@@ -110,7 +110,7 @@ void recipe_select::reload()
     }
     else
     {
-        LOG_PRINT(error_e, "No recipe to show\n");
+        LOG_PRINT(info_e, "No recipe to show\n");
         return;
     }
 }

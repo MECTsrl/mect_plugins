@@ -123,12 +123,14 @@ void recipe::updateData()
     if (state == 1)
     {
         state = 0;
+        current_row = 0;
+        current_column = 0;
         /* load the actual receipt  */
         if (strlen(_actual_recipe_) == 0)
         {
             QMessageBox::critical(this,trUtf8("Empty recipe name"), trUtf8("No recipe is selected."));
             state = 0;
-            go_back();
+            goto_page("recipe_select", false);
             return;
         }
         else if (loadRecipe(_actual_recipe_) == false)
@@ -482,9 +484,6 @@ bool recipe::loadRecipe(const char * filename)
     char line[1024] = "";
     char *p, *r;
 
-    current_row = 0;
-    current_column = 0;
-
     varNbMax = 0;
     stepNbMax = 0;
 
@@ -589,7 +588,6 @@ bool recipe::loadRecipe(const char * filename)
     return true;
 }
 
-
 bool recipe::showRecipe(const char * familyName, const char * recipeName)
 {
     //ui->labelStatus->setText(QString("%1/%2").arg(familyName).arg(recipeName));
@@ -626,80 +624,3 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
 
     return true;
 }
-
-int recipe::readRecipe(int step)
-{
-    QString value;
-    int errors = 0;
-
-    for (int varIndex = 0; varIndex < varNbMax; varIndex++)
-    {
-        //LOG_PRINT(error_e, "%d -> %d\n", varIndex, valuesTable[stepIndex]->at(varIndex));
-        char msg[TAG_LEN];
-
-        uint32_t valueu = 0;
-        int ctIndex = recipeMatrix[varIndex].ctIndex;
-        readFromDb(ctIndex, &valueu);
-        LOG_PRINT(info_e, "%d -> %d\n", ctIndex, valueu);
-        getFormattedVar(varNameArray[ctIndex].tag, &value, NULL);
-
-        switch (getStatusVarByCtIndex(ctIndex, msg))
-        {
-        case BUSY:
-            //retry_nb = 0;
-            LOG_PRINT(info_e, "BUSY: %s\n", msg);
-            if (msg[0] == '\0')
-            {
-                strcpy(msg, VAR_PROGRESS);
-            }
-            errors++;
-            break;
-        case ERROR:
-            LOG_PRINT(info_e, "ERROR: %s\n", msg);
-            if (msg[0] == '\0')
-            {
-                strcpy(msg, VAR_COMMUNICATION);
-            }
-            errors++;
-            break;
-        case DONE:
-            strcpy(msg, value.toAscii().data());
-            LOG_PRINT(info_e, "DONE %s\n", msg);
-            recipeMatrix[varIndex].step[step] = atof(msg);
-            break;
-        default:
-            LOG_PRINT(info_e, "OTHER: %s\n", msg);
-            if (msg[0] == '\0')
-            {
-                strcpy(msg, VAR_UNKNOWN);
-            }
-            errors++;
-            break;
-        }
-        if (msg[0] != '\0')
-        {
-            LOG_PRINT(info_e, "Reading (%d) - '%s' - '%s'\n", varIndex, varNameArray[ctIndex].tag, msg);
-        }
-    }
-    return errors;
-}
-
-int recipe::writeRecipe(int step)
-{
-    int errors = 0;
-
-    beginWrite();
-    for (int i = 0; i < varNbMax; i++)
-    {
-        u_int16_t addr = recipeMatrix[i].ctIndex;
-        u_int32_t value = recipeMatrix[i].step[step];
-
-        errors += addWrite(addr, &value);
-        LOG_PRINT(info_e, "Writing (%d) - '%s' - '%d'\n", addr, varNameArray[addr].tag, value);
-    }
-    endWrite();
-    sleep(1); // FIXME: HMI/PLC protocol
-
-    return errors;
-}
-

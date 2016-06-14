@@ -468,19 +468,20 @@ size_t Logger::loadAlarmsTable()
     EventHash.clear();
 
     int index = -1;
+    event_t * item = NULL;
+
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
-        event_t * item = (event_t*)calloc(1, sizeof(event_t));
         LOG_PRINT(verbose_e, "%s\n", line);
-
-        index++;
-
         p = strchr(line, ';');
         if (p == NULL)
         {
-            LOG_PRINT(info_e, "skip empty line [%d]\n", elem_nb);
+            LOG_PRINT(verbose_e, "skip empty line [%d]\n", elem_nb);
             continue;
         }
+
+        index++;
+
         *p = '\0';
         int level = atoi(line);
 
@@ -489,7 +490,6 @@ size_t Logger::loadAlarmsTable()
         {
             sprintf(CrossTableErrorMsg, "Malformed line");
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
-            free(item);
             fclose(fp);
             return elem_nb;
         }
@@ -509,9 +509,11 @@ size_t Logger::loadAlarmsTable()
         {
             continue;
         }
+
         /* alarm */
         if (strncmp(p, "[AL", 3) == 0)
         {
+            item = (event_t*)calloc(1, sizeof(event_t));
             item->type = ALARM;
             item->persistence = 1;
             item->dump = 1;
@@ -519,6 +521,7 @@ size_t Logger::loadAlarmsTable()
         /* event */
         else if (strncmp(p, "[EV", 3) == 0)
         {
+            item = (event_t*)calloc(1, sizeof(event_t));
             item->type = EVENT;
             item->persistence = 0;
             item->dump = 0;
@@ -1379,6 +1382,7 @@ int Logger::checkSpace( void )
         return -1;
     }
     
+    /* it must be available at least 1Mb */
     if (fiData.f_bfree * fiData.f_bsize < 1024)
     {
         LOG_PRINT(info_e,"Free %ld [minimum free %d]\n", fiData.f_bfree * fiData.f_bsize, 1024);
@@ -1400,6 +1404,7 @@ int Logger::checkSpace( void )
               (unsigned int)( (float)(fiData.f_blocks - fiData.f_bavail) / fiData.f_blocks * 100)
               );
     
+    /* the space occupied by data bust be less than MaxLogUsageMb */
     if (total >= (unsigned int)MaxLogUsageMb * 1024 * 1024)
     {
         LOG_PRINT(info_e,"total %d > MaxLogUsageMb %d\n", total, MaxLogUsageMb * 1024 * 1024);

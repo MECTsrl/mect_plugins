@@ -159,8 +159,6 @@ void trend::reload()
     reloading = true;
     d_qwtplot->hide();
 
-    ui->lbelInfo->setVisible(false);
-
     /* disable all button during loading */
     ui->pushButtonUp->setEnabled(false);
     ui->pushButtonDown->setEnabled(false);
@@ -170,9 +168,7 @@ void trend::reload()
     ui->pushButtonPenColor->setStyleSheet("");
     ui->pushButtonPenColor->setAutoFillBackground(true);
     /* set the label as loading */
-    ui->labelDate->setText(trUtf8("loading..."));
-    ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
-    ui->labelDate->repaint();
+    showStatus(trUtf8("Loading..."), false);
     
     force_back = false;
     
@@ -375,7 +371,6 @@ void trend::updateData()
     LOG_PRINT(verbose_e, "UPDATE\n");
     if (force_back == true)
     {
-        force_back = false;
         LOG_PRINT(verbose_e, "UPDATE\n");
         /* select a new trend from CUSTOM_TREND_DIR directory */
         item_selector * sel;
@@ -397,13 +392,7 @@ void trend::updateData()
                 {
                     refresh_timer->stop();
                     errormsg = trUtf8("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg);
-                    //QMessageBox::critical(0,trUtf8("Invalid data"), trUtf8("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg));
-                    ui->lbelInfo->setText(errormsg);
-                    ui->lbelInfo->setVisible(true);
-                    ui->lbelInfo->repaint();
-                    ui->labelDate->setText(trUtf8("Error..."));
-                    ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
-                    ui->labelDate->repaint();
+                    showStatus(errormsg, true);
                     errormsg.clear();
                     force_back = true;
                     delete sel;
@@ -419,27 +408,21 @@ void trend::updateData()
             }
             else
             {
-                LOG_PRINT(error_e, "No trend selected\n");
+                errormsg = trUtf8("No trend selected");
             }
             delete sel;
         }
         else
         {
-            LOG_PRINT(error_e, "No trend to show\n");
+            errormsg = trUtf8("No trend to show");
         }
         LOG_PRINT(verbose_e, "UPDATE\n");
         actualVisibleWindowSec = 0;
-        ui->lbelInfo->setText(errormsg);
-        ui->lbelInfo->setVisible(true);
-        ui->lbelInfo->repaint();
-        ui->labelDate->setText(trUtf8("Error..."));
-        ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
-        ui->labelDate->repaint();
+        showStatus(errormsg, true);
         errormsg.clear();
         //go_back();
         return;
     }
-    ui->lbelInfo->setVisible(false);
 
     LOG_PRINT(verbose_e, "UPDATE\n");
     if(first_time == true)
@@ -1008,7 +991,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         }
         else if (p[0] == '\0')
         {
-            LOG_PRINT(error_e, "Empty tag '%s' at line %d\n", p, rownb);
+            LOG_PRINT(warning_e, "Empty tag '%s' at line %d\n", p, rownb);
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
         }
@@ -1101,7 +1084,7 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         p = strtok_csv(NULL, SEPARATOR, &r);
         if (p == NULL || p[0] == '\0')
         {
-            LOG_PRINT(warning_e, "Empty tag '%s'\n", line);
+            LOG_PRINT(verbose_e, "Empty description '%s'\n", line);
             pens[rownb].description[0] = '\0';
         }
         else
@@ -1142,7 +1125,11 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         {
             if (valueScale[z] == NULL)
             {
-                int decimal =  getVarDecimalByName(pens[z].tag);
+                int decimal = 0;
+                if (strlen(pens[z].tag))
+                {
+                    getVarDecimalByName(pens[z].tag);
+                }
                 LOG_PRINT(info_e, "@@@@@@@@@@@@ valueScale null pointer for z='%d'\n", z);
                 valueScale[z] = new NormalScaleDraw(decimal);
             }
@@ -1256,7 +1243,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     for (iterator = begin; iterator < end; iterator = iterator.addDays(1))
     {
         LOG_PRINT(verbose_e, "looking for '%s' (%s)\n", iterator.toString("yyyy_MM_dd.log").toAscii().data(), end.toString("yyyy_MM_dd.log").toAscii().data());
-        if (QFileInfo(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log").toAscii().data())).exists())
+        if (QFileInfo(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log").toAscii().data())).isFile())
         {
             LOG_PRINT(verbose_e, "found '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
             if (Load(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data(), &begin, &end, skip) == false)
@@ -1799,15 +1786,9 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     /* update the actual date label */
     if (this->isVisible())
     {
-        ui->labelDate->setStyleSheet("");
-        LOG_PRINT(verbose_e, "setstyle!\n");
         if (ui->labelDate->text().compare(actualTzero.toString("yyyy/MM/dd")) != 0)
         {
-            LOG_PRINT(verbose_e, "setingtext!\n");
-            ui->labelDate->setText(actualTzero.toString("yyyy/MM/dd"));
-            LOG_PRINT(verbose_e, "settext!\n");
-            ui->labelDate->update();
-            LOG_PRINT(verbose_e, "update!\n");
+            showStatus(actualTzero.toString("yyyy/MM/dd"), false);
         }
     }
     LOG_PRINT(verbose_e, "return!\n");
@@ -1910,10 +1891,8 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             ui->pushButtonUp->setEnabled(false);
             ui->pushButtonDown->setEnabled(false);
             
-            ui->labelDate->setText(trUtf8("loading..."));
-            ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
-            ui->labelDate->repaint();
-            
+            showStatus(trUtf8("Loading..."), false);
+
             if (VisibleWindowSec != actualVisibleWindowSec)
             {
                 VisibleWindowSec = actualVisibleWindowSec;
@@ -1940,9 +1919,9 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             if (loadFromFile(Ti) == false)
             {
                 LOG_PRINT(error_e, "cannot load the data from files\n");
-                ui->labelDate->setText(trUtf8("Error..."));
-                ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
-                ui->labelDate->repaint();
+                errormsg = trUtf8("cannot load the data from files");
+                showStatus(errormsg, true);
+                errormsg.clear();
                 actualTzero = QDateTime::currentDateTime();
             }
             else if (actualTzero < TzeroLoaded || actualVisibleWindowSec > LoadedWindowSec)
@@ -2252,4 +2231,33 @@ void trend::loadOrientedWindow()
 void trend::on_pushButtonOnline_clicked()
 {
     setOnline(!(getOnline()));
+}
+
+void trend::showStatus(QString message, bool iserror)
+{
+    ui->labelDate->setText(message);
+    if (iserror)
+    {
+        ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
+        ui->pushButtonOnline->setStyleSheet("QPushButton"
+                                            "{"
+                                            "border-image: url(:/systemicons/img/Warning.png);"
+                                            "qproperty-focusPolicy: NoFocus;"
+                                            "}");
+        ui->labelDate->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    }
+    else
+    {
+        ui->labelDate->setStyleSheet("");
+        ui->pushButtonOnline->setStyleSheet("QPushButton"
+                                            "{"
+                                            "border-image: url(:/systemicons/img/Chess.png);"
+                                            "qproperty-focusPolicy: NoFocus;"
+                                            "}");
+        ui->labelDate->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    }
+
+    ui->pushButtonPenColor->setVisible(!iserror);
+    ui->pushButtonPen->setVisible(!iserror);
+    ui->labelDate->repaint();
 }

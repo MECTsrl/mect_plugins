@@ -179,7 +179,7 @@ void display_settings::on_horizontalSlider_valueChanged(int value)
     }
     char command[256];
     LOG_PRINT(info_e, "%d to %d\n", brightness_level, value);
-    sprintf (command, "echo %d > /sys/devices/platform/mxs-bl.0/backlight/mxs-bl/brightness", value);
+    sprintf (command, "echo %d > %s", value, BACKLIGHT_FILE_SYSTEM);
     if (system(command) == 0)
     {
         brightness_level = value;
@@ -194,7 +194,7 @@ void display_settings::on_pushButton_clicked()
     {
         QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("Impossible to save brightness value into the file '%1'.").arg(BACKLIGHT_FILE_LOCAL));
     }
-    fprintf(fp, "echo %d > /sys/devices/platform/mxs-bl.0/backlight/mxs-bl/brightness\n", brightness_level);
+    fprintf(fp, "echo %d > %s\n", brightness_level, BACKLIGHT_FILE_SYSTEM);
     fclose(fp);
     sync();
 }

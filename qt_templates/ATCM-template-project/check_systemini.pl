@@ -59,7 +59,7 @@ while ($line = <INFILE>)
 		{
 			if ($section eq "CANOPEN_0" && $key eq "baudrate" && $value ne "125000")
 			{
-				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '" . $value . "'\n";
+				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '125000' instead of '" . $value . "'\n";
 				$retval = 1;
 			}
 		}
@@ -67,7 +67,7 @@ while ($line = <INFILE>)
 		{
 			if ($section eq "CANOPEN_0" && $key eq "baudrate" && $value ne "125000")
 			{
-				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '" . $value . "'\n";
+				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '125000' instead of '" . $value . "'\n";
 				$retval = 1;
 			}
 		}
@@ -75,7 +75,7 @@ while ($line = <INFILE>)
 		{
 			if ($section eq "SERIAL_PORT_3" && $key eq "baudrate" && $value ne "225000")
 			{
-				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '" . $value . "'\n";
+				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '225000' instead of '" . $value . "'\n";
 				$retval = 1;
 			}
 		}
@@ -83,7 +83,7 @@ while ($line = <INFILE>)
 		{
 			if ($section eq "CANOPEN_0" && $key eq "baudrate" && $value ne "125000")
 			{
-				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '" . $value . "'\n";
+				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '225000' instead of '" . $value . "'\n";
 				$retval = 1;
 			}
 		}

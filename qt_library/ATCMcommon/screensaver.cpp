@@ -24,7 +24,7 @@ void ScreenSaver::restore()
         while(fgets(command,256,fp)!=NULL)
         {
             LOG_PRINT(verbose_e, "BACKLIGHT: %s\n", command);
-            sscanf(command,"echo %d > /sys/devices/platform/mxs-bl.0/backlight/mxs-bl/brightness", &brightness_level );
+            sscanf(command,"echo %d %*s", &brightness_level);
         }
         fclose(fp);
     }

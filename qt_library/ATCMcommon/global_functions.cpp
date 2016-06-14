@@ -180,7 +180,7 @@ bool loadRecipe(const char * filename)
     for (int line_nb = 0; fgets(line, 1024, fp) != NULL && varNbMax < MAX_RCP_VAR; line_nb++)
     {
         if (line[0] == '\n' || line[0] == '\r' || line[0] == 0) {
-            LOG_PRINT(error_e, "skipping empty line\n");
+            LOG_PRINT(info_e, "skipping empty line\n");
             continue;
         }
         /* tag */
@@ -758,4 +758,41 @@ bool beep(int duration_ms)
         return false;
     }
     return true;
+}
+
+int set_backlight_level(int level)
+{
+        int _level;
+        char command[256];
+
+        if (level < 0)
+        {
+                _level = 0;
+        }
+        else if ( level > 100)
+        {
+                _level = 100;
+        }
+        else
+        {
+                _level = level;
+        }
+
+        sprintf (command, "echo %d > %s", level, BACKLIGHT_FILE_SYSTEM);
+        system(command);
+
+        //printf("level set to: %d", level);
+        return level;
+}
+
+int get_backlight_level(void)
+{
+        int level;
+        FILE * fp = fopen(BACKLIGHT_FILE_SYSTEM, "r");
+        if (fp != NULL)
+        {
+                fscanf(fp, "%d", &level);
+        }
+        fclose(fp);
+        return level;
 }
