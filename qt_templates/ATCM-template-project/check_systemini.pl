@@ -57,19 +57,11 @@ while ($line = <INFILE>)
 		
 		if ($model eq "TP1057_01_A" || $model eq "TP1057_01_B")
 		{
-			if ($section eq "CANOPEN_0" && $key eq "baudrate" && $value ne "125000")
-			{
-				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '125000' instead of '" . $value . "'\n";
-				$retval = 1;
-			}
+			# nothing to check
 		}
 		elsif ($model eq "TP1070_01_A" || $model eq "TP1070_01_B" || $model eq "TP1070_01_C" || $model eq "TP1070_01_D")
 		{
-			if ($section eq "CANOPEN_0" && $key eq "baudrate" && $value ne "125000")
-			{
-				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '125000' instead of '" . $value . "'\n";
-				$retval = 1;
-			}
+			# nothing to check
 		}
 		elsif ($model eq "TPAC1007_03" || $model eq "TPAC1007_04_AA" || $model eq "TPAC1007_04_AB" || $model eq "TPAC1007_04_AC")
 		{

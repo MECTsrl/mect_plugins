@@ -145,7 +145,7 @@ void options::on_pushButtonPasswords_clicked()
         }
         
         passwords[active_password] = password;
-        if (dumpPasswords())
+        if (dumpPasswords() == 0)
         {
             QMessageBox::information(this,trUtf8("Password changed"), trUtf8("The password is succesfully changed."));
         }
