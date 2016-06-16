@@ -64,6 +64,7 @@ Custom project wizard configuration example file. Note that by convention,
 	   -->
 	   <file source="project.pro" target="%ProjectName%.pro" openproject="true"/>
 	   <file source="template.pri" target="template.pri" openproject="false"/>
+	   <file source="common.pri" target="common.pri" openproject="false"/>
 	   <file source="languages.pri" target="languages.pri" openproject="false"/>
 	   </files>
 	    <!-- Create a 2nd wizard page with parameters -->

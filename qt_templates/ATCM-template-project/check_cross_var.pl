@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use File::Glob qw(bsd_glob);
 
 sub strip_comments {
 	my $string=shift;
@@ -8,7 +9,8 @@ sub strip_comments {
 	return $string;
 }
 my $srcdirname = $ARGV[0];
-my @uifiles = glob( $srcdirname . '/*.ui' );
+
+my @uifiles =  bsd_glob( $srcdirname . '/*.ui' );
 my @ui_keyword = (
 "variable",
 "visibilityVar",
@@ -33,7 +35,7 @@ my @ui_keyword = (
 "Display2"
 );
 
-my @cppfiles = glob( $srcdirname . '/*.cpp' );
+my @cppfiles =  bsd_glob( $srcdirname . '/*.cpp' );
 my @cpp_keyword = (
 "isBlockActive",
 "getHeadBlockName",
