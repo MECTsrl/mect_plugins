@@ -991,13 +991,13 @@ bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
         }
         else if (p[0] == '\0')
         {
-            LOG_PRINT(warning_e, "Empty tag '%s' at line %d\n", p, rownb);
+            LOG_PRINT(warning_e, "Empty tag '%s' at line %d\n", p, rownb+1);
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
         }
         else if (Tag2CtIndex(p, &index) != 0)
         {
-            LOG_PRINT(error_e, "Invalid tag '%s' at line %d\n", p, rownb);
+            LOG_PRINT(error_e, "Invalid tag '%s' at line %d\n", p, rownb+1);
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
             pens[rownb].CtIndex = -1;
@@ -1224,7 +1224,6 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     QDateTime iterator;
     int logfound = 0;
     
-    
     for (int rownb = 0; rownb < PEN_NB; rownb++)
     {
         if (pens[rownb].y != NULL)
@@ -1248,7 +1247,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
             LOG_PRINT(verbose_e, "found '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
             if (Load(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data(), &begin, &end, skip) == false)
             {
-                LOG_PRINT(error_e, "Cannot load '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
+                LOG_PRINT(info_e, "Cannot load '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
                 return false;
             }
             LOG_PRINT(verbose_e, "PARSED TREND FILE '%s'\n", QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data());
@@ -1257,10 +1256,9 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     }
     if (logfound == 0)
     {
-        LOG_PRINT(error_e, "cannot found any sample from begin '%s' end '%s', skip %d\n",
+        LOG_PRINT(error_e, "cannot found any sample from begin '%s' to '%s'\n",
                   begin.toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
-                  end.toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
-                  skip
+                  end.toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
                   );
         return false;
     }
@@ -1575,7 +1573,6 @@ void trend::incrementValue(int direction)
 
 bool trend::loadFromFile(QDateTime Ti)
 {
-    LOG_PRINT(verbose_e, "DISCONNECT!!!!!\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
     
     TzeroLoaded = Ti;
@@ -1622,7 +1619,7 @@ bool trend::loadFromFile(QDateTime Ti)
     /* load data from Ti to Ti + MaxWindowsec */
     if (Load(TzeroLoaded, Tfin, sample_to_skip) == false)
     {
-        LOG_PRINT(error_e, "Cannot load data\n");
+        LOG_PRINT(info_e, "Cannot load data\n");
         return false;
     }
     LOG_PRINT(verbose_e, "PARSED2 TREND FILE\n");
@@ -1638,7 +1635,7 @@ bool trend::loadFromFile(QDateTime Ti)
         timeScale->setBaseTime(TzeroLoaded.time());
     }
     d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
-    LOG_PRINT(verbose_e, "####### Setting time axis\n");
+    LOG_PRINT(verbose_e, "Setting time axis\n");
 #else
     d_qwtplot->setAxisScaleDraw(timeAxisId, new TimeScaleDraw(TzeroLoaded.time()));
 #endif
@@ -1918,7 +1915,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             
             if (loadFromFile(Ti) == false)
             {
-                LOG_PRINT(error_e, "cannot load the data from files\n");
+                LOG_PRINT(info_e, "cannot load the data from files\n");
                 errormsg = trUtf8("cannot load the data from files");
                 showStatus(errormsg, true);
                 errormsg.clear();

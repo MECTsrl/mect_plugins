@@ -21,6 +21,8 @@
 #endif
 #endif
 
+#define RUNTIME "fcrts.sh"
+
 page0::page0(QWidget *parent) :
     page(parent),
     ui(new Ui::page0)
@@ -84,14 +86,16 @@ void page0::changePage()
     {
         ui->label->update();
         /* if fcrts is not running or if it is in Zombie status, start it */
-        if (system("PID=`pidof fcrts` && test $PID != '' &&  test  `grep -c zombie /proc/$PID/status` -eq 0"))
+        if (system("PID=`pidof fcrts` && test $PID != '' && test \"`grep -c zombie /proc/$PID/status`\" -eq 0"))
         {
+            LOG_PRINT(warning_e, "Cannot found the run-time active process. Start it [%s].\n", RUNTIME);
             QProcess *myProcess = new QProcess();
-            myProcess->start("fcrts.sh");
+            myProcess->start(RUNTIME);
         }
 
         if(CommStart() == false)
         {
+            LOG_PRINT(error_e, "Cannot found start the communication with the the run-time.\n");
             exit(0);
         }
         first_time = false;

@@ -64,7 +64,6 @@ private:
 private:
     Ui::store *ui;
     int status;
-    int * actual_filter;
     int sizeof_filter;
     QStringList headerList;
     QStringList logFileList;

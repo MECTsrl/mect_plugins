@@ -44,6 +44,8 @@
     this->setStyleSheet(mystyle); \
     }
 
+bool actual_filter[DB_SIZE_ELEM];
+
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
  */
@@ -77,7 +79,7 @@ store::store(QWidget *parent) :
     /* connect the label that show the user name */
     //labelUserName = ui->labelUserName;
     
-    actual_filter = NULL;
+    status = 0;
     logfp = NULL;
     
     /* set as default current day */
@@ -120,13 +122,9 @@ int store::getLogColumnNb(const char * filename)
     {
         LINE2STR(line);
         headerList = QString(line).simplified().replace(QString(" "), QString("")).split(SEPARATOR);
-        fclose(fp);
-    }
-    else
-    {
-        return 0;
     }
     
+    fclose(fp);
     return headerList.count();
 }
 
@@ -150,12 +148,12 @@ bool store::LoadStoreFilter(const char * filename)
         return false;
     }
     
-    if (actual_filter != NULL)
+    /* clear the actual filter */
+    for (int i = 0; i <= sizeof_filter; i++)
     {
-        free(actual_filter);
+        actual_filter[i] = false;
     }
-    actual_filter = (int*)calloc(sizeof_filter, sizeof(int));
-    
+
     if (filename[0] != '\0')
     {
         fp = fopen(filename, "r");
@@ -184,7 +182,7 @@ bool store::LoadStoreFilter(const char * filename)
             columnnb = headerList.indexOf(linestr);
             if (columnnb>=0 && columnnb <= sizeof_filter)
             {
-                actual_filter[columnnb] = 1;
+                actual_filter[columnnb] = false;
                 LOG_PRINT(verbose_e, "tag '%s' actual_filter[%d] = %d\n", linestr.toAscii().data(), columnnb, actual_filter[columnnb]);
             }
             else
@@ -208,7 +206,7 @@ bool store::LoadStoreFilter(const char * filename)
     {
         for (int i = 0; i <= sizeof_filter; i++)
         {
-            actual_filter[i] = 1;
+            actual_filter[i] = true;
         }
         return true;
     }
@@ -221,10 +219,8 @@ bool store::LoadStore(QDateTime init, QDateTime final)
     
     mkdir(TMPDIR, S_IRWXU | S_IRWXG);
     sprintf(command, "umount %s", TMPDIR);
-    if (system (command) != 0)
-    {
-        LOG_PRINT(error_e, "cannot execute '%s'\n", command);
-    }
+    /* if TMPDIR is mounted, unmount it */
+    system (command);
     sprintf(command, "mount -t tmpfs -o size=32M tmpfs %s", TMPDIR);
     if (system (command) != 0)
     {
@@ -299,7 +295,7 @@ bool store::LoadStore(const char * filename)
     int i ,j = 0;
     for (i = 0; i <= sizeof_filter; i++)
     {
-        if (actual_filter[i] == 1)
+        if (actual_filter[i] == true)
         {
             ui->tableWidget->insertColumn(j);
             LOG_PRINT(info_e, "Inserted column '%d'\n", j);
@@ -310,7 +306,7 @@ bool store::LoadStore(const char * filename)
     ui->tableWidget->verticalHeader()->hide();
     
     //sprintf(line, "%s/%s", STORE_DIR, filename);
-    strcpy(line,filename);
+    strncpy(line,filename,LINE_SIZE);
     logfp = fopen(line, "r");
     if (logfp == NULL)
     {
@@ -335,7 +331,7 @@ bool store::LoadStore(const char * filename)
             do
             {
                 /* tag */
-                if (actual_filter[colfilternb] == 1)
+                if (actual_filter[colfilternb] == true)
                 {
                     item = new QTableWidgetItem(p);
                     if (rownb == 0)
@@ -421,7 +417,7 @@ bool store::readLine()
         do
         {
             /* tag */
-            if (actual_filter[colfilternb] == 1)
+            if (actual_filter[colfilternb] == true)
             {
                 item = new QTableWidgetItem(p);
                 ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1,colnb,item);

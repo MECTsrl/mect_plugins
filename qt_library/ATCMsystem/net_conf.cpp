@@ -137,7 +137,7 @@ bool net_conf::saveETH0cfg()
             return false;
         }
     }
-    if (system("/etc/rc.d/init.d/network restart"))
+    if (system("/etc/rc.d/init.d/network restart >/dev/null 2>&1"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the eth0 network configuration."));
@@ -207,7 +207,7 @@ bool net_conf::saveETH1cfg()
             return false;
         }
     }
-    if (system("/etc/rc.d/init.d/network restart"))
+    if (system("/etc/rc.d/init.d/network restart >/dev/null 2>&1"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the eth0 network configuration"));
@@ -288,7 +288,7 @@ bool net_conf::saveWLAN0cfg()
         }
     }
     char command[256];
-    sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\"",
+    sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
             wlan0_essid.toAscii().data(),
             wlan0_pwd.toAscii().data()
             );
@@ -333,7 +333,7 @@ bool net_conf::saveWAN0cfg()
         return false;
     }
     char command[256];
-    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\"",
+    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
             ui->pushButton_wan0_dialnb->text().toAscii().data(),
             ui->pushButton_wan0_apn->text().toAscii().data()
             );
@@ -583,7 +583,7 @@ void net_conf::reload()
         wlan0_essid = QString(tmp).mid(1, strlen(tmp)-2);
         if (wlan0_essid.length() == 0 && is_wlan_active)
         {
-            FILE * fp = popen("iwconfig wlan0 | grep ESSID: | cut -d: -f2", "r");
+            FILE * fp = popen("iwconfig wlan0 2> /dev/null | grep ESSID: | cut -d: -f2", "r");
             if (fp == NULL)
             {
                 QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Problem during wifi network scanning"));
@@ -636,7 +636,7 @@ void net_conf::reload()
     if (wlan0_essid.length() > 0 && wlan0_pwd.length() > 0)
     {
         char command[256];
-        sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\"",
+        sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
                 wlan0_essid.toAscii().data(),
                 wlan0_pwd.toAscii().data()
                 );
@@ -1114,7 +1114,7 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
 
 bool net_conf::isWlanOn(void)
 {
-    return system("iwconfig wlan0 | grep -q 'Access Point: Not-Associate'");
+    return system("iwconfig wlan0 2> /dev/null | grep -q 'Access Point: Not-Associate'");
 }
 
 void net_conf::on_pushButton_wlan0_enable_clicked()
@@ -1130,7 +1130,7 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
             ui->tab_wlan0->repaint();
             return;
         }
-        system("/usr/sbin/wifi.sh start");
+        system("/usr/sbin/wifi.sh start >/dev/null 2>&1");
     }
     else
     {
@@ -1141,7 +1141,7 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
             ui->tab_wlan0->repaint();
             return;
         }
-        system("/usr/sbin/wifi.sh stop");
+        system("/usr/sbin/wifi.sh stop >/dev/null 2>&1");
     }
 
     ui->tab_wlan0->setEnabled(true);
@@ -1194,7 +1194,7 @@ void net_conf::on_pushButton_wan0_enable_clicked()
             ui->tab_wan0->repaint();
             return;
         }
-        system("/usr/sbin/usb3g.sh start");
+        system("/usr/sbin/usb3g.sh start >/dev/null 2>&1");
     }
     else
     {
@@ -1205,7 +1205,7 @@ void net_conf::on_pushButton_wan0_enable_clicked()
             ui->tab_wan0->repaint();
             return;
         }
-        system("/usr/sbin/usb3g.sh stop");
+        system("/usr/sbin/usb3g.sh stop >/dev/null 2>&1");
     }
 
     ui->tab_wan0->setEnabled(true);

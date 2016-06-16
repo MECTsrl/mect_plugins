@@ -178,7 +178,7 @@ void data_manager::on_pushButtonRecipe_clicked()
 #if defined(ENABLE_RECIPE)
     ui->labelStatus->setText(trUtf8("Loading recipe..."));
     ui->labelStatus->repaint();
-    goto_page("recipe_select", false);
+    goto_page("recipe_select");
 #else
     ui->labelStatus->setText(trUtf8("Funtionality not enabled"));
 #endif
