@@ -13,6 +13,7 @@
 #include "pagebrowser.h"
 #include <QList>
 #include <QTableWidgetItem>
+#include <global_var.h>
 
 namespace Ui {
 class recipe;
@@ -44,7 +45,6 @@ private slots:
     void on_tableWidget_itemClicked(QTableWidgetItem *item);
     void horizontalHeaderClicked(int column);
 private:
-    bool loadRecipe(const char * filename);
     bool showRecipe(const char * familyName, const char * recipeName);
     bool getFamilyRecipe(const char * filename, char * familyName, char * recipeName);
 private:

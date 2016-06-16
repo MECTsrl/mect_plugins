@@ -146,39 +146,26 @@ enum usb_mode_e USBmode();
  */
 bool USBCheck();
 
-
-#define MAX_RCP_STEP 64
-#define MAX_RCP_VAR  200
-
-typedef struct {
-        u_int16_t ctIndex;
-        u_int32_t step[MAX_RCP_STEP];
-} row;
-
-extern int stepNbMax;
-extern int varNbMax;
-extern row recipeMatrix[MAX_RCP_VAR];
-
 /**
  * @brief load a bi-dimensional recipe
  *
  * @return true loaded, false not loaded
  */
-bool loadRecipe(const char * filename);
+int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table[]);
 
 /**
  * @brief write a step of bi-dimensional recipe
  *
  * @return 0 written, otherwise not written
  */
-int writeRecipe(int step);
+int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[]);
 
 /**
  * @brief read a step of bi-dimensional recipe
  *
  * @return 0 read, otherwise not read
  */
-int readRecipe(int step);
+int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[]);
 
 /**
  * @brief set the backlight level

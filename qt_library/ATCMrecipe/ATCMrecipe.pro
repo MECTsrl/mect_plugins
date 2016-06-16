@@ -9,13 +9,16 @@ TARGET = ATCMrecipe
 include (../qt_library.pri)
 
 INCLUDEPATH += .\
-../ATCMlogger
+../ATCMlogger \
+../ATCMcommon
 
 QMAKE_LIBDIR += \
-../ATCMlogger
+../ATCMlogger \
+../ATCMcommon
 
 LIBS += \
--lATCMlogger
+-lATCMlogger \
+-lATCMcommon
 
 SOURCES += \
 recipe.cpp \

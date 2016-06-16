@@ -156,29 +156,29 @@ int writeIniFile(void)
     return 0;
 }
 
-row recipeMatrix[MAX_RCP_VAR];
-int stepNbMax = 0;
-int varNbMax = 0;
-
-bool loadRecipe(const char * filename)
+int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 {
     FILE * fp;
+
+    // clear lists
+    indexes->clear();
+    for (int n = 0; n < MAX_RCP_STEP; ++n) {
+        table[n].clear();
+    }
 
     fp = fopen(filename, "r");
     if (fp == NULL)
     {
         LOG_PRINT(info_e, "Cannot open '%s'\n", filename);
-        return false;
+        return -1;
     }
 
-    char line[1024] = "";
+    char line[LINE_SIZE] = "";
     char *p, *r;
-
-    varNbMax = 0;
-    stepNbMax = 0;
-
-    for (int line_nb = 0; fgets(line, 1024, fp) != NULL && varNbMax < MAX_RCP_VAR; line_nb++)
+    int step_max = 0, step;
+    for (int line_nb = 0; fgets(line, LINE_SIZE, fp) != NULL; line_nb++)
     {
+        /* ignore blank lines */
         if (line[0] == '\n' || line[0] == '\r' || line[0] == 0) {
             LOG_PRINT(info_e, "skipping empty line\n");
             continue;
@@ -197,9 +197,8 @@ bool loadRecipe(const char * filename)
             LOG_PRINT(error_e, "Invalid variable '%s' at line %d\n", p, line_nb);
             continue;
         }
+        indexes->append((u_int16_t)ctIndex);
         int decimal = getVarDecimalByCtIndex(ctIndex);
-        LOG_PRINT(verbose_e, "recipeMatrix[%d].ctIndex = %d\n", varNbMax, (u_int16_t)ctIndex);
-        recipeMatrix[varNbMax].ctIndex = (u_int16_t)ctIndex;
 
         /* values */
         u_int32_t value;
@@ -208,7 +207,8 @@ bool loadRecipe(const char * filename)
         int32_t val_int32;
         int16_t val_int16;
 
-        for (stepNbMax = 0; stepNbMax < MAX_RCP_STEP && (p = strtok_csv(NULL, SEPARATOR, &r)) != NULL; stepNbMax++)
+        step = 0;
+        while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL)
         {
             value = 0;
             // compute value
@@ -267,29 +267,35 @@ bool loadRecipe(const char * filename)
                 value = 0;
             }
             // assign value
-            recipeMatrix[varNbMax].step[stepNbMax] = value;
-            LOG_PRINT(verbose_e, "recipeMatrix[%d].step[%d] = %d;\n", varNbMax, stepNbMax, value);
+            (table[step]) << value;
+            step++;
         }
-        varNbMax++;
+        if (step > step_max) {
+            step_max = step;
+        }
     }
 
-    LOG_PRINT(info_e, "row %d column %d\n", varNbMax, stepNbMax);
+    LOG_PRINT(info_e, "row %d column %d\n", table[step].count(), step_max);
     fclose(fp);
-    return true;
+    return step_max;
 }
 
-int readRecipe(int step)
+int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 {
     QString value;
     int errors = 0;
 
-    for (int varIndex = 0; varIndex < varNbMax; varIndex++)
+    if (step >= MAX_RCP_STEP)
+	{
+        return -1;
+    }
+    for (int i = 0; i < table[step].count(); i++)
     {
         //LOG_PRINT(error_e, "%d -> %d\n", varIndex, valuesTable[stepIndex]->at(varIndex));
         char msg[TAG_LEN];
 
         uint32_t valueu = 0;
-        int ctIndex = recipeMatrix[varIndex].ctIndex;
+        int ctIndex = (int)(indexes->at(i));
         readFromDb(ctIndex, &valueu);
         LOG_PRINT(info_e, "%d -> %d\n", ctIndex, valueu);
 
@@ -315,7 +321,7 @@ int readRecipe(int step)
         case DONE:
             strcpy(msg, value.toAscii().data());
             LOG_PRINT(info_e, "DONE %s\n", msg);
-            recipeMatrix[varIndex].step[step] = atof(msg);
+            table[step][i] = atof(msg);
             break;
         default:
             LOG_PRINT(info_e, "OTHER: %s\n", msg);
@@ -328,27 +334,28 @@ int readRecipe(int step)
         }
         if (msg[0] != '\0')
         {
-            LOG_PRINT(info_e, "Reading (%d) - '%s' - '%s'\n", varIndex, varNameArray[ctIndex].tag, msg);
+            LOG_PRINT(info_e, "Reading (%d) - '%s' - '%s'\n", i, varNameArray[ctIndex].tag, msg);
         }
     }
     return errors;
 }
 
-int writeRecipe(int step)
+int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 {
     int errors = 0;
 
+    if (step >= MAX_RCP_STEP)
+	{
+        return -1;
+    }
     beginWrite();
-    for (int i = 0; i < varNbMax; i++)
+    for (int i = 0; i < table[step].count(); i++)
     {
-        u_int16_t addr = recipeMatrix[i].ctIndex;
-        u_int32_t value = recipeMatrix[i].step[step];
-
+        u_int16_t addr = indexes->at(i);
+        u_int32_t value = table[step].at(i);
         errors += addWrite(addr, &value);
-        LOG_PRINT(info_e, "Writing (%d) - '%s' - '%d'\n", addr, varNameArray[addr].tag, value);
     }
     endWrite();
-    sleep(1); // FIXME: HMI/PLC protocol
 
     return errors;
 }
@@ -762,37 +769,37 @@ bool beep(int duration_ms)
 
 int set_backlight_level(int level)
 {
-        int _level;
-        char command[256];
+    int _level;
+    char command[256];
 
-        if (level < 0)
-        {
-                _level = 0;
-        }
-        else if ( level > 100)
-        {
-                _level = 100;
-        }
-        else
-        {
-                _level = level;
-        }
+    if (level < 0)
+    {
+        _level = 0;
+    }
+    else if ( level > 100)
+    {
+        _level = 100;
+    }
+    else
+    {
+        _level = level;
+    }
 
-        sprintf (command, "echo %d > %s", level, BACKLIGHT_FILE_SYSTEM);
-        system(command);
+    sprintf (command, "echo %d > %s", level, BACKLIGHT_FILE_SYSTEM);
+    system(command);
 
-        //printf("level set to: %d", level);
-        return level;
+    //printf("level set to: %d", level);
+    return level;
 }
 
 int get_backlight_level(void)
 {
-        int level;
-        FILE * fp = fopen(BACKLIGHT_FILE_SYSTEM, "r");
-        if (fp != NULL)
-        {
-                fscanf(fp, "%d", &level);
-        }
-        fclose(fp);
-        return level;
+    int level;
+    FILE * fp = fopen(BACKLIGHT_FILE_SYSTEM, "r");
+    if (fp != NULL)
+    {
+        fscanf(fp, "%d", &level);
+    }
+    fclose(fp);
+    return level;
 }

@@ -18,6 +18,13 @@
 #include "utility.h"
 #include "ui_recipe.h"
 
+#define ENABLE_DESCR
+
+QList<u_int16_t> testsIndexes;
+QList<u_int32_t> testsTable[MAX_RCP_STEP];
+int stepNbMax;
+int varNbMax;
+
 /* this define set the variables list to be to displayed in this page */
 #undef VAR_TO_DISPLAY
 /* Example:
@@ -71,8 +78,6 @@ recipe::recipe(QWidget *parent) :
     /* connect the label that show the user name */
     //labelUserName = ui->labelUserName;
 
-    current_row = 0;
-    current_column = 0;
     ui->tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
     connect(ui->tableWidget->horizontalHeader(),SIGNAL(sectionClicked(int)), this,SLOT(horizontalHeaderClicked(int)));
 
@@ -80,9 +85,6 @@ recipe::recipe(QWidget *parent) :
 
     _familyName[0] = '\0';
     _recipeName[0] = '\0';
-
-    stepNbMax = 0;
-    varNbMax = 0;
 
     state = 0;
 }
@@ -108,6 +110,10 @@ void recipe::reload()
     /* clear the status label and reset the progressbar */
     ui->progressBarStatus->setVisible(false);
     state = 1;
+    current_row = 0;
+    current_column = 0;
+    stepNbMax = 0;
+    varNbMax = 0;
 }
 
 /**
@@ -133,7 +139,9 @@ void recipe::updateData()
             goto_page("recipe_select", false);
             return;
         }
-        else if (loadRecipe(_actual_recipe_) == false)
+        stepNbMax = loadRecipe(_actual_recipe_, &testsIndexes, testsTable);
+        varNbMax = testsIndexes.count();
+        if (stepNbMax <= 0)
         {
             QMessageBox::critical(this,trUtf8("Malformed recipe"), trUtf8("The recipe '%1' is malformed.").arg(_actual_recipe_));
             state = 0;
@@ -199,6 +207,7 @@ void recipe::on_pushButtonRead_clicked()
 {
     if (ui->tableWidget->currentColumn() < 1)
     {
+        QMessageBox::information(this,trUtf8("No step selected"), trUtf8("No step selected.\nPlease select a column to load from the panel"));
         return;
     }
     ui->pushButtonLoad->setEnabled(false);
@@ -208,17 +217,19 @@ void recipe::on_pushButtonRead_clicked()
     ui->labelStatus->repaint();
 
     int stepIndex = ui->tableWidget->currentColumn() - 1;
-    readRecipe(stepIndex);
+    readRecipe(stepIndex, &testsIndexes, testsTable);
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
-        int decimal = getVarDecimalByCtIndex(recipeMatrix[varIndex].step[stepIndex]);
-        ui->tableWidget->item(varIndex, stepIndex + 1)->setText(QString::number(recipeMatrix[varIndex].step[stepIndex] / pow(10,decimal), 'f', decimal));
+        int decimal = getVarDecimalByCtIndex(testsIndexes[varIndex]);
+        ui->tableWidget->item(varIndex, stepIndex + 1)->setText(QString::number(testsTable[stepIndex][varIndex] / pow(10,decimal), 'f', decimal));
     }
 
     ui->pushButtonLoad->setEnabled(true);
     ui->pushButtonRead->setEnabled(true);
     ui->pushButtonSave->setEnabled(true);
-    //ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
+#ifdef ENABLE_DESCR
+    ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
+#endif
     ui->labelStatus->setText("");
     ui->labelStatus->repaint();
 
@@ -229,6 +240,7 @@ void recipe::on_pushButtonLoad_clicked()
 {
     if (ui->tableWidget->currentColumn() < 1)
     {
+        QMessageBox::information(this,trUtf8("No step selected"), trUtf8("No step selected.\nPlease select a column to load into the panel"));
         return;
     }
     ui->pushButtonLoad->setEnabled(false);
@@ -236,12 +248,14 @@ void recipe::on_pushButtonLoad_clicked()
     ui->pushButtonSave->setEnabled(false);
     ui->labelStatus->setText(trUtf8("Writing"));
     ui->labelStatus->repaint();
-    writeRecipe(ui->tableWidget->currentColumn() - 1);
+    writeRecipe(ui->tableWidget->currentColumn() - 1, &testsIndexes, testsTable);
     ui->pushButtonLoad->setEnabled(true);
     ui->pushButtonRead->setEnabled(true);
     ui->pushButtonSave->setEnabled(true);
     ui->labelStatus->setText("");
-    //ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
+#ifdef ENABLE_DESCR
+    ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
+#endif
     ui->labelStatus->repaint();
 
     return;
@@ -288,7 +302,9 @@ void recipe::on_pushButtonSave_clicked()
             LOG_PRINT(error_e, "Saved '%s'\n", fullfilename);
 
             getFamilyRecipe(fullfilename, _familyName, _recipeName);
-            //ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
+#ifdef ENABLE_DESCR
+            ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
+#endif
         }
     }
     else
@@ -416,10 +432,10 @@ void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
         else
         {
             char token[LINE_SIZE]="";
-            int decimal = getVarDecimalByCtIndex(recipeMatrix[ui->tableWidget->currentRow()].ctIndex);
+            int decimal = getVarDecimalByCtIndex(testsIndexes[ui->tableWidget->currentRow()]);
             sprintf(token, "%.*f",decimal,value);
             item->setText(token);
-            recipeMatrix[ui->tableWidget->currentRow()].step[ui->tableWidget->currentColumn() - 1] = atof(token);
+            testsTable[ui->tableWidget->currentColumn() - 1][ui->tableWidget->currentRow()] = atof(token);
         }
     }
     delete dk;
@@ -434,7 +450,9 @@ bool recipe::getFamilyRecipe(const char * filename, char * familyName, char * re
     }
     familyName[0] = '\0';
     recipeName[0] = '\0';
+#ifndef ENABLE_DESCR
     return false;
+#endif
 
     strcpy(familyName, filename);
     /* if exists, cut the extension */
@@ -465,132 +483,11 @@ bool recipe::getFamilyRecipe(const char * filename, char * familyName, char * re
     return true;
 }
 
-/*
- * tag1; val1; val2 ... valn
- * ...
- * tagm; val1; val2 ... valn
- */
-bool recipe::loadRecipe(const char * filename)
-{
-    FILE * fp;
-
-    fp = fopen(filename, "r");
-    if (fp == NULL)
-    {
-        LOG_PRINT(info_e, "Cannot open '%s'\n", filename);
-        return false;
-    }
-
-    char line[1024] = "";
-    char *p, *r;
-
-    varNbMax = 0;
-    stepNbMax = 0;
-
-    for (int line_nb = 0; fgets(line, 1024, fp) != NULL && varNbMax < MAX_RCP_VAR; line_nb++)
-    {
-        if (line[0] == '\n' || line[0] == '\r' || line[0] == 0) {
-            LOG_PRINT(info_e, "skipping empty line\n");
-            continue;
-        }
-        /* tag */
-        p = strtok_csv(line, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s' at line %d\n", line, line_nb);
-            continue;
-        }
-        int ctIndex;
-        LOG_PRINT(info_e, "Loading variable '%s'\n", p);
-        if (Tag2CtIndex(p, &ctIndex))
-        {
-            LOG_PRINT(error_e, "Invalid variable '%s' at line %d\n", p, line_nb);
-            continue;
-        }
-        int decimal = getVarDecimalByCtIndex(ctIndex);
-        LOG_PRINT(verbose_e, "recipeMatrix[%d].ctIndex = %d\n", varNbMax, (u_int16_t)ctIndex);
-        recipeMatrix[varNbMax].ctIndex = (u_int16_t)ctIndex;
-
-        /* values */
-        u_int32_t value;
-        float val_float;
-        u_int8_t val_bit;
-        int32_t val_int32;
-        int16_t val_int16;
-
-        for (stepNbMax = 0; stepNbMax < MAX_RCP_STEP && (p = strtok_csv(NULL, SEPARATOR, &r)) != NULL; stepNbMax++)
-        {
-            value = 0;
-            // compute value
-            switch (varNameArray[ctIndex].type)
-            {
-            case uintab_e:
-            case uintba_e:
-            case intab_e:
-            case intba_e:
-            {
-                val_float = atof(p);
-                for (int n = 0; n < decimal; ++n) {
-                    val_float = val_float * 10;
-                }
-                val_int16 = (int16_t)val_float;
-                value = (u_int32_t)val_int16;
-                break;
-            }
-            case udint_abcd_e:
-            case udint_badc_e:
-            case udint_cdab_e:
-            case udint_dcba_e:
-            case dint_abcd_e:
-            case dint_badc_e:
-            case dint_cdab_e:
-            case dint_dcba_e:
-            {
-                val_float = atof(p);
-                for (int n = 0; n < decimal; ++n) {
-                    val_float = val_float * 10;
-                }
-                val_int32 = (int32_t)val_float;
-                memcpy(&value, &val_int32, sizeof(u_int32_t));
-                break;
-            }
-            case fabcd_e:
-            case fbadc_e:
-            case fcdab_e:
-            case fdcba_e:
-            {
-                val_float = atof(p);
-                memcpy(&value, &val_float, sizeof(u_int32_t));
-                break;
-            }
-            case bytebit_e:
-            case wordbit_e:
-            case dwordbit_e:
-            case bit_e:
-            {
-                val_bit = atoi(p);
-                value = (u_int32_t)val_bit;
-                break;
-            }
-            default:
-                /* unknown type */
-                value = 0;
-            }
-            // assign value
-            recipeMatrix[varNbMax].step[stepNbMax] = value;
-            LOG_PRINT(verbose_e, "recipeMatrix[%d].step[%d] = %d;\n", varNbMax, stepNbMax, value);
-        }
-        varNbMax++;
-    }
-
-    LOG_PRINT(info_e, "row %d column %d\n", varNbMax, stepNbMax);
-    fclose(fp);
-    return true;
-}
-
 bool recipe::showRecipe(const char * familyName, const char * recipeName)
 {
-    //ui->labelStatus->setText(QString("%1/%2").arg(familyName).arg(recipeName));
+#ifdef ENABLE_DESCR
+    ui->labelStatus->setText(QString("%1/%2").arg(familyName).arg(recipeName));
+#endif
 
     /* reset the current colum/row */
     current_row = 0;
@@ -612,12 +509,12 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
         ui->progressBarStatus->setValue(varIndex);
-        int decimal = getVarDecimalByCtIndex(recipeMatrix[varIndex].ctIndex);
-        ui->tableWidget->setItem(varIndex, 0, new QTableWidgetItem(varNameArray[recipeMatrix[varIndex].ctIndex].tag));
+        int decimal = getVarDecimalByCtIndex(testsIndexes[varIndex]);
+        ui->tableWidget->setItem(varIndex, 0, new QTableWidgetItem(varNameArray[testsIndexes[varIndex]].tag));
 
         for (int stepIndex = 0; stepIndex < stepNbMax; stepIndex++)
         {
-            ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString::number(recipeMatrix[varIndex].step[stepIndex] / pow(10,decimal), 'f', decimal)));
+            ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString::number(testsTable[stepIndex][varIndex] / pow(10,decimal), 'f', decimal)));
         }
     }
     ui->progressBarStatus->setVisible(false);
