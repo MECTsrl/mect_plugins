@@ -218,10 +218,10 @@ bool store::LoadStore(QDateTime init, QDateTime final)
     outputfile[0] = '\0';
     
     mkdir(TMPDIR, S_IRWXU | S_IRWXG);
-    sprintf(command, "umount %s", TMPDIR);
+    sprintf(command, "umount %s >/dev/null 2>&1", TMPDIR);
     /* if TMPDIR is mounted, unmount it */
     system (command);
-    sprintf(command, "mount -t tmpfs -o size=32M tmpfs %s", TMPDIR);
+    sprintf(command, "mount -t tmpfs -o size=32M tmpfs %s >/dev/null 2>&1", TMPDIR);
     if (system (command) != 0)
     {
         LOG_PRINT(error_e, "cannot execute '%s'\n", command);
@@ -725,7 +725,7 @@ void store::on_pushButtonSaveUSB_clicked()
         
         char srcfilename[FILENAME_MAX];
         char dstfilename[FILENAME_MAX];
-        /* compose the source file name ans the destination file name */
+        /* compose the source file name and the destination file name */
         sprintf(srcfilename, "%s/%s", TMPDIR, outputfile);
         sprintf(dstfilename, "%s/%s_%s.zip",
                 usb_mnt_point,

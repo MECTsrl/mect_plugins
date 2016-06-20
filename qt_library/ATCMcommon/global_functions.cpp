@@ -98,6 +98,16 @@ int readIniFile(void)
     LOG_PRINT(info_e, "'%s' = %d\n", WINDOW_SEC_TAG, MaxWindowSec);
 
     MaxLogUsageMb = settings.value(MAX_SPACE_AVAILABLE_TAG, MAX_SPACE_AVAILABLE_DEF).toInt();
+    MaxLogUsageMb = (MaxLogUsageMb < 0) ? 0 : MaxLogUsageMb;
+    if (MaxLogUsageMb == 0)
+    {
+        LOG_PRINT(warning_e, "No space available for logs [%d]. No logs will be recorded.\n", MaxLogUsageMb);
+    }
+    if (MaxLogUsageMb > MAX_SPACE_AVAILABLE_MAX)
+    {
+        LOG_PRINT(warning_e, "'%s' is too big [%d]. Use the maximum value %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb, MAX_SPACE_AVAILABLE_MAX);
+        MaxLogUsageMb = MAX_SPACE_AVAILABLE_MAX;
+    }
     LOG_PRINT(info_e, "'%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
 #endif
 
@@ -633,7 +643,7 @@ bool USBmount()
     if (USBmode() == usb_device_e)
     {
         char command[256];
-        sprintf(command,"LOOP=`losetup -f` && losetup -o 4096 $LOOP %s && mount -t vfat $LOOP %s", BACKING_FILE, MOUNT_POINT);
+        sprintf(command,"LOOP=`losetup -f` && losetup -o 4096 $LOOP %s && mount -t vfat $LOOP %s >/dev/null 2>&1", BACKING_FILE, MOUNT_POINT);
         if (system (command) == 0)
         {
             strcpy(usb_mnt_point, MOUNT_POINT);

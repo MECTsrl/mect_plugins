@@ -570,7 +570,7 @@ void ATCMgraph::updateData()
     }
 
     /* add sample */
-    if (pen1 == false || addSample(m_x1ArrayValue, m_y1ArrayValue, x1, y1, m_x1MinValue, m_x1MaxValue, &m_current_sample1) == false)
+    if (pen1 == false || addSample(m_x1ArrayValue, m_y1ArrayValue, x1, y1, m_x1MinValue, m_x1MaxValue) == false)
     {
         pen1 = false;
         LOG_PRINT(error_e, "Problem PEN 1\n");
@@ -583,7 +583,7 @@ void ATCMgraph::updateData()
         PLOT->setAxisScale(QwtPlot::yLeft, m_y1MinValue, m_y1MaxValue, m_y1step);
     }
 #ifdef  TARGET_ARM
-    if (pen2 == false || addSample(m_x2ArrayValue, m_y2ArrayValue, x2, y2, m_x2MinValue, m_x2MaxValue, &m_current_sample2) == false)
+    if (pen2 == false || addSample(m_x2ArrayValue, m_y2ArrayValue, x2, y2, m_x2MinValue, m_x2MaxValue) == false)
     {
         pen2 = false;
         LOG_PRINT(error_e, "Problem PEN 2\n");
@@ -648,7 +648,7 @@ void ATCMgraph::setLegendVisible(bool status)
 }
 
 #ifdef TARGET_ARM
-bool ATCMgraph::addSample(double *samples_x, double *samples_y, double x, double y, double min_x, double max_x, int * sample)
+bool ATCMgraph::addSample(double *samples_x, double *samples_y, double x, double y, double min_x, double max_x)
 {
     if (samples_x != NULL && samples_y != NULL)
     {
@@ -1064,7 +1064,7 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
 }
 
 #ifdef TARGET_ARM
-char ATCMgraph::readVariable(QString variable, int CtIndex, double * valuef)
+char ATCMgraph::readVariable(int CtIndex, double * valuef)
 {
     char value[16];
     if (formattedReadFromDb(CtIndex, value) == 0 && strlen(value) > 0)
@@ -1169,7 +1169,7 @@ bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
     }
 #ifdef TARGET_ARM
     /* it is a variable value */
-    else if (readVariable(variable, CtIndex, &myvalue) == DONE)
+    else if (readVariable(CtIndex, &myvalue) == DONE)
     {
         *value = myvalue;
         return true;

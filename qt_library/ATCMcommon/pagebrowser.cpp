@@ -1992,7 +1992,7 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
             return false;
         }
     }
-    
+#if 0
     QProcess process;
     if (junkdir)
     {
@@ -2002,12 +2002,37 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
     {
         process.start(ZIP_BIN, QStringList() << "-r"  << destfile << sourcefiles);
     }
-    
+    process.terminate();
+    if (!process.waitForStarted())
+    {
+        LOG_PRINT(error_e, "Cannot start command: '%s'\n", process.errorString().toAscii().data());
+        process.close();
+        return false;
+    }
+
     if (!process.waitForFinished())
     {
         LOG_PRINT(error_e, "Cannot execute command: '%s'\n", process.errorString().toAscii().data());
+        process.close();
         return false;
     }
+    process.close();
+#else
+    char command[1024];
+    if (junkdir)
+    {
+        sprintf(command, "%s -r -j %s %s >/dev/null 2>&1", ZIP_BIN, destfile.toAscii().data(), sourcefiles.join(" ").toAscii().data());
+    }
+    else
+    {
+        sprintf(command, "%s -r %s %s >/dev/null 2>&1", ZIP_BIN, destfile.toAscii().data(), sourcefiles.join(" ").toAscii().data());
+    }
+    if (system(command))
+    {
+        LOG_PRINT(error_e, "Cannot execute command: '%s'\n", command);
+        return false;
+    }
+#endif
     return true;
 }
 

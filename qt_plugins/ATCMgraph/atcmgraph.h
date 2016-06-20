@@ -384,7 +384,7 @@ public slots:
     bool setViewStatus(bool);
     void setLegendVisible(bool);
 #ifdef TARGET_ARM
-    bool addSample(double *samples_x, double *samples_y, double x, double y, double min_x, double max_x, int * sample);
+    bool addSample(double *samples_x, double *samples_y, double x, double y, double min_x, double max_x);
     bool readData(int CtIndex, QString variable, double * value);
 #endif
     void setDisplay1(QString);
@@ -554,7 +554,7 @@ protected:
 private:
     bool setVariable(QString variable, QString * destination, int * CtIndex);
 #ifdef TARGET_ARM
-    char readVariable(QString variable, int CtIndex, double * value);
+    char readVariable(int CtIndex, double * value);
 #endif
 private:
     QTimer * refresh_timer;

@@ -949,8 +949,9 @@ void system_ini::on_pushButton_FastLogPeriod_clicked()
 
 void system_ini::on_pushButton_MaxLogSpace_clicked()
 {
-    int value;
-    numpad tatiera(&value, ui->pushButton_MaxLogSpace->text().toInt());
+    int value, minvalue = 0, maxvalue = MAX_SPACE_AVAILABLE_MAX;
+
+    numpad tatiera(&value, ui->pushButton_MaxLogSpace->text().toInt(),minvalue,maxvalue);
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {

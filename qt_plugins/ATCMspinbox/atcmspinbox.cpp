@@ -116,10 +116,11 @@ ATCMspinbox::~ATCMspinbox()
 void ATCMspinbox::paintEvent(QPaintEvent * e)
 {
     Q_UNUSED( e );
-    _diameter_ = m_borderradius;
-    _penWidth_ = m_borderwidth;
+    QPainter painter(this);
     QPalette palette = this->palette();
 
+    QStyleOptionSpinBox opt;
+    opt.init(this);
 
     /* font color */
     palette.setColor(QPalette::Text,m_fontcolor);
@@ -129,6 +130,16 @@ void ATCMspinbox::paintEvent(QPaintEvent * e)
     palette.setColor(QPalette::Foreground, m_bordercolor);
     /* bg color */
     palette.setColor(QPalette::Button, m_bgcolor);
+
+    if (m_apparence == QFrame::Raised)
+    {
+        opt.state = QStyle::State_Raised;
+    }
+    else if (m_apparence == QFrame::Sunken)
+    {
+        opt.state = QStyle::State_Sunken;
+    }
+
 
 #ifdef TARGET_ARM
     if (m_viewstatus)
@@ -153,20 +164,9 @@ void ATCMspinbox::paintEvent(QPaintEvent * e)
     }
 #endif
 
-    QPainter painter(this);
-    QStyleOptionSpinBox opt;
-    opt.init(this);
-
-    if (m_apparence == QFrame::Raised)
-    {
-        opt.state = QStyle::State_Raised;
-    }
-    else if (m_apparence == QFrame::Sunken)
-    {
-        opt.state = QStyle::State_Sunken;
-    }
-
     opt.palette = palette;
+    _diameter_ = m_borderradius;
+    _penWidth_ = m_borderwidth;
 
     style()->drawComplexControl(QStyle::CC_SpinBox, &opt, &painter, this);
 }
@@ -191,7 +191,7 @@ bool ATCMspinbox::setVisibilityVar(QString visibilityVar)
         int CtIndex;
         if (Tag2CtIndex(visibilityVar.trimmed().toAscii().data(), &CtIndex) == 0)
         {
-            LOG_PRINT(verbose_e,"visibilityVar '%s', CtIndex %d\n", m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
+            LOG_PRINT(verbose_e,"visibilityVar '%s', CtIndex %d\n", m_visibilityvar.trimmed().toAscii().data(), m_CtVisibilityIndex);
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
@@ -444,6 +444,7 @@ void ATCMspinbox::updateData()
 #ifdef TARGET_ARM
     char statusMsg[TAG_LEN] = "";
     char value[TAG_LEN] = "";
+
     if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
     {
         if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
@@ -459,7 +460,7 @@ void ATCMspinbox::updateData()
         return;
     }
 
-    if (m_variable.length())
+    if (m_variable.length() == 0)
     {
         if (m_CtIndex >= 0)
         {

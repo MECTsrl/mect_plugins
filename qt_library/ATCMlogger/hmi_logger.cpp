@@ -112,7 +112,7 @@ char StatusBannerColorTable[nb_of_alarm_status_e][DESCR_LEN] =
 QHash<QString, event_t *> EventHash;
 #endif
 
-unsigned int total = 0;
+unsigned long int totalBytes = 0;
 
 Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec, QObject *parent) :
     QThread(parent)
@@ -162,19 +162,29 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     }
 #endif	
     /* check the available space */
-    while (checkSpace() == 1)
+    if (MaxLogUsageMb == 0)
     {
-        /* if necessary delete the oldest logfile */
-        if (removeOldest(StorageDir))
+        LOG_PRINT(warning_e, "No space available for logs [%d]. No logs will be recorded.\n", MaxLogUsageMb);
+    }
+    else
+    {
+        while (checkSpace() == 1)
         {
-            LOG_PRINT(error_e, "Cannot remove the oldest log\n");
-            return;
-        }
-        /* if necessary delete the oldest logfile */
-        if (removeOldest(AlarmsDir))
-        {
-            LOG_PRINT(error_e, "Cannot remove the oldest log\n");
-            return;
+            /* if necessary delete the oldest logfile */
+            if (removeOldest(StorageDir))
+            {
+                LOG_PRINT(error_e, "Cannot remove the oldest log\n");
+                return;
+            }
+            /* if necessary delete the oldest logfile */
+            if (checkSpace() == 1)
+            {
+                if (removeOldest(AlarmsDir))
+                {
+                    LOG_PRINT(error_e, "Cannot remove the oldest log\n");
+                    return;
+                }
+            }
         }
     }
 #ifdef ENABLE_STORE
@@ -429,6 +439,12 @@ void Logger::run()
 
 bool Logger::logstart()
 {
+    if (MaxLogUsageMb == 0)
+    {
+        LOG_PRINT(warning_e, "No space available for logs [%d]. No logs will be recorded.\n", MaxLogUsageMb);
+        logger_start = false;
+        return false;
+    }
     logger_start = true;
     return true;
 }
@@ -1368,7 +1384,7 @@ bool Logger::dumpStorage()
 #endif
 
 int sum(__attribute__((unused)) const char *fpath, const struct stat *sb, __attribute__((unused)) int typeflag) {
-    total += sb->st_size;
+    totalBytes += sb->st_size;
     return 0;
 }
 
@@ -1378,38 +1394,37 @@ int Logger::checkSpace( void )
     
     if((statvfs(LOCAL_ROOT_DIR,&fiData)) < 0 )
     {
-        LOG_PRINT(error_e,"Failed to stat %s:\n", LOCAL_ROOT_DIR);
+        LOG_PRINT(error_e,"failed to stat %s:\n", LOCAL_ROOT_DIR);
         return -1;
     }
     
     /* it must be available at least 1Mb */
     if (fiData.f_bfree * fiData.f_bsize < 1024)
     {
-        LOG_PRINT(info_e,"Free %ld [minimum free %d]\n", fiData.f_bfree * fiData.f_bsize, 1024);
+        LOG_PRINT(warning_e,"the available space is almost finish: free %ld[bytes], minimum free %d[bytes].\n", fiData.f_bfree * fiData.f_bsize, 1024);
         return 1;
     }
     
-    total = 0;
+    totalBytes = 0;
     if (getSizeDir(STORE_DIR) != 0)
     {
-        LOG_PRINT(error_e,"Failed to get size of %s:\n", LOCAL_ROOT_DIR);
+        LOG_PRINT(error_e,"failed to get size of %s:\n", LOCAL_ROOT_DIR);
         return -1;
     }
     
-    LOG_PRINT(info_e, "total %ld limit %d avaliable %ld free %ld used %d%%\n",
-              fiData.f_blocks - fiData.f_bavail,
-              MaxLogUsageMb,
-              fiData.f_bavail,
-              fiData.f_bfree,
-              (unsigned int)( (float)(fiData.f_blocks - fiData.f_bavail) / fiData.f_blocks * 100)
-              );
-    
     /* the space occupied by data bust be less than MaxLogUsageMb */
-    if (total >= (unsigned int)MaxLogUsageMb * 1024 * 1024)
+    if (totalBytes >= (unsigned long int)MaxLogUsageMb * 1024 * 1024)
     {
-        LOG_PRINT(info_e,"total %d > MaxLogUsageMb %d\n", total, MaxLogUsageMb * 1024 * 1024);
+        LOG_PRINT(warning_e,"space used is %ld[bytes], max space usable %ld[bytes]\n",
+                  totalBytes, (unsigned long int)MaxLogUsageMb * 1024 * 1024);
         return 1;
     }
+    LOG_PRINT(info_e, "space free %ld, space used %ld, Max space usable %d\n",
+              fiData.f_bfree * fiData.f_bsize,
+              totalBytes,
+              MaxLogUsageMb * 1024 * 1024
+              );
+
     return 0;
 }
 
@@ -1421,7 +1436,7 @@ int Logger::getSizeDir(const char *dirname) {
         perror("ftw");
         return 2;
     }
-    LOG_PRINT(info_e, "%s: %u\n", dirname, total);
+    LOG_PRINT(info_e, "%s: %ld\n", dirname, totalBytes);
     return 0;
 }
 
@@ -1450,7 +1465,7 @@ int Logger::removeOldest( const char * dir)
         if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0)
         {
             sprintf(filename, "%s/%s", dir, filelist[i]->d_name);
-            LOG_PRINT (info_e, "Removing oldest log file '%s'\n", filelist[i]->d_name);
+            LOG_PRINT (warning_e, "Removing oldest log file '%s'\n", filelist[i]->d_name);
             if (remove(filename) != 0)
             {
                 LOG_PRINT (error_e, "Cannot remove oldest log file '%s'\n", filelist[i]->d_name);

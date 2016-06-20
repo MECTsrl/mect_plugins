@@ -119,6 +119,9 @@ QPushButton:pressed
          <bool>false</bool>
         </property>
        </widget>
+       <zorder>qwtPlot</zorder>
+       <zorder>labelvalue</zorder>
+       <zorder>pushButtonSelect</zorder>
       </widget>
      </item>
      <item>
