@@ -53,6 +53,8 @@ private slots:
 
     void on_pushButtonBack_clicked();
 
+    void on_pushButtonTEST_clicked();
+
 private:
     Ui::display_settings *ui;
     QTimer * timer;

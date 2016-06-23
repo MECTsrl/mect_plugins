@@ -15,7 +15,7 @@ my @ui_keyword = (
 "variable",
 "visibilityVar",
 "passwordVar",
-"statusVar",
+"statusvar",
 "x1Variable",
 "x1Min",
 "x1Max",

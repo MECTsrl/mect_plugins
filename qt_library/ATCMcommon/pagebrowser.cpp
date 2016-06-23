@@ -30,6 +30,7 @@
 #include "ATCMsystem/net_conf.h"
 #include "ATCMsystem/data_manager.h"
 #include "ATCMsystem/display_settings.h"
+#include "ATCMsystem/display_test.h"
 #include "ATCMsystem/info.h"
 #include "ATCMsystem/menu.h"
 #include "ATCMsystem/options.h"
@@ -1952,7 +1953,7 @@ void page::translateFontSize( QWidget *ui )
         return;
     
     QFont font = QFont(ui->font());
-    font.setPointSize( (font.pointSize() *6) / 5);
+    font.setPointSize( (font.pointSize() *5) / 3);
     ui->setFont(font);
     
     l = ui->children();
@@ -1961,7 +1962,7 @@ void page::translateFontSize( QWidget *ui )
         QWidget *ww = dynamic_cast<QWidget *>(w);
         if (ww) {
             QFont font = QFont(ww->font());
-            font.setPointSize( (font.pointSize() *6) / 5);
+            font.setPointSize( (font.pointSize() *5) / 3);
             ww->setFont(font);
         }
     }
@@ -2244,6 +2245,10 @@ bool page::create_next_page(page ** p, const char * t)
         else if (strcmp(t, "display_settings") == 0)
         {
             *p = (page *)(new display_settings);
+        }
+        else if (strcmp(t, "display_test") == 0)
+        {
+            *p = (page *)(new display_test);
         }
         else if (strcmp(t, "menu") == 0)
         {

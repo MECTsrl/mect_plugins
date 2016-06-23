@@ -390,6 +390,26 @@ border: 2px solid  rgb(194, 194, 194);
     </layout>
    </item>
    <item>
+    <widget class="QPushButton" name="pushButtonTEST">
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>START TEST</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <property name="spacing">
       <number>4</number>

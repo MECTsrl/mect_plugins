@@ -41,6 +41,7 @@ SOURCES += \
 system_ini.cpp \
 data_manager.cpp \
 display_settings.cpp \
+display_test.cpp \
 info.cpp \
 item_selector.cpp \
 menu.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
 system_ini.h \
 data_manager.h \
 display_settings.h \
+display_test.h \
 info.h \
 item_selector.h \
 menu.h \
@@ -67,6 +69,7 @@ FORMS += \
 system_ini.ui \
 data_manager.ui \
 display_settings.ui \
+display_test.ui \
 info.ui \
 item_selector.ui \
 menu.ui \

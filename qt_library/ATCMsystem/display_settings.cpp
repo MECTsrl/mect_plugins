@@ -255,3 +255,8 @@ void display_settings::on_pushButtonBack_clicked()
     go_back();
 }
 
+
+void display_settings::on_pushButtonTEST_clicked()
+{
+    goto_page("display_test");
+}
