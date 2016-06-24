@@ -1346,7 +1346,7 @@ bool page::goto_page(const char * page_name, bool remember)
 
     if (active_password > p->protection_level)
     {
-        QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible to access the desired page '%1': inadequate privilegies. %2 vs %3").arg(p->windowTitle()).arg(p->protection_level).arg(active_password));
+        QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible access to '%1': inappropriate privilegies.").arg(p->windowTitle()));
         LOG_PRINT(info_e,"active %d, protection %d\n", active_password, p->protection_level);
         go_home();
         return false;
