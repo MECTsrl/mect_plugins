@@ -256,7 +256,7 @@ SectionGroup "QT"
 		nsExec::ExecToLog 'IF NOT EXIST "c:\Program Files\MectConfiguratorInstaller" mklink /d   "c:\Program Files\MectConfiguratorInstaller" "c:\Program Files (x86)/MectConfiguratorInstaller"'
 		
 		;MessageBox MB_YESNO|MB_ICONQUESTION "To finish the installation you need to Reboot. Do you wish to Reboot now?" IDYES true IDNO false
-		MessageBox MB_YESNO|MB_ICONQUESTION "Per terminare correttamente l'installazione e' necessario riavviare il PC. Vuoi riavviare ora?" IDYES true IDNO false
+		MessageBox MB_YESNO|MB_ICONQUESTION "Per terminare correttamente l'installazione e' necessario uscire dalla sessione. Vuoi uscire dalla sessione ora?" IDYES true IDNO false
 		true:
 			nsExec::ExecToLog 'Shutdown /L'
 			Reboot

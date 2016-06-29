@@ -8,6 +8,7 @@
  * @brief Main page
  */
 #include "app_logprint.h"
+#include "global_functions.h"
 #include "trend.h"
 #include "item_selector.h"
 #include "ui_trend.h"
@@ -177,7 +178,7 @@ void trend::reload()
     {
         if (strlen(_actual_trend_) == 0)
         {
-            LOG_PRINT(error_e, "TREND PROBLEM!!!!!\n");
+            LOG_PRINT(warning_e, "No trend selected.\n");
             LOG_PRINT(info_e, "DISCONNECT!!!!!\n");
             disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
             refresh_timer->stop();
@@ -211,6 +212,34 @@ void trend::reload()
             reloading = false;
             LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADED\n");
             return;
+        }
+        else
+        {
+            for (int z = 0; z < PEN_NB; z++)
+            {
+                if (valueScale[z] == NULL)
+                {
+                    int decimal = 0;
+                    if (strlen(pens[z].tag))
+                    {
+                        getVarDecimalByName(pens[z].tag);
+                    }
+                    LOG_PRINT(info_e, "@@@@@@@@@@@@ valueScale null pointer for z='%d'\n", z);
+                    valueScale[z] = new NormalScaleDraw(decimal);
+                }
+
+                pens[z].curve = new InterruptedCurve();
+                //pens[rownb].curve = new QwtPlotCurve();
+                pens[z].y = new double [MAX_SAMPLE_NB + 1];
+                pens[z].x = new double [MAX_SAMPLE_NB + 1];
+
+                for (int i = 0; i < MAX_SAMPLE_NB; i++)
+                {
+                    pens[z].y[i] = /*pens[rownb].yMax*/NAN;
+                    pens[z].x[i] = /*pens[rownb].yMax*/NAN;
+                }
+                pens[z].sample = 0;
+            }
         }
 #ifdef MARKER
         if (d_marker != NULL)
@@ -401,6 +430,31 @@ void trend::updateData()
                 else
                 {
                     delete sel;
+                    for (int z = 0; z < PEN_NB; z++)
+                    {
+                        if (valueScale[z] == NULL)
+                        {
+                            int decimal = 0;
+                            if (strlen(pens[z].tag))
+                            {
+                                getVarDecimalByName(pens[z].tag);
+                            }
+                            LOG_PRINT(info_e, "@@@@@@@@@@@@ valueScale null pointer for z='%d'\n", z);
+                            valueScale[z] = new NormalScaleDraw(decimal);
+                        }
+
+                        pens[z].curve = new InterruptedCurve();
+                        //pens[rownb].curve = new QwtPlotCurve();
+                        pens[z].y = new double [MAX_SAMPLE_NB + 1];
+                        pens[z].x = new double [MAX_SAMPLE_NB + 1];
+
+                        for (int i = 0; i < MAX_SAMPLE_NB; i++)
+                        {
+                            pens[z].y[i] = /*pens[rownb].yMax*/NAN;
+                            pens[z].x[i] = /*pens[rownb].yMax*/NAN;
+                        }
+                        pens[z].sample = 0;
+                    }
                     reload();
                     refresh_timer->start(REFRESH_MS);
                     return;
@@ -515,7 +569,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
     
     if (item_trend.timestamp.isValid() == false)
     {
-        LOG_PRINT(error_e,"INVALID SAMPLE '%s'\n",  varNameArray[item_trend.CtIndex].tag);
+        LOG_PRINT(error_e,"invalid sample '%s'\n",  varNameArray[item_trend.CtIndex].tag);
         return;
     }
     
@@ -881,310 +935,6 @@ bool trend::printGraph()
     return false;
 }
 
-bool trend::LoadTrend(const char * filename, QString * ErrorMsg)
-{
-    FILE * fp;
-    char line[LINE_SIZE] = "";
-    char * p = NULL, *r = NULL;
-    
-    fp = fopen(filename, "r");
-    if (fp == NULL)
-    {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
-        if (ErrorMsg) *ErrorMsg = trUtf8("Cannot open '%1'").arg(filename);
-        return false;
-    }
-    LOG_PRINT(verbose_e, "opened '%s'\n", filename);
-    /*
-     * the file is formatted as
-     * <Layout>
-     * <Visible>;<Tag1>;<color>;<Ymin>;<Ymax>;<description>
-     * <Visible>;<Tag2>;<color>;<Ymin>;<Ymax>;<description>
-     * <Visible>;<Tag3>;<color>;<Ymin>;<Ymax>;<description>
-     * <Visible>;<Tag4>;<color>;<Ymin>;<Ymax>;<description>
-     */
-    /* extract the layout */
-    if (fgets(line, LINE_SIZE, fp) == NULL)
-    {
-        LOG_PRINT(error_e, "Invalid Layout '%s'\n", line);
-        fclose(fp);
-        if (ErrorMsg) *ErrorMsg = trUtf8("Invalid Layout '%1'").arg(line);
-        return false;
-    }
-    
-    //disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-    
-    switch(line[0])
-    {
-    case PORTRAIT:
-        _layout_ = PORTRAIT;
-        break;
-    case LANDSCAPE:
-        _layout_ = LANDSCAPE;
-        break;
-    default:
-        _layout_ = LANDSCAPE;
-        break;
-    }
-    _last_layout_ = _layout_;
-    
-    int rownb = 0;
-    while (fgets(line, LINE_SIZE, fp) != NULL)
-    {
-        if (rownb >= PEN_NB)
-        {
-            LOG_PRINT(verbose_e, "Too many pen, ignore them.\n");
-            break;
-        }
-        LOG_PRINT(verbose_e, "line %s\n", line);
-        pens[rownb].visible = false;
-        if (pens[rownb].curve != NULL)
-        {
-            //delete pens[rownb].curve;
-            pens[rownb].curve = NULL;
-        }
-        if (pens[rownb].y != NULL)
-        {
-            delete pens[rownb].y;
-            pens[rownb].y = NULL;
-        }
-        
-        pens[rownb].color[0] = '\0';
-        pens[rownb].description[0] = '\0';
-        pens[rownb].sample = 0;
-        pens[rownb].tag[0] = '\0';
-        pens[rownb].visible = 0;
-        pens[rownb].y = NULL;
-        pens[rownb].yMax = 0;
-        pens[rownb].yMin = 0;
-        pens[rownb].yMaxActual = 0;
-        pens[rownb].yMinActual = 0;
-        
-        /* visible */
-        p = strtok_csv(line, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            fclose(fp);
-            if (ErrorMsg) *ErrorMsg = trUtf8("Invalid visible tag");
-            return false;
-        }
-        else if (p[0] == '\0')
-        {
-            pens[rownb].visible = false;
-        }
-        else
-        {
-            pens[rownb].visible = (atoi(p) == 1);
-            LOG_PRINT(verbose_e, "tag '%s'\n", p);
-        }
-        
-        /* tag */
-        int index;
-        p = strtok_csv(NULL, SEPARATOR, &r);
-        if (p == NULL)
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            fclose(fp);
-            if (ErrorMsg) *ErrorMsg = trUtf8("Invalid variable tag '%1'").arg(line);
-            return false;
-        }
-        else if (p[0] == '\0')
-        {
-            LOG_PRINT(warning_e, "Empty tag '%s' at line %d\n", p, rownb+1);
-            pens[rownb].tag[0] = '\0';
-            pens[rownb].visible = false;
-        }
-        else if (Tag2CtIndex(p, &index) != 0)
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s' at line %d\n", p, rownb+1);
-            pens[rownb].tag[0] = '\0';
-            pens[rownb].visible = false;
-            pens[rownb].CtIndex = -1;
-            if (ErrorMsg) *ErrorMsg = trUtf8("Cannot find the variable %1 into the Crosstable. The pen will be disabled.").arg(p);
-            return false;
-        }
-        else
-        {
-            pens[rownb].CtIndex = index;
-            strcpy(pens[rownb].tag, p);
-            LOG_PRINT(verbose_e, "tag '%s'\n", p);
-        }
-        
-        /* color */
-        p = strtok_csv(NULL, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            fclose(fp);
-            if (ErrorMsg)*ErrorMsg = trUtf8("Invalid color tag '%1'").arg(line);
-            return false;
-        }
-        else if (p[0] == '\0')
-        {
-            strcpy(pens[rownb].color, "000000");
-            LOG_PRINT(warning_e, "Empty color tag. set default as '%s'\n", p);
-        }
-        else
-        {
-            strcpy(pens[rownb].color, p);
-            LOG_PRINT(verbose_e, "tag '%s'\n", p);
-        }
-        
-        /* Ymin */
-        p = strtok_csv(NULL, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            fclose(fp);
-            if (ErrorMsg)* ErrorMsg = trUtf8("Invalid Ymin tag '%1'").arg(line);
-            return false;
-        }
-        else if (p[0] == '\0')
-        {
-            pens[rownb].yMin = 0;
-            pens[rownb].yMinActual = 0;
-        }
-        else
-        {
-            pens[rownb].yMin = atof(p);
-            pens[rownb].yMinActual = pens[rownb].yMin;
-            LOG_PRINT(verbose_e, "tag '%s'\n", p);
-        }
-        
-        /* Ymax */
-        p = strtok_csv(NULL, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0')
-        {
-            LOG_PRINT(error_e, "Invalid tag '%s'\n", line);
-            fclose(fp);
-            if (ErrorMsg) *ErrorMsg = trUtf8("Invalid Ymax tag '%1'").arg(line);
-            return false;
-        }
-        else if (p[0] == '\0')
-        {
-            pens[rownb].yMax = 0;
-            pens[rownb].yMaxActual = 0;
-        }
-        else
-        {
-            pens[rownb].yMax = atof(p);
-            pens[rownb].yMaxActual = pens[rownb].yMax;
-            LOG_PRINT(verbose_e, "tag '%s'\n", p);
-        }
-        
-        if (pens[rownb].visible && pens[rownb].yMin >= pens[rownb].yMax)
-        {
-            LOG_PRINT(warning_e, "Max value must be bigger than min value\n");
-            if (ErrorMsg) *ErrorMsg = trUtf8("Max value must be bigger than min value");
-            return false;
-        }
-        
-        /* description */
-        p = strtok_csv(NULL, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0')
-        {
-            LOG_PRINT(verbose_e, "Empty description '%s'\n", line);
-            pens[rownb].description[0] = '\0';
-        }
-        else
-        {
-            strcpy(pens[rownb].description, p);
-        }
-
-        pens[rownb].curve = new InterruptedCurve();
-        //pens[rownb].curve = new QwtPlotCurve();
-        pens[rownb].y = new double [MAX_SAMPLE_NB + 1];
-        pens[rownb].x = new double [MAX_SAMPLE_NB + 1];
-        
-        for (int i = 0; i < MAX_SAMPLE_NB; i++)
-        {
-            pens[rownb].y[i] = /*pens[rownb].yMax*/NAN;
-            pens[rownb].x[i] = /*pens[rownb].yMax*/NAN;
-        }
-        pens[rownb].sample = 0;
-        rownb++;
-    }
-    fclose(fp);
-    
-    if (rownb != PEN_NB)
-    {
-        LOG_PRINT(error_e, "Incomplete trend file (%d vs %d)\n", rownb, PEN_NB);
-        if (ErrorMsg) *ErrorMsg = trUtf8("Incomplete trend file (%1 vs %2)").arg(rownb).arg(PEN_NB);
-        return false;
-    }
-    
-    /* fill the empty color */
-    {
-        QStringList default_color;
-        int i = 0, j = 0;
-        
-        default_color << "FF0000" << "00FF00" << "0000FF" << "000000";
-        
-        for (int z = 0; z < PEN_NB; z++)
-        {
-            if (valueScale[z] == NULL)
-            {
-                int decimal = 0;
-                if (strlen(pens[z].tag))
-                {
-                    getVarDecimalByName(pens[z].tag);
-                }
-                LOG_PRINT(info_e, "@@@@@@@@@@@@ valueScale null pointer for z='%d'\n", z);
-                valueScale[z] = new NormalScaleDraw(decimal);
-            }
-            
-            /* the actual color is empty*/
-            if (pens[z].color[0] == '\0')
-            {
-                for (i = 0; i < default_color.count(); i++)
-                {
-                    for (j = 0; j < PEN_NB; j++)
-                    {
-                        /* the color i is already used by the pen j */
-                        if (strcmp(default_color.at(i).toAscii().data(), pens[j].color) == 0)
-                        {
-                            break;
-                        }
-                    }
-                    /* the color i is not used by the pen j so is a valid color */
-                    if (strcmp(default_color.at(i).toAscii().data(), pens[j].color) != 0)
-                    {
-                        break;
-                    }
-                }
-                /* if all aolor are used, use the default color */
-                if (i > PEN_NB)
-                {
-                    i = default_color.count() - 1;
-                }
-                strcpy(pens[z].color, default_color.at(i).toAscii().data());
-                LOG_PRINT(verbose_e, "set color of pen %d as '%s'\n", z, pens[z].color);
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "the pen %d already have the color '%s'\n", z, pens[z].color);
-            }
-        }
-    }
-    
-    actualPen = 0;
-    for (int i = 0; i < PEN_NB; i++)
-    {
-        LOG_PRINT(verbose_e, "pen '%s' position %d color %s min %f max %f\n", pens[i].tag, i, pens[i].color, pens[i].yMin, pens[i].yMax);
-        if (pens[i].visible)
-        {
-            actualPen = i;
-            LOG_PRINT(verbose_e, "visible pen '%s' position %d\n", pens[actualPen].tag, actualPen);
-            //connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-            return true;
-        }
-    }
-    LOG_PRINT(warning_e, "No visible pen\n");
-    if (ErrorMsg) *ErrorMsg = trUtf8("No visible pen");
-    return false;
-}
-
 bool trend::bringFront(int pen)
 {
     if (_load_window_busy == true)
@@ -1256,7 +1006,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     }
     if (logfound == 0)
     {
-        LOG_PRINT(error_e, "cannot found any sample from begin '%s' to '%s'\n",
+        LOG_PRINT(warning_e, "cannot found any sample from begin '%s' to '%s'\n",
                   begin.toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
                   end.toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
                   );
@@ -1304,7 +1054,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         p = strtok_csv(line, SEPARATOR, &r);
         if (p == NULL || p[0] == '\0' || strcmp(token, "date") != 0)
         {
-            LOG_PRINT(error_e, "Invalid tag '%s' '%s'\n", line, token);
+            LOG_PRINT(error_e, "Invalid date field '%s' '%s'\n", line, token);
             fclose(fp);
             return false;
         }
@@ -1313,7 +1063,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         p = strtok_csv(NULL, SEPARATOR, &r);
         if (p == NULL || p[0] == '\0' || strcmp(token, "time") != 0)
         {
-            LOG_PRINT(error_e, "Invalid tag '%s' '%s'\n", line, token);
+            LOG_PRINT(error_e, "Invalid time field '%s' '%s'\n", line, token);
             fclose(fp);
             return false;
         }
@@ -1472,7 +1222,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     }
     else
     {
-        LOG_PRINT(error_e, "NO TREND FILE '%s'\n", filename);
+        LOG_PRINT(error_e, "no trend file '%s'\n", filename);
         return false;
     }
     LOG_PRINT(verbose_e, "LOADED TREND FILE '%s'\n", filename);
@@ -1972,7 +1722,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             ui->pushButtonLeft->setEnabled(false);
         }
     }
-    LOG_PRINT(verbose_e, "DOOOOOOWN pen %d Max %f Actual Max %f\n", actualPen, pens[actualPen].yMax, pens[actualPen].yMaxActual);
+    LOG_PRINT(verbose_e, "DOWN pen %d Max %f Actual Max %f\n", actualPen, pens[actualPen].yMax, pens[actualPen].yMaxActual);
     if (pens[actualPen].yMin < pens[actualPen].yMinActual)
     {
         if (_layout_ == LANDSCAPE)
@@ -2005,7 +1755,6 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         else
         {
             ui->pushButtonUp->setEnabled(true);
-            LOG_PRINT(verbose_e, "@@@@@@@@@@@@@@@ current '%s' Tmax '%s'\n", QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data(), Tmax.toString(DATE_TIME_FMT).toAscii().data());
         }
     }
     else

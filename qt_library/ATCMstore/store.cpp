@@ -22,7 +22,7 @@
 #include "ui_store.h"
 #include "utility.h"
 
-#define LINE_BUFFER_SIZE 5
+#define LINE_BUFFER_SIZE 12
 
 /* this define set the variables list to be to displayed in this page */
 #undef VAR_TO_DISPLAY

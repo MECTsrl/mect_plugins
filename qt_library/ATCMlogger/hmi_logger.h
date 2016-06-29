@@ -140,7 +140,8 @@ private:
     bool checkVariation();
     int checkSpace( void );
     int removeOldest(const char * dir);
-    int getSizeDir(const char *dirname);
+    unsigned long getSizeDir(const char *dirname);
+    unsigned long getCapacityDir(const char *dirname);
 private:
     time_t Now;
     struct tm * timeinfo;

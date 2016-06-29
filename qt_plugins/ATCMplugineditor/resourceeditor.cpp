@@ -24,6 +24,8 @@ ResourceEditor::ResourceEditor(QWidget *parent, QString * selection)
         if (
                 start == false
                 ||
+                !item.endsWith(".png")
+                ||
                 item.startsWith(":/trolltech/")
                 ||
                 item.startsWith(":/core/")
@@ -85,8 +87,6 @@ ResourceEditor::ResourceEditor(QWidget *parent, QString * selection)
                 item.startsWith(":/icon/tool/")
                 ||
                 item.startsWith(":/resourceeditor/")
-                ||
-                !item.endsWith(".png")
            )
         {
             continue;

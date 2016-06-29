@@ -38,7 +38,7 @@ Custom project wizard configuration example file. Note that by convention,
 	   class="qt4project" firstpage="10"
 	   id="A.customqtproject" category="B.CustomProjects">
 	   <icon>console.png</icon>
-	   <description>Creates an empty Qt project for TPAC1008_02_AD with the template used by ATCM Applications and by QTCMplugin.</description>
+	   <description>Creates an empty Qt project for TPAC1008_02_AD with the template used by ATCM Applications and by QATCMplugin.</description>
 	   <displayname>TPAC1008_02_AD</displayname>;
 	   <displaycategory>Mect Projects</displaycategory>
 	   <files>

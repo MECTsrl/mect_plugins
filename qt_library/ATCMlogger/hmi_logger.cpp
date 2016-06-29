@@ -168,6 +168,16 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     }
     else
     {
+        int capacity_mb = getCapacityDir(LOCAL_DATA_DIR) / 1024;
+        if ( MaxLogUsageMb > capacity_mb )
+        {
+            LOG_PRINT(warning_e, "'%s' is too big [%d]. Use the maximum value %d\n",
+                      MAX_SPACE_AVAILABLE_TAG,
+                      MaxLogUsageMb,
+                      capacity_mb);
+            MaxLogUsageMb = capacity_mb;
+        }
+
         while (checkSpace() == 1)
         {
             /* if necessary delete the oldest logfile */
@@ -1392,9 +1402,9 @@ int Logger::checkSpace( void )
 {
     struct statvfs fiData;
     
-    if((statvfs(LOCAL_ROOT_DIR,&fiData)) < 0 )
+    if((statvfs(LOCAL_DATA_DIR,&fiData)) < 0 )
     {
-        LOG_PRINT(error_e,"failed to stat %s:\n", LOCAL_ROOT_DIR);
+        LOG_PRINT(error_e,"failed to stat %s:\n", LOCAL_DATA_DIR);
         return -1;
     }
     
@@ -1405,15 +1415,8 @@ int Logger::checkSpace( void )
         return 1;
     }
     
-    totalBytes = 0;
-    if (getSizeDir(STORE_DIR) != 0)
-    {
-        LOG_PRINT(error_e,"failed to get size of %s:\n", LOCAL_ROOT_DIR);
-        return -1;
-    }
-    
     /* the space occupied by data bust be less than MaxLogUsageMb */
-    if (totalBytes >= (unsigned long int)MaxLogUsageMb * 1024 * 1024)
+    if (getSizeDir(STORE_DIR) >= (unsigned long int)MaxLogUsageMb * 1024 * 1024)
     {
         LOG_PRINT(warning_e,"space used is %ld[bytes], max space usable %ld[bytes]\n",
                   totalBytes, (unsigned long int)MaxLogUsageMb * 1024 * 1024);
@@ -1428,16 +1431,38 @@ int Logger::checkSpace( void )
     return 0;
 }
 
-int Logger::getSizeDir(const char *dirname) {
+unsigned long Logger::getSizeDir(const char *dirname) {
+    totalBytes = 0;
     if (access(dirname, R_OK)) {
-        return 1;
+        return 0;
     }
     if (ftw(dirname, &sum, 1)) {
         perror("ftw");
-        return 2;
+        return 0;
     }
     LOG_PRINT(info_e, "%s: %ld\n", dirname, totalBytes);
-    return 0;
+    return totalBytes;
+}
+
+unsigned long Logger::getCapacityDir(const char *dirname) {
+    struct statvfs fiData;
+
+    if((statvfs(dirname,&fiData)) < 0 )
+    {
+        LOG_PRINT(error_e,"failed to stat %s. Disable logs\n", LOCAL_DATA_DIR);
+        MaxLogUsageMb = 0;
+    }
+
+    unsigned long capacity =
+            (unsigned long)
+            (
+                (unsigned long)((float)fiData.f_bavail / 1024 * fiData.f_bsize)
+                +
+                (unsigned long)(getSizeDir(LOCAL_DATA_DIR) / 1024)
+            )
+            ;
+    LOG_PRINT(info_e, "%s: %ld\n", dirname, capacity);
+    return capacity;
 }
 
 int Logger::removeOldest( const char * dir)

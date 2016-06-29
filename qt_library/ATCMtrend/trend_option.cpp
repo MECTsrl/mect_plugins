@@ -85,19 +85,53 @@ trend_option::trend_option(QWidget *parent) :
  */
 void trend_option::reload()
 {
-    ui->labelInfo->setText("");
-    ui->labelInfo->repaint();
     if (_layout_ == PORTRAIT)
     {
-        ui->pushButtonLayout->setText(trUtf8("Portrait"));
+        ui->pushButtonLayout->setStyleSheet(
+                    "QPushButton"
+                    "{"
+                    "border: 2px solid  rgb(94, 94, 94);"
+                    "border-radius: 8px;"
+                    "qproperty-icon: url(:/systemicons/img/Portrait.png);"
+                    "qproperty-iconSize: 24px 24px;"
+                    "qproperty-focusPolicy: NoFocus;"
+                    "}"
+                    "QPushButton:pressed"
+                    "{"
+                    "border: 2px solid  rgb(194, 194, 194);"
+                    "background-color:  rgb(255, 255, 127);"
+                    "}"
+                    "QPushButton:disabled"
+                    "{"
+                    "border: 2px solid  rgb(194, 194, 194);"
+                    "}"
+                    );
     }
     else
     {
-        ui->pushButtonLayout->setText(trUtf8("Landscape"));
+        ui->pushButtonLayout->setStyleSheet(
+                    "QPushButton"
+                    "{"
+                    "border: 2px solid  rgb(94, 94, 94);"
+                    "border-radius: 8px;"
+                    "qproperty-icon: url(:/systemicons/img/Landscape.png);"
+                    "qproperty-iconSize: 24px 24px;"
+                    "qproperty-focusPolicy: NoFocus;"
+                    "}"
+                    "QPushButton:pressed"
+                    "{"
+                    "border: 2px solid  rgb(194, 194, 194);"
+                    "background-color:  rgb(255, 255, 127);"
+                    "}"
+                    "QPushButton:disabled"
+                    "{"
+                    "border: 2px solid  rgb(194, 194, 194);"
+                    "}"
+                    );
     }
     
-    ui->labelTrendName->setText(_actual_trend_);
-    ui->labelPenName->setText(pens[actualPen].tag);
+    ui->pushButtonChangeTrend->setText(_actual_trend_);
+    ui->pushButtonChangePen->setText(pens[actualPen].tag);
     ui->checkBoxVisible->setChecked(pens[actualPen].visible == 1);
     
     if (strlen(pens[actualPen].description) == 0)
@@ -109,7 +143,11 @@ void trend_option::reload()
         ui->pushButtonDescription->setText(pens[actualPen].description);
     }
     
-    int decimal =  getVarDecimalByName(pens[actualPen].tag);
+    int decimal = 1;
+    if (pens[actualPen].tag[0] != '\0')
+    {
+        decimal =  getVarDecimalByName(pens[actualPen].tag);
+    }
     ui->pushButtonYmin->setText(QString().setNum(pens[actualPen].yMin,'f',decimal));
     ui->pushButtonYmax->setText(QString().setNum(pens[actualPen].yMax,'f',decimal));
     
@@ -168,9 +206,6 @@ void trend_option::on_pushButtonHome_clicked()
 
 void trend_option::on_pushButtonBack_clicked()
 {
-    ui->labelInfo->setText(trUtf8("loading..."));
-    ui->labelInfo->setStyleSheet("color: rgb(255,0,0);");
-    ui->labelInfo->repaint();
 #if 0
     /* force a online */
     actualVisibleWindowSec = 0;
@@ -182,14 +217,90 @@ void trend_option::on_pushButtonLayout_clicked()
 {
     if (_layout_ == PORTRAIT)
     {
-        ui->pushButtonLayout->setText(trUtf8("Landscape"));
+        ui->pushButtonLayout->setStyleSheet(
+                    "QPushButton"
+                    "{"
+                    "border: 2px solid  rgb(94, 94, 94);"
+                    "border-radius: 8px;"
+                    "qproperty-icon: url(:/systemicons/img/Landscape.png);"
+                    "qproperty-iconSize: 24px 24px;"
+                    "qproperty-focusPolicy: NoFocus;"
+                    "}"
+                    "QPushButton:pressed"
+                    "{"
+                    "border: 2px solid  rgb(194, 194, 194);"
+                    "background-color:  rgb(255, 255, 127);"
+                    "}"
+                    "QPushButton:disabled"
+                    "{"
+                    "border: 2px solid  rgb(194, 194, 194);"
+                    "}"
+                    );
         _layout_ = LANDSCAPE;
     }
     else
     {
-        ui->pushButtonLayout->setText(trUtf8("Portrait"));
+        ui->pushButtonLayout->setStyleSheet(
+                    "QPushButton"
+                    "{"
+                    "border: 2px solid  rgb(94, 94, 94);"
+                    "border-radius: 8px;"
+                    "qproperty-icon: url(:/systemicons/img/Portrait.png);"
+                    "qproperty-iconSize: 24px 24px;"
+                    "qproperty-focusPolicy: NoFocus;"
+                    "}"
+                    "QPushButton:pressed"
+                    "{"
+                    "border: 2px solid  rgb(194, 194, 194);"
+                    "background-color:  rgb(255, 255, 127);"
+                    "}"
+                    "QPushButton:disabled"
+                    "{"
+                    "border: 2px solid  rgb(194, 194, 194);"
+                    "}"
+                    );
         _layout_ = PORTRAIT;
     }
+}
+
+void trend_option::on_pushButtonChangeNew_clicked()
+{
+    char value[DESCR_LEN] = "trend";
+    alphanumpad * dk;
+
+    dk = new alphanumpad(value, value);
+    dk->showFullScreen();
+
+    if (dk->exec() == QDialog::Accepted && strlen(value) != 0)
+    {
+        char filename[MAX_LINE];
+        LOG_PRINT(info_e, "Saving to '%s'\n", value);
+        sprintf(filename, "%s/%s%s", CUSTOM_TREND_DIR, value, ".csv");
+        if (!QFile::exists(filename))
+        {
+            /* set the default value */
+            for (int i = 0; i < PEN_NB; i++)
+            {
+                pens[i].visible = 0;
+                pens[i].tag[0]='\0';
+                strcpy(pens[i].color, curve_palette.at(i).toAscii().data());
+                pens[i].yMin = 0;
+                pens[i].yMax = 1;
+                pens[i].description[0]='\0';
+            }
+            strcpy(_actual_trend_, QFileInfo(filename).baseName().toAscii().data());
+            Save(filename);
+        }
+        /* force a online */
+        actualVisibleWindowSec = 0;
+        QString(errormsg);
+        LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg);
+        reload();
+    }
+    else
+    {
+    }
+    delete dk;
 }
 
 void trend_option::on_pushButtonChangeTrend_clicked()
@@ -212,7 +323,7 @@ void trend_option::on_pushButtonChangeTrend_clicked()
     }
     else
     {
-        LOG_PRINT(error_e, "No trend to show\n");
+        LOG_PRINT(warning_e, "No trend to show\n");
         return;
     }
     
@@ -224,7 +335,9 @@ void trend_option::on_pushButtonChangeTrend_clicked()
         strcpy(_actual_trend_, QFileInfo(value).baseName().toAscii().data());
         /* force a online */
         actualVisibleWindowSec = 0;
-        goto_page("trend");
+        QString(errormsg);
+        LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg);
+        reload();
     }
     else
     {
@@ -254,7 +367,7 @@ void trend_option::on_pushButtonChangePen_clicked()
     if (sel->exec() == QDialog::Accepted)
     {
         strcpy(pens[actualPen].tag, value.toAscii().data());
-        ui->labelPenName->setText(value);
+        ui->pushButtonChangePen->setText(value);
     }
     else
     {
@@ -264,10 +377,13 @@ void trend_option::on_pushButtonChangePen_clicked()
 
 void trend_option::on_pushButtonDeletePen_clicked()
 {
-    pens[actualPen].visible = 0;
-    pens[actualPen].tag[0] = '\0';
-    pens[actualPen].description[0] = '\0';
-    reload();
+    if (QMessageBox::question(this, trUtf8("Remove confirmation"), trUtf8("do you want remove the variable '%1'?\nThe operation will take effect after save the new options.").arg(pens[actualPen].tag), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
+    {
+        pens[actualPen].visible = 0;
+        pens[actualPen].tag[0] = '\0';
+        pens[actualPen].description[0] = '\0';
+        reload();
+    }
 }
 
 void trend_option::on_checkBoxVisible_clicked(bool checked)
@@ -369,7 +485,7 @@ void trend_option::on_pushButtonSaveAs_clicked()
         LOG_PRINT(info_e, "Saving to '%s'\n", value);
         sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, value);
         Save(fullfilename);
-        ui->labelTrendName->setText(value);
+        ui->pushButtonChangeTrend->setText(value);
     }
     else
     {
@@ -382,7 +498,7 @@ void trend_option::on_pushButtonSave_clicked()
     char fullfilename[FILENAME_MAX];
     sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, _actual_trend_);
     Save(fullfilename);
-    ui->labelTrendName->setText(_actual_trend_);
+    ui->pushButtonChangeTrend->setText(_actual_trend_);
 }
 
 void trend_option::Save(const char * fullfilename)
@@ -410,7 +526,7 @@ void trend_option::Save(const char * fullfilename)
             strcpy(pens[actualPen].color, color);
         }
         
-        LOG_PRINT(error_e, "opened '%s'\n", fullfilename);
+        LOG_PRINT(info_e, "opened '%s'\n", fullfilename);
         for (int i = 0; i < PEN_NB; i++)
         {
             fprintf(fp, "%d;%s;%s;%f;%f;%s\n",
@@ -423,7 +539,7 @@ void trend_option::Save(const char * fullfilename)
                     );
         }
         fclose(fp);
-        LOG_PRINT(error_e, "Saved '%s'\n", fullfilename);
+        LOG_PRINT(info_e, "Saved '%s'\n", fullfilename);
         QMessageBox::information(this,trUtf8("Save"), trUtf8("the trend configuration %1 is saved to %2").arg(_actual_trend_).arg(fullfilename));
     }
     /* force a reload */
@@ -500,6 +616,33 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         USBumount();
         LOG_PRINT(info_e, "DOWNLOADED\n");
         QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
+    }
+}
+
+
+void trend_option::on_pushButtonPrev_clicked()
+{
+    actualPen--;
+    actualPen = actualPen % PEN_NB;
+    reload();
+}
+
+void trend_option::on_pushButtonNext_clicked()
+{
+    actualPen++;
+    actualPen = actualPen % PEN_NB;
+    reload();
+}
+
+void trend_option::on_pushButtonDeleteTrend_clicked()
+{
+    if (QMessageBox::question(this, trUtf8("Remove confirmation"), trUtf8("do you want remove the trend '%1'?").arg(ui->pushButtonChangeTrend->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
+    {
+        char fullfilename [MAX_LINE];
+        sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, ui->pushButtonChangeTrend->text().toAscii().data());
+        QFile::remove(fullfilename);
+        QMessageBox::information(this,trUtf8("Removed"), trUtf8("Trend '%1' removed.").arg(ui->pushButtonChangeTrend->text()));
+        on_pushButtonChangeTrend_clicked();
     }
 }
 

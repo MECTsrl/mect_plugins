@@ -14,7 +14,7 @@
 #include <QListWidgetItem>
 
 //#include "style.h"
-#include "../../qt_templates/ATCM-template-project/style.h"
+//#include "../../qt_templates/ATCM-template-project/style.h"
 
 namespace Ui {
 class item_selector;

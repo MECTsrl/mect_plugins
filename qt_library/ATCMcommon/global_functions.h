@@ -181,4 +181,6 @@ int set_backlight_level(int level);
  */
 int get_backlight_level(void);
 
+bool LoadTrend(const char * filename, QString * ErrorMsg);
+
 #endif // GLOBAL_FUNCTIONS_H

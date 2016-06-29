@@ -58,6 +58,14 @@ private slots:
 
     void on_pushButtonSaveUSB_clicked();
 
+    void on_pushButtonPrev_clicked();
+
+    void on_pushButtonNext_clicked();
+
+    void on_pushButtonChangeNew_clicked();
+
+    void on_pushButtonDeleteTrend_clicked();
+
 private:
     void Save(const char * fullfilename);
     

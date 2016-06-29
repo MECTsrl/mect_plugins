@@ -117,7 +117,6 @@ private slots:
     void on_pushButtonOnline_clicked();
 
 private:
-    bool LoadTrend(const char * filename, QString * ErrorMsg = NULL);
     bool loadFromFile(QDateTime Ti);
     bool Load(QDateTime begin, QDateTime end, int skip = 0);
     bool Load(const char * filename, QDateTime * begin = NULL, QDateTime * end = NULL, int skip = 0);
