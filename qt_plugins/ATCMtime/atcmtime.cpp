@@ -222,6 +222,10 @@ void ATCMtime::setBorderRadius(int radius)
 /* read variable */
 void ATCMtime::updateData()
 {
+    if (this->isVisible() == false)
+    {
+        return;
+    }
     this->setText(QTime::currentTime().toString(m_format));
     this->update();
 }

@@ -223,6 +223,10 @@ void ATCMdate::setBorderRadius(int radius)
 /* read variable */
 void ATCMdate::updateData()
 {
+    if (this->isVisible() == false)
+    {
+        return;
+    }
     this->setText(QDate::currentDate().toString(m_format));
     this->update();
 }
