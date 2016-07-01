@@ -21,20 +21,6 @@ contains(QMAKE_HOST.os,Windows){
         ATCM_TEMPLATE_BASE_DIR = 
 }
 
-!isEmpty(ATCM_TEMPLATE_BASE_DIR) {
-    eval(LIST = $$replace(PWD,/,' '))
-    for(a, LIST):eval( RELATIVE_PATH += ..)
-
-    #eval(LIST = $$replace(ATCM_TEMPLATE_BASE_DIR,/,' '))
-    #for(a, LIST):!exists($${a}):eval(SYSTEMICON_DIR += $${a})
-
-    SYSTEMICON_DIR = Qt485/desktop/share/qtcreator/templates/wizards
-    #message(BA: -$$join(SYSTEMICON_DIR,/)-)
-
-    #RESOURCES += $$join(RELATIVE_PATH,/)/$${SYSTEMICON_DIR}/ATCM-template-project/systemicons.qrc
-    RESOURCES += $$join(RELATIVE_PATH,/)/$$join(SYSTEMICON_DIR,/)/ATCM-template-project/systemicons.qrc
-}
-
 isEmpty(QT_ROOTFS) {
         error(QT_ROOTFS is empty)
 }
@@ -107,6 +93,10 @@ SOURCES += \
 	QMAKE_EXTRA_TARGETS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini
 	PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini
 }
+
+# system icons
+RESOURCES += \
+    systemicons.qrc
 
 # language
 !isEmpty(QT_LUPDATE_PATH) {

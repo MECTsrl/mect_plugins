@@ -65,6 +65,7 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="template.pri" target="template.pri" openproject="false"/>
 	   <file source="../ATCM-template-project/common.pri" target="common.pri" openproject="false"/>
 	   <file source="../ATCM-template-project/languages.pri" target="languages.pri" openproject="false"/>
+	   <file source="../ATCM-template-project/systemicons.qrc" target="systemicons.qrc" openproject="false"/>
 	   </files>
 	    <!-- Create a 2nd wizard page with parameters -->
 	    <fieldpagetitle>Add extra funtionality</fieldpagetitle>

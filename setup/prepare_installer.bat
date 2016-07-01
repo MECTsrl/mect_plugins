@@ -13,7 +13,7 @@ FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\Me
 SET QTPROJECT=0
 SET BUILD=1
 SET INSTALL=0
-SET UPDATE=0
+SET UPDATE=1
 
 IF %UPDATE% == 1 (
 	SET PREPARE_UPDATE=1

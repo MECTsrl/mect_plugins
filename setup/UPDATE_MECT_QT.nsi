@@ -128,19 +128,19 @@ Section "Mect plugins ${REVISION}"
 
 SectionEnd
 
-;Section "Mect Configurator ${MECT_CONFIGURATOR_REVISION}"
-;	SectionIn 1
-;	SetOutPath "$TEMP"
-;	SetOverwrite on
-;	SetCompress off
-;	RMDir /r  "$TEMP\MectConfigurator"
-;
-;	File "MectConfigurator.7z"
-;	Nsis7z::ExtractWithDetails "MectConfigurator.7z" "Installing MectConfigurator ${MECT_CONFIGURATOR_REVISION} %..."
-;	Delete "MectConfigurator.7z"
-;
-;	ExecWait "MectConfigurator\MectConfiguratorInstaller\Volume\setup.exe /q /acceptlicenses yes /r:n"
-;	RMDir /r  "$TEMP\MectConfigurator"
-;
-;	nsExec::ExecToLog 'IF NOT EXIST "c:\Program Files\MectConfiguratorInstaller" mklink /d   "c:\Program Files\MectConfiguratorInstaller" "c:\Program Files (x86)/MectConfiguratorInstaller"'
-;SectionEnd
+Section "Mect Configurator ${MECT_CONFIGURATOR_REVISION}"
+	SectionIn 1
+	SetOutPath "$TEMP"
+	SetOverwrite on
+	SetCompress off
+	RMDir /r  "$TEMP\MectConfigurator"
+
+	File "MectConfigurator.7z"
+	Nsis7z::ExtractWithDetails "MectConfigurator.7z" "Installing MectConfigurator ${MECT_CONFIGURATOR_REVISION} %..."
+	Delete "MectConfigurator.7z"
+
+	ExecWait "MectConfigurator\MectConfiguratorInstaller\Volume\setup.exe /q /acceptlicenses yes /r:n"
+	RMDir /r  "$TEMP\MectConfigurator"
+
+	nsExec::ExecToLog 'IF NOT EXIST "c:\Program Files\MectConfiguratorInstaller" mklink /d   "c:\Program Files\MectConfiguratorInstaller" "c:\Program Files (x86)/MectConfiguratorInstaller"'
+SectionEnd
