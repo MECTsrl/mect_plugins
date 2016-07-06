@@ -1067,7 +1067,7 @@ bool Logger::openStorageFile()
     if (newfile)
     {
         LOG_PRINT(verbose_e, "NEW log file\n");
-        int nb_of_char = fprintf(storefp, "%10s; %8s","date","time");
+        int nb_of_char = fprintf(storefp, "date; time");
         if (nb_of_char != (int)strlen("date; time"))
         {
             LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "date; time", nb_of_char, (int)strlen("date; time"));
@@ -1077,7 +1077,7 @@ bool Logger::openStorageFile()
         for ( int i = 0; StoreArrayS[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayS[i].tag);
-            nb_of_char = fprintf(storefp, "; %18s", StoreArrayS[i].tag);
+            nb_of_char = fprintf(storefp, "; %s", StoreArrayS[i].tag);
             if (nb_of_char != (int)strlen(StoreArrayS[i].tag) + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayS[i].tag, nb_of_char, (int)strlen(StoreArrayS[i].tag) + 2);
@@ -1087,7 +1087,7 @@ bool Logger::openStorageFile()
         for ( int i = 0; StoreArrayF[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayF[i].tag);
-            nb_of_char = fprintf(storefp, "; %18s", StoreArrayF[i].tag);
+            nb_of_char = fprintf(storefp, "; %s", StoreArrayF[i].tag);
             if (nb_of_char != (int)strlen(StoreArrayF[i].tag) + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayF[i].tag, nb_of_char, (int)strlen(StoreArrayF[i].tag) + 2);
@@ -1097,7 +1097,7 @@ bool Logger::openStorageFile()
         for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayV[i].tag);
-            nb_of_char = fprintf(storefp, "; %18s", StoreArrayV[i].tag);
+            nb_of_char = fprintf(storefp, "; %s", StoreArrayV[i].tag);
             if (nb_of_char != (int)strlen(StoreArrayV[i].tag) + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayV[i].tag, nb_of_char, (int)strlen(StoreArrayV[i].tag) + 2);
@@ -1107,7 +1107,7 @@ bool Logger::openStorageFile()
         for ( int i = 0; StoreArrayX[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayX[i].tag);
-            nb_of_char = fprintf(storefp, "; %18s", StoreArrayX[i].tag);
+            nb_of_char = fprintf(storefp, "; %s", StoreArrayX[i].tag);
             if (nb_of_char != (int)strlen(StoreArrayX[i].tag) + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayX[i].tag, nb_of_char, (int)strlen(StoreArrayX[i].tag) + 2);
@@ -1213,7 +1213,7 @@ bool Logger::dumpStorage()
                 strcpy(value, TAG_NAN);
             }
             
-            nb_of_char = fprintf(storefp, "; %18s", value);
+            nb_of_char = fprintf(storefp, "; %s", value);
             if (nb_of_char != (int)strlen(value) + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
@@ -1242,7 +1242,7 @@ bool Logger::dumpStorage()
     {
         for ( iS = 0; StoreArrayS[iS].tag[0] != '\0'; iS++)
         {
-            nb_of_char = fprintf(storefp, "; %18s", "-");
+            nb_of_char = fprintf(storefp, "; %s", "-");
             if (nb_of_char != (int)strlen("-") + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
@@ -1265,7 +1265,7 @@ bool Logger::dumpStorage()
                 strcpy(value, TAG_NAN);
             }
             
-            nb_of_char = fprintf(storefp, "; %18s", value);
+            nb_of_char = fprintf(storefp, "; %s", value);
             if (nb_of_char != (int)strlen(value) + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
@@ -1294,7 +1294,7 @@ bool Logger::dumpStorage()
     {
         for ( iF = 0; StoreArrayF[iF].tag[0] != '\0'; iF++)
         {
-            nb_of_char = fprintf(storefp, "; %18s", "-");
+            nb_of_char = fprintf(storefp, "; %s", "-");
             if (nb_of_char != (int)strlen("-") + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
@@ -1320,7 +1320,7 @@ bool Logger::dumpStorage()
             if (logger_shot || strcmp(StoreArrayV[iV].value, value) != 0)
             {
                 strcpy(StoreArrayV[iV].value, value);
-                nb_of_char = fprintf(storefp, "; %18s", value);
+                nb_of_char = fprintf(storefp, "; %s", value);
                 if (nb_of_char != (int)strlen(value) + 2)
                 {
                     LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
@@ -1329,7 +1329,7 @@ bool Logger::dumpStorage()
             }
             else
             {
-                nb_of_char = fprintf(storefp, "; %18s", "-");
+                nb_of_char = fprintf(storefp, "; %s", "-");
                 if (nb_of_char != (int)strlen("-") + 2)
                 {
                     LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
@@ -1359,7 +1359,7 @@ bool Logger::dumpStorage()
     {
         for ( iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
         {
-            nb_of_char = fprintf(storefp, "; %18s", "-");
+            nb_of_char = fprintf(storefp, "; %s", "-");
             if (nb_of_char != (int)strlen("-") + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
@@ -1381,7 +1381,7 @@ bool Logger::dumpStorage()
                 strcpy(value, TAG_NAN);
             }
 
-            nb_of_char = fprintf(storefp, "; %18s", value);
+            nb_of_char = fprintf(storefp, "; %s", value);
             if (nb_of_char != (int)strlen(value) + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
@@ -1410,7 +1410,7 @@ bool Logger::dumpStorage()
     {
         for ( iX = 0; StoreArrayX[iX].tag[0] != '\0'; iX++)
         {
-            nb_of_char = fprintf(storefp, "; %18s", "-");
+            nb_of_char = fprintf(storefp, "; %s", "-");
             if (nb_of_char != (int)strlen("-") + 2)
             {
                 LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);

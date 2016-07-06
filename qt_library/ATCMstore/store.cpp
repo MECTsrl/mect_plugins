@@ -228,21 +228,25 @@ bool store::LoadStore(QDateTime init, QDateTime final)
     }
 
     char filename[FILENAME_MAX];
-    if (_actual_store_[0] == '\0')
+    if (_actual_store_[0] == '\0' || strcmp(_actual_store_, "store") == 0)
     {
         filename[0] = '\0';
-    }
-    if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
-    {
-        sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
     }
     else
     {
-        sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
-    }
-    if (!QFile::exists(filename))
-    {
-        filename[0] = '\0';
+        if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
+        {
+            sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
+        }
+        else
+        {
+            sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
+        }
+        if (!QFile::exists(filename))
+        {
+            LOG_PRINT(error_e, "cannot open store '%s' [%s]\n", _actual_store_, filename);
+            return false;
+        }
     }
     /* remove TMPDIR */
     if (StoreFilter(
@@ -348,7 +352,7 @@ bool store::LoadStore(const char * filename)
                 }
                 else
                 {
-                    LOG_PRINT(warning_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
+                    LOG_PRINT(info_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
                 }
                 colfilternb++;
             }
@@ -414,24 +418,24 @@ bool store::readLine()
         p = strtok_csv(line, SEPARATOR, &r);
         if (p != NULL)
         {
-        do
-        {
-            /* tag */
-            if (actual_filter[colfilternb] == true)
+            do
             {
-                item = new QTableWidgetItem(p);
-                ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1,colnb,item);
-                
-                LOG_PRINT(verbose_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
-                colnb++;
+                /* tag */
+                if (actual_filter[colfilternb] == true)
+                {
+                    item = new QTableWidgetItem(p);
+                    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1,colnb,item);
+
+                    LOG_PRINT(verbose_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
+                    colnb++;
+                }
+                else
+                {
+                    LOG_PRINT(verbose_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
+                }
+                colfilternb++;
             }
-            else
-            {
-                LOG_PRINT(verbose_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
-            }
-            colfilternb++;
-        }
-        while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL);
+            while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL);
         }
         LOG_PRINT(verbose_e, "ROW %d\n", ui->tableWidget->rowCount() - 1);
         //ui->tableWidget->insertRow(ui->tableWidget->rowCount());
@@ -519,7 +523,7 @@ void store::updateData()
         /* load the actual daily store */
         if (LoadStore(StoreInit, StoreFinal) == false)
         {
-            QMessageBox::critical(this,trUtf8("Loading problem"), trUtf8("Cannot load the log between %1 and %2.").arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss")).arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
+            QMessageBox::critical(this,trUtf8("Loading problem"), trUtf8("Cannot load the log %1.").arg(_actual_store_));
             LOG_PRINT(info_e, "cannot load store, force back\n");
             go_back();
             return;

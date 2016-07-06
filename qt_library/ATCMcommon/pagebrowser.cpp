@@ -78,7 +78,6 @@ page::page(QWidget *parent) :
     refresh_timer = new QTimer(this);
     connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
     refresh_timer->start(REFRESH_MS);
-    LOG_PRINT(info_e, "START TIMER %s\n", this->windowTitle().toAscii().data());
     labelDataOra = NULL;
     labelUserName = NULL;
     labelIcon = NULL;
@@ -108,7 +107,6 @@ void page::updateData()
         bool FORCE_BUZZER;
         if (readFromDb(ID_FORCE_BUZZER, &FORCE_BUZZER) == 0 && FORCE_BUZZER == true)
         {
-            LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", BUZZER_DURATION_MS);
             beep(BUZZER_DURATION_MS);
         }
     }
@@ -118,7 +116,6 @@ void page::updateData()
         LOG_PRINT(warning_e, "page '%s' not visible but running.\n", this->windowTitle().toAscii().data());
         return;
     }
-    LOG_PRINT(info_e, "PAGEBROWSWER %s\n", this->windowTitle().toAscii().data());
 #ifdef ENABLE_AUTODUMP
     {
         static bool inserted = false;
@@ -128,7 +125,6 @@ void page::updateData()
             if ( inserted == false)
             {
                 inserted = true;
-                LOG_PRINT(info_e, "USB INSERTED\n");
                 if (USBmount() == false)
                 {
                     LOG_PRINT(error_e, "cannot mount the usb key\n");
@@ -205,13 +201,13 @@ void page::updateData()
     checkWriting();
 
     /*
- *    if(IS_ENGINE_READY == 0)
+    if(IS_ENGINE_READY == 0)
     {
         QMessageBox::critical(0, "Communication Error", QString("Problem to start communication engine [0x%1].").arg(QString().setNum((IOSyncroAreaI)[5707]),16));
     }
 
     LOG_PRINT(info_e, "Communication engine started\n");
-*/
+    */
 #ifdef DUMPSCREEN
     QPixmap::grabWidget(this).save(this->windowTitle().append(".png").prepend("/local/root/"));
 #endif
@@ -242,7 +238,6 @@ bool page::getFormattedVar(const char * varname, bool * formattedVar, QLabel * l
     {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-        LOG_PRINT(info_e, "FALSE\n");
         return return_value;
     }
     
@@ -331,7 +326,6 @@ bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabe
     {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-        LOG_PRINT(info_e, "FALSE\n");
         return return_value;
     }
     
@@ -340,7 +334,6 @@ bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabe
     if (varNameArray[ctIndex].decimal > 0)
     {
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-        LOG_PRINT(info_e, "FALSE\n");
         return return_value;
     }
     if (
@@ -351,7 +344,6 @@ bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabe
         if (readFromDb(ctIndex, formattedVar) != 0)
         {
             if(led) led->setStyleSheet(STYLE_UNKNOWN);
-            LOG_PRINT(info_e, "FALSE\n");
             return return_value;
         }
         switch (getStatusVarByCtIndex(ctIndex, NULL))
@@ -377,7 +369,6 @@ bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabe
     else
     {
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-        LOG_PRINT(info_e, "FALSE\n");
         return return_value;
     }
     
@@ -403,7 +394,6 @@ bool page::getFormattedVar(const char * varname, unsigned short int * formattedV
     {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-        LOG_PRINT(info_e, "FALSE\n");
         return return_value;
     }
     
@@ -475,7 +465,6 @@ bool page::getFormattedVar(const char * varname, int * formattedVar, QLabel * le
     {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-        LOG_PRINT(info_e, "FALSE\n");
         return return_value;
     }
     
@@ -549,7 +538,6 @@ bool page::getFormattedVar(const char * varname, unsigned int * formattedVar, QL
     {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-        LOG_PRINT(info_e, "FALSE\n");
         return return_value;
     }
     
@@ -625,7 +613,6 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
     {
         LOG_PRINT(error_e, "cannot extract ctIndex '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-        LOG_PRINT(info_e, "FALSE\n");
         return return_value;
     }
     
@@ -687,7 +674,6 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
         unsigned short int _value;
         if (readFromDb(ctIndex, &_value) != 0)
         {
-            LOG_PRINT(error_e, "readFromDb\n");
             if(led) led->setStyleSheet(STYLE_UNKNOWN);
             return return_value;
         }
@@ -732,7 +718,6 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
         short int _value;
         if (readFromDb(ctIndex, &_value) != 0)
         {
-            LOG_PRINT(error_e, "readFromDb\n");
             if(led) led->setStyleSheet(STYLE_UNKNOWN);
             return return_value;
         }
@@ -778,7 +763,6 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
         unsigned int _value;
         if (readFromDb(ctIndex, &_value) != 0)
         {
-            LOG_PRINT(error_e, "readFromDb\n");
             if(led) led->setStyleSheet(STYLE_UNKNOWN);
             return return_value;
         }
@@ -824,7 +808,6 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
         int _value;
         if (readFromDb(ctIndex, &_value) != 0)
         {
-            LOG_PRINT(error_e, "readFromDb\n");
             if(led) led->setStyleSheet(STYLE_UNKNOWN);
             return return_value;
         }
@@ -870,7 +853,6 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
         float _value;
         if (readFromDb(ctIndex, &_value) != 0)
         {
-            LOG_PRINT(error_e, "readFromDb\n");
             if(led) led->setStyleSheet(STYLE_UNKNOWN);
             return return_value;
         }
@@ -915,7 +897,6 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
         BYTE _value;
         if (readFromDb(ctIndex, &_value) != 0)
         {
-            LOG_PRINT(error_e, "readFromDb\n");
             if(led) led->setStyleSheet(STYLE_UNKNOWN);
             return return_value;
         }
@@ -978,7 +959,6 @@ bool page::getFormattedVar(const char * varname, QString * formattedVar, QLabel 
         LOG_PRINT(error_e, "cannot extract ctIndex of variable '%s'\n", varname);
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
         *formattedVar = VAR_UNKNOWN;
-        LOG_PRINT(info_e, "FALSE\n");
         return false;
     }
     
@@ -1019,7 +999,6 @@ bool page::getFormattedVar(const char * varname, QString * formattedVar, QLabel 
     {
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
         *formattedVar = VAR_UNKNOWN;
-        LOG_PRINT(info_e, "FALSE '%s'\n", varname);
         return false;
     }
 }
@@ -1033,13 +1012,11 @@ bool page::getFormattedVar(const char * varname, QLabel * formattedVar, QLabel *
     QString value;
     if (getFormattedVar(varname, &value, led) && value.length() > 0)
     {
-        LOG_PRINT(verbose_e, "TRUE %s\n", value.toAscii().data());
         formattedVar->setText(value);
         return true;
     }
     else
     {
-        LOG_PRINT(verbose_e, "FALSE\n");
         formattedVar->setText(value);
         return false;
     }
@@ -1260,12 +1237,12 @@ bool page::hideAll(void)
     {
         if ( i.value()->isVisible())
         {
-            LOG_PRINT(info_e,"QUESTA FINESTRA (%s) ERA ATTIVA!!!!\n", i.value()->windowTitle().toAscii().data() );
+            LOG_PRINT(info_e,"hiding (%s)...\n", i.value()->windowTitle().toAscii().data() );
             i.value()->hide();
-            LOG_PRINT(info_e,"ORA E' NASCOSTA!!!!\n" );
+            LOG_PRINT(info_e,"done!\n" );
         }
     }
-    LOG_PRINT(info_e,"ORA E' TUTTO NASCOSTO!!!!\n" );
+    LOG_PRINT(info_e,"Everything hide.\n" );
     return 0;
 }
 
@@ -1294,10 +1271,8 @@ bool page::goto_page(const char * page_name, bool remember)
     refresh_timer->stop();
     LOG_PRINT(info_e, " %s TIMER STOP\n", this->windowTitle().toAscii().data());
     
-    //mymutex.lock();
     if (remember)
     {
-        //LOG_PRINT(info_e,"PUT INTO HISTORY '%s'\n", this->windowTitle().toAscii().data());
         /* update history */
         History.push(this->windowTitle());
     }
@@ -1306,6 +1281,7 @@ bool page::goto_page(const char * page_name, bool remember)
     emptySyncroElement();
     
 #ifdef ENABLE_TREND
+    /* destroy trend page */
     if (strcmp(page_name, "trend") == 0 && _last_layout_ != _layout_)
     {
         _last_layout_ = _layout_;
@@ -1315,7 +1291,6 @@ bool page::goto_page(const char * page_name, bool remember)
             //p->destroy();
             delete p;
             p = NULL;
-            LOG_PRINT(info_e,"RIMOSSO TREND\n");
         }
     }
 #endif
@@ -1341,7 +1316,7 @@ bool page::goto_page(const char * page_name, bool remember)
         p = ScreenHash.value(page_name);
         p->refresh_timer->stop();
         LOG_PRINT(info_e, " %s TIMER STOP\n", p->windowTitle().toAscii().data());
-        LOG_PRINT(info_e,"RICARICATA PAGINA ESISTENTE %s\n", page_name);
+        LOG_PRINT(info_e,"reload existing page '%s'\n", page_name);
     }
 
     if (active_password > p->protection_level)
@@ -1382,8 +1357,7 @@ bool page::goto_page(const char * page_name, bool remember)
     p->refresh_timer->start(REFRESH_MS);
     LOG_PRINT(info_e, " %s TIMER START\n", p->windowTitle().toAscii().data());
     p->SHOW();
-    //mymutex.unlock();
-    LOG_PRINT(info_e, "ORA LA NUOVA PAGINA '%s' (%s) E' MOSTRATA!!!!\n", p->windowTitle().toAscii().data(), page_name );
+    LOG_PRINT(info_e, "New page '%s' (%s) is shown.\n", p->windowTitle().toAscii().data(), page_name );
     return true;
 }
 
@@ -1412,7 +1386,6 @@ bool page::go_back()
     {
         return false;
     }
-    LOG_PRINT(info_e, " FROM (%s)\n", this->windowTitle().toAscii().data());
     if (!History.isEmpty())
     {
         QString page_name = History.pop();
@@ -1993,7 +1966,7 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
             return false;
         }
     }
-#if 0
+#if 0 /* this code have some problem to catch the finished() signal*/
     QProcess process;
     if (junkdir)
     {
