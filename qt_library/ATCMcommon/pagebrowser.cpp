@@ -131,7 +131,7 @@ void page::updateData()
                 LOG_PRINT(info_e, "USB INSERTED\n");
                 if (USBmount() == false)
                 {
-                    LOG_PRINT(error_e, "Cannot mount the usb key\n");
+                    LOG_PRINT(error_e, "cannot mount the usb key\n");
                     QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
                     return;
                 }
@@ -1141,7 +1141,7 @@ bool page::getFormattedVar(const char * varname, QComboBox * formattedVar, QLabe
         else
         {
             /* if is not managed, put an empty string */
-            LOG_PRINT(warning_e, "Cannot found data '%s' into selection.\n", value.toAscii().data());
+            LOG_PRINT(warning_e, "Cannot find data '%s' into selection.\n", value.toAscii().data());
             formattedVar->setEditable(true);
             formattedVar->setEditText("");
         }
@@ -1178,7 +1178,7 @@ bool page::getFormattedVar(const char * varname, QComboBox * formattedVar, QStri
         if (i >= map.count())
         {
             /* if is not managed, put an empty string */
-            LOG_PRINT(warning_e, "Cannot found data '%s' into selection.\n", value.toAscii().data());
+            LOG_PRINT(warning_e, "Cannot find data '%s' into selection.\n", value.toAscii().data());
             formattedVar->setEditable(true);
             formattedVar->setEditText("");
             return false;
@@ -1192,7 +1192,7 @@ bool page::getFormattedVar(const char * varname, QComboBox * formattedVar, QStri
         else
         {
             /* if is not managed, put an empty string */
-            LOG_PRINT(warning_e, "Cannot found data '%s' into selection.\n", value.toAscii().data());
+            LOG_PRINT(warning_e, "Cannot find data '%s' into selection.\n", value.toAscii().data());
             formattedVar->setEditable(true);
             formattedVar->setEditText("");
             return false;
@@ -1693,7 +1693,7 @@ bool page::setStatusVar(int SynIndex, char Status)
     }
     else
     {
-        LOG_PRINT(error_e, "Cannot set the status '%c' the variable '%d'\n", Status, CtIndex);
+        LOG_PRINT(error_e, "cannot set the status '%c' the variable '%d'\n", Status, CtIndex);
         return false;
     }
 }
@@ -1822,7 +1822,7 @@ bool page::rotateShowError(QLineEdit * line, int period_ms)
         }
         else
         {
-            LOG_PRINT(error_e, "Cannot connect '%s' to logger\n", this->windowTitle().toAscii().data());
+            LOG_PRINT(error_e, "cannot connect '%s' to logger\n", this->windowTitle().toAscii().data());
         }
     }
     _line = line;
@@ -1989,7 +1989,7 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
     {
         if (!QFile::exists(sourcefiles.at(i)))
         {
-            LOG_PRINT(error_e, "Cannot found the file to zip '%s'\n", sourcefiles.at(i).toAscii().data());
+            LOG_PRINT(error_e, "cannot find the file to zip '%s'\n", sourcefiles.at(i).toAscii().data());
             return false;
         }
     }
@@ -2006,14 +2006,14 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
     process.terminate();
     if (!process.waitForStarted())
     {
-        LOG_PRINT(error_e, "Cannot start command: '%s'\n", process.errorString().toAscii().data());
+        LOG_PRINT(error_e, "cannot start command: '%s'\n", process.errorString().toAscii().data());
         process.close();
         return false;
     }
 
     if (!process.waitForFinished())
     {
-        LOG_PRINT(error_e, "Cannot execute command: '%s'\n", process.errorString().toAscii().data());
+        LOG_PRINT(error_e, "cannot execute command: '%s'\n", process.errorString().toAscii().data());
         process.close();
         return false;
     }
@@ -2030,7 +2030,7 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
     }
     if (system(command))
     {
-        LOG_PRINT(error_e, "Cannot execute command: '%s'\n", command);
+        LOG_PRINT(error_e, "cannot execute command: '%s'\n", command);
         return false;
     }
 #endif
@@ -2093,7 +2093,7 @@ int page::checkLicence(QString * message)
         message->clear();
         if (getSdCID(cid) != 0)
         {
-            LOG_PRINT(error_e, "Cannot open CID file '%s'\n", CID_FILE );
+            LOG_PRINT(error_e, "cannot open CID file '%s'\n", CID_FILE );
             *message = "Invalid SD card detected.";
             return -1;
         }

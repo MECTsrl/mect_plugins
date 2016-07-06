@@ -113,7 +113,7 @@ int store::getLogColumnNb(const char * filename)
     fp = fopen(filename, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
+        LOG_PRINT(error_e, "cannot open '%s'\n", filename);
         return 0;
     }
     LOG_PRINT(info_e, "opened '%s'\n", filename);
@@ -159,7 +159,7 @@ bool store::LoadStoreFilter(const char * filename)
         fp = fopen(filename, "r");
         if (fp == NULL)
         {
-            LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
+            LOG_PRINT(error_e, "cannot open '%s'\n", filename);
             return false;
         }
         LOG_PRINT(info_e, "opened '%s'\n", line);
@@ -188,7 +188,7 @@ bool store::LoadStoreFilter(const char * filename)
             else
             {
                 wrongVariables << linestr;
-                LOG_PRINT(error_e, "Cannot find tag '%s' into the log header (%s).\n", linestr.toAscii().data(), headerList.join("|").toAscii().data());
+                LOG_PRINT(error_e, "cannot find tag '%s' into the log header (%s).\n", linestr.toAscii().data(), headerList.join("|").toAscii().data());
             }
             rownb++;
         }
@@ -310,7 +310,7 @@ bool store::LoadStore(const char * filename)
     logfp = fopen(line, "r");
     if (logfp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", line);
+        LOG_PRINT(error_e, "cannot open '%s'\n", line);
         return false;
     }
     LOG_PRINT(info_e, "opened '%s'\n", line);
@@ -718,7 +718,7 @@ void store::on_pushButtonSaveUSB_clicked()
     {
         if (USBmount() == false)
         {
-            LOG_PRINT(error_e, "Cannot mount the usb key\n");
+            LOG_PRINT(error_e, "cannot mount the usb key\n");
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
@@ -727,9 +727,8 @@ void store::on_pushButtonSaveUSB_clicked()
         char dstfilename[FILENAME_MAX];
         /* compose the source file name and the destination file name */
         sprintf(srcfilename, "%s/%s", TMPDIR, outputfile);
-        sprintf(dstfilename, "%s/%s_%s.zip",
+        sprintf(dstfilename, "%s/%s.zip",
                 usb_mnt_point,
-                QDateTime::currentDateTime().toString("yyMMddhhmmss").toAscii().data(),
                 outputfile);
         
         /* zip the file, the sign file and delete them */

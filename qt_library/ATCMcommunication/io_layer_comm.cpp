@@ -175,7 +175,7 @@ bool io_layer_comm::initializeData(const char * RemoteAddress, const int iUdpRxP
         ServerAddress.sin_port = htons((u_short)iUdpRxPort);
 
         if (bind(iServerSocketData, (struct sockaddr *)&ServerAddress, sizeof(ServerAddress)) < 0) {
-            LOG_PRINT(error_e, "Cannot bind Server socket: [%s]\n", strerror(errno));
+            LOG_PRINT(error_e, "cannot bind Server socket: [%s]\n", strerror(errno));
             return false;
         }
         LOG_PRINT(info_e, "Waiting for data input on UDP from port %d\n", iUdpRxPort);
@@ -264,7 +264,7 @@ bool io_layer_comm::initializeSyncro(const char * RemoteAddress, const int iUdpR
         ServerAddress.sin_port = htons((u_short)iUdpRxPort);
 
         if (bind(iServerSocketSyncro, (struct sockaddr *)&ServerAddress, sizeof(ServerAddress)) < 0) {
-            LOG_PRINT(error_e, "Cannot bind Server socket: [%s]\n", strerror(errno));
+            LOG_PRINT(error_e, "cannot bind Server socket: [%s]\n", strerror(errno));
             return false;
         }
         LOG_PRINT(info_e, "Waiting for data input on UDP from port %d\n", iUdpRxPort);

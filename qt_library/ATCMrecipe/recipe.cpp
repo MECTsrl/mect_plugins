@@ -81,7 +81,7 @@ recipe::recipe(QWidget *parent) :
     ui->tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
     connect(ui->tableWidget->horizontalHeader(),SIGNAL(sectionClicked(int)), this,SLOT(horizontalHeaderClicked(int)));
 
-    ui->tableWidget->setColumnWidth(0,200);
+    ui->tableWidget->setColumnWidth(0,230);
 
     _familyName[0] = '\0';
     _recipeName[0] = '\0';
@@ -227,6 +227,7 @@ void recipe::on_pushButtonRead_clicked()
     ui->pushButtonLoad->setEnabled(true);
     ui->pushButtonRead->setEnabled(true);
     ui->pushButtonSave->setEnabled(true);
+
 #ifdef ENABLE_DESCR
     ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
 #endif
@@ -278,7 +279,7 @@ void recipe::on_pushButtonSave_clicked()
         fp = fopen(fullfilename, "w");
         if (fp == NULL)
         {
-            LOG_PRINT(error_e, "Cannot open '%s'\n", fullfilename);
+            LOG_PRINT(error_e, "cannot open '%s'\n", fullfilename);
         }
         else
         {
@@ -322,6 +323,7 @@ void recipe::on_pushButtonUp_clicked()
     current_column = (current_column > 0) ? current_column : 0;
     ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
 
+#ifdef AUTO_DISABLE_ARROW
     if (current_row > 0)
     {
         ui->pushButtonDown->setEnabled(true);
@@ -330,6 +332,7 @@ void recipe::on_pushButtonUp_clicked()
     {
         ui->pushButtonUp->setEnabled(false);
     }
+#endif
 }
 
 void recipe::on_pushButtonDown_clicked()
@@ -341,6 +344,7 @@ void recipe::on_pushButtonDown_clicked()
     current_column = (current_column > 0) ? current_column : 0;
     ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
 
+#ifdef AUTO_DISABLE_ARROW
     if (current_row < ui->tableWidget->rowCount() - 1)
     {
         ui->pushButtonUp->setEnabled(true);
@@ -349,6 +353,7 @@ void recipe::on_pushButtonDown_clicked()
     {
         ui->pushButtonDown->setEnabled(false);
     }
+#endif
 }
 
 void recipe::on_pushButtonLeft_clicked()
@@ -360,7 +365,8 @@ void recipe::on_pushButtonLeft_clicked()
     current_column = (current_column > 0) ? current_column : 0;
     ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
 
-    if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,0)).x() < 0)
+#ifdef AUTO_DISABLE_ARROW
+    if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,0)).x() < 0)
     {
         ui->pushButtonLeft->setEnabled(true);
     }
@@ -369,8 +375,8 @@ void recipe::on_pushButtonLeft_clicked()
         ui->pushButtonLeft->setEnabled(false);
     }
     if (
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,ui->tableWidget->columnCount() - 1)).x() +
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,ui->tableWidget->columnCount() - 1)).width() - ui->tableWidget->width() > 0
+            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,ui->tableWidget->columnCount() - 1)).x() +
+            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,ui->tableWidget->columnCount() - 1)).width() - ui->tableWidget->width() > 0
             )
     {
         ui->pushButtonRight->setEnabled(true);
@@ -379,6 +385,7 @@ void recipe::on_pushButtonLeft_clicked()
     {
         ui->pushButtonRight->setEnabled(false);
     }
+#endif
 }
 
 void recipe::on_pushButtonRight_clicked()
@@ -390,7 +397,8 @@ void recipe::on_pushButtonRight_clicked()
     current_column = (current_column > 0) ? current_column : 0;
     ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
 
-    if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,0)).x() < 0)
+#ifdef AUTO_DISABLE_ARROW
+    if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,0)).x() < 0)
     {
         ui->pushButtonLeft->setEnabled(true);
     }
@@ -399,8 +407,8 @@ void recipe::on_pushButtonRight_clicked()
         ui->pushButtonLeft->setEnabled(false);
     }
     if (
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,ui->tableWidget->columnCount() - 1)).x() +
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,ui->tableWidget->columnCount() - 1)).width() - ui->tableWidget->width() > 0
+            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,ui->tableWidget->columnCount() - 1)).x() +
+            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,ui->tableWidget->columnCount() - 1)).width() - ui->tableWidget->width() > 0
             )
     {
         ui->pushButtonRight->setEnabled(true);
@@ -409,6 +417,7 @@ void recipe::on_pushButtonRight_clicked()
     {
         ui->pushButtonRight->setEnabled(false);
     }
+#endif
 }
 
 void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
@@ -517,6 +526,7 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
             ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString::number(testsTable[stepIndex][varIndex] / pow(10,decimal), 'f', decimal)));
         }
     }
+
     ui->progressBarStatus->setVisible(false);
 
     return true;

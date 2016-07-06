@@ -72,11 +72,13 @@ alarms_history::alarms_history(QWidget *parent) :
     _level = level_all_e;
     _file_nb = 0;
     
+#ifdef LEVEL_TYPE
     ui->comboBoxLevel->clear();
     for (int i = level_all_e; i < nb_of_level_e; i++)
     {
         ui->comboBoxLevel->addItem(QString("%1").arg(i));
     }
+#endif
     
     reload();
 }
@@ -91,7 +93,8 @@ void alarms_history::reload()
 {
     /* clear the old value */
     ui->listWidget->clear();
-    
+    ui->pushButtonSave->setEnabled(false);
+
     /* get the file list */
     QDir logDir(ALARMS_DIR);
     logFileList = logDir.entryList(QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
@@ -107,7 +110,12 @@ void alarms_history::reload()
         }
         else
         {
-            ui->comboBoxDate->addItem(QDate().fromString(logFileList.at(i),"yyyy_MM_dd.log").toString("yyyy/MM/dd"));
+            QString label = QDateTime().fromString(logFileList.at(i),"yyyy_MM_dd_HH_mm_ss.log").toString("yyyy/MM/dd - HH:mm:ss");
+            if (label.length() == 0)
+            {
+                label = logFileList.at(i);
+            }
+            ui->comboBoxDate->addItem(label);
         }
     }
     
@@ -187,7 +195,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
     fp = fopen(fileName, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", fileName);
+        LOG_PRINT(error_e, "cannot open '%s'\n", fileName);
         return false;
     }
     LOG_PRINT(info_e, "opened '%s'\n", line);
@@ -196,6 +204,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
         /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
+#ifdef LEVEL_TYPE
         /* type */
         p = strtok(line, ";");
         if (p == NULL)
@@ -229,9 +238,12 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
             LOG_PRINT(info_e, "Skip level '%d %d'\n", atoi(p), level);
             continue;
         }
-
         /* tag */
         p = strtok(NULL, ";");
+#else
+        /* tag */
+        p = strtok(line, ";");
+#endif
         if (p == NULL)
         {
             LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", fileName, line);
@@ -329,6 +341,7 @@ void alarms_history::on_pushButtonNext_clicked()
     ui->comboBoxDate->setCurrentIndex(_current);
 }
 
+#ifdef LEVEL_TYPE
 void alarms_history::on_comboBoxLevel_currentIndexChanged(int index)
 {
     LOG_PRINT(info_e, "_level %d\n", _level);
@@ -377,13 +390,17 @@ void alarms_history::on_comboBoxType_currentIndexChanged(int index)
         LOG_PRINT(error_e, "Cannot open log file %d\n", _current);
     }
 }
-
+#endif
 void alarms_history::on_comboBoxDate_currentIndexChanged(int index)
 {
+    if (index < 0)
+    {
+        return;
+    }
     _current = index;
     if (loadLogFile(_current, _alarm, _event, _level) == false)
     {
-        LOG_PRINT(error_e, "Cannot open log file %d\n", _current);
+        LOG_PRINT(error_e, "cannot open log file %d\n", _current);
     }
 }
 
@@ -394,45 +411,49 @@ void alarms_history::on_pushButtonSave_clicked()
     {
         if (USBmount() == false)
         {
-            LOG_PRINT(error_e, "Cannot mount the usb key\n");
+            LOG_PRINT(error_e, "cannot mount the usb key\n");
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
         
+        char line[LINE_SIZE];
+        FILE * fp;
+        FILE * fpout;
+
+#ifdef LEVEL_TYPE
         char srcfilename [MAX_LINE] = "";
         char dstfilename [MAX_LINE] = "";
         
         /* compose the source file name ans the destination file name */
         sprintf(srcfilename, "%s/%s", ALARMS_DIR, logFileList.at(_current).toAscii().data());
-        sprintf(dstfilename, "%s/%s_%s",
+        sprintf(dstfilename, "%s/%s",
                 usb_mnt_point,
-                QDateTime::currentDateTime().toString("yy_MM_dd_hh_mm_ss").toAscii().data(),
                 logFileList.at(_current).toAscii().data());
         
         /* prepare the alarm filtered file */
         
         /* open the source alarm file */
-        FILE * fp = fopen(srcfilename, "r");
+        fp = fopen(srcfilename, "r");
         if (fp == NULL)
         {
-            LOG_PRINT(error_e, "Cannot open '%s'\n", srcfilename);
+            LOG_PRINT(error_e, "cannot open '%s'\n", srcfilename);
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot open the alarm file '%1'").arg(srcfilename));
             return;
         }
         /* open the dest alarm file */
-        FILE * fpout = fopen(dstfilename, "w");
+        fpout = fopen(dstfilename, "w");
         if (fpout == NULL)
         {
-            LOG_PRINT(error_e, "Cannot open '%s'\n", dstfilename);
+            LOG_PRINT(error_e, "cannot open '%s'\n", dstfilename);
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot write the alarm file '%1'").arg(srcfilename));
             return;
         }
-        
-        char line[LINE_SIZE];
+        char lineout[LINE_SIZE];
         char * p;
         /* read from source and filter the level an the type of alarm and dump the dest alarm file */
         while (fgets(line, LINE_SIZE, fp) != NULL)
         {
+            strcpy(lineout,line);
             /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
             /* type */
             p = strtok(line, ";");
@@ -466,13 +487,18 @@ void alarms_history::on_pushButtonSave_clicked()
                 LOG_PRINT(info_e, "Skip level '%d %d'\n", atoi(p), _level);
                 continue;
             }
-            fprintf(fpout, "%s", line);
+            fprintf(fpout, "%s", lineout);
         }
         fclose(fp);
         fclose(fpout);
-        
+
+#else
+        char dstfilename [MAX_LINE] = "";
+        sprintf(dstfilename, "%s/%s", ALARMS_DIR, logFileList.at(_current).toAscii().data());
+#endif
+
         /* create the signature file */
-        
+
         /* Open the command for reading. */
         sprintf(line, "%s %s", APP_SIGN, dstfilename);
         fp = popen(line, "r");
@@ -480,17 +506,17 @@ void alarms_history::on_pushButtonSave_clicked()
             LOG_PRINT(error_e,"Failed to run command '%s'\n", line );
             return;
         }
-        
+
         char sign[LINE_SIZE];
-        
+
         /* Read the output a line at a time - output it. */
         if (fscanf(fp, "%s", sign) > 0) {
             LOG_PRINT(info_e,"SIGN: '%s'\n", sign);
         }
-        
+
         /* close */
         pclose(fp);
-        
+
         if (sign[0] == '\0')
         {
             LOG_PRINT(error_e,"Failed read sign\n");
@@ -499,12 +525,12 @@ void alarms_history::on_pushButtonSave_clicked()
             USBumount();
             return;
         }
-        
+
         sprintf(line, "%s.sign", dstfilename);
         fpout = fopen(line, "w");
         if (fpout == NULL)
         {
-            LOG_PRINT(error_e, "Cannot open '%s'\n", line);
+            LOG_PRINT(error_e, "cannot open '%s'\n", line);
             QFile::remove(dstfilename);
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
             USBumount();
@@ -512,16 +538,18 @@ void alarms_history::on_pushButtonSave_clicked()
         }
         fprintf(fpout, "%s\n", sign);
         fclose(fpout);
-        
+
         /* zip the file, the sign file and delete them */
-        if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(dstfilename), QString("%1.zip").arg(dstfilename)) == false)
+        if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(dstfilename), QString("%1.zip").arg(dstfilename), true) == false)
         {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save the sip file '%1.zip'").arg(dstfilename));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save the zip file '%1.zip'").arg(dstfilename));
             USBumount();
             return;
         }
         
+#ifdef LEVEL_TYPE
         QFile::remove(dstfilename);
+#endif
         QFile::remove(QString("%1.sign").arg(dstfilename));
         
         /* unmount USB key */

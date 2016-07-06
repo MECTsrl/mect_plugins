@@ -38,9 +38,11 @@ private slots:
 
     void on_pushButtonNext_clicked();
 
+#ifdef LEVEL_TYPE
     void on_comboBoxLevel_currentIndexChanged(int index);
 
     void on_comboBoxType_currentIndexChanged(int index);
+#endif
 
     void on_comboBoxDate_currentIndexChanged(int index);
 

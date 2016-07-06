@@ -372,13 +372,13 @@ bool CommStart()
     int elem_read = fillSyncroArea();
     if (elem_read < 0)
     {
-        LOG_PRINT(error_e, "Cannot found the cross table [%s]\n", CROSS_TABLE);
-        QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Cannot found the cross table %1\nMSG: '%2'").arg(CROSS_TABLE).arg(CrossTableErrorMsg));
+        LOG_PRINT(error_e, "cannot find the cross table [%s]\n", CROSS_TABLE);
+        QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Cannot find the cross table %1\nMSG: '%2'").arg(CROSS_TABLE).arg(CrossTableErrorMsg));
         return false;
     }
     else if (elem_read < DB_SIZE_ELEM)
     {
-        LOG_PRINT(error_e, "Cannot load completly the cross table [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
+        LOG_PRINT(error_e, "cannot load completly the cross table [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
         QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Syntax error into the cross table at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
         return false;
     }
@@ -408,7 +408,7 @@ bool CommStart()
 
     if (ioComm->initializeData(LOCAL_SERVER_ADDR, LOCAL_SERVER_DATA_RX_PORT, LOCAL_SERVER_DATA_TX_PORT, IODataAreaI, STATUS_BASE_BYTE + DB_SIZE_BYTE, IODataAreaO, STATUS_BASE_BYTE + DB_SIZE_BYTE) == false)
     {
-        LOG_PRINT(error_e, "Cannot connect to the Data IOLayer\n");
+        LOG_PRINT(error_e, "cannot connect to the Data IOLayer\n");
         QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
         return false;
     }
@@ -418,7 +418,7 @@ bool CommStart()
 
     if (ioComm->initializeSyncro(LOCAL_SERVER_ADDR, LOCAL_SERVER_SYNCRO_RX_PORT, LOCAL_SERVER_SYNCRO_TX_PORT, IOSyncroAreaI, SYNCRO_SIZE_BYTE, IOSyncroAreaO, SYNCRO_SIZE_BYTE) == false)
     {
-        LOG_PRINT(error_e, "Cannot connect to the Syncro IOLayer\n");
+        LOG_PRINT(error_e, "cannot connect to the Syncro IOLayer\n");
         QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
         return false;
     }
@@ -542,10 +542,12 @@ int initialize()
     QFontDatabase fontDB;
     while (it.hasNext()) {
         QString item = it.next();
-        if (item.endsWith(".ttf"))
+        if (item.endsWith(".ttf", Qt::CaseInsensitive))
         {
-            LOG_PRINT(warning_e, "Loading font '%s' from resource file.\n", item.toAscii().data());
-            fontDB.addApplicationFont(item);
+            if (fontDB.addApplicationFont(item) == -1)
+            {
+                LOG_PRINT(error_e, "Cannot load font '%s' from resource file.\n", item.toAscii().data());
+            }
         }
     }
 
@@ -706,7 +708,7 @@ bool USBmount()
         }
         else
         {
-            LOG_PRINT (info_e, "Cannot found USB.\n");
+            LOG_PRINT (info_e, "Cannot find USB.\n");
         }
 
         if (last_usb_status != USBstatus[0])
@@ -733,7 +735,7 @@ bool USBumount()
         sprintf(command,"LOOP=`losetup -f | tr \"\\/dev\\/loop\" \" \" | awk '{printf(\"%%d\\n\", $1 - 1);}'` && umount %s && losetup -d /dev/loop$LOOP", MOUNT_POINT);
         if (system (command) == 0)
         {
-            LOG_PRINT(error_e, "Cannot unmount: %s\n", strerror(errno));
+            LOG_PRINT(error_e, "cannot unmount: %s\n", strerror(errno));
         }
     }
     else
@@ -832,7 +834,7 @@ bool LoadTrend(const char * filename, QString * ErrorMsg)
     fp = fopen(filename, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", filename);
+        LOG_PRINT(error_e, "cannot open '%s'\n", filename);
         if (ErrorMsg) *ErrorMsg = QObject::trUtf8("Cannot open '%1'").arg(filename);
         return false;
     }

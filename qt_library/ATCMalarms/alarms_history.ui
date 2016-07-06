@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>424</width>
-    <height>230</height>
+    <width>450</width>
+    <height>238</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -121,6 +121,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
       <widget class="QLabel" name="labelDate">
        <property name="text">
@@ -134,7 +137,7 @@
      <item>
       <widget class="QComboBox" name="comboBoxDate">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -143,12 +146,6 @@
         <size>
          <width>150</width>
          <height>32</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>150</width>
-         <height>35</height>
         </size>
        </property>
        <property name="styleSheet">
@@ -204,192 +201,6 @@ QComboBox::drop-down {
 }
 </string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelLevel">
-       <property name="text">
-        <string>Liv</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBoxLevel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>70</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>70</width>
-         <height>35</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">/* Combobox item */
-QAbstractItemView {
-	/* padding of each item (top,right,bottom,left) */
-	padding: 2 0 2 0;
-	font-size: 18px;
-}
-
-/* Sets up scrollbar size, border, color */
-QScrollBar:vertical {
-	width: 40px;
-	/* margin sets up how far the handle can travel (top,right,bottom,left) */
-	margin: 40px 0px 40px 0px;
-}
-
-/* Sets up the color and height of handle (cursor) */
-QScrollBar::handle:vertical {
-	min-height:40px;
-}
-
-/* bottom button (set height at 0px to remove)*/
-QScrollBar::add-line:vertical {
-	height: 40px;
-	subcontrol-position: bottom;
-	subcontrol-origin: margin;
-}
-
-/* top button (set height at 0px to remove)*/
-QScrollBar::sub-line:vertical {
-	height: 40px;
-	subcontrol-position: top;
-	subcontrol-origin: margin;
-	background-color: rgb(0, 255, 0);
-}
-
-/* need this to get rid of crosshatching on scrollbar background */
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-	background: none;
-}
-
-/* Combobox main item */
-QComboBox {
-	padding-left: 2px;
-	font-size: 18px;
-	min-height: 30px;
-}
-
-/* drop down button */
-QComboBox::drop-down {
-	min-width: 40px;
-}
-</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>32</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelType">
-       <property name="text">
-        <string>Tipo:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBoxType">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>100</width>
-         <height>35</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">    QAbstractItemView {
-     padding: 5 5 16 5;
-     font-size: 18px;
-    }
-     
-    /* Sets up scrollbar size, border, color */
-      QScrollBar:vertical {
-          width: 40px;
-      /* margin sets up how far the handle can travel*/
-       margin: 0px 0px 0px 0px;
-      }
-     
-    /* Sets up the color and height of handle */
-      QScrollBar::handle:vertical {
-          min-height:40px;
-	background-color: rgb(0, 0, 0);
-      }
-     
-    /* This remvoes the bottom button by setting the height to 0px */
-      QScrollBar::add-line:vertical {
-       height: 0px;
-          subcontrol-position: bottom;
-          subcontrol-origin: margin;
-      }
-     
-    /* This remvoes the top button by setting the height to 0px */
-      QScrollBar::sub-line:vertical {
-         height: 0px;
-          subcontrol-position: top;
-          subcontrol-origin: margin;
-      }
-     
-    /* need this to get rid of crosshatching on scrollbar background */
-      QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-          background: none;
-      }
-     
-    QComboBox {
-     padding-left: 5px;
-     font-size: 18px;
-     min-height: 30px;
- }
-     
-    QComboBox::drop-down {
-    min-width: 40px;
-    }
-</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>All</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Alarm</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Event</string>
-        </property>
-       </item>
       </widget>
      </item>
     </layout>
@@ -469,7 +280,7 @@ QScrollBar::add-line:horizontal
 	    background: rgb(255, 255, 255);
         subcontrol-position: left;
         subcontrol-origin: margin;
-	image: url(:/icons/img/left.png);
+		image: url(:/systemicons/img/Back.png);
 }
 QScrollBar::sub-line:horizontal 
 {
@@ -477,11 +288,14 @@ QScrollBar::sub-line:horizontal
 	    background: rgb(255, 255, 255);
         subcontrol-position: right;
 	    subcontrol-origin: margin;
-	image: url(:/icons/img/right.png);
+		image: url(:/systemicons/img/Forward.png);
 }</string>
        </property>
        <property name="verticalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
        </property>
        <property name="alternatingRowColors">
         <bool>true</bool>

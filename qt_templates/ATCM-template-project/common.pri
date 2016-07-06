@@ -85,13 +85,14 @@ SOURCES += \
 
 !isEmpty(ATCM_TEMPLATE_BASE_DIR) {
 	# pre-elaboration
-        check_missing_file.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/cleanmissingpage.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
-        check_undeclared_variable.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_cross_var.pl \"$$_PRO_FILE_PWD_\"
-        check_gotopage_bind.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/connectbutton.pl \"$$_PRO_FILE_PWD_\"
-        check_systemini.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_systemini.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
+    check_missing_file.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/cleanmissingpage.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
+    check_undeclared_variable.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_cross_var.pl \"$$_PRO_FILE_PWD_\"
+    check_gotopage_bind.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/connectbutton.pl \"$$_PRO_FILE_PWD_\"
+    check_systemini.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_systemini.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
+    check_default_font.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/defaultfont.pl \"$$_PRO_FILE_PWD_\"
 
-	QMAKE_EXTRA_TARGETS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini
-	PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini
+	QMAKE_EXTRA_TARGETS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font
+	PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font
 }
 
 # default icons

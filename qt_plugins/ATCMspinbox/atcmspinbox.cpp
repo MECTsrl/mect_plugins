@@ -483,6 +483,7 @@ void ATCMspinbox::updateData()
     }
     LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 
+    disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
     if (m_status == ERROR)
     {
         /* set error MSG */
@@ -491,14 +492,12 @@ void ATCMspinbox::updateData()
             setSpecialValueText(statusMsg);
         }
     }
-    else
+    else if (m_status == DONE)
+    {
+        this->setValue(m_value);
+    }
+    connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #endif
-        if (m_status == DONE)
-        {
-            disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-            this->setValue(m_value);
-            connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-        }
     this->update();
 }
 
@@ -565,5 +564,3 @@ void ATCMspinbox::unsetApparence()
 {
     setApparence(QFrame::Plain);
 }
-
-

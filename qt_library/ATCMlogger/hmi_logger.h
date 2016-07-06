@@ -124,7 +124,7 @@ public:
     bool logshot();
 #endif
 private:
-    FILE * openFile(int * newfile, const char * basedir, const char * subdir = NULL);
+    FILE * openFile(bool daily, int * newfile, const char * basedir, const char * subdir = NULL);
 #ifdef ENABLE_ALARMS
     int getElemAlarmStyleIndex(event_descr_t * event_msg);
     size_t loadAlarmsTable();
@@ -145,13 +145,12 @@ private:
 private:
     time_t Now;
     struct tm * timeinfo;
-    struct tm * CurrentTimeInfo;
+    struct tm CurrentTimeInfo;
     FILE * alarmsfp;
     FILE * storefp;
     int _period_msec;
     char AlarmsDir[FILENAME_MAX];
     char StorageDir[FILENAME_MAX];
-    char CurrentDate[DESCR_LEN];
 #ifdef ENABLE_STORE
     int counterS;
     int counterF;

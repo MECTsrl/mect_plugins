@@ -185,7 +185,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
 
 		if (USBmount() == false)
         {
-            LOG_PRINT(error_e, "Cannot mount the usb key\n");
+            LOG_PRINT(error_e, "cannot mount the usb key\n");
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
@@ -216,7 +216,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
 
         if (!QFile::exists(srcfilename))
         {
-            LOG_PRINT(error_e, "Cannot found the file to zip '%s'\n", srcfilename);
+            LOG_PRINT(error_e, "cannot find the file to zip '%s'\n", srcfilename);
             return;
         }
 

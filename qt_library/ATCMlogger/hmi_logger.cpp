@@ -147,8 +147,8 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     LOG_PRINT(verbose_e, "Store dir: '%s'.\n", StorageDir);
     
     time(&Now);
-    CurrentTimeInfo = localtime (&Now);
-    strftime (CurrentDate, 32, "%Y_%m_%d_%H_%M_%S", CurrentTimeInfo);
+    memcpy(&CurrentTimeInfo, localtime(&Now), sizeof(CurrentTimeInfo));
+    LOG_PRINT(info_e, "Data changed \n");
 
     for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
     {
@@ -183,7 +183,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
             /* if necessary delete the oldest logfile */
             if (removeOldest(StorageDir))
             {
-                LOG_PRINT(error_e, "Cannot remove the oldest log\n");
+                LOG_PRINT(error_e, "cannot remove the oldest log\n");
                 return;
             }
             /* if necessary delete the oldest logfile */
@@ -191,7 +191,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
             {
                 if (removeOldest(AlarmsDir))
                 {
-                    LOG_PRINT(error_e, "Cannot remove the oldest log\n");
+                    LOG_PRINT(error_e, "cannot remove the oldest log\n");
                     return;
                 }
             }
@@ -203,11 +203,22 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
 #endif
 }
 
-FILE * Logger::openFile(int * newfile, const char * basedir, const char * subdir)
+FILE * Logger::openFile(bool daily, int * newfile, const char * basedir, const char * subdir)
 {
     /* create the log name in function of the current date */
     char logFileName[FILENAME_MAX];
-    
+    char CurrentDate[DESCR_LEN];
+
+    if (daily)
+    {
+        strftime (CurrentDate, 32, "%Y_%m_%d", &CurrentTimeInfo);
+    }
+    else
+    {
+        strftime (CurrentDate, 32, "%Y_%m_%d_%H_%M_%S", &CurrentTimeInfo);
+    }
+    LOG_PRINT(info_e, "CurrentDate '%s'\n", CurrentDate);
+
     /* if necessary, create the subdir */
     if (subdir != NULL)
     {
@@ -254,10 +265,10 @@ bool Logger::openAlarmsFile()
         return true;
     }
     /*  open the log file */
-    alarmsfp = openFile(&newfile, AlarmsDir);
+    alarmsfp = openFile(true, &newfile, AlarmsDir);
     if (alarmsfp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot dump the log\n");
+        LOG_PRINT(error_e, "cannot dump the log\n");
         return false;
     }
     
@@ -336,13 +347,12 @@ void Logger::run()
 
         /* check if the actual date is the same of the date described into the logfile name */
         /* if is different, close the actual log file then open a new one with the new date*/
-        if (CurrentTimeInfo->tm_year < timeinfo->tm_year || CurrentTimeInfo->tm_yday < timeinfo->tm_yday)
+        if (CurrentTimeInfo.tm_year < timeinfo->tm_year || CurrentTimeInfo.tm_yday < timeinfo->tm_yday)
         {
             LOG_PRINT(info_e, "Data changed: '%d/%d' -> '%d/%d'\n",
-                      CurrentTimeInfo->tm_year, CurrentTimeInfo->tm_yday,
+                      CurrentTimeInfo.tm_year, CurrentTimeInfo.tm_yday,
                       timeinfo->tm_year, timeinfo->tm_yday);
-            strftime (CurrentDate, 32, "%Y_%m_%d_%H_%M_%S", timeinfo);
-            memcpy(CurrentTimeInfo, timeinfo, sizeof(timeinfo));
+            memcpy(&CurrentTimeInfo, timeinfo, sizeof(timeinfo));
 #ifdef ENABLE_ALARMS
             closeAlarmsFile();
 #endif
@@ -360,7 +370,7 @@ void Logger::run()
                 continue;
             }
             /* if is active, dump if it is necessary and emit the signal */
-            LOG_PRINT(verbose_e, "Reading '%s'\n", i.key().toAscii().data());
+            LOG_PRINT(verbose_e, "Reading '%s' - %d\n", i.key().toAscii().data(), i.value()->CtIndex);
             if (readFromDb(i.value()->CtIndex, &var) == 0)
             {
                 LOG_PRINT(verbose_e, "Reading '%s' 0x%X\n", i.key().toAscii().data(), var);
@@ -376,11 +386,6 @@ void Logger::run()
                 {
                     i.value()->begin = 0;
                     LOG_PRINT(verbose_e, "%s [%d] = %d - dumpEvent\n", i.key().toAscii().data(), i.value()->CtIndex, var);
-                    if (openAlarmsFile() == false)
-                    {
-                        LOG_PRINT(error_e, "Cannot open the log\n");
-                        return;
-                    }
                     dumpEvent(i.key(), i.value(), (var == 1) ? alarm_rise_e : alarm_fall_e);
                 }
                 else
@@ -429,7 +434,7 @@ void Logger::run()
                 /* if the file is not open, open it */
                 if (openStorageFile() == false)
                 {
-                    LOG_PRINT(error_e, "Cannot open the store\n");
+                    LOG_PRINT(error_e, "cannot open the store\n");
                     logger_shot = false;
                     return;
                 }
@@ -493,7 +498,7 @@ size_t Logger::loadAlarmsTable()
 
     EventHash.clear();
 
-    int index = -1;
+    int index = 0;
     event_t * item = NULL;
 
     while (fgets(line, LINE_SIZE, fp) != NULL)
@@ -595,7 +600,7 @@ size_t Logger::loadAlarmsTable()
         item->level = level;
 
         /* extract the CT index of the alarm/event */
-        item->CtIndex = index + 1;
+        item->CtIndex = index;
 
         EventHash.insert(tag, item);
         elem_nb++;
@@ -816,7 +821,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
             /* if necessary delete the oldest logfile */
             if (removeOldest(AlarmsDir))
             {
-                LOG_PRINT(error_e, "Cannot remove the oldest log\n");
+                LOG_PRINT(error_e, "cannot remove the oldest log\n");
                 return false;
             }
         }
@@ -841,6 +846,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         }
         
         /* prepare the event item */
+#ifdef LEVEL_TYPE
         /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
         sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
                 item->type,
@@ -850,8 +856,22 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
                 buffer,
                 item->description
                 );
+#else
+        /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
+        sprintf(msg, "%s;%s;%s;%s\n",
+                varname.toAscii().data(),
+                event,
+                buffer,
+                item->description
+                );
+#endif
         
         /* dump the item into log file */
+        if (openAlarmsFile() == false)
+        {
+            LOG_PRINT(error_e, "cannot open the log\n");
+            return false;
+        }
         if (alarmsfp != NULL)
         {
             fprintf(alarmsfp, "%s", msg);
@@ -893,7 +913,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
         /* if necessary delete the oldest logfile */
         if (removeOldest(AlarmsDir))
         {
-            LOG_PRINT(error_e, "Cannot remove the oldest log\n");
+            LOG_PRINT(error_e, "cannot remove the oldest log\n");
             return false;
         }
     }
@@ -916,6 +936,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
             
             getElemAlarmStyleIndex(_active_alarms_events_.at(i));
             
+#ifdef LEVEL_TYPE
             /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
             sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
                     event->type,
@@ -925,8 +946,22 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                     _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
                     event->description
                     );
+#else
+            /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
+            sprintf(msg, "%s;%s;%s;%s\n",
+                    _active_alarms_events_.at(i)->tag,
+                    TAG_ACK,
+                    _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
+                    event->description
+                    );
+#endif
             
             /* dump the event into log file */
+            if (openAlarmsFile() == false)
+            {
+                LOG_PRINT(error_e, "cannot open the log\n");
+                return false;
+            }
             if (alarmsfp != NULL)
             {
                 fprintf(alarmsfp, "%s", msg);
@@ -968,6 +1003,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
             }
         }
         
+#ifdef LEVEL_TYPE
         /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
         sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
                 event->type,
@@ -977,8 +1013,22 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                 _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
                 event->description
                 );
+#else
+        /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
+        sprintf(msg, "%s;%s;%s;%s\n",
+                _active_alarms_events_.at(i)->tag,
+                TAG_ACK,
+                _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
+                event->description
+                );
+#endif
         
         /* dump the event into log file */
+        if (openAlarmsFile() == false)
+        {
+            LOG_PRINT(error_e, "cannot open the log\n");
+            return false;
+        }
         if (alarmsfp != NULL)
         {
             fprintf(alarmsfp, "%s", msg);
@@ -1007,67 +1057,67 @@ bool Logger::openStorageFile()
         return true;
     }
     /*  open the log file */
-    storefp = openFile(&newfile, StorageDir);
+    storefp = openFile(false, &newfile, StorageDir);
     if (storefp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot dump the log\n");
+        LOG_PRINT(error_e, "cannot dump the log\n");
         return false;
     }
     
     if (newfile)
     {
         LOG_PRINT(verbose_e, "NEW log file\n");
-        int nb_of_char = fprintf(storefp, "date; time");
+        int nb_of_char = fprintf(storefp, "%10s; %8s","date","time");
         if (nb_of_char != (int)strlen("date; time"))
         {
-            LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "date; time", nb_of_char, (int)strlen("date; time"));
+            LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "date; time", nb_of_char, (int)strlen("date; time"));
             return false;
         }
         
         for ( int i = 0; StoreArrayS[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayS[i].tag);
-            nb_of_char = fprintf(storefp, "; %s", StoreArrayS[i].tag);
+            nb_of_char = fprintf(storefp, "; %18s", StoreArrayS[i].tag);
             if (nb_of_char != (int)strlen(StoreArrayS[i].tag) + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", StoreArrayS[i].tag, nb_of_char, (int)strlen(StoreArrayS[i].tag) + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayS[i].tag, nb_of_char, (int)strlen(StoreArrayS[i].tag) + 2);
                 return false;
             }
         }
         for ( int i = 0; StoreArrayF[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayF[i].tag);
-            nb_of_char = fprintf(storefp, "; %s", StoreArrayF[i].tag);
+            nb_of_char = fprintf(storefp, "; %18s", StoreArrayF[i].tag);
             if (nb_of_char != (int)strlen(StoreArrayF[i].tag) + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", StoreArrayF[i].tag, nb_of_char, (int)strlen(StoreArrayF[i].tag) + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayF[i].tag, nb_of_char, (int)strlen(StoreArrayF[i].tag) + 2);
                 return false;
             }
         }
         for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayV[i].tag);
-            nb_of_char = fprintf(storefp, "; %s", StoreArrayV[i].tag);
+            nb_of_char = fprintf(storefp, "; %18s", StoreArrayV[i].tag);
             if (nb_of_char != (int)strlen(StoreArrayV[i].tag) + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", StoreArrayV[i].tag, nb_of_char, (int)strlen(StoreArrayV[i].tag) + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayV[i].tag, nb_of_char, (int)strlen(StoreArrayV[i].tag) + 2);
                 return false;
             }
         }
         for ( int i = 0; StoreArrayX[i].tag[0] != '\0'; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayX[i].tag);
-            nb_of_char = fprintf(storefp, "; %s", StoreArrayX[i].tag);
+            nb_of_char = fprintf(storefp, "; %18s", StoreArrayX[i].tag);
             if (nb_of_char != (int)strlen(StoreArrayX[i].tag) + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", StoreArrayX[i].tag, nb_of_char, (int)strlen(StoreArrayX[i].tag) + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayX[i].tag, nb_of_char, (int)strlen(StoreArrayX[i].tag) + 2);
                 return false;
             }
         }
 
         if (fprintf(storefp, "\n") != 1)
         {
-            LOG_PRINT(error_e, "Cannot dump: '%s'\n", strerror(errno));
+            LOG_PRINT(error_e, "cannot dump: '%s'\n", strerror(errno));
             return false;
         }
         fflush(storefp);
@@ -1124,7 +1174,7 @@ bool Logger::dumpStorage()
     
     if (storefp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot dump: (storefp is null).\n");
+        LOG_PRINT(error_e, "cannot dump: (storefp is null).\n");
         return false;
     }
     
@@ -1134,7 +1184,7 @@ bool Logger::dumpStorage()
         /* if necessary delete the oldest logfile */
         if (removeOldest(StorageDir))
         {
-            LOG_PRINT(error_e, "Cannot remove the oldest log\n");
+            LOG_PRINT(error_e, "cannot remove the oldest log\n");
             return false;
         }
     }
@@ -1146,7 +1196,7 @@ bool Logger::dumpStorage()
     int nb_of_char = fprintf(storefp, "%s", buffer);
     if (nb_of_char != (int)strlen(buffer))
     {
-        LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", buffer, nb_of_char, (int)strlen(buffer));
+        LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", buffer, nb_of_char, (int)strlen(buffer));
         return false;
     }
 
@@ -1163,10 +1213,10 @@ bool Logger::dumpStorage()
                 strcpy(value, TAG_NAN);
             }
             
-            nb_of_char = fprintf(storefp, "; %s", value);
+            nb_of_char = fprintf(storefp, "; %18s", value);
             if (nb_of_char != (int)strlen(value) + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
                 return false;
             }
             
@@ -1192,10 +1242,10 @@ bool Logger::dumpStorage()
     {
         for ( iS = 0; StoreArrayS[iS].tag[0] != '\0'; iS++)
         {
-            nb_of_char = fprintf(storefp, "; %s", "-");
+            nb_of_char = fprintf(storefp, "; %18s", "-");
             if (nb_of_char != (int)strlen("-") + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
                 return false;
             }
         }
@@ -1215,10 +1265,10 @@ bool Logger::dumpStorage()
                 strcpy(value, TAG_NAN);
             }
             
-            nb_of_char = fprintf(storefp, "; %s", value);
+            nb_of_char = fprintf(storefp, "; %18s", value);
             if (nb_of_char != (int)strlen(value) + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
                 return false;
             }
             
@@ -1244,10 +1294,10 @@ bool Logger::dumpStorage()
     {
         for ( iF = 0; StoreArrayF[iF].tag[0] != '\0'; iF++)
         {
-            nb_of_char = fprintf(storefp, "; %s", "-");
+            nb_of_char = fprintf(storefp, "; %18s", "-");
             if (nb_of_char != (int)strlen("-") + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
                 return false;
             }
         }
@@ -1270,19 +1320,19 @@ bool Logger::dumpStorage()
             if (logger_shot || strcmp(StoreArrayV[iV].value, value) != 0)
             {
                 strcpy(StoreArrayV[iV].value, value);
-                nb_of_char = fprintf(storefp, "; %s", value);
+                nb_of_char = fprintf(storefp, "; %18s", value);
                 if (nb_of_char != (int)strlen(value) + 2)
                 {
-                    LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
+                    LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
                     return false;
                 }
             }
             else
             {
-                nb_of_char = fprintf(storefp, "; %s", "-");
+                nb_of_char = fprintf(storefp, "; %18s", "-");
                 if (nb_of_char != (int)strlen("-") + 2)
                 {
-                    LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
+                    LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
                     return false;
                 }
             }
@@ -1309,10 +1359,10 @@ bool Logger::dumpStorage()
     {
         for ( iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
         {
-            nb_of_char = fprintf(storefp, "; %s", "-");
+            nb_of_char = fprintf(storefp, "; %18s", "-");
             if (nb_of_char != (int)strlen("-") + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
                 return false;
             }
         }
@@ -1331,10 +1381,10 @@ bool Logger::dumpStorage()
                 strcpy(value, TAG_NAN);
             }
 
-            nb_of_char = fprintf(storefp, "; %s", value);
+            nb_of_char = fprintf(storefp, "; %18s", value);
             if (nb_of_char != (int)strlen(value) + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
                 return false;
             }
 
@@ -1360,10 +1410,10 @@ bool Logger::dumpStorage()
     {
         for ( iX = 0; StoreArrayX[iX].tag[0] != '\0'; iX++)
         {
-            nb_of_char = fprintf(storefp, "; %s", "-");
+            nb_of_char = fprintf(storefp, "; %18s", "-");
             if (nb_of_char != (int)strlen("-") + 2)
             {
-                LOG_PRINT(error_e, "Cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
+                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
                 return false;
             }
         }
@@ -1384,7 +1434,7 @@ bool Logger::dumpStorage()
     }
     if (fprintf(storefp, "\n") != 1)
     {
-        LOG_PRINT(error_e, "Cannot dump\n");
+        LOG_PRINT(error_e, "cannot dump\n");
         return false;
     }
     fflush(storefp);
@@ -1493,7 +1543,7 @@ int Logger::removeOldest( const char * dir)
             LOG_PRINT (warning_e, "Removing oldest log file '%s'\n", filelist[i]->d_name);
             if (remove(filename) != 0)
             {
-                LOG_PRINT (error_e, "Cannot remove oldest log file '%s'\n", filelist[i]->d_name);
+                LOG_PRINT (error_e, "cannot remove oldest log file '%s'\n", filelist[i]->d_name);
             }
             else
             {

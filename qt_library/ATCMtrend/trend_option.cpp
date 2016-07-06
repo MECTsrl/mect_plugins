@@ -506,7 +506,7 @@ void trend_option::Save(const char * fullfilename)
     FILE * fp = fopen(fullfilename, "w");
     if (fp == NULL)
     {
-        LOG_PRINT(error_e, "Cannot open '%s'\n", fullfilename);
+        LOG_PRINT(error_e, "cannot open '%s'\n", fullfilename);
     }
     else
     {
@@ -529,12 +529,17 @@ void trend_option::Save(const char * fullfilename)
         LOG_PRINT(info_e, "opened '%s'\n", fullfilename);
         for (int i = 0; i < PEN_NB; i++)
         {
-            fprintf(fp, "%d;%s;%s;%f;%f;%s\n",
+            int decimal = 2;
+            if (pens[i].CtIndex != -1)
+            {
+                decimal = getVarDecimalByCtIndex(pens[i].CtIndex);
+            }
+            fprintf(fp, "%d;%s;%s;%s;%s;%s\n",
                     pens[i].visible,
                     pens[i].tag,
                     pens[i].color,
-                    pens[i].yMin,
-                    pens[i].yMax,
+                    QString::number(pens[i].yMin, 'f', decimal).toAscii().data(),
+                    QString::number(pens[i].yMax, 'f', decimal).toAscii().data(),
                     pens[i].description
                     );
         }
@@ -573,7 +578,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
     {
         if (USBmount() == false)
         {
-            LOG_PRINT(error_e, "Cannot mount the usb key\n");
+            LOG_PRINT(error_e, "cannot mount the usb key\n");
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
@@ -605,7 +610,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         }
         
         /* zip the file, the sign file and delete them */
-        if (zipAndSave(sourcelist,QString("%1.zip").arg(dstfilename)) == false)
+        if (zipAndSave(sourcelist,QString("%1.zip").arg(dstfilename), true) == false)
         {
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(QString("%1.zip").arg(dstfilename)));
             USBumount();

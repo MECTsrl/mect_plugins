@@ -1006,7 +1006,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     }
     if (logfound == 0)
     {
-        LOG_PRINT(warning_e, "cannot found any sample from begin '%s' to '%s'\n",
+        LOG_PRINT(warning_e, "cannot find any sample from begin '%s' to '%s'\n",
                   begin.toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
                   end.toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
                   );
@@ -1046,7 +1046,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         if (fgets(line, LINE_SIZE, fp) == NULL)
         {
             fclose(fp);
-            LOG_PRINT(error_e, "Cannot extract the title from '%s'\n", filename);
+            LOG_PRINT(error_e, "cannot extract the title from '%s'\n", filename);
             return false;
         }
         

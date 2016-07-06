@@ -627,7 +627,7 @@ size_t fillSyncroArea(void)
                 {
                     if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
                     {
-                        LOG_PRINT(error_e, "Cannot add the block to the syncroelement\n");
+                        LOG_PRINT(error_e, "cannot add the block to the syncroelement\n");
                         return elem_nb;
                     }
                     /* enable it in reading */
@@ -636,7 +636,7 @@ size_t fillSyncroArea(void)
                 }
                 else
                 {
-                    LOG_PRINT(error_e, "Cannot add the block to the syncroelement\n");
+                    LOG_PRINT(error_e, "cannot add the block to the syncroelement\n");
                 }
             }
             else
@@ -820,7 +820,7 @@ int addSyncroElement(const char * tag, int * CtIndex)
     Tag2CtIndex(tag, CtIndex);
     if(*CtIndex < 0)
     {
-        LOG_PRINT(error_e, "Cannot find the index for variable '%s'\n", tag);
+        LOG_PRINT(error_e, "cannot find the index for variable '%s'\n", tag);
         return *CtIndex;
     }
 
@@ -1010,7 +1010,7 @@ int Tag2CtIndex(const char * Tag, int * CtIndex)
             return 0;
         }
     }
-    LOG_PRINT(verbose_e, "Cannot found '%s'\n", Tag);
+    LOG_PRINT(verbose_e, "Cannot find '%s'\n", Tag);
     return -1;
 }
 
@@ -1912,7 +1912,7 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
         }
         if (CtIndex2SynIndex(ctIndex, pSynIndex) != 0)
         {
-            LOG_PRINT(error_e, "Cannot find the variable '%d'' into the syncro vector\n", ctIndex);
+            LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", ctIndex);
             return ERROR;
         }
     }
@@ -2033,7 +2033,7 @@ char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
             }
             if (CtIndex2SynIndex(CtIndex, pSynIndex) != 0)
             {
-                LOG_PRINT(error_e, "Cannot find the variable '%d'' into the syncro vector\n", CtIndex);
+                LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", CtIndex);
                 return ERROR;
             }
         }
@@ -2213,7 +2213,7 @@ int writeBlock(const char * varname)
         }
         if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
         {
-            LOG_PRINT(error_e, "Cannot find the variable '%d'' into the syncro vector\n", CtIndex);
+            LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", CtIndex);
             return 1;
         }
     }
@@ -2260,7 +2260,7 @@ int isBlockActiveByCtIndex(const int CtIndex, char * varblockhead)
     }
     else
     {
-        LOG_PRINT(error_e, "Cannot found the head block of '%s' ('%s', %d)\n", varNameArray[CtIndex].tag, varNameArray[CtIndexHead].tag, CtIndexHead);
+        LOG_PRINT(error_e, "cannot find the head block of '%s' ('%s', %d)\n", varNameArray[CtIndex].tag, varNameArray[CtIndexHead].tag, CtIndexHead);
     }
 
     int SynIndex = 0;
@@ -2500,7 +2500,7 @@ int connectDevice(enum protocol_e protocol, int node)
                 {
                     if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
                     {
-                        LOG_PRINT(error_e, "Cannot add the block to the syncroelement\n");
+                        LOG_PRINT(error_e, "cannot add the block to the syncroelement\n");
                         /*failed reconnection*/
                         return 1;
                     }
@@ -2510,7 +2510,7 @@ int connectDevice(enum protocol_e protocol, int node)
                 }
                 else
                 {
-                    LOG_PRINT(error_e, "Cannot add the block to the syncroelement\n");
+                    LOG_PRINT(error_e, "cannot add the block to the syncroelement\n");
                 }
             }
             else
@@ -2643,7 +2643,7 @@ int activateVar(const char * varname)
         {
             if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
             {
-                LOG_PRINT(error_e, "Cannot find the variable '%d'' into the syncro vector\n", CtIndex);
+                LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", CtIndex);
                 return 1;
             }
             LOG_PRINT(verbose_e, "Set reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
@@ -2654,7 +2654,7 @@ int activateVar(const char * varname)
             varNameArray[CtIndex].visible = 1;
             return 0;
         }
-        LOG_PRINT(error_e, "Cannot Activate '%s'\n", varname);
+        LOG_PRINT(error_e, "cannot Activate '%s'\n", varname);
     }
     LOG_PRINT(error_e, "IMPOSSIBLE RET VALUE '%d'\n", retval);
     return 1;
@@ -2843,7 +2843,7 @@ int setStatusVar(const char * varname, char Status)
     }
     else
     {
-        LOG_PRINT(error_e, "Cannot set the status '%c' the variable '%s'\n", Status, varname);
+        LOG_PRINT(error_e, "cannot set the status '%c' the variable '%s'\n", Status, varname);
         return 1;
     }
 }
@@ -2875,7 +2875,7 @@ int setStatusVarBySynIndex(int SynIndex, char Status)
     }
     else
     {
-        LOG_PRINT(error_e, "Cannot set the status '%c' the variable '%d'\n", Status, CtIndex);
+        LOG_PRINT(error_e, "cannot set the status '%c' the variable '%d'\n", Status, CtIndex);
         retval = 1;
     }
     return retval;
@@ -2889,7 +2889,7 @@ int getString(const char* varname, int size, char * string)
 #if 0
     if (getFormattedVar(varname, &value) == false)
     {
-        LOG_PRINT(error_e, "Cannot read the variable '%s'\n", varname);
+        LOG_PRINT(error_e, "cannot read the variable '%s'\n", varname);
         return false;
     }
 #else
@@ -2944,7 +2944,7 @@ int getString(const char* varname, int size, char * string)
     LOG_PRINT(info_e, "get var name '%s' size %d\n", varname, size);
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
-        LOG_PRINT(error_e, "Cannot extract ctIndex for variable %s\n", varname);
+        LOG_PRINT(error_e, "cannot extract ctIndex for variable %s\n", varname);
         return 1;
     }
     for (i = 0; i < size; i++)
@@ -2953,7 +2953,7 @@ int getString(const char* varname, int size, char * string)
         {
             if (readFromDb(ctIndex, &value) != 0)
             {
-                LOG_PRINT(error_e, "Cannot read the variable at ctIndex %d\n", ctIndex);
+                LOG_PRINT(error_e, "cannot read the variable at ctIndex %d\n", ctIndex);
                 return 1;
             }
             LOG_PRINT(info_e, "%d value[%d] = %d\n",ctIndex, i, value);
@@ -2976,7 +2976,7 @@ int setString(const char* varname, int size, char * string)
 
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
-        LOG_PRINT(error_e, "Cannot extract ctIndex for variable %s\n", varname);
+        LOG_PRINT(error_e, "cannot extract ctIndex for variable %s\n", varname);
         return 1;
     }
 
@@ -2986,14 +2986,14 @@ int setString(const char* varname, int size, char * string)
         {
             if (CtIndex2Tag(ctIndex, tag) != 0)
             {
-                LOG_PRINT(error_e, "Cannot extract tag name from variable at ctIndex %d\n", ctIndex);
+                LOG_PRINT(error_e, "cannot extract tag name from variable at ctIndex %d\n", ctIndex);
                 return 1;
             }
             value = (string[i] | (string[i+1] << 8));
             LOG_PRINT(info_e, "'%c' '%c' -> %x %x -> %x\n", string[i], string[i+1], string[i], string[i+1], value);
             if (prepareWriteBlock(tag, &value, NULL) != DONE)
             {
-                LOG_PRINT(error_e, "Cannot prepare the write value into variable %s\n", tag);
+                LOG_PRINT(error_e, "cannot prepare the write value into variable %s\n", tag);
                 return 1;
             }
             ctIndex++;
@@ -3001,7 +3001,7 @@ int setString(const char* varname, int size, char * string)
     }
     if (writeBlock(varname) != 0)
     {
-        LOG_PRINT(error_e, "Cannot perform the write of the block %s\n", varname);
+        LOG_PRINT(error_e, "cannot perform the write of the block %s\n", varname);
         return 0;
     }
     LOG_PRINT(info_e, "set string '%s'\n", string);
@@ -3093,7 +3093,7 @@ void checkTagWriting(const char * varname)
         isBlockActive(varname, blockhead);
         if (Tag2SynIndex(blockhead, &SynIndex) != 0)
         {
-            LOG_PRINT(error_e, "cannot found the Syn index of variable '%s'\n", varname);
+            LOG_PRINT(error_e, "cannot find the Syn index of variable '%s'\n", varname);
             return;
         }
         else

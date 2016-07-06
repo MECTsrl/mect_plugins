@@ -32,6 +32,26 @@
 char FieldsMap[MAX_FIELDS_NB][LINE_SIZE];
 int  FilterFlags[MAX_FIELDS_NB];
 
+int substitute(const char * namesrc, char * namedst, const char * substr1, const char * substr2)
+{
+    unsigned int i, j = 0;
+    for (i = 0; i < strlen(namesrc); i++)
+    {
+        if (strncmp(&(namesrc[i]), substr1, strlen(substr1)) == 0)
+        {
+            strcpy(&(namedst[j]), substr2);
+            j+=strlen(substr2);
+            i+=strlen(substr1) - 1;
+        }
+        else
+        {
+            namedst[j] = namesrc[i];
+            j++;
+        }
+    }
+    return 0;
+}
+
 int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflags)
 {
     char field[LINE_SIZE];
@@ -249,7 +269,7 @@ int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const ch
                             {
                                 fprintf(fpout, "; ");
                             }
-                            fprintf(fpout, "%s", token);
+                            fprintf(fpout, "%18s", token);
                             first = 0;
                         }
                     }
@@ -258,11 +278,11 @@ int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const ch
                         fprintf(fpout, "; ");
                         if (firstline == 1 && skipline == 0)
                         {
-                            fprintf(fpout, "%s", FieldsMap[j]);
+                            fprintf(fpout, "%18s", FieldsMap[j]);
                         }
                         else
                         {
-                            fprintf(fpout, "%s", UNDEFINED);
+                            fprintf(fpout, "%18s", UNDEFINED);
                         }
                     }
                     fprintf(fpout, "\n");
@@ -459,8 +479,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 
         while (difftime(datetimefin, datetimein) > 0)
         {
-            strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
-            LOG_PRINT(info_e, "%s\n", tmp );
             for(i = 0; i < fcount; i++)
             {
                 if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0 && strncmp(tmp, filelist[i]->d_name, strlen(tmp)) == 0)
@@ -484,9 +502,17 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                         {
                             *p = '\0';
                         }
-                        strftime(tmp, sizeof(token), "%Y_%m_%d_%H_%M_%S", &mytime);
-                        sprintf(outFileName, "%s_%s.log", tmp, token );
+                        /* daily logs */
+
+                        char tmp[1024];
+                        sprintf(tmp, "%s", datein);
+                        substitute(tmp, outFileName, "/", "_");
+                        strcpy(tmp, outFileName);
+                        substitute(tmp, outFileName, ":", "_");
+
+                        sprintf(outFileName, "%s.log", tmp );
                         sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
+                        LOG_PRINT(info_e, "DAILY, Outout file '%s'\n", outFullPathFileName);
 
 
                         fpout = fopen(outFullPathFileName, "w");
@@ -533,7 +559,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                                     {
                                         fprintf(fpout, "; ");
                                     }
-                                    fprintf(fpout, "%s", token);
+                                    fprintf(fpout, "%18s", token);
                                     first = 0;
                                 }
                             }
@@ -593,15 +619,22 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                     {
                         *p = '\0';
                     }
+                    /* all logs */
                     strcpy(outFileName, filelist[i]->d_name);
                     p = strrchr(outFileName, '.' );
                     if (p)
                     {
                         *p = '\0';
                     }
-                    sprintf(outFileName, "%s_%s.log", outFileName, token );
+                    char tmp[1024];
+                    sprintf(tmp, "%s", token);
+                    substitute(tmp, outFileName, "/", "_");
+                    strcpy(tmp, outFileName);
+                    substitute(tmp, outFileName, ":", "_");
 
+                    sprintf(outFileName, "%s.log", tmp );
                     sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
+                    LOG_PRINT(info_e, "ALL, Outout file '%s'\n", outFullPathFileName);
 
                     fpout = fopen(outFullPathFileName, "w");
                     if (fpout == NULL)
@@ -614,7 +647,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 #ifdef STANDALONE
                     fprintf(stdout, "%s\n", outFullPathFileName);
 #endif
-
                     /* extract the selected columns from the actual log file */
                     while (fgets(line, LINE_SIZE, fpin) != NULL)
                     {
@@ -649,7 +681,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                                 {
                                     fprintf(fpout, "; ");
                                 }
-                                fprintf(fpout, "%s", token);
+                                fprintf(fpout, "%18s", token);
                                 first = 0;
                             }
                         }
@@ -660,7 +692,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                     }
                     fclose(fpout);
                     fclose(fpin);
-
 #ifdef SIGN_APP
                     /* create the sign file for the actual extracted log file */
                     sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
@@ -704,27 +735,15 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         datetimein = mktime(&mytime);
 
         /* creating the name of the output file */
-        char * p = strrchr(fieldsfile, '/' );
-        if (p)
-        {
-            strcpy(token, p + 1);
-        }
-        else
-        {
-            strcpy(token, fieldsfile);
-        }
-        p = strrchr(token, '.' );
-        if (p)
-        {
-            *p = '\0';
-        }
-        if (strlen(token) == 0)
-        {
-            strftime(token, sizeof(token), "%Y_%m_%d_%H_%M_%S", &mytime);
-        }
+        /* time filtered */
 
-        sprintf(outFileName, "%s.log", token );
+        char tmp[1024];
+        sprintf(tmp, "%s_%s-%s_%s.log", datein, timein, datefin, timefin);
+        substitute(tmp, outFileName, "/", "_");
+        strcpy(tmp, outFileName);
+        substitute(tmp, outFileName, ":", "_");
         sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
+        LOG_PRINT(info_e, "FILTERED, Outout file '%s'\n", outFullPathFileName);
 
         fpout = fopen(outFullPathFileName, "w");
         if (fpout == NULL)
@@ -736,7 +755,6 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 #ifdef STANDALONE
         fprintf(stdout, "%s\n", outFullPathFileName);
 #endif
-
         while (datetimefin >= datetimein)
         {
             strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
@@ -753,6 +771,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                         if (skipline == 0)
                         {
                             skipline = 1;
+                            char * p;
                             for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
                             {
                                 if (*p == ';')
@@ -779,7 +798,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                                     {
                                         strcpy(token, &(token[k]));
                                     }
-                                    fprintf(fpout, "%s", token);
+                                    fprintf(fpout, "%18s", token);
                                     if (firstline == 0)
                                     {
                                         fprintf(fpout, "; ");
