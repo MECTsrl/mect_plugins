@@ -269,7 +269,7 @@ int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const ch
                             {
                                 fprintf(fpout, "; ");
                             }
-                            fprintf(fpout, "%18s", token);
+                            fprintf(fpout, "%s", token);
                             first = 0;
                         }
                     }
@@ -278,11 +278,11 @@ int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const ch
                         fprintf(fpout, "; ");
                         if (firstline == 1 && skipline == 0)
                         {
-                            fprintf(fpout, "%18s", FieldsMap[j]);
+                            fprintf(fpout, "%s", FieldsMap[j]);
                         }
                         else
                         {
-                            fprintf(fpout, "%18s", UNDEFINED);
+                            fprintf(fpout, "%s", UNDEFINED);
                         }
                     }
                     fprintf(fpout, "\n");
@@ -559,7 +559,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                                     {
                                         fprintf(fpout, "; ");
                                     }
-                                    fprintf(fpout, "%18s", token);
+                                    fprintf(fpout, "%s", token);
                                     first = 0;
                                 }
                             }
@@ -681,7 +681,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                                 {
                                     fprintf(fpout, "; ");
                                 }
-                                fprintf(fpout, "%18s", token);
+                                fprintf(fpout, "%s", token);
                                 first = 0;
                             }
                         }
@@ -798,7 +798,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                                     {
                                         strcpy(token, &(token[k]));
                                     }
-                                    fprintf(fpout, "%18s", token);
+                                    fprintf(fpout, "%s", token);
                                     if (firstline == 0)
                                     {
                                         fprintf(fpout, "; ");

@@ -203,7 +203,7 @@ void page::updateData()
     /*
     if(IS_ENGINE_READY == 0)
     {
-        QMessageBox::critical(0, "Communication Error", QString("Problem to start communication engine [0x%1].").arg(QString().setNum((IOSyncroAreaI)[5707]),16));
+        QMessageBox::critical(0, "Communication Error", QString("Problem to start communication engine [0x%1].").arg(QString::number((IOSyncroAreaI)[5707]),16));
     }
 
     LOG_PRINT(info_e, "Communication engine started\n");

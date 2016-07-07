@@ -61,11 +61,18 @@ trend_other::trend_other(QWidget *parent) :
     SET_SELECT_STYLE();
     tp = (trend *)parent;
     this->setAutoFillBackground(true);
-    reload();
 }
 
 #undef WINDOW_TITLE
 #undef WINDOW_ICON
+
+void trend_other::updateData()
+{
+    if (this->isVisible() == false)
+    {
+        return;
+    }
+}
 
 /**
  * @brief This is the reload member. The operation written here, are executed every time this page is shown.
@@ -144,36 +151,12 @@ trend_other::~trend_other()
 
 #undef VAR_TO_DISPLAY
 
-void trend_other::on_pushButtonHome_clicked()
-{
-    go_home();
-    _trend_data_reload_ = true;
-    LOG_PRINT(info_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
-    ((trend*)tp)->disableUpdate();
-    hide();
-}
-
-
-void trend_other::on_pushButtonBack_clicked()
-{
-    go_back();
-    _trend_data_reload_ = true;
-    LOG_PRINT(info_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
-    ((trend*)tp)->disableUpdate();
-    hide();
-}
-
 void trend_other::mouseMoveEvent(QMouseEvent * e)
 {
     //this->setEnabled(false);
     LOG_PRINT(info_e, "################# x %d y %d\n", e->x(), e->y());
     this->move(this->x() + e->x(), this->y() + e->y() - this->height()/3);
     //this->move(e->x(), e->y());
-}
-
-void trend_other::on_pushButtonTime_clicked()
-{
-    ((trend*)tp)->setRange();
 }
 
 void trend_other::on_pushButtonOnline_clicked()
@@ -187,8 +170,71 @@ void trend_other::on_pushButtonScreenshot_clicked()
     ((trend*)tp)->printGraph();
 }
 
-void trend_other::on_pushButtonPan_clicked()
+void trend_other::on_pushButtonUp_clicked()
 {
-    ((trend*)tp)->setPan();
+    if (_layout_ == PORTRAIT)
+    {
+        ((trend*)tp)->incrementTime(1);
+    }
+    else
+    {
+        ((trend*)tp)->incrementValue(1);
+    }
+}
+
+void trend_other::on_pushButtonDown_clicked()
+{
+    if (_layout_ == PORTRAIT)
+    {
+        ((trend*)tp)->incrementTime(-1);
+    }
+    else
+    {
+        ((trend*)tp)->incrementValue(-1);
+    }
+}
+
+void trend_other::on_pushButtonLeft_clicked()
+{
+    if (_layout_ == PORTRAIT)
+    {
+        ((trend*)tp)->incrementValue(-1);
+    }
+    else
+    {
+        ((trend*)tp)->incrementTime(-1);
+    }
+}
+
+void trend_other::on_pushButtonRight_clicked()
+{
+    if (_layout_ == PORTRAIT)
+    {
+        ((trend*)tp)->incrementValue(1);
+    }
+    else
+    {
+        ((trend*)tp)->incrementTime(1);
+    }
+}
+
+void trend_other::enableButtonUp(bool status)
+{
+    ui->pushButtonUp->setEnabled(status);
+}
+
+void trend_other::enableButtonDown(bool status)
+{
+    ui->pushButtonDown->setEnabled(status);
+}
+
+void trend_other::enableButtonLeft(bool status)
+{
+    ui->pushButtonLeft->setEnabled(status);
+}
+
+void trend_other::enableButtonRight(bool status)
+{
+    ui->pushButtonRight->setEnabled(status);
 }
 

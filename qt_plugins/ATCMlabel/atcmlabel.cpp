@@ -447,7 +447,7 @@ void ATCMlabel::updateData()
             m_status = DONE;
             if (m_format == Bin)
             {
-                m_value = QString().setNum(atoi(value), 2) + QString("b");
+                m_value = QString::number(atoi(value), 2) + QString("b");
 
             }
             else if (m_format == Hex)
@@ -458,14 +458,14 @@ void ATCMlabel::updateData()
                 case intba_e:
                 {
                     int16_t val = strtol(value, NULL, 10);
-                    m_value = QString("0x") + QString().setNum(val, 16);
+                    m_value = QString("0x") + QString::number(val, 16);
                     break;
                 }
                 case uintab_e:
                 case uintba_e:
                 {
                     uint16_t val = strtoul(value, NULL, 10);
-                    m_value = QString("0x") + QString().setNum(val, 16);
+                    m_value = QString("0x") + QString::number(val, 16);
                     break;
                 }
                 case dint_abcd_e:
@@ -474,7 +474,7 @@ void ATCMlabel::updateData()
                 case dint_dcba_e:
                 {
                     int32_t val = strtoll(value, NULL, 10);
-                    m_value = QString("0x") + QString().setNum(val, 16);
+                    m_value = QString("0x") + QString::number(val, 16);
                     break;
                 }
                 case udint_abcd_e:
@@ -483,7 +483,7 @@ void ATCMlabel::updateData()
                 case udint_dcba_e:
                 {
                     uint32_t val = strtoull(value, NULL, 10);
-                    m_value = QString("0x") + QString().setNum(val, 16);
+                    m_value = QString("0x") + QString::number(val, 16);
                     break;
                 }
                 case fabcd_e:
@@ -493,7 +493,7 @@ void ATCMlabel::updateData()
                     m_value = value;
                     break;
                 default:
-                    m_value = QString("0x") + QString().setNum(atoi(value), 16);
+                    m_value = QString("0x") + QString::number(atoi(value), 16);
                     break;
                 }
             }
@@ -686,7 +686,7 @@ void ATCMlabel::writeAction()
                         delete dk;
                         return;
                     }
-                    strvalue = QString().setNum(value);
+                    strvalue = QString::number(value);
 
                 }
                 else
@@ -710,7 +710,7 @@ void ATCMlabel::writeAction()
                         delete dk;
                         return;
                     }
-                    strvalue = QString().setNum(value);
+                    strvalue = QString::number(value);
 
                 }
                 else
@@ -739,7 +739,7 @@ void ATCMlabel::writeAction()
                     delete dk;
                     return;
                 }
-                strvalue = QString().setNum(value);
+                strvalue = QString::number(value);
 
             }
             else
@@ -765,7 +765,7 @@ void ATCMlabel::writeAction()
                     delete dk;
                     return;
                 }
-                strvalue = QString().setNum(value);
+                strvalue = QString::number(value);
 
             }
             else

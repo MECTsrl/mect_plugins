@@ -148,8 +148,8 @@ void trend_option::reload()
     {
         decimal =  getVarDecimalByName(pens[actualPen].tag);
     }
-    ui->pushButtonYmin->setText(QString().setNum(pens[actualPen].yMin,'f',decimal));
-    ui->pushButtonYmax->setText(QString().setNum(pens[actualPen].yMax,'f',decimal));
+    ui->pushButtonYmin->setText(QString::number(pens[actualPen].yMin,'f',decimal));
+    ui->pushButtonYmax->setText(QString::number(pens[actualPen].yMax,'f',decimal));
     
     QPixmap pixmap(25, 25);
     
@@ -414,7 +414,7 @@ void trend_option::on_pushButtonYmin_clicked()
         }
         pens[actualPen].yMin = value;
         //int decimal =  getVarDecimalByName(pens[actualPen].tag);
-        ui->pushButtonYmin->setText(QString().setNum(pens[actualPen].yMin,'f',3));
+        ui->pushButtonYmin->setText(QString::number(pens[actualPen].yMin,'f',3));
     }
     else
     {
@@ -442,7 +442,7 @@ void trend_option::on_pushButtonYmax_clicked()
         }
         pens[actualPen].yMax = value;
         //int decimal =  getVarDecimalByName(pens[actualPen].tag);
-        ui->pushButtonYmax->setText(QString().setNum(pens[actualPen].yMax,'f',3));
+        ui->pushButtonYmax->setText(QString::number(pens[actualPen].yMax,'f',3));
     }
     else
     {

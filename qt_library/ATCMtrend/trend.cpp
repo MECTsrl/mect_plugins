@@ -83,7 +83,6 @@ trend::trend(QWidget *parent) :
         pens[i].curve = NULL;
     }
     
-    popup = NULL;
     actualPen = 0;
     
     d_qwtplot = NULL;
@@ -102,7 +101,8 @@ trend::trend(QWidget *parent) :
     
     d_qwtplot = ui->qwtPlot;
     
-    d_qwtplot->plotLayout()->setAlignCanvasToScales(true);
+//    d_qwtplot->plotLayout()->setAlignCanvasToScales(true);
+//    d_qwtplot->plotLayout()->setCanvasMargin 	( 40, -1 );
     d_qwtplot->setAxesCount( QwtPlot::xBottom, 1 );
     d_qwtplot->setAxesCount( QwtPlot::xTop, PEN_NB );
     d_qwtplot->setAxesCount( QwtPlot::yLeft, PEN_NB );
@@ -142,7 +142,10 @@ trend::trend(QWidget *parent) :
     _load_window_busy = false;
     reloading = false;
     overloadActualTzero = true;
-    LOG_PRINT(verbose_e, "constructor\n");
+
+    popup = new trend_other(this);
+    popup_visible = false;
+    popup->hide();
 }
 
 #undef WINDOW_TITLE
@@ -153,18 +156,18 @@ trend::trend(QWidget *parent) :
  */
 void trend::reload()
 {
-    LOG_PRINT(verbose_e, "DISCONNECT!!!!!\n");
+    LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
 
-    LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADING\n");
+    LOG_PRINT(info_e, " RELOADING\n");
     reloading = true;
     d_qwtplot->hide();
 
     /* disable all button during loading */
-    ui->pushButtonUp->setEnabled(false);
-    ui->pushButtonDown->setEnabled(false);
-    ui->pushButtonLeft->setEnabled(false);
-    ui->pushButtonRight->setEnabled(false);
+    popup->enableButtonUp(false);
+    popup->enableButtonDown(false);
+    popup->enableButtonLeft(false);
+    popup->enableButtonRight(false);
     ui->pushButtonPen->setText("");
     ui->pushButtonPenColor->setStyleSheet("");
     ui->pushButtonPenColor->setAutoFillBackground(true);
@@ -179,14 +182,14 @@ void trend::reload()
         if (strlen(_actual_trend_) == 0)
         {
             LOG_PRINT(warning_e, "No trend selected.\n");
-            LOG_PRINT(info_e, "DISCONNECT!!!!!\n");
+            LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
             disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
             refresh_timer->stop();
             errormsg = (trUtf8("No trend description specified."));
             //QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("No trend description specified."));
             force_back = true;
             reloading = false;
-            LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADED\n");
+            LOG_PRINT(info_e, " RELOADED\n");
             return;
         }
 
@@ -210,7 +213,7 @@ void trend::reload()
         {
             force_back = true;
             reloading = false;
-            LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADED\n");
+            LOG_PRINT(info_e, " RELOADED\n");
             return;
         }
         else
@@ -222,9 +225,9 @@ void trend::reload()
                     int decimal = 0;
                     if (strlen(pens[z].tag))
                     {
-                        getVarDecimalByName(pens[z].tag);
+                        decimal = getVarDecimalByName(pens[z].tag);
                     }
-                    LOG_PRINT(info_e, "@@@@@@@@@@@@ valueScale null pointer for z='%d'\n", z);
+                    LOG_PRINT(info_e, " valueScale null pointer for z='%d'\n", z);
                     valueScale[z] = new NormalScaleDraw(decimal);
                 }
 
@@ -357,7 +360,7 @@ void trend::reload()
         
         LOG_PRINT(verbose_e, "pen %d yMin %f yMax %f tmin %d tmax %d\n", i, pens[i].yMin, pens[i].yMax, 0, MaxWindowSec);
     }
-    
+
 #ifdef TIME_SCALE
     if (timeScale == NULL)
     {
@@ -376,7 +379,7 @@ void trend::reload()
     
     first_time = true;
     reloading = false;
-    LOG_PRINT(info_e, "@@@@@@@@@@@@@@@@@@@@@@@@ RELOADED\n");
+    LOG_PRINT(info_e, " RELOADED\n");
 }
 
 /**
@@ -437,9 +440,9 @@ void trend::updateData()
                             int decimal = 0;
                             if (strlen(pens[z].tag))
                             {
-                                getVarDecimalByName(pens[z].tag);
+                                decimal = getVarDecimalByName(pens[z].tag);
                             }
-                            LOG_PRINT(info_e, "@@@@@@@@@@@@ valueScale null pointer for z='%d'\n", z);
+                            LOG_PRINT(info_e, " valueScale null pointer for z='%d'\n", z);
                             valueScale[z] = new NormalScaleDraw(decimal);
                         }
 
@@ -506,8 +509,7 @@ void trend::updateData()
         }
         first_time = false;
         /* connecting new_trend signal */
-        LOG_PRINT(verbose_e, "Connecting new_trend signal\n");
-        LOG_PRINT(verbose_e, "DISCONNECT!!!!!\n");
+        LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
         
         /* update the actual window parameters */
@@ -523,14 +525,14 @@ void trend::updateData()
         actualPen = -1;
         on_pushButtonSelect_clicked();
         
-        LOG_PRINT(verbose_e, "DISCONNECT!!!!!\n");
+        LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-        LOG_PRINT(verbose_e, "-----> CONNECT!!!!!\n");
+        LOG_PRINT(info_e, "CONNECT refreshEvent\n");
         connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
     }
     
     LOG_PRINT(verbose_e, "UPDATE\n");
-    if (popup != NULL)
+    if (popup_visible != false)
     {
         popup->reload();
         popup->show();
@@ -749,7 +751,7 @@ void trend::on_pushButtonSelect_clicked()
 {
     ui->pushButtonSelect->setEnabled(false);
     
-    LOG_PRINT(verbose_e, "############################ actual pen %d\n", actualPen);
+    LOG_PRINT(verbose_e, "actual pen %d\n", actualPen);
     
     /* show the next trace */
     actualPen = ((actualPen + 1) % PEN_NB);
@@ -793,6 +795,7 @@ void trend::on_pushButtonSelect_clicked()
         }
     }
     
+    /* update the pushButtonPenColor text with the current pen color */
     if (strlen(pens[actualPen].color) != 0)
     {
         ui->pushButtonPenColor->setStyleSheet(QString("background-color: %1;").arg(QString("#%1").arg(pens[actualPen].color)));
@@ -807,8 +810,8 @@ void trend::on_pushButtonSelect_clicked()
         LOG_PRINT(verbose_e, "####### axis curve %d set status %d\n", i, (i == actualPen));
         d_qwtplot->setAxisVisible( QwtAxisId( valueAxisId, i ), (i == actualPen));
     }
-    d_qwtplot->plotLayout()->setAlignCanvasToScales(true);
-    
+//    d_qwtplot->plotLayout()->setAlignCanvasToScales(true);
+//    d_qwtplot->plotLayout()->setCanvasMargin 	( 40, -1 );
     d_qwtplot->replot();
     ui->pushButtonSelect->setEnabled(true);
 }
@@ -820,19 +823,18 @@ void trend::on_pushButtonZoom_toggled(bool checked)
 
 void trend::on_pushButton_clicked()
 {
-    if (popup == NULL)
+    if (!popup->isVisible())
     {
-        popup = new trend_other(this);
         popup->move(this->width() - (2 * popup->width()), 0);
         popup->reload();
         popup->show();
         popup->raise();
+        popup_visible = true;
     }
     else if (popup->isVisible())
     {
-        popup->close();
-        delete popup;
-        popup = NULL;
+        popup->hide();
+        popup_visible = false;
         return;
     }
 }
@@ -857,7 +859,7 @@ void trend::setPan()
     
     loadOrientedWindow();
     
-    LOG_PRINT(verbose_e, "Calling setOnline  _trend_data_reload_ %d\n",  _trend_data_reload_);
+    // Calling setOnline
     //setOnline(true);
 }
 
@@ -880,7 +882,7 @@ void trend::enableZoomMode(bool on)
 bool trend::setOnline(bool status)
 {
     _online_ = status;
-    LOG_PRINT(verbose_e, "_online_ %d\n", _online_);
+    LOG_PRINT(info_e, "set %s\n", (_online_ == true) ? "ONLINE": "OFFLINE");
     if (popup != NULL && popup->isVisible())
     {
         LOG_PRINT(verbose_e, "RELOAD POPUP\n");
@@ -965,7 +967,7 @@ bool trend::bringFront(int pen)
 
 void trend::disableUpdate()
 {
-    LOG_PRINT(verbose_e, "DISCONNECT!!!!!\n");
+    LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
 }
 
@@ -1006,7 +1008,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     }
     if (logfound == 0)
     {
-        LOG_PRINT(warning_e, "cannot find any sample from begin '%s' to '%s'\n",
+        LOG_PRINT(warning_e, "cannot found any sample from begin '%s' to '%s'\n",
                   begin.toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
                   end.toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
                   );
@@ -1046,7 +1048,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         if (fgets(line, LINE_SIZE, fp) == NULL)
         {
             fclose(fp);
-            LOG_PRINT(error_e, "cannot extract the title from '%s'\n", filename);
+            LOG_PRINT(error_e, "Cannot extract the title from '%s'\n", filename);
             return false;
         }
         
@@ -1229,58 +1231,6 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     return true;
 }
 
-/* right */
-void trend::on_pushButtonRight_clicked()
-{
-    if (_layout_ == PORTRAIT)
-    {
-        incrementValue(1);
-    }
-    else
-    {
-        incrementTime(1);
-    }
-}
-
-/* left */
-void trend::on_pushButtonLeft_clicked()
-{
-    if (_layout_ == PORTRAIT)
-    {
-        incrementValue(-1);
-    }
-    else
-    {
-        incrementTime(-1);
-    }
-}
-
-/* up */
-void trend::on_pushButtonUp_clicked()
-{
-    if (_layout_ == PORTRAIT)
-    {
-        incrementTime(1);
-    }
-    else
-    {
-        incrementValue(1);
-    }
-}
-
-/* down */
-void trend::on_pushButtonDown_clicked()
-{
-    if (_layout_ == PORTRAIT)
-    {
-        incrementTime(-1);
-    }
-    else
-    {
-        incrementValue(-1);
-    }
-}
-
 void trend::incrementTime(int direction)
 {
     setOnline(false);
@@ -1323,6 +1273,7 @@ void trend::incrementValue(int direction)
 
 bool trend::loadFromFile(QDateTime Ti)
 {
+    LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
     
     TzeroLoaded = Ti;
@@ -1370,6 +1321,10 @@ bool trend::loadFromFile(QDateTime Ti)
     if (Load(TzeroLoaded, Tfin, sample_to_skip) == false)
     {
         LOG_PRINT(info_e, "Cannot load data\n");
+        LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+        disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
+        LOG_PRINT(info_e, "CONNECT refreshEvent\n");
+        connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
         return false;
     }
     LOG_PRINT(verbose_e, "PARSED2 TREND FILE\n");
@@ -1405,9 +1360,9 @@ bool trend::loadFromFile(QDateTime Ti)
         //LOG_PRINT(info_e, "decimals %d\n", decimal);
     }
 #endif
-    LOG_PRINT(verbose_e, "DISCONNECT!!!!!\n");
+    LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-    LOG_PRINT(verbose_e, "-----> CONNECT!!!!!\n");
+    LOG_PRINT(info_e, "CONNECT refreshEvent\n");
     connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
     return true;
 }
@@ -1463,7 +1418,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             {
                 arrayTicks << pens[pen_index].yMinActual + (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) * i / VERT_TICKS;
             }
-            arrayTimeTicks << pens[pen_index].yMaxActual;
+            arrayTicks << pens[pen_index].yMaxActual;
             QwtScaleDiv scale = QwtScaleDiv(pens[pen_index].yMinActual,pens[pen_index].yMaxActual);
             //scale = d_qwtplot->axisScaleDiv(valueAxisId + pen_index);
             scale.setTicks(QwtScaleDiv::MajorTick, (arrayTicks));
@@ -1633,11 +1588,11 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                       actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
                       );
             
-            ui->pushButtonLeft->setEnabled(false);
-            ui->pushButtonRight->setEnabled(false);
-            ui->pushButtonUp->setEnabled(false);
-            ui->pushButtonDown->setEnabled(false);
-            
+            popup->enableButtonUp(false);
+            popup->enableButtonDown(false);
+            popup->enableButtonLeft(false);
+            popup->enableButtonRight(false);
+
             showStatus(trUtf8("Loading..."), false);
 
             if (VisibleWindowSec != actualVisibleWindowSec)
@@ -1704,22 +1659,22 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     {
         if (_layout_ == LANDSCAPE)
         {
-            ui->pushButtonUp->setEnabled(true);
+            popup->enableButtonUp(true);
         }
         else
         {
-            ui->pushButtonLeft->setEnabled(true);
+            popup->enableButtonLeft(true);
         }
     }
     else
     {
         if (_layout_ == LANDSCAPE)
         {
-            ui->pushButtonUp->setEnabled(false);
+            popup->enableButtonUp(false);
         }
         else
         {
-            ui->pushButtonLeft->setEnabled(false);
+            popup->enableButtonLeft(false);
         }
     }
     LOG_PRINT(verbose_e, "DOWN pen %d Max %f Actual Max %f\n", actualPen, pens[actualPen].yMax, pens[actualPen].yMaxActual);
@@ -1727,22 +1682,22 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     {
         if (_layout_ == LANDSCAPE)
         {
-            ui->pushButtonDown->setEnabled(true);
+            popup->enableButtonDown(true);
         }
         else
         {
-            ui->pushButtonRight->setEnabled(true);
+            popup->enableButtonRight(true);
         }
     }
     else
     {
         if (_layout_ == LANDSCAPE)
         {
-            ui->pushButtonDown->setEnabled(false);
+            popup->enableButtonDown(false);
         }
         else
         {
-            ui->pushButtonRight->setEnabled(false);
+            popup->enableButtonRight(false);
         }
     }
     
@@ -1750,32 +1705,32 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     {
         if (_layout_ == LANDSCAPE)
         {
-            ui->pushButtonRight->setEnabled(true);
+            popup->enableButtonRight(true);
         }
         else
         {
-            ui->pushButtonUp->setEnabled(true);
+            popup->enableButtonUp(true);
         }
     }
     else
     {
         if (_layout_ == LANDSCAPE)
         {
-            ui->pushButtonRight->setEnabled(false);
+            popup->enableButtonRight(false);
         }
         else
         {
-            ui->pushButtonUp->setEnabled(false);
+            popup->enableButtonUp(false);
         }
     }
     
     if (_layout_ == LANDSCAPE)
     {
-        ui->pushButtonLeft->setEnabled(true);
+        popup->enableButtonLeft(true);
     }
     else
     {
-        ui->pushButtonDown->setEnabled(true);
+        popup->enableButtonDown(true);
     }
     
     _load_window_busy = false;
@@ -1788,13 +1743,13 @@ void trend::moved(const QPoint &pos)
     QString x, y;
     if (_layout_ == PORTRAIT)
     {
-        x = QString().setNum(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.x()), 'f', decimal);
+        x = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.x()), 'f', decimal);
         y = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.y()))).toString("HH:mm:ss");
     }
     else
     {
         x = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.x()))).toString("HH:mm:ss");
-        y = QString().setNum(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.y()), 'f', decimal);
+        y = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.y()), 'f', decimal);
     }
     
     ui->labelvalue->setText(x + "; " + y);
@@ -2006,4 +1961,32 @@ void trend::showStatus(QString message, bool iserror)
     ui->pushButtonPenColor->setVisible(!iserror);
     ui->pushButtonPen->setVisible(!iserror);
     ui->labelDate->repaint();
+}
+
+void trend::on_pushButtonHome_clicked()
+{
+    go_home();
+    _trend_data_reload_ = true;
+    LOG_PRINT(info_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
+    disableUpdate();
+    hide();
+}
+
+void trend::on_pushButtonBack_clicked()
+{
+    go_back();
+    _trend_data_reload_ = true;
+    LOG_PRINT(info_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
+    disableUpdate();
+    hide();
+}
+
+void trend::on_pushButtonTime_clicked()
+{
+    setRange();
+}
+
+void trend::on_pushButtonPan_clicked()
+{
+    setPan();
 }

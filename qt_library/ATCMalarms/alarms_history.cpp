@@ -423,13 +423,13 @@ void alarms_history::on_pushButtonSave_clicked()
 #ifdef LEVEL_TYPE
         char srcfilename [MAX_LINE] = "";
         char dstfilename [MAX_LINE] = "";
-        
+
         /* compose the source file name ans the destination file name */
         sprintf(srcfilename, "%s/%s", ALARMS_DIR, logFileList.at(_current).toAscii().data());
         sprintf(dstfilename, "%s/%s",
                 usb_mnt_point,
                 logFileList.at(_current).toAscii().data());
-        
+
         /* prepare the alarm filtered file */
         
         /* open the source alarm file */
@@ -492,11 +492,6 @@ void alarms_history::on_pushButtonSave_clicked()
         fclose(fp);
         fclose(fpout);
 
-#else
-        char dstfilename [MAX_LINE] = "";
-        sprintf(dstfilename, "%s/%s", ALARMS_DIR, logFileList.at(_current).toAscii().data());
-#endif
-
         /* create the signature file */
 
         /* Open the command for reading. */
@@ -547,15 +542,72 @@ void alarms_history::on_pushButtonSave_clicked()
             return;
         }
         
-#ifdef LEVEL_TYPE
         QFile::remove(dstfilename);
+#else
+        char srcfilename [MAX_LINE] = "";
+        char dstfilename [MAX_LINE] = "";
+
+        /* compose the source file name ans the destination file name */
+        sprintf(srcfilename, "%s/%s", ALARMS_DIR, logFileList.at(_current).toAscii().data());
+        sprintf(dstfilename, "%s/%s",
+                usb_mnt_point,
+                logFileList.at(_current).toAscii().data());
+
+        /* create the signature file */
+
+        /* Open the command for reading. */
+        sprintf(line, "%s %s", APP_SIGN, srcfilename);
+        fp = popen(line, "r");
+        if (fp == NULL) {
+            LOG_PRINT(error_e,"Failed to run command '%s'\n", line );
+            return;
+        }
+
+        char sign[LINE_SIZE];
+
+        /* Read the output a line at a time - output it. */
+        if (fscanf(fp, "%s", sign) > 0) {
+            LOG_PRINT(info_e,"SIGN: '%s'\n", sign);
+        }
+
+        /* close */
+        pclose(fp);
+
+        if (sign[0] == '\0')
+        {
+            LOG_PRINT(error_e,"Failed read sign\n");
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
+            USBumount();
+            return;
+        }
+
+        sprintf(line, "%s.sign", dstfilename);
+        fpout = fopen(line, "w");
+        if (fpout == NULL)
+        {
+            LOG_PRINT(error_e, "cannot open '%s'\n", line);
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
+            USBumount();
+            return;
+        }
+        fprintf(fpout, "%s\n", sign);
+        fclose(fpout);
+
+        /* zip the file, the sign file and delete them */
+        if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(srcfilename), QString("%1.zip").arg(dstfilename), true) == false)
+        {
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save the zip file '%1.zip'").arg(dstfilename));
+            USBumount();
+            return;
+        }
+
 #endif
         QFile::remove(QString("%1.sign").arg(dstfilename));
         
         /* unmount USB key */
         USBumount();
         LOG_PRINT(info_e, "DOWNLOADED\n");
-        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
+        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
     }
 }
 

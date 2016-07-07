@@ -26,23 +26,22 @@ public:
     explicit trend_other(QWidget *parent = 0);
     ~trend_other();
     virtual void reload(void);
+    virtual void updateData();
+    void enableButtonUp(bool status);
+    void enableButtonDown(bool status);
+    void enableButtonLeft(bool status);
+    void enableButtonRight(bool status);
 
 private slots:
 #ifdef TRANSLATION
     void changeEvent(QEvent * event);
 #endif
-    void on_pushButtonBack_clicked();
-
-    void on_pushButtonHome_clicked();
-
-    void on_pushButtonTime_clicked();
-
     void on_pushButtonOnline_clicked();
-
     void on_pushButtonScreenshot_clicked();
-
-    void on_pushButtonPan_clicked();
-
+    void on_pushButtonUp_clicked();
+    void on_pushButtonDown_clicked();
+    void on_pushButtonLeft_clicked();
+    void on_pushButtonRight_clicked();
 private:
     void mouseMoveEvent(QMouseEvent * e);
 

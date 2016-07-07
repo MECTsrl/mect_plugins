@@ -910,7 +910,7 @@ void system_ini::on_pushButton_PwdTimeout_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_PwdTimeout->setText(QString().setNum(value));
+        ui->pushButton_PwdTimeout->setText(QString::number(value));
     }
 }
 
@@ -921,7 +921,7 @@ void system_ini::on_pushButton_ScreenSaver_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_ScreenSaver->setText(QString().setNum(value));
+        ui->pushButton_ScreenSaver->setText(QString::number(value));
     }
 }
 
@@ -932,7 +932,7 @@ void system_ini::on_pushButton_SlowLogPeriod_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_SlowLogPeriod->setText(QString().setNum(value));
+        ui->pushButton_SlowLogPeriod->setText(QString::number(value));
     }
 }
 
@@ -943,7 +943,7 @@ void system_ini::on_pushButton_FastLogPeriod_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_FastLogPeriod->setText(QString().setNum(value));
+        ui->pushButton_FastLogPeriod->setText(QString::number(value));
     }
 }
 
@@ -955,7 +955,7 @@ void system_ini::on_pushButton_MaxLogSpace_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_MaxLogSpace->setText(QString().setNum(value));
+        ui->pushButton_MaxLogSpace->setText(QString::number(value));
     }
 }
 
@@ -966,7 +966,7 @@ void system_ini::on_pushButton_TraceWindow_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_TraceWindow->setText(QString().setNum(value));
+        ui->pushButton_TraceWindow->setText(QString::number(value));
     }
 }
 
@@ -977,7 +977,7 @@ void system_ini::on_pushButton_Retries_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Retries->setText(QString().setNum(value));
+        ui->pushButton_Retries->setText(QString::number(value));
     }
 }
 
@@ -988,7 +988,7 @@ void system_ini::on_pushButton_Blacklist_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Blacklist->setText(QString().setNum(value));
+        ui->pushButton_Blacklist->setText(QString::number(value));
     }
 }
 
@@ -999,7 +999,7 @@ void system_ini::on_pushButton_ReadPeriod1_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_ReadPeriod1->setText(QString().setNum(value));
+        ui->pushButton_ReadPeriod1->setText(QString::number(value));
     }
 }
 
@@ -1010,7 +1010,7 @@ void system_ini::on_pushButton_ReadPeriod2_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_ReadPeriod2->setText(QString().setNum(value));
+        ui->pushButton_ReadPeriod2->setText(QString::number(value));
     }
 }
 
@@ -1021,7 +1021,7 @@ void system_ini::on_pushButton_ReadPeriod3_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_ReadPeriod3->setText(QString().setNum(value));
+        ui->pushButton_ReadPeriod3->setText(QString::number(value));
     }
 }
 
@@ -1032,7 +1032,7 @@ void system_ini::on_pushButton_Timeout_SERIAL_PORT_0_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Timeout_SERIAL_PORT_0->setText(QString().setNum(value));
+        ui->pushButton_Timeout_SERIAL_PORT_0->setText(QString::number(value));
     }
 }
 
@@ -1043,7 +1043,7 @@ void system_ini::on_pushButton_Silence_SERIAL_PORT_0_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Silence_SERIAL_PORT_0->setText(QString().setNum(value));
+        ui->pushButton_Silence_SERIAL_PORT_0->setText(QString::number(value));
     }
 }
 
@@ -1054,7 +1054,7 @@ void system_ini::on_pushButton_Timeout_SERIAL_PORT_1_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Timeout_SERIAL_PORT_1->setText(QString().setNum(value));
+        ui->pushButton_Timeout_SERIAL_PORT_1->setText(QString::number(value));
     }
 }
 
@@ -1065,7 +1065,7 @@ void system_ini::on_pushButton_Silence_SERIAL_PORT_1_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Silence_SERIAL_PORT_1->setText(QString().setNum(value));
+        ui->pushButton_Silence_SERIAL_PORT_1->setText(QString::number(value));
     }
 }
 
@@ -1076,7 +1076,7 @@ void system_ini::on_pushButton_Timeout_SERIAL_PORT_2_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Timeout_SERIAL_PORT_2->setText(QString().setNum(value));
+        ui->pushButton_Timeout_SERIAL_PORT_2->setText(QString::number(value));
     }
 }
 
@@ -1087,7 +1087,7 @@ void system_ini::on_pushButton_Silence_SERIAL_PORT_2_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Silence_SERIAL_PORT_2->setText(QString().setNum(value));
+        ui->pushButton_Silence_SERIAL_PORT_2->setText(QString::number(value));
     }
 }
 
@@ -1098,7 +1098,7 @@ void system_ini::on_pushButton_Timeout_SERIAL_PORT_3_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Timeout_SERIAL_PORT_3->setText(QString().setNum(value));
+        ui->pushButton_Timeout_SERIAL_PORT_3->setText(QString::number(value));
     }
 }
 
@@ -1109,7 +1109,7 @@ void system_ini::on_pushButton_Silence_SERIAL_PORT_3_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Silence_SERIAL_PORT_3->setText(QString().setNum(value));
+        ui->pushButton_Silence_SERIAL_PORT_3->setText(QString::number(value));
     }
 }
 
@@ -1120,7 +1120,7 @@ void system_ini::on_pushButton_Timeout_TCP_IP_PORT_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Timeout_TCP_IP_PORT->setText(QString().setNum(value));
+        ui->pushButton_Timeout_TCP_IP_PORT->setText(QString::number(value));
     }
 }
 
@@ -1131,6 +1131,6 @@ void system_ini::on_pushButton_Silence_TCP_IP_PORT_clicked()
     tatiera.showFullScreen();
     if(tatiera.exec()==QDialog::Accepted)
     {
-        ui->pushButton_Silence_TCP_IP_PORT->setText(QString().setNum(value));
+        ui->pushButton_Silence_TCP_IP_PORT->setText(QString::number(value));
     }
 }

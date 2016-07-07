@@ -67,7 +67,7 @@ public:
     virtual QwtText label(double v) const
     {
         //fprintf(stderr, "%s + %f = %s\n", baseTime.toString().toAscii().data(), v, upTime.toString().toAscii().data());
-        return QString().setNum(v,'f',decimalNb);
+        return QString::number(v,'f',decimalNb);
     }
     void setDecimalNb(const int &decimals)
     {
@@ -258,11 +258,11 @@ public:
     QString x1Variable() const { return m_x1Variable; }
     QString x1Min() const {
         if (m_x1MinVariable.length() > 0) return m_x1MinVariable;
-        else return QString().setNum(m_x1MinValue,'f');
+        else return QString::number(m_x1MinValue,'f');
     }
     QString x1Max() const {
         if (m_x1MaxVariable.length() > 0) return m_x1MaxVariable;
-        else return QString().setNum(m_x1MaxValue,'f');
+        else return QString::number(m_x1MaxValue,'f');
     }
     double x1Step() const { return m_x1step; }
     QString x1Label() const { return m_x1label; }
@@ -272,11 +272,11 @@ public:
     QString y1Variable() const { return m_y1Variable; }
     QString y1Min() const {
         if (m_y1MinVariable.length() > 0) return m_y1MinVariable;
-        else return QString().setNum(m_y1MinValue,'f');
+        else return QString::number(m_y1MinValue,'f');
     }
     QString y1Max() const {
         if (m_y1MaxVariable.length() > 0) return m_y1MaxVariable;
-        else return QString().setNum(m_y1MaxValue,'f');
+        else return QString::number(m_y1MaxValue,'f');
     }
     double y1Step() const { return m_y1step; }
     QString y1Label() const { return m_y1label; }
@@ -288,11 +288,11 @@ public:
     QString x2Variable() const { return m_x2Variable; }
     QString x2Min() const {
         if (m_x2MinVariable.length() > 0) return m_x2MinVariable;
-        else return QString().setNum(m_x2MinValue,'f');
+        else return QString::number(m_x2MinValue,'f');
     }
     QString x2Max() const {
         if (m_x2MaxVariable.length() > 0) return m_x2MaxVariable;
-        else return QString().setNum(m_x2MaxValue,'f');
+        else return QString::number(m_x2MaxValue,'f');
     }
     double x2Step() const { return m_x2step; }
     QString x2Label() const { return m_x2label; }
@@ -302,11 +302,11 @@ public:
     QString y2Variable() const { return m_y2Variable; }
     QString y2Min() const {
         if (m_y2MinVariable.length() > 0) return m_y2MinVariable;
-        else return QString().setNum(m_y2MinValue,'f');
+        else return QString::number(m_y2MinValue,'f');
     }
     QString y2Max() const {
         if (m_y2MaxVariable.length() > 0) return m_y2MaxVariable;
-        else return QString().setNum(m_y2MaxValue,'f');
+        else return QString::number(m_y2MaxValue,'f');
     }
     double y2Step() const { return m_y2step; }
     QString y2Label() const { return m_y2label; }

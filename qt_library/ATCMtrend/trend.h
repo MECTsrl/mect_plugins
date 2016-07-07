@@ -43,9 +43,7 @@ public:
     virtual QwtText label(double v) const
     {
         QTime upTime = baseTime.addSecs((int)v);
-        //fprintf(stderr, "%s + %f = %s\n", baseTime.toString().toAscii().data(), v, upTime.toString().toAscii().data());
         return upTime.toString();
-        //return QString("%1").arg(v);
     }
     void setBaseTime(const QTime &base)
     {
@@ -54,6 +52,7 @@ public:
 private:
     QTime baseTime;
 };
+
 #ifdef VALUE_TIME_SCALE
 class NormalScaleDraw: public QwtScaleDraw
 {
@@ -64,8 +63,7 @@ public:
     }
     virtual QwtText label(double v) const
     {
-        //fprintf(stderr, "%s + %f = %s\n", baseTime.toString().toAscii().data(), v, upTime.toString().toAscii().data());
-        return QString().setNum(v,'f',decimalNb);
+        return QString::number(v,'f',decimalNb).rightJustified(8,' ');
     }
     void setDecimalNb(const int &decimals)
     {
@@ -79,6 +77,7 @@ private:
     int decimalNb;
 };
 #endif
+
 class trend : public page
 {
     Q_OBJECT
@@ -96,6 +95,8 @@ public:
     bool bringFront(int pen);
     void enableZoomMode(bool);
     void disableUpdate();
+    void incrementTime(int direction);
+    void incrementValue(int direction);
 
 private slots:
 #ifdef TRANSLATION
@@ -108,13 +109,12 @@ private slots:
     void on_pushButtonSelect_clicked();
     void on_pushButtonZoom_toggled(bool checked);
     void on_pushButton_clicked();
-    void on_pushButtonRight_clicked();
-    void on_pushButtonLeft_clicked();
-    void on_pushButtonUp_clicked();
-    void on_pushButtonDown_clicked();
     void on_pushButtonPenColor_clicked();
-    
     void on_pushButtonOnline_clicked();
+    void on_pushButtonHome_clicked();
+    void on_pushButtonBack_clicked();
+    void on_pushButtonTime_clicked();
+    void on_pushButtonPan_clicked();
 
 private:
     bool loadFromFile(QDateTime Ti);
@@ -123,8 +123,6 @@ private:
     bool loadWindow(QDateTime Ti, QDateTime Tmax, double ymin = 0, double ymax = 0, int pen = actualPen);
     bool showWindow(QDateTime Tmin, QDateTime Tmax, double ymin = 0, double ymax = 0, int pen = actualPen);
     void loadOrientedWindow();
-    void incrementTime(int direction);
-    void incrementValue(int direction);
     void initValue();
     void createElem();
     void showStatus(QString message, bool iserror);
@@ -172,9 +170,8 @@ private:
     int LogPeriodSec;
     int sample_to_skip;
     QString errormsg;
+    bool popup_visible;
 
 };
 
 #endif // TREND_H
-
-

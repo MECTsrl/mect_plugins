@@ -226,7 +226,7 @@ bool ATCMslider::writeValue(int value)
 	m_value = value;
 	//this->setValue(m_value);
 #ifdef TARGET_ARM
-    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString().setNum(m_value).toAscii().data()) == 0)
+    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data()) == 0)
     {
         return true;
     }
