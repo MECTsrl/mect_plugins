@@ -170,6 +170,7 @@ bool store::LoadStoreFilter(const char * filename)
      * <TagN>
      */
         QStringList wrongVariables;
+        bool something_to_show = false;
         while (fgets(line, LINE_SIZE, fp) != NULL)
         {
             QString linestr = QString(line).simplified();
@@ -182,8 +183,9 @@ bool store::LoadStoreFilter(const char * filename)
             columnnb = headerList.indexOf(linestr);
             if (columnnb>=0 && columnnb <= sizeof_filter)
             {
-                actual_filter[columnnb] = false;
-                LOG_PRINT(verbose_e, "tag '%s' actual_filter[%d] = %d\n", linestr.toAscii().data(), columnnb, actual_filter[columnnb]);
+                actual_filter[columnnb] = true;
+                LOG_PRINT(info_e, "tag '%s' actual_filter[%d] = %d\n", linestr.toAscii().data(), columnnb, actual_filter[columnnb]);
+                something_to_show = true;
             }
             else
             {
@@ -192,14 +194,20 @@ bool store::LoadStoreFilter(const char * filename)
             }
             rownb++;
         }
-        if (wrongVariables.length() > 0)
+        fclose(fp);
+        if (something_to_show == false)
+        {
+            QMessageBox::critical(this,trUtf8("No variable to show."),
+                                     trUtf8("Cannot find any variable to show:\n%1\ninto the log header:\n%2.").arg(wrongVariables.join(",")).arg(headerList.join("|"))
+                                     );
+        }
+        else if (wrongVariables.length() > 0)
         {
             QMessageBox::information(this,trUtf8("Variables not found."),
                                      trUtf8("Cannot find the variables:\n%1\ninto the log header:\n%2.").arg(wrongVariables.join(",")).arg(headerList.join("|"))
                                      );
         }
-        fclose(fp);
-        return (rownb > 0);
+        return (rownb > 0) && something_to_show;
     }
     /* no filter, load all variables */
     else
@@ -382,6 +390,7 @@ bool store::LoadStore(const char * filename)
     
     if (rownb <= 0)
     {
+        LOG_PRINT(error_e, "Invalid format [ROW %d COLUMN %d]\n", rownb, colnb);
         ui->labelName->setText(QString("invalid format"));
     }
     if (rownb > 0 && colnb > 2)

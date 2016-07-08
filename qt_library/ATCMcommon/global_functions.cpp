@@ -289,7 +289,6 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
 
 int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 {
-    QString value;
     int errors = 0;
 
     if (step >= MAX_RCP_STEP)
@@ -298,7 +297,7 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     }
     for (int i = 0; i < table[step].count(); i++)
     {
-        char msg[TAG_LEN];
+        char msg[TAG_LEN] = "";
 
         uint32_t valueu = 0;
         int ctIndex = (int)(indexes->at(i));
@@ -325,9 +324,9 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
             errors++;
             break;
         case DONE:
-            strcpy(msg, value.toAscii().data());
-            LOG_PRINT(info_e, "DONE %s\n", msg);
-            table[step][i] = atof(msg);
+            LOG_PRINT(info_e, "DONE step %d i %d value %d\n", step, i, valueu);
+            table[step][i] = valueu;
+            msg[0] = '\0';
             break;
         default:
             LOG_PRINT(info_e, "OTHER: %s\n", msg);
@@ -340,7 +339,7 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         }
         if (msg[0] != '\0')
         {
-            LOG_PRINT(info_e, "Reading (%d) - '%s' - '%s'\n", i, varNameArray[ctIndex].tag, msg);
+            LOG_PRINT(error_e, "Reading (%d) - '%s' - '%s'\n", i, varNameArray[ctIndex].tag, msg);
         }
     }
     return errors;

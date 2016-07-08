@@ -1700,9 +1700,9 @@ void page::setAlarmsBuzzer(int period_ms)
         return;
     }
     
+    /* do the alarm check only any period_ms */
     if (counter * REFRESH_MS < period_ms)
     {
-        LOG_PRINT(info_e, "SKIP ALARM CHECK '%d < %d'\n", counter * REFRESH_MS, period_ms);
         counter++;
         return;
     }
@@ -1722,6 +1722,7 @@ void page::setAlarmsBuzzer(int period_ms)
     else
     {
         LOG_PRINT(info_e, "NO ACTIVE ALARM FOUND\n");
+        index = 0;
     }
 #endif
 }

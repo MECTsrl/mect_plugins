@@ -122,6 +122,7 @@ public:
     bool logstart();
     bool logstop();
     bool logshot();
+    bool logreset();
 #endif
 private:
     FILE * openFile(bool daily, int * newfile, const char * basedir, const char * subdir = NULL);
@@ -182,4 +183,6 @@ extern sem_t theLoggingSem;
 #define logStart() logger->logstart()
 #define logStop()  logger->logstop()
 #define logShot()  logger->logshot()
+#define logReset() logger->logreset()
+
 #endif // HMI_LOGGER_H

@@ -213,7 +213,7 @@ void recipe::on_pushButtonRead_clicked()
     ui->pushButtonLoad->setEnabled(false);
     ui->pushButtonRead->setEnabled(false);
     ui->pushButtonSave->setEnabled(false);
-    ui->labelStatus->setText(trUtf8("Writing"));
+    ui->labelStatus->setText(trUtf8("Reading"));
     ui->labelStatus->repaint();
 
     int stepIndex = ui->tableWidget->currentColumn() - 1;

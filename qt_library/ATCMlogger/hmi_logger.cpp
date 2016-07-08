@@ -477,6 +477,14 @@ bool Logger::logshot()
     return sem_post(&theLoggingSem) == 0;
 }
 
+bool Logger::logreset()
+{
+    char command[LINE_SIZE];
+    closeStorageFile();
+    sprintf(command, "rm %s/*", STORE_DIR);
+    return system(command) == 0;
+}
+
 #ifdef ENABLE_ALARMS
 size_t Logger::loadAlarmsTable()
 {
