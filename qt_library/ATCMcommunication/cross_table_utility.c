@@ -168,7 +168,7 @@ size_t fillSyncroArea(void)
 
         if (p[0] == '\0' && r == NULL)
         {
-            LOG_PRINT(info_e, "skip empty line [%d]\n", elem_nb);
+            LOG_PRINT(verbose_e, "skip empty line [%d]\n", elem_nb);
             continue;
         }
 
@@ -345,7 +345,7 @@ size_t fillSyncroArea(void)
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
-        LOG_PRINT(info_e, "Variable %s Type BIT %d\n", varNameArray[elem_nb].tag, varNameArray[elem_nb].type);
+        LOG_PRINT(verbose_e, "Variable %s Type BIT %d\n", varNameArray[elem_nb].tag, varNameArray[elem_nb].type);
 
         /* Decimal */
         p = strtok_csv(NULL, SEPARATOR, &r);
@@ -641,7 +641,7 @@ size_t fillSyncroArea(void)
             }
             else
             {
-                LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varNameArray[elem_nb].tag);
+                LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varNameArray[elem_nb].tag);
             }
             varNameArray[elem_nb].active = 1;
         }
@@ -700,16 +700,16 @@ size_t fillSyncroArea(void)
         }
 #endif
 
-        LOG_PRINT(info_e, "'%s' %d\n", varNameArray[elem_nb].tag, elem_nb);
+        LOG_PRINT(verbose_e, "'%s' %d\n", varNameArray[elem_nb].tag, elem_nb);
 
         elem_nb++;
     }
     fclose(fp);
     elem_nb--;
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
-    LOG_PRINT(info_e, "Loaded %d record stored record S: %d F: %d V: %d\n", elem_nb, store_elem_nb_S, store_elem_nb_F, store_elem_nb_V);
+    LOG_PRINT(verbose_e, "Loaded %d record stored record S: %d F: %d V: %d\n", elem_nb, store_elem_nb_S, store_elem_nb_F, store_elem_nb_V);
 #else
-    LOG_PRINT(info_e, "Loaded %d record\n", elem_nb);
+    LOG_PRINT(verbose_e, "Loaded %d record\n", elem_nb);
 #endif
     CrossTableErrorMsg[0] = '\0';
 
@@ -754,7 +754,7 @@ int Tag2SynIndex(const char * tag, int * SynIndex)
 
     if (*SynIndex == -1)
     {
-        LOG_PRINT(info_e, "'%s' not found into SyncroVector\n", tag);
+        LOG_PRINT(verbose_e, "'%s' not found into SyncroVector\n", tag);
         return -1;
     }
     else
@@ -774,10 +774,10 @@ int addSyncroElementbyIndex(const char * tag, int CtIndex)
     int synIndex = 0;
     if (Tag2SynIndex(tag, &synIndex) != 0)
     {
-        LOG_PRINT(info_e, "Adding tag %s, CtIndex %d SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
+        LOG_PRINT(verbose_e, "Adding tag %s, CtIndex %d SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
         setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), CtIndex);
         SyncroAreaSize++;
-        LOG_PRINT(info_e, "Added tag %s, CtIndex %d SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
+        LOG_PRINT(verbose_e, "Added tag %s, CtIndex %d SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
         return 0;
     }
     else
@@ -785,7 +785,7 @@ int addSyncroElementbyIndex(const char * tag, int CtIndex)
         LOG_PRINT(verbose_e, "The tag %s, CtIndex %d synIndex %d already exist!\n", tag, CtIndex, synIndex);
         return 0;
     }
-    LOG_PRINT(info_e, "Cannot add tag %s, CtIndex %d\n", tag, CtIndex);
+    LOG_PRINT(verbose_e, "Cannot add tag %s, CtIndex %d\n", tag, CtIndex);
     return -1;
 }
 
@@ -836,7 +836,7 @@ int addSyncroElement(const char * tag, int * CtIndex)
 int delSyncroElement(const char * tag)
 {
     int synIndex;
-    LOG_PRINT(info_e, "Deleting %s\n", tag);
+    LOG_PRINT(verbose_e, "Deleting %s\n", tag);
     if (Tag2SynIndex(tag, &synIndex) == 0)
     {
         return delSyncroElementByIndex(synIndex);
@@ -886,12 +886,12 @@ int emptySyncroElement()
         {
             if (varNameArray[CtIndex].active == 0)
             {
-                LOG_PRINT(info_e, "%d - '%s'\n", CtIndex, varNameArray[CtIndex].tag);
+                LOG_PRINT(verbose_e, "%d - '%s'\n", CtIndex, varNameArray[CtIndex].tag);
                 delSyncroElementByIndex(i);
             }
             else
             {
-                LOG_PRINT(info_e, "'%s' is always active\n", varNameArray[CtIndex].tag);
+                LOG_PRINT(verbose_e, "'%s' is always active\n", varNameArray[CtIndex].tag);
             }
         }
     }
@@ -1496,7 +1496,7 @@ int formattedWriteToDb(int ctIndex, void * value)
         case uintba_e:
         {
             unsigned short value2 = (unsigned short)((*(float*)value) * powf(10,decimal));
-            LOG_PRINT(info_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
+            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
             return writeToDb(ctIndex, &value2);
         }
             break;
@@ -1504,7 +1504,7 @@ int formattedWriteToDb(int ctIndex, void * value)
         case intba_e:
         {
             short value2 = (short)((*(float*)value) * powf(10,decimal));
-            LOG_PRINT(info_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
+            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
             return writeToDb(ctIndex, &value2);
         }
             break;
@@ -1514,7 +1514,7 @@ int formattedWriteToDb(int ctIndex, void * value)
         case udint_dcba_e:
         {
             unsigned int value2 = (unsigned int)((*(float*)value) * powf(10,decimal));
-            LOG_PRINT(info_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
+            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
             return writeToDb(ctIndex, &value2);
         }
             break;
@@ -1524,7 +1524,7 @@ int formattedWriteToDb(int ctIndex, void * value)
         case dint_dcba_e:
         {
             int value2 = (int)((*(float*)value) * powf(10,decimal));
-            LOG_PRINT(info_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
+            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
             return writeToDb(ctIndex, &value2);
         }
             break;
@@ -1534,12 +1534,12 @@ int formattedWriteToDb(int ctIndex, void * value)
         case fdcba_e:
         {
             float value2 = (float)((*(float*)value) /** powf(10,decimal)*/);
-            LOG_PRINT(info_e, "'%s' decimal %d old %f new %f\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
+            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %f\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
             return writeToDb(ctIndex, &value2);
         }
             break;
         default:
-            LOG_PRINT(info_e, "Unkown %d '%s' decimal %d value %x\n", varNameArray[ctIndex].type, varNameArray[ctIndex].tag, decimal, *(int*)value);
+            LOG_PRINT(verbose_e, "Unkown %d '%s' decimal %d value %x\n", varNameArray[ctIndex].type, varNameArray[ctIndex].tag, decimal, *(int*)value);
             return writeToDb(ctIndex, value);
             break;
         }
@@ -1640,7 +1640,7 @@ int writeVarByCtIndex(const int ctIndex, void * value)
         setStatusVarBySynIndex(SynIndex, BUSY);
 
         /* update the write flag */
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
 #ifdef ENABLE_MUTEX
         pthread_mutex_lock(&sync_send_mutex);
 #endif
@@ -1651,7 +1651,7 @@ int writeVarByCtIndex(const int ctIndex, void * value)
 #ifdef ENABLE_MUTEX
         pthread_mutex_unlock(&sync_send_mutex);
 #endif
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
         return 0;
     }
 
@@ -1667,7 +1667,7 @@ int writeVarByCtIndex_nowait(const int ctIndex, void * value)
         setStatusVarBySynIndex(SynIndex, BUSY);
 
         /* update the write flag */
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
 #ifdef ENABLE_MUTEX
         pthread_mutex_lock(&sync_send_mutex);
 #endif
@@ -1678,7 +1678,7 @@ int writeVarByCtIndex_nowait(const int ctIndex, void * value)
 #ifdef ENABLE_MUTEX
         pthread_mutex_unlock(&sync_send_mutex);
 #endif
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
         return 0;
     }
 
@@ -1707,10 +1707,10 @@ int writePending()
         if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
         {
             setStatusVarBySynIndex(SynIndex, BUSY);
-            LOG_PRINT(info_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
+            LOG_PRINT(verbose_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
             CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
             SET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK);
-            LOG_PRINT(info_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
+            LOG_PRINT(verbose_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
         }
     }
     return 0;
@@ -1727,15 +1727,15 @@ int writePendingInorder()
         if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
         {
             setStatusVarBySynIndex(SynIndex, BUSY);
-            LOG_PRINT(info_e, "Clear the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
+            LOG_PRINT(verbose_e, "Clear the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
             CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
             SET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK);
-            LOG_PRINT(info_e, "Writing the RCP_WRITE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
+            LOG_PRINT(verbose_e, "Writing the RCP_WRITE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
         }
     }
     /*rise write interrupt*/
     SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
-    LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+    LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
     return 0;
 }
 
@@ -1758,7 +1758,7 @@ char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
     {
         var_float = atof(formattedVar);
         value = &var_float;
-        LOG_PRINT(info_e,"decimal %d [from %d] -> value %f\n", decimal, varNameArray[ctIndex].decimal, var_float);
+        LOG_PRINT(verbose_e,"decimal %d [from %d] -> value %f\n", decimal, varNameArray[ctIndex].decimal, var_float);
     }
     else
     {
@@ -1773,7 +1773,7 @@ char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
         case uintba_e:
             var_uint = atoi(formattedVar);
             value = &var_uint;
-            LOG_PRINT(info_e,"UINT %s = %d\n", varNameArray[ctIndex].tag, var_uint);
+            LOG_PRINT(verbose_e,"UINT %s = %d\n", varNameArray[ctIndex].tag, var_uint);
             break;
         case dint_abcd_e:
         case dint_badc_e:
@@ -1781,7 +1781,7 @@ char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
         case dint_dcba_e:
             var_dint = atoi(formattedVar);
             value = &var_dint;
-            LOG_PRINT(info_e,"DINT %s = %d\n", varNameArray[ctIndex].tag, var_dint);
+            LOG_PRINT(verbose_e,"DINT %s = %d\n", varNameArray[ctIndex].tag, var_dint);
             break;
         case udint_abcd_e:
         case udint_badc_e:
@@ -1789,7 +1789,7 @@ char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
         case udint_dcba_e:
             var_udint = atoi(formattedVar);
             value = &var_udint;
-            LOG_PRINT(info_e,"UDINT %s = %d\n", varNameArray[ctIndex].tag, var_udint);
+            LOG_PRINT(verbose_e,"UDINT %s = %d\n", varNameArray[ctIndex].tag, var_udint);
             break;
         case fabcd_e:
         case fbadc_e:
@@ -1797,12 +1797,12 @@ char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
         case fdcba_e:
             var_float = atof(formattedVar);
             value = &var_float;
-            LOG_PRINT(info_e,"FLOAT %s = %f\n", varNameArray[ctIndex].tag, var_float);
+            LOG_PRINT(verbose_e,"FLOAT %s = %f\n", varNameArray[ctIndex].tag, var_float);
             break;
         default:
             var_bit = (atoi(formattedVar) == 1);
             value = &var_bit;
-            LOG_PRINT(info_e,"BIT %s = %d\n", varNameArray[ctIndex].tag, var_bit);
+            LOG_PRINT(verbose_e,"BIT %s = %d\n", varNameArray[ctIndex].tag, var_bit);
             break;
         }
     }
@@ -1810,13 +1810,13 @@ char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
     switch(prepareWriteVarByCtIndex(ctIndex, value, NULL,1,1))
     {
     case DONE:
-        LOG_PRINT(info_e,"################### Prepared VAR: %s = %s\n", varNameArray[ctIndex].tag, formattedVar);
+        LOG_PRINT(verbose_e,"################### Prepared VAR: %s = %s\n", varNameArray[ctIndex].tag, formattedVar);
         return DONE;
     case ERROR:
         LOG_PRINT(error_e,"status ERROR\n");
         return ERROR;
     case BUSY:
-        LOG_PRINT(info_e,"status BUSY\n");
+        LOG_PRINT(verbose_e,"status BUSY\n");
         return BUSY;
     default:
         return ERROR;
@@ -1866,7 +1866,7 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
         pSynIndex = SynIndex;
     }
 
-    LOG_PRINT(info_e, "Writing '%d'\n", ctIndex);
+    LOG_PRINT(verbose_e, "Writing '%d'\n", ctIndex);
     /* if the variable is already active, clear the reading flag */
     if (CtIndex2SynIndex(ctIndex, pSynIndex) == 0)
     {
@@ -1878,7 +1878,7 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
             {
                 if (dowait)
                 {
-                    LOG_PRINT(info_e, "The variable '%d' is still in writing.\n", ctIndex);
+                    LOG_PRINT(verbose_e, "The variable '%d' is still in writing.\n", ctIndex);
                     usleep(1000 * IOLAYER_PERIOD_ms);
                     checkSynIndexWriting(*pSynIndex);
                     count ++;
@@ -1893,9 +1893,9 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
         {
             return BUSY;
         }
-        LOG_PRINT(info_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
+        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
         CLR_SYNCRO_FLAG(*pSynIndex, READ_MASK);
-        LOG_PRINT(info_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
+        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
     }
     /* if the variable is not active, active it */
     else
@@ -1936,7 +1936,7 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
         }
     }
 
-    LOG_PRINT(info_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex], ctIndex, ctIndex);
+    LOG_PRINT(verbose_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex], ctIndex, ctIndex);
     SET_SYNCRO_FLAG(*pSynIndex, PREPARE_MASK);
 
     return DONE;
@@ -1978,7 +1978,7 @@ char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
         pSynIndex = SynIndex;
     }
 
-    LOG_PRINT(info_e, "Writing '%s'\n", varname);
+    LOG_PRINT(verbose_e, "Writing '%s'\n", varname);
     /* if the variable is already active, clear the reading flag */
     if (Tag2SynIndex(varname, pSynIndex) == 0)
     {
@@ -1991,7 +1991,7 @@ char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
         int count = 0;
         while ((GET_SYNCRO_FLAG(*pSynIndex, WRITE_MASK) == 1 ||  pIOSyncroAreaI[*pSynIndex] == 1) && count < RETRY_NB)
         {
-            LOG_PRINT(info_e, "The variable '%s' is still in writing.\n", varname);
+            LOG_PRINT(verbose_e, "The variable '%s' is still in writing.\n", varname);
             usleep(1000 * IOLAYER_PERIOD_ms);
             localCheckWriting();
             count++;
@@ -2000,9 +2000,9 @@ char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
         {
             return BUSY;
         }
-        LOG_PRINT(info_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
+        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
         CLR_SYNCRO_FLAG(*pSynIndex, READ_MASK);
-        LOG_PRINT(info_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
+        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
     }
     /* if the variable is not active, active it */
     else
@@ -2012,7 +2012,7 @@ char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
         retval = isBlockActive(varname, blockhead);
         if (retval == 1)
         {
-            LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varname);
+            LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varname);
             if (SynIndex != NULL && Tag2SynIndex(blockhead, pSynIndex) != 0)
             {
                 LOG_PRINT(error_e, "cannot extract SynIndex for variable '%s'\n", varname);
@@ -2052,7 +2052,7 @@ char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
         return ERROR;
     }
 
-    LOG_PRINT(info_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex], CtIndex, CtIndex);
+    LOG_PRINT(verbose_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex], CtIndex, CtIndex);
     SET_SYNCRO_FLAG(*pSynIndex, PREPARE_MASK);
 
     return DONE;
@@ -2116,7 +2116,7 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
     {
         var_float = atof(formattedVar);
         value = &var_float;
-        LOG_PRINT(info_e,"FLOAT %d = %f\n", ctIndex, var_float);
+        LOG_PRINT(verbose_e,"FLOAT %d = %f\n", ctIndex, var_float);
     }
     else
     {
@@ -2161,7 +2161,7 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
     }
     if (writeVarByCtIndex(ctIndex, value) == 0)
     {
-        LOG_PRINT(info_e,"################### %d = %s\n", ctIndex, formattedVar);
+        LOG_PRINT(verbose_e,"################### %d = %s\n", ctIndex, formattedVar);
         return 0;
     }
     return 1;
@@ -2196,7 +2196,7 @@ int writeBlock(const char * varname)
     /* extract the block head */
     isBlockActive(varname, blockhead);
 
-    LOG_PRINT(info_e, "writing Block '%s' of variable '%s'\n", blockhead, varname);
+    LOG_PRINT(verbose_e, "writing Block '%s' of variable '%s'\n", blockhead, varname);
     /* if the variable is into syncrovector */
     if (Tag2SynIndex(blockhead, &SynIndex) != 0)
     {
@@ -2218,21 +2218,21 @@ int writeBlock(const char * varname)
         setStatusVarBySynIndex(SynIndex, BUSY);
 
         /* update the write flag */
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
         SET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK);
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
         for (i = 0; i < SyncroAreaSize; i++)
         {
             if (GET_SYNCRO_FLAG(i, PREPARE_MASK))
             {
-                LOG_PRINT(info_e, "Cleaning the PREPARE FLAG %d -> %X\n", i, pIOSyncroAreaO[i]);
+                LOG_PRINT(verbose_e, "Cleaning the PREPARE FLAG %d -> %X\n", i, pIOSyncroAreaO[i]);
                 CLR_SYNCRO_FLAG(i, PREPARE_MASK);
-                LOG_PRINT(info_e, "Cleaned the PREPARE FLAG %d -> %X\n", i, pIOSyncroAreaO[i]);
+                LOG_PRINT(verbose_e, "Cleaned the PREPARE FLAG %d -> %X\n", i, pIOSyncroAreaO[i]);
             }
         }
         /*rise write interrupt*/
         SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
     }
     return 0;
 }
@@ -2405,7 +2405,7 @@ int setupConnectedDeviceByName(const char * protocol, int node)
 
     if (node == INTERNAL_VARIABLE_FAKE_NODEID)
     {
-        LOG_PRINT(info_e, "Internal variable\n");
+        LOG_PRINT(verbose_e, "Internal variable\n");
         return 0;
     }
     /*Broadcast address 0 must be always connected*/
@@ -2440,7 +2440,7 @@ int setupConnectedDevice(enum protocol_e protocol, int node)
 {
     if (node == INTERNAL_VARIABLE_FAKE_NODEID)
     {
-        LOG_PRINT(info_e, "Internal variable\n");
+        LOG_PRINT(verbose_e, "Internal variable\n");
         return 0;
     }
     /*Broadcast address 0 must be always connected*/
@@ -2510,7 +2510,7 @@ int connectDevice(enum protocol_e protocol, int node)
             }
             else
             {
-                LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varNameArray[i].tag);
+                LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varNameArray[i].tag);
             }
         }
     }
@@ -2612,7 +2612,7 @@ int activateVar(const char * varname)
     char blockhead[TAG_LEN] = "";
     int retval;
 
-    LOG_PRINT(info_e, "Activating '%s'\n", varname);
+    LOG_PRINT(verbose_e, "Activating '%s'\n", varname);
 
 #if 0
 #ifdef ENABLE_DEVICE_DISCONNECT
@@ -2627,7 +2627,7 @@ int activateVar(const char * varname)
     retval = isBlockActive(varname, blockhead);
     if (retval == 1)
     {
-        LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varname);
+        LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varname);
         return 0;
     }
     else if (retval == 0)
@@ -2673,13 +2673,13 @@ int deactivateVar(const char * varname)
         retval = isBlockActive(varname, blockhead);
         if (retval == 1)
         {
-            LOG_PRINT(info_e, "The variable '%s' come from a block already active\n", varname);
+            LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varname);
             return 0;
         }
         else if (retval == 0)
         {
 
-            LOG_PRINT(info_e, "Deactivating block '%s' cause variable '%s' is deactivated\n", blockhead, varname);
+            LOG_PRINT(verbose_e, "Deactivating block '%s' cause variable '%s' is deactivated\n", blockhead, varname);
             /* looking and delete the variable from the syncrotable */
             if (delSyncroElement(blockhead) == 0)
             {
@@ -2833,7 +2833,7 @@ int setStatusVar(const char * varname, char Status)
         {
             pIODataStatusAreaO[CtIndex] = Status;
         }
-        LOG_PRINT(info_e, "Status '%s' is '%c'\n", varname, Status);
+        LOG_PRINT(verbose_e, "Status '%s' is '%c'\n", varname, Status);
         return 0;
     }
     else
@@ -2865,7 +2865,7 @@ int setStatusVarBySynIndex(int SynIndex, char Status)
 #ifdef ENABLE_MUTEX
         pthread_mutex_unlock(&sync_send_mutex);
 #endif
-        LOG_PRINT(info_e, "Status '%d' is '%c'\n", CtIndex, Status);
+        LOG_PRINT(verbose_e, "Status '%d' is '%c'\n", CtIndex, Status);
         retval = 0;
     }
     else
@@ -2901,7 +2901,7 @@ int getString(const char* varname, int size, char * string)
         return 1;
     }
 
-    LOG_PRINT(info_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
 
     if (varNameArray[ctIndex].decimal > 0)
     {
@@ -2936,7 +2936,7 @@ int getString(const char* varname, int size, char * string)
     }
 
 #endif
-    LOG_PRINT(info_e, "get var name '%s' size %d\n", varname, size);
+    LOG_PRINT(verbose_e, "get var name '%s' size %d\n", varname, size);
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
         LOG_PRINT(error_e, "cannot extract ctIndex for variable %s\n", varname);
@@ -2951,14 +2951,14 @@ int getString(const char* varname, int size, char * string)
                 LOG_PRINT(error_e, "cannot read the variable at ctIndex %d\n", ctIndex);
                 return 1;
             }
-            LOG_PRINT(info_e, "%d value[%d] = %d\n",ctIndex, i, value);
+            LOG_PRINT(verbose_e, "%d value[%d] = %d\n",ctIndex, i, value);
             string[i] = value & 0xFF;
             string[i+1] = (value >> 8) & 0xFF;
             ctIndex++;
         }
     }
     string[size]='\0';
-    LOG_PRINT(info_e, "get string '%s'\n", string);
+    LOG_PRINT(verbose_e, "get string '%s'\n", string);
     return 0;
 }
 
@@ -2985,7 +2985,7 @@ int setString(const char* varname, int size, char * string)
                 return 1;
             }
             value = (string[i] | (string[i+1] << 8));
-            LOG_PRINT(info_e, "'%c' '%c' -> %x %x -> %x\n", string[i], string[i+1], string[i], string[i+1], value);
+            LOG_PRINT(verbose_e, "'%c' '%c' -> %x %x -> %x\n", string[i], string[i+1], string[i], string[i+1], value);
             if (prepareWriteBlock(tag, &value, NULL) != DONE)
             {
                 LOG_PRINT(error_e, "cannot prepare the write value into variable %s\n", tag);
@@ -2999,7 +2999,7 @@ int setString(const char* varname, int size, char * string)
         LOG_PRINT(error_e, "cannot perform the write of the block %s\n", varname);
         return 0;
     }
-    LOG_PRINT(info_e, "set string '%s'\n", string);
+    LOG_PRINT(verbose_e, "set string '%s'\n", string);
     return 0;
 }
 
@@ -3015,7 +3015,7 @@ int deleteUnusedSynIndex(int SynIndex)
             )
     {
         CtIndex = (pIOSyncroAreaO[SynIndex] & ADDRESS_MASK);
-        LOG_PRINT(info_e, "The variable %d CtIndex %d state is READ %d WRITE %d PREPARE %d MULTI_WRITE %d WRITE_RCP  %d pIOSyncroAreaI[%d] %d\n",
+        LOG_PRINT(verbose_e, "The variable %d CtIndex %d state is READ %d WRITE %d PREPARE %d MULTI_WRITE %d WRITE_RCP  %d pIOSyncroAreaI[%d] %d\n",
                   SynIndex,
                   CtIndex,
                   GET_SYNCRO_FLAG(SynIndex, READ_MASK),
@@ -3025,11 +3025,11 @@ int deleteUnusedSynIndex(int SynIndex)
                   GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK),
                   SynIndex,
                   pIOSyncroAreaI[SynIndex]);
-        LOG_PRINT(info_e, "Clear the write flag for the variable '%s' WRITE_MASK %d SyncroArea %X - %X index: %d CT %d\n", varNameArray[CtIndex].tag, GET_SYNCRO_FLAG(SynIndex, WRITE_MASK), pIOSyncroAreaI[SynIndex], *(unsigned char *)(&(pIOSyncroAreaI[SynIndex])), SynIndex, CtIndex);
+        LOG_PRINT(verbose_e, "Clear the write flag for the variable '%s' WRITE_MASK %d SyncroArea %X - %X index: %d CT %d\n", varNameArray[CtIndex].tag, GET_SYNCRO_FLAG(SynIndex, WRITE_MASK), pIOSyncroAreaI[SynIndex], *(unsigned char *)(&(pIOSyncroAreaI[SynIndex])), SynIndex, CtIndex);
         if (CtIndex < 0 || CtIndex > DB_SIZE_ELEM)
         {
             LOG_PRINT(error_e, "Invalid CtIndex = %d for variable '%s'.\n", CtIndex, varNameArray[CtIndex].tag);
-            LOG_PRINT(info_e, "Clean the inactive variable %d\n", SynIndex);
+            LOG_PRINT(verbose_e, "Clean the inactive variable %d\n", SynIndex);
             delSyncroElementByIndex(SynIndex);
             return 1;
         }
@@ -3051,7 +3051,7 @@ int deleteUnusedSynIndex(int SynIndex)
                 if (isBlockActiveByCtIndex(CtIndex, blockhead) && strcmp(blockhead, varNameArray[CtIndex].tag) != 0)
                 {
                     delSyncroElementByIndex(SynIndex);
-                    LOG_PRINT(info_e, "DELETE SYNINDEX %d\n", SynIndex);
+                    LOG_PRINT(verbose_e, "DELETE SYNINDEX %d\n", SynIndex);
                 }
                 /* if it isn't a variable into a block or if it is a head block, reactivate it */
                 else
@@ -3063,7 +3063,7 @@ int deleteUnusedSynIndex(int SynIndex)
             }
             else
             {
-                LOG_PRINT(info_e, "Clean the inactive variable %d\n", SynIndex);
+                LOG_PRINT(verbose_e, "Clean the inactive variable %d\n", SynIndex);
                 delSyncroElementByIndex(SynIndex);
                 return 0;
             }
@@ -3093,7 +3093,7 @@ void checkTagWriting(const char * varname)
         }
         else
         {
-            LOG_PRINT(info_e, "the variable '%s' is a variable of the block '%s'\n", varname, blockhead);
+            LOG_PRINT(verbose_e, "the variable '%s' is a variable of the block '%s'\n", varname, blockhead);
         }
     }
     // The return value does not need to be checked it is needed by checkwriting when looping on the whole syncro area
@@ -3369,13 +3369,13 @@ short int getErrorBit(enum protocol_e protocol, enum error_kind_e kind, int node
             if (node < MAX_DEVICE_NB/2 )
             {
                 GET_DWORD_FROM_WORD(value, IOSyncroAreaI, BLACKLIST_RTU_BIT_ERROR);
-                LOG_PRINT(info_e,"BLACKLIST LOW DWORD 0x%x BIT %d\n", value, node - 1);
+                LOG_PRINT(verbose_e,"BLACKLIST LOW DWORD 0x%x BIT %d\n", value, node - 1);
                 return (short int)(GET_FLAG(value, (node - 1)));
             }
             else
             {
                 GET_DWORD_FROM_WORD(value, IOSyncroAreaI, (BLACKLIST_RTU_BIT_ERROR + SYNCRO_EXCHANGE_DWORD_SIZE) );
-                LOG_PRINT(info_e,"BLACKLIST HIGH DWORD 0x%x BIT %d\n", value, node - MAX_DEVICE_NB/2 - 1);
+                LOG_PRINT(verbose_e,"BLACKLIST HIGH DWORD 0x%x BIT %d\n", value, node - MAX_DEVICE_NB/2 - 1);
                 return (short int)(GET_FLAG(value, (node - MAX_DEVICE_NB/2 - 1)));
             }
         }
@@ -3384,13 +3384,13 @@ short int getErrorBit(enum protocol_e protocol, enum error_kind_e kind, int node
             if (node < MAX_DEVICE_NB/2 )
             {
                 GET_DWORD_FROM_WORD(value, IOSyncroAreaI, OTHER_RTU_BIT_ERROR  );
-                LOG_PRINT(info_e,"COMM LOW DWORD 0x%x\n", value);
+                LOG_PRINT(verbose_e,"COMM LOW DWORD 0x%x\n", value);
                 return (short int)(GET_FLAG(value, (node - 1)));
             }
             else
             {
                 GET_DWORD_FROM_WORD(value, IOSyncroAreaI, (OTHER_RTU_BIT_ERROR + SYNCRO_EXCHANGE_DWORD_SIZE) );
-                LOG_PRINT(info_e,"COMM HIGH DWORD 0x%x\n", value);
+                LOG_PRINT(verbose_e,"COMM HIGH DWORD 0x%x\n", value);
                 return (short int)(GET_FLAG(value, (node - MAX_DEVICE_NB/2 - 1 )));
             }
         }
@@ -3524,7 +3524,7 @@ int checkRecipeWriting(void)
     unsigned int active_writing = 0;
     for (i = 0; i < SyncroAreaSize; i++)
     {
-        LOG_PRINT(info_e, "%X vs %X (%X vs %X) %d\n", GET_SYNCRO_FLAG(i, MULTI_WRITE_RCP_MASK), pIOSyncroAreaI[i], pIOSyncroAreaO[i], pIOSyncroAreaI[i], i);
+        LOG_PRINT(verbose_e, "%X vs %X (%X vs %X) %d\n", GET_SYNCRO_FLAG(i, MULTI_WRITE_RCP_MASK), pIOSyncroAreaI[i], pIOSyncroAreaO[i], pIOSyncroAreaI[i], i);
 
         if ( GET_SYNCRO_FLAG(i, WRITE_RCP_MASK) == 1 )
         {
@@ -3545,7 +3545,7 @@ void cleanRecipeWriting(void)
 
     for (i = 0; i < SyncroAreaSize; i++)
     {
-        LOG_PRINT(info_e, "%X vs %X (%X vs %X) %d\n", GET_SYNCRO_FLAG(i, WRITE_RCP_MASK), pIOSyncroAreaI[i], pIOSyncroAreaO[i], pIOSyncroAreaI[i], i);
+        LOG_PRINT(verbose_e, "%X vs %X (%X vs %X) %d\n", GET_SYNCRO_FLAG(i, WRITE_RCP_MASK), pIOSyncroAreaI[i], pIOSyncroAreaO[i], pIOSyncroAreaI[i], i);
 
         if ( GET_SYNCRO_FLAG(i, WRITE_RCP_MASK) == 1 )
         {
@@ -3587,7 +3587,7 @@ int checkSynIndexWriting(int SynIndex)
         {
             write_pending = 1;
         }
-        LOG_PRINT(info_e, "The variable %d CtIndex %d is still active READ %d WRITE %d PREPARE %d MULTI_WRITE %d WRITE_RCP  %d pIOSyncroAreaI[%d] %d write_pending '%d'\n",
+        LOG_PRINT(verbose_e, "The variable %d CtIndex %d is still active READ %d WRITE %d PREPARE %d MULTI_WRITE %d WRITE_RCP  %d pIOSyncroAreaI[%d] %d write_pending '%d'\n",
                   SynIndex,
                   CtIndex,
                   GET_SYNCRO_FLAG(SynIndex, READ_MASK),
@@ -3627,7 +3627,7 @@ int checkSynIndexWriting(int SynIndex)
         }
         write_pending = 1;
         LOG_PRINT(verbose_e, "The write is taken in order\n");
-        LOG_PRINT(info_e, "Writing has been done\n");
+        LOG_PRINT(verbose_e, "Writing has been done\n");
     }
 #ifdef ENABLE_MUTEX
     pthread_mutex_unlock(&sync_recv_mutex);
@@ -3776,7 +3776,7 @@ int doWrite(int ctIndex, void * value)
         setStatusVarBySynIndex(SynIndex, BUSY);
 
         /* update the write flag */
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
 #ifdef ENABLE_MUTEX
         pthread_mutex_lock(&sync_send_mutex);
 #endif
@@ -3787,7 +3787,7 @@ int doWrite(int ctIndex, void * value)
 #ifdef ENABLE_MUTEX
         pthread_mutex_unlock(&sync_send_mutex);
 #endif
-        LOG_PRINT(info_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
         return 0;
     }
 

@@ -371,7 +371,7 @@ app_usb_file_copy(char *srcfile, char *dstfile, unsigned short src_index, unsign
 
         app_usb_copy_file_params.srcfile = srcfile;
         app_usb_copy_file_params.dstfile = dstfile;
-        LOG_PRINT(info_e,"src %s dest %s\n",app_usb_copy_file_params.srcfile, app_usb_copy_file_params.dstfile);
+        LOG_PRINT(verbose_e,"src %s dest %s\n",app_usb_copy_file_params.srcfile, app_usb_copy_file_params.dstfile);
         app_usb_copy_file_params.src_index = src_index;
         app_usb_copy_file_params.dst_index = dst_index;
 
@@ -552,7 +552,7 @@ app_usb_file_copy_manager(void *param )
         cmd = strdup("cp -a %s %s");
         c = (char *)calloc((strlen(cmd) + strlen(src_path) +1 + strlen(dst_path) +1 ), sizeof(char));
         sprintf(c, cmd, src_path, dst_path);
-        LOG_PRINT(info_e,"'%s' - '%s' - '%s'\n", src_path, dst_path, c);
+        LOG_PRINT(verbose_e,"'%s' - '%s' - '%s'\n", src_path, dst_path, c);
 #if DBGUSB		
         LOG_PRINT(error_e,"copy command: %s\n", c);
 #endif			
@@ -766,7 +766,7 @@ app_usb_file_diskcopy_manager(void *param )
         cmd = strdup("cp -a %s %s");
         c = (char *)calloc((strlen(cmd) + strlen(src_path) +1 + strlen(dst_path) +1 ), sizeof(char));
         sprintf(c, cmd, src_path, dst_path);
-        LOG_PRINT(info_e,"'%s' - '%s' - '%s'\n", src_path, dst_path, c);
+        LOG_PRINT(verbose_e,"'%s' - '%s' - '%s'\n", src_path, dst_path, c);
 #if DBGUSB		
         LOG_PRINT(error_e,"copy command: %s\n", c);
 #endif			

@@ -49,6 +49,7 @@ int substitute(const char * namesrc, char * namedst, const char * substr1, const
             j++;
         }
     }
+    namedst[j] = '\0';
     return 0;
 }
 
@@ -63,7 +64,7 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflag
 
     if (fieldsfile[0] == '\0')
     {
-        LOG_PRINT(info_e, "No filter loaded. Load all logs\n");
+        LOG_PRINT(verbose_e, "No filter loaded. Load all logs\n");
         for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
         {
             if (*p == ';')
@@ -93,7 +94,7 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflag
             }
             filterflags[j] = 1;
             strcpy(FieldsMap[j], token);
-            LOG_PRINT(info_e, "########## add new field %d %s\n", j, FieldsMap[j]);
+            LOG_PRINT(verbose_e, "########## add new field %d %s\n", j, FieldsMap[j]);
         }
     }
     else
@@ -105,7 +106,7 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflag
             return 1;
         }
 
-        LOG_PRINT(info_e, "fieldsfile %s\n", fieldsfile);
+        LOG_PRINT(verbose_e, "fieldsfile %s\n", fieldsfile);
 
         while (fgets(field, LINE_SIZE, fpfieldsfile) != NULL)
         {
@@ -123,7 +124,7 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflag
                 }
                 if (j > MAX_FIELDS_NB)
                 {
-                    LOG_PRINT(info_e, "Too many fields %d vs %d\n", j, MAX_FIELDS_NB);
+                    LOG_PRINT(verbose_e, "Too many fields %d vs %d\n", j, MAX_FIELDS_NB);
                     return 1;
                 }
                 strcpy(token, p);
@@ -140,14 +141,14 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflag
                 }
                 if (strcmp(field, token) == 0)
                 {
-                    LOG_PRINT(info_e, "########## add new field %d %s\n", j, field);
+                    LOG_PRINT(verbose_e, "########## add new field %d %s\n", j, field);
                     filterflags[j] = 1;
                     strcpy(FieldsMap[j], token);
                     found = 1;
                 }
                 else
                 {
-                    LOG_PRINT(info_e, "########## skipping field %d %s\n", j, field);
+                    LOG_PRINT(verbose_e, "########## skipping field %d %s\n", j, field);
                     filterflags[j] = 1;
                 }
             }
@@ -157,7 +158,7 @@ int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflag
                 if (j < MAX_FIELDS_NB)
                 {
                     strcpy(FieldsMap[j], field);
-                    LOG_PRINT(info_e, "add new field %d %s\n", j, field);
+                    LOG_PRINT(verbose_e, "add new field %d %s\n", j, field);
                     filterflags[j] = 1;
                 }
             }
@@ -190,7 +191,7 @@ int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const ch
         sprintf(token, "%s %s", datein, timein);
         if(strptime(token, "%Y/%m/%d %H:%M:%S", &time) == NULL)
         {
-            LOG_PRINT(info_e, "invalid time '%s'\n", token);
+            LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
             return 1;
         }
         datetimein = mktime(&time);
@@ -198,14 +199,14 @@ int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const ch
         sprintf(token, "%s %s", datefin, timefin);
         if(strptime(token, "%Y/%m/%d %H:%M:%S",&time) == NULL)
         {
-            LOG_PRINT(info_e, "invalid time '%s'\n", token);
+            LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
             return 1;
         }
         datetimefin = mktime(&time);
     }
     else
     {
-        LOG_PRINT(info_e, "invalid paramenters\n");
+        LOG_PRINT(verbose_e, "invalid paramenters\n");
         return 1;
     }
 
@@ -218,21 +219,21 @@ int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const ch
             p = strchr(token, ';');
             if (p == NULL)
             {
-                LOG_PRINT(info_e, "invalid time '%s'\n", token);
+                LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
                 return 1;
             }
             *p = ' ';
             p = strchr(token, ';');
             if (p == NULL)
             {
-                LOG_PRINT(info_e, "invalid time '%s'\n", token);
+                LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
                 return 1;
             }
             *p = '\0';
 
             if(strptime(token, "%Y/%m/%d %H:%M:%S",&time) == NULL)
             {
-                LOG_PRINT(info_e, "invalid time '%s'\n", token);
+                LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
                 return 1;
             }
             if (difftime(mktime(&time), datetimefin) <= 0)
@@ -304,7 +305,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 #endif
 {
     int retval;
-    LOG_PRINT(info_e, "fieldsfile %s logdir %s outdir %s\n", fieldsfile, logdir, outdir);
+    LOG_PRINT(verbose_e, "fieldsfile %s logdir %s outdir %s\n", fieldsfile, logdir, outdir);
     FILE * fpin = NULL, * fpout = NULL;
 #ifdef STANDALONE
     char * outdir = NULL, * logdir = NULL, * fieldsfile = NULL;
@@ -374,11 +375,11 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         timefin    = argv[7];
         break;
     default:
-        LOG_PRINT(info_e, "%d vs 8\n", argc);
-        LOG_PRINT(info_e, "Usage: %s <logdir> <outdir> <fieldsfile>\n", argv[0]);
-        LOG_PRINT(info_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein>\n", argv[0]);
-        LOG_PRINT(info_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein> <datefin>\n", argv[0]);
-        LOG_PRINT(info_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein> <timein> <datefin> <timefin>\n", argv[0]);
+        LOG_PRINT(verbose_e, "%d vs 8\n", argc);
+        LOG_PRINT(verbose_e, "Usage: %s <logdir> <outdir> <fieldsfile>\n", argv[0]);
+        LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein>\n", argv[0]);
+        LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein> <datefin>\n", argv[0]);
+        LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein> <timein> <datefin> <timefin>\n", argv[0]);
         return 1;
         break;
     }
@@ -386,7 +387,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 
     fcount = scandir(logdir, &filelist, 0, alphasort);
 
-    LOG_PRINT(info_e, "fieldsfile %s logdir %s fcount %d\n", fieldsfile, logdir, fcount);
+    LOG_PRINT(verbose_e, "fieldsfile %s logdir %s fcount %d\n", fieldsfile, logdir, fcount);
 
     if (fcount < 0) {
         perror(logdir);
@@ -405,7 +406,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         {
             sprintf(inFullPathFileName, "%s/%s", logdir, filelist[i]->d_name);
 
-            LOG_PRINT(info_e, "%s\n", inFullPathFileName);
+            LOG_PRINT(verbose_e, "%s\n", inFullPathFileName);
             fpin = fopen(inFullPathFileName, "r");
             if (fpin)
             {
@@ -413,7 +414,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                 if (fgets(titleline, LINE_SIZE, fpin) == NULL)
                 {
                     LINE2STR(titleline);
-                    LOG_PRINT(info_e, "Cannot read title line from '%s'\n", inFullPathFileName);
+                    LOG_PRINT(verbose_e, "Cannot read title line from '%s'\n", inFullPathFileName);
                     fclose(fpin);
                     continue;
                 }
@@ -429,16 +430,16 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     /* load the filter file */
     if (i < 0 || fpin == NULL)
     {
-        LOG_PRINT(info_e, "no file %s.\n", inFullPathFileName);
+        LOG_PRINT(verbose_e, "no file %s.\n", inFullPathFileName);
         retval = 2;
         goto exit_function;
     }
 
-    LOG_PRINT(info_e, "fieldsfile %s logdir %s fcount %d\n", fieldsfile, logdir, fcount);
+    LOG_PRINT(verbose_e, "fieldsfile %s logdir %s fcount %d\n", fieldsfile, logdir, fcount);
 
     if (strlen(titleline) == 0)
     {
-        LOG_PRINT(info_e, "Cannot read title line\n");
+        LOG_PRINT(verbose_e, "Cannot read title line\n");
         retval = 3;
         goto exit_function;
     }
@@ -446,7 +447,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     /* load the filter file */
     if (LoadFilterFields(fieldsfile, titleline, FilterFlags) != 0)
     {
-        LOG_PRINT(info_e, "invalid fields file '%s'\n", fieldsfile);
+        LOG_PRINT(verbose_e, "invalid fields file '%s'\n", fieldsfile);
         retval = 5;
         goto exit_function;
     }
@@ -454,7 +455,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     /* daily logs */
     if (datein != NULL && timein == NULL && timefin == NULL)
     {
-        LOG_PRINT(info_e, "DAILY\n %s -> %s\n", datein, datefin);
+        LOG_PRINT(verbose_e, "DAILY\n %s -> %s\n", datein, datefin);
         if (datefin == NULL)
         {
             datefin = datein;
@@ -462,7 +463,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         sprintf(tmp, "%s 23:59:59", datefin);
         if(strptime(tmp, "%Y/%m/%d %H:%M:%S", &mytime) == NULL)
         {
-            LOG_PRINT(info_e, "invalid time '%s'\n", datefin);
+            LOG_PRINT(verbose_e, "invalid time '%s'\n", datefin);
             retval = 6;
             goto exit_function;
         }
@@ -471,7 +472,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         sprintf(tmp, "%s 00:00:00", datein);
         if(strptime(tmp, "%Y/%m/%d %H:%M:%S", &mytime) == NULL)
         {
-            LOG_PRINT(info_e, "invalid time '%s'\n", datein);
+            LOG_PRINT(verbose_e, "invalid time '%s'\n", datein);
             retval = 7;
             goto exit_function;
         }
@@ -512,13 +513,13 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 
                         sprintf(outFileName, "%s.log", tmp );
                         sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
-                        LOG_PRINT(info_e, "DAILY, Outout file '%s'\n", outFullPathFileName);
+                        LOG_PRINT(verbose_e, "DAILY, Outout file '%s'\n", outFullPathFileName);
 
 
                         fpout = fopen(outFullPathFileName, "w");
                         if (fpout == NULL)
                         {
-                            LOG_PRINT(info_e, "Cannot open '%s'\n", outFullPathFileName);
+                            LOG_PRINT(verbose_e, "Cannot open '%s'\n", outFullPathFileName);
                             retval = 8;
                             goto exit_function;
                         }
@@ -572,7 +573,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                         sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
                         if (system(command) != 0)
                         {
-                            LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
+                            LOG_PRINT(verbose_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
                             retval = 9;
                             goto exit_function;
                         }
@@ -583,7 +584,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                     }
                     else
                     {
-                        LOG_PRINT(info_e, "Warning cannot open field file '%s'\n", inFullPathFileName);
+                        LOG_PRINT(verbose_e, "Warning cannot open field file '%s'\n", inFullPathFileName);
                     }
                 }
             }
@@ -594,7 +595,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     /* all logs */
     else if (datein == NULL && timein == NULL && datefin == NULL && timefin == NULL)
     {
-        LOG_PRINT(info_e, "ALL\n");
+        LOG_PRINT(verbose_e, "ALL\n");
         for(i = 0; i < fcount; i++)
         {
             /* skip the '.' and '..' files */
@@ -634,12 +635,12 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 
                     sprintf(outFileName, "%s.log", tmp );
                     sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
-                    LOG_PRINT(info_e, "ALL, Outout file '%s'\n", outFullPathFileName);
+                    LOG_PRINT(verbose_e, "ALL, Outout file '%s'\n", outFullPathFileName);
 
                     fpout = fopen(outFullPathFileName, "w");
                     if (fpout == NULL)
                     {
-                        LOG_PRINT(info_e, "Cannot open '%s'\n", outFullPathFileName);
+                        LOG_PRINT(verbose_e, "Cannot open '%s'\n", outFullPathFileName);
                         fclose(fpin);
                         retval = 10;
                         goto exit_function;
@@ -697,7 +698,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                     sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
                     if (system(command) != 0)
                     {
-                        LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
+                        LOG_PRINT(verbose_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
                         retval = 11;
                         goto exit_function;
                     }
@@ -712,14 +713,14 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
     /* time filtered */
     else if (datein != NULL && timein != NULL && datefin != NULL && timefin != NULL)
     {
-        LOG_PRINT(info_e, "TIME %s %s -> %s %s\n", datein, timein, datefin, timefin);
+        LOG_PRINT(verbose_e, "TIME %s %s -> %s %s\n", datein, timein, datefin, timefin);
         int skipline = 0;
 
         /* extract the log file */
         sprintf(tmp, "%s 00:00:00", datefin);
         if(strptime(tmp, "%Y/%m/%d %H:%M:%S", &mytime) == NULL)
         {
-            LOG_PRINT(info_e, "invalid time '%s'\n", datefin);
+            LOG_PRINT(verbose_e, "invalid time '%s'\n", datefin);
             retval = 12;
             goto exit_function;
         }
@@ -728,7 +729,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         sprintf(tmp, "%s 00:00:00", datein);
         if(strptime(tmp, "%Y/%m/%d %H:%M:%S", &mytime) == NULL)
         {
-            LOG_PRINT(info_e, "invalid time '%s'\n", datein);
+            LOG_PRINT(verbose_e, "invalid time '%s'\n", datein);
             retval = 13;
             goto exit_function;
         }
@@ -743,12 +744,12 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         strcpy(tmp, outFileName);
         substitute(tmp, outFileName, ":", "_");
         sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
-        LOG_PRINT(info_e, "FILTERED, Outout file '%s'\n", outFullPathFileName);
+        LOG_PRINT(verbose_e, "FILTERED, Outout file '%s'\n", outFullPathFileName);
 
         fpout = fopen(outFullPathFileName, "w");
         if (fpout == NULL)
         {
-            LOG_PRINT(info_e, "cannot open file '%s'\n", outFullPathFileName);
+            LOG_PRINT(verbose_e, "cannot open file '%s'\n", outFullPathFileName);
             retval = 14;
             goto exit_function;
         }
@@ -758,7 +759,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         while (datetimefin >= datetimein)
         {
             strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
-            LOG_PRINT(info_e, "%s\n", tmp );
+            LOG_PRINT(verbose_e, "%s\n", tmp );
             for(i = 0; i < fcount; i++)
             {
                 if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0 && strncmp(tmp, filelist[i]->d_name, strlen(tmp)) == 0)
@@ -786,7 +787,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                                 if (FilterFlags[j] == 1)
                                 {
                                     strcpy(token, p);
-                                    LOG_PRINT(info_e, "token %s, p %s", token, p);
+                                    LOG_PRINT(verbose_e, "token %s, p %s", token, p);
                                     if (strstr(token, ";") != NULL)
                                     {
                                         *strstr(token, ";") = '\0';
@@ -804,7 +805,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                                         fprintf(fpout, "; ");
                                     }
 
-                                    LOG_PRINT(info_e, "su file %s\n", token);
+                                    LOG_PRINT(verbose_e, "su file %s\n", token);
                                     firstline = 0;
                                 }
                             }
@@ -817,7 +818,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                         /* open the log file and filter by time and by field */
                         if (Extract(fpin, fpout, skipline, FilterFlags, datein, timein, datefin, timefin) != 0)
                         {
-                            LOG_PRINT(info_e, "Error\n");
+                            LOG_PRINT(verbose_e, "Error\n");
                             retval = 15;
                             goto exit_function;
                         }
@@ -825,7 +826,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
                     }
                     else
                     {
-                        LOG_PRINT(info_e,"Cannot open %s\n", inFullPathFileName);
+                        LOG_PRINT(verbose_e,"Cannot open %s\n", inFullPathFileName);
                     }
                 }
             }
@@ -838,7 +839,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
         if (system(command) != 0)
         {
-            LOG_PRINT(info_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
+            LOG_PRINT(verbose_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
             retval = 16;
             goto exit_function;
         }
@@ -853,7 +854,7 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
         retval = 17;
         goto exit_function;
     }
-    LOG_PRINT(info_e, "END\n");
+    LOG_PRINT(verbose_e, "END\n");
     retval = 0;
 
 exit_function:

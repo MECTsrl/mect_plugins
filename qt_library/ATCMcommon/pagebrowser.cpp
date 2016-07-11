@@ -153,13 +153,13 @@ void page::updateData()
                 
                 /* unmount USB key */
                 USBumount();
-                LOG_PRINT(info_e, "DOWNLOADED\n");
+                LOG_PRINT(verbose_e, "DOWNLOADED\n");
                 QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
             }
         }
         else
         {
-            LOG_PRINT(info_e, "USB REMOVED\n");
+            LOG_PRINT(verbose_e, "USB REMOVED\n");
             inserted = false;
         }
     }
@@ -174,7 +174,7 @@ void page::updateData()
             active_password = pwd_operator_e;
             if (windowTitle().compare(PwdLogoutPage))
             {
-                LOG_PRINT(info_e, "password expire after %d seconds. going to '%s' page\n", PwdTimeoutSec, PwdLogoutPage);
+                LOG_PRINT(verbose_e, "password expire after %d seconds. going to '%s' page\n", PwdTimeoutSec, PwdLogoutPage);
                 goto_page(PwdLogoutPage);
             }
         }
@@ -206,7 +206,7 @@ void page::updateData()
         QMessageBox::critical(0, "Communication Error", QString("Problem to start communication engine [0x%1].").arg(QString::number((IOSyncroAreaI)[5707]),16));
     }
 
-    LOG_PRINT(info_e, "Communication engine started\n");
+    LOG_PRINT(verbose_e, "Communication engine started\n");
     */
 #ifdef DUMPSCREEN
     QPixmap::grabWidget(this).save(this->windowTitle().append(".png").prepend("/local/root/"));
@@ -303,7 +303,7 @@ bool page::getFormattedVar(const char * varname, bool * formattedVar, QLabel * l
         }
     }
     
-    LOG_PRINT(info_e, "HEX %X - FORMATTED BIT '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
+    LOG_PRINT(verbose_e, "HEX %X - FORMATTED BIT '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
     return return_value;
     
 }
@@ -329,7 +329,7 @@ bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabe
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
     
     if (varNameArray[ctIndex].decimal > 0)
     {
@@ -372,7 +372,7 @@ bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabe
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEX %X - FORMATTED '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
+    LOG_PRINT(verbose_e, "HEX %X - FORMATTED '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
     return return_value;
 }
 
@@ -397,7 +397,7 @@ bool page::getFormattedVar(const char * varname, unsigned short int * formattedV
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
     
     if (varNameArray[ctIndex].decimal > 0)
     {
@@ -443,7 +443,7 @@ bool page::getFormattedVar(const char * varname, unsigned short int * formattedV
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEX %X - FORMATTED '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
+    LOG_PRINT(verbose_e, "HEX %X - FORMATTED '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
     return return_value;
 }
 
@@ -468,7 +468,7 @@ bool page::getFormattedVar(const char * varname, int * formattedVar, QLabel * le
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
     
     if (varNameArray[ctIndex].decimal > 0)
     {
@@ -516,7 +516,7 @@ bool page::getFormattedVar(const char * varname, int * formattedVar, QLabel * le
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEX %X - FORMATTED '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
+    LOG_PRINT(verbose_e, "HEX %X - FORMATTED '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
     return return_value;
 }
 
@@ -541,7 +541,7 @@ bool page::getFormattedVar(const char * varname, unsigned int * formattedVar, QL
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
     
     if (varNameArray[ctIndex].decimal > 0)
     {
@@ -589,7 +589,7 @@ bool page::getFormattedVar(const char * varname, unsigned int * formattedVar, QL
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEX %X - FORMATTED '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
+    LOG_PRINT(verbose_e, "HEX %X - FORMATTED '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
     return return_value;
 }
 
@@ -616,7 +616,7 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
         return return_value;
     }
     
-    LOG_PRINT(info_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
     
     if (varNameArray[ctIndex].decimal > 4)
     {
@@ -930,7 +930,7 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
         break;
     }
     
-    LOG_PRINT(info_e, "HEX %X - FORMATTED '%s': '%f'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
+    LOG_PRINT(verbose_e, "HEX %X - FORMATTED '%s': '%f'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
     return return_value;
 }
 
@@ -992,7 +992,7 @@ bool page::getFormattedVar(const char * varname, QString * formattedVar, QLabel 
             return_value = false;
             break;
         }
-        LOG_PRINT(info_e, "%s '%s': '%s' status %d\n", (return_value == true) ? "TRUE" : "FALSE", varname, value,getStatusVarByCtIndex(CtIndex, status));
+        LOG_PRINT(verbose_e, "%s '%s': '%s' status %d\n", (return_value == true) ? "TRUE" : "FALSE", varname, value,getStatusVarByCtIndex(CtIndex, status));
         return return_value;
     }
     else
@@ -1112,7 +1112,7 @@ bool page::getFormattedVar(const char * varname, QComboBox * formattedVar, QLabe
             }
             else
             {
-                LOG_PRINT(info_e,"Value not changed\n");
+                LOG_PRINT(verbose_e,"Value not changed\n");
             }
         }
         else
@@ -1143,12 +1143,12 @@ bool page::getFormattedVar(const char * varname, QComboBox * formattedVar, QStri
     
     if (getFormattedVar(varname, &value, led) && value.length() > 0)
     {
-        LOG_PRINT(info_e, "data read '%s'.\n", value.toAscii().data());
+        LOG_PRINT(verbose_e, "data read '%s'.\n", value.toAscii().data());
         for (i = 0; i < map.count(); i+=2)
         {
             if (map.at(i).compare(value) == 0)
             {
-                LOG_PRINT(info_e, "Found mapping '%s' -> '%s'.\n", map.at(i).toAscii().data(), map.at(i + 1).toAscii().data());
+                LOG_PRINT(verbose_e, "Found mapping '%s' -> '%s'.\n", map.at(i).toAscii().data(), map.at(i + 1).toAscii().data());
                 break;
             }
         }
@@ -1237,12 +1237,12 @@ bool page::hideAll(void)
     {
         if ( i.value()->isVisible())
         {
-            LOG_PRINT(info_e,"hiding (%s)...\n", i.value()->windowTitle().toAscii().data() );
+            LOG_PRINT(verbose_e,"hiding (%s)...\n", i.value()->windowTitle().toAscii().data() );
             i.value()->hide();
-            LOG_PRINT(info_e,"done!\n" );
+            LOG_PRINT(verbose_e,"done!\n" );
         }
     }
-    LOG_PRINT(info_e,"Everything hide.\n" );
+    LOG_PRINT(verbose_e,"Everything hide.\n" );
     return 0;
 }
 
@@ -1266,10 +1266,10 @@ bool page::goto_page(const char * page_name, bool remember)
         goto_page(StartPage, false);
     }
     
-    LOG_PRINT(info_e, "page_name %s\n", page_name);
+    LOG_PRINT(verbose_e, "page_name %s\n", page_name);
     
     refresh_timer->stop();
-    LOG_PRINT(info_e, " %s TIMER STOP\n", this->windowTitle().toAscii().data());
+    LOG_PRINT(verbose_e, " %s TIMER STOP\n", this->windowTitle().toAscii().data());
     
     if (remember)
     {
@@ -1305,24 +1305,24 @@ bool page::goto_page(const char * page_name, bool remember)
             //mymutex.unlock();
             QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("The requested page '%1' doesn't exist.").arg(page_name));
             refresh_timer->start(REFRESH_MS);
-            LOG_PRINT(info_e, " %s TIMER START\n", this->windowTitle().toAscii().data());
+            LOG_PRINT(verbose_e, " %s TIMER START\n", this->windowTitle().toAscii().data());
             return false;
         }
         ScreenHash.insert(page_name, p);
-        LOG_PRINT(info_e,"CREATA NUOVA PAGINA %s\n", page_name);
+        LOG_PRINT(verbose_e,"CREATA NUOVA PAGINA %s\n", page_name);
     }
     else
     {
         p = ScreenHash.value(page_name);
         p->refresh_timer->stop();
-        LOG_PRINT(info_e, " %s TIMER STOP\n", p->windowTitle().toAscii().data());
-        LOG_PRINT(info_e,"reload existing page '%s'\n", page_name);
+        LOG_PRINT(verbose_e, " %s TIMER STOP\n", p->windowTitle().toAscii().data());
+        LOG_PRINT(verbose_e,"reload existing page '%s'\n", page_name);
     }
 
     if (active_password > p->protection_level)
     {
         QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible access to '%1': inappropriate privilegies.").arg(p->windowTitle()));
-        LOG_PRINT(info_e,"active %d, protection %d\n", active_password, p->protection_level);
+        LOG_PRINT(verbose_e,"active %d, protection %d\n", active_password, p->protection_level);
         go_home();
         return false;
     }
@@ -1332,7 +1332,7 @@ bool page::goto_page(const char * page_name, bool remember)
         /* deactivate the old variables */
         if (this->variableList.count() == 0)
         {
-            LOG_PRINT(info_e, "No variable to deactivate.\n");
+            LOG_PRINT(verbose_e, "No variable to deactivate.\n");
         }
         else if (deactivateVarList(this->variableList) == false)
         {
@@ -1344,7 +1344,7 @@ bool page::goto_page(const char * page_name, bool remember)
         /* this code will be active only if the variable VAR_TO_DISPLAY is not empty */
         if (p->variableList.count() == 0)
         {
-            LOG_PRINT(info_e, "No variable to activate.\n");
+            LOG_PRINT(verbose_e, "No variable to activate.\n");
         }
         else if (activateVarList(p->variableList) == false)
         {
@@ -1355,9 +1355,9 @@ bool page::goto_page(const char * page_name, bool remember)
     //hideOthers(p);
 
     p->refresh_timer->start(REFRESH_MS);
-    LOG_PRINT(info_e, " %s TIMER START\n", p->windowTitle().toAscii().data());
+    LOG_PRINT(verbose_e, " %s TIMER START\n", p->windowTitle().toAscii().data());
     p->SHOW();
-    LOG_PRINT(info_e, "New page '%s' (%s) is shown.\n", p->windowTitle().toAscii().data(), page_name );
+    LOG_PRINT(verbose_e, "New page '%s' (%s) is shown.\n", p->windowTitle().toAscii().data(), page_name );
     return true;
 }
 
@@ -1389,7 +1389,7 @@ bool page::go_back()
     if (!History.isEmpty())
     {
         QString page_name = History.pop();
-        LOG_PRINT(info_e, " FROM (%s) BACK TO (%s)\n", this->windowTitle().toAscii().data(), page_name.toAscii().data());
+        LOG_PRINT(verbose_e, " FROM (%s) BACK TO (%s)\n", this->windowTitle().toAscii().data(), page_name.toAscii().data());
         return goto_page (page_name.toAscii().data(),false);
     }
     else
@@ -1407,53 +1407,53 @@ bool page::go_back()
 void page::keyReleaseEvent(QKeyEvent *event)
 {
     fprintf(stderr, "A KEY IS PRESSED: 1 - %d\n", event->key());
-    //LOG_PRINT(info_e, "A KEY IS PRESSED: 1 - %d\n", event->key());
+    //LOG_PRINT(verbose_e, "A KEY IS PRESSED: 1 - %d\n", event->key());
 #if 0
     int i;
     switch (event->key() - 0x1000000 + 11)
     {
     case F01:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 1 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 1 - %d\n", event->key());
         i = 0;
         break;
     case F02:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 2 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 2 - %d\n", event->key());
         i = 1;
         break;
     case F03:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 3 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 3 - %d\n", event->key());
         i = 2;
         break;
     case F04:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 4 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 4 - %d\n", event->key());
         i = 3;
         break;
     case F05:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 5 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 5 - %d\n", event->key());
         i = 4;
         break;
     case F06:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 6 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 6 - %d\n", event->key());
         i = 5;
         break;
     case F07:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 7 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 7 - %d\n", event->key());
         i = 6;
         break;
     case F08:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 8 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 8 - %d\n", event->key());
         i = 7;
         break;
     case F09:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 9 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 9 - %d\n", event->key());
         i = 8;
         break;
     case F10:
-        //LOG_PRINT(info_e,"A KEY IS PRESSED: 0 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS PRESSED: 0 - %d\n", event->key());
         i = 9;
         break;
     default:
-        //LOG_PRINT(info_e,"UNKNOWN KEY IS PRESSED: 0 - %d\n", event->key() - 0x1000000);
+        //LOG_PRINT(verbose_e,"UNKNOWN KEY IS PRESSED: 0 - %d\n", event->key() - 0x1000000);
         return;
         break;
     }
@@ -1466,53 +1466,53 @@ void page::keyReleaseEvent(QKeyEvent *event)
 void page::keyPressEvent(QKeyEvent *event)
 {
     fprintf(stderr, "A KEY IS RELEASED: 1 - %d\n", event->key());
-    LOG_PRINT(info_e, "A KEY IS RELEASED: 1 - %d\n", event->key());
+    LOG_PRINT(verbose_e, "A KEY IS RELEASED: 1 - %d\n", event->key());
 #if 0
     int i;
     switch (event->key() - 0x1000000 + 11)
     {
     case F01:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 1 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 1 - %d\n", event->key());
         i = 0;
         break;
     case F02:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 2 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 2 - %d\n", event->key());
         i = 1;
         break;
     case F03:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 3 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 3 - %d\n", event->key());
         i = 2;
         break;
     case F04:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 4 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 4 - %d\n", event->key());
         i = 3;
         break;
     case F05:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 5 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 5 - %d\n", event->key());
         i = 4;
         break;
     case F06:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 6 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 6 - %d\n", event->key());
         i = 5;
         break;
     case F07:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 7 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 7 - %d\n", event->key());
         i = 6;
         break;
     case F08:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 8 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 8 - %d\n", event->key());
         i = 7;
         break;
     case F09:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 9 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 9 - %d\n", event->key());
         i = 8;
         break;
     case F10:
-        //LOG_PRINT(info_e,"A KEY IS RELEASED: 0 - %d\n", event->key());
+        //LOG_PRINT(verbose_e,"A KEY IS RELEASED: 0 - %d\n", event->key());
         i = 9;
         break;
     default:
-        //LOG_PRINT(info_e,"UNKNOWN KEY IS RELEASED: 0 - %d\n", event->key() - 0x1000000);
+        //LOG_PRINT(verbose_e,"UNKNOWN KEY IS RELEASED: 0 - %d\n", event->key() - 0x1000000);
         return;
         break;
     }
@@ -1608,7 +1608,7 @@ char page::getStatusVar(const char * varname, char * msg)
     if (StatusComm == ERROR)
     {
         Status = ERROR;
-        LOG_PRINT(info_e, "ioLayer: '%c' [ERROR]\n", StatusComm);
+        LOG_PRINT(verbose_e, "ioLayer: '%c' [ERROR]\n", StatusComm);
         if (msg != NULL)
         {
             strcpy(msg, VAR_COMMUNICATION);
@@ -1618,7 +1618,7 @@ char page::getStatusVar(const char * varname, char * msg)
     else if (StatusComm == BUSY)
     {
         Status = BUSY;
-        LOG_PRINT(info_e, "ioLayer: '%c' [BUSY]\n", StatusComm);
+        LOG_PRINT(verbose_e, "ioLayer: '%c' [BUSY]\n", StatusComm);
         if (msg != NULL)
         {
             strcpy(msg, VAR_PROGRESS);
@@ -1661,7 +1661,7 @@ bool page::setStatusVar(int SynIndex, char Status)
         {
             pIODataStatusAreaO[CtIndex] = Status;
         }
-        LOG_PRINT(info_e, "Status '%d' is '%c'\n", CtIndex, Status);
+        LOG_PRINT(verbose_e, "Status '%d' is '%c'\n", CtIndex, Status);
         return true;
     }
     else
@@ -1696,7 +1696,7 @@ void page::setAlarmsBuzzer(int period_ms)
     
     if (_active_alarms_events_.count() == 0)
     {
-        LOG_PRINT(info_e, "NO ALARM '%d'\n", _active_alarms_events_.count());
+        LOG_PRINT(verbose_e, "NO ALARM '%d'\n", _active_alarms_events_.count());
         return;
     }
     
@@ -1721,7 +1721,7 @@ void page::setAlarmsBuzzer(int period_ms)
     }
     else
     {
-        LOG_PRINT(info_e, "NO ACTIVE ALARM FOUND\n");
+        LOG_PRINT(verbose_e, "NO ACTIVE ALARM FOUND\n");
         index = 0;
     }
 #endif
@@ -1755,18 +1755,18 @@ void page::sequentialShowError(QLineEdit * line, int period_ms)
     
     if (index >= _active_alarms_events_.count())
     {
-        LOG_PRINT(info_e, "rewind\n");
+        LOG_PRINT(verbose_e, "rewind\n");
         index = 0;
     }
     if (_active_alarms_events_.at(index)->isack)
     {
         line->clear();
-        LOG_PRINT(info_e, "nothing to show\n");
+        LOG_PRINT(verbose_e, "nothing to show\n");
     }
     else
     {
         line->setText((EventHash.find(_active_alarms_events_.at(index)->tag).value())->description);
-        LOG_PRINT(info_e, "show '%s'\n", line->text().toAscii().data());
+        LOG_PRINT(verbose_e, "show '%s'\n", line->text().toAscii().data());
     }
 }
 
@@ -1791,7 +1791,7 @@ bool page::rotateShowError(QLineEdit * line, int period_ms)
         p = this;
         if (logger && logger->connectToPage(p))
         {
-            LOG_PRINT(info_e, "'%s' connected to logger\n", this->windowTitle().toAscii().data());
+            LOG_PRINT(verbose_e, "'%s' connected to logger\n", this->windowTitle().toAscii().data());
             
         }
         else
@@ -1820,16 +1820,16 @@ bool page::rotateShowError(QLineEdit * line, int period_ms)
     
     if (bannerStrOld.compare(bannerStr) != 0)
     {
-        LOG_PRINT(info_e, "new error\n");
+        LOG_PRINT(verbose_e, "new error\n");
         bannerStrOld = bannerStr;
         shift = 0;
     }
     else if (bannerStr.length() != 0)
     {
-        LOG_PRINT(info_e, "rewind %d >= %d\n", line->width(), fm.width(bannerStr.right(bannerStr.length() - shift)));
+        LOG_PRINT(verbose_e, "rewind %d >= %d\n", line->width(), fm.width(bannerStr.right(bannerStr.length() - shift)));
         if (line->width() < fm.width(bannerStr.right(bannerStr.length() - shift)))
         {
-            LOG_PRINT(info_e, "rewind %d >= %d\n", line->width(), fm.width(bannerStr.right(bannerStr.length() - shift)));
+            LOG_PRINT(verbose_e, "rewind %d >= %d\n", line->width(), fm.width(bannerStr.right(bannerStr.length() - shift)));
             shift++;
         }
         else
@@ -1840,13 +1840,13 @@ bool page::rotateShowError(QLineEdit * line, int period_ms)
     if (bannerStr.length() == 0)
     {
         line->clear();
-        LOG_PRINT(info_e, "nothing to show\n");
+        LOG_PRINT(verbose_e, "nothing to show\n");
     }
     else
     {
         line->setText(bannerStr.right(bannerStr.length() - shift));
         line->setCursorPosition(0);
-        LOG_PRINT(info_e, "show '%s'\n", line->text().toAscii().data());
+        LOG_PRINT(verbose_e, "show '%s'\n", line->text().toAscii().data());
     }
     QTimer::singleShot(_period_ms, this, SLOT(rotateShowErrorSlot()));
     return true;
@@ -2014,7 +2014,7 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
 bool page::setTag(QString * label, QString value)
 {
     QHash<QString, QString>::const_iterator i;
-    LOG_PRINT(info_e,"LOOKING FOR %s\n", value.toAscii().data());
+    LOG_PRINT(verbose_e,"LOOKING FOR %s\n", value.toAscii().data());
     if (value.length() == 0)
     {
         return false;
@@ -2026,7 +2026,7 @@ bool page::setTag(QString * label, QString value)
     if (i != TagTable.end())
     {
         *label = i.value();
-        LOG_PRINT(info_e,"FOUND %s\n", i.value().toAscii().data());
+        LOG_PRINT(verbose_e,"FOUND %s\n", i.value().toAscii().data());
         return true;
     }
     return false;
@@ -2090,7 +2090,7 @@ int page::checkLicence(QString * message)
         /* Read the output a line at a time - output it. */
         if (fscanf(fp, "%s", licence) == 1)
         {
-            LOG_PRINT(info_e, "licence: '%s'\n", licence);
+            LOG_PRINT(verbose_e, "licence: '%s'\n", licence);
         }
         else
         {
@@ -2100,11 +2100,11 @@ int page::checkLicence(QString * message)
             return 1;
         }
         
-        LOG_PRINT(info_e, "licence: '%s'\n", licence);
+        LOG_PRINT(verbose_e, "licence: '%s'\n", licence);
         /* close */
         fclose(fp);
         
-        LOG_PRINT(info_e, "licence: '%s'\n", licence);
+        LOG_PRINT(verbose_e, "licence: '%s'\n", licence);
         /* compose licence */
         char signedcode[LINE_SIZE];
         /* Open the command for reading. */
@@ -2117,12 +2117,12 @@ int page::checkLicence(QString * message)
             return -1;
         }
         
-        LOG_PRINT(info_e, "licence: '%s'\n", licence);
+        LOG_PRINT(verbose_e, "licence: '%s'\n", licence);
         /* Read the output a line at a time - output it. */
         if (fgets(signedcode, LINE_SIZE, fp) != NULL)
         {
             sscanf(signedcode, "%s", signedcode);
-            LOG_PRINT(info_e, "signedcode: '%s'\n", signedcode);
+            LOG_PRINT(verbose_e, "signedcode: '%s'\n", signedcode);
         }
         else
         {
@@ -2132,14 +2132,14 @@ int page::checkLicence(QString * message)
             return -1;
         }
         
-        LOG_PRINT(info_e, "licence: '%s'\n", licence);
+        LOG_PRINT(verbose_e, "licence: '%s'\n", licence);
         /* close */
         pclose(fp);
         
         if (strcmp(licence, signedcode) == 0)
         {
             *message = "SD card detected, storage licence found.";
-            LOG_PRINT(info_e, "SD card detected, storage licence found.\n");
+            LOG_PRINT(verbose_e, "SD card detected, storage licence found.\n");
             return 2;
         }
         
@@ -2157,7 +2157,7 @@ int page::checkLicence(QString * message)
         if (fgets(signedcode, LINE_SIZE, fp) != NULL)
         {
             sscanf(signedcode, "%s", signedcode);
-            LOG_PRINT(info_e, "signedcode: '%s'\n", signedcode);
+            LOG_PRINT(verbose_e, "signedcode: '%s'\n", signedcode);
         }
         else
         {
@@ -2173,12 +2173,12 @@ int page::checkLicence(QString * message)
         if (strcmp(licence, signedcode) == 0)
         {
             *message = "SD card detected, application licence found.";
-            LOG_PRINT(info_e, "SD card detected, application licence found.\n");
+            LOG_PRINT(verbose_e, "SD card detected, application licence found.\n");
             return 3;
         }
         else
         {
-            LOG_PRINT(info_e, "'%s'\n'%s'\n", licence, signedcode);
+            LOG_PRINT(verbose_e, "'%s'\n'%s'\n", licence, signedcode);
             *message = "SD card detected, No valid licence found.";
             return 1;
         }

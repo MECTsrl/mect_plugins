@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>370</width>
-    <height>275</height>
+    <height>279</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -162,7 +162,7 @@
      <property name="font">
       <font>
        <family>DejaVu Sans Mono</family>
-       <pointsize>22</pointsize>
+       <pointsize>12</pointsize>
        <weight>50</weight>
        <italic>false</italic>
        <bold>false</bold>
@@ -171,7 +171,7 @@
      <property name="styleSheet">
       <string notr="true">QTableWidget
 {
-	font: 22pt &quot;DejaVu Sans Mono&quot;;
+	font: 12pt &quot;DejaVu Sans Mono&quot;;
 }
 QScrollBar:vertical
 {

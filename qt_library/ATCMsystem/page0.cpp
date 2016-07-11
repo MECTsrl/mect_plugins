@@ -33,13 +33,13 @@ page0::page0(QWidget *parent) :
     QPixmap splash;
     if (splash.load(SPLASH_FILE))
     {
-        LOG_PRINT(info_e, "Splash file: '%s'\n", SPLASH_FILE);
+        LOG_PRINT(verbose_e, "Splash file: '%s'\n", SPLASH_FILE);
         ui->label->setPixmap(splash);
         ui->label->update();
     }
     else
     {
-        LOG_PRINT(info_e, "Cannot load splash file: '%s'\n", SPLASH_FILE);
+        LOG_PRINT(verbose_e, "Cannot load splash file: '%s'\n", SPLASH_FILE);
     }
     
     ui->progressBar->setValue(0);

@@ -296,7 +296,7 @@ bool info::getVersion(const char * command, char * version, int maxsize)
     fp = popen(command, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(info_e, "Failed to run command '%s'\n", command );
+        LOG_PRINT(verbose_e, "Failed to run command '%s'\n", command );
         return false;
     }
 
@@ -304,12 +304,12 @@ bool info::getVersion(const char * command, char * version, int maxsize)
     if (fgets(version, maxsize, fp) != NULL)
     {
         sscanf(version, "%s", version);
-        LOG_PRINT(info_e, "version: '%s'\n", version);
+        LOG_PRINT(verbose_e, "version: '%s'\n", version);
     }
     else
     {
         pclose(fp);
-        LOG_PRINT(info_e, "Failed to run command '%s': '%s'\n", command, version );
+        LOG_PRINT(verbose_e, "Failed to run command '%s': '%s'\n", command, version );
         return false;
     }
 

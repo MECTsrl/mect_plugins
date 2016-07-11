@@ -191,7 +191,7 @@ void data_manager::on_pushButtonTrend_clicked()
     ui->labelStatus->repaint();
     strcpy(_actual_trend_, "trend1");
     _trend_data_reload_ = true  ;
-    LOG_PRINT(info_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
+    LOG_PRINT(verbose_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
     goto_page("trend");
 #else
     ui->labelStatus->setText(trUtf8("Funtionality not enabled"));

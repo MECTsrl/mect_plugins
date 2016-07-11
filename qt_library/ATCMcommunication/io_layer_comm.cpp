@@ -120,7 +120,7 @@ void io_layer_comm::run()
         update_all();
         pthread_cond_signal(&condvar);
     }
-    LOG_PRINT(info_e, "Finish ioLayer syncronization\n");
+    LOG_PRINT(verbose_e, "Finish ioLayer syncronization\n");
 }
 
 bool io_layer_comm::initializeData(const char * RemoteAddress, const int iUdpRxPort, const int iUdpTxPort, void * ioAreaI, size_t ioAreaSizeI, void * ioAreaO, size_t ioAreaSizeO)
@@ -152,7 +152,7 @@ bool io_layer_comm::initializeData(const char * RemoteAddress, const int iUdpRxP
         SendDataData = ioAreaO;
         SendSizeData = ioAreaSizeO;
     }
-    LOG_PRINT(info_e, "Address %s:%d, AreaI %p SizeI %d, AreaO %p SizeO %d.\n", RemoteAddress, iUdpRxPort, ioAreaI, ioAreaSizeI, ioAreaO, ioAreaSizeO);
+    LOG_PRINT(verbose_e, "Address %s:%d, AreaI %p SizeI %d, AreaO %p SizeO %d.\n", RemoteAddress, iUdpRxPort, ioAreaI, ioAreaSizeI, ioAreaO, ioAreaSizeO);
 
     /* Create the server (receive) socket */
     if (iServerSocketData < 0) {
@@ -178,7 +178,7 @@ bool io_layer_comm::initializeData(const char * RemoteAddress, const int iUdpRxP
             LOG_PRINT(error_e, "cannot bind Server socket: [%s]\n", strerror(errno));
             return false;
         }
-        LOG_PRINT(info_e, "Waiting for data input on UDP from port %d\n", iUdpRxPort);
+        LOG_PRINT(verbose_e, "Waiting for data input on UDP from port %d\n", iUdpRxPort);
     }
     /* Create the client (transmitter) UDP socket */
     if (iClientSocketData < 0) {
@@ -207,7 +207,7 @@ bool io_layer_comm::initializeData(const char * RemoteAddress, const int iUdpRxP
             return false;
         }
 
-        LOG_PRINT(info_e, "client socket creation done\n");
+        LOG_PRINT(verbose_e, "client socket creation done\n");
     }
     return true;
 }
@@ -241,7 +241,7 @@ bool io_layer_comm::initializeSyncro(const char * RemoteAddress, const int iUdpR
         SendDataSyncro = ioAreaO;
         SendSizeSyncro = ioAreaSizeO;
     }
-    LOG_PRINT(info_e, "Address %s:%d, AreaI %p SizeI %d, AreaO %p SizeO %d.\n", RemoteAddress, iUdpRxPort, ioAreaI, ioAreaSizeI, ioAreaO, ioAreaSizeO);
+    LOG_PRINT(verbose_e, "Address %s:%d, AreaI %p SizeI %d, AreaO %p SizeO %d.\n", RemoteAddress, iUdpRxPort, ioAreaI, ioAreaSizeI, ioAreaO, ioAreaSizeO);
 
     /* Create the server (receive) socket */
     if (iServerSocketSyncro < 0) {
@@ -267,7 +267,7 @@ bool io_layer_comm::initializeSyncro(const char * RemoteAddress, const int iUdpR
             LOG_PRINT(error_e, "cannot bind Server socket: [%s]\n", strerror(errno));
             return false;
         }
-        LOG_PRINT(info_e, "Waiting for data input on UDP from port %d\n", iUdpRxPort);
+        LOG_PRINT(verbose_e, "Waiting for data input on UDP from port %d\n", iUdpRxPort);
     }
     /* Create the client (transmitter) UDP socket */
     if (iClientSocketSyncro < 0) {
@@ -296,14 +296,14 @@ bool io_layer_comm::initializeSyncro(const char * RemoteAddress, const int iUdpR
             return false;
         }
 
-        LOG_PRINT(info_e, "client socket creation done\n");
+        LOG_PRINT(verbose_e, "client socket creation done\n");
     }
     return true;
 }
 
 bool io_layer_comm::finalize(void)
 {
-    LOG_PRINT(info_e, "ioLayer Finalyze\n");
+    LOG_PRINT(verbose_e, "ioLayer Finalyze\n");
     close(iServerSocketData);
     close(iClientSocketData);
 

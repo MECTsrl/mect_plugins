@@ -482,7 +482,7 @@ void ATCMcombobox::updateData()
         {
             m_status = ERROR;
             m_value = VAR_UNKNOWN;
-            LOG_PRINT(info_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
+            LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
         }
     }
     LOG_PRINT(verbose_e, "'%s': '%s' status '%c' \n", m_variable.toAscii().data(), value, m_status);
@@ -547,7 +547,7 @@ bool ATCMcombobox::setMapping(QString mapping)
         for (int i = 1; i < map.count(); i+=2)
         {
 #ifdef TARGET_ARM
-            LOG_PRINT(info_e, "@@@@@@@@@@@@@@@ '%d' [%s]\n", i, map.at(i).toAscii().data());
+            LOG_PRINT(verbose_e, "@@@@@@@@@@@@@@@ '%d' [%s]\n", i, map.at(i).toAscii().data());
 #endif
             this->addItem(map.at(i));
         }
@@ -617,7 +617,7 @@ bool ATCMcombobox::setcomboValue()
         {
             m_remapping = false;
     #ifdef TARGET_ARM
-            LOG_PRINT(info_e, "Remapping...\n");
+            LOG_PRINT(verbose_e, "Remapping...\n");
     #endif
             setMapping(m_mapping);
         }
@@ -642,7 +642,7 @@ bool ATCMcombobox::setcomboValue()
     else
     {
 #ifdef TARGET_ARM
-        LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
+        LOG_PRINT(verbose_e,"unkown value '%s'\n", m_value.toAscii().data());
 #endif
         /* if is not managed, put an empty string */
         /* if the actual status is an error, display error message */
@@ -651,7 +651,7 @@ bool ATCMcombobox::setcomboValue()
             this->setEditable(true);
             this->setEditText(mapped);
 #ifdef TARGET_ARM
-            LOG_PRINT(info_e,"unkown value '%s'\n", m_value.toAscii().data());
+            LOG_PRINT(verbose_e,"unkown value '%s'\n", m_value.toAscii().data());
 #endif
         }
         /* if the actual status is not expected, display the value */

@@ -272,7 +272,7 @@ void ATCMled::updateData()
             LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
             setVisible(atoi(value) != 0);
         }
-        LOG_PRINT(info_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
+        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
     if (this->isVisible() == false)
     {
@@ -295,7 +295,7 @@ void ATCMled::updateData()
     else
     {
         m_status = ERROR;
-        LOG_PRINT(info_e, "[%s] Invalid CtIndex %d for variable '%s'\n", objectName().toAscii().data(), m_CtIndex, m_variable.toAscii().data());
+        LOG_PRINT(verbose_e, "[%s] Invalid CtIndex %d for variable '%s'\n", objectName().toAscii().data(), m_CtIndex, m_variable.toAscii().data());
     }
     LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 #endif

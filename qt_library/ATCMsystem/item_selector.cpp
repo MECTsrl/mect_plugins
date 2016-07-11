@@ -61,7 +61,7 @@ void item_selector::reload()
         for (int i = 0; i < _list->count(); i++)
         {
             ui->listWidget->addItem(_list->at(i));
-            LOG_PRINT(info_e, "trend '%s'\n", _list->at(i).toAscii().data());
+            LOG_PRINT(verbose_e, "trend '%s'\n", _list->at(i).toAscii().data());
         }
     }
     else

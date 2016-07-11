@@ -148,7 +148,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     
     time(&Now);
     memcpy(&CurrentTimeInfo, localtime(&Now), sizeof(CurrentTimeInfo));
-    LOG_PRINT(info_e, "Data changed \n");
+    LOG_PRINT(verbose_e, "Data changed \n");
 
     for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
     {
@@ -217,7 +217,7 @@ FILE * Logger::openFile(bool daily, int * newfile, const char * basedir, const c
     {
         strftime (CurrentDate, 32, "%Y_%m_%d_%H_%M_%S", &CurrentTimeInfo);
     }
-    LOG_PRINT(info_e, "CurrentDate '%s'\n", CurrentDate);
+    LOG_PRINT(verbose_e, "CurrentDate '%s'\n", CurrentDate);
 
     /* if necessary, create the subdir */
     if (subdir != NULL)
@@ -261,7 +261,7 @@ bool Logger::openAlarmsFile()
     int newfile = 0;
     if (alarmsfp != NULL)
     {
-        LOG_PRINT(info_e, "the log file is already open\n");
+        LOG_PRINT(verbose_e, "the log file is already open\n");
         return true;
     }
     /*  open the log file */
@@ -349,7 +349,7 @@ void Logger::run()
         /* if is different, close the actual log file then open a new one with the new date*/
         if (CurrentTimeInfo.tm_year < timeinfo->tm_year || CurrentTimeInfo.tm_yday < timeinfo->tm_yday)
         {
-            LOG_PRINT(info_e, "Data changed: '%d/%d' -> '%d/%d'\n",
+            LOG_PRINT(verbose_e, "Data changed: '%d/%d' -> '%d/%d'\n",
                       CurrentTimeInfo.tm_year, CurrentTimeInfo.tm_yday,
                       timeinfo->tm_year, timeinfo->tm_yday);
             memcpy(&CurrentTimeInfo, timeinfo, sizeof(timeinfo));
@@ -438,7 +438,7 @@ void Logger::run()
                     logger_shot = false;
                     return;
                 }
-                LOG_PRINT(info_e, "store opened\n");
+                LOG_PRINT(verbose_e, "store opened\n");
                 /* log the store variables */
                 dumpStorage();
                 logger_shot = false;
@@ -732,14 +732,14 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         if (strcmp(_active_alarms_events_.at(i)->tag, varname.toAscii().data()) == 0)
         {
             info_descr = _active_alarms_events_.at(i);
-            LOG_PRINT(info_e, "Update existing event for %s\n", info_descr->tag);
+            LOG_PRINT(verbose_e, "Update existing event for %s\n", info_descr->tag);
             break;
         }
     }
     
     if (status == alarm_fall_e && info_descr == NULL)
     {
-        LOG_PRINT(info_e, "Nothing interesting to dump...\n");
+        LOG_PRINT(verbose_e, "Nothing interesting to dump...\n");
         return true;
     }
     
@@ -766,7 +766,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         toemit = true;
         if (info_descr->status == alarm_fall_e)
         {
-            LOG_PRINT(info_e, "Rising event for %s\n", info_descr->tag);
+            LOG_PRINT(verbose_e, "Rising event for %s\n", info_descr->tag);
             HornACK = false;
             todump = true;
             if (info_descr->begin == NULL)
@@ -787,7 +787,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
     {
         if (info_descr->status == alarm_rise_e)
         {
-            LOG_PRINT(info_e, "Falling event for %s\n", info_descr->tag);
+            LOG_PRINT(verbose_e, "Falling event for %s\n", info_descr->tag);
             toemit = true;
             todump = true;
             if (info_descr->end == NULL)
@@ -812,12 +812,12 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         /* emit a signal to the hmi with the new item to display */
         if (item->type == EVENT)
         {
-            LOG_PRINT(info_e, "Emit New event for %s status %d\n", info_descr->tag, info_descr->status);
+            LOG_PRINT(verbose_e, "Emit New event for %s status %d\n", info_descr->tag, info_descr->status);
             emit new_event(info_descr->tag);
         }
         else
         {
-            LOG_PRINT(info_e, "Emit New alarm for %s status %d\n", info_descr->tag, info_descr->status);
+            LOG_PRINT(verbose_e, "Emit New alarm for %s status %d\n", info_descr->tag, info_descr->status);
             emit new_alarm(info_descr->tag);
         }
     }
@@ -1061,7 +1061,7 @@ bool Logger::openStorageFile()
     int newfile;
     if (storefp != NULL)
     {
-        LOG_PRINT(info_e, "the log file is already open\n");
+        LOG_PRINT(verbose_e, "the log file is already open\n");
         return true;
     }
     /*  open the log file */
@@ -1164,7 +1164,7 @@ bool Logger::checkVariation()
         /* dump only if the last value was different */
         if (strcmp(StoreArrayV[i].value, value) != 0)
         {
-            LOG_PRINT(info_e, "Found variation for '%s' [%s -> %s]\n", StoreArrayV[i].tag, StoreArrayV[i].value, value );
+            LOG_PRINT(verbose_e, "Found variation for '%s' [%s -> %s]\n", StoreArrayV[i].tag, StoreArrayV[i].value, value );
             return true;
         }
     }
@@ -1430,7 +1430,7 @@ bool Logger::dumpStorage()
 
     if (iF == 0 && iS == 0 && iV == 0 && iX == 0)
     {
-        LOG_PRINT(info_e, "No signal emitted\n");
+        LOG_PRINT(verbose_e, "No signal emitted\n");
 #if 0
 #ifndef LOG_DISABLED
         for ( int i = 0; i < 10; i++)
@@ -1480,7 +1480,7 @@ int Logger::checkSpace( void )
                   totalBytes, (unsigned long int)MaxLogUsageMb * 1024 * 1024);
         return 1;
     }
-    LOG_PRINT(info_e, "space free %ld, space used %ld, Max space usable %d\n",
+    LOG_PRINT(verbose_e, "space free %ld, space used %ld, Max space usable %d\n",
               fiData.f_bfree * fiData.f_bsize,
               totalBytes,
               MaxLogUsageMb * 1024 * 1024
@@ -1498,7 +1498,7 @@ unsigned long Logger::getSizeDir(const char *dirname) {
         perror("ftw");
         return 0;
     }
-    LOG_PRINT(info_e, "%s: %ld\n", dirname, totalBytes);
+    LOG_PRINT(verbose_e, "%s: %ld\n", dirname, totalBytes);
     return totalBytes;
 }
 
@@ -1519,7 +1519,7 @@ unsigned long Logger::getCapacityDir(const char *dirname) {
                 (unsigned long)(getSizeDir(LOCAL_DATA_DIR) / 1024)
             )
             ;
-    LOG_PRINT(info_e, "%s: %ld\n", dirname, capacity);
+    LOG_PRINT(verbose_e, "%s: %ld\n", dirname, capacity);
     return capacity;
 }
 

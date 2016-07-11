@@ -26,18 +26,18 @@ int loadPasswords()
     out = fopen(PASSFILE, "rb");
     if (out == NULL)
     {
-        LOG_PRINT(info_e,"Cannot open password file\n");
+        LOG_PRINT(verbose_e,"Cannot open password file\n");
         return 1;
     }
     for (i = 0; i < PASSWORD_NB; i++)
     {
         if (fread(&passwords[i], 4,1, out)==0)
         {
-            LOG_PRINT(info_e,"Cannot read password %d\n", i);
+            LOG_PRINT(verbose_e,"Cannot read password %d\n", i);
             fclose(out);
             return 1;
         }
-        LOG_PRINT(info_e,"password[%d] = %d\n", i, passwords[i]);
+        LOG_PRINT(verbose_e,"password[%d] = %d\n", i, passwords[i]);
     }
     fclose(out);
     return 0;
@@ -56,14 +56,14 @@ int dumpPasswords()
         for (i = 0; i < PASSWORD_NB; i++)
         {
             fwrite(&passwords[i], 4,1, out);
-            LOG_PRINT(info_e,"dump password[%d] = %d\n", i, passwords[i]);
+            LOG_PRINT(verbose_e,"dump password[%d] = %d\n", i, passwords[i]);
         }
         fclose(out);
         return 0;
     }
     else
     {
-        LOG_PRINT(info_e,"Cannot create password file\n");
+        LOG_PRINT(verbose_e,"Cannot create password file\n");
         return 1;
     }
 }
@@ -75,29 +75,29 @@ int readIniFile(void)
 {
     QSettings settings(CONFIG_FILE, QSettings::IniFormat);
 
-    LOG_PRINT(info_e, "Reading configuration...\n");
+    LOG_PRINT(verbose_e, "Reading configuration...\n");
 
     strcpy(HomePage, settings.value(HOMEPAGE_TAG, HOMEPAGE_DEF).toString().toAscii().data());
-    LOG_PRINT(info_e, "'%s' = %s\n", HOMEPAGE_TAG, HomePage);
+    LOG_PRINT(verbose_e, "'%s' = %s\n", HOMEPAGE_TAG, HomePage);
 
     strcpy(StartPage, settings.value(STARTPAGE_TAG, STARTPAGE_DEF).toString().toAscii().data());
-    LOG_PRINT(info_e, "'%s' = %s\n", STARTPAGE_TAG, StartPage);
+    LOG_PRINT(verbose_e, "'%s' = %s\n", STARTPAGE_TAG, StartPage);
 
     BuzzerAlarm = settings.value(BUZZER_ALARM_TAG, BUZZER_ALARM_DEF).toBool();
-    LOG_PRINT(info_e, "'%s' = %d\n", BUZZER_ALARM_TAG, BuzzerAlarm);
+    LOG_PRINT(verbose_e, "'%s' = %d\n", BUZZER_ALARM_TAG, BuzzerAlarm);
 
     BuzzerTouch = settings.value(BUZZER_TOUCH_TAG, BUZZER_TOUCH_DEF).toBool();
-    LOG_PRINT(info_e, "'%s' = %d\n", BUZZER_TOUCH_TAG, BuzzerTouch);
+    LOG_PRINT(verbose_e, "'%s' = %d\n", BUZZER_TOUCH_TAG, BuzzerTouch);
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     LogPeriodSecS = settings.value(LOG_PERIOD_SLOW_TAG, LOG_PERIOD_SLOW_DEF).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", LOG_PERIOD_SLOW_TAG, LogPeriodSecS);
+    LOG_PRINT(verbose_e, "'%s' = %d\n", LOG_PERIOD_SLOW_TAG, LogPeriodSecS);
 
     LogPeriodSecF = settings.value(LOG_PERIOD_FAST_TAG, LOG_PERIOD_FAST_DEF).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", LOG_PERIOD_FAST_TAG, LogPeriodSecF);
+    LOG_PRINT(verbose_e, "'%s' = %d\n", LOG_PERIOD_FAST_TAG, LogPeriodSecF);
 
     MaxWindowSec = settings.value(WINDOW_SEC_TAG, MAX_SAMPLE_NB * ((LogPeriodSecF>LogPeriodSecS)?LogPeriodSecF:LogPeriodSecS)).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", WINDOW_SEC_TAG, MaxWindowSec);
+    LOG_PRINT(verbose_e, "'%s' = %d\n", WINDOW_SEC_TAG, MaxWindowSec);
 
     MaxLogUsageMb = settings.value(MAX_SPACE_AVAILABLE_TAG, MAX_SPACE_AVAILABLE_DEF).toInt();
     MaxLogUsageMb = (MaxLogUsageMb < 0) ? 0 : MaxLogUsageMb;
@@ -105,23 +105,23 @@ int readIniFile(void)
     {
         LOG_PRINT(warning_e, "No space available for logs [%d]. No logs will be recorded.\n", MaxLogUsageMb);
     }
-    LOG_PRINT(info_e, "'%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
+    LOG_PRINT(verbose_e, "'%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
 #endif
 
 #ifdef ENABLE_SCREENSAVER
     ScreenSaverSec = settings.value(SCREENSAVER_TAG, SCREENSAVER_DEFAULT_TIME/1000).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", SCREENSAVER_TAG, ScreenSaverSec);
+    LOG_PRINT(verbose_e, "'%s' = %d\n", SCREENSAVER_TAG, ScreenSaverSec);
 #endif
 
     PwdTimeoutSec = settings.value(PWD_TIMEOUT_SEC_TAG, PWD_TIMEOUT_SEC_DEF).toInt();
-    LOG_PRINT(info_e, "'%s' = %d\n", PWD_TIMEOUT_SEC_TAG, PwdTimeoutSec);
+    LOG_PRINT(verbose_e, "'%s' = %d\n", PWD_TIMEOUT_SEC_TAG, PwdTimeoutSec);
 
     strcpy(PwdLogoutPage, settings.value(PWD_LOGOUT_PAGE_TAG, PWD_LOGOUT_PAGE_DEF).toString().toAscii().data());
-    LOG_PRINT(info_e, "'%s' = %s\n", PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
+    LOG_PRINT(verbose_e, "'%s' = %s\n", PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
 
 #ifdef TRANSLATION
     strcpy(_language_, settings.value(LANGUAGE_TAG, DEFAULT_LANGUAGE).toString().toAscii().data());
-    LOG_PRINT(info_e, "'%s' = %s\n", LANGUAGE_TAG, _language_);
+    LOG_PRINT(verbose_e, "'%s' = %s\n", LANGUAGE_TAG, _language_);
 #endif
 
     return 0;
@@ -134,7 +134,7 @@ int writeIniFile(void)
 {
     QSettings settings(CONFIG_FILE, QSettings::IniFormat);
 
-    LOG_PRINT(info_e, "Dumping configuration...\n");
+    LOG_PRINT(verbose_e, "Dumping configuration...\n");
 
     settings.setValue(HOMEPAGE_TAG, HomePage);
     settings.setValue(STARTPAGE_TAG, StartPage);
@@ -176,7 +176,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
     fp = fopen(filename, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(info_e, "Cannot open '%s'\n", filename);
+        LOG_PRINT(verbose_e, "Cannot open '%s'\n", filename);
         return -1;
     }
 
@@ -187,7 +187,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
     {
         /* ignore blank lines */
         if (line[0] == '\n' || line[0] == '\r' || line[0] == 0) {
-            LOG_PRINT(info_e, "skipping empty line\n");
+            LOG_PRINT(verbose_e, "skipping empty line\n");
             continue;
         }
         /* tag */
@@ -198,7 +198,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
             continue;
         }
         int ctIndex;
-        LOG_PRINT(info_e, "Loading variable '%s'\n", p);
+        LOG_PRINT(verbose_e, "Loading variable '%s'\n", p);
         if (Tag2CtIndex(p, &ctIndex))
         {
             LOG_PRINT(error_e, "Invalid variable '%s' at line %d\n", p, line_nb);
@@ -282,7 +282,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
         }
     }
 
-    LOG_PRINT(info_e, "row %d column %d\n", table[step].count(), step_max);
+    LOG_PRINT(verbose_e, "row %d column %d\n", table[step].count(), step_max);
     fclose(fp);
     return step_max;
 }
@@ -302,13 +302,13 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         uint32_t valueu = 0;
         int ctIndex = (int)(indexes->at(i));
         readFromDb(ctIndex, &valueu);
-        LOG_PRINT(info_e, "%d -> %d\n", ctIndex, valueu);
+        LOG_PRINT(verbose_e, "%d -> %d\n", ctIndex, valueu);
 
         switch (getStatusVarByCtIndex(ctIndex, msg))
         {
         case BUSY:
             //retry_nb = 0;
-            LOG_PRINT(info_e, "BUSY: %s\n", msg);
+            LOG_PRINT(verbose_e, "BUSY: %s\n", msg);
             if (msg[0] == '\0')
             {
                 strcpy(msg, VAR_PROGRESS);
@@ -316,7 +316,7 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
             errors++;
             break;
         case ERROR:
-            LOG_PRINT(info_e, "ERROR: %s\n", msg);
+            LOG_PRINT(verbose_e, "ERROR: %s\n", msg);
             if (msg[0] == '\0')
             {
                 strcpy(msg, VAR_COMMUNICATION);
@@ -324,12 +324,12 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
             errors++;
             break;
         case DONE:
-            LOG_PRINT(info_e, "DONE step %d i %d value %d\n", step, i, valueu);
+            LOG_PRINT(verbose_e, "DONE step %d i %d value %d\n", step, i, valueu);
             table[step][i] = valueu;
             msg[0] = '\0';
             break;
         default:
-            LOG_PRINT(info_e, "OTHER: %s\n", msg);
+            LOG_PRINT(verbose_e, "OTHER: %s\n", msg);
             if (msg[0] == '\0')
             {
                 strcpy(msg, VAR_UNKNOWN);
@@ -394,7 +394,7 @@ bool CommStart()
 
     /* start the io layers */
     ioComm = new io_layer_comm(&data_send_mutex, &data_recv_mutex);
-    LOG_PRINT(info_e, "Starting IOLayer Data\n");
+    LOG_PRINT(verbose_e, "Starting IOLayer Data\n");
 
     /* setting output data area size */
     SET_SIZE_BYTE(IODataAreaO + DB_OUT_BASE_BYTE, DB_SIZE_ELEM);
@@ -422,12 +422,12 @@ bool CommStart()
         return false;
     }
     ioComm->start();
-    LOG_PRINT(info_e, "IOLayer Syncro Started\n");
+    LOG_PRINT(verbose_e, "IOLayer Syncro Started\n");
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     /* start the logger thread */
     logger->start();
-    LOG_PRINT(info_e, "Logger Started\n");
+    LOG_PRINT(verbose_e, "Logger Started\n");
 #endif
 
     if (QFile::exists(KINDOFUPDATE_FILE))
@@ -464,7 +464,7 @@ bool CommStart()
     int i;
     for (i = 0; i <= PASSWORD_NB; i++)
     {
-        LOG_PRINT(info_e, "Password %d '%s' = '%d'\n", i, PasswordsString[i], passwords[i]);
+        LOG_PRINT(verbose_e, "Password %d '%s' = '%d'\n", i, PasswordsString[i], passwords[i]);
     }
 #endif
     return true;
@@ -646,7 +646,7 @@ bool USBmount()
 {
     if (usb_mnt_point[0] != '\0')
     {
-        LOG_PRINT(info_e, "Usb already mounted to '%s'\n", usb_mnt_point);
+        LOG_PRINT(verbose_e, "Usb already mounted to '%s'\n", usb_mnt_point);
         return true;
     }
 
@@ -684,11 +684,11 @@ bool USBmount()
             /* wait that is not busy */
             do {
                 usleep(5000);
-                LOG_PRINT (info_e, "usb waiting free \n");
+                LOG_PRINT (verbose_e, "usb waiting free \n");
                 retry_nb++;
             }
             while(USBfeedback[0] != 0 /*|| strlen(Usb_mpoint(1)) != 0*/ && retry_nb < RETRY_NB);
-            LOG_PRINT (info_e, "found usb USBfeedback[1] %d\n", USBfeedback[1]);
+            LOG_PRINT (verbose_e, "found usb USBfeedback[1] %d\n", USBfeedback[1]);
             /* mount the key */
             if (USBfeedback[1] != 0 || Usb_on(1) != 0)
             {
@@ -697,7 +697,7 @@ bool USBmount()
                 return false;
             }
             strcpy(usb_mnt_point, Usb_mpoint(1));
-            LOG_PRINT (info_e, "Found USB. Mountpint: '%s'\n", usb_mnt_point);
+            LOG_PRINT (verbose_e, "Found USB. Mountpint: '%s'\n", usb_mnt_point);
             return true;
         }
         else if (strlen(usb_mnt_point) != 0)
@@ -707,12 +707,12 @@ bool USBmount()
         }
         else
         {
-            LOG_PRINT (info_e, "Cannot find USB.\n");
+            LOG_PRINT (verbose_e, "Cannot find USB.\n");
         }
 
         if (last_usb_status != USBstatus[0])
         {
-            LOG_PRINT(info_e, "extracted USB\n");
+            LOG_PRINT(verbose_e, "extracted USB\n");
             usb_mnt_point[0] = '\0';
         }
 
@@ -725,7 +725,7 @@ bool USBumount()
 {
     if (usb_mnt_point[0] == '\0')
     {
-        LOG_PRINT (info_e, "USB already unmounted cause usb_mnt_point = '%s'\n", usb_mnt_point);
+        LOG_PRINT (verbose_e, "USB already unmounted cause usb_mnt_point = '%s'\n", usb_mnt_point);
         return false;
     }
     if (USBmode() == usb_device_e)
@@ -781,7 +781,7 @@ bool beep(int duration_ms)
     }
     else
     {
-        LOG_PRINT(info_e, "busy %ld < %ld\n", buzzer_busy_timeout_ms, now_ms);
+        LOG_PRINT(verbose_e, "busy %ld < %ld\n", buzzer_busy_timeout_ms, now_ms);
         return false;
     }
     return true;

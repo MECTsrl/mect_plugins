@@ -220,7 +220,7 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
             (msg->end == NULL) ? "-" : msg->end->toString("yyyy/MM/dd-HH:mm:ss").toAscii().data()
                                  );
 #endif
-    LOG_PRINT(info_e, "STYLE INDEX %d STYLE '%s'\n", msg->styleindex, StatusColorTable[msg->styleindex]);
+    LOG_PRINT(verbose_e, "STYLE INDEX %d STYLE '%s'\n", msg->styleindex, StatusColorTable[msg->styleindex]);
     addEvent(line, visibility, description, StatusColorTable[msg->styleindex]);
     return;
 }
@@ -231,7 +231,7 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
 #if 0
     if (ui->listWidget->findItems(text,Qt::MatchCaseSensitive).count() != 0)
     {
-        LOG_PRINT(info_e, "event alredy present '%s'\n", line);
+        LOG_PRINT(verbose_e, "event alredy present '%s'\n", line);
         return;
     }
 #endif
@@ -254,16 +254,16 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
                 if (item->text().compare(text) != 0)
                 {
                     item->setText(text);
-                    LOG_PRINT(info_e, "Adding updating item '%s'\n", item->text().toAscii().data());
+                    LOG_PRINT(verbose_e, "Adding updating item '%s'\n", item->text().toAscii().data());
                 }
                 else
                 {
-                    LOG_PRINT(info_e, "Already existing item item '%s'\n", item->text().toAscii().data());
+                    LOG_PRINT(verbose_e, "Already existing item item '%s'\n", item->text().toAscii().data());
                 }
             }
             else
             {
-                LOG_PRINT(info_e, "Hide item '%s'\n", item->text().toAscii().data());
+                LOG_PRINT(verbose_e, "Hide item '%s'\n", item->text().toAscii().data());
                 QListWidgetItem* item = ui->listWidget->takeItem(i);
                 delete item;
                 return;
@@ -278,20 +278,20 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
 #else
             ui->listWidget->insertItem(0,item);
 #endif
-            LOG_PRINT(info_e, "Adding new item '%s'\n", item->text().toAscii().data());
+            LOG_PRINT(verbose_e, "Adding new item '%s'\n", item->text().toAscii().data());
         }
         else
         {
             return;
         }
-        LOG_PRINT(info_e, "'%s'\n",style);
+        LOG_PRINT(verbose_e, "'%s'\n",style);
         int r = 0, g = 0, b = 0, ret = 0;
         ret = sscanf(style, "rgb(%d,%d,%d)", &r,&g,&b);
         if (ret == 3)
         {
-            LOG_PRINT(info_e, "setting color %d %d %d\n",r,g,b)
+            LOG_PRINT(verbose_e, "setting color %d %d %d\n",r,g,b)
                     item->setTextColor(QColor(r,g,b));
-            LOG_PRINT(info_e, "set color %d %d %d\n",r,g,b)
+            LOG_PRINT(verbose_e, "set color %d %d %d\n",r,g,b)
         }
         else
         {
@@ -301,7 +301,7 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
     }
     else
     {
-        LOG_PRINT(info_e, "Not visible into the banner\n");
+        LOG_PRINT(verbose_e, "Not visible into the banner\n");
     }
 }
 
@@ -357,13 +357,13 @@ void alarms::on_comboBoxType_currentIndexChanged(int index)
         _event = true;
         break;
     }
-    LOG_PRINT(info_e, "alarm %d event %d\n", _alarm, _event);
+    LOG_PRINT(verbose_e, "alarm %d event %d\n", _alarm, _event);
     refreshEvent();
 }
 
 void alarms::receiveEvent(__attribute__((unused)) char * msg)
 {
-    LOG_PRINT(info_e, "alarm %s\n", msg);
+    LOG_PRINT(verbose_e, "alarm %s\n", msg);
     if (this->isVisible() == false)
     {
         return;
@@ -379,7 +379,7 @@ void alarms::refreshEvent()
     /* to avoid flikering don't remove and refill all the widget but update only the difference */
     //ui->listWidget->clear();
     
-    LOG_PRINT(info_e,"%d\n", _active_alarms_events_.count());
+    LOG_PRINT(verbose_e,"%d\n", _active_alarms_events_.count());
     
     int found = 0;
     /* remove the non active alarm */
@@ -397,13 +397,13 @@ void alarms::refreshEvent()
         }
         if (found == 0)
         {
-            LOG_PRINT(info_e, "NOT FOUND %s\n", ui->listWidget->item(i)->text().toAscii().data());
+            LOG_PRINT(verbose_e, "NOT FOUND %s\n", ui->listWidget->item(i)->text().toAscii().data());
             QListWidgetItem * item = ui->listWidget->takeItem(i);
             delete item;
         }
         else
         {
-            LOG_PRINT(info_e, "FOUND %s\n", ui->listWidget->item(i)->text().toAscii().data());
+            LOG_PRINT(verbose_e, "FOUND %s\n", ui->listWidget->item(i)->text().toAscii().data());
             found = 0;
         }
     }
@@ -412,23 +412,23 @@ void alarms::refreshEvent()
     for (int i = 0; i < _active_alarms_events_.count(); i++)
     {
         visibility = true;
-        LOG_PRINT(info_e,"%s\n", _active_alarms_events_.at(i)->tag);
+        LOG_PRINT(verbose_e,"%s\n", _active_alarms_events_.at(i)->tag);
         event = EventHash.find(_active_alarms_events_.at(i)->tag).value();
         
         /* loking into event db this event to get the level and the type if it is necessary */
         if (event->type == ALARM && _alarm == false)
         {
-            LOG_PRINT(info_e, "Hide event '%s'\n", event->description);
+            LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
             visibility = false;
         }
         if (event->type == EVENT && _event == false)
         {
-            LOG_PRINT(info_e, "Hide event '%s'\n", event->description);
+            LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
             visibility = false;
         }
         if (_level != level_all_e && event->level > _level)
         {
-            LOG_PRINT(info_e, "Hide event '%s'\n", event->description);
+            LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
             visibility = false;
         }
         addEvent(_active_alarms_events_.at(i), visibility);
@@ -444,7 +444,7 @@ void alarms::on_pushButtonACK_clicked()
         {
             return;
         }
-        LOG_PRINT(info_e, "selected row %d '%s'\n", current_index, _active_alarms_events_.at(current_index)->tag);
+        LOG_PRINT(verbose_e, "selected row %d '%s'\n", current_index, _active_alarms_events_.at(current_index)->tag);
         _active_alarms_events_.at(current_index)->isack = true;
         if (_active_alarms_events_.at(current_index)->ack == NULL)
         {
@@ -465,7 +465,7 @@ void alarms::on_pushButtonACK_clicked()
 
 void alarms::on_pushButtonACKall_clicked()
 {
-    LOG_PRINT(info_e, "ACKALL\n");
+    LOG_PRINT(verbose_e, "ACKALL\n");
     for (int i = 0; i < _active_alarms_events_.count(); i++)
     {
         if (_active_alarms_events_.at(i)->ack == NULL)

@@ -361,7 +361,7 @@ numpad::~numpad()
 
 void numpad::on_pushButton0_clicked()
 {
-    LOG_PRINT(info_e, "0\n");
+    LOG_PRINT(verbose_e, "0\n");
     ui->lineEditVal->insert("0");
 }
 

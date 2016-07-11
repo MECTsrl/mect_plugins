@@ -154,7 +154,7 @@ void trend_range::on_pushButtonBack_clicked()
 /* save the actual log period */
 void trend_range::on_pushButtonOk_clicked()
 {
-    LOG_PRINT(info_e, "actualVisibleWindowSec %d actualTzero '%s'\n",
+    LOG_PRINT(verbose_e, "actualVisibleWindowSec %d actualTzero '%s'\n",
               actualVisibleWindowSec,
               actualTzero.toString("yy/MM/dd hh:mm:ss").toAscii().data()
               );
@@ -182,7 +182,7 @@ void trend_range::on_pushButtonOk_clicked()
         _online_ = false;
     }
     
-    LOG_PRINT(info_e, "actualVisibleWindowSec %d actualTzero '%s'\n",
+    LOG_PRINT(verbose_e, "actualVisibleWindowSec %d actualTzero '%s'\n",
               actualVisibleWindowSec,
               actualTzero.toString("yy/MM/dd hh:mm:ss").toAscii().data()
               );

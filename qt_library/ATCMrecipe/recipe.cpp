@@ -274,7 +274,7 @@ void recipe::on_pushButtonSave_clicked()
 
     if (dk->exec() == QDialog::Accepted && strlen(value) != 0)
     {
-        LOG_PRINT(info_e, "Saving to '%s'\n", value);
+        LOG_PRINT(verbose_e, "Saving to '%s'\n", value);
         sprintf(fullfilename, "%s/%s.csv", QFileInfo(_actual_recipe_).absolutePath().toAscii().data(), value);
         fp = fopen(fullfilename, "w");
         if (fp == NULL)

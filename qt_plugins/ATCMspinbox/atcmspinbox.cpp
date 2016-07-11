@@ -230,7 +230,7 @@ bool ATCMspinbox::writeValue(double value)
 #ifdef TARGET_ARM
     if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(value).toAscii().data()) == 0)
     {
-        LOG_PRINT(info_e, "WRITE %f \n", m_value);
+        LOG_PRINT(verbose_e, "WRITE %f \n", m_value);
         m_value = (float)value;
         disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
@@ -239,7 +239,7 @@ bool ATCMspinbox::writeValue(double value)
     }
     else
     {
-        LOG_PRINT(info_e, "WRITE\n");
+        LOG_PRINT(verbose_e, "WRITE\n");
         disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
         connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
@@ -453,7 +453,7 @@ void ATCMspinbox::updateData()
             LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
             setVisible(atoi(value) != 0);
         }
-        LOG_PRINT(info_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
+        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
     if (this->isVisible() == false)
     {

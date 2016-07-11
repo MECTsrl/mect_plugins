@@ -381,7 +381,7 @@ void system_ini::updateData()
      * The variable could be not present into the active variable list "variableList"
      if (writeVar("NRE_REG_1", &value) == true)
      {
-         LOG_PRINT(info_e,"################### NRE_REG_1 %d\n", value);
+         LOG_PRINT(verbose_e,"################### NRE_REG_1 %d\n", value);
      }
      */
 }

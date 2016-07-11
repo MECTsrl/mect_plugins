@@ -96,7 +96,7 @@ void recipe_select::reload()
         for (int i = 0; i < recipeList.count(); i++)
         {
             ui->listWidget->addItem(recipeList.at(i));
-            LOG_PRINT(info_e, "Recipe '%s'\n", recipeList.at(i).toAscii().data());
+            LOG_PRINT(verbose_e, "Recipe '%s'\n", recipeList.at(i).toAscii().data());
         }
     }
     else if (recipeDir.entryList(QDir::Files).count() != 0)
@@ -105,12 +105,12 @@ void recipe_select::reload()
         for (int i = 0; i < recipeList.count(); i++)
         {
             ui->listWidget->addItem(QFileInfo(recipeList.at(i)).fileName());
-            LOG_PRINT(info_e, "Recipe '%s'\n", QFileInfo(recipeList.at(i)).fileName().toAscii().data());
+            LOG_PRINT(verbose_e, "Recipe '%s'\n", QFileInfo(recipeList.at(i)).fileName().toAscii().data());
         }
     }
     else
     {
-        LOG_PRINT(info_e, "No recipe to show\n");
+        LOG_PRINT(verbose_e, "No recipe to show\n");
         return;
     }
 }
@@ -231,7 +231,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
         /* unmount USB key */
         USBumount();
 
-        LOG_PRINT(info_e, "DOWNLOADED\n");
+        LOG_PRINT(verbose_e, "DOWNLOADED\n");
         QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
     }
 }

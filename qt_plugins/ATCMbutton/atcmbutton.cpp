@@ -538,7 +538,7 @@ void ATCMbutton::updateData()
             {
                 m_status = DONE;
                 setVisible(atoi(value) != 0);
-                LOG_PRINT(info_e, "VISIBILITY %d\n", atoi(value));
+                LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
             }
             LOG_PRINT(verbose_e, "T: '%s' - visibility var %s, index %d\n", m_text.toAscii().data(), m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
         }
@@ -555,14 +555,14 @@ void ATCMbutton::updateData()
     {
         if (m_CtPasswordVarIndex >= 0)
         {
-            LOG_PRINT(info_e, "password var %s, index %d\n", m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
+            LOG_PRINT(verbose_e, "password var %s, index %d\n", m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
             if (formattedReadFromDb(m_CtPasswordVarIndex, value) == 0 && strlen(value) > 0)
             {
                 m_status = DONE;
-                LOG_PRINT(info_e, "PASSWORD %d\n", atoi(value));
+                LOG_PRINT(verbose_e, "PASSWORD %d\n", atoi(value));
                 m_passwordValue = value;
             }
-            LOG_PRINT(info_e, "T: '%s' - password var %s, index %d\n", m_text.toAscii().data(), m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
+            LOG_PRINT(verbose_e, "T: '%s' - password var %s, index %d\n", m_text.toAscii().data(), m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
         }
         else
         {
@@ -758,7 +758,7 @@ void  ATCMbutton::goToPage()
         {
             strncpy(_actual_trend_, m_pagename.toAscii().data(), FILENAME_MAX);
             _trend_data_reload_ = true;
-            LOG_PRINT(info_e, "Going to page 'trend' loading file '%s'\n", m_pagename.toAscii().data());
+            LOG_PRINT(verbose_e, "Going to page 'trend' loading file '%s'\n", m_pagename.toAscii().data());
             emit newPage("trend", m_remember);
         }
         else
@@ -767,13 +767,13 @@ void  ATCMbutton::goToPage()
             if (m_pagename.startsWith("store"))
         {
             strncpy(_actual_store_, m_pagename.toAscii().data(), FILENAME_MAX);
-            LOG_PRINT(info_e, "Going to page 'store' loading file '%s'\n", m_pagename.toAscii().data());
+            LOG_PRINT(verbose_e, "Going to page 'store' loading file '%s'\n", m_pagename.toAscii().data());
             emit newPage("store", m_remember);
         }
         else
 #endif
         {
-            LOG_PRINT(info_e, "Going to page %s\n", m_pagename.toAscii().data());
+            LOG_PRINT(verbose_e, "Going to page %s\n", m_pagename.toAscii().data());
             emit newPage(m_pagename.toAscii().data(), m_remember);
         }
     }

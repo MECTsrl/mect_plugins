@@ -16,7 +16,7 @@ void ScreenSaver::restore()
     
     if (fp == NULL)
     {
-        LOG_PRINT(info_e, "no local configuration file for screensaver found using defaults \n");
+        LOG_PRINT(verbose_e, "no local configuration file for screensaver found using defaults \n");
         brightness_level = DEF_BACKLIGHT_LEVEL;
     }
     else
@@ -41,7 +41,7 @@ void ScreenSaver::restore()
     sprintf (command, "echo %d > %s", brightness_level, BACKLIGHT_FILE_SYSTEM);
     system(command);
     
-    LOG_PRINT(info_e, "EXITING SCREENSAVER\n");
+    LOG_PRINT(verbose_e, "EXITING SCREENSAVER\n");
 }
 
 bool ScreenSaver::save(__attribute__((unused)) int level)
@@ -53,6 +53,6 @@ bool ScreenSaver::save(__attribute__((unused)) int level)
     sprintf (command, "echo %d > %s", brightness_level, BACKLIGHT_FILE_SYSTEM);
     system(command);
     
-    LOG_PRINT(info_e, "ENTERING SCREENSAVER\n");
+    LOG_PRINT(verbose_e, "ENTERING SCREENSAVER\n");
     return true;
 }

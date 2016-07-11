@@ -428,7 +428,7 @@ void ATCMlabel::updateData()
             LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
             setVisible(atoi(value) != 0);
         }
-        LOG_PRINT(info_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
+        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
     if (this->isVisible() == false)
     {
@@ -506,7 +506,7 @@ void ATCMlabel::updateData()
         {
             m_value = VAR_UNKNOWN;
             m_status = ERROR;
-            LOG_PRINT(info_e,"variable '%s', CtIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+            LOG_PRINT(verbose_e,"variable '%s', CtIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
         }
         this->setText(m_value);
     }
@@ -747,7 +747,7 @@ void ATCMlabel::writeAction()
                 delete dk;
                 return;
             }
-            LOG_PRINT(info_e,"decimale %s = %f\n", m_variable.toAscii().data(), value);
+            LOG_PRINT(verbose_e,"decimale %s = %f\n", m_variable.toAscii().data(), value);
         }
             break;
         default:
@@ -773,7 +773,7 @@ void ATCMlabel::writeAction()
                 delete dk;
                 return;
             }
-            LOG_PRINT(info_e,"bit %s = %d\n", m_variable.toAscii().data(), value);
+            LOG_PRINT(verbose_e,"bit %s = %d\n", m_variable.toAscii().data(), value);
         }
             break;
         }

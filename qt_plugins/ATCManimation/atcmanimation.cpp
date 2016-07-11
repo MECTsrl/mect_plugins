@@ -92,11 +92,11 @@ void ATCManimation::paintEvent(QPaintEvent * e)
 		p.drawRect(this->rect());
 	}
 
-	LOG_PRINT(info_e, "LOADING '%s' %d %d\n", m_value.toAscii().data(), m_maplist.count(), m_maplist.indexOf(m_value));
+	LOG_PRINT(verbose_e, "LOADING '%s' %d %d\n", m_value.toAscii().data(), m_maplist.count(), m_maplist.indexOf(m_value));
 	if (m_value.compare(VAR_UNKNOWN) != 0 && m_maplist.count() > 0 && m_maplist.indexOf(m_value) >= 0 && m_maplist.indexOf(m_value) <= m_maplist.count() - 2)
 	{
-		LOG_PRINT(info_e, "LOADING '%s'\n", m_value.toAscii().data());
-		LOG_PRINT(info_e, "LOADING '%s'\n", m_maplist.at(m_maplist.indexOf(m_value) + 1).toAscii().data());
+		LOG_PRINT(verbose_e, "LOADING '%s'\n", m_value.toAscii().data());
+		LOG_PRINT(verbose_e, "LOADING '%s'\n", m_maplist.at(m_maplist.indexOf(m_value) + 1).toAscii().data());
 		p.drawPixmap(this->rect(), QPixmap(m_maplist.at(m_maplist.indexOf(m_value) + 1)), QPixmap(m_maplist.at(m_maplist.indexOf(m_value) + 1)).rect());
 	}
 #else
@@ -297,7 +297,7 @@ void ATCManimation::updateData()
 	{
 		m_status = ERROR;
 		m_value = VAR_UNKNOWN;
-		LOG_PRINT(info_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
+		LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
 	}
 	LOG_PRINT(verbose_e, "'%s': '%s' status '%c' \n", m_variable.toAscii().data(), value, m_status);
 #endif
@@ -340,10 +340,10 @@ bool ATCManimation::setMapping(QString mapping)
 		m_maplist = m_mapping.split(";");
 #ifdef TARGET_ARM
 #if 0
-		LOG_PRINT(info_e, "%d\n", m_maplist.count());
+		LOG_PRINT(verbose_e, "%d\n", m_maplist.count());
 		for (int i = 0; i < m_maplist.count() - 1; i+=2)
 		{
-			LOG_PRINT(info_e, "%d - '%s' -> '%s'\n", i, m_maplist.at(i).toAscii().data(),  m_maplist.at(i+1).toAscii().data());
+			LOG_PRINT(verbose_e, "%d - '%s' -> '%s'\n", i, m_maplist.at(i).toAscii().data(),  m_maplist.at(i+1).toAscii().data());
 		}
 #endif
 #endif

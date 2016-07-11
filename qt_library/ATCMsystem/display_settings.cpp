@@ -178,7 +178,7 @@ void display_settings::on_horizontalSlider_valueChanged(int value)
         return;
     }
     char command[256];
-    LOG_PRINT(info_e, "%d to %d\n", brightness_level, value);
+    LOG_PRINT(verbose_e, "%d to %d\n", brightness_level, value);
     sprintf (command, "echo %d > %s", value, BACKLIGHT_FILE_SYSTEM);
     if (system(command) == 0)
     {

@@ -23,6 +23,7 @@
 #include "utility.h"
 
 #define LINE_BUFFER_SIZE 12
+#define UNDEFINED "UNDEFINED"
 
 /* this define set the variables list to be to displayed in this page */
 #undef VAR_TO_DISPLAY
@@ -85,7 +86,6 @@ store::store(QWidget *parent) :
     /* set as default current day */
     StoreInit = QDateTime(QDate::currentDate(), QTime(0,0,0));
     StoreFinal = QDateTime(QDate::currentDate(), QTime(23,59,59));
-    
     //reload();
 }
 
@@ -101,7 +101,7 @@ void store::reload()
     
 }
 
-/** @brief count the column of a csv file
+/** @brief count the column of a csv file and extract the header
  */
 int store::getLogColumnNb(const char * filename)
 {
@@ -116,7 +116,7 @@ int store::getLogColumnNb(const char * filename)
         LOG_PRINT(error_e, "cannot open '%s'\n", filename);
         return 0;
     }
-    LOG_PRINT(info_e, "opened '%s'\n", filename);
+    LOG_PRINT(verbose_e, "opened '%s'\n", filename);
     
     if (fgets(line, LINE_SIZE, fp) != NULL)
     {
@@ -162,7 +162,7 @@ bool store::LoadStoreFilter(const char * filename)
             LOG_PRINT(error_e, "cannot open '%s'\n", filename);
             return false;
         }
-        LOG_PRINT(info_e, "opened '%s'\n", line);
+        LOG_PRINT(verbose_e, "opened '%s'\n", line);
         /*
      * the file is formatted as
      * <Tag1>
@@ -184,7 +184,7 @@ bool store::LoadStoreFilter(const char * filename)
             if (columnnb>=0 && columnnb <= sizeof_filter)
             {
                 actual_filter[columnnb] = true;
-                LOG_PRINT(info_e, "tag '%s' actual_filter[%d] = %d\n", linestr.toAscii().data(), columnnb, actual_filter[columnnb]);
+                LOG_PRINT(verbose_e, "tag '%s' actual_filter[%d] = %d\n", linestr.toAscii().data(), columnnb, actual_filter[columnnb]);
                 something_to_show = true;
             }
             else
@@ -225,6 +225,16 @@ bool store::LoadStore(QDateTime init, QDateTime final)
     char command[256];
     outputfile[0] = '\0';
     
+    /* clear the table */
+    while(ui->tableWidget->columnCount())
+    {
+        ui->tableWidget->removeColumn(0);
+    }
+    while(ui->tableWidget->rowCount())
+    {
+        ui->tableWidget->removeRow(0);
+    }
+
     mkdir(TMPDIR, S_IRWXU | S_IRWXG);
     sprintf(command, "umount %s >/dev/null 2>&1", TMPDIR);
     /* if TMPDIR is mounted, unmount it */
@@ -268,20 +278,21 @@ bool store::LoadStore(QDateTime init, QDateTime final)
                 final.time().toString("hh:mm:ss").toAscii().data()
                 ) != 0)
     {
-        LOG_PRINT(info_e, "outputfile '%s'\n", outputfile);
+        LOG_PRINT(error_e, "outputfile '%s'\n", outputfile);
         return false;
     }
-    LOG_PRINT(info_e, "outputfile '%s'\n", outputfile);
+    LOG_PRINT(verbose_e, "outputfile '%s'\n", outputfile);
     return LoadStore(QString("%1/%2").arg(TMPDIR).arg(outputfile).toAscii().data());
 }
 bool store::LoadStore(int fileNb)
 {
     if (fileNb < 0 || fileNb > logFileList.count())
     {
+        LOG_PRINT(error_e, "invalid number '%d'\n", fileNb);
         return false;
     }
-    LOG_PRINT(info_e, "fileNb %d < %d\n", fileNb, logFileList.count());
-    LOG_PRINT(info_e, "logFileList '%s'\n", logFileList.at(fileNb).toAscii().data());
+    LOG_PRINT(verbose_e, "fileNb %d < %d\n", fileNb, logFileList.count());
+    LOG_PRINT(verbose_e, "logFileList '%s'\n", logFileList.at(fileNb).toAscii().data());
     return LoadStore(QString(STORE_DIR + logFileList.at(fileNb)).toAscii().data());
 }
 
@@ -289,7 +300,6 @@ bool store::LoadStore(const char * filename)
 {
     char line[LINE_SIZE] = "";
     char * p = NULL, * r = NULL;
-    QTableWidgetItem * item;
     
     /* clear the table */
     while(ui->tableWidget->columnCount())
@@ -307,10 +317,11 @@ bool store::LoadStore(const char * filename)
     int i ,j = 0;
     for (i = 0; i <= sizeof_filter; i++)
     {
-        if (actual_filter[i] == true)
+        if (actual_filter[i] == true && j < headerList.count())
         {
             ui->tableWidget->insertColumn(j);
-            LOG_PRINT(info_e, "Inserted column '%d'\n", j);
+            LOG_PRINT(verbose_e, "Inserted column '%d' '%s'\n", j, headerList[i].toAscii().data());
+            ui->tableWidget->setHorizontalHeaderItem(j, new QTableWidgetItem(headerList[i]));
             j++;
         }
     }
@@ -325,18 +336,20 @@ bool store::LoadStore(const char * filename)
         LOG_PRINT(error_e, "cannot open '%s'\n", line);
         return false;
     }
-    LOG_PRINT(info_e, "opened '%s'\n", line);
+    LOG_PRINT(verbose_e, "opened '%s'\n", line);
     
     int rownb = 0;
     int colfilternb = 0;
     int colnb = 0;
     while (rownb < LINE_BUFFER_SIZE && fgets(line, LINE_SIZE, logfp) != NULL)
     {
-        LOG_PRINT(info_e, "LINE %s\n", line);
+        LOG_PRINT(verbose_e, "LINE %s\n", line);
+
         ui->tableWidget->insertRow(rownb);
+        
         colnb = 0;
         colfilternb = 0;
-        
+
         p = strtok_csv(line, SEPARATOR, &r);
         if (p != NULL)
         {
@@ -345,30 +358,49 @@ bool store::LoadStore(const char * filename)
                 /* tag */
                 if (actual_filter[colfilternb] == true)
                 {
-                    item = new QTableWidgetItem(p);
-                    if (rownb == 0)
+                    if (rownb > 0)
                     {
-                        ui->tableWidget->setHorizontalHeaderItem(colnb, item);
-                    }
-                    else
-                    {
+                        QTableWidgetItem * item = new QTableWidgetItem(p);
+                        if (item == NULL)
+                        {
+                            LOG_PRINT(error_e, "NO MEMORY\n");
+                        }
                         ui->tableWidget->setItem(rownb - 1,colnb,item);
                     }
-
-                    LOG_PRINT(info_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
+#if 0
+                    else
+                    {
+                        if (headerList[colfilternb].compare(p) != 0)
+                        {
+                            LOG_PRINT(error_e, "ERROR LOG INCONGRUENTI. %d %s vs %s\n", colfilternb, headerList[colfilternb].toAscii().data(), p);
+                        }
+//                        ui->tableWidget->setHorizontalHeaderItem(colnb, item);
+                    }
+#endif
+                    LOG_PRINT(verbose_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
                     colnb++;
                 }
                 else
                 {
-                    LOG_PRINT(info_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
+                    LOG_PRINT(verbose_e, "filtererd tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
                 }
                 colfilternb++;
             }
             while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL);
         }
+        if (colnb != ui->tableWidget->columnCount())
+        {
+            LOG_PRINT(verbose_e, "Missing variables %d vs %d\n", colnb, ui->tableWidget->columnCount());
+            QTableWidgetItem * item = new QTableWidgetItem(UNDEFINED);
+            if (item == NULL)
+            {
+                LOG_PRINT(error_e, "NO MEMORY\n");
+            }
+            ui->tableWidget->setItem(rownb - 1,colnb,item);
+        }
         if (colnb > 0)
         {
-            LOG_PRINT(verbose_e, "ROW %d\n", rownb);
+            LOG_PRINT(none_e, "ROW %d\n", rownb);
             rownb++;
         }
     }
@@ -382,26 +414,33 @@ bool store::LoadStore(const char * filename)
     {
         ui->tableWidget->removeRow(i);
     }
-    
+
+#if 0
     for (int i = ui->tableWidget->columnCount() - 1; i >= colnb; i--)
     {
         ui->tableWidget->removeColumn(i);
     }
-    
+#endif
     if (rownb <= 0)
     {
         LOG_PRINT(error_e, "Invalid format [ROW %d COLUMN %d]\n", rownb, colnb);
         ui->labelName->setText(QString("invalid format"));
+        ui->labelName->repaint();
     }
-    if (rownb > 0 && colnb > 2)
+
+    //ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
+    //ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    //ui->tableWidget->resizeColumnToContents(0);
+    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+
+    if (rownb > 0 && ui->tableWidget->columnCount() > 2)
     {
-        ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-        LOG_PRINT(info_e, "DONE ROW %d COLUMN %d\n", rownb, colnb);
+        LOG_PRINT(error_e, "DONE ROW %d COLUMN %d\n", rownb, colnb);
         return true;
     }
     else
     {
-        LOG_PRINT(info_e, "EMPTY FILE ROW %d COLUMN %d\n", rownb, colnb);
+        LOG_PRINT(error_e, "EMPTY FILE ROW %d COLUMN %d\n", rownb, colnb);
         return true;
     }
 }
@@ -433,6 +472,10 @@ bool store::readLine()
                 if (actual_filter[colfilternb] == true)
                 {
                     item = new QTableWidgetItem(p);
+                    if (item == NULL)
+                    {
+                        LOG_PRINT(error_e, "NO MEMORY\n");
+                    }
                     ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1,colnb,item);
 
                     LOG_PRINT(verbose_e, "showing tag %d '%s' actual_filter[%d] = %d\n", colnb, p, colfilternb, actual_filter[colfilternb]);
@@ -445,6 +488,16 @@ bool store::readLine()
                 colfilternb++;
             }
             while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL);
+            if (colnb != ui->tableWidget->columnCount())
+            {
+                LOG_PRINT(verbose_e, "Missing variables %d vs %d\n", colnb, ui->tableWidget->columnCount());
+                QTableWidgetItem * item = new QTableWidgetItem(UNDEFINED);
+                if (item == NULL)
+                {
+                    LOG_PRINT(error_e, "NO MEMORY\n");
+                }
+                ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1,colnb,item);
+            }
         }
         LOG_PRINT(verbose_e, "ROW %d\n", ui->tableWidget->rowCount() - 1);
         //ui->tableWidget->insertRow(ui->tableWidget->rowCount());
@@ -467,6 +520,11 @@ void store::updateData()
     if (status == 1)
     {
         status = 0;
+        LOG_PRINT(verbose_e, "Loading '%s' ...\n", _actual_store_);
+        ui->labelFilter->setText(QString("Loading '%1' ...").arg(_actual_store_));
+        ui->labelFilter->repaint();
+        ui->labelName->setText(_actual_store_);
+        ui->labelName->repaint();
         if (logfp != NULL)
         {
             fclose(logfp);
@@ -477,6 +535,9 @@ void store::updateData()
         if (fileList.count() == 0)
         {
             ui->labelFilter->setText(trUtf8("No log to show."));
+            ui->labelFilter->repaint();
+            ui->labelName->setText("");
+            ui->labelName->repaint();
             return;
         }
 
@@ -503,40 +564,52 @@ void store::updateData()
         if (LoadStoreFilter(filename) == false)
         {
             QMessageBox::critical(this,trUtf8("Malformed view"), trUtf8("The view '%1' is malformed.").arg(_actual_store_));
+            ui->labelName->setText("");
+            ui->labelName->repaint();
+            ui->labelFilter->setText("");
+            ui->labelFilter->repaint();
             go_back();
             return;
         }
-        LOG_PRINT(info_e, "_actual_store_ %s\n", _actual_store_);
-        ui->labelName->setText(_actual_store_);
+        LOG_PRINT(verbose_e, "_actual_store_ %s\n", _actual_store_);
 
         /* get the file list */
         QDir logDir(STORE_DIR);
         logFileList = logDir.entryList(QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
-
-        ui->labelFilter->setText(QString("Filter: [%1 - %2]")
-                                 .arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss"))
-                                 .arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
 
         _current = 0;
         /* no logfile found */
         _file_nb = logFileList.count();
         if (_file_nb == 0)
         {
-            LOG_PRINT(info_e, "No file to load\n");
+            LOG_PRINT(verbose_e, "No file to load\n");
+            ui->labelFilter->setText(trUtf8("No log to show."));
+            ui->labelFilter->repaint();
+            ui->labelName->setText("");
+            ui->labelName->repaint();
             return;
         }
 
         /* load the current log file */
-        LOG_PRINT(info_e, "_current %d\n",_current);
+        LOG_PRINT(verbose_e, "_current %d\n",_current);
 
         /* load the actual daily store */
         if (LoadStore(StoreInit, StoreFinal) == false)
         {
             QMessageBox::critical(this,trUtf8("Loading problem"), trUtf8("Cannot load the log %1.").arg(_actual_store_));
-            LOG_PRINT(info_e, "cannot load store, force back\n");
+            LOG_PRINT(error_e, "cannot load store, force back\n");
+            ui->labelName->setText("");
+            ui->labelName->repaint();
+            ui->labelFilter->setText("");
+            ui->labelFilter->repaint();
             go_back();
             return;
         }
+
+        ui->labelFilter->setText(QString("Filter: [%1 - %2]")
+                                 .arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss"))
+                                 .arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
+        ui->labelFilter->repaint();
 
         /* set the arrow button status in funtion of the visible items */
         ui->pushButtonLeft->setEnabled(current_column > 0);
@@ -606,11 +679,11 @@ void store::on_pushButtonUp_clicked()
 
 void store::on_pushButtonDown_clicked()
 {
-    LOG_PRINT(info_e, "current_row %d rowCount %d logfp %p\n", current_row, ui->tableWidget->rowCount(), logfp);
+    LOG_PRINT(verbose_e, "current_row %d rowCount %d logfp %p\n", current_row, ui->tableWidget->rowCount(), logfp);
     
     if (current_row >= ui->tableWidget->rowCount() - 2 && logfp != NULL)
     {
-        LOG_PRINT(info_e, "Reading a new line current_row %d rowCount %d\n", current_row, ui->tableWidget->rowCount());
+        LOG_PRINT(verbose_e, "Reading a new line current_row %d rowCount %d\n", current_row, ui->tableWidget->rowCount());
         readLine();
     }
     
@@ -696,7 +769,7 @@ void store::on_pushButtonPrevious_clicked()
 {
     if (_file_nb == 0) return;
     
-    LOG_PRINT(info_e, "_current %d\n", _current);
+    LOG_PRINT(verbose_e, "_current %d\n", _current);
     if (_current == 0)
     {
         _current = _file_nb - 1;
@@ -711,7 +784,7 @@ void store::on_pushButtonPrevious_clicked()
 void store::on_pushButtonNext_clicked()
 {
     if (_file_nb == 0) return;
-    LOG_PRINT(info_e, "_current %d\n", _current);
+    LOG_PRINT(verbose_e, "_current %d\n", _current);
     if (_current == _file_nb - 1)
     {
         _current = 0;
@@ -757,7 +830,7 @@ void store::on_pushButtonSaveUSB_clicked()
         
         /* unmount USB key */
         USBumount();
-        LOG_PRINT(info_e, "DOWNLOADED\n");
+        LOG_PRINT(verbose_e, "DOWNLOADED\n");
         QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
     }
 }

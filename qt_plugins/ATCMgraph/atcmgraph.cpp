@@ -1050,7 +1050,7 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
         }
         *destination = variable.trimmed();
         *CtIndex = myCtIndex;
-        LOG_PRINT(info_e, "'%s' -> ctIndex %d\n", destination->toAscii().data(), *CtIndex);
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", destination->toAscii().data(), *CtIndex);
 
         return true;
     }
@@ -1100,7 +1100,7 @@ bool ATCMgraph::read4Variables(int CtIndex1, int CtIndex1, int CtIndex1, int CtI
     }
     else if (StatusData == BUSY || StatusSyncro == BUSY)
     {
-        LOG_PRINT(info_e, "'%s' StatusData or StatusSyncro id BUSY\n", variable.toAscii().data());
+        LOG_PRINT(verbose_e, "'%s' StatusData or StatusSyncro id BUSY\n", variable.toAscii().data());
         return false;
     }
 

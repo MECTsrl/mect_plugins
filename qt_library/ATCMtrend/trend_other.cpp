@@ -144,7 +144,7 @@ void trend_other::changeEvent(QEvent * event)
  */
 trend_other::~trend_other()
 {
-    LOG_PRINT(info_e, "############################################################## DELETE\n");
+    LOG_PRINT(verbose_e, "############################################################## DELETE\n");
     
     delete ui;
 }
@@ -154,14 +154,14 @@ trend_other::~trend_other()
 void trend_other::mouseMoveEvent(QMouseEvent * e)
 {
     //this->setEnabled(false);
-    LOG_PRINT(info_e, "################# x %d y %d\n", e->x(), e->y());
+    LOG_PRINT(verbose_e, "################# x %d y %d\n", e->x(), e->y());
     this->move(this->x() + e->x(), this->y() + e->y() - this->height()/3);
     //this->move(e->x(), e->y());
 }
 
 void trend_other::on_pushButtonOnline_clicked()
 {
-    LOG_PRINT(info_e, "Calling setOnline\n");
+    LOG_PRINT(verbose_e, "Calling setOnline\n");
     ((trend*)tp)->setOnline(!(((trend*)tp)->getOnline()));
 }
 

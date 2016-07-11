@@ -156,10 +156,10 @@ trend::trend(QWidget *parent) :
  */
 void trend::reload()
 {
-    LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+    LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
 
-    LOG_PRINT(info_e, " RELOADING\n");
+    LOG_PRINT(verbose_e, " RELOADING\n");
     reloading = true;
     d_qwtplot->hide();
 
@@ -182,14 +182,14 @@ void trend::reload()
         if (strlen(_actual_trend_) == 0)
         {
             LOG_PRINT(warning_e, "No trend selected.\n");
-            LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+            LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
             disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
             refresh_timer->stop();
             errormsg = (trUtf8("No trend description specified."));
             //QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("No trend description specified."));
             force_back = true;
             reloading = false;
-            LOG_PRINT(info_e, " RELOADED\n");
+            LOG_PRINT(verbose_e, " RELOADED\n");
             return;
         }
 
@@ -213,7 +213,7 @@ void trend::reload()
         {
             force_back = true;
             reloading = false;
-            LOG_PRINT(info_e, " RELOADED\n");
+            LOG_PRINT(verbose_e, " RELOADED\n");
             return;
         }
         else
@@ -227,7 +227,7 @@ void trend::reload()
                     {
                         decimal = getVarDecimalByName(pens[z].tag);
                     }
-                    LOG_PRINT(info_e, " valueScale null pointer for z='%d'\n", z);
+                    LOG_PRINT(verbose_e, " valueScale null pointer for z='%d'\n", z);
                     valueScale[z] = new NormalScaleDraw(decimal);
                 }
 
@@ -273,12 +273,12 @@ void trend::reload()
         actualTzero = TzeroLoaded;
         actualVisibleWindowSec = VisibleWindowSec;
         setOnline(true);
-        LOG_PRINT(info_e, "initialize actualTzero '%s' and actualVisibleWindowSec %d\n", actualTzero.toString(DATE_TIME_FMT).toAscii().data(), actualVisibleWindowSec);
+        LOG_PRINT(verbose_e, "initialize actualTzero '%s' and actualVisibleWindowSec %d\n", actualTzero.toString(DATE_TIME_FMT).toAscii().data(), actualVisibleWindowSec);
         overloadActualTzero = true;
     }
     else
     {
-        LOG_PRINT(info_e, "initialize actualTzero '%s' and actualVisibleWindowSec %d\n", actualTzero.toString(DATE_TIME_FMT).toAscii().data(), actualVisibleWindowSec);
+        LOG_PRINT(verbose_e, "initialize actualTzero '%s' and actualVisibleWindowSec %d\n", actualTzero.toString(DATE_TIME_FMT).toAscii().data(), actualVisibleWindowSec);
         VisibleWindowSec = actualVisibleWindowSec;
         // setOnline(false); /* maintain the last status */
         overloadActualTzero = false;
@@ -379,7 +379,7 @@ void trend::reload()
     
     first_time = true;
     reloading = false;
-    LOG_PRINT(info_e, " RELOADED\n");
+    LOG_PRINT(verbose_e, " RELOADED\n");
 }
 
 /**
@@ -392,10 +392,10 @@ void trend::updateData()
     {
         return;
     }
-    LOG_PRINT(info_e, "UPDATE\n");
+    LOG_PRINT(verbose_e, "UPDATE\n");
     /* call the father update data  */
     page::updateData();
-    LOG_PRINT(info_e, "UPDATE\n");
+    LOG_PRINT(verbose_e, "UPDATE\n");
     if ((reloading == true || _trend_data_reload_ == false ) && first_time == false)
     {
         return;
@@ -442,7 +442,7 @@ void trend::updateData()
                             {
                                 decimal = getVarDecimalByName(pens[z].tag);
                             }
-                            LOG_PRINT(info_e, " valueScale null pointer for z='%d'\n", z);
+                            LOG_PRINT(verbose_e, " valueScale null pointer for z='%d'\n", z);
                             valueScale[z] = new NormalScaleDraw(decimal);
                         }
 
@@ -488,7 +488,7 @@ void trend::updateData()
         if (_layout_ == PORTRAIT)
         {
             ui->pushButtonSelect->setGeometry(0,0,ui->frame->width(), 30);
-            LOG_PRINT(info_e, "GEOMETRY: 0,0,%d,30\n", ui->frame->width());
+            LOG_PRINT(verbose_e, "GEOMETRY: 0,0,%d,30\n", ui->frame->width());
             ui->labelvalue->setGeometry(
                         ui->frame->width() - ui->labelvalue->width(),
                         ui->frame->height() - ui->labelvalue->height(),
@@ -499,7 +499,7 @@ void trend::updateData()
         else
         {
             ui->pushButtonSelect->setGeometry(0,0,80, ui->frame->height());
-            LOG_PRINT(info_e, "GEOMETRY: 0,0,80,%d\n", ui->frame->height());
+            LOG_PRINT(verbose_e, "GEOMETRY: 0,0,80,%d\n", ui->frame->height());
             ui->labelvalue->setGeometry(
                         ui->frame->width() - ui->labelvalue->width(),
                         ui->frame->height() + ui->pushButtonSelect->height(),
@@ -509,7 +509,7 @@ void trend::updateData()
         }
         first_time = false;
         /* connecting new_trend signal */
-        LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+        LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
         
         /* update the actual window parameters */
@@ -525,9 +525,9 @@ void trend::updateData()
         actualPen = -1;
         on_pushButtonSelect_clicked();
         
-        LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+        LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-        LOG_PRINT(info_e, "CONNECT refreshEvent\n");
+        LOG_PRINT(verbose_e, "CONNECT refreshEvent\n");
         connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
     }
     
@@ -723,7 +723,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
                     }
                 }
             }
-            LOG_PRINT(info_e,"NEW SAMPLE DRAWN '%s' -> '%f' time: '%s'\n",  varNameArray[item_trend.CtIndex].tag, item_trend.value,  item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data());
+            LOG_PRINT(verbose_e,"NEW SAMPLE DRAWN '%s' -> '%f' time: '%s'\n",  varNameArray[item_trend.CtIndex].tag, item_trend.value,  item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data());
             
             loadOrientedWindow();
         }
@@ -882,7 +882,7 @@ void trend::enableZoomMode(bool on)
 bool trend::setOnline(bool status)
 {
     _online_ = status;
-    LOG_PRINT(info_e, "set %s\n", (_online_ == true) ? "ONLINE": "OFFLINE");
+    LOG_PRINT(verbose_e, "set %s\n", (_online_ == true) ? "ONLINE": "OFFLINE");
     if (popup != NULL && popup->isVisible())
     {
         LOG_PRINT(verbose_e, "RELOAD POPUP\n");
@@ -967,7 +967,7 @@ bool trend::bringFront(int pen)
 
 void trend::disableUpdate()
 {
-    LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+    LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
 }
 
@@ -989,7 +989,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
         pens[rownb].sample = 0;
     }
     
-    LOG_PRINT(info_e, "begin '%s' end '%s' skip '%d'\n", begin.toString(DATE_TIME_FMT).toAscii().data(), end.toString(DATE_TIME_FMT).toAscii().data(), skip);
+    LOG_PRINT(verbose_e, "begin '%s' end '%s' skip '%d'\n", begin.toString(DATE_TIME_FMT).toAscii().data(), end.toString(DATE_TIME_FMT).toAscii().data(), skip);
     
     for (iterator = begin; iterator < end; iterator = iterator.addDays(1))
     {
@@ -999,7 +999,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
             LOG_PRINT(verbose_e, "found '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
             if (Load(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data(), &begin, &end, skip) == false)
             {
-                LOG_PRINT(info_e, "Cannot load '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
+                LOG_PRINT(verbose_e, "Cannot load '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
                 return false;
             }
             LOG_PRINT(verbose_e, "PARSED TREND FILE '%s'\n", QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data());
@@ -1195,9 +1195,9 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                                     pens[j].sample++;
                                     if (pens[j].sample > MAX_SAMPLE_NB)
                                     {
-                                        LOG_PRINT(info_e, "fatal error max sample %d reach! TrendPeriodSec %d LoadedWindowSec %d\n", MAX_SAMPLE_NB, TrendPeriodSec, LoadedWindowSec);
-                                        LOG_PRINT(info_e, "begin %s end %s skip %d\n", begin->toString(DATE_TIME_FMT).toAscii().data(), end->toString(DATE_TIME_FMT).toAscii().data(), skip);
-                                        //LOG_PRINT(info_e, "actual_date_time %s end %s\n", actual_date_time.toString(DATE_TIME_FMT).toAscii().data(), end->toString(DATE_TIME_FMT).toAscii().data());
+                                        LOG_PRINT(verbose_e, "fatal error max sample %d reach! TrendPeriodSec %d LoadedWindowSec %d\n", MAX_SAMPLE_NB, TrendPeriodSec, LoadedWindowSec);
+                                        LOG_PRINT(verbose_e, "begin %s end %s skip %d\n", begin->toString(DATE_TIME_FMT).toAscii().data(), end->toString(DATE_TIME_FMT).toAscii().data(), skip);
+                                        //LOG_PRINT(verbose_e, "actual_date_time %s end %s\n", actual_date_time.toString(DATE_TIME_FMT).toAscii().data(), end->toString(DATE_TIME_FMT).toAscii().data());
                                         LOG_PRINT(error_e, "Too many sample\n");
                                         fclose(fp);
                                         return false;
@@ -1273,7 +1273,7 @@ void trend::incrementValue(int direction)
 
 bool trend::loadFromFile(QDateTime Ti)
 {
-    LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+    LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
     
     TzeroLoaded = Ti;
@@ -1320,10 +1320,10 @@ bool trend::loadFromFile(QDateTime Ti)
     /* load data from Ti to Ti + MaxWindowsec */
     if (Load(TzeroLoaded, Tfin, sample_to_skip) == false)
     {
-        LOG_PRINT(info_e, "Cannot load data\n");
-        LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+        LOG_PRINT(verbose_e, "Cannot load data\n");
+        LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-        LOG_PRINT(info_e, "CONNECT refreshEvent\n");
+        LOG_PRINT(verbose_e, "CONNECT refreshEvent\n");
         connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
         return false;
     }
@@ -1357,12 +1357,12 @@ bool trend::loadFromFile(QDateTime Ti)
         
         d_qwtplot->setAxisScaleDraw(QwtAxisId( valueAxisId, i ), valueScale[i]);
         //d_qwtplot->setAxisScaleDraw(valueAxisId + i, new NormalScaleDraw(decimal));
-        //LOG_PRINT(info_e, "decimals %d\n", decimal);
+        //LOG_PRINT(verbose_e, "decimals %d\n", decimal);
     }
 #endif
-    LOG_PRINT(info_e, "DISCONNECT refreshEvent\n");
+    LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-    LOG_PRINT(info_e, "CONNECT refreshEvent\n");
+    LOG_PRINT(verbose_e, "CONNECT refreshEvent\n");
     connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
     return true;
 }
@@ -1601,7 +1601,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             }
             LoadedWindowSec = OVERLOAD_FACTOR * VisibleWindowSec;
             
-            LOG_PRINT(info_e, "actualTzero '%s' LoadedWindowSec '%d' actualVisibleWindowSec '%d' -> loadedTzero %s\n",
+            LOG_PRINT(verbose_e, "actualTzero '%s' LoadedWindowSec '%d' actualVisibleWindowSec '%d' -> loadedTzero %s\n",
                       actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
                       LoadedWindowSec,
                       actualVisibleWindowSec,
@@ -1620,7 +1620,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             
             if (loadFromFile(Ti) == false)
             {
-                LOG_PRINT(info_e, "cannot load the data from files\n");
+                LOG_PRINT(verbose_e, "cannot load the data from files\n");
                 errormsg = trUtf8("cannot load the data from files");
                 showStatus(errormsg, true);
                 errormsg.clear();
@@ -1967,7 +1967,7 @@ void trend::on_pushButtonHome_clicked()
 {
     go_home();
     _trend_data_reload_ = true;
-    LOG_PRINT(info_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
+    LOG_PRINT(verbose_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
     disableUpdate();
     hide();
 }
@@ -1976,7 +1976,7 @@ void trend::on_pushButtonBack_clicked()
 {
     go_back();
     _trend_data_reload_ = true;
-    LOG_PRINT(info_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
+    LOG_PRINT(verbose_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
     disableUpdate();
     hide();
 }

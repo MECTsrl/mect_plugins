@@ -133,7 +133,7 @@ void alarms_history::reload()
     }
     
     /* load the current log file */
-    LOG_PRINT(info_e, "_current %d\n",_current);
+    LOG_PRINT(verbose_e, "_current %d\n",_current);
     ui->comboBoxDate->setCurrentIndex(_current);
     loadLogFile(_current, _alarm, _event, _level);
 }
@@ -178,8 +178,8 @@ bool alarms_history::loadLogFile(int fileNb, bool alarm, bool event, int level)
     {
         return false;
     }
-    LOG_PRINT(info_e, "fileNb %d < %d\n", fileNb, logFileList.count());
-    LOG_PRINT(info_e, "logFileList '%s'\n", logFileList.at(fileNb).toAscii().data());
+    LOG_PRINT(verbose_e, "fileNb %d < %d\n", fileNb, logFileList.count());
+    LOG_PRINT(verbose_e, "logFileList '%s'\n", logFileList.at(fileNb).toAscii().data());
     return loadLogFile(logFileList.at(fileNb).toAscii().data(), alarm, event, level);
 }
 
@@ -198,7 +198,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         LOG_PRINT(error_e, "cannot open '%s'\n", fileName);
         return false;
     }
-    LOG_PRINT(info_e, "opened '%s'\n", line);
+    LOG_PRINT(verbose_e, "opened '%s'\n", line);
     
     ui->listWidget->clear();
     while (fgets(line, LINE_SIZE, fp) != NULL)
@@ -209,19 +209,19 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         p = strtok(line, ";");
         if (p == NULL)
         {
-            LOG_PRINT(info_e, "Skip empty line'%s'\n", line);
+            LOG_PRINT(verbose_e, "Skip empty line'%s'\n", line);
             continue;
         }
         /* skip the alarms */
         if (atoi(p) == ALARM && alarm == false)
         {
-            LOG_PRINT(info_e, "Skip alarm '%s'\n", line);
+            LOG_PRINT(verbose_e, "Skip alarm '%s'\n", line);
             continue;
         }
         /* skip the events */
         if (atoi(p) == EVENT && event == false)
         {
-            LOG_PRINT(info_e, "Skip event '%s'\n", line);
+            LOG_PRINT(verbose_e, "Skip event '%s'\n", line);
             continue;
         }
 
@@ -235,7 +235,7 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
         /* skip the level */
         if (atoi(p) < level)
         {
-            LOG_PRINT(info_e, "Skip level '%d %d'\n", atoi(p), level);
+            LOG_PRINT(verbose_e, "Skip level '%d %d'\n", atoi(p), level);
             continue;
         }
         /* tag */
@@ -293,9 +293,9 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
                 event);
 
         ui->listWidget->addItem(line);
-        LOG_PRINT(info_e, "add '%s'\n", line);
+        LOG_PRINT(verbose_e, "add '%s'\n", line);
     }
-    LOG_PRINT(info_e, "COUNT '%d'\n", ui->listWidget->count());
+    LOG_PRINT(verbose_e, "COUNT '%d'\n", ui->listWidget->count());
 
     return true;
 }
@@ -314,7 +314,7 @@ void alarms_history::on_pushButtonPrevious_clicked()
 {
     if (_file_nb == 0) return;
     
-    LOG_PRINT(info_e, "_current %d\n", _current);
+    LOG_PRINT(verbose_e, "_current %d\n", _current);
     if (_current == 0)
     {
         _current = _file_nb - 1;
@@ -329,7 +329,7 @@ void alarms_history::on_pushButtonPrevious_clicked()
 void alarms_history::on_pushButtonNext_clicked()
 {
     if (_file_nb == 0) return;
-    LOG_PRINT(info_e, "_current %d\n", _current);
+    LOG_PRINT(verbose_e, "_current %d\n", _current);
     if (_current == _file_nb - 1)
     {
         _current = 0;
@@ -344,12 +344,12 @@ void alarms_history::on_pushButtonNext_clicked()
 #ifdef LEVEL_TYPE
 void alarms_history::on_comboBoxLevel_currentIndexChanged(int index)
 {
-    LOG_PRINT(info_e, "_level %d\n", _level);
+    LOG_PRINT(verbose_e, "_level %d\n", _level);
     /* 0 is all level */
     if (_level != index && index < nb_of_level_e)
     {
         _level = index;
-        LOG_PRINT(info_e, "_level %d\n", _level);
+        LOG_PRINT(verbose_e, "_level %d\n", _level);
         if (_file_nb == 0) return;
         if (loadLogFile(_current, _alarm, _event, _level) == false)
         {
@@ -383,7 +383,7 @@ void alarms_history::on_comboBoxType_currentIndexChanged(int index)
         _event = true;
         break;
     }
-    LOG_PRINT(info_e, "_current %d\n", _current);
+    LOG_PRINT(verbose_e, "_current %d\n", _current);
     if (_file_nb == 0) return;
     if (loadLogFile(_current, _alarm, _event, _level) == false)
     {
@@ -459,19 +459,19 @@ void alarms_history::on_pushButtonSave_clicked()
             p = strtok(line, ";");
             if (p == NULL)
             {
-                LOG_PRINT(info_e, "Skip empty line'%s'\n", line);
+                LOG_PRINT(verbose_e, "Skip empty line'%s'\n", line);
                 continue;
             }
             /* skip the alarms */
             if (atoi(p) == ALARM && _alarm == false)
             {
-                LOG_PRINT(info_e, "Skip alarm '%s'\n", line);
+                LOG_PRINT(verbose_e, "Skip alarm '%s'\n", line);
                 continue;
             }
             /* skip the events */
             if (atoi(p) == EVENT && _event == false)
             {
-                LOG_PRINT(info_e, "Skip event '%s'\n", line);
+                LOG_PRINT(verbose_e, "Skip event '%s'\n", line);
                 continue;
             }
             /* level */
@@ -484,7 +484,7 @@ void alarms_history::on_pushButtonSave_clicked()
             /* skip the level */
             if (atoi(p) < _level)
             {
-                LOG_PRINT(info_e, "Skip level '%d %d'\n", atoi(p), _level);
+                LOG_PRINT(verbose_e, "Skip level '%d %d'\n", atoi(p), _level);
                 continue;
             }
             fprintf(fpout, "%s", lineout);
@@ -506,7 +506,7 @@ void alarms_history::on_pushButtonSave_clicked()
 
         /* Read the output a line at a time - output it. */
         if (fscanf(fp, "%s", sign) > 0) {
-            LOG_PRINT(info_e,"SIGN: '%s'\n", sign);
+            LOG_PRINT(verbose_e,"SIGN: '%s'\n", sign);
         }
 
         /* close */
@@ -567,7 +567,7 @@ void alarms_history::on_pushButtonSave_clicked()
 
         /* Read the output a line at a time - output it. */
         if (fscanf(fp, "%s", sign) > 0) {
-            LOG_PRINT(info_e,"SIGN: '%s'\n", sign);
+            LOG_PRINT(verbose_e,"SIGN: '%s'\n", sign);
         }
 
         /* close */
@@ -606,7 +606,7 @@ void alarms_history::on_pushButtonSave_clicked()
         
         /* unmount USB key */
         USBumount();
-        LOG_PRINT(info_e, "DOWNLOADED\n");
+        LOG_PRINT(verbose_e, "DOWNLOADED\n");
         QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
     }
 }

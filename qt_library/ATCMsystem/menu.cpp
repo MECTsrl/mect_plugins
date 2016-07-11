@@ -145,11 +145,11 @@ void menu::on_pushButtonLogin_clicked()
             }
             for (i = 0; i <= PASSWORD_NB; i++)
             {
-                LOG_PRINT(info_e, "#############%d vs %d\n", password, passwords[i]);
+                LOG_PRINT(verbose_e, "#############%d vs %d\n", password, passwords[i]);
                 if (password == passwords[i])
                 {
                     active_password = i;
-                    LOG_PRINT(info_e, "%d vs %d\n", password, passwords[i]);
+                    LOG_PRINT(verbose_e, "%d vs %d\n", password, passwords[i]);
                     break;
                 }
             }

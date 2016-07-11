@@ -274,7 +274,7 @@ void trend_option::on_pushButtonChangeNew_clicked()
     if (dk->exec() == QDialog::Accepted && strlen(value) != 0)
     {
         char filename[MAX_LINE];
-        LOG_PRINT(info_e, "Saving to '%s'\n", value);
+        LOG_PRINT(verbose_e, "Saving to '%s'\n", value);
         sprintf(filename, "%s/%s%s", CUSTOM_TREND_DIR, value, ".csv");
         if (!QFile::exists(filename))
         {
@@ -460,7 +460,7 @@ void trend_option::on_pushButtonDescription_clicked()
     
     if (dk->exec() == QDialog::Accepted && strlen(value) != 0)
     {
-        LOG_PRINT(info_e, "Saving to '%s'\n", value);
+        LOG_PRINT(verbose_e, "Saving to '%s'\n", value);
         strcpy(pens[actualPen].description, value);
         ui->pushButtonDescription->setText(pens[actualPen].description);
     }
@@ -482,7 +482,7 @@ void trend_option::on_pushButtonSaveAs_clicked()
     
     if (dk->exec() == QDialog::Accepted && strlen(value) != 0)
     {
-        LOG_PRINT(info_e, "Saving to '%s'\n", value);
+        LOG_PRINT(verbose_e, "Saving to '%s'\n", value);
         sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, value);
         Save(fullfilename);
         ui->pushButtonChangeTrend->setText(value);
@@ -526,7 +526,7 @@ void trend_option::Save(const char * fullfilename)
             strcpy(pens[actualPen].color, color);
         }
         
-        LOG_PRINT(info_e, "opened '%s'\n", fullfilename);
+        LOG_PRINT(verbose_e, "opened '%s'\n", fullfilename);
         for (int i = 0; i < PEN_NB; i++)
         {
             int decimal = 2;
@@ -544,12 +544,12 @@ void trend_option::Save(const char * fullfilename)
                     );
         }
         fclose(fp);
-        LOG_PRINT(info_e, "Saved '%s'\n", fullfilename);
+        LOG_PRINT(verbose_e, "Saved '%s'\n", fullfilename);
         QMessageBox::information(this,trUtf8("Save"), trUtf8("the trend configuration %1 is saved to %2").arg(_actual_trend_).arg(fullfilename));
     }
     /* force a reload */
     _trend_data_reload_ = true;
-    LOG_PRINT(info_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
+    LOG_PRINT(verbose_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
 }
 
 void trend_option::on_comboBoxColor_currentIndexChanged(int index)
@@ -566,7 +566,7 @@ void trend_option::on_comboBoxColor_currentIndexChanged(int index)
     {
         strcpy(color, pens[index].color);
     }
-    LOG_PRINT(info_e, "New color at index %d '%s'\n", index, color);
+    LOG_PRINT(verbose_e, "New color at index %d '%s'\n", index, color);
 }
 
 void trend_option::on_pushButtonSaveUSB_clicked()
@@ -591,7 +591,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
                 QDateTime::currentDateTime().toString("yy_MM_dd_hh_mm_ss").toAscii().data(),
                 _actual_trend_);
         
-        LOG_PRINT(info_e, "Save %s'\n", dstfilename);
+        LOG_PRINT(verbose_e, "Save %s'\n", dstfilename);
         
         QStringList sourcelist;
         if (QFile::exists(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_)))
@@ -619,7 +619,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         
         /* unmount USB key */
         USBumount();
-        LOG_PRINT(info_e, "DOWNLOADED\n");
+        LOG_PRINT(verbose_e, "DOWNLOADED\n");
         QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
     }
 }
