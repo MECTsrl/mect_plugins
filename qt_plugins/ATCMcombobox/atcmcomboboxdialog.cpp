@@ -165,7 +165,7 @@ void atcmcomboboxDialog::removeMapItem()
 
 void atcmcomboboxDialog::chooseCtVariable()
 {
-	QString value;
+    QString value = lineVariable->text();
     CrossTableEditor dialog(combobox, &value);
     if (dialog.exec() == Accepted)
 	{
@@ -175,7 +175,7 @@ void atcmcomboboxDialog::chooseCtVariable()
 
 void atcmcomboboxDialog::chooseCtVisibility()
 {
-	QString value;
+    QString value = lineVisibility->text();
     CrossTableEditor dialog(combobox, &value);
     if (dialog.exec() == Accepted)
 	{

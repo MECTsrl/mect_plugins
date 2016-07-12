@@ -12,6 +12,7 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
     : QDialog(parent)
 {
     m_selection = selection;
+    *m_selection = m_selection->trimmed();
     table = new QTableWidget(1,5);
 
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -67,19 +68,19 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
                 {
                     table->insertRow(i);
                 }
-                item = new QTableWidgetItem(fields.at(1));
+                item = new QTableWidgetItem(fields.at(1).trimmed());
                 table->setItem(i,0,item);
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                item = new QTableWidgetItem(fields.at(2).simplified());
+                item = new QTableWidgetItem(fields.at(2).trimmed());
                 table->setItem(i,1,item);
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                item = new QTableWidgetItem(fields.at(3));
+                item = new QTableWidgetItem(fields.at(3).trimmed());
                 table->setItem(i,2,item);
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                item = new QTableWidgetItem(fields.at(5));
+                item = new QTableWidgetItem(fields.at(5).trimmed());
                 table->setItem(i,3,item);
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-                item = new QTableWidgetItem(fields.at(12));
+                item = new QTableWidgetItem(fields.at(12).trimmed());
                 table->setItem(i,4,item);
                 item->setFlags(item->flags() & ~Qt::ItemIsEditable);
                 i++;
