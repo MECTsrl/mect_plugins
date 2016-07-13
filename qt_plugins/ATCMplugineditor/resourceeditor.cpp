@@ -87,6 +87,18 @@ ResourceEditor::ResourceEditor(QWidget *parent, QString * selection)
                 item.startsWith(":/icon/tool/")
                 ||
                 item.startsWith(":/resourceeditor/")
+                ||
+                item.startsWith(":/marker.png")
+                ||
+                item.startsWith(":/atcmslider.png")
+                ||
+                item.startsWith(":/left.png")
+                ||
+                item.startsWith(":/right.png")
+                ||
+                item.startsWith(":/atcmspinbox.png")
+                ||
+                item.startsWith(":/atcmtime.png")
            )
         {
             continue;

@@ -33,7 +33,7 @@ int varNbMax;
 /* this define set the window title */
 #define WINDOW_TITLE "RECIPE"
 /* this define set the window icon the file can have a path into resource file or into the file system */
-#define WINDOW_ICON ":/systemicons/img/Script.png"
+#define WINDOW_ICON ":/libicons/img/Script.png"
 
 /**
  * @brief this macro is used to set the RECIPE style.
@@ -128,6 +128,9 @@ void recipe::updateData()
 
     if (state == 1)
     {
+        ui->progressBarStatus->setVisible(true);
+        ui->progressBarStatus->setValue(0);
+        ui->progressBarStatus->update();
         state = 0;
         current_row = 0;
         current_column = 0;
@@ -513,7 +516,6 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
     }
 
     /* variable rows */
-    ui->progressBarStatus->setVisible(true);
     ui->progressBarStatus->setMaximum(varNbMax);
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
@@ -527,6 +529,7 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
         }
     }
 
+    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     ui->progressBarStatus->setVisible(false);
 
     return true;

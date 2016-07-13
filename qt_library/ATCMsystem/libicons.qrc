@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/systemicons">
+    <qresource prefix="/libicons">
         <file>img/3d_bar_chart.png</file>
         <file>img/Abort.png</file>
         <file>img/About.png</file>

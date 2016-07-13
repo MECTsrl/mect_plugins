@@ -58,7 +58,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/systemicons/img/Display.png);</string>
+        <string notr="true">border-image: url(:/libicons/img/Display.png);</string>
        </property>
        <property name="text">
         <string/>
@@ -193,7 +193,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/systemicons/img/Minus.png);</string>
+        <string notr="true">border-image: url(:/libicons/img/Minus.png);</string>
        </property>
        <property name="text">
         <string/>
@@ -249,7 +249,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/systemicons/img/Plus.png);</string>
+        <string notr="true">border-image: url(:/libicons/img/Plus.png);</string>
        </property>
        <property name="text">
         <string/>
@@ -294,7 +294,7 @@
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/OK.png);
+qproperty-icon: url(:/libicons/img/OK.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -442,7 +442,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Home.png);
+qproperty-icon: url(:/libicons/img/Home.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -490,7 +490,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Go_back.png);
+qproperty-icon: url(:/libicons/img/Go_back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

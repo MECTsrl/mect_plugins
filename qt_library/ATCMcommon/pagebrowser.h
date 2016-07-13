@@ -124,6 +124,7 @@ protected:
 
     int countLine(const char * filename);
     bool zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir = false);
+    bool signFile(QString srcfile, QString destfile);
 
 #ifdef ENABLE_ALARMS
     char * getDescription(char* tag);

@@ -934,7 +934,7 @@ bool LoadTrend(const char * filename, QString * ErrorMsg)
         }
         else if (p[0] == '\0')
         {
-            LOG_PRINT(warning_e, "Empty tag '%s' at line %d\n", p, rownb+1);
+            LOG_PRINT(info_e, "Empty tag '%s' at line %d\n", p, rownb+1);
             pens[rownb].tag[0] = '\0';
             pens[rownb].visible = false;
         }

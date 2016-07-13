@@ -58,7 +58,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/systemicons/img/Error.png);</string>
+        <string notr="true">border-image: url(:/libicons/img/Error.png);</string>
        </property>
        <property name="text">
         <string/>
@@ -249,7 +249,7 @@ QScrollBar::add-line:vertical
 	    background: rgb(255, 255, 255);
         subcontrol-position: bottom;
         subcontrol-origin: margin;
-	image: url(:/systemicons/img/Down.png);
+	image: url(:/libicons/img/Down.png);
 }
 QScrollBar::sub-line:vertical 
 {
@@ -257,7 +257,7 @@ QScrollBar::sub-line:vertical
 	    background: rgb(255, 255, 255);
         subcontrol-position: top;
 	    subcontrol-origin: margin;
-	image: url(:/systemicons/img/Up.png);
+	image: url(:/libicons/img/Up.png);
 }
 
 QScrollBar:horizontal
@@ -280,7 +280,7 @@ QScrollBar::add-line:horizontal
 	    background: rgb(255, 255, 255);
         subcontrol-position: left;
         subcontrol-origin: margin;
-		image: url(:/systemicons/img/Back.png);
+		image: url(:/libicons/img/Back.png);
 }
 QScrollBar::sub-line:horizontal 
 {
@@ -288,7 +288,7 @@ QScrollBar::sub-line:horizontal
 	    background: rgb(255, 255, 255);
         subcontrol-position: right;
 	    subcontrol-origin: margin;
-		image: url(:/systemicons/img/Forward.png);
+		image: url(:/libicons/img/Forward.png);
 }</string>
        </property>
        <property name="verticalScrollBarPolicy">
@@ -337,7 +337,7 @@ QScrollBar::sub-line:horizontal
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Home.png);
+qproperty-icon: url(:/libicons/img/Home.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -385,7 +385,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Go_back.png);
+qproperty-icon: url(:/libicons/img/Go_back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -446,7 +446,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Back.png);
+qproperty-icon: url(:/libicons/img/Back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -485,7 +485,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Forward.png);
+qproperty-icon: url(:/libicons/img/Forward.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -524,7 +524,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Flash_drive.png);
+qproperty-icon: url(:/libicons/img/Flash_drive.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

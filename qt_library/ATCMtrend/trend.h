@@ -109,7 +109,6 @@ private slots:
     void on_pushButtonSelect_clicked();
     void on_pushButtonZoom_toggled(bool checked);
     void on_pushButton_clicked();
-    void on_pushButtonPenColor_clicked();
     void on_pushButtonOnline_clicked();
     void on_pushButtonHome_clicked();
     void on_pushButtonBack_clicked();
@@ -126,6 +125,7 @@ private:
     void initValue();
     void createElem();
     void showStatus(QString message, bool iserror);
+    void updatePenLabel();
 private:
     Ui::trend *ui;
     

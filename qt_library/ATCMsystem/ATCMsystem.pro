@@ -85,4 +85,4 @@ include.path = $${ATCM_ARM_LIBRARY_INSTALL_INCPATH}
 INSTALLS += target include
 
 RESOURCES += \
-    systemicons.qrc
+    libicons.qrc

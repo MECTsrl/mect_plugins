@@ -171,7 +171,8 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
     else
     {
         strcpy(event, TAG_UNK);
-        LOG_PRINT(error_e, "Unknown event '%s' [%s|%s|%s] for variable '%s'\n", event, TAG_ACK, TAG_RISE, TAG_FALL, msg->tag);
+        LOG_PRINT(verbose_e, "Unknown status '%s' [%s|%s|%s] for variable '%s'\n", event, TAG_ACK, TAG_RISE, TAG_FALL, msg->tag);
+        return;
     }
     
     event_t * evt = EventHash.find(msg->tag).value();
@@ -186,7 +187,8 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
     else
     {
         strcpy(event, TAG_UNK);
-        LOG_PRINT(error_e, "Unknown event type '%d' [%s|%s] for variable '%s'\n", evt->type, TAG_ALARM, TAG_EVENT, msg->tag);
+        LOG_PRINT(verbose_e, "Unknown event type '%d' [%s|%s] for variable '%s'\n", evt->type, TAG_ALARM, TAG_EVENT, msg->tag);
+        return;
     }
     
     /* description [date - time] */
@@ -446,6 +448,7 @@ void alarms::on_pushButtonACK_clicked()
         }
         LOG_PRINT(verbose_e, "selected row %d '%s'\n", current_index, _active_alarms_events_.at(current_index)->tag);
         _active_alarms_events_.at(current_index)->isack = true;
+        _active_alarms_events_.at(current_index)->status = alarm_ack_e;
         if (_active_alarms_events_.at(current_index)->ack == NULL)
         {
             _active_alarms_events_.at(current_index)->ack = new QDateTime();
@@ -474,6 +477,7 @@ void alarms::on_pushButtonACKall_clicked()
         }
         *(_active_alarms_events_.at(i)->ack) = QDateTime::currentDateTime();
         _active_alarms_events_.at(i)->isack = true;
+        _active_alarms_events_.at(i)->status = alarm_ack_e;
     }
     emit new_ack(NULL);
     if (ui->listWidget->currentItem() != NULL)

@@ -55,7 +55,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/systemicons/img/3d_bar_chart.png);</string>
+        <string notr="true">border-image: url(:/libicons/img/3d_bar_chart.png);</string>
        </property>
        <property name="text">
         <string/>
@@ -140,7 +140,7 @@
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Landscape.png);
+qproperty-icon: url(:/libicons/img/Landscape.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -222,7 +222,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/New.png);
+qproperty-icon: url(:/libicons/img/New.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -264,7 +264,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Delete.png);
+qproperty-icon: url(:/libicons/img/Delete.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -323,7 +323,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Back.png);
+qproperty-icon: url(:/libicons/img/Back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -411,7 +411,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Forward.png);
+qproperty-icon: url(:/libicons/img/Forward.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -453,7 +453,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Delete.png);
+qproperty-icon: url(:/libicons/img/Delete.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -811,7 +811,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Home.png);
+qproperty-icon: url(:/libicons/img/Home.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -859,7 +859,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Go_back.png);
+qproperty-icon: url(:/libicons/img/Go_back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -914,7 +914,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Notes.png);
+qproperty-icon: url(:/libicons/img/Notes.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -956,7 +956,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Save.png);
+qproperty-icon: url(:/libicons/img/Save.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -995,7 +995,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Flash_drive.png);
+qproperty-icon: url(:/libicons/img/Flash_drive.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

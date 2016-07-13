@@ -19,7 +19,7 @@
 /* this define set the window title */
 #define WINDOW_TITLE ""
 /* this define set the window icon the file can have a path into resource file or into the file system */
-#define WINDOW_ICON ":/systemicons/img/Home.png"
+#define WINDOW_ICON ":/libicons/img/Home.png"
 
 /**
  * @brief this macro is used to set the display_settings style.

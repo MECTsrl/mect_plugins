@@ -56,7 +56,7 @@ void system_ini::reload()
 {
     QSettings settings(SYSTEM_INI, QSettings::IniFormat);
 
-
+    LanguageMap.clear();
     /* load the map of the language and his locale abbreviation */
     FILE * fp = fopen(LANGUAGE_MAP_FILE, "r");
     if (fp)

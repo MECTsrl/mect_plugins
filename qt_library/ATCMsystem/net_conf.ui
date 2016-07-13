@@ -772,7 +772,7 @@ QComboBox
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Sync.png);
+qproperty-icon: url(:/libicons/img/Sync.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -1284,7 +1284,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Home.png);
+qproperty-icon: url(:/libicons/img/Home.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -1326,7 +1326,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Go_back.png);
+qproperty-icon: url(:/libicons/img/Go_back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -1399,7 +1399,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Save.png);
+qproperty-icon: url(:/libicons/img/Save.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

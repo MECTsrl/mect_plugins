@@ -19,7 +19,7 @@
 /* this define set the window title */
 #define WINDOW_TITLE "ALARM HISTORY"
 /* this define set the window icon the file can have a path into resource file or into the file system */
-#define WINDOW_ICON ":/systemicons/img/Home.png"
+#define WINDOW_ICON ":/libicons/img/Home.png"
 
 /**
  * @brief this macro is used to set the ALARM_HISTORY style.
@@ -492,47 +492,12 @@ void alarms_history::on_pushButtonSave_clicked()
         fclose(fp);
         fclose(fpout);
 
-        /* create the signature file */
-
-        /* Open the command for reading. */
-        sprintf(line, "%s %s", APP_SIGN, dstfilename);
-        fp = popen(line, "r");
-        if (fp == NULL) {
-            LOG_PRINT(error_e,"Failed to run command '%s'\n", line );
-            return;
-        }
-
-        char sign[LINE_SIZE];
-
-        /* Read the output a line at a time - output it. */
-        if (fscanf(fp, "%s", sign) > 0) {
-            LOG_PRINT(verbose_e,"SIGN: '%s'\n", sign);
-        }
-
-        /* close */
-        pclose(fp);
-
-        if (sign[0] == '\0')
+        if (signFile(dstfilename, QString("%1.sign").arg(dstfilename)) == false)
         {
-            LOG_PRINT(error_e,"Failed read sign\n");
-            QFile::remove(dstfilename);
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(dstfilename));
             USBumount();
             return;
         }
-
-        sprintf(line, "%s.sign", dstfilename);
-        fpout = fopen(line, "w");
-        if (fpout == NULL)
-        {
-            LOG_PRINT(error_e, "cannot open '%s'\n", line);
-            QFile::remove(dstfilename);
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
-            USBumount();
-            return;
-        }
-        fprintf(fpout, "%s\n", sign);
-        fclose(fpout);
 
         /* zip the file, the sign file and delete them */
         if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(dstfilename), QString("%1.zip").arg(dstfilename), true) == false)
@@ -594,9 +559,9 @@ void alarms_history::on_pushButtonSave_clicked()
         fclose(fpout);
 
         /* zip the file, the sign file and delete them */
-        if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(srcfilename), QString("%1.zip").arg(dstfilename), true) == false)
+        if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(srcfilename), QString("%1.alarm.zip").arg(dstfilename), true) == false)
         {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save the zip file '%1.zip'").arg(dstfilename));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save the zip file '%1.alarm.zip'").arg(dstfilename));
             USBumount();
             return;
         }

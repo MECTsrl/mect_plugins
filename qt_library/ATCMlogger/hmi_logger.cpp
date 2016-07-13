@@ -217,7 +217,6 @@ FILE * Logger::openFile(bool daily, int * newfile, const char * basedir, const c
     {
         strftime (CurrentDate, 32, "%Y_%m_%d_%H_%M_%S", &CurrentTimeInfo);
     }
-    LOG_PRINT(verbose_e, "CurrentDate '%s'\n", CurrentDate);
 
     /* if necessary, create the subdir */
     if (subdir != NULL)
@@ -230,7 +229,8 @@ FILE * Logger::openFile(bool daily, int * newfile, const char * basedir, const c
     {
         sprintf(logFileName, "%s/%s.log", basedir, CurrentDate);
     }
-    
+    LOG_PRINT(verbose_e, "logFileName '%s'\n", logFileName);
+
     FILE * fp = NULL;
     
     fp = fopen(logFileName, "r");
@@ -280,12 +280,7 @@ bool Logger::openAlarmsFile()
 Logger::~Logger()
 {
     /* close log file */
-    if (alarmsfp != NULL)
-    {
-        fclose(alarmsfp);
-        alarmsfp = NULL;
-        LOG_PRINT(verbose_e, "Logfile closed\n");
-    }
+    closeAlarmsFile();
 }
 
 #ifdef ENABLE_ALARMS
@@ -352,7 +347,7 @@ void Logger::run()
             LOG_PRINT(verbose_e, "Data changed: '%d/%d' -> '%d/%d'\n",
                       CurrentTimeInfo.tm_year, CurrentTimeInfo.tm_yday,
                       timeinfo->tm_year, timeinfo->tm_yday);
-            memcpy(&CurrentTimeInfo, timeinfo, sizeof(timeinfo));
+            memcpy(&CurrentTimeInfo, timeinfo, sizeof(struct tm));
 #ifdef ENABLE_ALARMS
             closeAlarmsFile();
 #endif
@@ -754,7 +749,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         info_descr->begin = NULL;
         info_descr->end = NULL;
         info_descr->ack = NULL;
-        info_descr->status = alarm_fall_e;
+        info_descr->status = alarm_none_e;
         info_descr->type = item->type;
         _active_alarms_events_.append(info_descr);
         
@@ -764,7 +759,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
     if (status == alarm_rise_e)
     {
         toemit = true;
-        if (info_descr->status == alarm_fall_e)
+        if (info_descr->status == alarm_fall_e || info_descr->status == alarm_none_e)
         {
             LOG_PRINT(verbose_e, "Rising event for %s\n", info_descr->tag);
             HornACK = false;
@@ -835,7 +830,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         }
         
         char event[TAG_LEN];
-        if (info_descr->isack == true)
+        if (info_descr->isack == true && info_descr->status == alarm_ack_e)
         {
             strcpy(event, TAG_ACK);
         }

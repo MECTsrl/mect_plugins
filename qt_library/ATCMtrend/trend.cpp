@@ -169,8 +169,6 @@ void trend::reload()
     popup->enableButtonLeft(false);
     popup->enableButtonRight(false);
     ui->pushButtonPen->setText("");
-    ui->pushButtonPenColor->setStyleSheet("");
-    ui->pushButtonPenColor->setAutoFillBackground(true);
     /* set the label as loading */
     showStatus(trUtf8("Loading..."), false);
     
@@ -410,9 +408,9 @@ void trend::updateData()
         QStringList trendList;
         QDir trendDir(CUSTOM_TREND_DIR, "*.csv");
 
-        if (trendDir.entryList(QDir::Files).count() > 1)
+        trendList = trendDir.entryList(QDir::Files|QDir::NoDotAndDotDot);
+        if (trendList.count() > 0)
         {
-            trendList = trendDir.entryList(QDir::Files);
             sel = new item_selector(trendList, &value, trUtf8("TREND SELECTOR"));
             sel->showFullScreen();
 
@@ -466,6 +464,7 @@ void trend::updateData()
             else
             {
                 errormsg = trUtf8("No trend selected");
+                go_back();
             }
             delete sel;
         }
@@ -517,6 +516,7 @@ void trend::updateData()
         if (overloadActualTzero == true)
         {
             actualVisibleWindowSec = VisibleWindowSec;
+            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), Tzero.toString().toAscii().data());
             actualTzero = Tzero;
         }
         
@@ -635,6 +635,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
                 LOG_PRINT(warning_e, "out of range %f > %f.", pens[i].y[pens[i].sample], pens[i].yMaxActual);
             }
             pens[i].sample++;
+            updatePenLabel();
         }
     }
     
@@ -646,7 +647,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
             {
                 ui->pushButtonOnline->setStyleSheet("QPushButton"
                                                     "{"
-                                                    "border-image: url(:/systemicons/img/Chess1.png);"
+                                                    "border-image: url(:/libicons/img/Chess1.png);"
                                                     "qproperty-focusPolicy: NoFocus;"
                                                     "}");
             }
@@ -654,7 +655,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
             {
                 ui->pushButtonOnline->setStyleSheet("QPushButton"
                                                     "{"
-                                                    "border-image: url(:/systemicons/img/Chess2.png);"
+                                                    "border-image: url(:/libicons/img/Chess2.png);"
                                                     "qproperty-focusPolicy: NoFocus;"
                                                     "}");
             }
@@ -664,7 +665,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
         {
             ui->pushButtonOnline->setStyleSheet("QPushButton"
                                                 "{"
-                                                "border-image: url(:/systemicons/img/Chess.png);"
+                                                "border-image: url(:/libicons/img/Chess.png);"
                                                 "qproperty-focusPolicy: NoFocus;"
                                                 "}");
         }
@@ -701,6 +702,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
                               actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
                               item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data()
                               );
+                    LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), item_trend.timestamp.toString().toAscii().data());
                     actualTzero = item_trend.timestamp;
                 }
                 else
@@ -713,6 +715,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
                     while (item_trend.timestamp > limit)
                     {
                         limit = actualTzero.addSecs(actualVisibleWindowSec);
+                        LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), actualTzero.addSecs(increment).toString().toAscii().data());
                         actualTzero = actualTzero.addSecs(increment);
                         LOG_PRINT(verbose_e,"ONLINE: CENTER to actual data actual sample %s actual Tmin %s Tmax %s increment %d\n",
                                   item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data(),
@@ -741,12 +744,6 @@ void trend::on_pushButtonPen_clicked()
     goto_page("trend_option");
 }
 
-void trend::on_pushButtonPenColor_clicked()
-{
-    disableUpdate();
-    goto_page("trend_option");
-}
-
 void trend::on_pushButtonSelect_clicked()
 {
     ui->pushButtonSelect->setEnabled(false);
@@ -760,48 +757,22 @@ void trend::on_pushButtonSelect_clicked()
         bringFront(actualPen);
     }
     
-    /* update the pushButtonPen text with the current pen description */
-    if (pens[actualPen].visible && strlen(pens[actualPen].tag) != 0)
-    {
-        if (strlen(pens[actualPen].description) > 0)
-        {
-            ui->pushButtonPen->setText(pens[actualPen].description);
-        }
-        else
-        {
-            ui->pushButtonPen->setText(pens[actualPen].tag);
-        }
-    }
-    else if (strlen(pens[actualPen].tag) != 0)
-    {
-        if (strlen(pens[actualPen].description) > 0)
-        {
-            ui->pushButtonPen->setText(trUtf8("Pen '%1' is not visible").arg(pens[actualPen].description));
-        }
-        else
-        {
-            ui->pushButtonPen->setText(trUtf8("Pen '%1' is not visible").arg(pens[actualPen].tag));
-        }
-    }
-    else
-    {
-        if (strlen(pens[actualPen].description) > 0)
-        {
-            ui->pushButtonPen->setText(trUtf8("Pen '%1' is empty").arg(pens[actualPen].description));
-        }
-        else
-        {
-            ui->pushButtonPen->setText(trUtf8("Pen '%1' is empty").arg(actualPen + 1));
-        }
-    }
+    updatePenLabel();
     
     /* update the pushButtonPenColor text with the current pen color */
     if (strlen(pens[actualPen].color) != 0)
     {
-        ui->pushButtonPenColor->setStyleSheet(QString("background-color: %1;").arg(QString("#%1").arg(pens[actualPen].color)));
-        ui->pushButtonPenColor->setAutoFillBackground(true);
-        ui->pushButtonPenColor->repaint();
         LOG_PRINT(verbose_e, "COLOR %s\n", pens[actualPen].color);
+        ui->pushButtonPen->setStyleSheet(
+                    QString(
+                        "QPushButton"
+                        "{"
+                        "border: 3px solid  #%1;"
+                        "qproperty-focusPolicy: NoFocus;"
+                        "}"
+                        ).arg(pens[actualPen].color)
+                    );
+
     }
     
     /* enable the actual axis */
@@ -991,24 +962,47 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     
     LOG_PRINT(verbose_e, "begin '%s' end '%s' skip '%d'\n", begin.toString(DATE_TIME_FMT).toAscii().data(), end.toString(DATE_TIME_FMT).toAscii().data(), skip);
     
-    for (iterator = begin; iterator < end; iterator = iterator.addDays(1))
+    /* the store are in STORE_DIR and they have a name like yyyy_MM_dd_HH_mm_ss.log */
+    /* get the list of the file and parse the file between time begin and time end */
+    QDir logDir(STORE_DIR);
+    QStringList logFileList = logDir.entryList(QDir::Files|QDir::NoDotAndDotDot);
+    for (int i = 0; i < logFileList.count(); i++)
     {
-        LOG_PRINT(verbose_e, "looking for '%s' (%s)\n", iterator.toString("yyyy_MM_dd.log").toAscii().data(), end.toString("yyyy_MM_dd.log").toAscii().data());
-        if (QFileInfo(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log").toAscii().data())).isFile())
+        // check if the log time is into the interval
+        if (
+                (
+                    begin <= QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(),"yyyy_MM_dd_HH_mm_ss")
+                    ||
+                    (
+                        i + 1 < logFileList.count()
+                        &&
+                        begin < QDateTime::fromString(QFileInfo(logFileList.at(i + 1)).baseName(),"yyyy_MM_dd_HH_mm_ss")
+                    )
+                    ||
+                    (
+                        i + 1 == logFileList.count()
+                        &&
+                        begin < QDateTime::currentDateTime()
+                    )
+                 )
+                &&
+                end >= QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(),"yyyy_MM_dd_HH_mm_ss")
+            )
         {
-            LOG_PRINT(verbose_e, "found '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
-            if (Load(QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data(), &begin, &end, skip) == false)
+            LOG_PRINT(verbose_e, "PARSING TREND FILE '%s'\n", logFileList.at(i).toAscii().data());
+            if (Load(QString("%1/%2").arg(STORE_DIR).arg(logFileList.at(i)).toAscii().data(), &begin, &end, skip) == false)
             {
-                LOG_PRINT(verbose_e, "Cannot load '%s'\n", iterator.toString("yyyy_MM_dd.log").toAscii().data());
+                LOG_PRINT(verbose_e, "Cannot load '%s'\n", logFileList.at(i).toAscii().data());
                 return false;
             }
-            LOG_PRINT(verbose_e, "PARSED TREND FILE '%s'\n", QString("%1/%2").arg(STORE_DIR).arg(iterator.toString("yyyy_MM_dd.log")).toAscii().data());
+            LOG_PRINT(verbose_e, "PARSED TREND FILE '%s'\n", logFileList.at(i).toAscii().data());
             logfound++;
         }
     }
+
     if (logfound == 0)
     {
-        LOG_PRINT(warning_e, "cannot found any sample from begin '%s' to '%s'\n",
+        LOG_PRINT(verbose_e, "cannot found any sample from begin '%s' to '%s'\n",
                   begin.toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
                   end.toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
                   );
@@ -1054,18 +1048,18 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         
         /* date */
         p = strtok_csv(line, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0' || strcmp(token, "date") != 0)
+        if (p == NULL || p[0] == '\0' || strcmp(p, "date") != 0)
         {
-            LOG_PRINT(error_e, "Invalid date field '%s' '%s'\n", line, token);
+            LOG_PRINT(error_e, "Invalid date field '%s' '%s'\n", line, p);
             fclose(fp);
             return false;
         }
         
         /* time */
         p = strtok_csv(NULL, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0' || strcmp(token, "time") != 0)
+        if (p == NULL || p[0] == '\0' || strcmp(p, "time") != 0)
         {
-            LOG_PRINT(error_e, "Invalid time field '%s' '%s'\n", line, token);
+            LOG_PRINT(error_e, "Invalid time field '%s' '%s'\n", line, p);
             fclose(fp);
             return false;
         }
@@ -1245,6 +1239,7 @@ void trend::incrementTime(int direction)
               );
     
     /* update the actual window parameters */
+    LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), actualTzero.addSecs(increment * direction).toString().toAscii().data());
     actualTzero = actualTzero.addSecs(increment * direction);
     if (actualTzero > QDateTime::currentDateTime())
     {
@@ -1376,6 +1371,11 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     double sfinal = TzeroLoaded.secsTo(Tmax);
     QList<double> arrayTimeTicks;
     
+    LOG_PRINT(verbose_e, "Tmin '%s' TMax '%s'\n",
+              Tmin.toString("yyyy/MM/dd hh:MM:ss").toAscii().data(),
+              Tmax.toString("yyyy/MM/dd hh:MM:ss").toAscii().data()
+              );
+
     arrayTimeTicks << sinint;
     for (int i = 0; i < HORIZ_TICKS; i++)
     {
@@ -1395,8 +1395,22 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             /* calculate the initial index and the final index visible into the current window */
             int XindexIn = 0, XindexFin = 0, nsec = 0;
             nsec = TzeroLoaded.secsTo(Tmin);
-            for (XindexIn = 0; pens[pen_index].x[XindexIn] < nsec && XindexIn < MAX_SAMPLE_NB; XindexIn++);
-            XindexIn = ((pens[pen_index].x[XindexIn] > nsec) ? (XindexIn - 1): XindexIn);
+            for (XindexIn = 0; pens[pen_index].x[XindexIn] < nsec && XindexIn < pens[pen_index].sample; XindexIn++)
+            {
+                LOG_PRINT(verbose_e, "pens[%d].x[%d] = %f ?> nsec %d\n",
+                          pen_index,
+                          XindexIn,
+                          pens[pen_index].x[XindexIn],
+                          nsec
+                          );
+            }
+            XindexIn = ((XindexIn > 0 && pens[pen_index].x[XindexIn] > nsec) ? (XindexIn - 1): XindexIn);
+            LOG_PRINT(verbose_e, "pens[%d].x[%d] = %f > nsec %d\n",
+                      pen_index,
+                      XindexIn,
+                      pens[pen_index].x[XindexIn],
+                      nsec
+                      );
             
             int decimal = getVarDecimalByCtIndex(pens[pen_index].CtIndex);
             
@@ -1429,6 +1443,12 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             if (_online_)
             {
                 XindexFin = pens[pen_index].sample;
+                LOG_PRINT(verbose_e, "pens[%d].x[%d] = %f > nsec %d\n",
+                          pen_index,
+                          XindexFin,
+                          pens[pen_index].x[XindexFin],
+                          nsec
+                          );
             }
             /* if offline, looking for the last sample */
             else
@@ -1436,10 +1456,18 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                 int nsec = TzeroLoaded.secsTo(Tmax);
                 for (XindexFin = pens[pen_index].sample; pens[pen_index].x[XindexFin] > nsec && XindexFin > XindexIn; XindexFin--);
                 XindexFin = ((pens[pen_index].x[XindexFin] < nsec) ? (XindexFin + 1): XindexFin);
+                LOG_PRINT(verbose_e, "pens[%d].x[%d] = %f > nsec %d\n",
+                          pen_index,
+                          XindexFin,
+                          pens[pen_index].x[XindexFin],
+                          nsec
+                          );
             }
             
             if (pens[pen_index].visible == true)
             {
+                if (XindexFin > XindexIn)
+                {
                 /* set the y scale in according with the new window and the new scale of the activa pen */
                 if (ymin != ymax)
                 {
@@ -1475,6 +1503,12 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                 }
                 
                 LOG_PRINT(verbose_e, "################## NEW SAMPLE LAST '%s'  %f %f in %d fin %d sample %d\n", pens[pen_index].tag, pens[pen_index].x[XindexFin-1], pens[pen_index].y[XindexFin-1], XindexIn, XindexFin, pens[pen_index].sample);
+                }
+                else
+                {
+                    LOG_PRINT(warning_e, "no point to show\n");
+                    return false;
+                }
             }
         }
     }
@@ -1524,10 +1558,12 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         /* set the actual Tzero and the actual VisibleWindowSec */
         if (_layout_ == LANDSCAPE)
         {
+            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), Tmin.toString().toAscii().data());
             actualTzero = Tmin;
         }
         else
         {
+            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), Tmax.toString().toAscii().data());
             actualTzero = Tmax;
         }
         actualVisibleWindowSec = Tmin.secsTo(Tmax);
@@ -1620,11 +1656,12 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             
             if (loadFromFile(Ti) == false)
             {
-                LOG_PRINT(verbose_e, "cannot load the data from files\n");
-                errormsg = trUtf8("cannot load the data from files");
+                errormsg = trUtf8("Cannot found any data from %1 to %2").arg(actualTzero.toString().toAscii().data()).arg(QDateTime::currentDateTime().toString().toAscii().data());
                 showStatus(errormsg, true);
                 errormsg.clear();
-                actualTzero = QDateTime::currentDateTime();
+                LOG_PRINT(warning_e, "Cannot found any data from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
+                //LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
+                //actualTzero = QDateTime::currentDateTime();
             }
             else if (actualTzero < TzeroLoaded || actualVisibleWindowSec > LoadedWindowSec)
             {
@@ -1634,6 +1671,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                           TzeroLoaded.addSecs(LoadedWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
                           actualVisibleWindowSec
                           );
+                LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.toString().toAscii().data());
                 actualTzero = TzeroLoaded;
                 d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
             }
@@ -1835,10 +1873,12 @@ void trend::selected(const QPolygon &pol)
         LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
         if (_layout_ == PORTRAIT)
         {
+            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.addSecs(myXfin).toString().toAscii().data());
             actualTzero = TzeroLoaded.addSecs(myXfin);
         }
         else
         {
+            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.addSecs(myXin).toString().toAscii().data());
             actualTzero = TzeroLoaded.addSecs(myXin);
         }
         
@@ -1905,25 +1945,17 @@ void trend::loadOrientedWindow()
                   actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
                   VisibleWindowSec
                   );
-        while (loadWindow(
+        loadWindow(
                    actualTzero.addSecs(-actualVisibleWindowSec),
                    actualTzero
-                   ) == false)
-        {
-            LOG_PRINT(verbose_e,"Waiting to loadWindow...\n");
-            usleep(1000);
-        }
+                   );
     }
     else
     {
-        while (loadWindow(
+        loadWindow(
                    actualTzero,
                    actualTzero.addSecs(actualVisibleWindowSec)
-                   ) == false)
-        {
-            LOG_PRINT(verbose_e,"Waiting to loadWindow...\n");
-            usleep(1000);
-        }
+                   );
     }
     pthread_mutex_unlock(&mutex);
 }
@@ -1942,7 +1974,7 @@ void trend::showStatus(QString message, bool iserror)
         ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
         ui->pushButtonOnline->setStyleSheet("QPushButton"
                                             "{"
-                                            "border-image: url(:/systemicons/img/Warning.png);"
+                                            "border-image: url(:/libicons/img/Warning.png);"
                                             "qproperty-focusPolicy: NoFocus;"
                                             "}");
         ui->labelDate->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -1952,13 +1984,12 @@ void trend::showStatus(QString message, bool iserror)
         ui->labelDate->setStyleSheet("");
         ui->pushButtonOnline->setStyleSheet("QPushButton"
                                             "{"
-                                            "border-image: url(:/systemicons/img/Chess.png);"
+                                            "border-image: url(:/libicons/img/Chess.png);"
                                             "qproperty-focusPolicy: NoFocus;"
                                             "}");
         ui->labelDate->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
 
-    ui->pushButtonPenColor->setVisible(!iserror);
     ui->pushButtonPen->setVisible(!iserror);
     ui->labelDate->repaint();
 }
@@ -1989,4 +2020,52 @@ void trend::on_pushButtonTime_clicked()
 void trend::on_pushButtonPan_clicked()
 {
     setPan();
+}
+
+void trend::updatePenLabel()
+{
+    /* update the pushButtonPen text with the current pen description */
+    if (pens[actualPen].visible && strlen(pens[actualPen].tag) != 0)
+    {
+        int decimal = getVarDecimalByCtIndex(pens[actualPen].CtIndex);
+        if (strlen(pens[actualPen].description) > 0)
+        {
+            ui->pushButtonPen->setText(
+                        pens[actualPen].description +
+                        QString(" [x:%1; y:%2]")
+                        .arg(TzeroLoaded.addSecs(pens[actualPen].x[pens[actualPen].sample - 1]).toString("hh:MM:ss"))
+                    .arg(QString::number(pens[actualPen].y[pens[actualPen].sample - 1], 'f', decimal)));
+        }
+        else
+        {
+            ui->pushButtonPen->setText(
+                        pens[actualPen].tag +
+                        QString(" [x:%1; y:%2]")
+                        .arg(TzeroLoaded.addSecs(pens[actualPen].x[pens[actualPen].sample - 1]).toString("hh:MM:ss"))
+                    .arg(QString::number(pens[actualPen].y[pens[actualPen].sample - 1], 'f', decimal)));
+        }
+    }
+    else if (strlen(pens[actualPen].tag) != 0)
+    {
+        if (strlen(pens[actualPen].description) > 0)
+        {
+            ui->pushButtonPen->setText(trUtf8("Pen '%1' is not visible").arg(pens[actualPen].description));
+        }
+        else
+        {
+            ui->pushButtonPen->setText(trUtf8("Pen '%1' is not visible").arg(pens[actualPen].tag));
+        }
+    }
+    else
+    {
+        if (strlen(pens[actualPen].description) > 0)
+        {
+            ui->pushButtonPen->setText(trUtf8("Pen '%1' is empty").arg(pens[actualPen].description));
+        }
+        else
+        {
+            ui->pushButtonPen->setText(trUtf8("Pen '%1' is empty").arg(actualPen + 1));
+        }
+    }
+    return;
 }

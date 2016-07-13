@@ -2011,6 +2011,45 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
     return true;
 }
 
+bool page::signFile(QString srcfile, QString destfile)
+{
+    char line[STR_LEN];
+    /* create the signature file */
+    /* Open the command for reading. */
+    sprintf(line, "%s %s", APP_SIGN, srcfile.toAscii().data());
+    FILE * fp = popen(line, "r");
+    if (fp == NULL) {
+        LOG_PRINT(error_e,"Failed to run command '%s'\n", line );
+        return false;
+    }
+
+    char sign[LINE_SIZE];
+
+    /* Read the output a line at a time - output it. */
+    if (fscanf(fp, "%s", sign) > 0) {
+        LOG_PRINT(verbose_e,"SIGN: '%s'\n", sign);
+    }
+
+    /* close */
+    pclose(fp);
+
+    if (sign[0] == '\0')
+    {
+        LOG_PRINT(error_e,"Failed read sign\n");
+        return false;
+    }
+
+    FILE * fpout = fopen(destfile.toAscii().data(), "w");
+    if (fpout == NULL)
+    {
+        LOG_PRINT(error_e, "cannot open '%s'\n", destfile.toAscii().data());
+        return false;
+    }
+    fprintf(fpout, "%s\n", sign);
+    fclose(fpout);
+    return true;
+}
+
 bool page::setTag(QString * label, QString value)
 {
     QHash<QString, QString>::const_iterator i;

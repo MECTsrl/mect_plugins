@@ -95,9 +95,9 @@ SOURCES += \
 	PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font
 }
 
-# default icons
+# system icons
 RESOURCES += \
-    defaulticons.qrc
+    systemicons.qrc
 
 # language
 !isEmpty(QT_LUPDATE_PATH) {

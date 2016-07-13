@@ -58,7 +58,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/systemicons/img/Error.png);</string>
+        <string notr="true">border-image: url(:/libicons/img/Error.png);</string>
        </property>
        <property name="text">
         <string/>
@@ -253,7 +253,7 @@ QScrollBar::add-line:vertical
 	    background: rgb(255, 255, 255);
         subcontrol-position: bottom;
         subcontrol-origin: margin;
-	image: url(:/systemicons/img/Down.png);
+	image: url(:/libicons/img/Down.png);
 }
 QScrollBar::sub-line:vertical 
 {
@@ -261,7 +261,7 @@ QScrollBar::sub-line:vertical
 	    background: rgb(255, 255, 255);
         subcontrol-position: top;
 	    subcontrol-origin: margin;
-	image: url(:/systemicons/img/Up.png);
+	image: url(:/libicons/img/Up.png);
 }
 
 QScrollBar:horizontal
@@ -351,7 +351,7 @@ QScrollBar::sub-line:horizontal
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Home.png);
+qproperty-icon: url(:/libicons/img/Home.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -399,7 +399,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Go_back.png);
+qproperty-icon: url(:/libicons/img/Go_back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -463,7 +463,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Thumbs_up.png);
+qproperty-icon: url(:/libicons/img/Thumbs_up.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -505,7 +505,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Apply.png);
+qproperty-icon: url(:/libicons/img/Apply.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -544,7 +544,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Silence.png);
+qproperty-icon: url(:/libicons/img/Silence.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -586,7 +586,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/History.png);
+qproperty-icon: url(:/libicons/img/History.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

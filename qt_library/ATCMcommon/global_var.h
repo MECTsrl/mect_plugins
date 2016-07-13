@@ -94,7 +94,7 @@ typedef struct event_descr_e
     QDateTime * begin;
     QDateTime * end;
     QDateTime * ack;
-    bool status;
+    enum alarm_event_e status;
     bool isack;
     char type;
 } event_descr_t;

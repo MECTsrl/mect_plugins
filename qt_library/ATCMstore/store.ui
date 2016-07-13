@@ -81,7 +81,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/systemicons/img/Hard_disk.png);</string>
+        <string notr="true">border-image: url(:/libicons/img/Hard_disk.png);</string>
        </property>
        <property name="text">
         <string/>
@@ -193,7 +193,7 @@ QScrollBar::add-line:vertical
 	    background: rgb(255, 255, 255);
         subcontrol-position: bottom;
         subcontrol-origin: margin;
-	image: url(:/systemicons/img/Down.png);
+	image: url(:/libicons/img/Down.png);
 }
 QScrollBar::sub-line:vertical 
 {
@@ -201,7 +201,7 @@ QScrollBar::sub-line:vertical
 	    background: rgb(255, 255, 255);
         subcontrol-position: top;
 	    subcontrol-origin: margin;
-	image: url(:/systemicons/img/Up.png);
+	image: url(:/libicons/img/Up.png);
 }
 
 
@@ -298,7 +298,7 @@ QScrollBar::sub-line:horizontal
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Home.png);
+qproperty-icon: url(:/libicons/img/Home.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -343,7 +343,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Go_back.png);
+qproperty-icon: url(:/libicons/img/Go_back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -395,7 +395,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Filter.png);
+qproperty-icon: url(:/libicons/img/Filter.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -447,7 +447,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Up.png);
+qproperty-icon: url(:/libicons/img/Up.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -489,7 +489,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Down.png);
+qproperty-icon: url(:/libicons/img/Down.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -540,7 +540,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Back.png);
+qproperty-icon: url(:/libicons/img/Back.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -591,7 +591,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Forward.png);
+qproperty-icon: url(:/libicons/img/Forward.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -629,6 +629,9 @@ border: 2px solid  rgb(194, 194, 194);
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonSaveUSB">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>40</width>
@@ -646,7 +649,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/systemicons/img/Flash_drive.png);
+qproperty-icon: url(:/libicons/img/Flash_drive.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }

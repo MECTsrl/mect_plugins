@@ -400,7 +400,7 @@ bool store::LoadStore(const char * filename)
         }
         if (colnb > 0)
         {
-            LOG_PRINT(none_e, "ROW %d\n", rownb);
+            LOG_PRINT(verbose_e, "ROW %d\n", rownb);
             rownb++;
         }
     }
@@ -435,12 +435,12 @@ bool store::LoadStore(const char * filename)
 
     if (rownb > 0 && ui->tableWidget->columnCount() > 2)
     {
-        LOG_PRINT(error_e, "DONE ROW %d COLUMN %d\n", rownb, colnb);
+        LOG_PRINT(verbose_e, "DONE ROW %d COLUMN %d\n", rownb, colnb);
         return true;
     }
     else
     {
-        LOG_PRINT(error_e, "EMPTY FILE ROW %d COLUMN %d\n", rownb, colnb);
+        LOG_PRINT(verbose_e, "EMPTY FILE ROW %d COLUMN %d\n", rownb, colnb);
         return true;
     }
 }
@@ -700,7 +700,7 @@ void store::on_pushButtonDown_clicked()
     }
     else
     {
-        ui->pushButtonDown->setEnabled(false);
+        ui->pushButtonDown->setEnabled(logfp != NULL);
     }
 }
 
@@ -813,19 +813,67 @@ void store::on_pushButtonSaveUSB_clicked()
         char dstfilename[FILENAME_MAX];
         /* compose the source file name and the destination file name */
         sprintf(srcfilename, "%s/%s", TMPDIR, outputfile);
+        sprintf(dstfilename, "%s/%s_%s", TMPDIR, QFileInfo(_actual_store_).baseName().toAscii().data(), outputfile);
+
+        /* extract only the selected column */
+        /* open file */
+        FILE * srcfp = fopen(srcfilename, "r");
+        if (srcfp == NULL)
+        {
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot extract the log '%1'").arg(srcfilename));
+            USBumount();
+            return;
+        }
+        FILE * dstfp = fopen(dstfilename, "w");
+        if (dstfp == NULL)
+        {
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot extract the log '%1'").arg(dstfilename));
+            USBumount();
+            fclose(srcfp);
+            return;
+        }
+        char line [STR_LEN];
+        while (fgets(line, LINE_SIZE, srcfp) != NULL)
+        {
+            QStringList fields = QString(line).simplified().replace(QString(" "), QString("")).split(SEPARATOR);
+
+            for (int i = 0; i <= sizeof_filter; i++)
+            {
+                if (actual_filter[i] == true)
+                {
+                    if (i > 0)
+                    {
+                        fprintf(dstfp, "; ");
+                    }
+                    fprintf(dstfp, "%s", fields.at(i).toAscii().data());
+                }
+            }
+            fprintf(dstfp, "\n");
+        }
+        fclose (srcfp);
+        fclose (dstfp);
+
+        strcpy(srcfilename, dstfilename);
         sprintf(dstfilename, "%s/%s.zip",
                 usb_mnt_point,
                 outputfile);
-        
-        /* zip the file, the sign file and delete them */
-        if (zipAndSave(QStringList() << srcfilename << QString("%1.sign").arg(srcfilename), QString(dstfilename), true) == false)
+
+        if (signFile(srcfilename, QString("%1.sign").arg(srcfilename)) == false)
         {
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(srcfilename));
             USBumount();
             return;
         }
+
+        /* zip the file, the sign file and delete them */
+        if (zipAndSave(QStringList() << srcfilename << QString("%1.sign").arg(srcfilename), QString(dstfilename), true) == false)
+        {
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(dstfilename));
+            USBumount();
+            return;
+        }
         
-        //QFile::remove(srcfilename);
+        QFile::remove(srcfilename);
         //QFile::remove(QString("%1.sign").arg(srcfilename));
         
         /* unmount USB key */
