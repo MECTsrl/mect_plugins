@@ -156,7 +156,7 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
     char event[DESCR_LEN];
     char type[DESCR_LEN];
     
-    if (msg->isack == alarm_ack_e)
+    if (msg->isack)
     {
         strcpy(event, TAG_ACK);
     }
@@ -448,7 +448,6 @@ void alarms::on_pushButtonACK_clicked()
         }
         LOG_PRINT(verbose_e, "selected row %d '%s'\n", current_index, _active_alarms_events_.at(current_index)->tag);
         _active_alarms_events_.at(current_index)->isack = true;
-        _active_alarms_events_.at(current_index)->status = alarm_ack_e;
         if (_active_alarms_events_.at(current_index)->ack == NULL)
         {
             _active_alarms_events_.at(current_index)->ack = new QDateTime();
@@ -477,7 +476,6 @@ void alarms::on_pushButtonACKall_clicked()
         }
         *(_active_alarms_events_.at(i)->ack) = QDateTime::currentDateTime();
         _active_alarms_events_.at(i)->isack = true;
-        _active_alarms_events_.at(i)->status = alarm_ack_e;
     }
     emit new_ack(NULL);
     if (ui->listWidget->currentItem() != NULL)

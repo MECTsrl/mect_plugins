@@ -192,36 +192,43 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
 
         /* compose the source file name and the destination file name */
         /* if one is selected save the item */
+        char basedir[STR_LEN];
         if (ui->listWidget->currentIndex().isValid())
         {
             sprintf(_actual_recipe_, "%s/%s", _recipe_dir_to_browse, ui->listWidget->currentItem()->text().toAscii().data());
-            sprintf(srcfilename, "%s/%s", _recipe_dir_to_browse, ui->listWidget->currentItem()->text().toAscii().data());
+            sprintf(srcfilename, "%s", ui->listWidget->currentItem()->text().toAscii().data());
             sprintf(dstfilename, "%s/%s_%s.zip",
                     usb_mnt_point,
                     QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss").toAscii().data(),
                     ui->listWidget->currentItem()->text().toAscii().data());
             LOG_PRINT(error_e, "Save family '%s' into '%s'\n", srcfilename, dstfilename);
+            if (!QFile::exists(srcfilename))
+            {
+                LOG_PRINT(error_e, "cannot find the file to zip '%s'\n", srcfilename);
+                return;
+            }
         }
         /* if none is selected save all */
         else
         {
-            strcpy(srcfilename, RECIPE_DIR);
+            strcpy(srcfilename, "*");
             LOG_PRINT(error_e, "srcfilename %s\n", srcfilename);
             LOG_PRINT(error_e, "RECIPE_DIR %s\n", RECIPE_DIR);
             sprintf(dstfilename, "%s/%s_recipes.zip",
                     usb_mnt_point,
                     QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss").toAscii().data());
             LOG_PRINT(error_e, "SAVE ALL\n");
+            if (ui->listWidget->count() == 0)
+            {
+                LOG_PRINT(error_e, "cannot find any file to zip.\n");
+                return;
+            }
         }
 
-        if (!QFile::exists(srcfilename))
-        {
-            LOG_PRINT(error_e, "cannot find the file to zip '%s'\n", srcfilename);
-            return;
-        }
+        strcpy(basedir, _recipe_dir_to_browse);
 
         /* zip the file, the sign file and delete them */
-        if (zipAndSave(QStringList() << srcfilename, QString(dstfilename), true) == false)
+        if (zipAndSave(QStringList() << srcfilename, QString(dstfilename), false, basedir) == false)
         {
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(dstfilename));
             USBumount();
@@ -232,7 +239,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
         USBumount();
 
         LOG_PRINT(verbose_e, "DOWNLOADED\n");
-        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
+        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).baseName()));
     }
 }
 

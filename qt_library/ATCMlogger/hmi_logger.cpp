@@ -717,7 +717,8 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
     char msg[LINE_SIZE];
     char buffer [FILENAME_MAX] = "";
     event_descr_e * info_descr = NULL;
-    
+    bool to_append = false;
+
     strftime (buffer, FILENAME_MAX, "%Y/%m/%d,%H:%M:%S", timeinfo);
     
     /* check if the alarm associated to the actual event is still into the _active_alarms_events_ */
@@ -732,16 +733,17 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         }
     }
     
+    /* the alarm is not active and is not into the active list */
     if (status == alarm_fall_e && info_descr == NULL)
     {
         LOG_PRINT(verbose_e, "Nothing interesting to dump...\n");
         return true;
     }
     
+    /* the alarm is not into the active list */
     if (info_descr == NULL)
     {
         info_descr = new event_descr_e;
-        
         strcpy(info_descr->tag, varname.toAscii().data());
         info_descr->description[0] = '\0';
         info_descr->styleindex = nb_of_alarm_status_e;
@@ -751,11 +753,14 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         info_descr->ack = NULL;
         info_descr->status = alarm_none_e;
         info_descr->type = item->type;
-        _active_alarms_events_.append(info_descr);
-        
+        to_append = true;
         LOG_PRINT(verbose_e, "New event for %s\n", info_descr->tag);
     }
     
+    LOG_PRINT(verbose_e, "isack %d status %d status %d\n",
+              info_descr->isack,
+              info_descr->status,
+              status);
     if (status == alarm_rise_e)
     {
         toemit = true;
@@ -804,6 +809,12 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
     {
         getElemAlarmStyleIndex(info_descr);
         ForceResetAlarmBanner = true;
+        if (to_append)
+        {
+            _active_alarms_events_.append(info_descr);
+            LOG_PRINT(verbose_e, "ADD isack %d status %d\n", info_descr->isack, info_descr->status);
+        }
+
         /* emit a signal to the hmi with the new item to display */
         if (item->type == EVENT)
         {
@@ -830,11 +841,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         }
         
         char event[TAG_LEN];
-        if (info_descr->isack == true && info_descr->status == alarm_ack_e)
-        {
-            strcpy(event, TAG_ACK);
-        }
-        else if (info_descr->status == alarm_rise_e)
+        if (info_descr->status == alarm_rise_e)
         {
             strcpy(event, TAG_RISE);
         }
@@ -844,10 +851,14 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         }
         else
         {
+            /*the ack event is already dump by dumpACK*/
             strcpy(event, TAG_UNK);
             LOG_PRINT(warning_e, "Unknown event for variable '%s'\n", info_descr->tag);
+            return true;
         }
         
+        LOG_PRINT(verbose_e, "DUMP event: '%s' isack %d status %d\n", event, info_descr->isack, info_descr->status);
+
         /* prepare the event item */
 #ifdef LEVEL_TYPE
         /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */

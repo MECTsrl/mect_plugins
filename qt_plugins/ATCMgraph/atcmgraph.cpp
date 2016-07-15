@@ -10,7 +10,6 @@
 #include <QPainter>
 #include <QBoxLayout>
 #include <QStyleOption>
-#include <QMessageBox>
 
 #include "atcmgraph.h"
 #include "common.h"

@@ -123,7 +123,7 @@ protected:
     int checkSDusage();
 
     int countLine(const char * filename);
-    bool zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir = false);
+    bool zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir = false, QString basedir = "");
     bool signFile(QString srcfile, QString destfile);
 
 #ifdef ENABLE_ALARMS

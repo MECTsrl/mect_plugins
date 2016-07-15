@@ -23,7 +23,7 @@
 #include "utility.h"
 
 #define LINE_BUFFER_SIZE 12
-#define UNDEFINED "UNDEFINED"
+#define UNDEFINED ""
 
 /* this define set the variables list to be to displayed in this page */
 #undef VAR_TO_DISPLAY
@@ -813,7 +813,14 @@ void store::on_pushButtonSaveUSB_clicked()
         char dstfilename[FILENAME_MAX];
         /* compose the source file name and the destination file name */
         sprintf(srcfilename, "%s/%s", TMPDIR, outputfile);
-        sprintf(dstfilename, "%s/%s_%s", TMPDIR, QFileInfo(_actual_store_).baseName().toAscii().data(), outputfile);
+        if (strlen(_actual_store_))
+        {
+            sprintf(dstfilename, "%s/%s_%s", TMPDIR, QFileInfo(_actual_store_).baseName().toAscii().data(), outputfile);
+        }
+        else
+        {
+            sprintf(dstfilename, "%s/%s", TMPDIR, outputfile);
+        }
 
         /* extract only the selected column */
         /* open file */
@@ -837,7 +844,7 @@ void store::on_pushButtonSaveUSB_clicked()
         {
             QStringList fields = QString(line).simplified().replace(QString(" "), QString("")).split(SEPARATOR);
 
-            for (int i = 0; i <= sizeof_filter; i++)
+            for (int i = 0; i <= sizeof_filter && i < fields.count(); i++)
             {
                 if (actual_filter[i] == true)
                 {
@@ -854,9 +861,19 @@ void store::on_pushButtonSaveUSB_clicked()
         fclose (dstfp);
 
         strcpy(srcfilename, dstfilename);
-        sprintf(dstfilename, "%s/%s.zip",
-                usb_mnt_point,
-                outputfile);
+        if (strlen(_actual_store_))
+        {
+            sprintf(dstfilename, "%s/%s_%s.zip",
+                    usb_mnt_point,
+                    QFileInfo(_actual_store_).baseName().toAscii().data(),
+                    outputfile);
+        }
+        else
+        {
+            sprintf(dstfilename, "%s/%s.zip",
+                    usb_mnt_point,
+                    outputfile);
+        }
 
         if (signFile(srcfilename, QString("%1.sign").arg(srcfilename)) == false)
         {
@@ -874,7 +891,7 @@ void store::on_pushButtonSaveUSB_clicked()
         }
         
         QFile::remove(srcfilename);
-        //QFile::remove(QString("%1.sign").arg(srcfilename));
+        QFile::remove(QString("%1.sign").arg(srcfilename));
         
         /* unmount USB key */
         USBumount();

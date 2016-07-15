@@ -186,6 +186,11 @@ void trend_range::on_pushButtonOk_clicked()
               actualVisibleWindowSec,
               actualTzero.toString("yy/MM/dd hh:mm:ss").toAscii().data()
               );
+
+    /* Y range */
+    pens[actualPen].yMinActual = ui->doubleSpinBoxYmin->value();
+    pens[actualPen].yMaxActual = ui->doubleSpinBoxYmax->value();
+
     _trend_data_reload_ = false;
     go_back();
 }

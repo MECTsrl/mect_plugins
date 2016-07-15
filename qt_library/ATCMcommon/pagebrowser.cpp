@@ -1947,7 +1947,7 @@ int page::getPageNb()
     return atoh(this->windowTitle().right(strlen(PAGE_PREFIX)).toAscii().data());
 }
 
-bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
+bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir, QString basedir)
 {
     if (destfile.length() == 0)
     {
@@ -1961,7 +1961,7 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
     }
     for (int i = 0; i < sourcefiles.count(); i++)
     {
-        if (!QFile::exists(sourcefiles.at(i)))
+        if (!QFile::exists(sourcefiles.at(i)) && sourcefiles.at(i).compare("*") != 0)
         {
             LOG_PRINT(error_e, "cannot find the file to zip '%s'\n", sourcefiles.at(i).toAscii().data());
             return false;
@@ -1994,14 +1994,29 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir)
     process.close();
 #else
     char command[1024];
-    if (junkdir)
+    if (basedir.length())
     {
-        sprintf(command, "%s -r -j %s %s >/dev/null 2>&1", ZIP_BIN, destfile.toAscii().data(), sourcefiles.join(" ").toAscii().data());
+        if (junkdir)
+        {
+            sprintf(command, "cd %s && %s -r -j %s %s >/dev/null 2>&1", basedir.toAscii().data(), ZIP_BIN, destfile.toAscii().data(), sourcefiles.join(" ").toAscii().data());
+        }
+        else
+        {
+            sprintf(command, "cd %s && %s -r %s %s >/dev/null 2>&1", basedir.toAscii().data(), ZIP_BIN, destfile.toAscii().data(), sourcefiles.join(" ").toAscii().data());
+        }
     }
     else
     {
-        sprintf(command, "%s -r %s %s >/dev/null 2>&1", ZIP_BIN, destfile.toAscii().data(), sourcefiles.join(" ").toAscii().data());
+        if (junkdir)
+        {
+            sprintf(command, "%s -r -j %s %s >/dev/null 2>&1", ZIP_BIN, destfile.toAscii().data(), sourcefiles.join(" ").toAscii().data());
+        }
+        else
+        {
+            sprintf(command, "%s -r %s %s >/dev/null 2>&1", ZIP_BIN, destfile.toAscii().data(), sourcefiles.join(" ").toAscii().data());
+        }
     }
+
     if (system(command))
     {
         LOG_PRINT(error_e, "cannot execute command: '%s'\n", command);
