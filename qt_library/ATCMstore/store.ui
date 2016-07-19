@@ -130,7 +130,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>dd.mm.yy hh:MM:ss</string>
+        <string>dd.mm.yy HH:mm:ss</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -151,7 +151,7 @@
      <item>
       <widget class="QLabel" name="labelFilter">
        <property name="text">
-        <string>Filter: [dd/MM/YYYY hh:mm:ss - dd/MM/YYYY hh:mm:ss]</string>
+        <string>Filter: [dd/MM/YYYY HH:mm:ss - dd/MM/YYYY HH:mm:ss]</string>
        </property>
       </widget>
      </item>

@@ -156,7 +156,7 @@ void trend_range::on_pushButtonOk_clicked()
 {
     LOG_PRINT(verbose_e, "actualVisibleWindowSec %d actualTzero '%s'\n",
               actualVisibleWindowSec,
-              actualTzero.toString("yy/MM/dd hh:mm:ss").toAscii().data()
+              actualTzero.toString("yy/MM/dd HH:mm:ss").toAscii().data()
               );
     
     int tmpwindow =
@@ -184,7 +184,7 @@ void trend_range::on_pushButtonOk_clicked()
     
     LOG_PRINT(verbose_e, "actualVisibleWindowSec %d actualTzero '%s'\n",
               actualVisibleWindowSec,
-              actualTzero.toString("yy/MM/dd hh:mm:ss").toAscii().data()
+              actualTzero.toString("yy/MM/dd HH:mm:ss").toAscii().data()
               );
 
     /* Y range */

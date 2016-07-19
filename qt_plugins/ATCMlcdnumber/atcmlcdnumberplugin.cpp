@@ -77,7 +77,7 @@ QString ATCMlcdnumberPlugin::domXml() const
 		" <string>ATCMlcdnumber widget</string>\n"
 		" </property>\n"
 		" <property name=\"variable\" >\n"
-		" <string></string>\n"
+		" <string notr=\"true\"></string>\n"
 		" </property>\n"
 		" <property name=\"refresh\" >\n"
 		" <number>500</number>\n"

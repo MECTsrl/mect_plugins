@@ -273,9 +273,9 @@ bool store::LoadStore(QDateTime init, QDateTime final)
                 TMPDIR,
                 filename,
                 init.date().toString("yyyy/MM/dd").toAscii().data(),
-                init.time().toString("hh:mm:ss").toAscii().data(),
+                init.time().toString("HH:mm:ss").toAscii().data(),
                 final.date().toString("yyyy/MM/dd").toAscii().data(),
-                final.time().toString("hh:mm:ss").toAscii().data()
+                final.time().toString("HH:mm:ss").toAscii().data()
                 ) != 0)
     {
         LOG_PRINT(error_e, "outputfile '%s'\n", outputfile);
@@ -607,8 +607,8 @@ void store::updateData()
         }
 
         ui->labelFilter->setText(QString("Filter: [%1 - %2]")
-                                 .arg(StoreInit.toString("yyyy/MM/dd hh:mm:ss"))
-                                 .arg(StoreFinal.toString("yyyy/MM/dd hh:mm:ss")));
+                                 .arg(StoreInit.toString("yyyy/MM/dd HH:mm:ss"))
+                                 .arg(StoreFinal.toString("yyyy/MM/dd HH:mm:ss")));
         ui->labelFilter->repaint();
 
         /* set the arrow button status in funtion of the visible items */

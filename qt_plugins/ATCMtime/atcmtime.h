@@ -10,7 +10,7 @@
 #include <QTimer>
 #include <QFrame>
 
-#define TIME_24 "hh:mm:ss"
+#define TIME_24 "HH:mm:ss"
 #define TIME_12 "hh:mm:ss ap"
 #define DEFAULT_TIME TIME_24
 

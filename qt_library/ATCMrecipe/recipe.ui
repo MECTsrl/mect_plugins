@@ -101,7 +101,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>dd.mm.yy hh:MM:ss</string>
+        <string>dd.mm.yy HH:mm:ss</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

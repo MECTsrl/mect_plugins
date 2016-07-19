@@ -91,7 +91,7 @@ QString ATCManimationPlugin::domXml() const
 			" <string>ATCManimation widget</string>\n"
 			" </property>\n"
 			" <property name=\"variable\" >\n"
-			" <string></string>\n"
+			" <string notr=\"true\"></string>\n"
 			" </property>\n"
 			" <property name=\"refresh\" >\n"
 			" <number>200</number>\n"
@@ -100,7 +100,7 @@ QString ATCManimationPlugin::domXml() const
 			" <bool>false</bool>\n"
 			" </property>\n"
 			" <property name=\"visibilityVar\" >\n"
-			" <string></string>\n"
+			" <string notr=\"true\"></string>\n"
 			" </property>\n"
 			"</widget>\n");
 }

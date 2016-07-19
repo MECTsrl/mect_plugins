@@ -27,7 +27,7 @@
 #include <QMessageBox>
 #include <unistd.h>
 
-#define TIME_SCALE
+#undef TIME_SCALE
 
 #define HORIZ_TICKS 5
 #define VERT_TICKS  4
@@ -385,23 +385,21 @@ void trend::reload()
  */
 void trend::updateData()
 {
-    LOG_PRINT(verbose_e, "UPDATE\n");
     if (this->isVisible() == false)
     {
         return;
     }
-    LOG_PRINT(verbose_e, "UPDATE\n");
+
     /* call the father update data  */
     page::updateData();
-    LOG_PRINT(verbose_e, "UPDATE\n");
+
     if ((reloading == true || _trend_data_reload_ == false ) && first_time == false)
     {
         return;
     }
-    LOG_PRINT(verbose_e, "UPDATE\n");
+
     if (force_back == true)
     {
-        LOG_PRINT(verbose_e, "UPDATE\n");
         /* select a new trend from CUSTOM_TREND_DIR directory */
         item_selector * sel;
         QString value;
@@ -472,7 +470,7 @@ void trend::updateData()
         {
             errormsg = trUtf8("No trend to show");
         }
-        LOG_PRINT(verbose_e, "UPDATE\n");
+
         actualVisibleWindowSec = 0;
         showStatus(errormsg, true);
         errormsg.clear();
@@ -480,7 +478,6 @@ void trend::updateData()
         return;
     }
 
-    LOG_PRINT(verbose_e, "UPDATE\n");
     if(first_time == true)
     {
         d_qwtplot->setGeometry(ui->frame->rect());
@@ -1367,13 +1364,23 @@ bool trend::loadFromFile(QDateTime Ti)
 bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax, int pen)
 {
     /* prepare the time axis tick */
+    //double sinint = timeScale->getBaseTime().secsTo(Tmin.time());
+    //double sfinal = timeScale->getBaseTime().secsTo(Tmax.time()
     double sinint = TzeroLoaded.secsTo(Tmin);
     double sfinal = TzeroLoaded.secsTo(Tmax);
+
     QList<double> arrayTimeTicks;
     
-    LOG_PRINT(verbose_e, "Tmin '%s' TMax '%s'\n",
-              Tmin.toString("yyyy/MM/dd hh:MM:ss").toAscii().data(),
-              Tmax.toString("yyyy/MM/dd hh:MM:ss").toAscii().data()
+    LOG_PRINT(verbose_e, "Current '%s' Tmin '%s' Tmax '%s' ymin %f ymax %f pen %d sinint %f sfinal %f TzeroLoaded %s\n",
+              QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data(),
+              Tmin.toString(DATE_TIME_FMT).toAscii().data(),
+              Tmax.toString(DATE_TIME_FMT).toAscii().data(),
+              ymin,
+              ymax,
+              pen,
+              sinint,
+              sfinal,
+              TzeroLoaded.toString().toAscii().data()
               );
 
     arrayTimeTicks << sinint;
@@ -1517,7 +1524,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     LOG_PRINT(verbose_e,"before replot\n");
     d_qwtplot->updateAxes();
     d_qwtplot->replot();
-    LOG_PRINT(verbose_e, "REPLOT!\n");
+    LOG_PRINT(verbose_e, "UPDATE AXES AND REPLOT!\n");
     
     /* update the actual date label */
     if (this->isVisible())
@@ -1941,9 +1948,9 @@ void trend::loadOrientedWindow()
     {
         LOG_PRINT(verbose_e, "Current '%s' Tmin '%s' Tmax '%s' VisibleWindowSec %d\n",
                   QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data(),
-                  actualTzero.addSecs(-VisibleWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
+                  actualTzero.addSecs(actualVisibleWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
                   actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                  VisibleWindowSec
+                  actualVisibleWindowSec
                   );
         loadWindow(
                    actualTzero.addSecs(-actualVisibleWindowSec),
@@ -1952,6 +1959,12 @@ void trend::loadOrientedWindow()
     }
     else
     {
+        LOG_PRINT(verbose_e, "Current '%s' Tmin '%s' Tmax '%s' VisibleWindowSec %d\n",
+                  QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data(),
+                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
+                  actualTzero.addSecs(actualVisibleWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
+                  actualVisibleWindowSec
+                  );
         loadWindow(
                    actualTzero,
                    actualTzero.addSecs(actualVisibleWindowSec)
@@ -2033,7 +2046,7 @@ void trend::updatePenLabel()
             ui->pushButtonPen->setText(
                         pens[actualPen].description +
                         QString(" [x:%1; y:%2]")
-                        .arg(TzeroLoaded.addSecs(pens[actualPen].x[pens[actualPen].sample - 1]).toString("hh:MM:ss"))
+                        .arg(TzeroLoaded.addSecs(pens[actualPen].x[pens[actualPen].sample - 1]).toString("HH:mm:ss"))
                     .arg(QString::number(pens[actualPen].y[pens[actualPen].sample - 1], 'f', decimal)));
         }
         else
@@ -2041,7 +2054,7 @@ void trend::updatePenLabel()
             ui->pushButtonPen->setText(
                         pens[actualPen].tag +
                         QString(" [x:%1; y:%2]")
-                        .arg(TzeroLoaded.addSecs(pens[actualPen].x[pens[actualPen].sample - 1]).toString("hh:MM:ss"))
+                        .arg(TzeroLoaded.addSecs(pens[actualPen].x[pens[actualPen].sample - 1]).toString("HH:mm:ss"))
                     .arg(QString::number(pens[actualPen].y[pens[actualPen].sample - 1], 'f', decimal)));
         }
     }
