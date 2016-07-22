@@ -210,6 +210,7 @@ void trend_option::on_pushButtonBack_clicked()
     /* force a online */
     actualVisibleWindowSec = 0;
 #endif
+    // _trend_data_reload_ = true;
     go_back();
 }
 
@@ -296,6 +297,7 @@ void trend_option::on_pushButtonChangeNew_clicked()
         QString(errormsg);
         LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg);
         reload();
+        _trend_data_reload_ = true;
     }
     else
     {
@@ -338,6 +340,7 @@ void trend_option::on_pushButtonChangeTrend_clicked()
         QString(errormsg);
         LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg);
         reload();
+        _trend_data_reload_ = true;
     }
     else
     {
@@ -545,7 +548,7 @@ void trend_option::Save(const char * fullfilename)
         }
         fclose(fp);
         LOG_PRINT(verbose_e, "Saved '%s'\n", fullfilename);
-        QMessageBox::information(this,trUtf8("Save"), trUtf8("the trend configuration %1 is saved to %2").arg(_actual_trend_).arg(fullfilename));
+        QMessageBox::information(this,trUtf8("Save"), trUtf8("the trend configuration '%1' is saved into file '%2'").arg(_actual_trend_).arg(QFileInfo(fullfilename).baseName()));
     }
     /* force a reload */
     _trend_data_reload_ = true;
@@ -620,7 +623,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         /* unmount USB key */
         USBumount();
         LOG_PRINT(verbose_e, "DOWNLOADED\n");
-        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
+        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).baseName()));
     }
 }
 

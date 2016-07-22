@@ -2,311 +2,632 @@
 #define __USE_XOPEN
 #define _GNU_SOURCE
 #include <time.h>
+
 #include <string.h>
 #include <stdlib.h>
 #include <dirent.h>
 #include <ctype.h>
+#include <sys/stat.h>
+
 #ifdef STANDALONE
-#define LOG_PRINT(level, format, args...)
+#define LOG_PRINT(level, format, args...) \
+{ \
+    fprintf (stderr, "[%s:%s:%d]", __FILE__, __func__, __LINE__); \
+    fprintf (stderr, format , ## args); \
+    fflush(stderr); \
+}
+#define CROSS_TABLE        LOCAL_ETC_DIR"/Crosstable.csv"
+#define TAG_LEN   (16 + 1)
+#define DB_SIZE_ELEM 5472
+#define TAG_STORED_SLOW    'S'
+#define TAG_STORED_FAST    'F'
+#define TAG_STORED_ON_VAR  'V'
+#define TAG_STORED_ON_SHOT 'X'
 #else
 #include "app_logprint.h"
+#include "utility.h"
+#include "common.h"
 #endif
 
-#define MAX_FIELDS_NB 128
 #define LINE_SIZE 1024
-#define SIGN_APP "/usr/bin/sign"
-#define UNDEFINED "UNDEFINED"
+#define STR_LEN 256
+#define SEPARATOR ";"
+#define ALL_VARIABLE "Total.csv"
 
-#define LINE2STR(line) \
-{ \
-    if (strchr(line, '\r')) \
-{ \
-    *strchr(line, '\r') = '\0'; \
-    } \
-    else if (strchr(line, '\n')) \
-{ \
-    *strchr(line, '\n') = '\0'; \
-    } \
-    }
+struct dirent **filelist = NULL;
+int fcount = -1;
+int actualfcount = -1;
 
-char FieldsMap[MAX_FIELDS_NB][LINE_SIZE];
-int  FilterFlags[MAX_FIELDS_NB];
+char ** logHeader = NULL;
+int logHeaderSize = 0;
 
-int substitute(const char * namesrc, char * namedst, const char * substr1, const char * substr2)
+char ** ctHeader = NULL;
+int ctHeaderSize = 0;
+
+char ** filterHeader = NULL;
+int filterHeaderSize = 0;
+
+char ** outstruct = NULL;
+
+int maplog2header[DB_SIZE_ELEM];
+
+char ** allocMatrix(int m , int n)
 {
-    unsigned int i, j = 0;
-    for (i = 0; i < strlen(namesrc); i++)
+    int i;
+    char ** matrix = calloc(m, sizeof (char **));
+    for (i = 0; i < m; i++)
     {
-        if (strncmp(&(namesrc[i]), substr1, strlen(substr1)) == 0)
-        {
-            strcpy(&(namedst[j]), substr2);
-            j+=strlen(substr2);
-            i+=strlen(substr1) - 1;
-        }
-        else
-        {
-            namedst[j] = namesrc[i];
-            j++;
-        }
+        matrix[i] = calloc(n, sizeof (char *));
     }
-    namedst[j] = '\0';
-    return 0;
+    return matrix;
 }
 
-int LoadFilterFields(const char * fieldsfile, char * titleline, int * filterflags)
+void freeMatrix(char ** matrix , int m)
 {
-    char field[LINE_SIZE];
-    char token[LINE_SIZE];
-    int j = 0;
-    int k = 0;
-    char * p = NULL;
-    int found = 0;
-
-    if (fieldsfile[0] == '\0')
+    int i;
+    for (i = 0; i < m; i++)
     {
-        LOG_PRINT(verbose_e, "No filter loaded. Load all logs\n");
-        for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
-        {
-            if (*p == ';')
-            {
-                p++;
-            }
-            if (*p =='\0')
-            {
-                break;
-            }
-            if (j > MAX_FIELDS_NB)
-            {
-                LOG_PRINT(error_e, "Too many fields %d vs %d\n", j, MAX_FIELDS_NB);
-                return 1;
-            }
-            strcpy(token, p);
-            if (strstr(token, ";") != NULL)
-            {
-                *strstr(token, ";") = '\0';
-            }
-            for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-            token[k + 1] = '\0';
-            for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-            if (k > 0)
-            {
-                strcpy(token, &(token[k]));
-            }
-            filterflags[j] = 1;
-            strcpy(FieldsMap[j], token);
-            LOG_PRINT(verbose_e, "########## add new field %d %s\n", j, FieldsMap[j]);
+        free(matrix[i]);
+    }
+    free(matrix);
+}
+
+#ifdef STANDALONE
+char *strtok_csv(char *string, const char *separators, char **savedptr)
+{
+    char *p, *s;
+
+    if (separators == NULL || savedptr == NULL) {
+        return NULL;
+    }
+    if (string == NULL) {
+        p = *savedptr;
+        if (p == NULL) {
+            return NULL;
         }
+    } else {
+        p = string;
+    }
+
+    s = strstr(p, separators);
+    if (s == NULL) {
+        *savedptr = NULL;
+        s = p + strlen(p);
     }
     else
     {
-        FILE * fpfieldsfile = fopen (fieldsfile, "r");
-        if (fpfieldsfile == NULL)
+        *s = 0;
+        *savedptr = s + 1;
+    }
+
+    // remove spaces at head
+    while (p < s && isspace(*p)) {
+        ++p;
+    }
+    // remove spaces at tail
+    --s;
+    while (s > p && isspace(*s)) {
+        *s = 0;
+        --s;
+    }
+    return p;
+}
+#endif
+
+void finishLogRead()
+{
+    int i =  0;
+    for (i = 0; i < DB_SIZE_ELEM; i++)
+    {
+        maplog2header[i] = -1;
+    }
+    if (ctHeader)
+    {
+        freeMatrix(ctHeader, DB_SIZE_ELEM);
+        ctHeaderSize = 0;
+        ctHeader = NULL;
+    }
+    if (filterHeader)
+    {
+        if (outstruct)
         {
-            LOG_PRINT(error_e, "cannot open field file '%s'\n", fieldsfile);
-            return 1;
+            freeMatrix(outstruct, filterHeaderSize);
+            outstruct = NULL;
+        }
+        freeMatrix(filterHeader, DB_SIZE_ELEM);
+        filterHeaderSize = 0;
+        filterHeader = NULL;
+    }
+    if (logHeader)
+    {
+        freeMatrix(logHeader, DB_SIZE_ELEM);
+        logHeaderSize = 0;
+        logHeader = NULL;
+    }
+    for(i = 0; i < fcount; i++)
+    {
+            free(filelist[i]);
+    }
+
+    free(filelist);
+    filelist = NULL;
+    fcount = 0;
+}
+
+int getStoreCtHeader(char ** header)
+{
+    FILE * fp;
+
+    fp = fopen(CROSS_TABLE, "r");
+    if (fp == NULL)
+    {
+        LOG_PRINT(error_e, "Cannot open the CROSS_TABLE '%s'\n", CROSS_TABLE);
+        return -1;
+    }
+
+    char line[LINE_SIZE];
+    char * p, * r;
+
+    strcpy(header[0], "date");
+    strcpy(header[1], "time");
+
+    int j = 2;
+    while (fgets(line, LINE_SIZE, fp) != NULL)
+    {
+        /* Enable */
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p != NULL && atoi(p) > 0)
+        {
+            /* Store */
+            p = strtok_csv(NULL, SEPARATOR, &r);
+            if (p != NULL)
+            {
+                switch (p[0])
+                {
+                    case TAG_STORED_SLOW:
+                    case TAG_STORED_FAST:
+                    case TAG_STORED_ON_VAR:
+                    case TAG_STORED_ON_SHOT:
+                        p = strtok_csv(NULL, SEPARATOR, &r);
+                        if (p != NULL)
+                        {
+                            strcpy(header[j], p);
+                            LOG_PRINT(verbose_e, "header[%d] '%s'\n", j, header[j]);
+                            j++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    fclose(fp);
+    return j;
+}
+
+int getStoreFilter(const char * storeFilterFile, char ** header)
+{
+    FILE * fp;
+    /* if there is a filter file, extract list of stored variable into the store filter file */
+    /* if the store filter file have more variable than CROSS_TABLE stored variable
+     * give an error and ignore it
+     */
+    ctHeader = allocMatrix(DB_SIZE_ELEM, TAG_LEN);
+    if (ctHeader == NULL)
+    {
+        LOG_PRINT(error_e, "Cannot allocate ctHeader\n");
+        return -1;
+    }
+
+    int ctHeaderSize = getStoreCtHeader(ctHeader);
+    if (ctHeaderSize <= 0)
+    {
+        LOG_PRINT(info_e, "Cannot find stored variable\n");
+        return -1;
+    }
+
+    if (storeFilterFile != NULL && storeFilterFile[0] != '\0')
+    {
+        fp = fopen(storeFilterFile, "r");
+        if (fp == NULL)
+        {
+            LOG_PRINT(error_e, "Cannot open the file '%s'\n", storeFilterFile);
+            return -1;
         }
 
-        LOG_PRINT(verbose_e, "fieldsfile %s\n", fieldsfile);
-
-        while (fgets(field, LINE_SIZE, fpfieldsfile) != NULL)
+        char line[STR_LEN];
+        int j = 0;
+        char * p;
+        while (fgets(line, LINE_SIZE, fp) != NULL)
         {
-            LINE2STR(field);
-            found = 0;
-            for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
+            if (line[0] == '\0')
             {
-                if (*p == ';')
+                /* skipping empty line */
+                continue;
+            }
+            p = strchr(line, '\r');
+            if (p)
+            {
+                *p = '\0';
+            }
+            p = strchr(line, '\n');
+            if (p)
+            {
+                *p = '\0';
+            }
+            int found = 0;
+            int i;
+            for (i = 0; i < ctHeaderSize; i++)
+            {
+                if (strcmp(ctHeader[i], line) == 0)
                 {
-                    p++;
-                }
-                if (*p =='\0')
-                {
-                    break;
-                }
-                if (j > MAX_FIELDS_NB)
-                {
-                    LOG_PRINT(verbose_e, "Too many fields %d vs %d\n", j, MAX_FIELDS_NB);
-                    return 1;
-                }
-                strcpy(token, p);
-                if (strstr(token, ";") != NULL)
-                {
-                    *strstr(token, ";") = '\0';
-                }
-                for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-                token[k + 1] = '\0';
-                for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-                if (k > 0)
-                {
-                    strcpy(token, &(token[k]));
-                }
-                if (strcmp(field, token) == 0)
-                {
-                    LOG_PRINT(verbose_e, "########## add new field %d %s\n", j, field);
-                    filterflags[j] = 1;
-                    strcpy(FieldsMap[j], token);
+                    strcpy(header[j], line);
+                    LOG_PRINT(verbose_e, "header[%d] %s\n",j, header[j]);
                     found = 1;
-                }
-                else
-                {
-                    LOG_PRINT(verbose_e, "########## skipping field %d %s\n", j, field);
-                    filterflags[j] = 1;
+                    j++;
                 }
             }
             if (found == 0)
             {
-                for (; j < MAX_FIELDS_NB && FieldsMap[j][0] != '\0'; j++);
-                if (j < MAX_FIELDS_NB)
-                {
-                    strcpy(FieldsMap[j], field);
-                    LOG_PRINT(verbose_e, "add new field %d %s\n", j, field);
-                    filterflags[j] = 1;
-                }
+                LOG_PRINT(error_e, "Cannot find variable to dump\n");
+                fclose(fp);
+                return -1;
             }
         }
-        fclose(fpfieldsfile);
+        fclose(fp);
+        return j;
     }
-
-    return 0;
-}
-
-int Extract(FILE * fpin, FILE * fpout, int skipline, int * filterflags, const char * datein, const char * timein, const char * datefin, const char * timefin)
-{
-    struct tm time;
-    time_t datetimein, datetimefin;
-    char token[LINE_SIZE];
-    char line[LINE_SIZE];
-    char * p;
-    int j,k;
-    int first = 0;
-    int firstline = 1;
-
-    if (fpin == NULL || fpout == NULL)
-    {
-        return 1;
-    }
-
-    if (datein != NULL && timein != NULL && datefin != NULL && timefin != NULL)
-    {
-        /* download logs from datein timein to datefin timefin */
-        sprintf(token, "%s %s", datein, timein);
-        if(strptime(token, "%Y/%m/%d %H:%M:%S", &time) == NULL)
-        {
-            LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
-            return 1;
-        }
-        datetimein = mktime(&time);
-
-        sprintf(token, "%s %s", datefin, timefin);
-        if(strptime(token, "%Y/%m/%d %H:%M:%S",&time) == NULL)
-        {
-            LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
-            return 1;
-        }
-        datetimefin = mktime(&time);
-    }
+    /* else if there isn't a filter file put all the stored variable into the CROSS_TABLE into the filter */
+    /* for each log file into the time filter interval,
+     * extract the header */
     else
     {
-        LOG_PRINT(verbose_e, "invalid paramenters\n");
-        return 1;
+        int i;
+        for (i = 0; i < ctHeaderSize; i++)
+        {
+            strcpy(header[i], ctHeader[i]);
+        }
+        LOG_PRINT(verbose_e, "No store filter \n");
+        return ctHeaderSize;
+    }
+}
+
+int initLogRead(const char * logdir, const char * storeFilterFile, time_t ti, time_t tf, FILE ** fpin)
+{
+    struct tm tfile;
+    time_t t;
+
+    finishLogRead();
+
+    fcount = scandir(logdir, &filelist, 0, alphasort);
+
+    if (fcount <= 0)
+    {
+        // no log file
+        LOG_PRINT(info_e, "Cannot found any store file\n");
+        return -1;
     }
 
-    if (skipline == 1 && fgets(line, LINE_SIZE, fpin) != NULL)
+    for (actualfcount = 0; actualfcount < fcount; actualfcount++)
     {
-        while (fgets(line, LINE_SIZE, fpin) != NULL)
+        /* skip the '.' and '..' files */
+        if (strcmp(filelist[actualfcount]->d_name, ".") == 0 || strcmp(filelist[actualfcount]->d_name, "..") == 0)
         {
-            LINE2STR(line);
-            strcpy(token, line);
-            p = strchr(token, ';');
-            if (p == NULL)
-            {
-                LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
-                return 1;
-            }
-            *p = ' ';
-            p = strchr(token, ';');
-            if (p == NULL)
-            {
-                LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
-                return 1;
-            }
-            *p = '\0';
+            continue;
+        }
+        // yyyy_MM_dd_HH_mm_ss.log
+        // transform yyyy_MM_dd_HH_mm_ss into time_t
+        strptime (filelist[actualfcount]->d_name, "%Y_%m_%d_%H_%M_%S.log", &tfile);
+        tfile.tm_isdst = 0;
+        t = mktime(&tfile);
 
-            if(strptime(token, "%Y/%m/%d %H:%M:%S",&time) == NULL)
-            {
-                LOG_PRINT(verbose_e, "invalid time '%s'\n", token);
-                return 1;
-            }
-            if (difftime(mktime(&time), datetimefin) <= 0)
-            {
-                if (difftime(mktime(&time), datetimein) >= 0)
-                {
-                    first = 1;
-                    for (j = 0, p = line; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
-                    {
-                        if (*p == ';')
-                        {
-                            p++;
-                        }
-                        if (*p =='\0')
-                        {
-                            break;
-                        }
+        if ( t > ti )
+        {
+            actualfcount = (actualfcount > 2) ? actualfcount - 1 : actualfcount;
+            LOG_PRINT(verbose_e, "found file '%s'\n", filelist[actualfcount]->d_name);
 
-                        if (filterflags[j] == 1)
-                        {
-                            strcpy(token, p);
-                            if (strstr(token, ";") != NULL)
-                            {
-                                *strstr(token, ";") = '\0';
-                            }
-                            for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-                            token[k + 1] = '\0';
-                            for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-                            if (k > 0)
-                            {
-                                strcpy(token, &(token[k]));
-                            }
-                            if (first == 0)
-                            {
-                                fprintf(fpout, "; ");
-                            }
-                            fprintf(fpout, "%s", token);
-                            first = 0;
-                        }
-                    }
-                    for (; j < MAX_FIELDS_NB && FieldsMap[j][0] != '\0'; j++)
-                    {
-                        fprintf(fpout, "; ");
-                        if (firstline == 1 && skipline == 0)
-                        {
-                            fprintf(fpout, "%s", FieldsMap[j]);
-                        }
-                        else
-                        {
-                            fprintf(fpout, "%s", UNDEFINED);
-                        }
-                    }
-                    fprintf(fpout, "\n");
+            filterHeader = allocMatrix(DB_SIZE_ELEM, TAG_LEN);
+            if (filterHeader == NULL)
+            {
+                LOG_PRINT(error_e, "Cannot allocate filterHeader\n");
+                return -1;
+            }
+            filterHeaderSize = getStoreFilter(storeFilterFile, filterHeader);
+            if (filterHeaderSize <= 0)
+            {
+                LOG_PRINT(error_e, "Cannot find variable to dump\n");
+                return -1;
+            }
+
+            /* read the store filter and intersecate it with ctHeader */
+
+            logHeader = allocMatrix(DB_SIZE_ELEM, TAG_LEN);
+            if (logHeader == NULL)
+            {
+                LOG_PRINT(error_e, "Cannot allocate logHeader\n");
+                return -1;
+            }
+
+            outstruct = allocMatrix(filterHeaderSize, TAG_LEN);
+            if (outstruct == NULL)
+            {
+                LOG_PRINT(error_e, "Cannot allocate outstruct\n");
+                return -1;
+            }
+
+            *fpin = NULL;
+
+            return 0;
+        }
+    }
+
+    return -1;
+}
+
+int getStoreLogHeader(FILE * fp, char ** logHeader)
+{
+    char line[LINE_SIZE];
+    char * p, * r;
+    if (fgets(line, LINE_SIZE, fp) == NULL)
+    {
+        LOG_PRINT(error_e, "Cannot get data\n");
+        return -1;
+    }
+    int i = 0;
+    p = strtok_csv(line, SEPARATOR, &r);
+    do
+    {
+        /* fill outstruct  in function of header */
+        strcpy(logHeader[i], p);
+        i++;
+    }
+    while ((p = strtok_csv(NULL, SEPARATOR, &r)));
+    return i;
+}
+
+int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** outstruct)
+{
+    static struct stat file_stat_old;
+    char line[LINE_SIZE];
+    if (fcount <= 0 || filelist == NULL || outstruct == NULL)
+    {
+        LOG_PRINT(error_e, "no data to read\n");
+        return -1;
+    }
+    if (*fpin == NULL || feof(*fpin))
+    {
+        char fullpath[FILENAME_MAX];
+        if (*fpin != NULL)
+        {
+            fclose(*fpin);
+            *fpin = NULL;
+            if (actualfcount + 1 < fcount)
+            {
+                actualfcount ++;
+                sprintf(fullpath,"%s/%s", logdir, filelist[actualfcount]->d_name);
+                if (stat(fullpath, &file_stat_old) != 0) {
+                    LOG_PRINT(error_e, "cannot stat '%s'\n",fullpath);
+                    return 1;
                 }
+
+                *fpin = fopen(fullpath, "r");
+                if (*fpin == NULL)
+                {
+                    LOG_PRINT(error_e, "cannot open '%s'\n",fullpath);
+                    return -1;
+                }
+                LOG_PRINT(verbose_e, "open '%s'\n",fullpath);
             }
             else
             {
-                break;
+                /* here the code to reopen the las log file and reload the news */
+                sprintf(fullpath,"%s/%s", logdir, filelist[actualfcount]->d_name);
+                *fpin = fopen(fullpath, "r");
+                LOG_PRINT(error_e, "check for some news in '%s'\n", fullpath);
+                struct stat file_stat;
+                if (stat(fullpath, &file_stat) != 0) {
+                    LOG_PRINT(error_e, "cannot stat '%s'\n",fullpath);
+                    return 1;
+                }
+                if (file_stat.st_mtime > file_stat_old.st_mtime)
+                {
+                    fpos_t pos;
+                    /* save the actual position */
+                    if (fgetpos(*fpin, &pos))
+                    {
+                        LOG_PRINT(error_e, "cannot get the actual position\n");
+                        return -1;
+                    }
+                    LOG_PRINT(verbose_e, "news in '%s': %ld %ld\n", fullpath, file_stat.st_mtime, file_stat_old.st_mtime);
+                    memcpy(&file_stat_old, &file_stat, sizeof(file_stat));
+                    /* close and re open the file */
+                    fclose(*fpin);
+                    *fpin = fopen(fullpath, "r");
+                    if (*fpin == NULL)
+                    {
+                        LOG_PRINT(error_e, "cannot open file '%s'\n", fullpath);
+                        return -1;
+                    }
+                    LOG_PRINT(verbose_e, "open '%s'\n",fullpath);
+                    /* go to the actual position */
+                    if (fsetpos(*fpin, &pos))
+                    {
+                        LOG_PRINT(error_e, "cannot set the actual position\n");
+                        return -1;
+                    }
+                    /* check if the file is not finished */
+                    if (feof(*fpin))
+                    {
+                        LOG_PRINT(verbose_e, "File finished\n");
+                        return -1;
+                    }
+                }
+                else
+                {
+                    /* no news, finish */
+                    LOG_PRINT(verbose_e, "no news: finished\n");
+                    return -1;
+                }
             }
-            firstline = 0;
+        }
+        else
+        {
+            sprintf(fullpath,"%s/%s", logdir, filelist[actualfcount]->d_name);
+            if (stat(fullpath, &file_stat_old) != 0) {
+                LOG_PRINT(error_e, "cannot stat '%s'\n",fullpath);
+                return 1;
+            }
+
+            *fpin = fopen(fullpath, "r");
+            if (*fpin == NULL)
+            {
+                LOG_PRINT(error_e, "cannot open file '%s'\n", fullpath);
+                return -1;
+            }
+            LOG_PRINT(verbose_e, "open '%s'\n",fullpath);
+        }
+        //LOG_PRINT(error_e, "Opening new file '%s'\n", fullpath);
+        int i,j;
+        int variablesFound = 0;
+        logHeaderSize = getStoreLogHeader(*fpin, logHeader);
+
+        for (i = 0; i < DB_SIZE_ELEM; i++)
+        {
+            maplog2header[i] = -1;
+        }
+
+        /* mette in ct header il numero di colonna dei log header */
+        for (i = 0; i < logHeaderSize; i++)
+        {
+            for (j = 0; j < filterHeaderSize; j++)
+            {
+                if (strcmp(logHeader[i], filterHeader[j]) == 0)
+                {
+                    maplog2header[i] = j;
+                    variablesFound++;
+                    break;
+                }
+            }
+            if (j >= filterHeaderSize)
+            {
+                LOG_PRINT(warning_e, "Parsing file '%s': Cannot find '%s' into the CT\n", fullpath, logHeader[i]);
+            }
+        }
+        if (variablesFound == 0)
+        {
+            LOG_PRINT(error_e, "no variables found\n");
+            return -1;
         }
     }
+    if (fgets(line, LINE_SIZE, *fpin) != NULL)
+    {
+        struct tm tfile;
+        time_t t;
+        char * p, * r;
+        char tmp[256];
+
+        /*date*/
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p == NULL)
+        {
+            LOG_PRINT(error_e, "Cannot get date token\n");
+            return -1;
+        }
+        strcpy(outstruct[0], p);
+        sprintf (tmp, "%s_", p);
+
+        /*time*/
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL)
+        {
+            LOG_PRINT(error_e, "Cannot get time token\n");
+            return -1;
+        }
+        strcpy(outstruct[1], p);
+        strcat (tmp, p);
+
+        strptime (tmp, "%Y/%m/%d_%H:%M:%S", &tfile);
+        tfile.tm_isdst = 0;
+        t = mktime(&tfile);
+        if ( ti > t )
+        {
+            /* to early */
+            LOG_PRINT(verbose_e, "early\n");
+            return 1;
+        }
+        if ( tf < t )
+        {
+            /* to late */
+            LOG_PRINT(verbose_e, "late %ld %ld %ld\n", ti, t, tf);
+            return -1;
+        }
+
+        int i = 2;
+        while ((p = strtok_csv(NULL, SEPARATOR, &r)))
+        {
+            /* fill outstruct  in function of header */
+            if (maplog2header[i]>=0)
+            {
+                if (maplog2header[i] < filterHeaderSize)
+                {
+                    strcpy(outstruct[maplog2header[i]], p);
+                }
+            }
+            i++;
+        }
+        return 0;
+    }
+    LOG_PRINT(verbose_e, "done\n");
+    return 1;
+}
+
+int dumpLogHeder(FILE * fpout)
+{
+    int i;
+    if (fpout == NULL)
+    {
+        return -1;
+    }
+    for (i = 0; i < filterHeaderSize; i++)
+    {
+        if (i > 0)
+        {
+            fprintf(fpout, ";");
+        }
+        fprintf(fpout, "%s", filterHeader[i]);
+    }
+    fprintf(fpout, "\n");
     return 0;
 }
+
+int dumpLogRead(FILE * fpout, char ** outstruct)
+{
+    int i;
+    if (fpout == NULL)
+    {
+        return -1;
+    }
+    if (filterHeaderSize <= 0)
+    {
+        return -1;
+    }
+    for (i = 0; i < filterHeaderSize; i++)
+    {
+        if (i > 0)
+        {
+            fprintf(fpout, ";");
+        }
+        fprintf(fpout, "%s", outstruct[i]);
+    }
+    fprintf(fpout, "\n");
+    return 0;
+}
+
+
 #ifdef STANDALONE
 int main (int argc, char * argv[])
-#else
-int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, const char * fieldsfile, const char * datein, const char * timein, const char * datefin, const char * timefin)
-#endif
 {
-    int retval;
-    LOG_PRINT(verbose_e, "fieldsfile %s logdir %s outdir %s\n", fieldsfile, logdir, outdir);
-    FILE * fpin = NULL, * fpout = NULL;
 #ifdef STANDALONE
     char * outdir = NULL, * logdir = NULL, * fieldsfile = NULL;
     char * datein = NULL, * timein = NULL, * datefin = NULL, * timefin = NULL;
@@ -314,558 +635,133 @@ int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, 
 #else
     outFileName[0] = '\0';
 #endif
-    char token[LINE_SIZE] = "";
-#ifdef SIGN_APP
-    char command[LINE_SIZE] = "";
-#endif
-    char line[LINE_SIZE] = "";
-    char tmp[LINE_SIZE] = "";
-    char titleline[LINE_SIZE] = "";
-    char inFullPathFileName[LINE_SIZE] = "";
-    char outFullPathFileName[LINE_SIZE] = "";
-    int i, j, k;
-    struct dirent **filelist = NULL;
-    int fcount = -1;
-    struct tm mytime;
-    time_t datetimein, datetimefin;
-    int first = 1;
-    int firstline = 0;
+    char outFullPathFileName[FILENAME_MAX];
+    struct tm tmp_ti, tmp_tf;
+    time_t ti, tf;
+    char tmp[256];
+    FILE * fpin = NULL, * fpout = NULL;
 
 #ifdef STANDALONE
-    char empty[2] = ""
+    char empty[2] = "";
     switch (argc)
     {
-    case 4:
-        logdir     = argv[1];
-        outdir     = argv[2];
-        if (strcmp(argv[3], ALL_VARIABLE) == 0)
-        {
-            fieldsfile = empty;
-        }
-        break;
-    case 5:
-        logdir     = argv[1];
-        outdir     = argv[2];
-        if (strcmp(argv[3], ALL_VARIABLE) == 0)
-        {
-            fieldsfile = empty;
-        }
-        datein     = argv[4];
-        break;
-    case 6:
-        logdir     = argv[1];
-        outdir     = argv[2];
-        if (strcmp(argv[3], ALL_VARIABLE) == 0)
-        {
-            fieldsfile = empty;
-        }
-        datein     = argv[4];
-        datefin    = argv[5];
-        break;
-    case 8:
-        logdir     = argv[1];
-        outdir     = argv[2];
-        if (strcmp(argv[3], ALL_VARIABLE) == 0)
-        {
-            fieldsfile = empty;
-        }
-        datein     = argv[4];
-        timein     = argv[5];
-        datefin    = argv[6];
-        timefin    = argv[7];
-        break;
-    default:
-        LOG_PRINT(verbose_e, "%d vs 8\n", argc);
-        LOG_PRINT(verbose_e, "Usage: %s <logdir> <outdir> <fieldsfile>\n", argv[0]);
-        LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein>\n", argv[0]);
-        LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein> <datefin>\n", argv[0]);
-        LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein> <timein> <datefin> <timefin>\n", argv[0]);
-        return 1;
-        break;
-    }
-#endif
-
-    fcount = scandir(logdir, &filelist, 0, alphasort);
-
-    LOG_PRINT(verbose_e, "fieldsfile %s logdir %s fcount %d\n", fieldsfile, logdir, fcount);
-
-    if (fcount < 0) {
-        perror(logdir);
-        retval = 1;
-        goto exit_function;
-    }
-
-    memset(FieldsMap, 0x0, MAX_FIELDS_NB * LINE_SIZE * sizeof(char));
-    memset(FilterFlags, 0x0, MAX_FIELDS_NB * sizeof(int));
-
-    /* extract the title line */
-    for (i = fcount - 1; i >= 0; i--)
-    {
-        /* skip the '.' and '..' files */
-        if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0)
-        {
-            sprintf(inFullPathFileName, "%s/%s", logdir, filelist[i]->d_name);
-
-            LOG_PRINT(verbose_e, "%s\n", inFullPathFileName);
-            fpin = fopen(inFullPathFileName, "r");
-            if (fpin)
+        case 4:
+            logdir     = argv[1];
+            outdir     = argv[2];
+            if (strcmp(argv[3], ALL_VARIABLE) == 0)
             {
-                /* extract the selected columns from the actual log file */
-                if (fgets(titleline, LINE_SIZE, fpin) == NULL)
-                {
-                    LINE2STR(titleline);
-                    LOG_PRINT(verbose_e, "Cannot read title line from '%s'\n", inFullPathFileName);
-                    fclose(fpin);
-                    continue;
-                }
-                else
-                {
-                    fclose(fpin);
-                    break;
-                }
+                fieldsfile = empty;
             }
-        }
-    }
-
-    /* load the filter file */
-    if (i < 0 || fpin == NULL)
-    {
-        LOG_PRINT(verbose_e, "no file %s.\n", inFullPathFileName);
-        retval = 2;
-        goto exit_function;
-    }
-
-    LOG_PRINT(verbose_e, "fieldsfile %s logdir %s fcount %d\n", fieldsfile, logdir, fcount);
-
-    if (strlen(titleline) == 0)
-    {
-        LOG_PRINT(verbose_e, "Cannot read title line\n");
-        retval = 3;
-        goto exit_function;
-    }
-
-    /* load the filter file */
-    if (LoadFilterFields(fieldsfile, titleline, FilterFlags) != 0)
-    {
-        LOG_PRINT(verbose_e, "invalid fields file '%s'\n", fieldsfile);
-        retval = 5;
-        goto exit_function;
-    }
-
-    /* daily logs */
-    if (datein != NULL && timein == NULL && timefin == NULL)
-    {
-        LOG_PRINT(verbose_e, "DAILY\n %s -> %s\n", datein, datefin);
-        if (datefin == NULL)
-        {
-            datefin = datein;
-        }
-        sprintf(tmp, "%s 23:59:59", datefin);
-        if(strptime(tmp, "%Y/%m/%d %H:%M:%S", &mytime) == NULL)
-        {
-            LOG_PRINT(verbose_e, "invalid time '%s'\n", datefin);
-            retval = 6;
-            goto exit_function;
-        }
-        datetimefin = mktime(&mytime);
-
-        sprintf(tmp, "%s 00:00:00", datein);
-        if(strptime(tmp, "%Y/%m/%d %H:%M:%S", &mytime) == NULL)
-        {
-            LOG_PRINT(verbose_e, "invalid time '%s'\n", datein);
-            retval = 7;
-            goto exit_function;
-        }
-        datetimein = mktime(&mytime);
-
-        while (difftime(datetimefin, datetimein) > 0)
-        {
-            for(i = 0; i < fcount; i++)
+            break;
+        case 5:
+            logdir     = argv[1];
+            outdir     = argv[2];
+            if (strcmp(argv[3], ALL_VARIABLE) == 0)
             {
-                if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0 && strncmp(tmp, filelist[i]->d_name, strlen(tmp)) == 0)
-                {
-                    sprintf(inFullPathFileName, "%s/%s", logdir, filelist[i]->d_name);
-                    fpin = fopen(inFullPathFileName, "r");
-                    if (fpin)
-                    {
-                        /* creating the name of the output file */
-                        char * p = strrchr(fieldsfile, '/' );
-                        if (p)
-                        {
-                            strcpy(token, p + 1);
-                        }
-                        else
-                        {
-                            strcpy(token, fieldsfile);
-                        }
-                        p = strrchr(token, '.' );
-                        if (p)
-                        {
-                            *p = '\0';
-                        }
-                        /* daily logs */
-
-                        char tmp[1024];
-                        sprintf(tmp, "%s", datein);
-                        substitute(tmp, outFileName, "/", "_");
-                        strcpy(tmp, outFileName);
-                        substitute(tmp, outFileName, ":", "_");
-
-                        sprintf(outFileName, "%s.log", tmp );
-                        sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
-                        LOG_PRINT(verbose_e, "DAILY, Outout file '%s'\n", outFullPathFileName);
-
-
-                        fpout = fopen(outFullPathFileName, "w");
-                        if (fpout == NULL)
-                        {
-                            LOG_PRINT(verbose_e, "Cannot open '%s'\n", outFullPathFileName);
-                            retval = 8;
-                            goto exit_function;
-                        }
-#ifdef STANDALONE
-                        fprintf(stdout, "%s\n", outFullPathFileName);
-#endif
-                        /* extract the selected columns from the actual log file */
-                        while (fgets(line, LINE_SIZE, fpin) != NULL)
-                        {
-                            LINE2STR(line);
-                            first = 1;
-                            for (j = 0, p = line; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
-                            {
-                                if (*p == ';')
-                                {
-                                    p++;
-                                }
-                                if (*p =='\0')
-                                {
-                                    break;
-                                }
-
-                                if (FilterFlags[j] == 1)
-                                {
-                                    strcpy(token, p);
-                                    if (strstr(token, ";") != NULL)
-                                    {
-                                        *strstr(token, ";") = '\0';
-                                    }
-                                    for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-                                    token[k + 1] = '\0';
-                                    for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-                                    if (k > 0)
-                                    {
-                                        strcpy(token, &(token[k]));
-                                    }
-                                    if (first == 0)
-                                    {
-                                        fprintf(fpout, "; ");
-                                    }
-                                    fprintf(fpout, "%s", token);
-                                    first = 0;
-                                }
-                            }
-                            fprintf(fpout, "\n");
-                        }
-                        fclose(fpout);
-                        fclose(fpin);
-#ifdef SIGN_APP
-                        /* create the sign file for the actual extracted log file */
-                        sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
-                        if (system(command) != 0)
-                        {
-                            LOG_PRINT(verbose_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
-                            retval = 9;
-                            goto exit_function;
-                        }
-#ifdef STANDALONE
-                        fprintf(stdout, "%s.sign\n", outFullPathFileName);
-#endif
-#endif
-                    }
-                    else
-                    {
-                        LOG_PRINT(verbose_e, "Warning cannot open field file '%s'\n", inFullPathFileName);
-                    }
-                }
+                fieldsfile = empty;
             }
-            datetimein+=(24*60*60);
-            memcpy(&mytime, localtime(&datetimein), sizeof(mytime));
-        }
-    }
-    /* all logs */
-    else if (datein == NULL && timein == NULL && datefin == NULL && timefin == NULL)
-    {
-        LOG_PRINT(verbose_e, "ALL\n");
-        for(i = 0; i < fcount; i++)
-        {
-            /* skip the '.' and '..' files */
-            if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0)
+            datein     = argv[4];
+            break;
+        case 6:
+            logdir     = argv[1];
+            outdir     = argv[2];
+            if (strcmp(argv[3], ALL_VARIABLE) == 0)
             {
-                sprintf(inFullPathFileName, "%s/%s", logdir, filelist[i]->d_name);
-                fpin = fopen(inFullPathFileName, "r");
-                if (fpin)
-                {
-                    /* creating the name of the output file */
-                    char * p = strrchr(fieldsfile, '/' );
-                    if (p)
-                    {
-                        strcpy(token, p + 1);
-                    }
-                    else
-                    {
-                        strcpy(token, fieldsfile);
-                    }
-                    p = strrchr(token, '.' );
-                    if (p)
-                    {
-                        *p = '\0';
-                    }
-                    /* all logs */
-                    strcpy(outFileName, filelist[i]->d_name);
-                    p = strrchr(outFileName, '.' );
-                    if (p)
-                    {
-                        *p = '\0';
-                    }
-                    char tmp[1024];
-                    sprintf(tmp, "%s", token);
-                    substitute(tmp, outFileName, "/", "_");
-                    strcpy(tmp, outFileName);
-                    substitute(tmp, outFileName, ":", "_");
-
-                    sprintf(outFileName, "%s.log", tmp );
-                    sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
-                    LOG_PRINT(verbose_e, "ALL, Outout file '%s'\n", outFullPathFileName);
-
-                    fpout = fopen(outFullPathFileName, "w");
-                    if (fpout == NULL)
-                    {
-                        LOG_PRINT(verbose_e, "Cannot open '%s'\n", outFullPathFileName);
-                        fclose(fpin);
-                        retval = 10;
-                        goto exit_function;
-                    }
-#ifdef STANDALONE
-                    fprintf(stdout, "%s\n", outFullPathFileName);
-#endif
-                    /* extract the selected columns from the actual log file */
-                    while (fgets(line, LINE_SIZE, fpin) != NULL)
-                    {
-                        LINE2STR(line);
-                        first = 1;
-                        for (j = 0, p = line; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
-                        {
-                            if (*p == ';')
-                            {
-                                p++;
-                            }
-                            if (*p =='\0')
-                            {
-                                break;
-                            }
-
-                            if (FilterFlags[j] == 1)
-                            {
-                                strcpy(token, p);
-                                if (strstr(token, ";") != NULL)
-                                {
-                                    *strstr(token, ";") = '\0';
-                                }
-                                for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-                                token[k + 1] = '\0';
-                                for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-                                if (k > 0)
-                                {
-                                    strcpy(token, &(token[k]));
-                                }
-                                if (first == 0)
-                                {
-                                    fprintf(fpout, "; ");
-                                }
-                                fprintf(fpout, "%s", token);
-                                first = 0;
-                            }
-                        }
-                        if (first == 0)
-                        {
-                            fprintf(fpout, "\n");
-                        }
-                    }
-                    fclose(fpout);
-                    fclose(fpin);
-#ifdef SIGN_APP
-                    /* create the sign file for the actual extracted log file */
-                    sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
-                    if (system(command) != 0)
-                    {
-                        LOG_PRINT(verbose_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
-                        retval = 11;
-                        goto exit_function;
-                    }
-#ifdef STANDALONE
-                    fprintf(stdout, "%s.sign\n", outFullPathFileName);
-#endif
-#endif
-                }
+                fieldsfile = empty;
             }
-        }
-    }
-    /* time filtered */
-    else if (datein != NULL && timein != NULL && datefin != NULL && timefin != NULL)
-    {
-        LOG_PRINT(verbose_e, "TIME %s %s -> %s %s\n", datein, timein, datefin, timefin);
-        int skipline = 0;
-
-        /* extract the log file */
-        sprintf(tmp, "%s 00:00:00", datefin);
-        if(strptime(tmp, "%Y/%m/%d %H:%M:%S", &mytime) == NULL)
-        {
-            LOG_PRINT(verbose_e, "invalid time '%s'\n", datefin);
-            retval = 12;
-            goto exit_function;
-        }
-        datetimefin = mktime(&mytime);
-
-        sprintf(tmp, "%s 00:00:00", datein);
-        if(strptime(tmp, "%Y/%m/%d %H:%M:%S", &mytime) == NULL)
-        {
-            LOG_PRINT(verbose_e, "invalid time '%s'\n", datein);
-            retval = 13;
-            goto exit_function;
-        }
-        datetimein = mktime(&mytime);
-
-        /* creating the name of the output file */
-        /* time filtered */
-
-        char tmp[1024];
-        sprintf(tmp, "%s_%s-%s_%s.log", datein, timein, datefin, timefin);
-        substitute(tmp, outFileName, "/", "_");
-        strcpy(tmp, outFileName);
-        substitute(tmp, outFileName, ":", "_");
-        sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
-        LOG_PRINT(verbose_e, "FILTERED, Outout file '%s'\n", outFullPathFileName);
-
-        fpout = fopen(outFullPathFileName, "w");
-        if (fpout == NULL)
-        {
-            LOG_PRINT(verbose_e, "cannot open file '%s'\n", outFullPathFileName);
-            retval = 14;
-            goto exit_function;
-        }
-#ifdef STANDALONE
-        fprintf(stdout, "%s\n", outFullPathFileName);
-#endif
-        while (datetimefin >= datetimein)
-        {
-            strftime(tmp, sizeof(tmp), "%Y_%m_%d", &mytime);
-            LOG_PRINT(verbose_e, "%s\n", tmp );
-            for(i = 0; i < fcount; i++)
+            datein     = argv[4];
+            datefin    = argv[5];
+            break;
+        case 8:
+            logdir     = argv[1];
+            outdir     = argv[2];
+            if (strcmp(argv[3], ALL_VARIABLE) == 0)
             {
-                if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0 && strncmp(tmp, filelist[i]->d_name, strlen(tmp)) == 0)
-                {
-                    sprintf(inFullPathFileName, "%s/%s", logdir, filelist[i]->d_name);
-                    fpin = fopen(inFullPathFileName, "r");
-
-                    if (fpin)
-                    {
-                        if (skipline == 0)
-                        {
-                            skipline = 1;
-                            char * p;
-                            for (j = 0, p = titleline; j < MAX_FIELDS_NB && p != NULL; j++, p = strchr(p, ';'))
-                            {
-                                if (*p == ';')
-                                {
-                                    p++;
-                                }
-                                if (*p =='\0')
-                                {
-                                    break;
-                                }
-
-                                if (FilterFlags[j] == 1)
-                                {
-                                    strcpy(token, p);
-                                    LOG_PRINT(verbose_e, "token %s, p %s", token, p);
-                                    if (strstr(token, ";") != NULL)
-                                    {
-                                        *strstr(token, ";") = '\0';
-                                    }
-                                    for (k = strlen(token) - 1; k > 0 && isspace(token[k]); k--);
-                                    token[k + 1] = '\0';
-                                    for (k = 0; (unsigned int) k < strlen(token) && isspace(token[k]); k++);
-                                    if (k > 0)
-                                    {
-                                        strcpy(token, &(token[k]));
-                                    }
-                                    fprintf(fpout, "%s", token);
-                                    if (firstline == 0)
-                                    {
-                                        fprintf(fpout, "; ");
-                                    }
-
-                                    LOG_PRINT(verbose_e, "su file %s\n", token);
-                                    firstline = 0;
-                                }
-                            }
-                            fprintf(fpout, "\n");
-
-                            //occorre filtrare anche la riga di titolo
-                            //fprintf(fpout, "%s", titleline);
-                        }
-
-                        /* open the log file and filter by time and by field */
-                        if (Extract(fpin, fpout, skipline, FilterFlags, datein, timein, datefin, timefin) != 0)
-                        {
-                            LOG_PRINT(verbose_e, "Error\n");
-                            retval = 15;
-                            goto exit_function;
-                        }
-                        fclose(fpin);
-                    }
-                    else
-                    {
-                        LOG_PRINT(verbose_e,"Cannot open %s\n", inFullPathFileName);
-                    }
-                }
+                fieldsfile = empty;
             }
-            datetimein+=(24*60*60);
-            memcpy(&mytime, localtime(&datetimein), sizeof(mytime));
-        }
-        fclose(fpout);
-#ifdef SIGN_APP
-        /* create the sign file for the actual extracted log file */
-        sprintf(command, "%s %s | cut -d\\  -f1 > %s.sign", SIGN_APP, outFullPathFileName, outFullPathFileName);
-        if (system(command) != 0)
-        {
-            LOG_PRINT(verbose_e, "cannot create sign file '%s.sign'\n", outFullPathFileName);
-            retval = 16;
-            goto exit_function;
-        }
-#ifdef STANDALONE
-        fprintf(stdout, "%s.sign\n", outFullPathFileName);
+            datein     = argv[4];
+            timein     = argv[5];
+            datefin    = argv[6];
+            timefin    = argv[7];
+            break;
+        default:
+            LOG_PRINT(verbose_e, "%d vs 8\n", argc);
+            LOG_PRINT(verbose_e, "Usage: %s <logdir> <outdir> <fieldsfile>\n", argv[0]);
+            LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein>\n", argv[0]);
+            LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein> <datefin>\n", argv[0]);
+            LOG_PRINT(verbose_e, "   Or: %s <logdir> <outdir> <fieldsfile> <datein> <timein> <datefin> <timefin>\n", argv[0]);
+            return 1;
+            break;
+    }
 #endif
-#endif
+
+    if (fieldsfile && fieldsfile[0] != '\0')
+    {
+        sprintf(outFileName, "%s/%s_%s-%s_%s.log", fieldsfile, datein, timein, datefin, timefin);
     }
     else
     {
-        LOG_PRINT(error_e, "invalid paramenter\n");
-        retval = 17;
-        goto exit_function;
+        sprintf(outFileName, "%s/%s-%s_%s.log", datein, timein, datefin, timefin);
     }
-    LOG_PRINT(verbose_e, "END\n");
-    retval = 0;
+    char * p = NULL;
+    while((p = strchr(outFileName, '/')))
+    {
+        *p = '_';
+    }
+    while((p = strchr(outFileName, ':')))
+    {
+        *p = '_';
+    }
+    sprintf(outFullPathFileName, "%s/%s", outdir, outFileName );
 
-exit_function:
-    if (fcount >= 0) {
-        int n;
-        for (n = 0; n < fcount; ++n) {
-            free(filelist[n]);
+    fpout = fopen(outFullPathFileName, "w");
+    if (fpout == NULL)
+    {
+        LOG_PRINT(verbose_e, "Cannot open '%s'\n", outFullPathFileName);
+        return -1;
+    }
+
+    sprintf (tmp, "%s_%s", datein, timein);
+    strptime (tmp, "%Y/%m/%d_%H:%M:%S", &tmp_ti);
+    tmp_ti.tm_isdst = 0;
+    ti = mktime(&tmp_ti);
+    LOG_PRINT(error_e, "%ld [%s]\n", ti, tmp);
+    strftime (tmp, 32, "%Y/%m/%d %H:%M:%S", localtime(&ti));
+    LOG_PRINT(verbose_e, "ti '%s'\n", tmp);
+    sprintf (tmp, "%s_%s", datefin, timefin);
+    strptime (tmp, "%Y/%m/%d_%H:%M:%S", &tmp_tf);
+    tmp_tf.tm_isdst = 0;
+    tf = mktime(&tmp_tf);
+    LOG_PRINT(error_e, "%ld [%s]\n", tf, tmp);
+    strftime (tmp, 32, "%Y/%m/%d %H:%M:%S", localtime(&tf));
+    LOG_PRINT(verbose_e, "tf '%s'\n", tmp);
+
+    // datein timein storefile
+    if (initLogRead(logdir, fieldsfile, ti, tf, &fpin) != 0)
+    {
+        LOG_PRINT(verbose_e, "no file to dump\n");
+    }
+
+    if (dumpLogHeder(fpout) != 0)
+    {
+        LOG_PRINT(error_e, "\n");
+        return -1;
+    }
+
+    int retval = 0;
+    while ( (retval = getLogRead(logdir, ti, tf, &fpin, outstruct)) >= 0)
+    {
+        if (retval == 0)
+        {
+            if (dumpLogRead(fpout, outstruct) != 0)
+            {
+                LOG_PRINT(error_e, "\n");
+                return -1;
+            }
         }
-        free(filelist);
     }
-    return retval;
+
+    fclose(fpout);
+    return 0;
 }
-
-
+#endif

@@ -808,7 +808,7 @@ int set_backlight_level(int level)
     sprintf (command, "echo %d > %s", level, BACKLIGHT_FILE_SYSTEM);
     system(command);
 
-    //printf("level set to: %d", level);
+    LOG_PRINT(warning_e, "level set to: %d", level);
     return level;
 }
 

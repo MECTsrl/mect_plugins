@@ -36,7 +36,7 @@ SetCompress off
 Name "MECT"
 Caption "MECT QT rev. ${REVISION}"
 
-OutFile "MectSuite_${REVISION}_Update.exe"
+OutFile "MectSuite_${REVISION}_Updat.exe"
 
 BrandingText /TRIMCENTER "MECT QT ${REVISION}"
 SetDateSave on

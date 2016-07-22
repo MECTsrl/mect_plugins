@@ -55,24 +55,17 @@ private slots:
     void on_pushButtonFilter_clicked();
 
 private:
-    bool LoadStore(const char * filename);
-    bool LoadStore(int fileNb);
-    bool LoadStore(QDateTime init, QDateTime final);
-    bool LoadStoreFilter(const char * filename);
-    int getLogColumnNb(const char * filename);
-    bool readLine();
+    void showLogHeder();
+    void showLogRead(char ** outstruct);
+
 private:
     Ui::store *ui;
     int status;
-    int sizeof_filter;
-    QStringList headerList;
-    QStringList logFileList;
     int current_row;
     int current_column;
-    FILE * logfp;
-    int _current;
-    int _file_nb;
     char outputfile[FILENAME_MAX];
+    time_t ti, tf;
+    FILE * fpin;
 private:
 };
 

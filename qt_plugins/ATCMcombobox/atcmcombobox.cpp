@@ -32,7 +32,6 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
     m_value = "";
     m_variable = "";
     m_status = UNK;
-    m_initialization = true;
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
     m_objectstatus = false;
@@ -290,11 +289,6 @@ bool ATCMcombobox::writeValue(QString value)
     if (m_variable.length() == 0)
     {
         return false;
-    }
-    if (m_initialization)
-    {
-        m_initialization = false;
-        return true;
     }
 #ifdef TARGET_ARM
     bool ret_val = true;
@@ -610,6 +604,7 @@ bool ATCMcombobox::setcomboValue()
     QString mapped = value2mapped(m_value);
     int index = this->findText(mapped);
 
+    /* code to manage a remapping value */
     if (index >= 0)
     {
         disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
@@ -632,12 +627,10 @@ bool ATCMcombobox::setcomboValue()
     if (index >= 0)
     {
         this->setEditable(false);
-        m_initialization = true;
         disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
         this->setCurrentIndex(index);
         connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
         setcomboValue();
-        m_initialization = false;
     }
     else
     {

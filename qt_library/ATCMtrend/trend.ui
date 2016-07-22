@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>272</width>
-    <height>274</height>
+    <width>495</width>
+    <height>487</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -54,74 +54,30 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <widget class="QPushButton" name="pushButtonSelect">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>25</width>
-          <height>251</height>
-         </rect>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>0</number>
         </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="margin">
+         <number>0</number>
         </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton
-{
-	border: 0px solid rgb(0, 0, 0);
-}
-QPushButton:pressed
-{
-	background-color: rgba(255, 170, 0,0);
-	border: 0px solid rgb(0, 0, 0);
-}</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QwtPlot" name="qwtPlot">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>431</width>
-          <height>241</height>
-         </rect>
-        </property>
-       </widget>
-       <widget class="QLabel" name="labelvalue">
-        <property name="geometry">
-         <rect>
-          <x>270</x>
-          <y>40</y>
-          <width>151</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="scaledContents">
-         <bool>false</bool>
-        </property>
-       </widget>
-       <zorder>qwtPlot</zorder>
-       <zorder>labelvalue</zorder>
-       <zorder>pushButtonSelect</zorder>
+        <item>
+         <widget class="QLabel" name="labelvalue">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QwtPlot" name="qwtPlot"/>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
@@ -137,11 +93,59 @@ QPushButton:pressed
            <height>30</height>
           </size>
          </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>30</height>
+          </size>
+         </property>
          <property name="focusPolicy">
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>Data del grafico</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonSelect">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton
+{
+	border: 0px solid rgb(0, 0, 0);
+}
+QPushButton:pressed
+{
+	background-color: rgba(255, 170, 0,0);
+	border: 0px solid rgb(0, 0, 0);
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -162,7 +166,7 @@ QPushButton:pressed
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>20</height>
+           <height>30</height>
           </size>
          </property>
          <property name="focusPolicy">
@@ -184,7 +188,7 @@ QPushButton:pressed
          <property name="maximumSize">
           <size>
            <width>40</width>
-           <height>20</height>
+           <height>30</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -214,6 +218,9 @@ border: 2px solid  rgb(194, 194, 194);
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="spacing">
+      <number>3</number>
+     </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">
        <property name="minimumSize">
@@ -490,6 +497,19 @@ border: 2px solid  rgb(194, 194, 194);
         <string/>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>

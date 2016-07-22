@@ -39,7 +39,6 @@ public:
     TimeScaleDraw(const QTime &base):
         baseTime(base)
     {
-        fprintf(stderr, "Setting base time axis to %s\n", baseTime.toString().toAscii().data());
     }
     virtual QwtText label(double v) const
     {
@@ -48,12 +47,10 @@ public:
     }
     void setBaseTime(const QTime &base)
     {
-        fprintf(stderr, "Setting base time axis to %s\n", baseTime.toString().toAscii().data());
         baseTime = base;
     }
     QTime getBaseTime()
     {
-        fprintf(stderr, "getting base time axis to %s\n", baseTime.toString().toAscii().data());
         return baseTime;
     }
 private:
@@ -171,8 +168,10 @@ private:
     
     bool _load_window_busy;
     TimeScaleDraw * timeScale;
+#ifdef STATIC_AXES
 #ifdef VALUE_TIME_SCALE
     NormalScaleDraw * valueScale[PEN_NB];
+#endif
 #endif
     int LogPeriodSec;
     int sample_to_skip;

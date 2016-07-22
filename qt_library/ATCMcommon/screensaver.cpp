@@ -41,7 +41,7 @@ void ScreenSaver::restore()
     sprintf (command, "echo %d > %s", brightness_level, BACKLIGHT_FILE_SYSTEM);
     system(command);
     
-    LOG_PRINT(verbose_e, "EXITING SCREENSAVER\n");
+    LOG_PRINT(warning_e, "EXITING SCREENSAVER\n");
 }
 
 bool ScreenSaver::save(__attribute__((unused)) int level)
@@ -53,6 +53,6 @@ bool ScreenSaver::save(__attribute__((unused)) int level)
     sprintf (command, "echo %d > %s", brightness_level, BACKLIGHT_FILE_SYSTEM);
     system(command);
     
-    LOG_PRINT(verbose_e, "ENTERING SCREENSAVER\n");
+    LOG_PRINT(warning_e, "ENTERING SCREENSAVER\n");
     return true;
 }
