@@ -60,19 +60,25 @@ store_filter::store_filter(QWidget *parent) :
  */
 void store_filter::reload()
 {
-    ui->spinBoxYearIn->setValue(StoreInit.date().year());
-    ui->spinBoxMonthIn->setValue(StoreInit.date().month());
-    ui->spinBoxDayIn->setValue(StoreInit.date().day());
-    ui->spinBoxHoursIn->setValue(StoreInit.time().hour());
-    ui->spinBoxMinutesIn->setValue(StoreInit.time().minute());
-    ui->spinBoxSecondsIn->setValue(StoreInit.time().second());
+    struct tm tmp_ti;
+    strptime (StoreInit, "%Y/%m/%d_%H:%M:%S", &tmp_ti);
+    tmp_ti.tm_isdst = 0;
+    ui->spinBoxYearIn->setValue(tmp_ti.tm_year + 1900);
+    ui->spinBoxMonthIn->setValue(tmp_ti.tm_mon + 1);
+    ui->spinBoxDayIn->setValue(tmp_ti.tm_mday);
+    ui->spinBoxHoursIn->setValue(tmp_ti.tm_hour);
+    ui->spinBoxMinutesIn->setValue(tmp_ti.tm_min);
+    ui->spinBoxSecondsIn->setValue(tmp_ti.tm_sec);
 
-    ui->spinBoxYearFin->setValue(StoreFinal.date().year());
-    ui->spinBoxMonthFin->setValue(StoreFinal.date().month());
-    ui->spinBoxDayFin->setValue(StoreFinal.date().day());
-    ui->spinBoxHoursFin->setValue(StoreFinal.time().hour());
-    ui->spinBoxMinutesFin->setValue(StoreFinal.time().minute());
-    ui->spinBoxSecondsFin->setValue(StoreFinal.time().second());
+    struct tm tmp_tf;
+    strptime (StoreFinal, "%Y/%m/%d_%H:%M:%S", &tmp_tf);
+    tmp_tf.tm_isdst = 0;
+    ui->spinBoxYearFin->setValue(tmp_tf.tm_year + 1900);
+    ui->spinBoxMonthFin->setValue(tmp_tf.tm_mon + 1);
+    ui->spinBoxDayFin->setValue(tmp_tf.tm_mday);
+    ui->spinBoxHoursFin->setValue(tmp_tf.tm_hour);
+    ui->spinBoxMinutesFin->setValue(tmp_tf.tm_min);
+    ui->spinBoxSecondsFin->setValue(tmp_tf.tm_sec);
 }
 
 /**
@@ -118,20 +124,28 @@ void store_filter::on_pushButtonCancel_clicked()
 
 void store_filter::on_pushButtonOk_clicked()
 {
-    StoreInit = QDateTime(
-                QDate(ui->spinBoxYearIn->value(),ui->spinBoxMonthIn->value(), ui->spinBoxDayIn->value()),
-                QTime(ui->spinBoxHoursIn->value(), ui->spinBoxMinutesIn->value(), ui->spinBoxSecondsIn->value())
-                );
-    StoreFinal = QDateTime(
-                QDate(ui->spinBoxYearFin->value(),ui->spinBoxMonthFin->value(), ui->spinBoxDayFin->value()),
-                QTime(ui->spinBoxHoursFin->value(), ui->spinBoxMinutesFin->value(), ui->spinBoxSecondsFin->value())
-                );
+    sprintf(StoreInit, "%d/%02d/%02d_%02d:%02d:%02d",
+            ui->spinBoxYearIn->value(),
+            ui->spinBoxMonthIn->value(),
+            ui->spinBoxDayIn->value(),
+            ui->spinBoxHoursIn->value(),
+            ui->spinBoxMinutesIn->value(),
+            ui->spinBoxSecondsIn->value()
+            );
+    sprintf(StoreFinal, "%d/%02d/%02d_%02d:%02d:%02d",
+            ui->spinBoxYearFin->value(),
+            ui->spinBoxMonthFin->value(),
+            ui->spinBoxDayFin->value(),
+            ui->spinBoxHoursFin->value(),
+            ui->spinBoxMinutesFin->value(),
+            ui->spinBoxSecondsFin->value()
+            );
     goto_page("store",false);
 }
 
 void store_filter::on_pushButtonReset_clicked()
 {
-    StoreInit = QDateTime(QDate::currentDate(), QTime(0,0,0));
-    StoreFinal = QDateTime(QDate::currentDate(), QTime(23,59,59));
+    strcpy(StoreInit, QDateTime(QDate::currentDate(), QTime(0,0,0)).toString("yyyy/MM/dd_HH:mm:ss").toAscii().data());
+    strcpy(StoreFinal, QDateTime(QDate::currentDate(), QTime(23,59,59)).toString("yyyy/MM/dd_HH:mm:ss").toAscii().data());
     reload();
 }

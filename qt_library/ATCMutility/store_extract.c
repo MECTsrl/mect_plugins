@@ -305,7 +305,7 @@ int initLogRead(const char * logdir, const char * storeFilterFile, time_t ti, ti
     if (fcount <= 0)
     {
         // no log file
-        LOG_PRINT(info_e, "Cannot found any store file\n");
+        LOG_PRINT(error_e, "Cannot found any store file into '%s'\n", logdir);
         return -1;
     }
 
@@ -322,9 +322,14 @@ int initLogRead(const char * logdir, const char * storeFilterFile, time_t ti, ti
         tfile.tm_isdst = 0;
         t = mktime(&tfile);
 
-        if ( t > ti )
+        LOG_PRINT(verbose_e, "actualfcount %d fcount %d\n", actualfcount, fcount);
+        if ( t > ti || actualfcount == fcount - 1)
         {
-            actualfcount = (actualfcount > 2) ? actualfcount - 1 : actualfcount;
+            if (actualfcount < fcount)
+            {
+                LOG_PRINT(verbose_e, "t > ti\n");
+                actualfcount = (actualfcount > 2) ? actualfcount - 1 : actualfcount;
+            }
             LOG_PRINT(verbose_e, "found file '%s'\n", filelist[actualfcount]->d_name);
 
             filterHeader = allocMatrix(DB_SIZE_ELEM, TAG_LEN);
@@ -362,6 +367,7 @@ int initLogRead(const char * logdir, const char * storeFilterFile, time_t ti, ti
         }
     }
 
+    LOG_PRINT(verbose_e, "actualfcount %d fcount %d\n", actualfcount, fcount);
     return -1;
 }
 
@@ -390,6 +396,7 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
 {
     static struct stat file_stat_old;
     char line[LINE_SIZE];
+    int getting_news = 0;
     if (fcount <= 0 || filelist == NULL || outstruct == NULL)
     {
         LOG_PRINT(error_e, "no data to read\n");
@@ -400,10 +407,10 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
         char fullpath[FILENAME_MAX];
         if (*fpin != NULL)
         {
-            fclose(*fpin);
-            *fpin = NULL;
             if (actualfcount + 1 < fcount)
             {
+                fclose(*fpin);
+                *fpin = NULL;
                 actualfcount ++;
                 sprintf(fullpath,"%s/%s", logdir, filelist[actualfcount]->d_name);
                 if (stat(fullpath, &file_stat_old) != 0) {
@@ -423,8 +430,7 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
             {
                 /* here the code to reopen the las log file and reload the news */
                 sprintf(fullpath,"%s/%s", logdir, filelist[actualfcount]->d_name);
-                *fpin = fopen(fullpath, "r");
-                LOG_PRINT(error_e, "check for some news in '%s'\n", fullpath);
+                LOG_PRINT(verbose_e, "check for some news in '%s'\n", fullpath);
                 struct stat file_stat;
                 if (stat(fullpath, &file_stat) != 0) {
                     LOG_PRINT(error_e, "cannot stat '%s'\n",fullpath);
@@ -462,6 +468,7 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
                         LOG_PRINT(verbose_e, "File finished\n");
                         return -1;
                     }
+                    getting_news = 1;
                 }
                 else
                 {
@@ -487,6 +494,8 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
             }
             LOG_PRINT(verbose_e, "open '%s'\n",fullpath);
         }
+        if (getting_news == 0)
+        {
         //LOG_PRINT(error_e, "Opening new file '%s'\n", fullpath);
         int i,j;
         int variablesFound = 0;
@@ -518,6 +527,7 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
         {
             LOG_PRINT(error_e, "no variables found\n");
             return -1;
+        }
         }
     }
     if (fgets(line, LINE_SIZE, *fpin) != NULL)

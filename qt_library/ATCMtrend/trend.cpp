@@ -325,12 +325,12 @@ void trend::reload()
             pens[i].curve->attach(d_qwtplot);
             if (_layout_ == PORTRAIT)
             {
-                LOG_PRINT(verbose_e, "################## PORTRAIT\n");
+                LOG_PRINT(verbose_e, "PORTRAIT\n");
                 pens[i].curve->setAxes(QwtAxisId( valueAxisId, i ), QwtAxisId( timeAxisId, 0 ));
             }
             else
             {
-                LOG_PRINT(verbose_e, "################## LANDSCAPE\n");
+                LOG_PRINT(verbose_e, "LANDSCAPE\n");
                 pens[i].curve->setAxes(QwtAxisId( timeAxisId, 0 ), QwtAxisId( valueAxisId, i ));
             }
             pens[i].curve->setPen(QPen(QColor(QString("#%1").arg(pens[i].color)),2));
@@ -1030,7 +1030,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     char token[LINE_SIZE] = "";
 
     LOG_PRINT(verbose_e, "LOG_FILE '%s'\n", filename);
-    LOG_PRINT(verbose_e, "######################### '%s' -> '%s'\n",
+    LOG_PRINT(verbose_e, "#######'%s' -> '%s'\n",
               begin->toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
               end->toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
               );
@@ -1513,7 +1513,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                     /* set the y scale in according with the new window and the new scale of the activa pen */
                     if (ymin != ymax)
                     {
-                        LOG_PRINT(verbose_e, "################## NEW RANGE pen %d %f %f from %f %f\n", pen_index, ymin, ymax, pens[pen_index].yMin, pens[pen_index].yMax);
+                        LOG_PRINT(verbose_e, "NEW RANGE pen %d %f %f from %f %f\n", pen_index, ymin, ymax, pens[pen_index].yMin, pens[pen_index].yMax);
                         pens[pen_index].yMinActual =
                                 pens[pen_index].yMin
                                 +
@@ -1530,21 +1530,21 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                                 (pens[pen].yMax - pens[pen].yMin)
                                 +
                                 (ymax - pens[pen].yMin);
-                        LOG_PRINT(verbose_e, "################## NEW RANGE pen %d %f %f from %f %f to %f %f\n", pen_index, ymin, ymax, pens[pen_index].yMin, pens[pen_index].yMax, pens[pen_index].yMinActual, pens[pen_index].yMaxActual );
+                        LOG_PRINT(verbose_e, "NEW RANGE pen %d %f %f from %f %f to %f %f\n", pen_index, ymin, ymax, pens[pen_index].yMin, pens[pen_index].yMax, pens[pen_index].yMinActual, pens[pen_index].yMaxActual );
                     }
 
                     if (_layout_ == PORTRAIT)
                     {
-                        LOG_PRINT(verbose_e, "################## PORTRAIT\n");
+                        LOG_PRINT(verbose_e, "PORTRAIT\n");
                         pens[pen_index].curve->setRawSamples(&(pens[pen_index].y[XindexIn]), &(pens[pen_index].x[XindexIn]), XindexFin - XindexIn);
                     }
                     else
                     {
                         pens[pen_index].curve->setRawSamples(&(pens[pen_index].x[XindexIn]), &(pens[pen_index].y[XindexIn]), XindexFin - XindexIn);
-                        LOG_PRINT(verbose_e, "################## LANDSCAPE \n");
+                        LOG_PRINT(verbose_e, "LANDSCAPE \n");
                     }
 
-                    LOG_PRINT(verbose_e, "################## NEW SAMPLE LAST '%s'  %f %f in %d fin %d sample %d\n", pens[pen_index].tag, pens[pen_index].x[XindexFin-1], pens[pen_index].y[XindexFin-1], XindexIn, XindexFin, pens[pen_index].sample);
+                    LOG_PRINT(verbose_e, "NEW SAMPLE LAST '%s'  %f %f in %d fin %d sample %d\n", pens[pen_index].tag, pens[pen_index].x[XindexFin-1], pens[pen_index].y[XindexFin-1], XindexIn, XindexFin, pens[pen_index].sample);
                 }
                 else
                 {

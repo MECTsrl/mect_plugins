@@ -179,8 +179,8 @@ extern int ScreenSaverSec;
 //extern Logger * logger;
 extern int LogPeriodSecS;
 extern int LogPeriodSecF;
-extern QDateTime StoreInit;
-extern QDateTime StoreFinal;
+extern char StoreInit[32];
+extern char StoreFinal[32];
 extern int MaxLogUsageMb;
 #endif //defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 

@@ -85,8 +85,8 @@ store::store(QWidget *parent) :
     fpin = NULL;
     
     /* set as default current day */
-    StoreInit = QDateTime(QDate::currentDate(), QTime(0,0,0));
-    StoreFinal = QDateTime(QDate::currentDate(), QTime(23,59,59));
+    strcpy(StoreInit, QDateTime(QDate::currentDate(), QTime(0,0,0)).toString("yyyy/MM/dd_HH:mm:ss").toAscii().data());
+    strcpy(StoreFinal, QDateTime(QDate::currentDate(), QTime(23,59,59)).toString("yyyy/MM/dd_HH:mm:ss").toAscii().data());
     //reload();
 }
 
@@ -152,17 +152,20 @@ void store::updateData()
         fpin = NULL;
 
         /* extract the time_t from the date string */
-        strptime (StoreInit.toString("yyyy/MM/dd_HH:mm:ss").toAscii().data(), "%Y/%m/%d_%H:%M:%S", &tmp_ti);
+        strptime (StoreInit, "%Y/%m/%d_%H:%M:%S", &tmp_ti);
         tmp_ti.tm_isdst = 0;
         ti = mktime(&tmp_ti);
-        strptime (StoreFinal.toString("yyyy/MM/dd_HH:mm:ss").toAscii().data(), "%Y/%m/%d_%H:%M:%S", &tmp_tf);
+        strptime (StoreFinal, "%Y/%m/%d_%H:%M:%S", &tmp_tf);
         tmp_tf.tm_isdst = 0;
         tf = mktime(&tmp_tf);
 
+        LOG_PRINT(verbose_e, "log from %s to %s\n", StoreInit, StoreFinal);
+
         char filename[FILENAME_MAX];
-        if (_actual_store_[0] == '\0')
+        if (_actual_store_[0] == '\0' || strcmp(_actual_store_, "store") == 0)
         {
             filename[0] = '\0';
+            _actual_store_[0] = '\0';
         }
         else if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
         {
@@ -217,8 +220,8 @@ void store::updateData()
         }
 
         ui->labelFilter->setText(QString("Filter: [%1 - %2]")
-                                 .arg(StoreInit.toString("yyyy/MM/dd HH:mm:ss"))
-                                 .arg(StoreFinal.toString("yyyy/MM/dd HH:mm:ss")));
+                                 .arg(StoreInit)
+                                 .arg(StoreFinal));
         ui->labelFilter->repaint();
 
 #ifdef AUTO_DISABLE_ARROW
@@ -434,7 +437,9 @@ void store::on_pushButtonSaveUSB_clicked()
         struct tm tmp_ti, tmp_tf;
         char srcfilename[FILENAME_MAX];
         char dstfilename[FILENAME_MAX];
+        char outFileName[FILENAME_MAX];
         FILE * fpout;
+        char * p = NULL;
 
         QWSServer::setCursorVisible(true);
         QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -450,50 +455,81 @@ void store::on_pushButtonSaveUSB_clicked()
 
         if (strlen(_actual_store_))
         {
-            sprintf(srcfilename, "%s/%s_%s-%s.log",
-                    usb_mnt_point,
+            sprintf(outFileName, "%s_%s-%s.log",
                     QFileInfo(_actual_store_).baseName().toAscii().data(),
-                    StoreInit.toString("yyyy_MM_dd_HH_mm_ss").toAscii().data(),
-                    StoreFinal.toString("yyyy_MM_dd_HH_mm_ss").toAscii().data()
+                    StoreInit,
+                    StoreFinal
                     );
         }
         else
         {
-            sprintf(srcfilename, "%s/%s-%s.log",
-                    usb_mnt_point,
-                    StoreInit.toString("yyyy_MM_dd_HH_mm_ss").toAscii().data(),
-                    StoreFinal.toString("yyyy_MM_dd_HH_mm_ss").toAscii().data()
+            sprintf(outFileName, "%s-%s.log",
+                    StoreInit,
+                    StoreFinal
                     );
         }
 
-        LOG_PRINT(error_e, "srcfilename: %s\n", srcfilename);
+        while((p = strchr(outFileName, '/')))
+        {
+            *p = '_';
+        }
+        while((p = strchr(outFileName, ':')))
+        {
+            *p = '_';
+        }
+
+        sprintf(srcfilename, "%s/%s", usb_mnt_point, outFileName);
+
+        LOG_PRINT(verbose_e, "srcfilename: %s\n", srcfilename);
         fpout = fopen(srcfilename, "w");
         fpin = NULL;
         if (fpout == NULL)
         {
-            LOG_PRINT(error_e, "Cannot open '%s'\n", srcfilename);
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("CAnnot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
+            LOG_PRINT(error_e, "Cannot open '%s'. [%s]\n", srcfilename, strerror(errno));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
             goto umount_and_exit;
         }
 
         /* extract the time_t from the date string */
-        strptime (StoreInit.toString("yyyy/MM/dd_HH:mm:ss").toAscii().data(), "%Y/%m/%d_%H:%M:%S", &tmp_ti);
+        strptime (StoreInit, "%Y/%m/%d_%H:%M:%S", &tmp_ti);
         tmp_ti.tm_isdst = 0;
         ti = mktime(&tmp_ti);
-        strptime (StoreFinal.toString("yyyy/MM/dd_HH:mm:ss").toAscii().data(), "%Y/%m/%d_%H:%M:%S", &tmp_tf);
+        strptime (StoreFinal, "%Y/%m/%d_%H:%M:%S", &tmp_tf);
         tmp_tf.tm_isdst = 0;
         tf = mktime(&tmp_tf);
 
-        // datein timein storefile
-        if (initLogRead(STORE_DIR, _actual_store_, ti, tf, &fpin) != 0)
+        char filename[FILENAME_MAX];
+        if (_actual_store_[0] == '\0' || strcmp(_actual_store_, "store") == 0)
         {
-            LOG_PRINT(verbose_e, "no file to dump\n");
+            filename[0] = '\0';
+            _actual_store_[0] = '\0';
+        }
+        else if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
+        {
+            sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
+        }
+        else
+        {
+            sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
+        }
+
+        if (!QFile::exists(filename))
+        {
+            filename[0] = '\0';
+        }
+
+        // datein timein storefile
+        if (initLogRead(STORE_DIR, filename, ti, tf, &fpin) != 0)
+        {
+            LOG_PRINT(error_e, "\n");
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(_actual_store_));
+            goto umount_and_exit;
         }
 
         if (dumpLogHeder(fpout) != 0)
         {
             LOG_PRINT(error_e, "\n");
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("CAnnot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
+            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
             goto umount_and_exit;
         }
 
@@ -504,7 +540,7 @@ void store::on_pushButtonSaveUSB_clicked()
                 if (dumpLogRead(fpout, outstruct) != 0)
                 {
                     LOG_PRINT(error_e, "\n");
-                    QMessageBox::critical(this,trUtf8("USB error"), trUtf8("CAnnot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
+                    QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
                     goto umount_and_exit;
                 }
             }

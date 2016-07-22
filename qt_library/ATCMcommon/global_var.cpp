@@ -41,8 +41,8 @@ int active_password = pwd_operator_e;
 int LogPeriodSecS = LOG_PERIOD_MS / 1000;
 int LogPeriodSecF = LOG_PERIOD_MS / 1000;
 int MaxWindowSec = MAX_SAMPLE_NB * ((LogPeriodSecF>LogPeriodSecS)?LogPeriodSecF:LogPeriodSecS);
-QDateTime StoreInit;
-QDateTime StoreFinal;
+char StoreInit[32];
+char StoreFinal[32];
 int MaxLogUsageMb = MAX_SPACE_AVAILABLE_DEF;
 #endif //defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 
