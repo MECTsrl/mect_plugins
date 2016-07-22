@@ -148,6 +148,7 @@ trend::trend(QWidget *parent) :
     popup = new trend_other(this);
     popup_visible = false;
     popup->hide();
+    actualPen = 0;
 }
 
 #undef WINDOW_TITLE
@@ -524,10 +525,10 @@ void trend::updateData()
         }
         
         loadOrientedWindow();
-        
-        actualPen = -1;
+
+        actualPen--;
         on_pushButtonSelect_clicked();
-        
+
         LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
         LOG_PRINT(verbose_e, "CONNECT refreshEvent\n");
@@ -1348,18 +1349,25 @@ bool trend::loadFromFile(QDateTime Ti)
 #ifdef VALUE_TIME_SCALE
     for (int i = 0; i < PEN_NB; i++)
     {
-#if 0 //moved into LoadTRend since if no data are available valueScale is null and you get SIG FAULT
-        int decimal =  getVarDecimalByName(pens[i].tag);
-        if (valueScale[i] == NULL)
+        int decimal = 0;
+        if (pens[i].visible)
         {
-            valueScale[i] = new NormalScaleDraw(decimal);
-        }
+#ifdef STATIC_AXES
+#if 0 //moved into LoadTRend since if no data are available valueScale is null and you get SIG FAULT
+            decimal =  getVarDecimalByName(pens[i].tag);
+            if (valueScale[i] == NULL)
+            {
+                valueScale[i] = new NormalScaleDraw(decimal);
+            }
 #endif
-        
+
+#else
+            decimal =  getVarDecimalByName(pens[i].tag);
+#endif
+        }
 #ifdef STATIC_AXES
         d_qwtplot->setAxisScaleDraw(, valueScale[i]);
 #else
-        int decimal =  getVarDecimalByName(pens[i].tag);
         d_qwtplot->setAxisScaleDraw(QwtAxisId( valueAxisId, i ), new NormalScaleDraw(decimal));
 #endif
         //LOG_PRINT(verbose_e, "decimals %d\n", decimal);
@@ -1434,11 +1442,22 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             
             int decimal = getVarDecimalByCtIndex(pens[pen_index].CtIndex);
             
-            //if ((pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS < 1)
+            float n = (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS;
+
+            /* FIXME : write a better code to extract the decimal's number */
+            char tmp[32];
+            sprintf (tmp, "%.6f",n);
+            char *p = strchr(tmp, '.');
+            int mindecimal = 0;
+            for (mindecimal = 6; mindecimal > 0; mindecimal--)
             {
-                int mindecimal = ceil(-log10(((double)(pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS)));
-                decimal = (decimal < mindecimal) ? mindecimal : decimal;
+                    if(p[mindecimal] != '0')
+                    {
+                            break;
+                    }
             }
+
+            decimal = (decimal < mindecimal) ? mindecimal : decimal;
 #ifdef STATIC_AXES
             if (valueScale[pen_index]->getDecimalNb() != decimal)
             {
@@ -1811,7 +1830,7 @@ void trend::moved(const QPoint &pos)
     else
     {
         x = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.x()))).toString("HH:mm:ss");
-        y = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.y()), 'f', decimal);
+        y = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.y()), 'f');
     }
     
     ui->labelvalue->setText(x + "; " + y);

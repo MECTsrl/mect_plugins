@@ -294,8 +294,7 @@ void trend_option::on_pushButtonChangeNew_clicked()
         }
         /* force a online */
         actualVisibleWindowSec = 0;
-        QString(errormsg);
-        LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg);
+        LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), NULL);
         reload();
         _trend_data_reload_ = true;
     }
@@ -488,7 +487,10 @@ void trend_option::on_pushButtonSaveAs_clicked()
         LOG_PRINT(verbose_e, "Saving to '%s'\n", value);
         sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, value);
         Save(fullfilename);
-        ui->pushButtonChangeTrend->setText(value);
+        strcpy(_actual_trend_, value);
+        LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), NULL);
+        reload();
+        _trend_data_reload_ = true;
     }
     else
     {
