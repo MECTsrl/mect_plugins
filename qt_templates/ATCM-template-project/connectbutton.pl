@@ -42,7 +42,7 @@ foreach $file (glob( 'page*.ui' ))
 			$line =~ s/\\//g;
 			$line =~ s/^\s+//;
 			$line =~ s/\s+$//;	
-			if ($line =~ /<string>([A-z0-9]+)<\/string>/ && $1 ne '')
+			if (($line =~ /<string>([A-z0-9]+)<\/string>/ || $line =~ /<string notr="true">([A-z0-9]+)<\/string>/) && $1 ne '')
 			{
 				push(@buttonlist,$button_name);
 			}
