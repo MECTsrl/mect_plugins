@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>img/Sfondo.png</file>
+        <file>img/Mect.ico</file>
+    </qresource>
+</RCC>
