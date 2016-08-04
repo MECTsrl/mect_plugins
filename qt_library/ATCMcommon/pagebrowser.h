@@ -31,10 +31,9 @@
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 #include "hmi_logger.h"
 #endif
-#ifdef ENABLE_INPUTPAD
+
 #include "numpad.h"
 #include "alphanumpad.h"
-#endif
 
 #ifdef TARGET
 #define SHOW showFullScreen
@@ -66,6 +65,7 @@ public:
     virtual void reload(void) = 0;
 protected slots:
     virtual void updateData();
+    void refreshPage();
     bool go_back(void);
     bool go_home(void);
     bool goto_page(const char * page_name, bool remember = true);
@@ -90,8 +90,8 @@ protected:
     void KeyPress(const char * Id);
     void KeyRelease(const char * Id);
 #endif
-    bool activateVarList(const QStringList listVarname);
-    bool deactivateVarList(const QStringList listVarname);
+    /* FIXME MTL Currently not used. To convert to new HMI<=>4C interface. */
+#if 0
     bool getFormattedVar(const char * varname, bool * formattedVar, QLabel * led = NULL);
     bool getFormattedVar(const char * varname, short int * formattedVar, QLabel * led = NULL);
     bool getFormattedVar(const char * varname, unsigned short int * formattedVar, QLabel * led = NULL);
@@ -110,12 +110,11 @@ protected:
     bool getFormattedVar(const char * varname, QLCDNumber * formattedVar, QLabel * led = NULL);
     bool getFormattedVar(const char * varname, QwtTextLabel * formattedVar, QLabel * led = NULL);
 #endif
+#endif
     bool setFormattedVar(const char * varname, char * formattedVar);
     char getStatusVar(const char * varname, char * msg = NULL);
     bool setStatusVar(const char * varname, char Status);
     bool setStatusVar(int SynIndex, char Status);
-    bool isBlockFullUsed(int block, QStringList variablelist);
-    QStringList getBlocksToFill(QStringList variablelist);
 
     bool setAsStartPage(char * window);
 
@@ -135,7 +134,11 @@ protected slots:
     void rotateShowErrorSlot();
 signals:
     void new_ack(event_msg_t * msg);
+
 #endif
+signals:
+    /* widget refresh AND request for new value for H-type variables */
+    void varRefresh();
 protected:
     QTimer * refresh_timer;
     QLabel * labelIcon;
@@ -144,8 +147,8 @@ protected:
     QLabel * labelUserName;
     int protection_level;
     QStringList variableList;
-private:
     bool hideAll(void);
+private:
     QLineEdit * _line;
     int _period_ms;
 

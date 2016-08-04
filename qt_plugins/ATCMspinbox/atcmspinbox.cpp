@@ -14,7 +14,10 @@
 #include "atcmspinbox.h"
 #include "common.h"
 #include "atcmstyle.h"
+#include "protocol.h"
+
 #ifdef TARGET_ARM
+#include "global_var.h"
 #include "app_logprint.h"
 #include "cross_table_utility.h"
 #endif
@@ -22,9 +25,10 @@
 ATCMspinbox::ATCMspinbox(QWidget *parent) :
     QDoubleSpinBox(parent)
 {
+    m_lastVisibility = false;
     m_value = 0;
     m_variable = "";
-    m_status = UNK;
+    m_status = STATUS_ENABLED;
     m_initialization = true;
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
@@ -37,7 +41,8 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
     m_bordercolor = BORDER_COLOR_DEF;
     m_borderwidth = BORDER_WIDTH_DEF;
     m_borderradius = BORDER_RADIUS_DEF;
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
+
+    m_parent = parent;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -88,29 +93,13 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
             #endif
                 );
 
-#ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else
-#endif
-    {
-        refresh_timer = NULL;
-    }
-
+    m_parent = parent;
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     //connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 }
 
 ATCMspinbox::~ATCMspinbox()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMspinbox::paintEvent(QPaintEvent * e)
@@ -142,25 +131,17 @@ void ATCMspinbox::paintEvent(QPaintEvent * e)
 
 
 #ifdef TARGET_ARM
-    if (m_viewstatus)
-    {
+    if (m_viewstatus) {
         /* draw the background color in funtion of the status */
         palette.setColor(QPalette::Foreground, Qt::red);
-        switch(m_status)
-        {
-        case DONE:
+        if (m_status & STATUS_OK)
             palette.setColor(QPalette::Foreground, Qt::green);
-            break;
-        case BUSY:
+        else if (m_status & (STATUS_BUSY_R | STATUS_BUSY_W))
             palette.setColor(QPalette::Foreground, Qt::yellow);
-            break;
-        case ERROR:
+        else if (m_status & (STATUS_FAIL_W | STATUS_ERR))
             palette.setColor(QPalette::Foreground, Qt::red);
-            break;
-        default /*UNKNOWN*/:
+        else
             palette.setColor(QPalette::Foreground, Qt::gray);
-            break;
-        }
     }
 #endif
 
@@ -195,10 +176,6 @@ bool ATCMspinbox::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -228,7 +205,7 @@ bool ATCMspinbox::writeValue(double value)
         return true;
     }
 #ifdef TARGET_ARM
-    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(value).toAscii().data()) == 0)
+    if (m_CtIndex > 0 && ioComm->sendUdpWriteCmd(m_CtIndex, QString::number(value).toAscii().data()) == 0)
     {
         LOG_PRINT(verbose_e, "WRITE %f \n", m_value);
         m_value = (float)value;
@@ -258,94 +235,79 @@ bool ATCMspinbox::setVariable(QString variable)
     /* if the acual variable is different from actual variable, deactivate it */
     if (m_variable.length() != 0 && variable.trimmed().compare(m_variable) != 0)
     {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_variable.trimmed().toAscii().data()) == 0)
-        {
-#endif
-            m_variable.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
+        m_variable.clear();
+        m_CtIndex = -1;
     }
 
     /* if the acual variable is empty activate it */
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_variable = variable.trimmed();
+        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_variable = variable.trimmed();
-            if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                //m_value = VAR_UNKNOWN;
-                m_CtIndex = -1;
-            }
-            else
-            {
-                switch (CtIndex2Type(m_CtIndex))
-                {
-                case intab_e:
-                case intba_e:
-                case uintab_e:
-                case uintba_e:
-                case dint_abcd_e:
-                case dint_badc_e:
-                case dint_cdab_e:
-                case dint_dcba_e:
-                case udint_abcd_e:
-                case udint_badc_e:
-                case udint_cdab_e:
-                case udint_dcba_e:
-                    QDoubleSpinBox::setDecimals(0);
-                    break;
-                case fabcd_e:
-                case fbadc_e:
-                case fcdab_e:
-                case fdcba_e:
-                {
-                    int decimal = 0;
-                    if (varNameArray[m_CtIndex].decimal > 4)
-                    {
-                        if (readFromDb(varNameArray[m_CtIndex].decimal, &decimal) != 0)
-                        {
-                            decimal = 0;
-                        }
-                    }
-                    else if (varNameArray[m_CtIndex].decimal > 0)
-                    {
-                        LOG_PRINT(verbose_e, "Decimal %d\n", varNameArray[m_CtIndex].decimal);
-                        decimal = varNameArray[m_CtIndex].decimal;
-                    }
-                    else
-                    {
-                        decimal = 0;
-                    }
-
-                    QDoubleSpinBox::setDecimals(decimal);
-                }
-                    break;
-                default:
-                    QDoubleSpinBox::setDecimals(0);
-                    break;
-                }
-
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
+            m_status = STATUS_ERR;
+            //m_value = VAR_UNKNOWN;
+            m_CtIndex = -1;
         }
         else
         {
-            m_status = ERROR;
-            //m_value = VAR_UNKNOWN;
+            switch (CtIndex2Type(m_CtIndex))
+            {
+            case intab_e:
+            case intba_e:
+            case uintab_e:
+            case uintba_e:
+            case dint_abcd_e:
+            case dint_badc_e:
+            case dint_cdab_e:
+            case dint_dcba_e:
+            case udint_abcd_e:
+            case udint_badc_e:
+            case udint_cdab_e:
+            case udint_dcba_e:
+                QDoubleSpinBox::setDecimals(0);
+                break;
+            case fabcd_e:
+            case fbadc_e:
+            case fcdab_e:
+            case fdcba_e:
+            {
+                int decimal = 0;
+                if (varNameArray[m_CtIndex].decimal > 4)
+                {
+                    if (ioComm->readUdpReply(varNameArray[m_CtIndex].decimal, &decimal) != 0)
+                    {
+                        decimal = 0;
+                    }
+                }
+                else if (varNameArray[m_CtIndex].decimal > 0)
+                {
+                    LOG_PRINT(verbose_e, "Decimal %d\n", varNameArray[m_CtIndex].decimal);
+                    decimal = varNameArray[m_CtIndex].decimal;
+                }
+                else
+                {
+                    decimal = 0;
+                }
+
+                QDoubleSpinBox::setDecimals(decimal);
+            }
+                break;
+            default:
+                QDoubleSpinBox::setDecimals(0);
+                break;
+            }
+
         }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
 #else
         m_variable = variable.trimmed();
 #endif
     }
 
-    if (m_status != ERROR)
+    if (!(m_status & STATUS_ERR))
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
@@ -416,45 +378,30 @@ void ATCMspinbox::setBorderRadius(int radius)
     update();
 }
 
-bool ATCMspinbox::setRefresh(int refresh)
-{
-    m_refresh = refresh;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
-    return true;
-}
-
 /* read variable */
 void ATCMspinbox::updateData()
 {
 #ifdef TARGET_ARM
     char statusMsg[TAG_LEN] = "";
-    char value[TAG_LEN] = "";
+    u_int32_t value;
+
+    if (!m_parent->isVisible())
+    {
+        incdecHvar(isVisible(), m_CtIndex);
+        return;
+    }
 
     if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
     {
-        if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
+        if (ioComm->readUdpReply(m_CtVisibilityIndex, &value) == 0)
         {
-            m_status = DONE;
-            LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
-            setVisible(atoi(value) != 0);
+            m_status = STATUS_OK;
+            setVisible(value != 0);
         }
-        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
+
+    incdecHvar(isVisible(), m_CtIndex);
+
     if (this->isVisible() == false)
     {
         return;
@@ -462,29 +409,28 @@ void ATCMspinbox::updateData()
 
     if (m_variable.length() == 0)
     {
-        if (m_CtIndex >= 0)
+        if (m_CtIndex > 0)
         {
-            if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
+            if (ioComm->readUdpReply(m_CtIndex, &value) == 0)
             {
-                m_status = DONE;
-                m_value = atof(value);
+                m_status = STATUS_OK;
+                m_value = (float)value;
             }
             else
             {
                 //m_value = VAR_UNKNOWN;
-                m_status = ERROR;
+                m_status = STATUS_OK;
             }
         }
         else
         {
-            m_status = ERROR;
+            m_status = STATUS_ERR;
             LOG_PRINT(error_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
         }
     }
-    LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 
     disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-    if (m_status == ERROR)
+    if (m_status & STATUS_ERR)
     {
         /* set error MSG */
         if (strlen(statusMsg) > 0)
@@ -492,41 +438,13 @@ void ATCMspinbox::updateData()
             setSpecialValueText(statusMsg);
         }
     }
-    else if (m_status == DONE)
+    else if (m_status & STATUS_OK)
     {
         this->setValue(m_value);
     }
     connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #endif
     this->update();
-}
-
-bool ATCMspinbox::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-bool ATCMspinbox::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
 }
 
 enum QFrame::Shadow ATCMspinbox::apparence() const
@@ -543,11 +461,6 @@ void ATCMspinbox::setApparence(const enum QFrame::Shadow apparence)
 void ATCMspinbox::unsetVariable()
 {
     setVariable("");
-}
-
-void ATCMspinbox::unsetRefresh()
-{
-    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMspinbox::unsetViewStatus()

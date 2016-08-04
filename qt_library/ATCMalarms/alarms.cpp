@@ -123,7 +123,7 @@ void alarms::updateData()
     }
     refreshEvent();
     /* call the parent updateData member */
-    page::updateData();
+    //page::updateData();
 }
 
 #ifdef TRANSLATION

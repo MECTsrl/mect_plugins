@@ -80,7 +80,7 @@ void display_test::updateData()
     else
         counter++;
 
-    page::updateData();
+    //page::updateData();
 }
 
 #ifdef TRANSLATION

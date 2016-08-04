@@ -144,7 +144,7 @@ void alarms_history::reload()
 void alarms_history::updateData()
 {
     /* call the parent updateData member */
-    page::updateData();
+    //page::updateData();
     ui->pushButtonSave->setEnabled(USBCheck());
 }
 

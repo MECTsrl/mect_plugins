@@ -154,13 +154,6 @@ bool USBCheck();
 int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table[]);
 
 /**
- * @brief write a step of bi-dimensional recipe
- *
- * @return 0 written, otherwise not written
- */
-int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[]);
-
-/**
  * @brief read a step of bi-dimensional recipe
  *
  * @return 0 read, otherwise not read

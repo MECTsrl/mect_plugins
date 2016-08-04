@@ -4,15 +4,19 @@ include (../qt_plugins.pri)
 
 INCLUDEPATH += ../ATCMplugineditor
 
-HEADERS     = atcmledplugin.h \ 
+HEADERS =  \
+    ../atcmplugin.h \
+    atcmledplugin.h \
     variableandvisibilitydialog.h \
     atcmledtaskmenu.h \
     ../ATCMplugineditor/crosstableeditor.h
 
-SOURCES     = atcmledplugin.cpp \ 
+SOURCES = \
+    ../atcmplugin.cpp \
+    atcmledplugin.cpp \
     variableandvisibilitydialog.cpp \
     atcmledtaskmenu.cpp \
-   ../ATCMplugineditor/crosstableeditor.cpp
+    ../ATCMplugineditor/crosstableeditor.cpp
 
 RESOURCES   = icons.qrc
 

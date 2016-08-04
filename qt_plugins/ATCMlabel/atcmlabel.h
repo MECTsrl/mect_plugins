@@ -7,14 +7,14 @@
 #ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
 #endif
-#include <QTimer>
 #include <QFrame>
+#include "atcmplugin.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMlabel : public QPushButton
+ ATCMlabel : public QPushButton, public ATCMplugin
 {
 	Q_OBJECT
 #ifndef TARGET_ARM
@@ -59,8 +59,6 @@ class
         Q_PROPERTY(QString prefix READ prefix WRITE setPrefix RESET unsetPrefix)
 		/* suffix to show */
         Q_PROPERTY(QString suffix READ suffix WRITE setSuffix RESET unsetSuffix)
-		/* refresh time of the crosstable variables */
-        Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
 		/* maximum value allowed of the associated crosstable variable */
         Q_PROPERTY(QString max READ max WRITE setMax RESET unsetMax)
         /* minumum value allowed of the associated crosstable variable */
@@ -110,7 +108,6 @@ class
 		QString suffix() { return m_suffix; }
 		QString min()      const { return m_min; }
 		QString max()      const { return m_max; }
-		int refresh()      const { return m_refresh; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
 		char statusComm()      const { return m_status; }
@@ -122,20 +119,17 @@ class
 		QColor bgSelectColor() const;
 		QColor borderSelectColor() const;
 		QColor fontSelectColor() const;
-		bool startAutoReading();
         
 		enum QFrame::Shadow apparence() const;
-
-		bool stopAutoReading();
 
 	public Q_SLOTS:
 		bool writeValue(QString);
 		bool setVariable(QString);
-		void setPrefix(QString);
+        bool setRefresh(int) const {return true;}
+        void setPrefix(QString);
 		void setSuffix(QString);
 		bool setMin(QString);
 		bool setMax(QString);
-		bool setRefresh(int);
 		void setViewStatus(bool);
 		bool setVisibilityVar(QString);
 		void setBgColor(const QColor& bgColor);
@@ -154,7 +148,6 @@ class
         void unsetVariable();
         void unsetPrefix();
         void unsetSuffix();
-        void unsetRefresh();
         void unsetMin();
         void unsetMax();
         void unsetViewStatus();
@@ -174,7 +167,6 @@ class
 		QString m_prefix;
 		QString m_suffix;
 		QString m_visibilityvar;
-		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		bool m_objectstatus;
@@ -194,11 +186,11 @@ class
         enum QFrame::Shadow m_apparence;
         enum ATCMLabelFormat m_format;
 
-	protected:
+        QWidget *m_parent;
+        bool m_lastVisibility;
+protected:
 		void paintEvent(QPaintEvent *event);
 
-	private:
-		QTimer * refresh_timer;
 };
 
 #endif

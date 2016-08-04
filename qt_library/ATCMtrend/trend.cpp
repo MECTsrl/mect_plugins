@@ -13,6 +13,7 @@
 #include "item_selector.h"
 #include "ui_trend.h"
 #include "utility.h"
+#include "alphanumpad.h"
 
 #include <QList>
 #include <QDate>
@@ -42,6 +43,18 @@
 #define DATE_TIME_FMT "yyyy/MM/dd HH:mm:ss"
 
 #define DEFAULT_TREND QDate::currentDate().toString("yyyy_MM_dd.log").toAscii().data()
+
+#define LINE2STR(line) \
+{ \
+    if (strchr(line, '\r')) \
+    { \
+        *strchr(line, '\r') = '\0'; \
+    } \
+    else if (strchr(line, '\n')) \
+    { \
+        *strchr(line, '\n') = '\0'; \
+    } \
+}
 
 /* this define set the window title */
 #define WINDOW_TITLE "TREND"
@@ -395,7 +408,7 @@ void trend::updateData()
     }
 
     /* call the father update data  */
-    page::updateData();
+    //page::updateData();
 
     if ((reloading == true || _trend_data_reload_ == false ) && first_time == false)
     {
@@ -1440,7 +1453,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                       nsec
                       );
             
-            int decimal = getVarDecimalByCtIndex(pens[pen_index].CtIndex);
+            int decimal = getVarDecimal(pens[pen_index].CtIndex);
             
             float n = (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS;
 
@@ -2079,7 +2092,7 @@ void trend::updatePenLabel()
     if (pens[actualPen].visible && strlen(pens[actualPen].tag) != 0)
     {
 #ifdef SHOW_ACTUAL_VALUE
-        int decimal = getVarDecimalByCtIndex(pens[actualPen].CtIndex);
+        int decimal = getVarDecimal(pens[actualPen].CtIndex);
 #endif
         if (strlen(pens[actualPen].description) > 0)
         {

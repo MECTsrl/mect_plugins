@@ -14,6 +14,7 @@
 #include "utility.h"
 #include <QDirIterator>
 #include <QFontDatabase>
+#include "protocol.h"
 //#include "app_config.h"
 
 /**
@@ -23,12 +24,14 @@ int loadPasswords()
 {
     FILE *out;
     int i;
+
     out = fopen(PASSFILE, "rb");
     if (out == NULL)
     {
         LOG_PRINT(verbose_e,"Cannot open password file\n");
         return 1;
     }
+
     for (i = 0; i < PASSWORD_NB; i++)
     {
         if (fread(&passwords[i], 4,1, out)==0)
@@ -39,7 +42,9 @@ int loadPasswords()
         }
         LOG_PRINT(verbose_e,"password[%d] = %d\n", i, passwords[i]);
     }
+
     fclose(out);
+
     return 0;
 }
 
@@ -205,7 +210,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
             continue;
         }
         indexes->append((u_int16_t)ctIndex);
-        int decimal = getVarDecimalByCtIndex(ctIndex);
+        int decimal = getVarDecimal(ctIndex);
 
         /* values */
         u_int32_t value;
@@ -292,75 +297,52 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     int errors = 0;
 
     if (step >= MAX_RCP_STEP)
-    {
         return -1;
-    }
-    for (int i = 0; i < table[step].count(); i++)
-    {
-        char msg[TAG_LEN] = "";
 
+    for (int i = 0; i < table[step].count(); i++) {
+        char msg[TAG_LEN] = "";
         uint32_t valueu = 0;
         int ctIndex = (int)(indexes->at(i));
-        readFromDb(ctIndex, &valueu);
+
+        ioComm->readUdpReply(ctIndex, &valueu);
         LOG_PRINT(verbose_e, "%d -> %d\n", ctIndex, valueu);
 
-        switch (getStatusVarByCtIndex(ctIndex, msg))
-        {
-        case BUSY:
-            //retry_nb = 0;
+        uint8_t status = ioComm->getStatusVar(ctIndex, msg);
+        if (status & (STATUS_BUSY_R | STATUS_BUSY_W)) {
             LOG_PRINT(verbose_e, "BUSY: %s\n", msg);
+
             if (msg[0] == '\0')
-            {
                 strcpy(msg, VAR_PROGRESS);
-            }
+
             errors++;
-            break;
-        case ERROR:
+        }
+        else if (status & (STATUS_ERR | STATUS_FAIL_W)) {
             LOG_PRINT(verbose_e, "ERROR: %s\n", msg);
+
             if (msg[0] == '\0')
-            {
                 strcpy(msg, VAR_COMMUNICATION);
-            }
+
             errors++;
-            break;
-        case DONE:
+        }
+        else if (status & STATUS_OK) {
             LOG_PRINT(verbose_e, "DONE step %d i %d value %d\n", step, i, valueu);
+
             table[step][i] = valueu;
+
             msg[0] = '\0';
-            break;
-        default:
+        }
+        else {
             LOG_PRINT(verbose_e, "OTHER: %s\n", msg);
+
             if (msg[0] == '\0')
-            {
                 strcpy(msg, VAR_UNKNOWN);
-            }
+
             errors++;
-            break;
         }
+
         if (msg[0] != '\0')
-        {
             LOG_PRINT(error_e, "Reading (%d) - '%s' - '%s'\n", i, varNameArray[ctIndex].tag, msg);
-        }
     }
-    return errors;
-}
-
-int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
-{
-    int errors = 0;
-
-    if (step >= MAX_RCP_STEP)
-    {
-        return -1;
-    }
-    beginWrite();
-    for (int i = 0; i < table[step].count(); i++)
-    {
-        u_int16_t addr = indexes->at(i);
-        u_int32_t value = table[step].at(i);
-        errors += addWrite(addr, &value);
-    }
-    endWrite();
 
     return errors;
 }
@@ -368,7 +350,7 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 bool CommStart()
 {
     /* Load the cross-table in order to allocate the ioArea to the right size (should be fixed size) and fill the syncro table */
-    int elem_read = fillSyncroArea();
+    int elem_read = loadCt();
     if (elem_read < 0)
     {
         LOG_PRINT(error_e, "cannot find the cross table [%s]\n", CROSS_TABLE);
@@ -385,6 +367,7 @@ bool CommStart()
     {
         LOG_PRINT(error_e, "Too many variable into the cross table [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
         QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Syntax error into the cross table at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
+
         return false;
     }
 
@@ -392,37 +375,20 @@ bool CommStart()
     logger = new Logger(NULL, NULL, LogPeriodSecS*1000);
 #endif
 
-    /* start the io layers */
-    ioComm = new io_layer_comm(&data_send_mutex, &data_recv_mutex);
-    LOG_PRINT(verbose_e, "Starting IOLayer Data\n");
+    /* create the io layers */
+    ioComm = new io_layer_comm();
+    LOG_PRINT(verbose_e, "Creating IOLayer\n");
 
-    /* setting output data area size */
-    SET_SIZE_BYTE(IODataAreaO + DB_OUT_BASE_BYTE, DB_SIZE_ELEM);
-    /* setting status area size */
-    SET_SIZE_BYTE(IODataAreaO + STATUS_BASE_BYTE, DB_SIZE_ELEM);
+    bool retval = ioComm->initializeData("localhost", COMMCH_UDP_PORT_RX, COMMCH_UDP_PORT_TX);
+    if (!retval) {
+        LOG_PRINT(error_e, "Cannot initialize communication with PLC runtime\n");
+        QMessageBox::critical(0, QApplication::trUtf8("Communication error"), QApplication::trUtf8("Cannot initialize communication with PLC runtime"));
 
-    /* setting input data area size (shouldn't be necessary) -- it has been checked at least for array init*/
-    //SET_SIZE_BYTE(IODataAreaI + DB_IN_BASE_BYTE, DB_SIZE_ELEM);
-    //SET_SIZE_BYTE(IODataAreaI + STATUS_BASE_BYTE, DB_SIZE_ELEM);
-
-    if (ioComm->initializeData(LOCAL_SERVER_ADDR, LOCAL_SERVER_DATA_RX_PORT, LOCAL_SERVER_DATA_TX_PORT, IODataAreaI, STATUS_BASE_BYTE + DB_SIZE_BYTE, IODataAreaO, STATUS_BASE_BYTE + DB_SIZE_BYTE) == false)
-    {
-        LOG_PRINT(error_e, "cannot connect to the Data IOLayer\n");
-        QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
         return false;
     }
 
-    /* setting output syncro area size, for the corresponding reading area it's not necessary */
-    SET_SIZE_WORD(IOSyncroAreaO + SYNCRO_BASE_BYTE, DB_SIZE_ELEM);
-
-    if (ioComm->initializeSyncro(LOCAL_SERVER_ADDR, LOCAL_SERVER_SYNCRO_RX_PORT, LOCAL_SERVER_SYNCRO_TX_PORT, IOSyncroAreaI, SYNCRO_SIZE_BYTE, IOSyncroAreaO, SYNCRO_SIZE_BYTE) == false)
-    {
-        LOG_PRINT(error_e, "cannot connect to the Syncro IOLayer\n");
-        QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
-        return false;
-    }
     ioComm->start();
-    LOG_PRINT(verbose_e, "IOLayer Syncro Started\n");
+    LOG_PRINT(verbose_e, "IOLayer Started\n");
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     /* start the logger thread */

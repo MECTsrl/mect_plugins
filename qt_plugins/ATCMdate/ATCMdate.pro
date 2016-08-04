@@ -4,9 +4,13 @@ include (../qt_plugins.pri)
 
 INCLUDEPATH += ../ATCMplugineditor
 
-HEADERS     = atcmdateplugin.h
+HEADERS =  \
+    ../atcmplugin.h \
+    atcmdateplugin.h
 
-SOURCES     = atcmdateplugin.cpp
+SOURCES = \
+    ../atcmplugin.cpp \
+    atcmdateplugin.cpp
 
 RESOURCES   = icons.qrc
 
