@@ -1,6 +1,6 @@
 @echo off
 
-SET REVISION="2.0.9rc6"
+SET REVISION="2.0.9rc11"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\Users\UserName\Documents\GitHub\mect_plugins"
@@ -10,7 +10,7 @@ SET TARGET_LIST=TP1043_01_A TP1043_01_B TP1043_01_C TP1057_01_A TP1057_01_B TP10
 rem extract MECT_CONFIGURATOR_REVISION
 FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\MectConfigurator\MectConfiguratorInstaller\Volume\nidist.id') DO SET MECT_CONFIGURATOR_REVISION="%%a"
 
-SET QTPROJECT=0
+SET QTPROJECT=1
 SET BUILD=1
 SET INSTALL=0
 SET UPDATE=1
@@ -84,6 +84,33 @@ IF %DLLBUILD% == 1 (
 	)
 	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" distclean>nul 2>&1
 	time /t
+
+	echo Building SystemConf...
+	cd /D %IN_DIR%\setup\SystemConf
+	time /t
+	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" distclean>nul 2>&1
+	"C:\Qt485\desktop\bin\qmake.exe" SystemConf.pro -r -spec win32-g++ "CONFIG+=release" > %OUT_DIR%\error.log 2>&1
+	IF ERRORLEVEL 1 (
+		echo problem during Building SystemConf
+		pause
+		cd %ORIGINAL%
+		exit
+	)
+
+	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" > %OUT_DIR%\error.log 2>&1
+	IF ERRORLEVEL 1 (
+		echo problem during Building SystemConf
+		pause
+		cd %ORIGINAL%
+		exit
+	)
+	xcopy %IN_DIR%\setup\SystemConf\release\SystemConf.exe C:\Qt485\desktop\bin\SystemConf.exe /Q /Y > %OUT_DIR%\error.log 2>&1
+	IF ERRORLEVEL 1 (
+		echo problem during template.
+		pause
+		cd %ORIGINAL%
+		exit
+	)
 )
 
 IF %TEMPLATE% == 1 (
@@ -221,7 +248,7 @@ IF %PREPARE_UPDATE% == 1 (
 			exit
 		)
 	)
-
+	
 	echo Copying SystemConf...
 	mkdir %OUT_DIR%\Qt485\desktop\bin
 	xcopy C:\Qt485\desktop\bin\SystemConf.exe %OUT_DIR%\Qt485\desktop\bin /Q /Y > %OUT_DIR%\error.log 2>&1
