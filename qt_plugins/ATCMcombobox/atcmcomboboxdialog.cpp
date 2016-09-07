@@ -9,9 +9,8 @@
 : QDialog(parent)
 {
 	combobox = anim;
-	table = new QTableWidget(1,2);
+    table = new QTableWidget(0,2);
 
-	//table->setSelectionBehavior(QAbstractItemView::SelectRows);
 	table->setEditTriggers(QAbstractItemView::DoubleClicked);
 
 	QTableWidgetItem * item;
@@ -27,12 +26,10 @@
 	if (m_mapping.length() > 0)
 	{
 		m_maplist = m_mapping.split(";");
-		//printf("%d\n", m_maplist.count());
 		for (int i = 0; i < m_maplist.count() - 1; i+=2)
 		{
 			if (m_maplist.at(i).length() > 0 && m_maplist.at(i+1).length() > 0)
 			{
-				//printf("%d - '%s' -> '%s'\n", i/2, m_maplist.at(i).toAscii().data(),  m_maplist.at(i+1).toAscii().data());
 				table->insertRow(i/2);
 				item = new QTableWidgetItem(m_maplist.at(i));
 				table->setItem(i/2,0,item);
@@ -40,7 +37,6 @@
 				table->setItem(i/2,1,item);
 			}
 		}
-        table->removeRow(table->rowCount() - 1);
     }
 
 	QLabel * labelVariable = new QLabel("Variable:");
@@ -109,10 +105,8 @@ void atcmcomboboxDialog::saveState()
 
 		/* set the mapping property using the content of the table widget */
 		m_mapping.clear();
-		//printf("%d\n", table->rowCount());
 		for (int i = 0; i < table->rowCount(); i++)
 		{
-			//printf("%d\n", i);
             if (table->item(i,0) && table->item(i,0)->text().length() > 0)
 			{
 				if (i > 0)
@@ -128,7 +122,12 @@ void atcmcomboboxDialog::saveState()
                     m_mapping = m_mapping + table->item(i,0)->text() + ";" + table->item(i,0)->text();
                 }
 			}
-		}
+            else if (table->item(i,1) && table->item(i,1)->text().length() > 0)
+            {
+                QMessageBox::critical(this,tr("Invalid item"), tr("The item '%1' have a description ('%2') but not a value.").arg(i+1).arg(table->item(i,1)->text()));
+                return;
+            }
+        }
 		formWindow->cursor()->setProperty("mapping", m_mapping.trimmed());
 		formWindow->cursor()->setProperty("variable", lineVariable->text().trimmed());
 		formWindow->cursor()->setProperty("visibilityVar", lineVisibility->text().trimmed());
@@ -139,18 +138,17 @@ void atcmcomboboxDialog::saveState()
 void atcmcomboboxDialog::addMapItem()
 {
 	QTableWidgetItem * item;
-    int i = table->currentRow();
-    if (i < 0)
-    {
-        i = table->rowCount();
+    int i;
+    if (table->selectionModel()->selectedRows().count() > 0) {
+        i = table->currentRow();
     }
     else
     {
-        i++;
+        i = table->rowCount();
     }
-	table->insertRow(i);
-	item = new QTableWidgetItem("");
-	table->setItem(i,0,item);
+    table->insertRow(i);
+    item = new QTableWidgetItem(QString("%1").setNum(i+1));
+    table->setItem(i,0,item);
 	item = new QTableWidgetItem("");
 	table->setItem(i,1,item);
 }
@@ -167,9 +165,9 @@ void atcmcomboboxDialog::removeMapItem()
 
 void atcmcomboboxDialog::chooseCtVariable()
 {
-	QString value;
-	CrossTableEditor dialog(combobox, &value);
-	if (dialog.exec() == Accepted)
+    QString value = lineVariable->text();
+    CrossTableEditor dialog(combobox, &value);
+    if (dialog.exec() == Accepted)
 	{
 		lineVariable->setText(value);
 	}
@@ -177,9 +175,9 @@ void atcmcomboboxDialog::chooseCtVariable()
 
 void atcmcomboboxDialog::chooseCtVisibility()
 {
-	QString value;
-	CrossTableEditor dialog(combobox, &value);
-	if (dialog.exec() == Accepted)
+    QString value = lineVisibility->text();
+    CrossTableEditor dialog(combobox, &value);
+    if (dialog.exec() == Accepted)
 	{
 		lineVisibility->setText(value);
 	}

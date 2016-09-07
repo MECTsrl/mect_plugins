@@ -1,17 +1,23 @@
 #ifndef ATCMLABEL_H
 #define ATCMLABEL_H
 
-//#include <QtGui/QWidget>
 #include <QLocale>
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
-#include <QTimer>
+#endif
 #include <QFrame>
+#include "atcmpluginobject.h"
 
-class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMlabel : public QPushButton, public ATCMpluginObject
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -21,13 +27,13 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
-		Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
-		Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
+        Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
+        Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
 		Q_PROPERTY(bool	autoRepeat READ autoRepeat WRITE setAutoRepeat DESIGNABLE false)
 		Q_PROPERTY(int	autoRepeatDelay READ autoRepeatDelay WRITE setAutoRepeatDelay DESIGNABLE false)
 		Q_PROPERTY(int	autoRepeatInterval READ autoRepeatInterval WRITE setAutoRepeatInterval DESIGNABLE false)
@@ -53,8 +59,6 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
         Q_PROPERTY(QString prefix READ prefix WRITE setPrefix RESET unsetPrefix)
 		/* suffix to show */
         Q_PROPERTY(QString suffix READ suffix WRITE setSuffix RESET unsetSuffix)
-		/* refresh time of the crosstable variables */
-        Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
 		/* maximum value allowed of the associated crosstable variable */
         Q_PROPERTY(QString max READ max WRITE setMax RESET unsetMax)
         /* minumum value allowed of the associated crosstable variable */
@@ -81,17 +85,29 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		Q_PROPERTY(int borderRadius READ borderRadius WRITE setBorderRadius)
 		/* set the apparence */
         Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence RESET unsetApparence)
+        Q_ENUMS(ATCMLabelFormat)
+        Q_PROPERTY(enum ATCMLabelFormat format READ format WRITE setFormat)
+#endif
 
-	public:
-		ATCMlabel(QWidget *parent = 0);
+    public:
+        enum ATCMLabelFormat
+        {
+            Dec,
+            Hex,
+            Bin
+        };
+        ATCMlabel(QWidget *parent = 0);
 		~ATCMlabel();
-		QString value()    const { return m_value; }
+        enum ATCMLabelFormat format() const
+        {
+            return m_format;
+        }
+        QString value()    const { return m_value; }
 		QString variable() const { return m_variable; }
 		QString prefix() { return m_prefix; }
 		QString suffix() { return m_suffix; }
 		QString min()      const { return m_min; }
 		QString max()      const { return m_max; }
-		int refresh()      const { return m_refresh; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
 		char statusComm()      const { return m_status; }
@@ -103,20 +119,17 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		QColor bgSelectColor() const;
 		QColor borderSelectColor() const;
 		QColor fontSelectColor() const;
-		bool startAutoReading();
         
 		enum QFrame::Shadow apparence() const;
-
-		bool stopAutoReading();
 
 	public Q_SLOTS:
 		bool writeValue(QString);
 		bool setVariable(QString);
-		void setPrefix(QString);
+        bool setRefresh(int) const {return true;}
+        void setPrefix(QString);
 		void setSuffix(QString);
 		bool setMin(QString);
 		bool setMax(QString);
-		bool setRefresh(int);
 		void setViewStatus(bool);
 		bool setVisibilityVar(QString);
 		void setBgColor(const QColor& bgColor);
@@ -130,11 +143,11 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		void setBorderRadius(int radius);
 
         void setApparence(const enum QFrame::Shadow apparence);
+        void setFormat(const enum ATCMLabelFormat format);
 
         void unsetVariable();
         void unsetPrefix();
         void unsetSuffix();
-        void unsetRefresh();
         void unsetMin();
         void unsetMax();
         void unsetViewStatus();
@@ -154,7 +167,6 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		QString m_prefix;
 		QString m_suffix;
 		QString m_visibilityvar;
-		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		bool m_objectstatus;
@@ -172,12 +184,13 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		int m_borderradius;
 
         enum QFrame::Shadow m_apparence;
+        enum ATCMLabelFormat m_format;
 
-	protected:
+        QWidget *m_parent;
+        bool m_lastVisibility;
+protected:
 		void paintEvent(QPaintEvent *event);
 
-	private:
-		QTimer * refresh_timer;
 };
 
 #endif

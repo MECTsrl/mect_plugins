@@ -11,39 +11,45 @@
 #include <QVBoxLayout>
 #include <QStyleOption>
 #include <QMessageBox>
+#include <stdlib.h>
 
 #include "atcmlabel.h"
 #include "common.h"
 #include "numpad.h"
 #include "atcmstyle.h"
+#include "protocol.h"
+
 #ifdef TARGET_ARM
 #include "app_logprint.h"
 #include "cross_table_utility.h"
+#include "global_var.h"
 #endif
 
 ATCMlabel::ATCMlabel(QWidget *parent) :
     QPushButton(parent)
 {
+    m_lastVisibility = false;
     m_value = "";
     m_variable = "";
     m_prefix = "";
     m_suffix = "";
     m_min = "NAN";
     m_max = "NAN";
-    m_status = UNK;
+    m_status = STATUS_ENABLED;
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
-    m_bgcolor = QColor(255,255,255);
-    m_bgcolor_select = QColor(230,230,230);
-    m_fontcolor = QColor(130,130,130);
-    m_fontcolor_select = QColor(10,10,10);
-    m_bordercolor = QColor(0,0,0);
-    m_bordercolor_select = QColor(0,0,0);
     m_objectstatus = false;
-    m_refresh = DEFAULT_REFRESH;
-    m_borderwidth = 1;
-    m_borderradius = 0;
     m_visibilityvar = "";
+    m_format = Dec;
+
+    m_bgcolor = BG_COLOR_DEF;
+    m_bgcolor_select = BG_COLOR_SEL_DEF;
+    m_fontcolor = FONT_COLOR_DEF;
+    m_fontcolor_select = FONT_COLOR_SEL_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_bordercolor_select = BORDER_COLOR_SEL_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -51,6 +57,9 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
 
     setFlat(true);
     setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
     /*
      * put there a default stylesheet
@@ -125,35 +134,19 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
             #endif
                 );
 
-#ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else
-#endif
-    {
-        refresh_timer = NULL;
-    }
-
+    m_parent = parent;
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     connect( this, SIGNAL( pressed() ), this, SLOT( writeAction() ) );
     connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
 }
 
 ATCMlabel::~ATCMlabel()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMlabel::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
     QPainter painter(this);
     QPalette palette = this->palette();
 
@@ -209,25 +202,17 @@ void ATCMlabel::paintEvent(QPaintEvent * e)
     }
 
 #ifdef TARGET_ARM
-    if (m_viewstatus)
-    {
+    if (m_viewstatus) {
         /* draw the background color in funtion of the status */
         palette.setColor(QPalette::Foreground, Qt::red);
-        switch(m_status)
-        {
-        case DONE:
+        if (m_status & STATUS_OK)
             palette.setColor(QPalette::Foreground, Qt::green);
-            break;
-        case BUSY:
+        else if (m_status & (STATUS_BUSY_R | STATUS_BUSY_W))
             palette.setColor(QPalette::Foreground, Qt::yellow);
-            break;
-        case ERROR:
+        else if (m_status & (STATUS_FAIL_W | STATUS_ERR))
             palette.setColor(QPalette::Foreground, Qt::red);
-            break;
-        default /*UNKNOWN*/:
+        else
             palette.setColor(QPalette::Foreground, Qt::gray);
-            break;
-        }
     }
 #endif
 
@@ -262,10 +247,6 @@ bool ATCMlabel::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -284,47 +265,34 @@ bool ATCMlabel::setVariable(QString variable)
     /* if the acual variable is different from actual variable, deactivate it */
     if (m_variable.length() != 0 && variable.trimmed().compare(m_variable) != 0)
     {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_variable.trimmed().toAscii().data()) == 0)
-        {
-#endif
-            m_variable.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
+        m_variable.clear();
+        m_CtIndex = -1;
     }
 
     /* if the acual variable is empty activate it */
-    if (variable.trimmed() > 0)
+    if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_variable = variable.trimmed();
+        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_variable = variable.trimmed();
-            if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                m_value = VAR_UNKNOWN;
-                m_CtIndex = -1;
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-        }
-        else
-        {
-            m_status = ERROR;
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
+            m_status = STATUS_ERR;
             m_value = VAR_UNKNOWN;
+            m_CtIndex = -1;
         }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
 #else
         m_variable = variable.trimmed();
 #endif
     }
 
-    if (m_status != ERROR)
+    if (!(m_status & STATUS_ERR))
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
+#else
+        setToolTip("");
 #endif
         return true;
     }
@@ -384,44 +352,31 @@ void ATCMlabel::setBorderRadius(int radius)
     update();
 }
 
-bool ATCMlabel::setRefresh(int refresh)
-{
-    m_refresh = refresh;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
-    return true;
-}
-
 /* read variable */
 void ATCMlabel::updateData()
 {
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
 
+    if (!m_parent->isVisible())
+    {
+        incdecHvar(isVisible(), m_CtIndex);
+        return;
+    }
+
     if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
     {
-        if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
+        if (ioComm->valFromIndex(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
         {
-            m_status = DONE;
+            m_status = STATUS_OK;
             LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
             setVisible(atoi(value) != 0);
         }
-        LOG_PRINT(info_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
+        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
+
+    incdecHvar(isVisible(), m_CtIndex);
+
     if (this->isVisible() == false)
     {
         return;
@@ -429,61 +384,87 @@ void ATCMlabel::updateData()
 
     if (m_variable.length() == 0)
     {
-        m_status = DONE;
+        m_status = STATUS_OK;
         m_value = VAR_UNKNOWN;
     }
-    else if (m_variable.length() > 0 && m_CtIndex >= 0)
+    else if (m_variable.length() > 0 && m_CtIndex > 0)
     {
-        if (formattedReadFromDb(m_CtIndex, value) == 0)
+        if (ioComm->valFromIndex(m_CtIndex, value) == 0)
         {
-            m_status = DONE;
-            m_value = value;
+            m_status = STATUS_OK;
+            if (m_format == Bin)
+            {
+                m_value = QString::number(atoi(value), 2) + QString("b");
+
+            }
+            else if (m_format == Hex)
+            {
+                switch (CtIndex2Type(m_CtIndex))
+                {
+                case intab_e:
+                case intba_e:
+                {
+                    int16_t val = strtol(value, NULL, 10);
+                    m_value = QString("0x") + QString::number(val, 16);
+                    break;
+                }
+                case uintab_e:
+                case uintba_e:
+                {
+                    uint16_t val = strtoul(value, NULL, 10);
+                    m_value = QString("0x") + QString::number(val, 16);
+                    break;
+                }
+                case dint_abcd_e:
+                case dint_badc_e:
+                case dint_cdab_e:
+                case dint_dcba_e:
+                {
+                    int32_t val = strtoll(value, NULL, 10);
+                    m_value = QString("0x") + QString::number(val, 16);
+                    break;
+                }
+                case udint_abcd_e:
+                case udint_badc_e:
+                case udint_cdab_e:
+                case udint_dcba_e:
+                {
+                    uint32_t val = strtoull(value, NULL, 10);
+                    m_value = QString("0x") + QString::number(val, 16);
+                    break;
+                }
+                case fabcd_e:
+                case fbadc_e:
+                case fcdab_e:
+                case fdcba_e:
+                    m_value = value;
+                    break;
+                default:
+                    m_value = QString("0x") + QString::number(atoi(value), 16);
+                    break;
+                }
+            }
+            else
+            {
+                m_value = value;
+            }
         }
         else
         {
             m_value = VAR_UNKNOWN;
-            m_status = ERROR;
-            LOG_PRINT(info_e,"variable '%s', CtIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+            m_status = STATUS_ERR;
+            LOG_PRINT(verbose_e,"variable '%s', CtIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
         }
         this->setText(m_value);
     }
     else
     {
-        m_status = ERROR;
+        m_status = STATUS_ERR;
         m_value = VAR_UNKNOWN;
         LOG_PRINT(error_e, "Invalid CtIndex %d for variable '%s' object '%s'\n", m_CtIndex, m_variable.toAscii().data(), this->objectName().toAscii().data());
     }
-    LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 #endif
     this->update();
-}
-
-bool ATCMlabel::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-bool ATCMlabel::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
 }
 
 void ATCMlabel::setBgSelectColor(const QColor& color)
@@ -592,12 +573,14 @@ void ATCMlabel::writeAction()
     QString strvalue;
     if (m_CtIndex > 0)
     {
-        int decimal = getVarDecimalByCtIndex(m_CtIndex);
+        int decimal = getVarDecimal(m_CtIndex);
         numpad * dk;
         switch (CtIndex2Type(m_CtIndex))
         {
-        case int_e:
-        case uint_e:
+        case intab_e:
+        case intba_e:
+        case uintab_e:
+        case uintba_e:
         case dint_abcd_e:
         case dint_badc_e:
         case dint_cdab_e:
@@ -610,18 +593,18 @@ void ATCMlabel::writeAction()
             if (decimal == 0)
             {
                 int value  = 0, min = m_min.toInt(), max = m_max.toInt();
-                dk = new numpad(&value, m_value.toInt(), min, max);
+                dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
                 dk->showFullScreen();
 
                 if (dk->exec() == QDialog::Accepted)
                 {
                     if (min < max && (value < min || value > max))
                     {
-                        QMessageBox::critical(this,tr("Dato non valido"), tr("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
+                        QMessageBox::critical(this,trUtf8("Dato non valido"), trUtf8("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
                         delete dk;
                         return;
                     }
-                    strvalue = QString().setNum(value);
+                    strvalue = QString::number(value);
 
                 }
                 else
@@ -641,11 +624,11 @@ void ATCMlabel::writeAction()
                 {
                     if (min < max && (value < min || value > max))
                     {
-                        QMessageBox::critical(this,tr("Dato non valido"), tr("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
+                        QMessageBox::critical(this,trUtf8("Dato non valido"), trUtf8("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
                         delete dk;
                         return;
                     }
-                    strvalue = QString().setNum(value);
+                    strvalue = QString::number(value);
 
                 }
                 else
@@ -670,11 +653,11 @@ void ATCMlabel::writeAction()
             {
                 if (min < max && (value < min || value > max))
                 {
-                    QMessageBox::critical(this,tr("Dato non valido"), tr("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
+                    QMessageBox::critical(this,trUtf8("Dato non valido"), trUtf8("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(m_min).arg(m_max));
                     delete dk;
                     return;
                 }
-                strvalue = QString().setNum(value);
+                strvalue = QString::number(value);
 
             }
             else
@@ -682,24 +665,24 @@ void ATCMlabel::writeAction()
                 delete dk;
                 return;
             }
-            LOG_PRINT(info_e,"decimale %s = %f\n", m_variable.toAscii().data(), value);
+            LOG_PRINT(verbose_e,"decimale %s = %f\n", m_variable.toAscii().data(), value);
         }
             break;
         default:
         {
             int value  = 0, min = 0, max = 1;
-            dk = new numpad(&value, m_value.toInt(), min, max);
+            dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
             dk->showFullScreen();
 
             if (dk->exec() == QDialog::Accepted)
             {
                 if (min < max && (value < min || value > max))
                 {
-                    QMessageBox::critical(this,tr("Dato non valido"), tr("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(min).arg(max));
+                    QMessageBox::critical(this,trUtf8("Dato non valido"), trUtf8("Il valore '%1' inserito non e' valido.\nIl valore deve essere compreso tra '%2' e '%3'").arg(value).arg(min).arg(max));
                     delete dk;
                     return;
                 }
-                strvalue = QString().setNum(value);
+                strvalue = QString::number(value);
 
             }
             else
@@ -707,7 +690,7 @@ void ATCMlabel::writeAction()
                 delete dk;
                 return;
             }
-            LOG_PRINT(info_e,"bit %s = %d\n", m_variable.toAscii().data(), value);
+            LOG_PRINT(verbose_e,"bit %s = %d\n", m_variable.toAscii().data(), value);
         }
             break;
         }
@@ -733,7 +716,7 @@ bool ATCMlabel::writeValue(QString value)
         return false;
     }
 #ifdef TARGET_ARM
-    if (setFormattedVar(m_variable.toAscii().data(), value.toAscii().data()))
+    if (m_CtIndex > 0 && ioComm->sendUdpWriteCmd(m_CtIndex, value.toAscii().data()) == 0)
     {
         m_value = value;
         this->setText(m_value);
@@ -766,11 +749,6 @@ void ATCMlabel::unsetSuffix()
     setSuffix("");
 }
 
-void ATCMlabel::unsetRefresh()
-{
-    setRefresh(DEFAULT_REFRESH);
-}
-
 void ATCMlabel::unsetMin()
 {
     setMin(0);
@@ -794,4 +772,10 @@ void ATCMlabel::unsetVisibilityVar()
 void ATCMlabel::unsetApparence()
 {
     setApparence(QFrame::Plain);
+}
+
+void ATCMlabel::setFormat(const enum ATCMLabelFormat format)
+{
+    m_format = format;
+    update();
 }

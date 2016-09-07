@@ -3,10 +3,12 @@
 
 #include <QtGui/QWidget>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
-#include <QTimer>
+#endif
 #include <QTime>
 #include <QGridLayout>
+#include <QMutex>
 
 #define FRAMEPLOT
 #ifdef FRAMEPLOT
@@ -24,7 +26,9 @@
 #include <qwt_scale_draw.h>
 #include <qwt_legend.h>
 
-#define MAX_SAMPLES 256
+#include "atcmpluginobject.h"
+
+#define MAX_SAMPLES 1024
 
 class ATCMInterruptedCurve : public QwtPlotCurve
 {
@@ -64,7 +68,7 @@ public:
     virtual QwtText label(double v) const
     {
         //fprintf(stderr, "%s + %f = %s\n", baseTime.toString().toAscii().data(), v, upTime.toString().toAscii().data());
-        return QString().setNum(v,'f',decimalNb);
+        return QString::number(v,'f',decimalNb);
     }
     void setDecimalNb(const int &decimals)
     {
@@ -113,9 +117,14 @@ private:
 Q_DECLARE_METATYPE(descriptor::atcm_axisDescriptor)
 #endif
 
-class QDESIGNER_WIDGET_EXPORT ATCMgraph : public MAINWIGET
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMgraph : public MAINWIGET, public ATCMpluginObject
 {
     Q_OBJECT
+#ifndef TARGET_ARM
     /************* property to hide *************/
 	Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
     // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -125,7 +134,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMgraph : public MAINWIGET
     Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
     Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
     Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
+#ifdef _WIN32
     Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
     Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
@@ -231,13 +240,11 @@ class QDESIGNER_WIDGET_EXPORT ATCMgraph : public MAINWIGET
     Q_PROPERTY(bool legendVisible READ legendVisible WRITE setLegendVisible RESET unsetLegendVisible)
     /* Title */
     Q_PROPERTY(QString title READ title WRITE setTitle RESET unsetTitle)
-    /* refresh time of the crosstable variables */
-    Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
     /* set if the the status of the associated variable have an visible feedback */
     Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
     /* set background color */
     Q_PROPERTY(QColor bgColor READ bgColor WRITE setBgColor)
-
+#endif
 public:
     enum ATCMAxisFormat
     {
@@ -250,11 +257,11 @@ public:
     QString x1Variable() const { return m_x1Variable; }
     QString x1Min() const {
         if (m_x1MinVariable.length() > 0) return m_x1MinVariable;
-        else return QString().setNum(m_x1MinValue,'f');
+        else return QString::number(m_x1MinValue,'f');
     }
     QString x1Max() const {
         if (m_x1MaxVariable.length() > 0) return m_x1MaxVariable;
-        else return QString().setNum(m_x1MaxValue,'f');
+        else return QString::number(m_x1MaxValue,'f');
     }
     double x1Step() const { return m_x1step; }
     QString x1Label() const { return m_x1label; }
@@ -264,11 +271,11 @@ public:
     QString y1Variable() const { return m_y1Variable; }
     QString y1Min() const {
         if (m_y1MinVariable.length() > 0) return m_y1MinVariable;
-        else return QString().setNum(m_y1MinValue,'f');
+        else return QString::number(m_y1MinValue,'f');
     }
     QString y1Max() const {
         if (m_y1MaxVariable.length() > 0) return m_y1MaxVariable;
-        else return QString().setNum(m_y1MaxValue,'f');
+        else return QString::number(m_y1MaxValue,'f');
     }
     double y1Step() const { return m_y1step; }
     QString y1Label() const { return m_y1label; }
@@ -280,11 +287,11 @@ public:
     QString x2Variable() const { return m_x2Variable; }
     QString x2Min() const {
         if (m_x2MinVariable.length() > 0) return m_x2MinVariable;
-        else return QString().setNum(m_x2MinValue,'f');
+        else return QString::number(m_x2MinValue,'f');
     }
     QString x2Max() const {
         if (m_x2MaxVariable.length() > 0) return m_x2MaxVariable;
-        else return QString().setNum(m_x2MaxValue,'f');
+        else return QString::number(m_x2MaxValue,'f');
     }
     double x2Step() const { return m_x2step; }
     QString x2Label() const { return m_x2label; }
@@ -294,11 +301,11 @@ public:
     QString y2Variable() const { return m_y2Variable; }
     QString y2Min() const {
         if (m_y2MinVariable.length() > 0) return m_y2MinVariable;
-        else return QString().setNum(m_y2MinValue,'f');
+        else return QString::number(m_y2MinValue,'f');
     }
     QString y2Max() const {
         if (m_y2MaxVariable.length() > 0) return m_y2MaxVariable;
-        else return QString().setNum(m_y2MaxValue,'f');
+        else return QString::number(m_y2MaxValue,'f');
     }
     double y2Step() const { return m_y2step; }
     QString y2Label() const { return m_y2label; }
@@ -320,7 +327,6 @@ public:
     int sample1Nb() const { return m_sample_nb1; }
     int sample2Nb() const { return m_sample_nb2; }
 
-    int refresh()      const { return m_refresh; }
     char status()      const { return m_x1status && m_y1status && m_x2status && m_y2status; }
     bool viewStatus()  const { return m_viewstatus; }
     bool legendVisible()  const { return m_legendvisible; }
@@ -372,11 +378,11 @@ public slots:
     void setX1axis(descriptor::atcm_axisDescriptor xaxis);
 #endif
 
-    bool setRefresh(int);
+    bool setRefresh(int) {return true;}
     bool setViewStatus(bool);
     void setLegendVisible(bool);
 #ifdef TARGET_ARM
-    bool addSample(double *samples_x, double *samples_y, double x, double y, double min_x, double max_x, int * sample);
+    bool addSample(double *samples_x, double *samples_y, double x, double y, double min_x, double max_x);
     bool readData(int CtIndex, QString variable, double * value);
 #endif
     void setDisplay1(QString);
@@ -416,7 +422,6 @@ public slots:
     void unsetGridVisible();
     void unsetLegendVisible();
     void unsetTitle();
-    void unsetRefresh();
     void unsetViewStatus();
     void unsetDisplay1();
     void unsetDisplay2();
@@ -427,7 +432,6 @@ protected:
 #ifdef FRAMEPLOT
     QwtPlot * plot;
 #endif
-    int m_refresh;
     bool m_viewstatus;
     bool m_legendvisible;
     QwtPlotGrid *grid;
@@ -546,11 +550,13 @@ protected:
 private:
     bool setVariable(QString variable, QString * destination, int * CtIndex);
 #ifdef TARGET_ARM
-    char readVariable(QString variable, int CtIndex, double * value);
+    char readVariable(int CtIndex, double * value);
 #endif
 private:
-    QTimer * refresh_timer;
     bool m_run_stop;
+    QMutex sample_mutex;
+    QWidget *m_parent;
+    bool m_lastVisibility;
 };
 
 #endif

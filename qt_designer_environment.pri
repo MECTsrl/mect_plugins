@@ -1,11 +1,17 @@
-include (qt_environment.pri)
 win32 {
-	ATCM_INSTALL_PLUGINS = c:/Qt485/desktop/plugins/designer
-        ATCM_QWT_LIB = C:/Qt485/desktop/lib/qwt-6.0.1/lib
-	ATCM_QWT_INCL = 
+	ATCM_QWT_LIB = C:/Qt485/desktop/lib
+	ATCM_QWT_INCL = C:/Qt485/desktop/include/Qwt
+        QT_CREATOR = C:/Qt485/desktop
+        ATCM_DIR_COPY = "cmd /c xcopy /Q /Y /E /S /I"
+        ATCM_INSTALL_WIZARD = C:/Qt485/desktop/share/qtcreator/templates/wizards
+        MECT_INSTALL_PLUGINS = $$[QT_INSTALL_PLUGINS]
 }
 unix:!macx {
-	ATCM_INSTALL_PLUGINS = /home/mect/QtSDK/QtCreator/lib/qtcreator/plugins/designer
-	ATCM_QWT_LIB = /usr/local/qwt-6.0.1/lib
-	ATCM_QWT_INCL = /usr/local/qwt-6.0.1/include
+	ATCM_QWT_LIB = $$QT_ROOTFS/usr/lib
+	ATCM_QWT_INCL = $$QT_ROOTFS/usr/include
+        QT_CREATOR = $$HOME/qtcreator-2.8.1/bin/qtcreator
+        ATCM_DIR_COPY = "cp -rf"
+        ATCM_INSTALL_WIZARD = "$$(HOME)/qtcreator-2.8.1/share/qtcreator/templates/wizards/"
+        MECT_INSTALL_PLUGINS = "$$(HOME)/qtcreator-2.8.1/bin/plugins"
 }
+

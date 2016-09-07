@@ -72,7 +72,7 @@ bool ATCMprogressbarPlugin::isContainer() const
 
 QString ATCMprogressbarPlugin::domXml() const
 {
-	return QLatin1String("<widget class=\"ATCMprogressbar\" name=\"atcmProgressbar \">\n"
+    return QLatin1String("<widget class=\"ATCMprogressbar\" name=\"atcmProgressbar\">\n"
 			" <property name=\"geometry\">\n"
 			" <rect>\n"
 			" <x>0</x>\n"
@@ -88,16 +88,16 @@ QString ATCMprogressbarPlugin::domXml() const
 			" <string>ATCMprogressbar widget</string>\n"
 			" </property>\n"
 			" <property name=\"variable\" >\n"
-			" <string></string>\n"
+			" <string notr=\"true\"></string>\n"
 			" </property>\n"
 			" <property name=\"refresh\" >\n"
-			" <number>500</number>\n"
+			" <number>200</number>\n"
 			" </property>\n"
 			" <property name=\"viewStatus\" >\n"
 			" <bool>false</bool>\n"
 			" </property>\n"
 			" <property name=\"visibilityVar\" >\n"
-			" <string></string>\n"
+			" <string notr=\"true\"></string>\n"
 			" </property>\n"
 			" <property name=\"borderWidth\" >\n"
 			" <number>0</number>\n"

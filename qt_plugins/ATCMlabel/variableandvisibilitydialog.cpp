@@ -41,7 +41,7 @@
     mainLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Minimum, QSizePolicy::Expanding));
     mainLayout->addWidget(buttonBox);
 
-	setLayout(mainLayout);
+    setLayout(mainLayout);
     setWindowTitle(tr("ATCM Label Variables"));
 }
 
@@ -58,12 +58,12 @@ void variableandvisibilityDialog::saveState()
         formWindow->cursor()->setProperty("variable", lineVariable->text().trimmed());
         formWindow->cursor()->setProperty("visibilityVar", lineVisibility->text().trimmed());
     }
-	accept();
+    accept();
 }
 
 void variableandvisibilityDialog::chooseCtVariable()
 {
-    QString value;
+    QString value = lineVariable->text();
     CrossTableEditor dialog(m_widget, &value);
     if (dialog.exec() == Accepted)
     {
@@ -73,7 +73,7 @@ void variableandvisibilityDialog::chooseCtVariable()
 
 void variableandvisibilityDialog::chooseCtVisibility()
 {
-    QString value;
+    QString value = lineVisibility->text();
     CrossTableEditor dialog(m_widget, &value);
     if (dialog.exec() == Accepted)
     {

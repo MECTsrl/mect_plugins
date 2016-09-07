@@ -4,7 +4,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int StoreFilter ( char * outFileName, const char * logdir, const char * outdir, const char * fieldsfile, const char * datein, const char * timein, const char * datefin, const char * timefin);
+
+extern char ** filterHeader;
+extern int filterHeaderSize;
+
+extern char ** outstruct;
+
+int initLogRead(const char * logdir, const char * storeFilterFile, time_t ti, time_t tf, FILE ** fpin);
+int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** outstruct);
+int dumpLogHeder(FILE * fpout);
+int dumpLogRead(FILE * fpout, char ** outstruct);
+
 #ifdef __cplusplus
 }
 #endif

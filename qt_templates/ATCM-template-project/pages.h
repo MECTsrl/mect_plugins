@@ -11,14 +11,9 @@
 #define _PAGES_H_
 
 #include "page0.h"
+#include "page100.h"
 /* add here the header of the new page */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-int create_page_nb(page ** p, int pagenb);
-#ifdef __cplusplus
-}
 #endif
 
-#endif
+

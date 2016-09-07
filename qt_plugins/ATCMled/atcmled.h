@@ -4,13 +4,20 @@
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QIcon>
-#include <QTimer>
+#include "atcmpluginobject.h"
 
-class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMled : public QLabel, public ATCMpluginObject
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
 		Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -20,8 +27,8 @@ class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
@@ -55,8 +62,6 @@ class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
 		/************* new property ************ */
 		/* name of the cross table variable associated */
 		Q_PROPERTY(QString variable READ variable WRITE setVariable RESET unsetVariable)
-		/* refresh time of the crosstable variables */
-		Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
 		/* set if the the status of the associated variable have an visible feedback */
 		Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set the crosstable variable to associate the led visibility */
@@ -65,32 +70,28 @@ class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
 		Q_PROPERTY(QIcon onIcon READ onIcon WRITE setOnIcon RESET unsetOnIcon )
 		/* set the icon led when it is off */
 		Q_PROPERTY(QIcon offIcon READ offIcon WRITE setOffIcon RESET unsetOffIcon)
-
+#endif
 	public:
 		ATCMled(QWidget *parent = 0);
 		~ATCMled();
 		QString variable() const { return m_variable; }
-		int refresh()      const { return m_refresh; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
 
 		QIcon onIcon() const;
 		QIcon offIcon() const;
 		int value()    const { return m_value; }
-		bool startAutoReading();
-		bool stopAutoReading();
 		virtual QSize 	sizeHint () { return QSize(15,15); }
 
 	public Q_SLOTS:
 		bool setVariable(QString);
-		bool setRefresh(int);
-		void setViewStatus(bool);
-		bool setVisibilityVar(QString);
+        bool setRefresh(int) const {return true;}
+        void setViewStatus(bool);
+        bool setVisibilityVar(QString);
 		void setOffIcon(const QIcon& icon);
 		void setOnIcon(const QIcon& icon);
 
 		void unsetVariable();
-		void unsetRefresh();
 		void unsetViewStatus();
 		void unsetVisibilityVar();
 		void unsetOnIcon();
@@ -100,10 +101,10 @@ class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
 		void updateData();
 
 	protected:
+        bool m_lastVisibility;
 		int m_value;
 		QString m_variable;
 		QString m_visibilityvar;
-		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		bool m_objectstatus;
@@ -117,7 +118,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

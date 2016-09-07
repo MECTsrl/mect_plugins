@@ -4,17 +4,23 @@
 #include <QtGui/QWidget>
 #include <QLocale>
 #include <QtGui/QComboBox>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
-#include <QTimer>
+#endif
 #include <QFrame>
-//#include "atcmcomboboxtaskmenu.h"
+#include "atcmpluginobject.h"
 
-class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMcombobox : public QComboBox, public ATCMpluginObject
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
-        Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
+        // Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
 		Q_PROPERTY(bool mouseTracking READ hasMouseTracking WRITE setMouseTracking DESIGNABLE false)
 		Q_PROPERTY(QPalette palette READ palette WRITE setPalette DESIGNABLE false)
@@ -22,8 +28,8 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
@@ -40,11 +46,15 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 		Q_PROPERTY(Qt::InputMethodHints inputMethodHints READ inputMethodHints WRITE setInputMethodHints DESIGNABLE false)
 		Q_PROPERTY(int modelColumn READ modelColumn WRITE setModelColumn DESIGNABLE false)
 		Q_PROPERTY(InsertPolicy insertPolicy READ insertPolicy WRITE setInsertPolicy DESIGNABLE false)
-		/************* new property ************ */
+        Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex DESIGNABLE false)
+        Q_PROPERTY(int maxVisibleItems READ maxVisibleItems WRITE setMaxVisibleItems DESIGNABLE false)
+        Q_PROPERTY(int maxCount READ maxCount WRITE setMaxCount DESIGNABLE false)
+        Q_PROPERTY(SizeAdjustPolicy sizeAdjustPolicy READ sizeAdjustPolicy WRITE setSizeAdjustPolicy DESIGNABLE false)
+        Q_PROPERTY(int minimumContentsLength READ minimumContentsLength WRITE setMinimumContentsLength DESIGNABLE false)
+        Q_PROPERTY(bool duplicatesEnabled READ duplicatesEnabled WRITE setDuplicatesEnabled DESIGNABLE false)
+        /************* new property ************ */
 		/* name of the cross table variable associated */
 		Q_PROPERTY(QString variable READ variable WRITE setVariable RESET unsetVariable)
-		/* refresh time of the crosstable variables */
-		Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
 		/* set if the the status of the associated variable have an visible feedback */
 		Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set if the a confirmation will be appear before each writing */
@@ -66,14 +76,13 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 		/* set mapping string */
 		Q_PROPERTY(QString mapping READ mapping WRITE setMapping RESET unsetMapping)
 		//Q_PROPERTY(atcmcomboboxTaskMenu * prova READ prova WRITE setProva)
-
+#endif
 	public:
 		ATCMcombobox(QWidget *parent = 0);
 		~ATCMcombobox();
 		QString value()    const { return m_value; }
 		QString variable() const { return m_variable; }
 		QString mapping()  const { return m_mapping; }
-		int refresh()      const { return m_refresh; }
 		bool viewStatus()  const { return m_viewstatus; }
 		bool writeAcknowledge()  const { return m_writeAcknowledge; }
 		QString visibilityVar()  const { return m_visibilityvar; }
@@ -84,19 +93,16 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 		QColor bgColor() const;
 		QColor borderColor() const;
 		QColor fontColor() const;
-		bool startAutoReading();
 		//atcmcomboboxTaskMenu * prova() { return m_prova; }
 
 		enum QFrame::Shadow apparence() const;
 
-		bool stopAutoReading();
-
-		public Q_SLOTS:
-			bool writeValue(QString);
+    public Q_SLOTS:
+        bool writeValue(QString);
 		bool setVariable(QString);
 		bool setMapping(QString);
-		bool setRefresh(int);
-		void setViewStatus(bool);
+        bool setRefresh(int) const {return true;}
+        void setViewStatus(bool);
 		void setWriteAcknowledge(bool);
 		bool setVisibilityVar(QString);
 		void setBgColor(const QColor& bgColor);
@@ -110,7 +116,6 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 
 		void unsetMapping();
 		void unsetVariable();
-		void unsetRefresh();
 		void unsetViewStatus();
 		void unsetVisibilityVar();
 		void unsetwriteAcknowledge();
@@ -120,11 +125,11 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 			void updateData();
 
 	protected:
-		QString m_value;
+        bool m_lastVisibility;
+        QString m_value;
 		QString m_variable;
 		QString m_mapping;
 		QString m_visibilityvar;
-		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		bool m_writeAcknowledge;
@@ -142,6 +147,8 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 
 		bool m_initialization;
 
+        bool m_remapping;
+
 		//atcmcomboboxTaskMenu * m_prova;
 	protected:
 		void paintEvent(QPaintEvent *event);
@@ -150,7 +157,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMcombobox : public QComboBox
 		QString mapped2value( QString mapped );
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

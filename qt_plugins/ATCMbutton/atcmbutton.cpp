@@ -16,9 +16,20 @@
 #include "common.h"
 #include "numpad.h"
 #include "atcmstyle.h"
+#include "protocol.h"
+
 #ifdef TARGET_ARM
+#include "global_var.h"
+#include <stdio.h>
 #include "app_logprint.h"
 #include "cross_table_utility.h"
+#ifdef ENABLE_TREND
+extern bool _trend_data_reload_;
+extern char _actual_trend_[FILENAME_MAX];
+#endif
+#ifdef ENABLE_STORE
+extern char _actual_store_[FILENAME_MAX];
+#endif
 #endif
 
 #define RETRY_NB 20
@@ -28,32 +39,32 @@ ATCMbutton::ATCMbutton(QWidget * parent):
 {
     m_pagename = "";
     m_remember = true;
-    m_status = UNK;
+    m_status = STATUS_ENABLED;
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
     m_CtPasswordVarIndex = -1;
-    m_bgcolor = QColor(230,230,230);
-    m_bgcolor_press = QColor(230,230,230);
-    m_fontcolor = QColor(0,0,0);
-    m_fontcolor_press = QColor(10,10,10);
-    m_bordercolor = QColor(0,0,0);
-    m_bordercolor_press = QColor(0,0,0);
     m_text = "";
     m_text_press = "";
     m_icon = QIcon();
     m_icon_press = QIcon();
-    m_refresh = DEFAULT_REFRESH / 2;
-    m_borderwidth = 1;
-    m_borderradius = 0;
     m_visibilityvar = "";
     m_passwordVar = "";
     m_passwordValue = "";
     m_viewstatus = false;
-    m_statuspressval = "1";
-    m_statusreleaseval = "0";
+    m_statuspressval = 1;
+    m_statusreleaseval = 0;
     m_justchanged = 0;
     m_forcedAction = false;
     m_statusactualval = m_statusreleaseval;
+
+    m_bgcolor = BG_COLOR_SEL_DEF;
+    m_bgcolor_press = BG_COLOR_SEL_DEF;
+    m_fontcolor = FONT_COLOR_DEF;
+    m_fontcolor_press = FONT_COLOR_SEL_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_bordercolor_press = BORDER_COLOR_SEL_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -61,6 +72,9 @@ ATCMbutton::ATCMbutton(QWidget * parent):
 
     setFlat(true);
     setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
     /*
      * put there a default stylesheet
@@ -156,29 +170,13 @@ ATCMbutton::ATCMbutton(QWidget * parent):
             #endif
                 );
 
-#ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else
-#endif
-    {
-        refresh_timer = NULL;
-    }
-
+    m_parent = parent;
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     /* connect spostate in setStatusVar */
 }
 
 ATCMbutton::~ATCMbutton()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMbutton::paintEvent(QPaintEvent * e)
@@ -246,25 +244,17 @@ void ATCMbutton::paintEvent(QPaintEvent * e)
     }
 
 #ifdef TARGET_ARM
-    if (m_viewstatus)
-    {
+    if (m_viewstatus) {
         /* draw the background color in funtion of the status */
         palette.setColor(QPalette::Foreground, Qt::red);
-        switch(m_status)
-        {
-        case DONE:
+        if (m_status & STATUS_OK)
             palette.setColor(QPalette::Foreground, Qt::green);
-            break;
-        case BUSY:
+        else if (m_status & (STATUS_BUSY_R | STATUS_BUSY_W))
             palette.setColor(QPalette::Foreground, Qt::yellow);
-            break;
-        case ERROR:
+        else if (m_status & (STATUS_FAIL_W | STATUS_ERR))
             palette.setColor(QPalette::Foreground, Qt::red);
-            break;
-        default /*UNKNOWN*/:
+        else
             palette.setColor(QPalette::Foreground, Qt::gray);
-            break;
-        }
     }
 #endif
 
@@ -299,10 +289,6 @@ bool ATCMbutton::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -335,11 +321,6 @@ void ATCMbutton::unsetStatusvar()
     setStatusvar("");
 }
 
-void ATCMbutton::unsetRefresh()
-{
-    setRefresh(DEFAULT_REFRESH);
-}
-
 void ATCMbutton::unsetViewStatus()
 {
     setViewStatus(false);
@@ -370,45 +351,33 @@ bool ATCMbutton::setStatusvar(QString variable)
     /* if the actual variable is different from actual variable, deactivate it */
     if (m_statusvar.length() != 0 && variable.trimmed().compare(m_statusvar) != 0)
     {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_statusvar.toAscii().data()) == 0)
-        {
-#endif
-            m_statusvar.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
+        m_statusvar.clear();
+        m_CtIndex = -1;
     }
 
     /* if the acual variable is empty activate it */
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_statusvar = variable.trimmed();
+        if (Tag2CtIndex(m_statusvar.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_statusvar = variable.trimmed();
-            if (Tag2CtIndex(m_statusvar.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                m_CtIndex = -1;
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_statusvar.toAscii().data(), m_CtIndex);
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
+            m_status = STATUS_ERR;
+            m_CtIndex = -1;
         }
-        else
-        {
-            m_status = ERROR;
-        }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_statusvar.toAscii().data(), m_CtIndex);
 #else
         m_statusvar = variable.trimmed();
 #endif
     }
 
-    if (m_status != ERROR)
+    if (!(m_status & STATUS_ERR))
     {
 #ifndef TARGET_ARM
         setToolTip(m_statusvar);
+#else
+        setToolTip("");
 #endif
         return true;
     }
@@ -420,7 +389,7 @@ bool ATCMbutton::setStatusvar(QString variable)
 
 bool ATCMbutton::setStatusPressedValue(QString variable)
 {
-    m_statuspressval = variable;
+    m_statuspressval = (u_int32_t)variable.toInt();
     if (isChecked()) {
         m_statusactualval = m_statuspressval;
     }
@@ -429,7 +398,7 @@ bool ATCMbutton::setStatusPressedValue(QString variable)
 
 bool ATCMbutton::setStatusReleasedValue(QString variable)
 {
-    m_statusreleaseval = variable;
+    m_statusreleaseval = (u_int32_t)variable.toInt();
     if (!isChecked()) {
         m_statusactualval = m_statusreleaseval;
     }
@@ -486,69 +455,46 @@ void ATCMbutton::setBorderRadius(int radius)
     update();
 }
 
-bool ATCMbutton::setRefresh(int refresh)
-{
-    Q_UNUSED( refresh );
-    m_refresh = refresh;
-    //m_refresh = DEFAULT_REFRESH / 2;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
-    return true;
-}
-
 /* read variable */
 void ATCMbutton::updateData()
 {
 #ifdef TARGET_ARM
-    char value[TAG_LEN] = "";
-    if (m_visibilityvar.length() > 0)
+    u_int32_t value;
+
+    if (!m_parent->isVisible())
     {
-        if (m_CtVisibilityIndex >= 0)
+        incdecHvar(isVisible(), m_CtIndex, m_CtPasswordVarIndex);
+        goto exit_function;
+    }
+
+    if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
+    {
+        if (ioComm->readUdpReply(m_CtVisibilityIndex, &value) == 0)
         {
-            LOG_PRINT(verbose_e, "visibility var %s, index %d\n", m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
-            if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
-            {
-                m_status = DONE;
-                setVisible(atoi(value) != 0);
-                LOG_PRINT(info_e, "VISIBILITY %d\n", atoi(value));
-            }
-            LOG_PRINT(verbose_e, "T: '%s' - visibility var %s, index %d\n", m_text.toAscii().data(), m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "T: '%s' - NO visibility var %s, index %d\n", m_text.toAscii().data(), m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
+            m_status = STATUS_OK;
+            setVisible(value != 0);
         }
     }
+
+    incdecHvar(isVisible(), m_CtIndex, m_CtPasswordVarIndex);
+
     if (this->isVisible() == false)
     {
         goto exit_function;
     }
+
     if (m_passwordVar.length() > 0)
     {
         if (m_CtPasswordVarIndex >= 0)
         {
-            LOG_PRINT(info_e, "password var %s, index %d\n", m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
-            if (formattedReadFromDb(m_CtPasswordVarIndex, value) == 0 && strlen(value) > 0)
+            LOG_PRINT(verbose_e, "password var %s, index %d\n", m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
+            char valuestr[32];
+            if (ioComm->valFromIndex(m_CtPasswordVarIndex, valuestr) == 0)
             {
-                m_status = DONE;
-                LOG_PRINT(info_e, "PASSWORD %d\n", atoi(value));
-                m_passwordValue = value;
+                m_status = STATUS_OK;
+                m_passwordValue = valuestr;
             }
-            LOG_PRINT(info_e, "T: '%s' - password var %s, index %d\n", m_text.toAscii().data(), m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
+            LOG_PRINT(verbose_e, "T: '%s' - password var %s, index %d\n", m_text.toAscii().data(), m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
         }
         else
         {
@@ -557,73 +503,51 @@ void ATCMbutton::updateData()
         }
     }
 
-    if (m_statusvar.length() > 0 && m_CtIndex >= 0)
+    if (m_statusvar.length() > 0 && m_CtIndex > 0)
     {
-        if (getStatusVarByCtIndex(m_CtIndex, NULL) != BUSY)
+        if (!(ioComm->getStatusVar(m_CtIndex, NULL) & (STATUS_BUSY_R | STATUS_BUSY_W)))
         {
-            if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
+            if (ioComm->readUdpReply(m_CtIndex, &value) == 0)
             {
-                if (m_statusactualval != value)
+                if (m_statusactualval != value
+                        ||
+                        (m_statusactualval == m_statuspressval && isDown() == false)
+                        ||
+                        (m_statusactualval != m_statuspressval && isDown() == true)
+                        )
                 {
                     m_statusactualval = value;
-                    doAction(m_statusactualval == m_statuspressval);
+                    bool press = (m_statusactualval == m_statuspressval);
+                    {
+                        if (isCheckable())
+                        {
+                            disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+                            setChecked(press); // emit toggled(true);
+                            LOG_PRINT(verbose_e, "setChecked(%d)\n", press);
+                            connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+                        }
+                        else
+                        {
+                            disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) );
+                            disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
+                            setDown(press); // emit pressed();
+                            LOG_PRINT(verbose_e, "setDown(%d)\n", press);
+                            connect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) , Qt::DirectConnection);
+                            connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
+                        }
+                    }
                 }
             }
         }
     }
     else
     {
-        m_status = ERROR;
+        m_status = STATUS_ERR;
         LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_statusvar.toAscii().data());
     }
 
 exit_function:
     this->update();
-#endif
-}
-
-void ATCMbutton::doAction(bool press)
-{
-#ifdef TARGET_ARM
-    if (isCheckable())
-    {
-        setChecked(press); // emit toggled(true);
-        LOG_PRINT(verbose_e, "setChecked(%d)\n", press);
-    }
-    else
-    {
-        setDown(press); // emit pressed();
-        LOG_PRINT(verbose_e, "setDown(%d)\n", press);
-    }
-#endif
-}
-
-
-bool ATCMbutton::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-bool ATCMbutton::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
 #endif
 }
 
@@ -722,6 +646,8 @@ void ATCMbutton::setPageName(QString pagename)
     m_pagename = pagename;
 #ifndef TARGET_ARM
     setToolTip(QString("page: %1  status: %2").arg(m_pagename).arg(m_statusvar));
+#else
+    setToolTip("");
 #endif
     update();
 }
@@ -731,8 +657,29 @@ void  ATCMbutton::goToPage()
 #ifdef TARGET_ARM
     if (m_pagename.length() > 0)
     {
-        LOG_PRINT(info_e, "Going to page %s\n", m_pagename.toAscii().data());
-        emit newPage(m_pagename.toAscii().data(), m_remember);
+#ifdef ENABLE_TREND
+        if (m_pagename.startsWith("trend"))
+        {
+            strncpy(_actual_trend_, m_pagename.toAscii().data(), FILENAME_MAX);
+            _trend_data_reload_ = true;
+            LOG_PRINT(verbose_e, "Going to page 'trend' loading file '%s'\n", m_pagename.toAscii().data());
+            emit newPage("trend", m_remember);
+        }
+        else
+#endif
+#ifdef ENABLE_STORE
+            if (m_pagename.startsWith("store"))
+            {
+                strncpy(_actual_store_, m_pagename.toAscii().data(), FILENAME_MAX);
+                LOG_PRINT(verbose_e, "Going to page 'store' loading file '%s'\n", m_pagename.toAscii().data());
+                emit newPage("store", m_remember);
+            }
+            else
+#endif
+            {
+                LOG_PRINT(verbose_e, "Going to page %s\n", m_pagename.toAscii().data());
+                emit newPage(m_pagename.toAscii().data(), m_remember);
+            }
     }
 #endif
 }
@@ -747,8 +694,7 @@ bool ATCMbutton::checkPassword()
         numpad * dk;
         int value = 0;
 
-        refresh_timer->stop();
-        dk = new numpad(&value, NO_DEFAULT, 0, 0, 1, 0);
+        dk = new numpad(&value, NO_DEFAULT, 0, 0, input_dec, true, 0);
 
         dk->showFullScreen();
 
@@ -770,7 +716,6 @@ bool ATCMbutton::checkPassword()
             retval = false;
         }
         delete dk;
-        refresh_timer->start(m_refresh);
     }
     else
     {
@@ -791,9 +736,9 @@ void ATCMbutton::pressFunction()
 #ifdef TARGET_ARM
     if (checkPassword())
     {
-        if (m_CtIndex >= 0)
+        if (m_CtIndex > 0)
         {
-            writeVarInQueueByCtIndex(m_CtIndex, m_statuspressval.toInt());
+            ioComm->sendUdpWriteCmd(m_CtIndex, (void*)(m_statuspressval));
         }
         goToPage();
     }
@@ -803,9 +748,9 @@ void ATCMbutton::pressFunction()
 void ATCMbutton::releaseFunction()
 {
 #ifdef TARGET_ARM
-    if (m_CtIndex >= 0)
+    if (m_CtIndex > 0)
     {
-        writeVarInQueueByCtIndex(m_CtIndex, m_statusreleaseval.toInt());
+        ioComm->sendUdpWriteCmd(m_CtIndex, (void*)(m_statusreleaseval));
     }
 #endif
 }
@@ -877,10 +822,6 @@ bool ATCMbutton::setPasswordVar(QString password)
             m_CtPasswordVarIndex = CtIndex;
 #endif
             m_passwordVar = password.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }

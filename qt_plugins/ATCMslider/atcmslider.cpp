@@ -15,161 +15,144 @@
 #include "atcmslider.h"
 #include "common.h"
 #include "atcmstyle.h"
+#include "protocol.h"
+
 #ifdef TARGET_ARM
+#include "global_var.h"
 #include "app_logprint.h"
 #include "cross_table_utility.h"
 #endif
 
 ATCMslider::ATCMslider(QWidget *parent) :
-	QSlider(parent)
+    QSlider(parent)
 {
-	m_value = 0;
-	m_variable = "";
-	m_status = UNK;
-	m_CtIndex = -1;
-	m_CtVisibilityIndex = -1;
-	m_handlerColor = QColor(128,128,128);
-	m_addColor = QColor(255,127,80);
-	m_subColor = QColor(255,127,80);
-	m_bordercolor = QColor(0,0,0);
-	m_icon = QIcon();
-	m_refresh = 0;
-	m_borderwidth = 0;
-	m_borderradius = 0;
-	m_visibilityvar = "";
-	m_viewstatus = false;
+    m_lastVisibility = false;
+    m_value = 0;
+    m_variable = "";
+    m_status = STATUS_ENABLED;
+    m_CtIndex = -1;
+    m_CtVisibilityIndex = -1;
+    m_handlerColor = QColor(128,128,128);
+    m_addColor = QColor(255,127,80);
+    m_subColor = QColor(255,127,80);
+    m_icon = QIcon();
+    m_visibilityvar = "";
+    m_viewstatus = false;
 
-	//setMinimumSize(QSize(150,50));
-	setFocusPolicy(Qt::NoFocus);
-	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
 
-	setStyle(new ATCMStyle);
+    //setMinimumSize(QSize(150,50));
+    setFocusPolicy(Qt::NoFocus);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-	/*
-	 * put there a default stylesheet
-	 */
-	setStyleSheet(
-#ifndef ENABLE_STYLESHEET
-			""
-#else
-			"/*\n"
-			"QSlider::groove:vertical  {\n"
-			"    background: transparent;\n"
-			"/* absolutely position 4px from the left and right of the widget. setting margins on the widget should work too... */\n"
-			"    position: absolute;\n"
-			"    left: 4px; right: 4px;\n"
-			"}\n"
-			"QSlider::handle:vertical  {\n"
-			"    height: 31px;\n"
-			"    background: transparent;\n"
-			"    margin: 0 -4px; /* expand outside the groove */\n"
-			"    border-image: url(:/marker.png);\n"
-			"}\n"
-			"QSlider::add-page:vertical  {\n"
-			"    background: transparent;\n"
-			"}\n"
-			"QSlider::sub-page:vertical  {\n"
-			"    background: transparent;\n"
-			"}\n"
-			"*/\n"
-#endif
-			);
-
+    setStyle(new ATCMStyle);
 #ifdef TARGET_ARM
-	if (m_refresh > 0)
-	{
-		refresh_timer = new QTimer(this);
-		connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-		refresh_timer->start(m_refresh);
-	}
-	else
+    setToolTip("");
 #endif
-	{
-		refresh_timer = NULL;
-	}
 
-	connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    /*
+     * put there a default stylesheet
+     */
+    setStyleSheet(
+            #ifndef ENABLE_STYLESHEET
+                ""
+            #else
+                "/*\n"
+                "QSlider::groove:vertical  {\n"
+                "    background: transparent;\n"
+                "/* absolutely position 4px from the left and right of the widget. setting margins on the widget should work too... */\n"
+                "    position: absolute;\n"
+                "    left: 4px; right: 4px;\n"
+                "}\n"
+                "QSlider::handle:vertical  {\n"
+                "    height: 31px;\n"
+                "    background: transparent;\n"
+                "    margin: 0 -4px; /* expand outside the groove */\n"
+                "    border-image: url(:/marker.png);\n"
+                "}\n"
+                "QSlider::add-page:vertical  {\n"
+                "    background: transparent;\n"
+                "}\n"
+                "QSlider::sub-page:vertical  {\n"
+                "    background: transparent;\n"
+                "}\n"
+                "*/\n"
+            #endif
+                );
+
+    m_parent = parent;
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    //connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
 }
 
 ATCMslider::~ATCMslider()
 {
-	if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-		delete refresh_timer;
-	}
 }
 
 void ATCMslider::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
     QPainter painter(this);
-	QPalette palette = this->palette();
+    QPalette palette = this->palette();
 
-	QStyleOptionSlider opt;
-	opt.init(this);
+    QStyleOptionSlider opt;
+    opt.init(this);
 
-	/* sub color */
-	palette.setColor(QPalette::ButtonText, m_subColor);
-	/* add color */
-	palette.setColor(QPalette::Background, m_addColor);
-	/* handler color */
-	palette.setColor(QPalette::Button, m_handlerColor);
-	/* border color */
-	palette.setColor(QPalette::Foreground, m_bordercolor);
+    /* sub color */
+    palette.setColor(QPalette::ButtonText, m_subColor);
+    /* add color */
+    palette.setColor(QPalette::Background, m_addColor);
+    /* handler color */
+    palette.setColor(QPalette::Button, m_handlerColor);
+    /* border color */
+    palette.setColor(QPalette::Foreground, m_bordercolor);
 
 #ifdef TARGET_ARM
-	if (m_viewstatus)
-	{
-		/* draw the background color in funtion of the status */
-		palette.setColor(QPalette::Foreground, Qt::red);
-		switch(m_status)
-		{
-			case DONE:
-				palette.setColor(QPalette::Foreground, Qt::green);
-				break;
-			case BUSY:
-				palette.setColor(QPalette::Foreground, Qt::yellow);
-				break;
-			case ERROR:
-				palette.setColor(QPalette::Foreground, Qt::red);
-				break;
-			default /*UNKNOWN*/:
-				palette.setColor(QPalette::Foreground, Qt::gray);
-				break;
-		}
-	}
+    if (m_viewstatus) {
+        /* draw the background color in funtion of the status */
+        palette.setColor(QPalette::Foreground, Qt::red);
+        if (m_status & STATUS_OK)
+            palette.setColor(QPalette::Foreground, Qt::green);
+        else if (m_status & (STATUS_BUSY_R | STATUS_BUSY_W))
+            palette.setColor(QPalette::Foreground, Qt::yellow);
+        else if (m_status & (STATUS_FAIL_W | STATUS_ERR))
+            palette.setColor(QPalette::Foreground, Qt::red);
+        else
+            palette.setColor(QPalette::Foreground, Qt::gray);
+    }
 #endif
 
-	opt.palette = palette;
-	_diameter_ = m_borderradius;
-	_penWidth_ = m_borderwidth;
+    opt.palette = palette;
+    _diameter_ = m_borderradius;
+    _penWidth_ = m_borderwidth;
 
-	if (m_apparence == QFrame::Raised)
-	{
+    if (m_apparence == QFrame::Raised)
+    {
         opt.state = QStyle::State_Raised;
-	}
-	else if (m_apparence == QFrame::Sunken)
-	{
+    }
+    else if (m_apparence == QFrame::Sunken)
+    {
         opt.state = QStyle::State_Sunken;
-	}
+    }
 
-	opt.orientation = QSlider::orientation();
-	opt.maximum = QSlider::maximum();
-	opt.minimum = QSlider::minimum();
-	opt.sliderValue = QSlider::value();
-	opt.rect = QSlider::rect();
-	opt.pageStep = QSlider::pageStep();
-	opt.upsideDown = QSlider::invertedAppearance();
-	_icon_ = m_icon;
+    opt.orientation = QSlider::orientation();
+    opt.maximum = QSlider::maximum();
+    opt.minimum = QSlider::minimum();
+    opt.sliderValue = QSlider::value();
+    opt.rect = QSlider::rect();
+    opt.pageStep = QSlider::pageStep();
+    opt.upsideDown = QSlider::invertedAppearance();
+    _icon_ = m_icon;
 
-	style()->drawComplexControl(QStyle::CC_Slider, &opt, &painter, this);
+    style()->drawComplexControl(QStyle::CC_Slider, &opt, &painter, this);
 }
 
 void ATCMslider::setViewStatus(bool status)
 {
-	m_viewstatus = status;
-	update();
+    m_viewstatus = status;
+    update();
 }
 
 bool ATCMslider::setVisibilityVar(QString visibilityVar)
@@ -190,10 +173,6 @@ bool ATCMslider::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -209,22 +188,29 @@ bool ATCMslider::setVisibilityVar(QString visibilityVar)
 /* Write variable */
 bool ATCMslider::writeValue(int value)
 {
-	static int initialization = true;
-	if (m_variable.length() == 0)
-	{
-		return false;
-	}
-	if (initialization)
-	{
-		initialization = false;
-		return true;
-	}
-	m_value = value;
-	//this->setValue(m_value);
+    static int initialization = true;
+    if (m_variable.length() == 0)
+    {
+        return false;
+    }
+    if (initialization)
+    {
+        initialization = false;
+        return true;
+    }
+    m_value = value;
+    //this->setValue(m_value);
 #ifdef TARGET_ARM
-	return setFormattedVar(m_variable.toAscii().data(), QString().setNum(m_value).toAscii().data());
+    if (m_CtIndex > 0 && ioComm->sendUdpWriteCmd(m_CtIndex, QString::number(m_value).toAscii().data()) == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 #else
-	return true;
+    return true;
 #endif
 }
 
@@ -234,47 +220,34 @@ bool ATCMslider::setVariable(QString variable)
     /* if the acual variable is different from actual variable, deactivate it */
     if (m_variable.length() != 0 && variable.trimmed().compare(m_variable) != 0)
     {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_variable.trimmed().toAscii().data()) == 0)
-        {
-#endif
-            m_variable.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
+        m_variable.clear();
+        m_CtIndex = -1;
     }
 
     /* if the acual variable is empty activate it */
-    if (variable.trimmed() > 0)
+    if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_variable = variable.trimmed();
+        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_variable = variable.trimmed();
-            if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                //m_value = VAR_UNKNOWN;
-                m_CtIndex = -1;
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-        }
-        else
-        {
-            m_status = ERROR;
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
+            m_status = STATUS_ERR;
             //m_value = VAR_UNKNOWN;
+            m_CtIndex = -1;
         }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
 #else
         m_variable = variable.trimmed();
 #endif
     }
 
-    if (m_status != ERROR)
+    if (!(m_status & STATUS_ERR))
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
+#else
+        setToolTip("");
 #endif
         return true;
     }
@@ -286,168 +259,125 @@ bool ATCMslider::setVariable(QString variable)
 
 QColor ATCMslider::borderColor() const
 {
-	return m_bordercolor;
+    return m_bordercolor;
 }
 
 void ATCMslider::setBorderColor(const QColor& color)
 {
-	m_bordercolor = color;
-	update();
+    m_bordercolor = color;
+    update();
 }
 
 QColor ATCMslider::handlerColor() const
 {
-	return m_handlerColor;
+    return m_handlerColor;
 }
 
 void ATCMslider::setHandlerColor(const QColor& color)
 {
-	m_handlerColor = color;
-	update();
+    m_handlerColor = color;
+    update();
 }
 
 QColor ATCMslider::subColor() const
 {
-	return m_subColor;
+    return m_subColor;
 }
 
 void ATCMslider::setSubColor(const QColor& color)
 {
-	m_subColor = color;
-	update();
+    m_subColor = color;
+    update();
 }
 
 QColor ATCMslider::addColor() const
 {
-	return m_addColor;
+    return m_addColor;
 }
 
 void ATCMslider::setAddColor(const QColor& color)
 {
-	m_addColor = color;
-	update();
+    m_addColor = color;
+    update();
 }
 
 void ATCMslider::setBorderWidth(int width)
 {
-	m_borderwidth = width;
-	update();
+    m_borderwidth = width;
+    update();
 }
 
 void ATCMslider::setBorderRadius(int radius)
 {
-	m_borderradius = radius;
-	update();
-}
-
-bool ATCMslider::setRefresh(int refresh)
-{
-	m_refresh = refresh;
-#ifdef TARGET_ARM
-	if (refresh_timer == NULL && m_refresh > 0)
-	{
-		refresh_timer = new QTimer(this);
-		connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-		refresh_timer->start(m_refresh);
-	}
-	else if (m_refresh > 0)
-	{
-		refresh_timer->start(m_refresh);
-	}
-	else if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-	}
-#endif
-	return true;
+    m_borderradius = radius;
+    update();
 }
 
 /* read variable */
 void ATCMslider::updateData()
 {
 #ifdef TARGET_ARM
-	char value[TAG_LEN] = "";
+    u_int32_t value;
 
-	if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
-	{
-		if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
-		{
-            m_status = ERROR;
-            LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
-            setVisible(atoi(value) != 0);
-		}
-		LOG_PRINT(info_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
-	}
+    if (!m_parent->isVisible())
+    {
+        incdecHvar(isVisible(), m_CtIndex);
+        return;
+    }
 
-	if (this->isVisible() == false)
-	{
-		return;
-	}
-
-	if (m_variable.length() > 0 && m_CtIndex >= 0)
-	{
-		if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
-		{
-            m_value = atoi(value);
-            m_status = DONE;
+    if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
+    {
+        if (ioComm->readUdpReply(m_CtVisibilityIndex, &value) == 0)
+        {
+            m_status = STATUS_OK;
+            setVisible(value != 0);
         }
-		else
-		{
-			//m_value = VAR_UNKNOWN;
-			m_status = ERROR;
-		}
-	}
-	else
-	{
-		m_status = ERROR;
-		LOG_PRINT(info_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
-	}
-	LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
-#endif
-	if (m_status == DONE)
-	{
-		this->setValue(m_value);
-	}
-	this->update();
-}
+    }
 
-bool ATCMslider::startAutoReading()
-{
-#ifdef TARGET_ARM
-	if (refresh_timer != NULL && m_refresh > 0)
-	{
-		refresh_timer->start(m_refresh);
-		return true;
-	}
-	return false;
-#else
-	return true;
-#endif
-}
+    incdecHvar(isVisible(), m_CtIndex);
 
-bool ATCMslider::stopAutoReading()
-{
-#ifdef TARGET_ARM
-	if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-		return true;
-	}
-	return false;
-#else
-	return true;
+    if (this->isVisible() == false)
+    {
+        return;
+    }
+
+    if (m_variable.length() > 0 && m_CtIndex > 0)
+    {
+        if (ioComm->readUdpReply(m_CtIndex, &value) == 0)
+        {
+            m_value = value;
+            m_status = STATUS_OK;
+        }
+        else
+        {
+            //m_value = VAR_UNKNOWN;
+            m_status = STATUS_ERR;
+        }
+    }
+    else
+    {
+        m_status = STATUS_ERR;
+        LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
+    }
 #endif
+    if (m_status & STATUS_OK)
+    {
+        disconnect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+        this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    }
+    this->update();
 }
 
 QIcon ATCMslider::icon() const
 {
-	return m_icon;
+    return m_icon;
 }
 
 void ATCMslider::setIcon(const QIcon& icon)
 {
-	m_icon = icon;
-	update();
+    m_icon = icon;
+    update();
 }
 
 enum QFrame::Shadow ATCMslider::apparence() const
@@ -464,11 +394,6 @@ void ATCMslider::setApparence(const enum QFrame::Shadow apparence)
 void ATCMslider::unsetVariable()
 {
     setVariable("");
-}
-
-void ATCMslider::unsetRefresh()
-{
-    setRefresh(DEFAULT_REFRESH);
 }
 
 void ATCMslider::unsetViewStatus()

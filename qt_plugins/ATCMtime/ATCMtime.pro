@@ -4,13 +4,17 @@ include (../qt_plugins.pri)
 
 INCLUDEPATH += ../ATCMplugineditor
 
-HEADERS     = atcmtimeplugin.h
+HEADERS = \
+    ../atcmplugin.h \
+    atcmtimeplugin.h
 
-SOURCES     = atcmtimeplugin.cpp
+SOURCES = \
+    ../atcmpluginobject.cpp \
+    atcmtimeplugin.cpp
 
 RESOURCES   = icons.qrc
 
-target.path = $$[QT_INSTALL_PLUGINS]/designer
+target.path = $${MECT_INSTALL_PLUGINS}/designer
 INSTALLS    += target
 
 include(atcmtime.pri)

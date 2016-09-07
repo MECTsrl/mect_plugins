@@ -4,17 +4,25 @@
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
+#include "atcmpluginobject.h"
 
 #define ITALIAN_DATE "dd/MM/yyyy"
 #define ENGLISH_DATE "yyyy/MM/dd"
 #define DEFAULT_DATE ITALIAN_DATE
 
-class QDESIGNER_WIDGET_EXPORT ATCMdate : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMdate : public QPushButton, public ATCMpluginObject
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -24,12 +32,12 @@ class QDESIGNER_WIDGET_EXPORT ATCMdate : public QPushButton
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
+#ifdef _WIN32
 		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
-		Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
+        Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
 		Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
 		Q_PROPERTY(bool	autoRepeat READ autoRepeat WRITE setAutoRepeat DESIGNABLE false)
 		Q_PROPERTY(int	autoRepeatDelay READ autoRepeatDelay WRITE setAutoRepeatDelay DESIGNABLE false)
@@ -72,7 +80,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMdate : public QPushButton
 		/* set the format */
 		Q_ENUMS(ATCMDateFormat)
         Q_PROPERTY(enum ATCMDateFormat format READ format WRITE setFormat)
-
+ #endif
 	public:
         enum ATCMDateFormat
         {

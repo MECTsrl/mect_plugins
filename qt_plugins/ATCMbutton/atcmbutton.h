@@ -4,14 +4,22 @@
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
-#include <QTimer>
+#include <stdint.h>
+typedef uint32_t u_int32_t;
+#endif
 #include <QFrame>
-#include <QMutex>
+#include "atcmpluginobject.h"
 
-class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMbutton : public QPushButton, public ATCMpluginObject
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
@@ -22,12 +30,12 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
-		Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
+        Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
 		Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
 		Q_PROPERTY(bool	autoDefault READ autoDefault WRITE setAutoDefault DESIGNABLE false)
 		Q_PROPERTY(bool	default READ isDefault WRITE setDefault DESIGNABLE false)
@@ -55,8 +63,6 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
         Q_PROPERTY(QString statusPressedValue READ statusPressedValue WRITE setStatusPressedValue)
         /* set if the the status of the associated variable have an visible feedback */
 		Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
-        /* refresh time of the crosstable variables */
-        Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
         /* set the crosstable variable to associate the button visibility */
 		Q_PROPERTY(QString visibilityVar READ visibilityVar WRITE setVisibilityVar RESET unsetVisibilityVar)
 		/* set the button background color */
@@ -89,7 +95,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		//Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus)
 		/* set the apparence */
 		Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence)
-
+#endif
 	public:
 		ATCMbutton(QWidget * parent = 0);
 		~ATCMbutton();
@@ -97,9 +103,8 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		bool remember()      const { return m_remember; }
 		QString passwordVar() const { return m_passwordVar; }
         QString statusvar() const { return m_statusvar; }
-        QString statusPressedValue() const { return m_statuspressval; }
-        QString statusReleasedValue() const { return m_statusreleaseval; }
-        int refresh()      const { return m_refresh; }
+        u_int32_t statusPressedValue() const { return m_statuspressval; }
+        u_int32_t statusReleasedValue() const { return m_statusreleaseval; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
 		char statusComm()      const { return m_status; }
@@ -131,7 +136,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		bool setStatusvar(QString);
         bool setStatusPressedValue(QString);
         bool setStatusReleasedValue(QString);
-        bool setRefresh(int);
+        bool setRefresh(int) {return true;}
 		void setViewStatus(bool);
 		bool setVisibilityVar(QString);
 		void setBgColor(const QColor& bgColor);
@@ -156,7 +161,6 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		void unsetRemember();
 		void unsetPasswordVar();
 		void unsetStatusvar();
-		void unsetRefresh();
 		void unsetViewStatus();
 		void unsetVisibilityVar();
         bool checkPassword();
@@ -169,7 +173,6 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		void releaseAction();
 		void toggleAction(bool);
         void goToPage();
-        void doAction(bool press);
 
 		protected Q_SLOTS:
 
@@ -183,12 +186,11 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		QString m_passwordVar;
 		QString m_visibilityvar;
 		QString m_statusvar;
-        QString m_statuspressval;
-        QString m_statusreleaseval;
-        QString m_statusactualval;
+        u_int32_t m_statuspressval;
+        u_int32_t m_statusreleaseval;
+        u_int32_t m_statusactualval;
         int m_justchanged;
         bool m_forcedAction;
-        int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		int m_CtIndex;
@@ -213,12 +215,13 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 
 		enum QFrame::Shadow m_apparence;
 
+        bool m_lastVisibility;
+
 	protected:
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
-        QMutex theMutex;
+        QWidget *m_parent;
 };
 
 #endif

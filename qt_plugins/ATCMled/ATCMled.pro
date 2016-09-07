@@ -4,19 +4,23 @@ include (../qt_plugins.pri)
 
 INCLUDEPATH += ../ATCMplugineditor
 
-HEADERS     = atcmledplugin.h \ 
+HEADERS =  \
+    ../atcmplugin.h \
+    atcmledplugin.h \
     variableandvisibilitydialog.h \
     atcmledtaskmenu.h \
     ../ATCMplugineditor/crosstableeditor.h
 
-SOURCES     = atcmledplugin.cpp \ 
+SOURCES = \
+    ../atcmpluginobject.cpp \
+    atcmledplugin.cpp \
     variableandvisibilitydialog.cpp \
     atcmledtaskmenu.cpp \
-   ../ATCMplugineditor/crosstableeditor.cpp
+    ../ATCMplugineditor/crosstableeditor.cpp
 
 RESOURCES   = icons.qrc
 
-target.path = $$[QT_INSTALL_PLUGINS]/designer
+target.path = $${MECT_INSTALL_PLUGINS}/designer
 INSTALLS    += target
 
 include(atcmled.pri)
