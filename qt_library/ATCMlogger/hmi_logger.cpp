@@ -756,7 +756,11 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         to_append = true;
         LOG_PRINT(verbose_e, "New event for %s\n", info_descr->tag);
     }
-    
+
+    if (status == info_descr->status)  {
+        /* avoid useless events */
+        return  true;
+    }
     LOG_PRINT(verbose_e, "isack %d status %d status %d\n",
               info_descr->isack,
               info_descr->status,
