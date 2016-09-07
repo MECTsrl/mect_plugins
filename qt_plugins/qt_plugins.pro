@@ -59,7 +59,7 @@ SOURCES += \
 		   ./ATCMgraph/atcmgraph.cpp \
 		   ./ATCMdate/atcmdate.cpp \
 		   ./ATCMtime/atcmtime.cpp \
-    atcmplugin.cpp
+                    atcmpluginobject.cpp
 
 RESOURCES += atcmicons.qrc 
 

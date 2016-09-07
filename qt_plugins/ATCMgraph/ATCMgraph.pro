@@ -20,7 +20,7 @@ HEADERS =  \
     ../ATCMplugineditor/crosstableeditor.h
 
 SOURCES = \
-    ../atcmplugin.cpp \
+    ../atcmpluginobject.cpp \
     atcmgraphplugin.cpp \
     atcmgraphdialog.cpp \
     atcmgraphtaskmenu.cpp \

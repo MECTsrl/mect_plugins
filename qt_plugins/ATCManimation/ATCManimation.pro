@@ -13,12 +13,12 @@ HEADERS =  \
     ../ATCMplugineditor/resourceeditor.h
 
 SOURCES = \
-    ../atcmplugin.cpp \
     atcmanimationplugin.cpp \
     atcmanimationtaskmenu.cpp \
     atcmanimationdialog.cpp \
     ../ATCMplugineditor/crosstableeditor.cpp \
-    ../ATCMplugineditor/resourceeditor.cpp
+    ../ATCMplugineditor/resourceeditor.cpp \
+    ../atcmpluginobject.cpp
 
 
 RESOURCES   = icons.qrc

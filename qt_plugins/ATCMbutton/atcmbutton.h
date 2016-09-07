@@ -6,15 +6,17 @@
 #include <QLocale>
 #ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#include <stdint.h>
+typedef uint32_t u_int32_t;
 #endif
 #include <QFrame>
-#include "atcmplugin.h"
+#include "atcmpluginobject.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMbutton : public QPushButton, public ATCMplugin
+ ATCMbutton : public QPushButton, public ATCMpluginObject
 {
 	Q_OBJECT
 #ifndef TARGET_ARM

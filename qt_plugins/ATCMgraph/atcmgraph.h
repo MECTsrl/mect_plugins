@@ -26,7 +26,7 @@
 #include <qwt_scale_draw.h>
 #include <qwt_legend.h>
 
-#include "atcmplugin.h"
+#include "atcmpluginobject.h"
 
 #define MAX_SAMPLES 1024
 
@@ -121,7 +121,7 @@ class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMgraph : public MAINWIGET, public ATCMplugin
+ ATCMgraph : public MAINWIGET, public ATCMpluginObject
 {
     Q_OBJECT
 #ifndef TARGET_ARM

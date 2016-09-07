@@ -9,13 +9,13 @@
 #endif
 #include <QFrame>
 #include <QIcon>
-#include "atcmplugin.h"
+#include "atcmpluginobject.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMslider : public QSlider, public ATCMplugin
+ ATCMslider : public QSlider, public ATCMpluginObject
 {
 	Q_OBJECT
 #ifndef TARGET_ARM

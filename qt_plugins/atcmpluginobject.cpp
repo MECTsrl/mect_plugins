@@ -1,14 +1,14 @@
-#include "atcmplugin.h"
+#include "atcmpluginobject.h"
 #ifdef TARGET_ARM
 #include "global_var.h" // ioComm
 #endif
 
-ATCMplugin::ATCMplugin()
+ATCMpluginObject::ATCMpluginObject()
 {
     m_isVisible = false;
 }
 
-void ATCMplugin::incdecHvar(bool isVisible, int ctIndex)
+void ATCMpluginObject::incdecHvar(bool isVisible, int ctIndex)
 {
 #ifdef TARGET_ARM
     if (isVisible && !m_isVisible)
@@ -30,7 +30,7 @@ void ATCMplugin::incdecHvar(bool isVisible, int ctIndex)
 #endif
 }
 
-void ATCMplugin::incdecHvar(bool isVisible, int ctIndex1, int ctIndex2)
+void ATCMpluginObject::incdecHvar(bool isVisible, int ctIndex1, int ctIndex2)
 {
 #ifdef TARGET_ARM
     if (isVisible && !m_isVisible)
@@ -60,7 +60,7 @@ void ATCMplugin::incdecHvar(bool isVisible, int ctIndex1, int ctIndex2)
 #endif
 }
 
-void ATCMplugin::incdecHvar(bool isVisible, int ctIndex1, int ctIndex2, int ctIndex3, int ctIndex4, int ctIndex5, int ctIndex6, int ctIndex7, int ctIndex8, int ctIndex9, int ctIndex10, int ctIndex11, int ctIndex12)
+void ATCMpluginObject::incdecHvar(bool isVisible, int ctIndex1, int ctIndex2, int ctIndex3, int ctIndex4, int ctIndex5, int ctIndex6, int ctIndex7, int ctIndex8, int ctIndex9, int ctIndex10, int ctIndex11, int ctIndex12)
 {
 #ifdef TARGET_ARM
     if (isVisible && !m_isVisible)

@@ -8,13 +8,13 @@
 #include <QtDesigner/QDesignerExportWidget>
 #endif
 #include <QIcon>
-#include "atcmplugin.h"
+#include "atcmpluginobject.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMled : public QLabel, public ATCMplugin
+ ATCMled : public QLabel, public ATCMpluginObject
 {
 	Q_OBJECT
 #ifndef TARGET_ARM

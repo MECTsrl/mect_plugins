@@ -12,7 +12,7 @@ HEADERS =  \
     ../ATCMplugineditor/crosstableeditor.h
 
 SOURCES = \
-    ../atcmplugin.cpp \
+    ../atcmpluginobject.cpp \
     atcmlabelplugin.cpp \
     variableandvisibilitydialog.cpp \
     atcmlabeltaskmenu.cpp \

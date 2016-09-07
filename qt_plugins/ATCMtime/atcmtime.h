@@ -9,7 +9,7 @@
 #endif
 #include <QTimer>
 #include <QFrame>
-#include "atcmplugin.h"
+#include "atcmpluginobject.h"
 
 #define TIME_24 "HH:mm:ss"
 #define TIME_12 "hh:mm:ss ap"
@@ -19,7 +19,7 @@ class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMtime : public QPushButton, public ATCMplugin
+ ATCMtime : public QPushButton, public ATCMpluginObject
 {
 	Q_OBJECT
 #ifndef TARGET_ARM

@@ -7,14 +7,14 @@
 #ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
 #endif
-#include "atcmplugin.h"
+#include "atcmpluginobject.h"
 
 class
         #ifndef TARGET_ARM
         QDESIGNER_WIDGET_EXPORT
         #endif
 
-        ATCManimation : public QLabel, public ATCMplugin
+        ATCManimation : public QLabel, public ATCMpluginObject
 {
     Q_OBJECT
 #ifndef TARGET_ARM

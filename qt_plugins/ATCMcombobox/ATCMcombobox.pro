@@ -13,7 +13,7 @@ HEADERS =  \
     #atcmcomboboxpropertysheet.h
 
 SOURCES = \
-    ../atcmplugin.cpp \
+    ../atcmpluginobject.cpp \
     atcmcomboboxplugin.cpp \
     atcmcomboboxtaskmenu.cpp \
     atcmcomboboxdialog.cpp \

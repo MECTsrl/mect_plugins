@@ -9,7 +9,7 @@ HEADERS = \
     atcmtimeplugin.h
 
 SOURCES = \
-    ../atcmplugin.cpp \
+    ../atcmpluginobject.cpp \
     atcmtimeplugin.cpp
 
 RESOURCES   = icons.qrc
