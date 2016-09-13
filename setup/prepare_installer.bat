@@ -1,6 +1,6 @@
 @echo off
 
-SET REVISION="2.0.9rc12"
+SET REVISION="2.1.0rc1"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\Users\UserName\Documents\GitHub\mect_plugins"
@@ -10,10 +10,10 @@ SET TARGET_LIST=TP1043_01_A TP1043_01_B TP1043_01_C TP1057_01_A TP1057_01_B TP10
 rem extract MECT_CONFIGURATOR_REVISION
 FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\MectConfigurator\MectConfiguratorInstaller\Volume\nidist.id') DO SET MECT_CONFIGURATOR_REVISION="%%a"
 
-SET QTPROJECT=0
+SET QTPROJECT=1
 SET BUILD=1
 SET INSTALL=0
-SET UPDATE=0
+SET UPDATE=1
 
 IF %UPDATE% == 1 (
 	SET PREPARE_UPDATE=1
