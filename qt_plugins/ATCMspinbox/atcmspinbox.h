@@ -7,14 +7,14 @@
 #ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
 #endif
+#include <QTimer>
 #include <QFrame>
-#include "atcmpluginobject.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMspinbox : public QDoubleSpinBox, public ATCMpluginObject
+ ATCMspinbox : public QDoubleSpinBox
 {
 	Q_OBJECT
 #ifndef TARGET_ARM
@@ -50,6 +50,8 @@ class
 		/************* new property ************ */
 		/* name of the cross table variable associated */
         Q_PROPERTY(QString variable READ variable WRITE setVariable RESET unsetVariable)
+		/* refresh time of the crosstable variables */
+        Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
 		/* set if the the status of the associated variable have an visible feedback */
         Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set the crosstable variable to associate the  visibility */
@@ -74,6 +76,7 @@ class
 		~ATCMspinbox();
 		float value()    const { return m_value; }
 		QString variable() const { return m_variable; }
+		int refresh()      const { return m_refresh; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
 		char statusComm()      const { return m_status; }
@@ -91,6 +94,7 @@ class
 		bool stopAutoReading();
 
         void unsetVariable();
+        void unsetRefresh();
         void unsetViewStatus();
         void unsetVisibilityVar();
         void unsetApparence();
@@ -98,7 +102,7 @@ class
 public Q_SLOTS:
 		bool writeValue(double);
 		bool setVariable(QString);
-        bool setRefresh(int){return true;}
+		bool setRefresh(int);
 		void setViewStatus(bool);
 		bool setVisibilityVar(QString);
 		void setBgColor(const QColor& bgColor);
@@ -118,6 +122,7 @@ public Q_SLOTS:
 		float m_value;
 		QString m_variable;
 		QString m_visibilityvar;
+		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		bool m_objectstatus;
@@ -139,8 +144,7 @@ public Q_SLOTS:
 		void paintEvent(QPaintEvent *event);
 
 	private:
-        QWidget *m_parent;
-        bool m_lastVisibility;
+		QTimer * refresh_timer;
 };
 
 #endif

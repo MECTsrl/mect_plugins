@@ -13,8 +13,6 @@
 
 #include "atcmlcdnumber.h"
 #include "common.h"
-#include "protocol.h"
-
 #ifdef TARGET_ARM
 #include "cross_table_utility.h"
 #include "app_logprint.h"
@@ -25,7 +23,7 @@ ATCMlcdnumber::ATCMlcdnumber(QWidget *parent) :
 {
 	m_value = "";
 	m_variable = "";
-    m_status = STATUS_ENABLED;
+	m_status = UNK;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -69,27 +67,32 @@ ATCMlcdnumber::~ATCMlcdnumber()
 
 void ATCMlcdnumber::paintEvent(QPaintEvent * e)
 {
-    QPainter p(this);
+	QPainter p(this);
 
-    if (m_viewstatus) {
-        /* draw the background color in funtion of the status */
-        QBrush brush(Qt::red);
-        if (m_status & STATUS_OK)
-            brush.setColor(Qt::green);
-        else if (m_status & (STATUS_BUSY_R | STATUS_BUSY_W))
-            brush.setColor(Qt::yellow);
-        else if (m_status & (STATUS_FAIL_W | STATUS_ERR))
-            brush.setColor(Qt::red);
-        else
-            brush.setColor(Qt::gray);
-
-        p.setBrush(brush);
-        p.drawRect(this->rect());
-    }
-
-    /* propagate the stylesheet set by QtCreator */
+	if (m_viewstatus)
+	{
+		/* draw the background color in funtion of the status */
+		QBrush brush(Qt::red);
+		switch(m_status)
+		{
+			case DONE:
+				brush.setColor(Qt::green);
+				break;
+			case BUSY:
+				brush.setColor(Qt::yellow);
+				break;
+			case ERROR:
+				brush.setColor(Qt::red);
+				break;
+			default /*UNKNOWN*/:
+				brush.setColor(Qt::gray);
+				break;
+		}
+		p.setBrush(brush);
+		p.drawRect(this->rect());
+	}
+	/* propagate the stylesheet set by QtCreator */
 	QStyleOption opt;
-
 	opt.init(this);
 	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 	/* propagate the paint event to the parent widget */

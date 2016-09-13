@@ -4,18 +4,14 @@ include (../qt_plugins.pri)
 
 INCLUDEPATH += ../ATCMplugineditor
 
-HEADERS =  \
-    ../atcmplugin.h \
-    atcmspinboxplugin.h \
-    atcmspinboxtaskmenu.h \
-    variableandvisibilitydialog.h \
+HEADERS     = atcmspinboxplugin.h \
+				atcmspinboxtaskmenu.h \
+				variableandvisibilitydialog.h \
     ../ATCMplugineditor/crosstableeditor.h
 
-SOURCES = \
-    ../atcmpluginobject.cpp \
-    atcmspinboxplugin.cpp \
-    atcmspinboxtaskmenu.cpp \
-    variableandvisibilitydialog.cpp \
+SOURCES     = atcmspinboxplugin.cpp \
+				atcmspinboxtaskmenu.cpp \
+				variableandvisibilitydialog.cpp \
     ../ATCMplugineditor/crosstableeditor.cpp
 
 RESOURCES   = icons.qrc

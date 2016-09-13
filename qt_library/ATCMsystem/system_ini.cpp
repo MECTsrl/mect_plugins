@@ -8,12 +8,11 @@
  * @brief Generic page
  */
 #include "app_logprint.h"
+#include "atcmplugin.h"
 #include "main.h"
 #include "system_ini.h"
 #include "ui_system_ini.h"
 #include "item_selector.h"
-#include "alphanumpad.h"
-#include "numpad.h"
 #include <QSettings>
 #include <QMessageBox>
 #include <QDirIterator>
@@ -360,15 +359,12 @@ void system_ini::reload()
  */
 void system_ini::updateData()
 {
-    LOG_PRINT(error_e,"updateData\n");
     if (this->isVisible() == false)
     {
-        LOG_PRINT(error_e,"updateData hidden\n");
         return;
     }
-    LOG_PRINT(error_e,"updateData visible\n");
     /* call the parent updateData member */
-    //page::updateData();
+    page::updateData();
     /* This code show how to connect
      * the cross table variable named "RET_REG_1" to the HMI label "label1val"
      * and if it is not NULL, set the Status led "led1" without using ATCM plugins

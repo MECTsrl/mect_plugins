@@ -12,19 +12,15 @@ LIBS += -lqwt
 
 CONFIG += QwtDll
 
-HEADERS =  \
-    ../atcmplugin.h \
-    atcmgraphplugin.h \
+HEADERS     = atcmgraphplugin.h \
     atcmgraphdialog.h \
     atcmgraphtaskmenu.h \
     ../ATCMplugineditor/crosstableeditor.h
 
-SOURCES = \
-    ../atcmpluginobject.cpp \
-    atcmgraphplugin.cpp \
+SOURCES     = atcmgraphplugin.cpp \
     atcmgraphdialog.cpp \
     atcmgraphtaskmenu.cpp \
-    ../ATCMplugineditor/crosstableeditor.cpp
+   ../ATCMplugineditor/crosstableeditor.cpp
 
 RESOURCES   = icons.qrc
 

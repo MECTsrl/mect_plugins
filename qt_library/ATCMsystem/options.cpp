@@ -11,7 +11,6 @@
 #include "global_functions.h"
 #include "options.h"
 #include "ui_options.h"
-#include "numpad.h"
 #include <QMessageBox>
 #ifdef TRANSLATION
 #include "item_selector.h"
@@ -97,7 +96,7 @@ void options::reload()
 void options::updateData()
 {
     /* call the parent updateData member */
-    //page::updateData();
+    page::updateData();
 }
 
 #ifdef TRANSLATION

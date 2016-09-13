@@ -4,7 +4,6 @@ TEMPLATE    = lib
 include(../qt_designer_environment.pri)
 
 INCLUDEPATH = . \
-               ../ \
                ../../qt_library/ATCMcommon \
                ../../qt_library/ATCMutility \
                ../../qt_library/ATCMcommunication \

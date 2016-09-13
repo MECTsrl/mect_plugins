@@ -13,10 +13,7 @@
 
 #include "atcmgraph.h"
 #include "common.h"
-#include "protocol.h"
-
 #ifdef TARGET_ARM
-#include "global_var.h"
 #include "app_logprint.h"
 #include "cross_table_utility.h"
 #endif
@@ -24,10 +21,10 @@
 ATCMgraph::ATCMgraph(QWidget *parent) :
     MAINWIGET(parent)
 {
-    m_lastVisibility = false;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
     m_x1Variable = "PLC_time";
     m_CtX1Index = 5390;
-    m_x1status = STATUS_ENABLED;
+    m_x1status = UNK;
     m_x1MinVariable = "PLC_timeMin";
     m_CtX1MinIndex = 5391;
     m_x1MinValue = 0;
@@ -40,7 +37,7 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
 
     m_y1Variable = "";
     m_CtY1Index = -1;
-    m_y1status = STATUS_ENABLED;
+    m_y1status = UNK;
     m_y1MinVariable = "0";
     m_CtY1MinIndex = -1;
     m_y1MinValue = 0;
@@ -57,7 +54,7 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
 
     m_x2Variable = "PLC_time";
     m_CtX2Index = 5390;
-    m_x2status = STATUS_ENABLED;
+    m_x2status = UNK;
     m_x2MinVariable = "PLC_timeMin";
     m_CtX2MinIndex = 5391;
     m_x2MinValue = 0;
@@ -70,7 +67,7 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
 
     m_y2Variable = "";
     m_CtY2Index = -1;
-    m_y2status = STATUS_ENABLED;
+    m_y2status = UNK;
     m_y2MinVariable = "0";
     m_CtY2MinIndex = -1;
     m_y2MinValue = 0;
@@ -200,8 +197,18 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
      * put there a default stylesheet
      *label->setStyleSheet("padding: 5px;");
      */
-    m_parent = parent;
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+#ifdef TARGET_ARM
+    if (m_refresh > 0)
+    {
+        refresh_timer = new QTimer(this);
+        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
+        refresh_timer->start(m_refresh);
+    }
+    else
+#endif
+    {
+        refresh_timer = NULL;
+    }
 }
 
 QSize ATCMgraph::sizeHint() const
@@ -211,6 +218,11 @@ QSize ATCMgraph::sizeHint() const
 
 ATCMgraph::~ATCMgraph()
 {
+    if (refresh_timer != NULL)
+    {
+        refresh_timer->stop();
+        delete refresh_timer;
+    }
     free(m_x1ArrayValue);
     m_x1ArrayValue = NULL;
     free(m_x2ArrayValue);
@@ -267,7 +279,7 @@ bool ATCMgraph::setX1Variable(QString variable)
     QString OldLabel = m_x1Variable;
     if (setVariable(variable, &m_x1Variable, &m_CtX1Index) == false)
     {
-        m_x1status = STATUS_ERR;
+        m_x1status = ERROR;
     }
     else
     {
@@ -276,27 +288,27 @@ bool ATCMgraph::setX1Variable(QString variable)
             setX1Label(variable);
         }
     }
-    return (!(m_x1status & STATUS_ERR));
+    return (m_x1status != ERROR);
 }
 
 bool ATCMgraph::setX1Min(QString variable)
 {
     if (setVariable(variable, &m_x1MinVariable, &m_CtX1MinIndex) == false)
     {
-        m_x1status = STATUS_ERR;
+        m_x1status = ERROR;
     }
     PLOT->setAxisScale(QwtPlot::xBottom, m_x1MinValue, m_x1MaxValue, m_x1step);
-    return (!(m_x1status & STATUS_ERR));
+    return (m_x1status != ERROR);
 }
 
 bool ATCMgraph::setX1Max(QString variable)
 {
     if (setVariable(variable, &m_x1MaxVariable, &m_CtX1MaxIndex) == false)
     {
-        m_x1status = STATUS_ERR;
+        m_x1status = ERROR;
     }
     PLOT->setAxisScale(QwtPlot::xBottom, m_x1MinValue, m_x1MaxValue, m_x1step);
-    return (!(m_x1status & STATUS_ERR));
+    return (m_x1status != ERROR);
 }
 
 void ATCMgraph::setX1Step(double x1Step)
@@ -318,7 +330,7 @@ bool ATCMgraph::setY1Variable(QString variable)
     QString OldLabel = m_y1Variable;
     if (setVariable(variable, &m_y1Variable, &m_CtY1Index) == false)
     {
-        m_y1status = STATUS_ERR;
+        m_y1status = ERROR;
     }
     else
     {
@@ -327,27 +339,27 @@ bool ATCMgraph::setY1Variable(QString variable)
             setY1Label(variable);
         }
     }
-    return (!(m_y1status & STATUS_ERR));
+    return (m_y1status != ERROR);
 }
 
 bool ATCMgraph::setY1Min(QString variable)
 {
     if (setVariable(variable, &m_y1MinVariable, &m_CtY1MinIndex) == false)
     {
-        m_y1status = STATUS_ERR;
+        m_y1status = ERROR;
     }
     PLOT->setAxisScale(QwtPlot::yLeft, m_y1MinValue, m_y1MaxValue, m_y1step);
-    return (!(m_y1status & STATUS_ERR));
+    return (m_y1status != ERROR);
 }
 
 bool ATCMgraph::setY1Max(QString variable)
 {
     if (setVariable(variable, &m_y1MaxVariable, &m_CtY1MaxIndex) == false)
     {
-        m_y1status = STATUS_ERR;
+        m_y1status = ERROR;
     }
     PLOT->setAxisScale(QwtPlot::yLeft, m_y1MinValue, m_y1MaxValue, m_y1step);
-    return (!(m_y1status & STATUS_ERR));
+    return (m_y1status != ERROR);
 }
 
 void ATCMgraph::setY1Step(double y1Step)
@@ -371,7 +383,7 @@ bool ATCMgraph::setX2Variable(QString variable)
     QString OldLabel = m_x2Variable;
     if (setVariable(variable, &m_x2Variable, &m_CtX2Index) == false)
     {
-        m_x2status = STATUS_ERR;
+        m_x2status = ERROR;
     }
     else
     {
@@ -380,27 +392,27 @@ bool ATCMgraph::setX2Variable(QString variable)
             setX2Label(variable);
         }
     }
-    return (!(m_x2status & STATUS_ERR));
+    return (m_x2status != ERROR);
 }
 
 bool ATCMgraph::setX2Min(QString variable)
 {
     if (setVariable(variable, &m_x2MinVariable, &m_CtX2MinIndex) == false)
     {
-        m_x2status = STATUS_ERR;
+        m_x2status = ERROR;
     }
     PLOT->setAxisScale(QwtPlot::xTop, m_x2MinValue, m_x2MaxValue, m_x2step);
-    return (!(m_x2status & STATUS_ERR));
+    return (m_x2status != ERROR);
 }
 
 bool ATCMgraph::setX2Max(QString variable)
 {
     if (setVariable(variable, &m_x2MaxVariable, &m_CtX2MaxIndex) == false)
     {
-        m_x2status = STATUS_ERR;
+        m_x2status = ERROR;
     }
     PLOT->setAxisScale(QwtPlot::xTop, m_x2MinValue, m_x2MaxValue, m_x2step);
-    return (!(m_x2status & STATUS_ERR));
+    return (m_x2status != ERROR);
 }
 
 void ATCMgraph::setX2Step(double x2Step)
@@ -422,7 +434,7 @@ bool ATCMgraph::setY2Variable(QString variable)
     QString OldLabel = m_y2Variable;
     if (setVariable(variable, &m_y2Variable, &m_CtY2Index) == false)
     {
-        m_y2status = STATUS_ERR;
+        m_y2status = ERROR;
     }
     else
     {
@@ -431,27 +443,27 @@ bool ATCMgraph::setY2Variable(QString variable)
             setY2Label(variable);
         }
     }
-    return (!(m_y2status & STATUS_ERR));
+    return (m_y2status != ERROR);
 }
 
 bool ATCMgraph::setY2Min(QString variable)
 {
     if (setVariable(variable, &m_y2MinVariable, &m_CtY2MinIndex) == false)
     {
-        m_y2status = STATUS_ERR;
+        m_y2status = ERROR;
     }
     PLOT->setAxisScale(QwtPlot::yRight, m_y2MinValue, m_y2MaxValue, m_y2step);
-    return (!(m_y2status & STATUS_ERR));
+    return (m_y2status != ERROR);
 }
 
 bool ATCMgraph::setY2Max(QString variable)
 {
     if (setVariable(variable, &m_y2MaxVariable, &m_CtY2MaxIndex) == false)
     {
-        m_y2status = STATUS_ERR;
+        m_y2status = ERROR;
     }
     PLOT->setAxisScale(QwtPlot::yRight, m_y2MinValue, m_y2MaxValue, m_y2step);
-    return (!(m_y2status & STATUS_ERR));
+    return (m_y2status != ERROR);
 }
 
 void ATCMgraph::setY2Step(double y2Step)
@@ -467,6 +479,28 @@ void ATCMgraph::setY2Label(QString y2Label)
     curve2->setTitle(m_y2label);
     PLOT->setAxisTitle(QwtPlot::yRight, m_y2label);
     setLegendVisible(m_legendvisible);
+}
+
+bool ATCMgraph::setRefresh(int refresh)
+{
+    m_refresh = refresh;
+    if (refresh_timer == NULL && m_refresh > 0)
+    {
+        refresh_timer = new QTimer(this);
+
+        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
+
+        refresh_timer->start(m_refresh);
+    }
+    else if (m_refresh > 0)
+    {
+        refresh_timer->start(m_refresh);
+    }
+    else if (refresh_timer != NULL)
+    {
+        refresh_timer->stop();
+    }
+    return true;
 }
 
 void ATCMgraph::setTitle(QString title)
@@ -503,23 +537,12 @@ void ATCMgraph::updateData()
     bool pen1 = true;
     bool pen2 = true;
 
-#ifdef  TARGET_ARM
-    incdecHvar(PLOT->isVisible(),
-               m_CtX1Index,
-               m_CtY1Index,
-               m_CtX1MinIndex,
-               m_CtX1MaxIndex,
-               m_CtY1MinIndex,
-               m_CtY1MaxIndex,
-               m_CtX2Index,
-               m_CtY2Index,
-               m_CtX2MinIndex,
-               m_CtX2MaxIndex,
-               m_CtY2MinIndex,
-               m_CtY2MaxIndex
-               );
-    return;
+    if (PLOT->isVisible() == false)
+    {
+        return;
+    }
 
+#ifdef  TARGET_ARM
     /* read data */
     double x1 = VAR_NAN, y1 = VAR_NAN;
     pen1 = false;
@@ -578,6 +601,26 @@ void ATCMgraph::updateData()
         PLOT->updateAxes();
         PLOT->replot();
     }
+}
+
+bool ATCMgraph::startAutoReading()
+{
+    if (refresh_timer != NULL && m_refresh > 0)
+    {
+        refresh_timer->start(m_refresh);
+        return true;
+    }
+    return false;
+}
+
+bool ATCMgraph::stopAutoReading()
+{
+    if (refresh_timer != NULL)
+    {
+        refresh_timer->stop();
+        return true;
+    }
+    return false;
 }
 
 bool ATCMgraph::setViewStatus(bool status)
@@ -923,6 +966,11 @@ void ATCMgraph::unsetTitle()
     setTitle("");
 }
 
+void ATCMgraph::unsetRefresh()
+{
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
+}
+
 void ATCMgraph::unsetViewStatus()
 {
     setViewStatus(false);
@@ -961,9 +1009,20 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
     {
         if (destination->length() != 0)
         {
-            destination->clear();
-            *CtIndex = -1;
-            return true;
+#ifdef TARGET_ARM
+            if (deactivateVar(destination->trimmed().toAscii().data()) == 0)
+            {
+#endif
+                destination->clear();
+                *CtIndex = -1;
+                return true;
+#ifdef TARGET_ARM
+            }
+            else
+            {
+                return false;
+            }
+#endif
         }
         return false;
     }
@@ -979,17 +1038,23 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
         return true;
     }
     /* activate the variable */
-    int myCtIndex = -1;
-    LOG_PRINT(verbose_e, "extracting ctIndex of '%s'\n", variable.trimmed().toAscii().data());
-    if (Tag2CtIndex(variable.trimmed().toAscii().data(), &myCtIndex) != 0)
+    if (activateVar(variable.trimmed().toAscii().data()) == 0)
     {
-        LOG_PRINT(error_e,"variable '%s', CtIndex %d\n", destination->toAscii().data(), *CtIndex);
-        return false;
-    }
-    *destination = variable.trimmed();
-    *CtIndex = myCtIndex;
-    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", destination->toAscii().data(), *CtIndex);
+        int myCtIndex = -1;
+        LOG_PRINT(verbose_e, "extracting ctIndex of '%s'\n", variable.trimmed().toAscii().data());
+        if (Tag2CtIndex(variable.trimmed().toAscii().data(), &myCtIndex) != 0)
+        {
+            LOG_PRINT(error_e,"variable '%s', CtIndex %d\n", destination->toAscii().data(), *CtIndex);
+            return false;
+        }
+        *destination = variable.trimmed();
+        *CtIndex = myCtIndex;
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", destination->toAscii().data(), *CtIndex);
 
+        return true;
+    }
+    *CtIndex = -1;
+    *destination = variable;
 #else
     *CtIndex = -1;
     *destination = variable;
@@ -1001,15 +1066,15 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
 char ATCMgraph::readVariable(int CtIndex, double * valuef)
 {
     char value[16];
-    if (ioComm->valFromIndex(CtIndex, value) == 0 && strlen(value) > 0)
+    if (formattedReadFromDb(CtIndex, value) == 0 && strlen(value) > 0)
     {
         *valuef = atof(value);
-        return STATUS_OK;
+        return DONE;
     }
     else
     {
         *valuef = VAR_NAN;
-        return STATUS_ERR;
+        return ERROR;
         LOG_PRINT(error_e, "Invalid value '%s'\n", value);
     }
 }
@@ -1103,7 +1168,7 @@ bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
     }
 #ifdef TARGET_ARM
     /* it is a variable value */
-    else if (readVariable(CtIndex, &myvalue) & STATUS_OK)
+    else if (readVariable(CtIndex, &myvalue) == DONE)
     {
         *value = myvalue;
         return true;
@@ -1120,6 +1185,20 @@ bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
 void ATCMgraph::RunStop()
 {
     m_run_stop = !m_run_stop;
+    if (refresh_timer != NULL)
+    {
+        if (m_run_stop)
+        {
+            if (m_refresh > 0)
+            {
+                refresh_timer->start(m_refresh);
+            }
+        }
+        else
+        {
+            refresh_timer->stop();
+        }
+    }
 }
 
 void ATCMInterruptedCurve::drawCurve( QPainter *painter, __attribute__((unused))int style, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect, int from, int to ) const

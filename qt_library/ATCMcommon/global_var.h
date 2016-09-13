@@ -164,6 +164,7 @@ extern bool _trend_data_reload_;
 #ifdef ENABLE_RECIPE
 
 #define MAX_RCP_STEP 64
+#define MAX_RCP_VAR  200
 
 extern char _actual_recipe_[FILENAME_MAX];
 #endif //ENABLE_RECIPE

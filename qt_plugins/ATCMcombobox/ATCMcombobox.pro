@@ -4,19 +4,15 @@ include (../qt_plugins.pri)
 
 INCLUDEPATH += ../ATCMplugineditor
 
-HEADERS =  \
-    ../atcmplugin.h \
-    atcmcomboboxplugin.h \
-    atcmcomboboxtaskmenu.h \
-    atcmcomboboxdialog.h \
+HEADERS     = atcmcomboboxplugin.h \
+				atcmcomboboxtaskmenu.h \
+				atcmcomboboxdialog.h \
     ../ATCMplugineditor/crosstableeditor.h \
     #atcmcomboboxpropertysheet.h
 
-SOURCES = \
-    ../atcmpluginobject.cpp \
-    atcmcomboboxplugin.cpp \
-    atcmcomboboxtaskmenu.cpp \
-    atcmcomboboxdialog.cpp \
+SOURCES     = atcmcomboboxplugin.cpp \
+				atcmcomboboxtaskmenu.cpp \
+				atcmcomboboxdialog.cpp \
     ../ATCMplugineditor/crosstableeditor.cpp \
     #atcmcomboboxpropertysheet.cpp
 

@@ -7,15 +7,15 @@
 #ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
 #endif
+#include <QTimer>
 #include <QFrame>
 #include <QIcon>
-#include "atcmpluginobject.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMslider : public QSlider, public ATCMpluginObject
+ ATCMslider : public QSlider
 {
 	Q_OBJECT
 #ifndef TARGET_ARM
@@ -52,6 +52,8 @@ class
         /************* new property ************ */
 		/* name of the cross table variable associated */
         Q_PROPERTY(QString variable READ variable WRITE setVariable RESET unsetVariable)
+		/* refresh time of the crosstable variables */
+        Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
 		/* set if the the status of the associated variable have an visible feedback */
         Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set the crosstable variable to associate the button visibility */
@@ -78,6 +80,7 @@ class
 		~ATCMslider();
 		int value()    const { return m_value; }
 		QString variable() const { return m_variable; }
+		int refresh()      const { return m_refresh; }
 		char status()      const { return m_status; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
@@ -97,7 +100,7 @@ class
 	public Q_SLOTS:
 			bool writeValue(int);
 		bool setVariable(QString);
-        bool setRefresh(int){return true;}
+		bool setRefresh(int);
 		void setViewStatus(bool);
 		bool setVisibilityVar(QString);
 		void setIcon(const QIcon& icon);
@@ -112,6 +115,7 @@ class
         void setApparence(const enum QFrame::Shadow apparence);
 
         void unsetVariable();
+        void unsetRefresh();
         void unsetViewStatus();
         void unsetVisibilityVar();
         void unsetApparence();
@@ -123,6 +127,7 @@ protected Q_SLOTS:
 		int m_value;
 		QString m_variable;
 		QString m_visibilityvar;
+		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		int m_CtIndex;
@@ -142,8 +147,7 @@ protected Q_SLOTS:
 		void paintEvent(QPaintEvent *event);
 
 	private:
-        QWidget *m_parent;
-        bool m_lastVisibility;
+		QTimer * refresh_timer;
 };
 
 #endif

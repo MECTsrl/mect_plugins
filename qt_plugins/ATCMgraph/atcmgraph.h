@@ -6,6 +6,7 @@
 #ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
 #endif
+#include <QTimer>
 #include <QTime>
 #include <QGridLayout>
 #include <QMutex>
@@ -25,8 +26,6 @@
 #include <qwt_plot_grid.h>
 #include <qwt_scale_draw.h>
 #include <qwt_legend.h>
-
-#include "atcmpluginobject.h"
 
 #define MAX_SAMPLES 1024
 
@@ -121,7 +120,7 @@ class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMgraph : public MAINWIGET, public ATCMpluginObject
+ ATCMgraph : public MAINWIGET
 {
     Q_OBJECT
 #ifndef TARGET_ARM
@@ -240,6 +239,8 @@ class
     Q_PROPERTY(bool legendVisible READ legendVisible WRITE setLegendVisible RESET unsetLegendVisible)
     /* Title */
     Q_PROPERTY(QString title READ title WRITE setTitle RESET unsetTitle)
+    /* refresh time of the crosstable variables */
+    Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
     /* set if the the status of the associated variable have an visible feedback */
     Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
     /* set background color */
@@ -327,6 +328,7 @@ public:
     int sample1Nb() const { return m_sample_nb1; }
     int sample2Nb() const { return m_sample_nb2; }
 
+    int refresh()      const { return m_refresh; }
     char status()      const { return m_x1status && m_y1status && m_x2status && m_y2status; }
     bool viewStatus()  const { return m_viewstatus; }
     bool legendVisible()  const { return m_legendvisible; }
@@ -378,7 +380,7 @@ public slots:
     void setX1axis(descriptor::atcm_axisDescriptor xaxis);
 #endif
 
-    bool setRefresh(int) {return true;}
+    bool setRefresh(int);
     bool setViewStatus(bool);
     void setLegendVisible(bool);
 #ifdef TARGET_ARM
@@ -422,6 +424,7 @@ public slots:
     void unsetGridVisible();
     void unsetLegendVisible();
     void unsetTitle();
+    void unsetRefresh();
     void unsetViewStatus();
     void unsetDisplay1();
     void unsetDisplay2();
@@ -432,6 +435,7 @@ protected:
 #ifdef FRAMEPLOT
     QwtPlot * plot;
 #endif
+    int m_refresh;
     bool m_viewstatus;
     bool m_legendvisible;
     QwtPlotGrid *grid;
@@ -553,10 +557,9 @@ private:
     char readVariable(int CtIndex, double * value);
 #endif
 private:
+    QTimer * refresh_timer;
     bool m_run_stop;
     QMutex sample_mutex;
-    QWidget *m_parent;
-    bool m_lastVisibility;
 };
 
 #endif

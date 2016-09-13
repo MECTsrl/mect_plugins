@@ -14,4 +14,4 @@
 #include "atcmdate.h"
 #include "atcmtime.h"
 
-#endif // ATCMPLUGIN_H
+#endif

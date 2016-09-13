@@ -17,7 +17,7 @@
 #define MAX_LEN_UPDATE_MSG 5
 #define WAIT_COMM_RETRY_NB 20
 #define SPLASH_TIMEOUT_MS 2000
-#define REFRESH_MS 100
+#define REFRESH_MS 500
 #define LOG_PERIOD_MS 5000
 
 /* Important files */

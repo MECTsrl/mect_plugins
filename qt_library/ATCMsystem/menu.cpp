@@ -83,7 +83,7 @@ void menu::reload()
  */
 void menu::updateData()
 {
-    //page::updateData();
+    page::updateData();
     if (active_password == pwd_operator_e)
     {
         ui->pushButtonLogin->setText(trUtf8("LOGIN"));

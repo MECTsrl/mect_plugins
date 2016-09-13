@@ -366,7 +366,7 @@ void Logger::run()
             }
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading '%s' - %d\n", i.key().toAscii().data(), i.value()->CtIndex);
-            if (ioComm->readUdpReply(i.value()->CtIndex, &var) == 0)
+            if (readFromDb(i.value()->CtIndex, &var) == 0)
             {
                 LOG_PRINT(verbose_e, "Reading '%s' 0x%X\n", i.key().toAscii().data(), var);
                 /* an event is active */
@@ -756,7 +756,11 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         to_append = true;
         LOG_PRINT(verbose_e, "New event for %s\n", info_descr->tag);
     }
-    
+
+    if (status == info_descr->status)  {
+        /* avoid useless events */
+        return  true;
+    }
     LOG_PRINT(verbose_e, "isack %d status %d status %d\n",
               info_descr->isack,
               info_descr->status,
@@ -1161,7 +1165,7 @@ bool Logger::checkVariation()
     {
         /* if is active, dump if it is necessary and emit the signal */
         LOG_PRINT(verbose_e, "Reading '%s'\n", StoreArrayV[i].tag);
-        if (ioComm->valFromIndex(StoreArrayV[i].CtIndex, value) != 0)
+        if (formattedReadFromDb(StoreArrayV[i].CtIndex, value) != 0)
         {
             LOG_PRINT(error_e, "cannot read variable %d '%s'\n", StoreArrayV[i].CtIndex, StoreArrayV[i].tag );
             continue;
@@ -1221,7 +1225,7 @@ bool Logger::dumpStorage()
         {
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading F '%s'\n", StoreArrayS[iS].tag);
-            if (ioComm->valFromIndex(StoreArrayS[iS].CtIndex, value) != 0)
+            if (formattedReadFromDb(StoreArrayS[iS].CtIndex, value) != 0)
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayS[iS].tag );
                 strcpy(value, TAG_NAN);
@@ -1273,7 +1277,7 @@ bool Logger::dumpStorage()
         {
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading F '%s'\n", StoreArrayF[iF].tag);
-            if (ioComm->valFromIndex(StoreArrayF[iF].CtIndex, value) != 0)
+            if (formattedReadFromDb(StoreArrayF[iF].CtIndex, value) != 0)
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayF[iF].tag );
                 strcpy(value, TAG_NAN);
@@ -1324,7 +1328,7 @@ bool Logger::dumpStorage()
         {
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading V '%s'\n", StoreArrayV[iV].tag);
-            if (ioComm->valFromIndex(StoreArrayV[iV].CtIndex, value) != 0)
+            if (formattedReadFromDb(StoreArrayV[iV].CtIndex, value) != 0)
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayV[iV].tag );
                 strcpy(value, TAG_NAN);
@@ -1389,7 +1393,7 @@ bool Logger::dumpStorage()
         {
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading X '%s'\n", StoreArrayX[iX].tag);
-            if (ioComm->valFromIndex(StoreArrayX[iX].CtIndex, value) != 0)
+            if (formattedReadFromDb(StoreArrayX[iX].CtIndex, value) != 0)
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayX[iX].tag );
                 strcpy(value, TAG_NAN);

@@ -22,8 +22,6 @@
 #include "app_logprint.h"
 #include "pagebrowser.h"
 #include "app_config.h"
-#include "cross_table_utility.h"
-
 #ifdef ENABLE_AUTODUMP
 #include "app_usb.h"
 #endif
@@ -78,7 +76,7 @@ page::page(QWidget *parent) :
 {
     /* set up the time for set the refresh timeout */
     refresh_timer = new QTimer(this);
-    connect(refresh_timer, SIGNAL(timeout()), this, SLOT(refreshPage()));
+    connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
     refresh_timer->start(REFRESH_MS);
     labelDataOra = NULL;
     labelUserName = NULL;
@@ -94,27 +92,11 @@ page::page(QWidget *parent) :
     }
 }
 
-void page::refreshPage()
-{
-    if (this->isVisible() == false)
-    {
-        /* should never happen */
-        refresh_timer->stop();
-        return;
-    }
-    initCtBusy();
-    updateData();
-    /* widget refresh AND request for new value for H-type variables */
-    LOG_PRINT(verbose_e, "EMIT from page '%s'\n", this->windowTitle().toAscii().data());
-    emit varRefresh();
-}
-
 /**
  * @brief This is the updateData member. The operation written here, are executed every REFRESH_MS milliseconds.
  */
 void page::updateData()
 {
-    LOG_PRINT(verbose_e, "UPDATE page '%s'\n", this->windowTitle().toAscii().data());
 #ifdef ENABLE_ALARMS
     setAlarmsBuzzer();
 #endif
@@ -123,7 +105,7 @@ void page::updateData()
     if (ID_FORCE_BUZZER != -1)
     {
         bool FORCE_BUZZER;
-        if (ioComm->readUdpReply(ID_FORCE_BUZZER, &FORCE_BUZZER) == 0 && FORCE_BUZZER == true)
+        if (readFromDb(ID_FORCE_BUZZER, &FORCE_BUZZER) == 0 && FORCE_BUZZER == true)
         {
             beep(BUZZER_DURATION_MS);
         }
@@ -207,7 +189,17 @@ void page::updateData()
     {
         labelUserName->setText(trUtf8("User: %1").arg(PasswordsString[active_password]));
     }
+#ifdef ENABLE_DEVICE_DISCONNECT
+    /*Re-activate variables local to a page in case of device reconnection*/
+    if(DeviceReconnected)
+    {
+        this->reload();
+        DeviceReconnected = 0;
+    }
+#endif
     
+    checkWriting();
+
     /*
     if(IS_ENGINE_READY == 0)
     {
@@ -228,71 +220,107 @@ page::~page()
 {
 }
 
-/* FIXME MTL Currently not used. To convert to new HMI<=>4C interface. */
-#if 0
-bool page::getFormattedVar(const char *varname, bool *formattedVar, QLabel *led)
+bool page::getFormattedVar(const char * varname, bool * formattedVar, QLabel * led)
 {
     int ctIndex;
     bool return_value = false;
     
-    if (Tag2CtIndex(varname, &ctIndex) != 0) {
+#ifdef ENABLE_DEVICE_DISCONNECT
+    if (isDeviceConnectedByVarname(varname) != 1)
+    {
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
+        if(led) led->setStyleSheet(STYLE_DISCONNECT);
+        *formattedVar = VAR_DISCONNECT;
+        return return_value;
+    }
+#endif
+    if (Tag2CtIndex(varname, &ctIndex) != 0)
+    {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
         if(led) led->setStyleSheet(STYLE_UNKNOWN);
-
-        return false;
+        return return_value;
     }
     
     int type = CtIndex2Type(ctIndex);
-    if (type != bit_e) {
+    
+    if (
+            type == uintab_e ||
+            type == uintba_e ||
+            type == intab_e ||
+            type == intba_e ||
+            type == udint_abcd_e ||
+            type == udint_badc_e ||
+            type == udint_cdab_e ||
+            type == udint_dcba_e ||
+            type == dint_abcd_e ||
+            type == dint_badc_e ||
+            type == dint_cdab_e ||
+            type == dint_dcba_e ||
+            type == fabcd_e ||
+            type == fbadc_e ||
+            type == fcdab_e ||
+            type == fdcba_e ||
+            type == bytebit_e ||
+            type == wordbit_e ||
+            type == dwordbit_e ||
+            type == bit_e
+            )
+    {
         LOG_PRINT(error_e, "Invalid type\n");
-
-        if (led)
-            led->setStyleSheet(STYLE_UNKNOWN);
-
-        return false;
+        if(led) led->setStyleSheet(STYLE_UNKNOWN);
+        return return_value;
     }
-
-    BYTE _value;
-    if (ioComm->valFromIndex(ctIndex, &_value) != 0) {
-        if (led)
-            led->setStyleSheet(STYLE_ERROR);
-
-        return false;
-    }
-
-    uint8_t status = getStatusVarByCtIndex(ctIndex, NULL);
-    if ((status & STATUS_BUSY_R) || (status & STATUS_BUSY_W)) {
-        if (led)
-            led->setStyleSheet(STYLE_PROGRESS);
-
-        *formattedVar = (_value == 1);
-
-        return_value = true;
-    }
-    else if ((status & STATUS_ERR) || (status & STATUS_FAIL_W)) {
-        if (led)
-            led->setStyleSheet(STYLE_ERROR);
-
-        return_value = false;
-    }
-    else {
-        if (led)
-            led->setStyleSheet(STYLE_READY);
-
-        *formattedVar = (_value == 1);
-
-        return_value = true;
+    /* bit */
+    else
+    {
+        BYTE _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            if(led) led->setStyleSheet(STYLE_ERROR);
+            return return_value;
+        }
+        
+        switch (getStatusVarByCtIndex(ctIndex, NULL))
+        {
+        case BUSY:
+            if(led) led->setStyleSheet(STYLE_PROGRESS);
+            *formattedVar = (_value == 1);
+            return_value = true;
+            break;
+        case ERROR:
+            if(led) led->setStyleSheet(STYLE_ERROR);
+            return_value = false;
+            break;
+        case DONE:
+            if(led) led->setStyleSheet(STYLE_READY);
+            *formattedVar = (_value == 1);
+            return_value = true;
+            break;
+        default:
+            if(led) led->setStyleSheet(STYLE_UNKNOWN);
+            return_value = false;
+            break;
+        }
     }
     
     LOG_PRINT(verbose_e, "HEX %X - FORMATTED BIT '%s': '%d'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *formattedVar);
-
     return return_value;
+    
 }
 
 bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabel * led)
 {
     int ctIndex;
     bool return_value = false;
+#ifdef ENABLE_DEVICE_DISCONNECT
+    if (isDeviceConnectedByVarname(varname) != 1)
+    {
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
+        if(led) led->setStyleSheet(STYLE_DISCONNECT);
+        *formattedVar = (short int)VAR_NAN;
+        return return_value;
+    }
+#endif
     
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
@@ -352,7 +380,16 @@ bool page::getFormattedVar(const char * varname, unsigned short int * formattedV
 {
     int ctIndex;
     bool return_value = false;
-
+#ifdef ENABLE_DEVICE_DISCONNECT
+    if (isDeviceConnectedByVarname(varname) != 1)
+    {
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
+        if(led) led->setStyleSheet(STYLE_DISCONNECT);
+        *formattedVar = (unsigned short int)VAR_NAN;
+        return return_value;
+    }
+#endif
+    
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
@@ -414,6 +451,15 @@ bool page::getFormattedVar(const char * varname, int * formattedVar, QLabel * le
 {
     int ctIndex;
     bool return_value = false;
+#ifdef ENABLE_DEVICE_DISCONNECT
+    if (isDeviceConnectedByVarname(varname) != 1)
+    {
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
+        if(led) led->setStyleSheet(STYLE_DISCONNECT);
+        *formattedVar = (int)VAR_NAN;
+        return return_value;
+    }
+#endif
     
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
@@ -478,6 +524,15 @@ bool page::getFormattedVar(const char * varname, unsigned int * formattedVar, QL
 {
     int ctIndex;
     bool return_value = false;
+#ifdef ENABLE_DEVICE_DISCONNECT
+    if (isDeviceConnectedByVarname(varname) != 1)
+    {
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
+        if(led) led->setStyleSheet(STYLE_DISCONNECT);
+        *formattedVar = (unsigned int)VAR_NAN;
+        return return_value;
+    }
+#endif
     
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
@@ -544,6 +599,15 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
     bool return_value = false;
     char fmt[8] = "";
     int decimal = 0;
+#ifdef ENABLE_DEVICE_DISCONNECT
+    if (isDeviceConnectedByVarname(varname) != 1)
+    {
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
+        if(led) led->setStyleSheet(STYLE_DISCONNECT);
+        *formattedVar = (float)VAR_NAN;
+        return return_value;
+    }
+#endif
     
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
@@ -879,6 +943,15 @@ bool page::getFormattedVar(const char * varname, QString * formattedVar, QLabel 
     int CtIndex;
     char value[TAG_LEN];
     char status[TAG_LEN];
+#ifdef ENABLE_DEVICE_DISCONNECT
+    if (isDeviceConnectedByVarname(varname) != 1)
+    {
+        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
+        if(led) led->setStyleSheet(STYLE_DISCONNECT);
+        *formattedVar = VAR_DISCONNECT;
+        return false;
+    }
+#endif
     
     formattedVar->clear();
     if (Tag2CtIndex(varname, &CtIndex) != 0)
@@ -1153,8 +1226,6 @@ bool page::getFormattedVar(const char * varname, QwtTextLabel * formattedVar, QL
     }
 }
 #endif
-#endif
-
 /**
  * @brief hide all pages
  */
@@ -1162,13 +1233,9 @@ bool page::hideAll(void)
 {
     /* chek if some windows is still open */
     QHash<QString, page *>::const_iterator i;
-    LOG_PRINT(verbose_e,"ScreenHash count(%d)...\n", ScreenHash.count() );
     for ( i = ScreenHash.begin(); i != ScreenHash.end() && i.value() != NULL ; i++)
     {
-        LOG_PRINT(verbose_e,"check (%s) %d ...\n", i.value()->windowTitle().toAscii().data(), i.value()->isVisible( ));
-        i.value()->hide();
-        LOG_PRINT(verbose_e,"check (%s) %d ...\n", i.value()->windowTitle().toAscii().data(), i.value()->isVisible( ));
-        if ( i.value()->isVisible() == true)
+        if ( i.value()->isVisible())
         {
             LOG_PRINT(verbose_e,"hiding (%s)...\n", i.value()->windowTitle().toAscii().data() );
             i.value()->hide();
@@ -1209,6 +1276,9 @@ bool page::goto_page(const char * page_name, bool remember)
         /* update history */
         History.push(this->windowTitle());
     }
+    
+    /* clear the variable of the actual page */
+    emptySyncroElement();
     
 #ifdef ENABLE_TREND
     /* destroy trend page */
@@ -1258,21 +1328,35 @@ bool page::goto_page(const char * page_name, bool remember)
     }
     p->reload();
 
+    if (p != this) {
+        /* deactivate the old variables */
+        if (this->variableList.count() == 0)
+        {
+            LOG_PRINT(verbose_e, "No variable to deactivate.\n");
+        }
+        else if (deactivateVarList(this->variableList) == false)
+        {
+            LOG_PRINT(error_e, "cannot deactivate the variable list\n");
+        }
+
+        /* activate the new variables */
+        /* send to the plc the active flag for the active variable */
+        /* this code will be active only if the variable VAR_TO_DISPLAY is not empty */
+        if (p->variableList.count() == 0)
+        {
+            LOG_PRINT(verbose_e, "No variable to activate.\n");
+        }
+        else if (activateVarList(p->variableList) == false)
+        {
+            LOG_PRINT(error_e, "cannot activate the variable list\n");
+        }
+    }
     hideAll();
     //hideOthers(p);
 
     p->refresh_timer->start(REFRESH_MS);
     LOG_PRINT(verbose_e, " %s TIMER START\n", p->windowTitle().toAscii().data());
     p->SHOW();
-
-    /* activate H variable variables */
-    /* FIXME use indexes in variableList */
-    ioComm->resetHvarUsage();
-    for (int i = 0; i < variableList.count(); i++)
-    {
-        ioComm->incHvarUsage(variableList.at(i).toAscii().data());
-    }
-
     LOG_PRINT(verbose_e, "New page '%s' (%s) is shown.\n", p->windowTitle().toAscii().data(), page_name );
     return true;
 }
@@ -1457,6 +1541,137 @@ void page::KeyPress(const char * Id)
 
 
 /**
+ * @brief call the activateVar function for each variable into listVarname
+ */
+bool page::activateVarList(const QStringList listVarname)
+{
+    QString varname;
+    bool ret = true;
+    
+    foreach(varname, listVarname)
+    {
+        if (activateVar(varname.toAscii().data()) != 0)
+        {
+            LOG_PRINT(error_e, "cannot activate '%s'\n", varname.toAscii().data());
+            ret = false;
+        }
+        else
+        {
+            LOG_PRINT(verbose_e, "activated '%s'\n", varname.toAscii().data());
+        }
+    }
+    
+    return ret;
+}
+
+/**
+ * @brief call the deactivateVar function for each variable into listVarname
+ */
+bool page::deactivateVarList(const QStringList listVarname)
+{
+    QString varname;
+    bool ret = true;
+    
+    foreach(varname, listVarname)
+    {
+        if (deactivateVar(varname.toAscii().data()) == false)
+        {
+            LOG_PRINT(error_e, "cannot deactivate '%s'\n", varname.toAscii().data());
+            ret = false;
+        }
+        else
+        {
+            LOG_PRINT(verbose_e, "deactivated '%s'\n", varname.toAscii().data());
+        }
+    }
+    
+    return ret;
+}
+
+
+/**
+ * @brief get the actual status.
+ * The status could be:
+ * - ERROR:  error flag is set to 1
+ * - DONE:   error flag is set to 0
+ * - BUSY:   error flag is set to 0
+ */
+char page::getStatusVar(const char * varname, char * msg)
+{
+    char Status = DONE;
+    char StatusComm = (ioComm == NULL) ? ERROR : ioComm->getStatusIO();
+    int CtIndex = - 1;
+    
+    /* force a status vector update before read the status */
+    checkWriting();
+    
+    if (StatusComm == ERROR)
+    {
+        Status = ERROR;
+        LOG_PRINT(verbose_e, "ioLayer: '%c' [ERROR]\n", StatusComm);
+        if (msg != NULL)
+        {
+            strcpy(msg, VAR_COMMUNICATION);
+        }
+        return Status;
+    }
+    else if (StatusComm == BUSY)
+    {
+        Status = BUSY;
+        LOG_PRINT(verbose_e, "ioLayer: '%c' [BUSY]\n", StatusComm);
+        if (msg != NULL)
+        {
+            strcpy(msg, VAR_PROGRESS);
+        }
+    }
+    
+    if (Tag2CtIndex(varname, &CtIndex) != 0)
+    {
+        LOG_PRINT(error_e, "CtIndex '%d' Status %d ERROR\n", CtIndex, Status);
+        if (msg != NULL)
+        {
+            strcpy(msg, VAR_UNKNOWN);
+        }
+        return ERROR;
+    }
+    
+    Status = getStatusVarByCtIndex(CtIndex, msg);
+    return Status;
+}
+
+/**
+ * @brief set the actual status.
+ * The status could be:
+ * - ERROR:  error flag is set to 1
+ * - DONE:   error flag is set to 0
+ * - BUSY:   error flag is set to 0
+ */
+bool page::setStatusVar(int SynIndex, char Status)
+{
+    int CtIndex;
+    
+    /* get the variable address from syncrovector */
+    if (SynIndex2CtIndex(SynIndex, &CtIndex) == 0)
+    {
+        if (Status == BUSY)
+        {
+            pIODataStatusAreaO[CtIndex] = Status;
+        }
+        else
+        {
+            pIODataStatusAreaO[CtIndex] = Status;
+        }
+        LOG_PRINT(verbose_e, "Status '%d' is '%c'\n", CtIndex, Status);
+        return true;
+    }
+    else
+    {
+        LOG_PRINT(error_e, "cannot set the status '%c' the variable '%d'\n", Status, CtIndex);
+        return false;
+    }
+}
+
+/**
  * @brief set the actual page as start page
  */
 bool page::setAsStartPage(char * window)
@@ -1467,7 +1682,6 @@ bool page::setAsStartPage(char * window)
     settings.sync();
     return true;
 }
-
 #ifdef ENABLE_ALARMS
 void page::setAlarmsBuzzer(int period_ms)
 {
@@ -1669,6 +1883,40 @@ int page::countLine(const char * filename)
     fclose (fp);
     return i;
 }
+
+bool page::isBlockFullUsed(int block, QStringList variablelist)
+{
+    int i;
+    for (i = 0; i < DB_SIZE_ELEM && varNameArray[i].block != block; i++);
+    for (; i < DB_SIZE_ELEM && varNameArray[i].block == block; i++)
+    {
+        if (variablelist.indexOf(varNameArray[i].tag) == -1)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+QStringList page::getBlocksToFill(QStringList variablelist)
+{
+    char varblockhead[TAG_LEN] = "";
+    QStringList list;
+    int i;
+    for (i = 0; i < variablelist.count(); i++)
+    {
+        int block = getHeadBlockName(variablelist.at(i).toAscii().data(), varblockhead);
+        if (block >= 0)
+        {
+            if (isBlockFullUsed(block, variablelist) == false)
+            {
+                list << varblockhead;
+            }
+        }
+    }
+    return list;
+}
+
 
 void page::translateFontSize( QWidget *ui )
 {

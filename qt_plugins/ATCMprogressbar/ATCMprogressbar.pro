@@ -4,19 +4,15 @@ include (../qt_plugins.pri)
 
 INCLUDEPATH += ../ATCMplugineditor
 
-HEADERS =  \
-    ../atcmplugin.h \
-    atcmprogressbarplugin.h \
-    variableandvisibilitydialog.h \
-    atcmprogressbartaskmenu.h \
-    ../ATCMplugineditor/crosstableeditor.h
+HEADERS = atcmprogressbarplugin.h \
+		variableandvisibilitydialog.h \
+		atcmprogressbartaskmenu.h \
+		../ATCMplugineditor/crosstableeditor.h
 
-SOURCES = \
-    ../atcmpluginobject.cpp \
-    atcmprogressbarplugin.cpp \
-    variableandvisibilitydialog.cpp \
-    atcmprogressbartaskmenu.cpp \
-    ../ATCMplugineditor/crosstableeditor.cpp
+SOURCES = atcmprogressbarplugin.cpp \
+		variableandvisibilitydialog.cpp \
+		atcmprogressbartaskmenu.cpp \
+		../ATCMplugineditor/crosstableeditor.cpp
 
 RESOURCES   = icons.qrc
 

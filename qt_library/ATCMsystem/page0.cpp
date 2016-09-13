@@ -108,7 +108,6 @@ void page0::changePage()
             create_next_page(&p, userPageList.at(pageIndex).toAscii().data());
             if (p != NULL)
             {
-                LOG_PRINT(verbose_e,"created page '%s'\n", userPageList.at(pageIndex).toAscii().data());
                 ScreenHash.insert(userPageList.at(pageIndex).toAscii().data(), p);
             }
             else
@@ -117,7 +116,6 @@ void page0::changePage()
             }
             ui->progressBar->setValue(pageIndex + 1);
         }
-        hideAll();
     }
 
     /* Check the date. if it is unset 01 Jan 1970 start with time_set page */

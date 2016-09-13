@@ -93,7 +93,7 @@ void time_set::reload()
 
 void time_set::updateData()
 {
-    //page::updateData();
+    page::updateData();
 }
 
 #ifdef TRANSLATION

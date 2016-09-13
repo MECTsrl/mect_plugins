@@ -114,7 +114,7 @@ void display_settings::reload()
  */
 void display_settings::updateData()
 {
-    //page::updateData();
+    page::updateData();
 }
 
 #ifdef TRANSLATION
