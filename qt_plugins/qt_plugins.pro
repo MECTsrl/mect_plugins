@@ -36,7 +36,6 @@ HEADERS += \
 		   ./ATCMlabel/atcmlabel.h \
 		   ./ATCMcombobox/atcmcombobox.h \
 		   ./ATCMspinbox/atcmspinbox.h \
-		   ./ATCMlcdnumber/atcmlcdnumber.h \
 		   ./ATCMbutton/atcmbutton.h \
 		   ./ATCMslider/atcmslider.h \
 		   ./ATCMprogressbar/atcmprogressbar.h \
@@ -51,7 +50,6 @@ SOURCES += \
 		   ./ATCMlabel/atcmlabel.cpp \
 		   ./ATCMcombobox/atcmcombobox.cpp \
 		   ./ATCMspinbox/atcmspinbox.cpp \
-		   ./ATCMlcdnumber/atcmlcdnumber.cpp \
 		   ./ATCMbutton/atcmbutton.cpp \
 		   ./ATCMslider/atcmslider.cpp \
 		   ./ATCMprogressbar/atcmprogressbar.cpp \
@@ -60,7 +58,8 @@ SOURCES += \
 		   ./ATCMstyle/atcmstyle.cpp \
 		   ./ATCMgraph/atcmgraph.cpp \
 		   ./ATCMdate/atcmdate.cpp \
-		   ./ATCMtime/atcmtime.cpp
+		   ./ATCMtime/atcmtime.cpp \
+                    atcmpluginobject.cpp
 
 RESOURCES += atcmicons.qrc 
 

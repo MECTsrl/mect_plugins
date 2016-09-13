@@ -241,7 +241,7 @@ void store::updateData()
 #endif
     ui->pushButtonSaveUSB->setEnabled(USBCheck());
     
-    page::updateData();
+    //page::updateData();
 }
 
 #ifdef TRANSLATION

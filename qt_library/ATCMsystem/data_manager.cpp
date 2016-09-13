@@ -92,7 +92,7 @@ void data_manager::updateData()
     }
 #endif
     /* call the parent updateData member */
-    page::updateData();
+    //page::updateData();
 }
 
 #ifdef TRANSLATION

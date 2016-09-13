@@ -8,13 +8,13 @@
 #include <QtDesigner/QDesignerExportWidget>
 #endif
 #include <QIcon>
-#include <QTimer>
+#include "atcmpluginobject.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMled : public QLabel
+ ATCMled : public QLabel, public ATCMpluginObject
 {
 	Q_OBJECT
 #ifndef TARGET_ARM
@@ -62,8 +62,6 @@ class
 		/************* new property ************ */
 		/* name of the cross table variable associated */
 		Q_PROPERTY(QString variable READ variable WRITE setVariable RESET unsetVariable)
-		/* refresh time of the crosstable variables */
-		Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
 		/* set if the the status of the associated variable have an visible feedback */
 		Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set the crosstable variable to associate the led visibility */
@@ -77,27 +75,23 @@ class
 		ATCMled(QWidget *parent = 0);
 		~ATCMled();
 		QString variable() const { return m_variable; }
-		int refresh()      const { return m_refresh; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
 
 		QIcon onIcon() const;
 		QIcon offIcon() const;
 		int value()    const { return m_value; }
-		bool startAutoReading();
-		bool stopAutoReading();
 		virtual QSize 	sizeHint () { return QSize(15,15); }
 
 	public Q_SLOTS:
 		bool setVariable(QString);
-		bool setRefresh(int);
-		void setViewStatus(bool);
-		bool setVisibilityVar(QString);
+        bool setRefresh(int) const {return true;}
+        void setViewStatus(bool);
+        bool setVisibilityVar(QString);
 		void setOffIcon(const QIcon& icon);
 		void setOnIcon(const QIcon& icon);
 
 		void unsetVariable();
-		void unsetRefresh();
 		void unsetViewStatus();
 		void unsetVisibilityVar();
 		void unsetOnIcon();
@@ -107,10 +101,10 @@ class
 		void updateData();
 
 	protected:
+        bool m_lastVisibility;
 		int m_value;
 		QString m_variable;
 		QString m_visibilityvar;
-		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		bool m_objectstatus;
@@ -124,7 +118,7 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

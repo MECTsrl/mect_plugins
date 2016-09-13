@@ -9,6 +9,7 @@
 #endif
 #include <QTimer>
 #include <QFrame>
+#include "atcmpluginobject.h"
 
 #define ITALIAN_DATE "dd/MM/yyyy"
 #define ENGLISH_DATE "yyyy/MM/dd"
@@ -18,7 +19,7 @@ class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMdate : public QPushButton
+ ATCMdate : public QPushButton, public ATCMpluginObject
 {
 	Q_OBJECT
 #ifndef TARGET_ARM

@@ -6,16 +6,17 @@
 #include <QLocale>
 #ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#include <stdint.h>
+typedef uint32_t u_int32_t;
 #endif
-#include <QTimer>
 #include <QFrame>
-#include <QMutex>
+#include "atcmpluginobject.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMbutton : public QPushButton
+ ATCMbutton : public QPushButton, public ATCMpluginObject
 {
 	Q_OBJECT
 #ifndef TARGET_ARM
@@ -62,8 +63,6 @@ class
         Q_PROPERTY(QString statusPressedValue READ statusPressedValue WRITE setStatusPressedValue)
         /* set if the the status of the associated variable have an visible feedback */
 		Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
-        /* refresh time of the crosstable variables */
-        Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
         /* set the crosstable variable to associate the button visibility */
 		Q_PROPERTY(QString visibilityVar READ visibilityVar WRITE setVisibilityVar RESET unsetVisibilityVar)
 		/* set the button background color */
@@ -104,9 +103,8 @@ class
 		bool remember()      const { return m_remember; }
 		QString passwordVar() const { return m_passwordVar; }
         QString statusvar() const { return m_statusvar; }
-        QString statusPressedValue() const { return m_statuspressval; }
-        QString statusReleasedValue() const { return m_statusreleaseval; }
-        int refresh()      const { return m_refresh; }
+        u_int32_t statusPressedValue() const { return m_statuspressval; }
+        u_int32_t statusReleasedValue() const { return m_statusreleaseval; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
 		char statusComm()      const { return m_status; }
@@ -138,7 +136,7 @@ class
 		bool setStatusvar(QString);
         bool setStatusPressedValue(QString);
         bool setStatusReleasedValue(QString);
-        bool setRefresh(int);
+        bool setRefresh(int) {return true;}
 		void setViewStatus(bool);
 		bool setVisibilityVar(QString);
 		void setBgColor(const QColor& bgColor);
@@ -163,7 +161,6 @@ class
 		void unsetRemember();
 		void unsetPasswordVar();
 		void unsetStatusvar();
-		void unsetRefresh();
 		void unsetViewStatus();
 		void unsetVisibilityVar();
         bool checkPassword();
@@ -189,12 +186,11 @@ class
 		QString m_passwordVar;
 		QString m_visibilityvar;
 		QString m_statusvar;
-        QString m_statuspressval;
-        QString m_statusreleaseval;
-        QString m_statusactualval;
+        u_int32_t m_statuspressval;
+        u_int32_t m_statusreleaseval;
+        u_int32_t m_statusactualval;
         int m_justchanged;
         bool m_forcedAction;
-        int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		int m_CtIndex;
@@ -219,12 +215,13 @@ class
 
 		enum QFrame::Shadow m_apparence;
 
+        bool m_lastVisibility;
+
 	protected:
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
-        QMutex theMutex;
+        QWidget *m_parent;
 };
 
 #endif

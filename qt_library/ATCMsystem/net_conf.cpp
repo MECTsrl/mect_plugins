@@ -8,11 +8,12 @@
  * @brief Generic page
  */
 #include "app_logprint.h"
-#include "atcmplugin.h"
 #include "main.h"
 #include "net_conf.h"
 #include "ui_net_conf.h"
 #include "app_config.h"
+#include "numpad.h"
+#include "alphanumpad.h"
 #include <QMessageBox>
 
 #define NONE     "-"
@@ -777,7 +778,7 @@ void net_conf::updateData()
         return;
     }
     /* call the parent updateData member */
-    page::updateData();
+    //page::updateData();
     
     /* To read the cross table variable UINT TEST1:
      *    uint_16 tmp = TEST1;

@@ -17,6 +17,9 @@
 #include "recipe.h"
 #include "utility.h"
 #include "ui_recipe.h"
+#include "global_var.h"
+#include "alphanumpad.h"
+#include "numpad.h"
 
 #define ENABLE_DESCR
 
@@ -172,7 +175,7 @@ void recipe::updateData()
     //LOG_PRINT(error_e, "UPDATE %d %d visible %d\n", refresh_timer->isActive(), refresh_timer->interval(), this->isVisible());
 
     /* call the parent updateData member */
-    page::updateData();
+    //page::updateData();
 }
 
 #ifdef TRANSLATION
@@ -223,7 +226,7 @@ void recipe::on_pushButtonRead_clicked()
     readRecipe(stepIndex, &testsIndexes, testsTable);
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
-        int decimal = getVarDecimalByCtIndex(testsIndexes[varIndex]);
+        int decimal = getVarDecimal(testsIndexes[varIndex]);
         ui->tableWidget->item(varIndex, stepIndex + 1)->setText(QString::number(testsTable[stepIndex][varIndex] / pow(10,decimal), 'f', decimal));
     }
 
@@ -252,7 +255,7 @@ void recipe::on_pushButtonLoad_clicked()
     ui->pushButtonSave->setEnabled(false);
     ui->labelStatus->setText(trUtf8("Writing"));
     ui->labelStatus->repaint();
-    writeRecipe(ui->tableWidget->currentColumn() - 1, &testsIndexes, testsTable);
+    ioComm->writeRecipe(ui->tableWidget->currentColumn() - 1, &testsIndexes, testsTable);
     ui->pushButtonLoad->setEnabled(true);
     ui->pushButtonRead->setEnabled(true);
     ui->pushButtonSave->setEnabled(true);
@@ -444,7 +447,7 @@ void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
         else
         {
             char token[LINE_SIZE]="";
-            int decimal = getVarDecimalByCtIndex(testsIndexes[ui->tableWidget->currentRow()]);
+            int decimal = getVarDecimal(testsIndexes[ui->tableWidget->currentRow()]);
             sprintf(token, "%.*f",decimal,value);
             item->setText(token);
             testsTable[ui->tableWidget->currentColumn() - 1][ui->tableWidget->currentRow()] = atof(token);
@@ -520,7 +523,7 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
         ui->progressBarStatus->setValue(varIndex);
-        int decimal = getVarDecimalByCtIndex(testsIndexes[varIndex]);
+        int decimal = getVarDecimal(testsIndexes[varIndex]);
         ui->tableWidget->setItem(varIndex, 0, new QTableWidgetItem(varNameArray[testsIndexes[varIndex]].tag));
 
         for (int stepIndex = 0; stepIndex < stepNbMax; stepIndex++)

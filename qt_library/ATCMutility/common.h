@@ -20,12 +20,10 @@ extern "C" {
 /* ----  Configuration Defines:   ----------------------------------------------------- */
 #define ENABLE_SCREENSAVER /* enable screensaver management */
 #define ENABLE_USB         /* enable USB management */
-#define ENABLE_INPUTPAD    /* enable numpad and alphanumpad */
 #define TARGET             /* enable compilation for target ARM */
 #undef  DUMPSCREEN         /* enable the screen shot of the screen when new page is shown */
 #undef  COMPACT_ALARM      /* show the start and the end of an alarm in the same line */
 #undef  ENABLE_AUTODUMP    /* enable the automatic dump when you insert the USB key */
-#undef  ENABLE_DEVICE_DISCONNECT /* enable the device disconnected management */
 #define ENABLE_TRANSLATION
 
 /* this compilation warnig is shown cause the DUMPSCREEN option is quite heavy, so if it is not necessary is better turn it off */
@@ -39,99 +37,6 @@ extern "C" {
 #define WORD  uint16_t
 
 #define DB_SIZE_ELEM 5472
-#define DB_SIZE_BYTE DB_SIZE_ELEM * 4
-
-/**
- * Base input array into PLC IO layer 0 (ioData)
- */
-#define DB_IN_BASE_BYTE  0
-
-/**
- * Base output array into PLC IO layer 0 (ioData)
- */
-#define DB_OUT_BASE_BYTE 0
-
-/**
- * Base status array into PLC IO layer 0 (ioData)
- */
-//#define STATUS_BASE_BYTE    (DB_SIZE_BYTE) * 2 + 2 /* + 2 cause 4C reserved area for array size */
-#define STATUS_BASE_BYTE 22000
-
-/**
- * Base synchronization array into PLC IO layer 1 (ioSyncro)
- */
-#define SYNCRO_BASE_BYTE 0
-// #define SYNCRO_SIZE_BYTE (DB_SIZE_ELEM * 2)
-#define SYNCRO_EXCHANGE_BASE_BYTE	11000 /*The Queue array fills the syncro Io starting from 0 to 10946*/
-#define SYNCRO_EXCHANGE_DWORD_SIZE	4 /*Exported var is a DWORD*/
-#define SYNCRO_EXCHANGE_DWORD_NB	12 /*Number of DWORD exported var*/
-#define SYNCRO_EXCHANGE_WORD_SIZE	2 /*Exported var is a WORD*/
-#define SYNCRO_EXCHANGE_WORD_NB		207 /*Number of WORD exported var*/
-#define SYNCRO_EXCHANGE_SIZE_BYTE	( SYNCRO_EXCHANGE_DWORD_SIZE * SYNCRO_EXCHANGE_DWORD_NB +  SYNCRO_EXCHANGE_WORD_SIZE * SYNCRO_EXCHANGE_WORD_NB)
-#define SYNCRO_SIZE_BYTE 		( SYNCRO_EXCHANGE_BASE_BYTE + SYNCRO_EXCHANGE_SIZE_BYTE )
-#define SYNCRO_DB_SIZE_ELEM		SYNCRO_SIZE_BYTE/2
-
-#define IS_MIRROR(index)    (index >= (RET_REG_NB + RET_BIT_NB) && index < (RET_REG_NB + RET_BIT_NB + MIR_BIT_NB + MIR_REG_NB))
-#define IS_RETENTIVE(index) (index >= 0                         && index < (RET_REG_NB + RET_BIT_NB))
-
-#define GET_FLAG(data, flag) ((((data) >> (flag)) & 0x1) == 0x1)
-#define SET_FLAG(data, flag) { (data) =  (  (data)  | (0x1 << (flag)));}
-#define CLR_FLAG(data, flag) { (data) = ~((~(data)) | (0x1 << (flag)));}
-
-#define SET_SIZE_BYTE(area, size) { \
-    (area)[1] = ((size) >> 8); \
-    (area)[0] = ((size) & 0x00FF); \
-}
-
-#define SET_SIZE_WORD(area, size) { \
-    (area)[0] = (size); \
-}
-/*
-Used when getting a value on the IOSyncroArea which is a WORD area.
-The values are defined as DWORD on the plc side
-Index is the index used to access the IOSyncroArea as array of byte hence to access it as WORD it must halved
-*/
-#define GET_DWORD_FROM_WORD(value, area, index) { \
-    value = ((area)[(index)/2] + ((area)[(index)/2 + 1] << 16)); \
-}
-
-#define SET_WORD_FROM_DWORD(value, area, index) { \
-     (area)[(index)/2] = ((value) & 0x0000FFFF); \
-     (area)[(index)/2 + 1] = (((value) & 0xFFFF0000) >> 16); \
-}
-
-/*
-Used when getting a value on the IOSyncroArea which is a WORD area.
-The values are defined as WORD on the plc side
-Index is the index used to access the IOSyncroArea as array of byte hence to access it as WORD it must halved
-*/
-#define GET_WORD_FROM_WORD(value, area, index) { \
-    value = ((area)[(index)/2] ); \
-}
-#define SET_WORD_FROM_WORD(value, area, index) { \
-    ((area)[(index)/2] ) = value; \
-}
-
-#define WRITE_IRQ_VAR SYNCRO_EXCHANGE_BASE_BYTE //11000
-#define WRITE_IRQ_ON	0x1
-#define WRITE_IRQ_OFF	0x0
-
-/* (IOSyncroAreaI)[5707])
- * hidle 0
- * inizialised 1
- * running 2
- * error 3
- * exit 4
- */
-#define IS_ENGINE_READY ((((IOSyncroAreaI)[5707]) & 0x02) == 0x02)
-
-/**
- * @brief Status description
- */
-#define DONE  0x0
-#define ERROR 0x1
-#define BUSY  0x2
-#define UNK  0xF
 
 #define TAG_UNK "UNK"
 #define TAG_NAN "Nan"
@@ -153,19 +58,10 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
  */
 #define NAB 0xFF
 
-#define LOCAL_SERVER_DATA_RX_PORT 34902
-#define LOCAL_SERVER_DATA_TX_PORT 34903
-#define LOCAL_SERVER_SYNCRO_RX_PORT 34904
-#define LOCAL_SERVER_SYNCRO_TX_PORT 34905
 #define LOCAL_SERVER_ADDR "127.0.0.1"
 
 #define IOLAYER_PERIOD_ms 100
-#define DEFAULT_REFRESH 500
-#define DEFAULT_PLUGIN_REFRESH 200
-#define WAITING_PERIOD_US 10000
 
-#define MAX_MSG 1024
-#define DATA_SIZE (2 * sizeof(char))
 #define NAME_LEN 3
 #define DESCR_LEN 64
 #define TAG_LEN   (16 + 1)
@@ -206,10 +102,6 @@ Index is the index used to access the IOSyncroArea as array of byte hence to acc
 #define TAG_STORED_ON_VAR  'V'
 #define TAG_STORED_ON_SHOT 'X'
 
-#define HIGH_PRIORITY	1
-#define MEDIUM_PRIORITY	2
-#define LOW_PRORITY	3
-
 #define MAX_DEVICE_NB 64
 
 #define TAG_RTU    	"RTU"
@@ -227,28 +119,6 @@ enum protocol_e
     prot_none_e
 };
 
-enum error_kind_e
-{
-    error_blacklist_e = 0,
-    error_other_e
-};
-
-typedef struct udp_msg
-{
-    unsigned short int dataLen;
-    char type;
-    char elemNb;
-    //char Data[MAX_MSG];
-    char Data[1];
-} udp_msg_t;
-
-typedef struct var_s
-{
-    char name[NAME_LEN];
-    int status;
-    char value[2];
-} var_t;
-
 typedef struct variable_s
 {
     char tag[TAG_LEN];
@@ -256,10 +126,10 @@ typedef struct variable_s
     int block;
     int blockhead;
     int decimal;
-    int active;
-    int visible;
+    int autoupdate;
     int node;
     enum protocol_e protocol;
+    int blockbusy;
 } variable_t;
 
 #if defined(ENABLE_TREND) || defined(ENABLE_STORE)
@@ -301,73 +171,10 @@ enum type_e
 #define LANDSCAPE 'L'
 #endif
 
-/* communication comand */
-#define ENABLE_RQST   'E'
-#define DISABLE_RQST  'D'
-#define WRITE_RQST    'W'
-#define READ_RQST     'R'
-/* service command */
-#define PING_RQST     'P'
-#define RELOAD_RQST   'U'
-
-#define ABCD2FLOAT(doubleword) (doubleword)
-#define BADC2FLOAT(doubleword) ((((doubleword) & 0x000F) << 4)  | (((doubleword) & 0x00F0) >> 4) | (((doubleword) & 0x0F00) << 4) | (((doubleword) & 0xF000) >> 4))
-#define CDAB2FLOAT(doubleword) ((((doubleword) & 0x000F) << 8)  | (((doubleword) & 0x00F0) << 8) | (((doubleword) & 0x0F00) >> 8) | (((doubleword) & 0xF000) >> 8))
-#define DCBA2FLOAT(doubleword) ((((doubleword) & 0x000F) << 12) | (((doubleword) & 0x00F0) << 4) | (((doubleword) & 0x0F00) >> 4) | (((doubleword) & 0xF000) >> 12))
-
-#define FLOAT2ABCD(doubleword) ABCD2FLOAT(doubleword)
-#define FLOAT2BADC(doubleword) BADC2FLOAT(doubleword)
-#define FLOAT2CDAB(doubleword) CDAB2FLOAT(doubleword)
-#define FLOAT2DCBA(doubleword) DCBA2FLOAT(doubleword)
-
-#define LINE2STR(line) \
-{ \
-    if (strchr(line, '\r')) \
-    { \
-        *strchr(line, '\r') = '\0'; \
-    } \
-    else if (strchr(line, '\n')) \
-    { \
-        *strchr(line, '\n') = '\0'; \
-    } \
-}
-
-/**
- * @brief type bits
- */
-struct bits {
-    unsigned char bit0 : 1;
-    unsigned char bit1 : 1;
-    unsigned char bit2 : 1;
-    unsigned char bit3 : 1;
-    unsigned char bit4 : 1;
-    unsigned char bit5 : 1;
-    unsigned char bit6 : 1;
-    unsigned char bit7 : 1;
-    unsigned char bit8 : 1;
-    unsigned char bit9 : 1;
-    unsigned char bi10 : 1;
-    unsigned char bit11 : 1;
-    unsigned char bit12 : 1;
-    unsigned char bit13 : 1;
-    unsigned char bit14 : 1;
-    unsigned char bit15 : 1;
-};
-
-/**
- * @brief type elem. this union allow to use this elem_t as word, and bit
- */
-typedef union {
-    unsigned int word;
-    char byte[2];
-    struct bits bits;
-} elem_t;
-
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 /**
  * @brief Log setup and define
  */
-#define SAMPLE_PERIOD_SEC LOG_PERIOD_MS
 #define MAX_SAMPLE_NB 10240
 #endif
 

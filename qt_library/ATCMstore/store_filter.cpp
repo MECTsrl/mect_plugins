@@ -91,7 +91,7 @@ void store_filter::updateData()
         return;
     }
     /* call the parent updateData member */
-    page::updateData();
+    //page::updateData();
 }
 
 #ifdef TRANSLATION

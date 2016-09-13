@@ -113,7 +113,7 @@ void trend_range::reload()
 void trend_range::updateData()
 {
     /* call the parent updateData member */
-    page::updateData();
+    //page::updateData();
 }
 
 #ifdef TRANSLATION

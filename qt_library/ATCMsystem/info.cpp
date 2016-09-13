@@ -140,7 +140,10 @@ void info::reload()
     }
 
     /* RT */
+    /* FIXME MTL Currently not used. To convert to new HMI<=>4C interface. */
+#if 0
     getFormattedVar("PLC_Version", ui->labelFcrtsval, NULL);
+#endif
 
     /* PLC */
     //getFormattedVar("PLC_Version", ui->labelPLCval, NULL);
@@ -213,7 +216,7 @@ void info::reload()
 void info::updateData()
 {
 	/* call the parent updateData member */
-	page::updateData();
+	//page::updateData();
 
     static int divisor = 0;
 

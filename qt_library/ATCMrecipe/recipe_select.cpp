@@ -120,7 +120,7 @@ void recipe_select::reload()
  */
 void recipe_select::updateData()
 {
-    page::updateData();
+    //page::updateData();
     ui->pushButtonSaveUSB->setEnabled(USBCheck());
 }
 

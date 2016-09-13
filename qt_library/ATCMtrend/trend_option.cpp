@@ -16,6 +16,7 @@
 #include "trend_option.h"
 #include "ui_trend_option.h"
 #include "global_functions.h"
+#include "numpad.h"
 
 #define DEFAULT_YMIN -1000
 #define DEFAULT_YMAX  1000
@@ -174,7 +175,7 @@ void trend_option::reload()
  */
 void trend_option::updateData()
 {
-    page::updateData();
+    //page::updateData();
     ui->pushButtonSaveUSB->setEnabled(USBCheck());
 }
 
@@ -537,7 +538,7 @@ void trend_option::Save(const char * fullfilename)
             int decimal = 2;
             if (pens[i].CtIndex != -1)
             {
-                decimal = getVarDecimalByCtIndex(pens[i].CtIndex);
+                decimal = getVarDecimal(pens[i].CtIndex);
             }
             fprintf(fp, "%d;%s;%s;%s;%s;%s\n",
                     pens[i].visible,

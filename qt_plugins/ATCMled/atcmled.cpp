@@ -13,23 +13,26 @@
 
 #include "atcmled.h"
 #include "common.h"
+#include "protocol.h"
+
 #ifdef TARGET_ARM
 #include "app_logprint.h"
 #include "cross_table_utility.h"
+#include "global_var.h"
 #endif
 
 ATCMled::ATCMled(QWidget *parent) :
     QLabel(parent)
 {
+    m_lastVisibility = false;
     m_value = 0;
     m_variable = "";
-    m_status = UNK;
+    m_status = STATUS_ENABLED;
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
     m_onicon = QIcon(":/on.png");
     m_officon = QIcon(":/off.png");
     m_objectstatus = false;
-    m_refresh = 0;
     m_visibilityvar = "";
     m_viewstatus = false;
 
@@ -43,27 +46,12 @@ ATCMled::ATCMled(QWidget *parent) :
      *led->setStyleSheet("padding: 5px;");
      */
 
-#ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else
-#endif
-    {
-        refresh_timer = NULL;
-    }
+    m_parent = parent;
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 }
 
 ATCMled::~ATCMled()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMled::paintEvent(QPaintEvent * e)
@@ -92,7 +80,7 @@ void ATCMled::paintEvent(QPaintEvent * e)
         break;
     }
 
-    if (m_viewstatus == true && m_status == ERROR)
+    if (m_viewstatus == true &&( m_status & STATUS_ERR))
     {
         mode = QIcon::Disabled;
     }
@@ -119,44 +107,29 @@ bool ATCMled::setVariable(QString variable)
     /* if the acual variable is different from actual variable, deactivate it */
     if (m_variable.length() != 0 && variable.trimmed().compare(m_variable) != 0)
     {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_variable.trimmed().toAscii().data()) == 0)
-        {
-#endif
-            m_variable.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
+        m_variable.clear();
+        m_CtIndex = -1;
     }
 
     /* if the acual variable is empty activate it */
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_variable = variable.trimmed();
+        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_variable = variable.trimmed();
-            if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                //m_value = VAR_UNKNOWN;
-                m_CtIndex = -1;
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-        }
-        else
-        {
-            m_status = ERROR;
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
+            m_status = STATUS_ERR;
             //m_value = VAR_UNKNOWN;
+            m_CtIndex = -1;
         }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
 #else
         m_variable = variable.trimmed();
 #endif
     }
 
-    if (m_status != ERROR)
+    if (!(m_status & STATUS_ERR))
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
@@ -174,11 +147,6 @@ bool ATCMled::setVariable(QString variable)
 void ATCMled::unsetVariable()
 {
     setVariable("");
-}
-
-void ATCMled::unsetRefresh()
-{
-    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMled::unsetViewStatus()
@@ -219,10 +187,6 @@ bool ATCMled::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -235,99 +199,54 @@ bool ATCMled::setVisibilityVar(QString visibilityVar)
     }
 }
 
-
-bool ATCMled::setRefresh(int refresh)
-{
-    m_refresh = refresh;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
-    return true;
-}
-
 /* read variable */
 void ATCMled::updateData()
 {
 #ifdef TARGET_ARM
-    char value[TAG_LEN] = "";
+    u_int32_t value = 0;
+
+    if (!m_parent->isVisible())
+    {
+        incdecHvar(isVisible(), m_CtIndex);
+        return;
+    }
 
     if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
     {
-        if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
+        if (ioComm->readUdpReply(m_CtVisibilityIndex, &value) == 0)
         {
-            m_status = DONE;
-            LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
-            setVisible(atoi(value) != 0);
+            m_status = STATUS_OK;
+            setVisible(value != 0);
         }
-        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
+
+    incdecHvar(isVisible(), m_CtIndex);
+
     if (this->isVisible() == false)
     {
         return;
     }
 
-    if (m_variable.length() > 0 && m_CtIndex >= 0)
+    if (m_variable.length() > 0 && m_CtIndex > 0)
     {
-        if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
+        if (ioComm->readUdpReply(m_CtIndex, &value) == 0)
         {
-            m_value = atoi(value) != 0;
-            m_status = DONE;
+            m_value = (value != 0);
+            m_status = STATUS_OK;
         }
         else
         {
             //m_value = -1;
-            m_status = ERROR;
+            m_status = STATUS_ERR;
         }
     }
     else
     {
-        m_status = ERROR;
+        m_status = STATUS_ERR;
         LOG_PRINT(verbose_e, "[%s] Invalid CtIndex %d for variable '%s'\n", objectName().toAscii().data(), m_CtIndex, m_variable.toAscii().data());
     }
-    LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 #endif
     this->update();
-}
-
-bool ATCMled::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-bool ATCMled::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
 }
 
 QIcon ATCMled::onIcon() const

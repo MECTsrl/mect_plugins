@@ -4,12 +4,16 @@ include (../qt_plugins.pri)
 
 INCLUDEPATH += ../ATCMplugineditor
 
-HEADERS     = atcmsliderplugin.h \
+HEADERS =  \
+    ../atcmplugin.h \
+    atcmsliderplugin.h \
     variableandvisibilitydialog.h \
     atcmslidertaskmenu.h \
     ../ATCMplugineditor/crosstableeditor.h
 
-SOURCES     = atcmsliderplugin.cpp \
+SOURCES = \
+    ../atcmpluginobject.cpp \
+    atcmsliderplugin.cpp \
     variableandvisibilitydialog.cpp \
     atcmslidertaskmenu.cpp \
     ../ATCMplugineditor/crosstableeditor.cpp

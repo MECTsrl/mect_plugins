@@ -7,15 +7,14 @@
 #ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
 #endif
-#include <QTimer>
 #include <QFrame>
-//#include "atcmcomboboxtaskmenu.h"
+#include "atcmpluginobject.h"
 
 class
 #ifndef TARGET_ARM
  QDESIGNER_WIDGET_EXPORT
 #endif
- ATCMcombobox : public QComboBox
+ ATCMcombobox : public QComboBox, public ATCMpluginObject
 {
 	Q_OBJECT
 #ifndef TARGET_ARM
@@ -56,8 +55,6 @@ class
         /************* new property ************ */
 		/* name of the cross table variable associated */
 		Q_PROPERTY(QString variable READ variable WRITE setVariable RESET unsetVariable)
-		/* refresh time of the crosstable variables */
-		Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
 		/* set if the the status of the associated variable have an visible feedback */
 		Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set if the a confirmation will be appear before each writing */
@@ -86,7 +83,6 @@ class
 		QString value()    const { return m_value; }
 		QString variable() const { return m_variable; }
 		QString mapping()  const { return m_mapping; }
-		int refresh()      const { return m_refresh; }
 		bool viewStatus()  const { return m_viewstatus; }
 		bool writeAcknowledge()  const { return m_writeAcknowledge; }
 		QString visibilityVar()  const { return m_visibilityvar; }
@@ -97,19 +93,16 @@ class
 		QColor bgColor() const;
 		QColor borderColor() const;
 		QColor fontColor() const;
-		bool startAutoReading();
 		//atcmcomboboxTaskMenu * prova() { return m_prova; }
 
 		enum QFrame::Shadow apparence() const;
 
-		bool stopAutoReading();
-
-		public Q_SLOTS:
-			bool writeValue(QString);
+    public Q_SLOTS:
+        bool writeValue(QString);
 		bool setVariable(QString);
 		bool setMapping(QString);
-		bool setRefresh(int);
-		void setViewStatus(bool);
+        bool setRefresh(int) const {return true;}
+        void setViewStatus(bool);
 		void setWriteAcknowledge(bool);
 		bool setVisibilityVar(QString);
 		void setBgColor(const QColor& bgColor);
@@ -123,7 +116,6 @@ class
 
 		void unsetMapping();
 		void unsetVariable();
-		void unsetRefresh();
 		void unsetViewStatus();
 		void unsetVisibilityVar();
 		void unsetwriteAcknowledge();
@@ -133,11 +125,11 @@ class
 			void updateData();
 
 	protected:
-		QString m_value;
+        bool m_lastVisibility;
+        QString m_value;
 		QString m_variable;
 		QString m_mapping;
 		QString m_visibilityvar;
-		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
 		bool m_writeAcknowledge;
@@ -165,7 +157,7 @@ class
 		QString mapped2value( QString mapped );
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif
