@@ -1,28 +1,33 @@
-TARGET = ATCMplugin
-TEMPLATE = lib
-CONFIG += staticlib
+#-------------------------------------------------
+#
+# Project file for plugins library
+#
+#-------------------------------------------------
 
+include(../qt_environment.pri)
+
+TARGET = ATCMplugin
+
+TEMPLATE    = lib
 DEFINES+="TARGET_ARM"
 
-include(../qt_designer_environment.pri)
-
-INCLUDEPATH += . \
-			   /imx_mect/trunk/imx28/ltib/rootfs/usr/src/linux/include \
-			   /imx_mect/trunk/imx28/ltib/rootfs/usr/include \
-                           ../qt_library/ATCMutility \
-                           ../qt_library/ATCMcommunication \
-                           ../qt_library/ATCMinputdialog \
-                           ./ATCMstyle
+INCLUDEPATH = . \
+               ../qt_library/ATCMcommon \
+               ../qt_library/ATCMutility \
+               ../qt_library/ATCMcommunication \
+               ../qt_library/ATCMinputdialog \
+               ./ATCMstyle \
+		$${INCLUDEPATH}
 
 QMAKE_LIBDIR += ../../lib \
-		   /usr/local/Trolltech/Qt-qvfb-version/lib \
-		   /imx_mect/trunk/imx28/ltib/rootfs/usr/lib \
-                   $${ATCM_ARM_LIBRARY_LIBPATH} \
-                   $${ATCM_SRC_LIBRARY_LIBPATH}ATCMutility \
-                   $${ATCM_SRC_LIBRARY_LIBPATH}ATCMcommunication \
-		   $${ATCM_SRC_LIBRARY_LIBPATH}ATCMinputdialog
+               ../qt_library/ATCMcommon \
+               ../qt_library/ATCMutility \
+               ../qt_library/ATCMcommunication \
+               ../qt_library/ATCMinputdialog \
+               $${ATCM_ARM_LIBRARY_LIBPATH}
 
 LIBS += \
+-lATCMcommon \
 -lATCMutility \
 -lATCMcommunication \
 -lATCMinputdialog
@@ -37,10 +42,10 @@ HEADERS += \
 		   ./ATCMprogressbar/atcmprogressbar.h \
 		   ./ATCMled/atcmled.h \
 		   ./ATCManimation/atcmanimation.h \
-                   ./ATCMstyle/atcmstyle.h \
-                   ./ATCMgraph/atcmgraph.h \
-                   ./ATCMdate/atcmdate.h \
-                   ./ATCMtime/atcmtime.h
+		   ./ATCMstyle/atcmstyle.h \
+		   ./ATCMgraph/atcmgraph.h \
+		   ./ATCMdate/atcmdate.h \
+		   ./ATCMtime/atcmtime.h
 
 SOURCES += \
 		   ./ATCMlabel/atcmlabel.cpp \
@@ -52,15 +57,15 @@ SOURCES += \
 		   ./ATCMprogressbar/atcmprogressbar.cpp \
 		   ./ATCMled/atcmled.cpp \
 		   ./ATCManimation/atcmanimation.cpp \
-                   ./ATCMstyle/atcmstyle.cpp \
-                   ./ATCMgraph/atcmgraph.cpp \
-                   ./ATCMdate/atcmdate.cpp \
-                   ./ATCMtime/atcmtime.cpp
+		   ./ATCMstyle/atcmstyle.cpp \
+		   ./ATCMgraph/atcmgraph.cpp \
+		   ./ATCMdate/atcmdate.cpp \
+		   ./ATCMtime/atcmtime.cpp
 
 RESOURCES += atcmicons.qrc 
 
 # install
-target.path = $${ATCM_ARM_PLUGINS_LIBPATH}
+target.path = $${ATCM_ARM_PLUGINS_INSTALL_LIBPATH}
 include.files = $$HEADERS atcmplugin.h
-include.path = $${ATCM_ARM_PLUGINS_INCPATH}
+include.path = $${ATCM_ARM_PLUGINS_INSTALL_INCPATH}
 INSTALLS += target include

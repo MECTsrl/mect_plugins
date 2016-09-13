@@ -4,14 +4,21 @@
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 #include <QMutex>
 
-class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMbutton : public QPushButton
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
@@ -22,12 +29,12 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
-		Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
+        Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
 		Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
 		Q_PROPERTY(bool	autoDefault READ autoDefault WRITE setAutoDefault DESIGNABLE false)
 		Q_PROPERTY(bool	default READ isDefault WRITE setDefault DESIGNABLE false)
@@ -89,7 +96,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		//Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus)
 		/* set the apparence */
 		Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence)
-
+#endif
 	public:
 		ATCMbutton(QWidget * parent = 0);
 		~ATCMbutton();
@@ -169,7 +176,6 @@ class QDESIGNER_WIDGET_EXPORT ATCMbutton : public QPushButton
 		void releaseAction();
 		void toggleAction(bool);
         void goToPage();
-        void doAction(bool press);
 
 		protected Q_SLOTS:
 

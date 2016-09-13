@@ -31,19 +31,23 @@ ATCMslider::ATCMslider(QWidget *parent) :
 	m_handlerColor = QColor(128,128,128);
 	m_addColor = QColor(255,127,80);
 	m_subColor = QColor(255,127,80);
-	m_bordercolor = QColor(0,0,0);
 	m_icon = QIcon();
 	m_refresh = 0;
-	m_borderwidth = 0;
-	m_borderradius = 0;
 	m_visibilityvar = "";
 	m_viewstatus = false;
 
-	//setMinimumSize(QSize(150,50));
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
+
+    //setMinimumSize(QSize(150,50));
 	setFocusPolicy(Qt::NoFocus);
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
 	setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
 	/*
 	 * put there a default stylesheet
@@ -88,7 +92,7 @@ ATCMslider::ATCMslider(QWidget *parent) :
 		refresh_timer = NULL;
 	}
 
-	connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    //connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
 }
 
 ATCMslider::~ATCMslider()
@@ -102,7 +106,7 @@ ATCMslider::~ATCMslider()
 
 void ATCMslider::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
     QPainter painter(this);
 	QPalette palette = this->palette();
 
@@ -192,7 +196,7 @@ bool ATCMslider::setVisibilityVar(QString visibilityVar)
             m_visibilityvar = visibilityVar.trimmed();
             if (m_refresh == 0)
             {
-                setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
             }
             return true;
 #ifdef TARGET_ARM
@@ -222,7 +226,14 @@ bool ATCMslider::writeValue(int value)
 	m_value = value;
 	//this->setValue(m_value);
 #ifdef TARGET_ARM
-	return setFormattedVar(m_variable.toAscii().data(), QString().setNum(m_value).toAscii().data());
+    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data()) == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 #else
 	return true;
 #endif
@@ -246,7 +257,7 @@ bool ATCMslider::setVariable(QString variable)
     }
 
     /* if the acual variable is empty activate it */
-    if (variable.trimmed() > 0)
+    if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
         if (activateVar(variable.trimmed().toAscii().data()) == 0)
@@ -275,6 +286,8 @@ bool ATCMslider::setVariable(QString variable)
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
+#else
+        setToolTip("");
 #endif
         return true;
     }
@@ -376,7 +389,7 @@ void ATCMslider::updateData()
             LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
             setVisible(atoi(value) != 0);
 		}
-		LOG_PRINT(info_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
+		LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
 	}
 
 	if (this->isVisible() == false)
@@ -400,14 +413,16 @@ void ATCMslider::updateData()
 	else
 	{
 		m_status = ERROR;
-		LOG_PRINT(info_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
+		LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
 	}
 	LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 #endif
 	if (m_status == DONE)
 	{
-		this->setValue(m_value);
-	}
+        disconnect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+        this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    }
 	this->update();
 }
 
@@ -468,7 +483,7 @@ void ATCMslider::unsetVariable()
 
 void ATCMslider::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMslider::unsetViewStatus()

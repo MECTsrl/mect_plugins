@@ -34,6 +34,9 @@ extern "C" {
 #define SET_SYNCRO_FLAG(index, flag) {CLR_SYNCRO_FLAG(index, flag); pIOSyncroAreaO[index] |= (flag << 13);}
 #define CLR_SYNCRO_FLAG(index, flag) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
 
+#define beginWrite() {}
+#define endWrite()  writePendingInorder()
+
 /**
  * Open the cross table and fill the syncro vector with the Mirror variables and the PLC variables
  *
@@ -43,7 +46,7 @@ extern "C" {
  * Enable:   Flag 0/1
  * PLC:      Flag 0/1
  * Tag:      char[16]
- * type:     UINT|INT|UDINTABCD|UDINTBADC|UDINTCDAB|UDINTDCBA|DINTABCD|DINTBADC|DINTCDAB|DINTDCBA|FABCD|FBADC|FCDAB|FDCBA
+ * type:     UINT|INT|UDINTABCD|UDINTBADC|UDINTCDAB|UDINTDCBA|DINTABCD|DINTBADC|DINTCDAB|DINTDCBA|RABCD|RBADC|RCDAB|RDCBA
  * Decimal:  0-4|address 
  * Protocol: RTU|TCP|TCPRTU
  * Port:     char[N] 
@@ -78,18 +81,18 @@ int formattedWriteToDb(int ctIndex, void * value);
 int isBlockActive(const char * varname, char * varblockhead);
 int getHeadBlock(int CtIndex, char * varblockhead);
 int getHeadBlockName(const char * varname, char * varblockhead);
-char * mystrtok(char * string, char * token, const char * separator);
-int disconnectDevice(const char * protocol, int node);
+int disconnectDevice(enum protocol_e protocol, int node);
 int disconnectDeviceByVarname(const char * varname);
 
-int connectDevice(const char * protocol, int node);
+int connectDevice(enum protocol_e protocol, int node);
 int connectDeviceByVarname(const char * varname);
 
-int isDeviceConnected(const char * protocol, int node);
+int isDeviceConnected(enum protocol_e protocol, int node);
 int isDeviceConnectedByVarname(const char * varname);
 int isDeviceConnectedByCtIndex(int CtIndex);
 
-int setupConnectedDevice(const char * protocol, int node);
+int setupConnectedDevice(enum protocol_e protocol, int node);
+int setupConnectedDeviceByName(const char * protocol, int node);
 
 extern char DeviceReconnected;
 
@@ -104,14 +107,19 @@ extern int deactivateVar(const char * varname);
 extern int activateVar(const char * varname);
 extern char prepareWriteVar(const char * varname, void * value, int * SynIndex);
 extern char prepareWriteBlock(const char * varname, void * value, int * SynIndex);
+extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, int dowait, int formatted);
 extern int readVar(const char * varname, void * value);
 extern int writeVar(const char * varname, void * value);
 extern int writeVarByCtIndex(const int ctIndex, void * value);
 extern int writeVarByCtIndex_nowait(const int ctIndex, void * value);
 extern int writeBlock(const char * varname);
 extern int deleteUnusedSynIndex(int SynIndex);
+extern int getVarDecimal(const int ctIndex);
 extern int getVarDecimalByCtIndex(const int ctIndex);
 extern int getVarDecimalByName(const char * varname);
+extern int doWrite(int ctIndex, void * value);
+extern int getStatus(int CtIndex);
+extern int addWrite(int ctIndex, void * value);
 
 /**
  * @brief enable the update of a variable into internal database
@@ -156,8 +164,12 @@ extern char CrossTableErrorMsg[256];
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
 extern store_t StoreArrayS[DB_SIZE_ELEM];
 extern store_t StoreArrayF[DB_SIZE_ELEM];
+extern store_t StoreArrayV[DB_SIZE_ELEM];
+extern store_t StoreArrayX[DB_SIZE_ELEM];
 extern int store_elem_nb_S;
 extern int store_elem_nb_F;
+extern int store_elem_nb_V;
+extern int store_elem_nb_X;
 #endif
 
 extern short int device_status[prot_none_e][MAX_DEVICE_NB];
@@ -167,12 +179,18 @@ extern pthread_mutex_t data_send_mutex;
 extern pthread_mutex_t sync_recv_mutex;
 extern pthread_mutex_t sync_send_mutex;
 
+#if 0
 unsigned short int getCommunicationEngineMainRevision(void);
 unsigned short int getCommunicationEngineMinorRevision(void);
-int resetError(const char *protocol);
-short int getErrorCounter(const char *protocol, int node);
-short int getErrorStatus(const char *protocol, char *kind);
-short int getErrorBit(const char *protocol, const char *kind, int node);
+int resetErrorByName(const char *protocol);
+int resetError(enum protocol_e protocol);
+short int getErrorCounterByName(const char *protocol, int node);
+short int getErrorCounter(enum protocol_e protocol, int node);
+short int getErrorStatusByName(const char *protocol, const char *kind);
+short int getErrorStatus(enum protocol_e protocol, enum error_kind_e kind);
+short int getErrorBitByName(const char *protocol, const char *kind, int node);
+short int getErrorBit(enum protocol_e protocol, enum error_kind_e kind, int node);
+#endif
 int writePending();
 int writePendingInorder();
 
@@ -184,8 +202,11 @@ int checkRecipeWriting(void);
 void cleanRecipeWriting(void);
 void checkWriting(void);
 char prepareFormattedVar(const char * varname, char * formattedVar);
-int  getVarDivisor(const char * varname);
-int  getVarDecimal(const char * varname);
+char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
+int  getVarDivisorByName(const char * varname);
+int  getVarDivisor(const int ctIndex);
+int  getVarDecimalByName(const char * varname);
+int  getVarDecimal(const int ctIndex);
 
 typedef struct write_queue_elem_s {
     int ctIndex;

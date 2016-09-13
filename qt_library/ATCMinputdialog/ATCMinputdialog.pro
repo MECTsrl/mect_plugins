@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project for ATCMcommunication library 
+# Project for ATCMinputdialog library 
 #
 #-------------------------------------------------
 
@@ -8,10 +8,8 @@ TARGET = ATCMinputdialog
 
 include (../qt_library.pri)
 
-INCLUDEPATH += ../ATCMutility
-
-LIBS += \
-ATCMutility
+#LIBS += \
+#-lATCMutility
 
 SOURCES += \
 alphanumpad.cpp \
@@ -26,7 +24,7 @@ alphanumpad.ui \
 numpad.ui
 
 # install
-target.path = $${ATCM_ARM_LIBRARY_LIBPATH}
+target.path = $${ATCM_ARM_LIBRARY_INSTALL_LIBPATH}
 include.files = $$HEADERS
-include.path = $${ATCM_ARM_LIBRARY_INCPATH}
+include.path = $${ATCM_ARM_LIBRARY_INSTALL_INCPATH}
 INSTALLS += target include

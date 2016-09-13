@@ -28,21 +28,25 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
     m_initialization = true;
     m_CtIndex = -1;
     m_CtVisibilityIndex = -1;
-    m_bgcolor = QColor(230,230,230);
     m_labelcolor = QColor(230,230,230);
-    m_fontcolor = QColor(10,10,10);
-    m_bordercolor = QColor(0,0,0);
     m_objectstatus = false;
-    m_refresh = DEFAULT_REFRESH;
-    m_borderwidth = 1;
-    m_borderradius = 0;
     m_visibilityvar = "";
+
+    m_bgcolor = BG_COLOR_DEF;
+    m_fontcolor = FONT_COLOR_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
     /*
      * put there a default stylesheet
@@ -54,7 +58,7 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
                 "/*\n"
                 "QDoubleSpinBox\n"
                 "{\n"
-                "    font: 18pt \"Ubuntu\";\n"
+                "    font: 18pt \""FONT_TYPE"\";\n"
                 "    background-color: rgb(230, 230, 230);\n"
                 "    border:2px solid black;\n"
                 "    border-radius:4px;\n"
@@ -97,7 +101,7 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
         refresh_timer = NULL;
     }
 
-    connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+    //connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 }
 
 ATCMspinbox::~ATCMspinbox()
@@ -111,11 +115,12 @@ ATCMspinbox::~ATCMspinbox()
 
 void ATCMspinbox::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
-    _diameter_ = m_borderradius;
-    _penWidth_ = m_borderwidth;
+    Q_UNUSED( e );
+    QPainter painter(this);
     QPalette palette = this->palette();
 
+    QStyleOptionSpinBox opt;
+    opt.init(this);
 
     /* font color */
     palette.setColor(QPalette::Text,m_fontcolor);
@@ -125,6 +130,16 @@ void ATCMspinbox::paintEvent(QPaintEvent * e)
     palette.setColor(QPalette::Foreground, m_bordercolor);
     /* bg color */
     palette.setColor(QPalette::Button, m_bgcolor);
+
+    if (m_apparence == QFrame::Raised)
+    {
+        opt.state = QStyle::State_Raised;
+    }
+    else if (m_apparence == QFrame::Sunken)
+    {
+        opt.state = QStyle::State_Sunken;
+    }
+
 
 #ifdef TARGET_ARM
     if (m_viewstatus)
@@ -149,20 +164,9 @@ void ATCMspinbox::paintEvent(QPaintEvent * e)
     }
 #endif
 
-    QPainter painter(this);
-    QStyleOptionSpinBox opt;
-    opt.init(this);
-
-    if (m_apparence == QFrame::Raised)
-    {
-        opt.state = QStyle::State_Raised;
-    }
-    else if (m_apparence == QFrame::Sunken)
-    {
-        opt.state = QStyle::State_Sunken;
-    }
-
     opt.palette = palette;
+    _diameter_ = m_borderradius;
+    _penWidth_ = m_borderwidth;
 
     style()->drawComplexControl(QStyle::CC_SpinBox, &opt, &painter, this);
 }
@@ -187,13 +191,13 @@ bool ATCMspinbox::setVisibilityVar(QString visibilityVar)
         int CtIndex;
         if (Tag2CtIndex(visibilityVar.trimmed().toAscii().data(), &CtIndex) == 0)
         {
-            LOG_PRINT(verbose_e,"visibilityVar '%s', CtIndex %d\n", m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
+            LOG_PRINT(verbose_e,"visibilityVar '%s', CtIndex %d\n", m_visibilityvar.trimmed().toAscii().data(), m_CtVisibilityIndex);
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
             if (m_refresh == 0)
             {
-                setRefresh(DEFAULT_REFRESH);
+                setRefresh(DEFAULT_PLUGIN_REFRESH);
             }
             return true;
 #ifdef TARGET_ARM
@@ -213,7 +217,9 @@ bool ATCMspinbox::writeValue(double value)
     if (m_variable.length() == 0)
     {
         m_value = (float)value;
+        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         return false;
     }
     if (m_initialization)
@@ -222,17 +228,21 @@ bool ATCMspinbox::writeValue(double value)
         return true;
     }
 #ifdef TARGET_ARM
-    if (setFormattedVar(m_variable.toAscii().data(), QString().setNum(value).toAscii().data()))
+    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(value).toAscii().data()) == 0)
     {
-        LOG_PRINT(info_e, "WRITE %f \n", m_value);
+        LOG_PRINT(verbose_e, "WRITE %f \n", m_value);
         m_value = (float)value;
+        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         return true;
     }
     else
     {
-        LOG_PRINT(info_e, "WRITE\n");
+        LOG_PRINT(verbose_e, "WRITE\n");
+        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         return false;
     }
 #else
@@ -260,7 +270,7 @@ bool ATCMspinbox::setVariable(QString variable)
     }
 
     /* if the acual variable is empty activate it */
-    if (variable.trimmed() > 0)
+    if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
         if (activateVar(variable.trimmed().toAscii().data()) == 0)
@@ -277,8 +287,10 @@ bool ATCMspinbox::setVariable(QString variable)
             {
                 switch (CtIndex2Type(m_CtIndex))
                 {
-                case int_e:
-                case uint_e:
+                case intab_e:
+                case intba_e:
+                case uintab_e:
+                case uintba_e:
                 case dint_abcd_e:
                 case dint_badc_e:
                 case dint_cdab_e:
@@ -337,6 +349,8 @@ bool ATCMspinbox::setVariable(QString variable)
     {
 #ifndef TARGET_ARM
         setToolTip(m_variable);
+#else
+        setToolTip("");
 #endif
         return true;
     }
@@ -430,6 +444,7 @@ void ATCMspinbox::updateData()
 #ifdef TARGET_ARM
     char statusMsg[TAG_LEN] = "";
     char value[TAG_LEN] = "";
+
     if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
     {
         if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
@@ -438,14 +453,14 @@ void ATCMspinbox::updateData()
             LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
             setVisible(atoi(value) != 0);
         }
-        LOG_PRINT(info_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
+        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
     if (this->isVisible() == false)
     {
         return;
     }
 
-    if (m_variable.length())
+    if (m_variable.length() == 0)
     {
         if (m_CtIndex >= 0)
         {
@@ -468,6 +483,7 @@ void ATCMspinbox::updateData()
     }
     LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 
+    disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
     if (m_status == ERROR)
     {
         /* set error MSG */
@@ -476,12 +492,12 @@ void ATCMspinbox::updateData()
             setSpecialValueText(statusMsg);
         }
     }
-    else
+    else if (m_status == DONE)
+    {
+        this->setValue(m_value);
+    }
+    connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #endif
-        if (m_status == DONE)
-        {
-            this->setValue(m_value);
-        }
     this->update();
 }
 
@@ -531,7 +547,7 @@ void ATCMspinbox::unsetVariable()
 
 void ATCMspinbox::unsetRefresh()
 {
-    setRefresh(DEFAULT_REFRESH);
+    setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
 
 void ATCMspinbox::unsetViewStatus()
@@ -548,5 +564,3 @@ void ATCMspinbox::unsetApparence()
 {
     setApparence(QFrame::Plain);
 }
-
-

@@ -4,7 +4,7 @@ qt_library \
 qt_plugins \
 #example
 
-include(./qt_designer_environment.pri)
+include(./qt_environment.pri)
 
 # install
 sources.files = atcmplugin.h

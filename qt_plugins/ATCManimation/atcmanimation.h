@@ -4,12 +4,19 @@
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 
-class QDESIGNER_WIDGET_EXPORT ATCManimation : public QLabel
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCManimation : public QLabel
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         //Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -19,9 +26,9 @@ class QDESIGNER_WIDGET_EXPORT ATCManimation : public QLabel
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
-		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+        Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
 		Q_PROPERTY(Qt::TextFormat textFormat READ textFormat WRITE setTextFormat DESIGNABLE false)
@@ -56,7 +63,7 @@ class QDESIGNER_WIDGET_EXPORT ATCManimation : public QLabel
         Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set the crosstable variable to associate the object visibility */
         Q_PROPERTY(QString visibilityVar READ visibilityVar WRITE setVisibilityVar RESET unsetVisibilityVar)
-
+#endif
 	public:
 		ATCManimation(QWidget *parent = 0);
 		~ATCManimation();

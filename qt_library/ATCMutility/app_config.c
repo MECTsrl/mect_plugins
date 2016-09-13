@@ -4,22 +4,22 @@
 #include <string.h>
 
 #include <stdio.h>
+#include <ctype.h>
 #include <unistd.h>
 
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <net/if.h>
 #include <arpa/inet.h>
 
+#include <sys/types.h>
+
 #include "app_config.h"
 
 /*
  * Constant definitions
  */
-
-
 
 enum app_conf_section_e {
     APP_CONF_NONE = 0,
@@ -168,7 +168,6 @@ app_conf_build_ids_t app_conf_build_ids = {
     }
 };
 
-static char *app_conf_mac = NULL;
 static char *app_conf_serial = NULL;
 static char *app_conf_ipaddr = NULL;
 static char *app_conf_netmask = NULL;
@@ -212,11 +211,15 @@ char *app_netconf_item_get(char ** item_pointer, const char * item_name)
     while ((fgets(line, MAX_LINE_SIZE, cf))!= NULL ) {
 
         if (strstr(line, item_name) != NULL)
+        {
+            len = strlen(line);
             break;
+        }
     }
     fclose(cf);
 
-    len = strlen(line);
+    if (len == 0)
+        return NULL;
 
     if (line[len - 1] == '\n')
         line[len - 1] = '\0';
@@ -241,16 +244,203 @@ char *app_netconf_item_get(char ** item_pointer, const char * item_name)
 }
 
 /**
+ * @brief Set a net conf item
+ *
+ * @param char * item_name : item name;
+ * @param char * item : item value to set;
+ *
+ * @return          != 0 if error
+ *
+ * @ingroup config
+ */
+int app_netconf_item_set(const char * item, const char * item_name)
+{
+#define MAX_LINE_SIZE       81
+    FILE *fp, * fptmp;
+    char _label [MAX_LINE_SIZE] = "";
+    char _value [MAX_LINE_SIZE] = "";
+    char line [MAX_LINE_SIZE] = "";
+    int found = 0;
+
+    fp = fopen(APP_CONFIG_IPADDR_FILE, "r");
+    if (fp == NULL) {
+        perror(APP_CONFIG_IPADDR_FILE);
+        return -1;
+    }
+
+    fptmp = tmpfile();
+    if (!fptmp)
+    {
+        perror("temporary file");
+        fclose(fp);
+        return -2;
+    }
+
+    while (fgets(line, MAX_LINE_SIZE, fp) != NULL)
+    {
+        char * p = line;
+        char * s = p + strlen(line);
+
+        if (strchr(line, '\n'))
+        {
+            *strchr(line, '\n') = '\0';
+        }
+
+        // remove spaces at head
+        while (p < s && isspace(*p)) {
+            ++p;
+        }
+        // remove spaces at tail
+        --s;
+        while (s > p && isspace(*s)) {
+            *s = 0;
+            --s;
+        }
+        strcpy(line, p);
+
+        if (line[0] != '#' && line[0] != '\0')
+        {
+            _label[0] = '\0';
+            _value[0] = '\0';
+            if (strchr(line, '=') == NULL)
+            {
+                fprintf(stderr,"WRONG FORMAT '%s'\n", line);
+                fclose(fp);
+                fclose(fptmp);
+                return -1;
+            }
+            strcpy(_value, strchr(line, '=') + 1);
+            if (strchr(_value, '\n'))
+            {
+                *strchr(_value, '\n') = '\0';
+            }
+            strcpy(_label, line);
+            *strchr(_label, '=') = '\0';
+            if (_label[0] != '\0')
+            {
+                if (strcmp(_label, item_name) == 0)
+                {
+                    strcpy(_value, item);
+                    found = 1;
+                }
+                char * p = _value;
+                char * s = p + strlen(_value);
+                // remove spaces at head
+                while (p < s && isspace(*p)) {
+                    ++p;
+                }
+                // remove spaces at tail
+                --s;
+                while (s > p && isspace(*s)) {
+                    *s = 0;
+                    --s;
+                }
+                strcpy(_value, p);
+                fprintf(fptmp,"%s=%s\n", _label, _value);
+            }
+            else
+            {
+                fprintf(fptmp,"%s\n", line);
+            }
+        }
+        else
+        {
+            fprintf(fptmp,"%s\n", line);
+        }
+    }
+    if (found == 0)
+    {
+        char * p = item;
+        char * s = p + strlen(item);
+        // remove spaces at head
+        while (p < s && isspace(*p)) {
+            ++p;
+        }
+        // remove spaces at tail
+        --s;
+        while (s > p && isspace(*s)) {
+            *s = 0;
+            --s;
+        }
+        fprintf(fptmp,"%s=%s\n", item_name, p);
+    }
+
+    fclose(fp);
+    rewind(fptmp);
+    fp = fopen(APP_CONFIG_IPADDR_FILE, "w");
+    if (!fp)
+    {
+        perror(APP_CONFIG_IPADDR_FILE);
+        fclose(fptmp);
+        return -1;
+    }
+    while (fgets(line, MAX_LINE_SIZE, fptmp) != NULL)
+    {
+        fprintf(fp, "%s", line);
+    }
+
+    fclose(fptmp);
+    fclose(fp);
+
+    return 0;
+#undef MAX_LINE_SIZE
+}
+
+
+/**
  * @brief Grab the MAC address
  *
  * @return          NULL if error or pointer to MAC string
  *
  * @ingroup config
  */
-char *
-app_build_mac_get(void)
+char *app_macconf_item_get(char ** item_pointer, const char * item_name)
 {
-    return app_netconf_item_get(&app_conf_mac, "MAC0");
+#define MAX_LINE_SIZE       81
+
+    char line[MAX_LINE_SIZE];
+    FILE *cf = NULL;
+    int len = 0;
+
+    cf = fopen(APP_CONFIG_MAC_FILE, "r");
+    if (cf == NULL) {
+        perror(APP_CONFIG_MAC_FILE);
+        return NULL;
+    }
+
+    while ((fgets(line, MAX_LINE_SIZE, cf))!= NULL ) {
+
+        if (strstr(line, item_name) != NULL)
+        {
+            len = strlen(line);
+            break;
+        }
+    }
+    fclose(cf);
+
+    if (len == 0)
+        return NULL;
+
+    if (line[len - 1] == '\n')
+        line[len - 1] = '\0';
+
+    if (*item_pointer != NULL)
+        free(*item_pointer);
+
+    if (strchr(line, '=') != NULL)
+    {
+        *item_pointer = strdup(strchr(line, '=') + 1);
+    }
+    else
+    {
+        *item_pointer = strdup(line);
+    }
+    assert(*item_pointer != NULL);
+
+
+    return *item_pointer;
+
+#undef MAX_LINE_SIZE
 }
 
 /**
@@ -331,9 +521,12 @@ app_build_serial_get(void)
 
     cf = fopen(APP_CONFIG_SERIAL_FILE, "r");
     if (cf == NULL) {
-        perror(APP_CONFIG_SERIAL_FILE);
+        cf = fopen(APP_CONFIG_SERIAL_FILE2, "r");
+        if (cf == NULL) {
+            perror(APP_CONFIG_SERIAL_FILE);
 
-        return NULL;
+            return NULL;
+        }
     }
 
     if (fgets(line, MAX_LINE_SIZE, cf) == line) {
@@ -1317,65 +1510,7 @@ char *app_version_item_get(char ** item_pointer, const char * item_name)
 #undef MAX_LINE_SIZE
 }
 
-int getMAC(char * mac)
-{
-    struct ifreq ifr;
-    struct ifconf ifc;
-    char buf[1024];
-    int success = 0;
-
-    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    if (sock == -1) {
-        return -1;
-    };
-
-    ifc.ifc_len = sizeof(buf);
-    ifc.ifc_buf = buf;
-    if (ioctl(sock, SIOCGIFCONF, &ifc) == -1) {
-        return -1;
-    }
-
-    struct ifreq* it = ifc.ifc_req;
-    const struct ifreq* const end = it + (ifc.ifc_len / sizeof(struct ifreq));
-
-    for (; it != end; ++it) {
-        strcpy(ifr.ifr_name, it->ifr_name);
-        if (ioctl(sock, SIOCGIFFLAGS, &ifr) == 0) {
-            if (! (ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
-                if (ioctl(sock, SIOCGIFHWADDR, &ifr) == 0) {
-                    success = 1;
-                    break;
-                }
-            }
-        }
-        else {
-            return -1;
-        }
-    }
-
-    unsigned char mac_address[6]= "";
-
-    if (success)
-    {
-        memcpy(mac_address, ifr.ifr_hwaddr.sa_data, 6);
-        int j = 0;
-        int i = 0;
-        for (i = 0; i < 6; i++)
-        {
-            sprintf(&(mac[j]), "%02X:", mac_address[i]);
-            j+=3;
-        }
-        mac[j-1]= '\0';
-        printf("MAC:'%s'\n", mac);
-    }
-    else
-    {
-        return -1;
-    }
-    return 0;
-}
-
-int getIP(char * ip)
+int getMAC(const char *interface, char * mac)
 {
     int fd;
     struct ifreq ifr;
@@ -1385,8 +1520,65 @@ int getIP(char * ip)
     /* I want to get an IPv4 IP address */
     ifr.ifr_addr.sa_family = AF_INET;
 
-    /* I want IP address attached to "eth0" */
-    strncpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
+    /* I want IP address attached to "interface" */
+    strncpy(ifr.ifr_name, interface, IFNAMSIZ-1);
+    if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0)
+    {
+        return -1;
+    }
+
+    close(fd);
+    unsigned char mac_address[6]= "";
+    memcpy(mac_address, ifr.ifr_hwaddr.sa_data, 6);
+    int j = 0;
+    int i = 0;
+    for (i = 0; i < 6; i++)
+    {
+        sprintf(&(mac[j]), "%02X:", mac_address[i]);
+        j+=3;
+    }
+    mac[j-1]= '\0';
+    return 0;
+}
+
+int getNetMask(const char * interface, char * nm)
+{
+    int fd;
+    struct ifreq ifr;
+
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    /* I want to get an IPv4 IP address */
+    ifr.ifr_addr.sa_family = AF_INET;
+
+    /* I want IP address attached to "interface" */
+    strncpy(ifr.ifr_name, interface, IFNAMSIZ-1);
+
+    if (ioctl(fd, SIOCGIFNETMASK, &ifr) != 0)
+    {
+        return -1;
+    }
+
+    close(fd);
+
+    /* display result */
+    strcpy(nm, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+
+    return 0;
+}
+
+int getIP(const char * interface, char * ip)
+{
+    int fd;
+    struct ifreq ifr;
+
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    /* I want to get an IPv4 IP address */
+    ifr.ifr_addr.sa_family = AF_INET;
+
+    /* I want IP address attached to "interface" */
+    strncpy(ifr.ifr_name, interface, IFNAMSIZ-1);
 
     if (ioctl(fd, SIOCGIFADDR, &ifr) != 0)
     {
@@ -1397,11 +1589,11 @@ int getIP(char * ip)
 
     /* display result */
     strcpy(ip, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-    printf("%s\n", ip);
 
     return 0;
 }
 
+char sd_mnt_point[256];
 int SDCheck()
 {
     return system("dmesg | grep -q mmcblk >/dev/null 2>&1");
@@ -1421,7 +1613,7 @@ int getSdCID(char * cid)
             /* Read the output a line at a time - output it. */
             if (fgets(cid, CID_LEN, fp) == NULL)
             {
-				return -1;
+                return -1;
             }
             /* close */
             fclose(fp);

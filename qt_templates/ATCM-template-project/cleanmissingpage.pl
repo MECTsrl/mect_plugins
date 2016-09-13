@@ -1,19 +1,22 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
 
 # open project file 
 # check the page#.ui presence for each page#.cpp and page#.h pages
 # if some mismatch:
-#    check if fisically exists into the file system
+#    check if physically exists into the file system
 #    clean the pro file 
 #    check the pages.h file and pages.cpp file and clean it
 
 print "Checking for files mismatch...\n";
 
-use File::Basename;
-my $srcdirname = dirname(__FILE__);
 my $projectfilename = $ARGV[0];
+my $srcdirname = $ARGV[1];
 
 open(INFILE, $projectfilename) or die $!;
+my $line;
+my @list= "";
 foreach $line (<INFILE>)
 {
 	chomp($line);
@@ -26,8 +29,9 @@ foreach $line (<INFILE>)
 	}
 }
 close INFILE;
-my $last;
+my $last = "";
 my $remove;
+my $var;
 foreach $var (sort @list)
 {
 	(my $without_extension = $var) =~ s/\.[^.]+$//;
@@ -106,9 +110,60 @@ foreach $var (sort @list)
 }
 print "Check for files mismatch done.\n";
 
+print "Check for remove the not existing trend file...\n";
+# if the trend file listed into the template.pri file is not existing into the file system, remove it
+my $dump = 0;
+my @filedata;
+open(INFILE, $srcdirname . "/template.pri") or die $!;
+foreach $line (<INFILE>)
+{
+	chomp($line);
+	if ($line =~ /customtrend.files/)
+	{
+		my @trend_file_list = "";
+		my @new_trend_file_list = "";
+		my $filename = "";
+		@trend_file_list = split('=', $line);
+		@trend_file_list = split(' ', $trend_file_list[1]);
+		foreach $filename (@trend_file_list)
+		{
+			if ( -e $srcdirname . "/" . $filename )
+			{
+				print "Adding not existing trend '" . $filename . "'.\n";
+				push(@new_trend_file_list, $filename);
+			}
+			else
+			{
+				print "Removing not existing trend '" . $filename . "'.\n";
+				$dump = 1;
+			}
+		}
+		if ($dump == 0)
+		{
+			last;
+		}
+		$line = "customtrend.files = " . join(" ", @new_trend_file_list);
+	}
+	push(@filedata,$line);
+}
+close INFILE;
+
+if ($dump == 1)
+{
+	open FILE, ">", $srcdirname . "/template.pri" or die $!;
+	foreach $line (@filedata)
+	{
+		print FILE $line . "\n";
+	}
+	close FILE;
+}
+
+print "Check for remove the not existing trend file done.\n";
+
 sub filter
 {
 	my ($file) = @_;
+	my $ClassiIndex = "";
 
 	open FILE, "<", $srcdirname . "/pages.h" or die $!;
 	open TMP, "+>", undef or die $!;
@@ -136,8 +191,12 @@ sub filter
 	$ClassiIndex = $file;
 	$ClassiIndex =~ s/page//;
 
-	$stop = 0;
+	my $stop = 0;
 	while (<FILE>) {
+		if ($_ =~/<< \"page$ClassiIndex\"/)
+		{
+			next;
+		}
 		if ($_ =~/case 0x$ClassiIndex:/)
 		{
 			$stop = 1;

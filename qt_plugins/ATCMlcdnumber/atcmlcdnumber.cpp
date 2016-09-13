@@ -131,7 +131,7 @@ bool ATCMlcdnumber::setVariable(QString variable)
 	retval = isBlockActive(m_variable.toAscii().data(), blockhead);
 	if (retval == 1)
 	{
-		LOG_PRINT(warning_e, "The variable '%s' come from a block already active\n", m_variable.toAscii().data());
+        LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", m_variable.toAscii().data());
 		return true;
 	}
 	else if (retval == 0)

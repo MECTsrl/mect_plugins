@@ -1,13 +1,16 @@
 TARGET      = $$qtLibraryTarget(atcmgraphplugin)
 
 include (../qt_plugins.pri)
-
-LIBS += -lqwt
+include (../../qt_designer_environment.pri)
 
 INCLUDEPATH += $${ATCM_QWT_INCL}
 QMAKE_LIBDIR += $${ATCM_QWT_LIB}
 
 INCLUDEPATH += 	../ATCMplugineditor
+
+LIBS += -lqwt
+
+CONFIG += QwtDll
 
 HEADERS     = atcmgraphplugin.h \
     atcmgraphdialog.h \
@@ -21,7 +24,7 @@ SOURCES     = atcmgraphplugin.cpp \
 
 RESOURCES   = icons.qrc
 
-target.path = $$[QT_INSTALL_PLUGINS]/designer
+target.path = $${MECT_INSTALL_PLUGINS}/designer
 INSTALLS    += target
 
 include(atcmgraph.pri)

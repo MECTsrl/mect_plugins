@@ -4,13 +4,20 @@
 #include <QtGui/QWidget>
 #include <QtGui/QLabel>
 #include <QLocale>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QIcon>
 #include <QTimer>
 
-class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMled : public QLabel
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
 		Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -20,8 +27,8 @@ class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
@@ -65,7 +72,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMled : public QLabel
 		Q_PROPERTY(QIcon onIcon READ onIcon WRITE setOnIcon RESET unsetOnIcon )
 		/* set the icon led when it is off */
 		Q_PROPERTY(QIcon offIcon READ offIcon WRITE setOffIcon RESET unsetOffIcon)
-
+#endif
 	public:
 		ATCMled(QWidget *parent = 0);
 		~ATCMled();

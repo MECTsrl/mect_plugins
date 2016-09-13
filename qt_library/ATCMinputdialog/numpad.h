@@ -24,16 +24,26 @@ class numpad;
 #define INTEGER 0
 #define DECIMAL 1
 #define STRING  2
+#define IPADDR  3
+#define DIALNB  4
 #define NO_DEFAULT 0xFFFF
+
+enum input_fmt_e
+{
+    input_dec,
+    input_hex,
+    input_bin
+};
 
 class numpad : public QDialog
 {
     Q_OBJECT
     
 public:
-    explicit numpad(float* value, float def = NO_DEFAULT, int decimal = 4, float min = 0.0, float max = 0.0, bool password = false, QWidget *parent = 0);
-    explicit numpad(int* value, int def = NO_DEFAULT, int min = 0, int max = 0, bool password = false, QWidget *parent = 0);
-    explicit numpad(char* value, char* def = NULL, char *min = NULL, char *max = NULL, bool password = false, QWidget *parent = 0);
+    explicit numpad(float* value, float def = NO_DEFAULT, int decimal = 4   , float min = 0.0 , float max = 0.0, bool password = false, QWidget *parent = 0);
+    explicit numpad(int*   value, int   def = NO_DEFAULT, int     min = 0   , int   max = 0   , enum input_fmt_e fmt = input_dec, bool password = false, QWidget *parent = 0);
+    explicit numpad(char*  value, char* def = NULL      , char   *min = NULL, char *max = NULL, bool password = false, QWidget *parent = 0);
+    explicit numpad(char*  value, int type, char* def = NULL, QWidget *parent = 0);
 
     ~numpad();
     void reload();
@@ -69,6 +79,18 @@ private slots:
 
     void on_pushButtonMinus_clicked();
 
+    void on_pushButtonA_clicked();
+
+    void on_pushButtonB_clicked();
+
+    void on_pushButtonC_clicked();
+
+    void on_pushButtonD_clicked();
+
+    void on_pushButtonE_clicked();
+
+    void on_pushButtonF_clicked();
+
 private:
     Ui::numpad *ui;
     float _minf;
@@ -81,6 +103,7 @@ private:
     char _maxs[DESCR_LEN];
     char * _values;
     int inputtype;
+    int base;
 
 };
 

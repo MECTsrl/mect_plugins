@@ -1,17 +1,23 @@
 #ifndef ATCMLABEL_H
 #define ATCMLABEL_H
 
-//#include <QtGui/QWidget>
 #include <QLocale>
 #include <QtGui/QWidget>
 #include <QtGui/QPushButton>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 
-class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMlabel : public QPushButton
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         // Q_PROPERTY(QSizePolicy sizePolicy READ sizePolicy WRITE setSizePolicy DESIGNABLE false)
@@ -21,13 +27,13 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
-		Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
-		Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
+        Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
+        Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
 		Q_PROPERTY(bool	autoRepeat READ autoRepeat WRITE setAutoRepeat DESIGNABLE false)
 		Q_PROPERTY(int	autoRepeatDelay READ autoRepeatDelay WRITE setAutoRepeatDelay DESIGNABLE false)
 		Q_PROPERTY(int	autoRepeatInterval READ autoRepeatInterval WRITE setAutoRepeatInterval DESIGNABLE false)
@@ -81,11 +87,24 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		Q_PROPERTY(int borderRadius READ borderRadius WRITE setBorderRadius)
 		/* set the apparence */
         Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence RESET unsetApparence)
+        Q_ENUMS(ATCMLabelFormat)
+        Q_PROPERTY(enum ATCMLabelFormat format READ format WRITE setFormat)
+#endif
 
-	public:
-		ATCMlabel(QWidget *parent = 0);
+    public:
+        enum ATCMLabelFormat
+        {
+            Dec,
+            Hex,
+            Bin
+        };
+        ATCMlabel(QWidget *parent = 0);
 		~ATCMlabel();
-		QString value()    const { return m_value; }
+        enum ATCMLabelFormat format() const
+        {
+            return m_format;
+        }
+        QString value()    const { return m_value; }
 		QString variable() const { return m_variable; }
 		QString prefix() { return m_prefix; }
 		QString suffix() { return m_suffix; }
@@ -130,6 +149,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		void setBorderRadius(int radius);
 
         void setApparence(const enum QFrame::Shadow apparence);
+        void setFormat(const enum ATCMLabelFormat format);
 
         void unsetVariable();
         void unsetPrefix();
@@ -172,6 +192,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMlabel : public QPushButton
 		int m_borderradius;
 
         enum QFrame::Shadow m_apparence;
+        enum ATCMLabelFormat m_format;
 
 	protected:
 		void paintEvent(QPaintEvent *event);

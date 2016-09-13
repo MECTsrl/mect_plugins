@@ -1,9 +1,18 @@
-#include(../qt_designer_environment.pri)
-#include(../qt_templates/ATCM-template-project/qt_environment.pri)
-include(../qt_environment.pri)
+#-------------------------------------------------
+#
+# Project file for common library
+#
+#-------------------------------------------------
 
 TEMPLATE      = subdirs
 SUBDIRS       =	\
-				ATCMutility \
-				ATCMcommunication \
-				ATCMinputdialog \
+                ATCMutility \
+                ATCMcommon \
+                ATCMcommunication \
+                ATCMinputdialog \
+                ATCMlogger \
+                ATCMalarms \
+                ATCMrecipe \
+                ATCMstore \
+                ATCMtrend \
+                ATCMsystem

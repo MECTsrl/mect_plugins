@@ -22,16 +22,16 @@
 ATCMtime::ATCMtime(QWidget *parent) :
     QPushButton(parent)
 {
-
-    m_bgcolor = QColor(255,255,255);
-    m_bgcolor_select = QColor(230,230,230);
-    m_fontcolor = QColor(130,130,130);
-    m_fontcolor_select = QColor(10,10,10);
-    m_bordercolor = QColor(0,0,0);
-    m_bordercolor_select = QColor(0,0,0);
-    m_borderwidth = 1;
-    m_borderradius = 0;
     m_format = DEFAULT_TIME;
+
+    m_bgcolor = BG_COLOR_DEF;
+    m_bgcolor_select = BG_COLOR_SEL_DEF;
+    m_fontcolor = FONT_COLOR_DEF;
+    m_fontcolor_select = FONT_COLOR_SEL_DEF;
+    m_bordercolor = BORDER_COLOR_DEF;
+    m_bordercolor_select = BORDER_COLOR_SEL_DEF;
+    m_borderwidth = BORDER_WIDTH_DEF;
+    m_borderradius = BORDER_RADIUS_DEF;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -39,6 +39,9 @@ ATCMtime::ATCMtime(QWidget *parent) :
 
     setFlat(true);
     setStyle(new ATCMStyle);
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
 
     /*
      * put there a default stylesheet
@@ -129,7 +132,7 @@ ATCMtime::~ATCMtime()
 
 void ATCMtime::paintEvent(QPaintEvent * e)
 {
-    Q_UNUSED( e )
+    Q_UNUSED( e );
     QPainter painter(this);
     QPalette palette = this->palette();
 
@@ -219,6 +222,10 @@ void ATCMtime::setBorderRadius(int radius)
 /* read variable */
 void ATCMtime::updateData()
 {
+    if (this->isVisible() == false)
+    {
+        return;
+    }
     this->setText(QTime::currentTime().toString(m_format));
     this->update();
 }

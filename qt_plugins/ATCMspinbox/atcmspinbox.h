@@ -4,13 +4,20 @@
 #include <QtGui/QWidget>
 #include <QLocale>
 #include <QtGui/QDoubleSpinBox>
+#ifndef TARGET_ARM
 #include <QtDesigner/QDesignerExportWidget>
+#endif
 #include <QTimer>
 #include <QFrame>
 
-class QDESIGNER_WIDGET_EXPORT ATCMspinbox : public QDoubleSpinBox
+class
+#ifndef TARGET_ARM
+ QDESIGNER_WIDGET_EXPORT
+#endif
+ ATCMspinbox : public QDoubleSpinBox
 {
 	Q_OBJECT
+#ifndef TARGET_ARM
 		/************* property to hide *************/
         Q_PROPERTY(QString styleSheet READ styleSheet WRITE setStyleSheet DESIGNABLE false)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled DESIGNABLE false)
@@ -21,8 +28,8 @@ class QDESIGNER_WIDGET_EXPORT ATCMspinbox : public QDoubleSpinBox
 		Q_PROPERTY(QCursor cursor READ cursor WRITE setCursor DESIGNABLE false)
 		Q_PROPERTY(QString whatsThis READ whatsThis WRITE setWhatsThis DESIGNABLE false)
 		Q_PROPERTY(QSize baseSize READ baseSize WRITE setBaseSize DESIGNABLE false)
-#ifndef TARGET_ARM
-		Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
+#ifdef _WIN32
+        Q_PROPERTY(QString accessibleName READ accessibleName WRITE setAccessibleName DESIGNABLE false)
 		Q_PROPERTY(QString accessibleDescription READ accessibleDescription WRITE setAccessibleDescription DESIGNABLE false)
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
@@ -63,7 +70,7 @@ class QDESIGNER_WIDGET_EXPORT ATCMspinbox : public QDoubleSpinBox
 		Q_PROPERTY(int borderRadius READ borderRadius WRITE setBorderRadius)
 		/* set the apparence */
         Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence DESIGNABLE true RESET unsetApparence)
-
+#endif
 	public:
 		ATCMspinbox(QWidget *parent = 0);
 		~ATCMspinbox();

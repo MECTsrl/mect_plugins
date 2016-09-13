@@ -42,7 +42,7 @@
     mainLayout->addWidget(buttonBox);
 
 	setLayout(mainLayout);
-    setWindowTitle(tr("ATCM Label Variables"));
+    setWindowTitle(tr("ATCM Led Variables"));
 }
 
 QSize variableandvisibilityDialog::sizeHint() const
@@ -63,7 +63,7 @@ void variableandvisibilityDialog::saveState()
 
 void variableandvisibilityDialog::chooseCtVariable()
 {
-    QString value;
+    QString value = lineVariable->text();
     CrossTableEditor dialog(m_widget, &value);
     if (dialog.exec() == Accepted)
     {
@@ -73,7 +73,7 @@ void variableandvisibilityDialog::chooseCtVariable()
 
 void variableandvisibilityDialog::chooseCtVisibility()
 {
-    QString value;
+    QString value = lineVisibility->text();
     CrossTableEditor dialog(m_widget, &value);
     if (dialog.exec() == Accepted)
     {
