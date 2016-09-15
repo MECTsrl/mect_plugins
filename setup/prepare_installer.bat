@@ -1,6 +1,6 @@
 @echo off
 
-SET REVISION="2.0.10rc2"
+SET REVISION="2.0.10rc3"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\Users\UserName\Documents\GitHub\mect_plugins"
@@ -12,7 +12,7 @@ FOR /f "eol=#tokens=2delims==" %%a IN ('findstr DistributionVersion %OUT_DIR%\Me
 
 SET QTPROJECT=1
 SET BUILD=1
-SET INSTALL=0
+SET INSTALL=1
 SET UPDATE=1
 
 IF %UPDATE% == 1 (
