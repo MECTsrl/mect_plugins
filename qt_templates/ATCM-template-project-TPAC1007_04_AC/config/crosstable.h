@@ -15,6 +15,7 @@ DWORD_BIT <-> int
 extern "C" {
 #endif
 #include <sys/types.h>
+#include "cross_table_utility.h"
  
 #define ID_RTU0_TYPE_PORT 5000
 extern u_int32_t RTU0_TYPE_PORT;
@@ -1373,9 +1374,9 @@ int addWrite_PLC_Tamb(int16_t value);
 int getStatus_PLC_Tamb();
  
 #define ID_PLC_Encoder 5334
-extern u_int32_t PLC_Encoder;
-int doWrite_PLC_Encoder(u_int32_t value);
-int addWrite_PLC_Encoder(u_int32_t value);
+extern int32_t PLC_Encoder;
+int doWrite_PLC_Encoder(int32_t value);
+int addWrite_PLC_Encoder(int32_t value);
 int getStatus_PLC_Encoder();
  
 #define ID_PLC_Capture 5335
@@ -1533,6 +1534,12 @@ extern int PLC_ResetValues;
 int doWrite_PLC_ResetValues(int value);
 int addWrite_PLC_ResetValues(int value);
 int getStatus_PLC_ResetValues();
+ 
+#define ID_PLC_buzzerOn 5397
+extern int PLC_buzzerOn;
+int doWrite_PLC_buzzerOn(int value);
+int addWrite_PLC_buzzerOn(int value);
+int getStatus_PLC_buzzerOn();
  
 #ifdef __cplusplus
 }

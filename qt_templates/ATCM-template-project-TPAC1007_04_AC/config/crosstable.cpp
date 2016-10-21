@@ -10,7 +10,6 @@ WORD_BIT  <-> int
 DWORD_BIT <-> int
 */ 
 #include "crosstable.h"
-#include "cross_table_utility.h"
  
 u_int32_t RTU0_TYPE_PORT = 0;
 u_int32_t RTU0_BAUDRATE = 0;
@@ -238,7 +237,7 @@ int16_t PLC_Reserved_4 = 0;
 int16_t PLC_Reserved_5 = 0;
 int16_t PLC_Reserved_6 = 0;
 int16_t PLC_Tamb = 0;
-u_int32_t PLC_Encoder = 0;
+int32_t PLC_Encoder = 0;
 u_int32_t PLC_Capture = 0;
 int PLC_DigOut_1 = 0;
 int PLC_DigOut_2 = 0;
@@ -265,6 +264,7 @@ float PLC_timeWin = 0;
 u_int16_t PLC_Version = 0;
 u_int16_t PLC_EngineStatus = 0;
 int PLC_ResetValues = 0;
+int PLC_buzzerOn = 0;
 
 
 int doWrite_RTU0_TYPE_PORT(u_int32_t value)
@@ -4335,13 +4335,13 @@ return getStatus(ID_PLC_Tamb);
 }
 
 
-int doWrite_PLC_Encoder(u_int32_t value)
+int doWrite_PLC_Encoder(int32_t value)
 {
 return doWrite(ID_PLC_Encoder,  &value);
 }
 
 
-int addWrite_PLC_Encoder(u_int32_t value)
+int addWrite_PLC_Encoder(int32_t value)
 {
 return addWrite(ID_PLC_Encoder, &value);
 }
@@ -4821,6 +4821,24 @@ return getStatus(ID_PLC_ResetValues);
 }
 
 
+int doWrite_PLC_buzzerOn(int value)
+{
+return doWrite(ID_PLC_buzzerOn,  &value);
+}
+
+
+int addWrite_PLC_buzzerOn(int value)
+{
+return addWrite(ID_PLC_buzzerOn, &value);
+}
+
+
+int getStatus_PLC_buzzerOn()
+{
+return getStatus(ID_PLC_buzzerOn);
+}
+
+
 int update_all(void)
 {
 int retval = 0;
@@ -5077,5 +5095,6 @@ retval += readFromDb(ID_PLC_timeWin, &PLC_timeWin);
 retval += readFromDb(ID_PLC_Version, &PLC_Version);
 retval += readFromDb(ID_PLC_EngineStatus, &PLC_EngineStatus);
 retval += readFromDb(ID_PLC_ResetValues, &PLC_ResetValues);
+retval += readFromDb(ID_PLC_buzzerOn, &PLC_buzzerOn);
 return retval;
 }
