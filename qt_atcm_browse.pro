@@ -1,7 +1,8 @@
 TEMPLATE      = subdirs
 SUBDIRS       =	\
 qt_library \
-qt_plugins
+qt_plugins \
+qt_templates
 
 #example
 
