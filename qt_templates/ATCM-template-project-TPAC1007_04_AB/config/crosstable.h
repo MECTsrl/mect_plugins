@@ -15,6 +15,7 @@ DWORD_BIT <-> int
 extern "C" {
 #endif
 #include <sys/types.h>
+#include "cross_table_utility.h"
  
 #define ID_RTU0_TYPE_PORT 5000
 extern u_int32_t RTU0_TYPE_PORT;
@@ -1372,11 +1373,11 @@ int doWrite_PLC_Tamb(int16_t value);
 int addWrite_PLC_Tamb(int16_t value);
 int getStatus_PLC_Tamb();
  
-#define ID_PLC_Encoder 5334
-extern u_int32_t PLC_Encoder;
-int doWrite_PLC_Encoder(u_int32_t value);
-int addWrite_PLC_Encoder(u_int32_t value);
-int getStatus_PLC_Encoder();
+#define ID_PLC_Reserved_4 5334
+extern u_int32_t PLC_Reserved_4;
+int doWrite_PLC_Reserved_4(u_int32_t value);
+int addWrite_PLC_Reserved_4(u_int32_t value);
+int getStatus_PLC_Reserved_4();
  
 #define ID_PLC_Capture 5335
 extern u_int32_t PLC_Capture;
@@ -1456,17 +1457,17 @@ int doWrite_PLC_AnOut_4(int16_t value);
 int addWrite_PLC_AnOut_4(int16_t value);
 int getStatus_PLC_AnOut_4();
  
-#define ID_PLC_EncoderStart 5348
-extern u_int16_t PLC_EncoderStart;
-int doWrite_PLC_EncoderStart(u_int16_t value);
-int addWrite_PLC_EncoderStart(u_int16_t value);
-int getStatus_PLC_EncoderStart();
+#define ID_PLC_Reserved_5 5348
+extern u_int16_t PLC_Reserved_5;
+int doWrite_PLC_Reserved_5(u_int16_t value);
+int addWrite_PLC_Reserved_5(u_int16_t value);
+int getStatus_PLC_Reserved_5();
  
-#define ID_PLC_EncoderReset 5349
-extern u_int16_t PLC_EncoderReset;
-int doWrite_PLC_EncoderReset(u_int16_t value);
-int addWrite_PLC_EncoderReset(u_int16_t value);
-int getStatus_PLC_EncoderReset();
+#define ID_PLC_Reserved_6 5349
+extern u_int16_t PLC_Reserved_6;
+int doWrite_PLC_Reserved_6(u_int16_t value);
+int addWrite_PLC_Reserved_6(u_int16_t value);
+int getStatus_PLC_Reserved_6();
  
 #define ID_PLC_Heartbeat 5350
 extern u_int16_t PLC_Heartbeat;
@@ -1491,6 +1492,24 @@ extern u_int16_t PLC_AnIn2Filter;
 int doWrite_PLC_AnIn2Filter(u_int16_t value);
 int addWrite_PLC_AnIn2Filter(u_int16_t value);
 int getStatus_PLC_AnIn2Filter();
+ 
+#define ID_PLC_AnIn3Filter 5354
+extern u_int16_t PLC_AnIn3Filter;
+int doWrite_PLC_AnIn3Filter(u_int16_t value);
+int addWrite_PLC_AnIn3Filter(u_int16_t value);
+int getStatus_PLC_AnIn3Filter();
+ 
+#define ID_PLC_AnIn4Filter 5355
+extern u_int16_t PLC_AnIn4Filter;
+int doWrite_PLC_AnIn4Filter(u_int16_t value);
+int addWrite_PLC_AnIn4Filter(u_int16_t value);
+int getStatus_PLC_AnIn4Filter();
+ 
+#define ID_PLC_AnIn5Filter 5356
+extern u_int16_t PLC_AnIn5Filter;
+int doWrite_PLC_AnIn5Filter(u_int16_t value);
+int addWrite_PLC_AnIn5Filter(u_int16_t value);
+int getStatus_PLC_AnIn5Filter();
  
 #define ID_PLC_time 5390
 extern float PLC_time;
@@ -1533,6 +1552,12 @@ extern int PLC_ResetValues;
 int doWrite_PLC_ResetValues(int value);
 int addWrite_PLC_ResetValues(int value);
 int getStatus_PLC_ResetValues();
+ 
+#define ID_PLC_buzzerOn 5397
+extern int PLC_buzzerOn;
+int doWrite_PLC_buzzerOn(int value);
+int addWrite_PLC_buzzerOn(int value);
+int getStatus_PLC_buzzerOn();
  
 #ifdef __cplusplus
 }
