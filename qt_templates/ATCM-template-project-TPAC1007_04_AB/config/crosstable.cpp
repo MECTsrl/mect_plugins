@@ -10,7 +10,6 @@ WORD_BIT  <-> int
 DWORD_BIT <-> int
 */ 
 #include "crosstable.h"
-#include "cross_table_utility.h"
  
 u_int32_t RTU0_TYPE_PORT = 0;
 u_int32_t RTU0_BAUDRATE = 0;
@@ -238,7 +237,7 @@ int16_t PLC_AnIn_3 = 0;
 int16_t PLC_AnIn_4 = 0;
 int16_t PLC_AnIn_5 = 0;
 int16_t PLC_Tamb = 0;
-u_int32_t PLC_Encoder = 0;
+u_int32_t PLC_Reserved_4 = 0;
 u_int32_t PLC_Capture = 0;
 int PLC_DigOut_1 = 0;
 int PLC_DigOut_2 = 0;
@@ -252,12 +251,15 @@ int16_t PLC_AnOut_1 = 0;
 int16_t PLC_AnOut_2 = 0;
 int16_t PLC_AnOut_3 = 0;
 int16_t PLC_AnOut_4 = 0;
-u_int16_t PLC_EncoderStart = 0;
-u_int16_t PLC_EncoderReset = 0;
+u_int16_t PLC_Reserved_5 = 0;
+u_int16_t PLC_Reserved_6 = 0;
 u_int16_t PLC_Heartbeat = 0;
 u_int16_t PLC_StatusReg = 0;
 u_int16_t PLC_AnIn1Filter = 0;
 u_int16_t PLC_AnIn2Filter = 0;
+u_int16_t PLC_AnIn3Filter = 0;
+u_int16_t PLC_AnIn4Filter = 0;
+u_int16_t PLC_AnIn5Filter = 0;
 float PLC_time = 0;
 float PLC_timeMin = 0;
 float PLC_timeMax = 0;
@@ -265,6 +267,7 @@ float PLC_timeWin = 0;
 u_int16_t PLC_Version = 0;
 u_int16_t PLC_EngineStatus = 0;
 int PLC_ResetValues = 0;
+int PLC_buzzerOn = 0;
 
 
 int doWrite_RTU0_TYPE_PORT(u_int32_t value)
@@ -4335,21 +4338,21 @@ return getStatus(ID_PLC_Tamb);
 }
 
 
-int doWrite_PLC_Encoder(u_int32_t value)
+int doWrite_PLC_Reserved_4(u_int32_t value)
 {
-return doWrite(ID_PLC_Encoder,  &value);
+return doWrite(ID_PLC_Reserved_4,  &value);
 }
 
 
-int addWrite_PLC_Encoder(u_int32_t value)
+int addWrite_PLC_Reserved_4(u_int32_t value)
 {
-return addWrite(ID_PLC_Encoder, &value);
+return addWrite(ID_PLC_Reserved_4, &value);
 }
 
 
-int getStatus_PLC_Encoder()
+int getStatus_PLC_Reserved_4()
 {
-return getStatus(ID_PLC_Encoder);
+return getStatus(ID_PLC_Reserved_4);
 }
 
 
@@ -4587,39 +4590,39 @@ return getStatus(ID_PLC_AnOut_4);
 }
 
 
-int doWrite_PLC_EncoderStart(u_int16_t value)
+int doWrite_PLC_Reserved_5(u_int16_t value)
 {
-return doWrite(ID_PLC_EncoderStart,  &value);
+return doWrite(ID_PLC_Reserved_5,  &value);
 }
 
 
-int addWrite_PLC_EncoderStart(u_int16_t value)
+int addWrite_PLC_Reserved_5(u_int16_t value)
 {
-return addWrite(ID_PLC_EncoderStart, &value);
+return addWrite(ID_PLC_Reserved_5, &value);
 }
 
 
-int getStatus_PLC_EncoderStart()
+int getStatus_PLC_Reserved_5()
 {
-return getStatus(ID_PLC_EncoderStart);
+return getStatus(ID_PLC_Reserved_5);
 }
 
 
-int doWrite_PLC_EncoderReset(u_int16_t value)
+int doWrite_PLC_Reserved_6(u_int16_t value)
 {
-return doWrite(ID_PLC_EncoderReset,  &value);
+return doWrite(ID_PLC_Reserved_6,  &value);
 }
 
 
-int addWrite_PLC_EncoderReset(u_int16_t value)
+int addWrite_PLC_Reserved_6(u_int16_t value)
 {
-return addWrite(ID_PLC_EncoderReset, &value);
+return addWrite(ID_PLC_Reserved_6, &value);
 }
 
 
-int getStatus_PLC_EncoderReset()
+int getStatus_PLC_Reserved_6()
 {
-return getStatus(ID_PLC_EncoderReset);
+return getStatus(ID_PLC_Reserved_6);
 }
 
 
@@ -4692,6 +4695,60 @@ return addWrite(ID_PLC_AnIn2Filter, &value);
 int getStatus_PLC_AnIn2Filter()
 {
 return getStatus(ID_PLC_AnIn2Filter);
+}
+
+
+int doWrite_PLC_AnIn3Filter(u_int16_t value)
+{
+return doWrite(ID_PLC_AnIn3Filter,  &value);
+}
+
+
+int addWrite_PLC_AnIn3Filter(u_int16_t value)
+{
+return addWrite(ID_PLC_AnIn3Filter, &value);
+}
+
+
+int getStatus_PLC_AnIn3Filter()
+{
+return getStatus(ID_PLC_AnIn3Filter);
+}
+
+
+int doWrite_PLC_AnIn4Filter(u_int16_t value)
+{
+return doWrite(ID_PLC_AnIn4Filter,  &value);
+}
+
+
+int addWrite_PLC_AnIn4Filter(u_int16_t value)
+{
+return addWrite(ID_PLC_AnIn4Filter, &value);
+}
+
+
+int getStatus_PLC_AnIn4Filter()
+{
+return getStatus(ID_PLC_AnIn4Filter);
+}
+
+
+int doWrite_PLC_AnIn5Filter(u_int16_t value)
+{
+return doWrite(ID_PLC_AnIn5Filter,  &value);
+}
+
+
+int addWrite_PLC_AnIn5Filter(u_int16_t value)
+{
+return addWrite(ID_PLC_AnIn5Filter, &value);
+}
+
+
+int getStatus_PLC_AnIn5Filter()
+{
+return getStatus(ID_PLC_AnIn5Filter);
 }
 
 
@@ -4818,6 +4875,24 @@ return addWrite(ID_PLC_ResetValues, &value);
 int getStatus_PLC_ResetValues()
 {
 return getStatus(ID_PLC_ResetValues);
+}
+
+
+int doWrite_PLC_buzzerOn(int value)
+{
+return doWrite(ID_PLC_buzzerOn,  &value);
+}
+
+
+int addWrite_PLC_buzzerOn(int value)
+{
+return addWrite(ID_PLC_buzzerOn, &value);
+}
+
+
+int getStatus_PLC_buzzerOn()
+{
+return getStatus(ID_PLC_buzzerOn);
 }
 
 
@@ -5050,7 +5125,7 @@ retval += readFromDb(ID_PLC_AnIn_3, &PLC_AnIn_3);
 retval += readFromDb(ID_PLC_AnIn_4, &PLC_AnIn_4);
 retval += readFromDb(ID_PLC_AnIn_5, &PLC_AnIn_5);
 retval += readFromDb(ID_PLC_Tamb, &PLC_Tamb);
-retval += readFromDb(ID_PLC_Encoder, &PLC_Encoder);
+retval += readFromDb(ID_PLC_Reserved_4, &PLC_Reserved_4);
 retval += readFromDb(ID_PLC_Capture, &PLC_Capture);
 retval += readFromDb(ID_PLC_DigOut_1, &PLC_DigOut_1);
 retval += readFromDb(ID_PLC_DigOut_2, &PLC_DigOut_2);
@@ -5064,12 +5139,15 @@ retval += readFromDb(ID_PLC_AnOut_1, &PLC_AnOut_1);
 retval += readFromDb(ID_PLC_AnOut_2, &PLC_AnOut_2);
 retval += readFromDb(ID_PLC_AnOut_3, &PLC_AnOut_3);
 retval += readFromDb(ID_PLC_AnOut_4, &PLC_AnOut_4);
-retval += readFromDb(ID_PLC_EncoderStart, &PLC_EncoderStart);
-retval += readFromDb(ID_PLC_EncoderReset, &PLC_EncoderReset);
+retval += readFromDb(ID_PLC_Reserved_5, &PLC_Reserved_5);
+retval += readFromDb(ID_PLC_Reserved_6, &PLC_Reserved_6);
 retval += readFromDb(ID_PLC_Heartbeat, &PLC_Heartbeat);
 retval += readFromDb(ID_PLC_StatusReg, &PLC_StatusReg);
 retval += readFromDb(ID_PLC_AnIn1Filter, &PLC_AnIn1Filter);
 retval += readFromDb(ID_PLC_AnIn2Filter, &PLC_AnIn2Filter);
+retval += readFromDb(ID_PLC_AnIn3Filter, &PLC_AnIn3Filter);
+retval += readFromDb(ID_PLC_AnIn4Filter, &PLC_AnIn4Filter);
+retval += readFromDb(ID_PLC_AnIn5Filter, &PLC_AnIn5Filter);
 retval += readFromDb(ID_PLC_time, &PLC_time);
 retval += readFromDb(ID_PLC_timeMin, &PLC_timeMin);
 retval += readFromDb(ID_PLC_timeMax, &PLC_timeMax);
@@ -5077,5 +5155,6 @@ retval += readFromDb(ID_PLC_timeWin, &PLC_timeWin);
 retval += readFromDb(ID_PLC_Version, &PLC_Version);
 retval += readFromDb(ID_PLC_EngineStatus, &PLC_EngineStatus);
 retval += readFromDb(ID_PLC_ResetValues, &PLC_ResetValues);
+retval += readFromDb(ID_PLC_buzzerOn, &PLC_buzzerOn);
 return retval;
 }
