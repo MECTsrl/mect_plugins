@@ -1,6 +1,6 @@
 @echo off
 
-SET REVISION="2.0.11rc3"
+SET REVISION="2.0.11rc5"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\mect_plugins"
