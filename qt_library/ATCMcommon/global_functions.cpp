@@ -750,40 +750,34 @@ bool beep(int duration_ms)
 {
     static time_t buzzer_busy_timeout_ms = 0;
     static time_t now_ms = 0;
-    struct timeval now;
+    struct timespec now;
 
-    /* return if the buzzer file descriptor is invalid */
+    /* No buzzer */
     if (Buzzerfd == -1)
-    {
         return false;
-    }
 
-    /* gives  the number of milliseconds since the Epoch */
-    gettimeofday(&now, NULL);
-    now_ms = now.tv_sec * 1000 + now.tv_usec / 1000;
-
-    /* initialize the buzzer timeout */
-    if (buzzer_busy_timeout_ms == 0)
-    {
-        buzzer_busy_timeout_ms = now_ms;
-    }
+    /* Milliseconds since some time reference */
+    if (clock_gettime(CLOCK_MONOTONIC, &now) != 0)
+        return false;
+    now_ms = now.tv_sec * 1000 + now.tv_nsec / 1000000;
 
     /* if the timeouit is expired, beep the buzzer for duration_ms */
-    if (buzzer_busy_timeout_ms <= now_ms)
-    {
-        LOG_PRINT(verbose_e, "duration %d\n", duration_ms);
+    if (buzzer_busy_timeout_ms <= now_ms) {
         buzzer_busy_timeout_ms = now_ms + duration_ms;
-        if (ioctl(Buzzerfd, BUZZER_BEEP, duration_ms) != 0)
-        {
-            LOG_PRINT(error_e, "problem playng buzzer.\n");
+
+	/* Buzz. */
+        if (ioctl(Buzzerfd, BUZZER_BEEP, duration_ms) != 0) {
+            LOG_PRINT(error_e, "buzzer error.\n");
+
             return false;
         }
     }
-    else
-    {
-        LOG_PRINT(verbose_e, "busy %ld < %ld\n", buzzer_busy_timeout_ms, now_ms);
+    else {
+        LOG_PRINT(verbose_e, "still buzzing %ld < %ld\n", buzzer_busy_timeout_ms, now_ms);
+
         return false;
     }
+
     return true;
 }
 

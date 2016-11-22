@@ -76,36 +76,23 @@ public:
     {
         Buzzerfd = open(BUZZER, O_RDWR);
 
-        if (Buzzerfd < 0) {
+        if (Buzzerfd < 0)
             fprintf(stderr,"can't open buzzer device '%s'\n", BUZZER);
-        }
     };
+
     ~MyEventFilter()
     {
         if (Buzzerfd != -1)
-        {
             close(Buzzerfd);
-        }
     };
 
-    bool eventFilter(QObject* object,QEvent* event)
+    bool eventFilter(QObject* object, QEvent* event)
     {
         Q_UNUSED(object);
 
-        if (event->type() == QEvent::MouseButtonPress)
-        {
-            struct timespec oldTouch = LastTouch;
-            clock_gettime(CLOCK_REALTIME, &LastTouch);
-            unsigned delay_ms = (LastTouch.tv_sec - oldTouch.tv_sec) * 1000;
-            delay_ms += (LastTouch.tv_nsec - oldTouch.tv_nsec) / 1000000;
-            if (delay_ms > BUZZER_DURATION_MS)
-            {
-                if (BuzzerTouch == true)
-                {
-                    beep(BUZZER_DURATION_MS);
-                }
-            }
-        }
+        if ((event->type() == QEvent::MouseButtonPress) && (BuzzerTouch == true))
+            beep(BUZZER_DURATION_MS);
+
         return false;
     }
 };
