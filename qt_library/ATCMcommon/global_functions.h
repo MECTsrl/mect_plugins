@@ -90,8 +90,12 @@ public:
     {
         Q_UNUSED(object);
 
-        if ((event->type() == QEvent::MouseButtonPress) && (BuzzerTouch == true))
-            beep(BUZZER_DURATION_MS);
+        if (event->type() == QEvent::MouseButtonPress) {
+            clock_gettime(CLOCK_REALTIME, &LastTouch);
+
+            if (BuzzerTouch == true)
+                beep(BUZZER_DURATION_MS);
+        }
 
         return false;
     }

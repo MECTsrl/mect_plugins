@@ -761,22 +761,18 @@ bool beep(int duration_ms)
         return false;
     now_ms = now.tv_sec * 1000 + now.tv_nsec / 1000000;
 
-    /* if the timeouit is expired, beep the buzzer for duration_ms */
+    /* Buzz for duration_ms (if done buzzing). */
     if (buzzer_busy_timeout_ms <= now_ms) {
-        buzzer_busy_timeout_ms = now_ms + duration_ms;
-
-	/* Buzz. */
         if (ioctl(Buzzerfd, BUZZER_BEEP, duration_ms) != 0) {
             LOG_PRINT(error_e, "buzzer error.\n");
 
             return false;
         }
-    }
-    else {
-        LOG_PRINT(verbose_e, "still buzzing %ld < %ld\n", buzzer_busy_timeout_ms, now_ms);
 
-        return false;
+        buzzer_busy_timeout_ms = now_ms + duration_ms;
     }
+    else
+        return false;
 
     return true;
 }
