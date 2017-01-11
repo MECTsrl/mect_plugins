@@ -748,8 +748,8 @@ bool USBumount()
 
 bool beep(int duration_ms)
 {
-    static time_t buzzer_busy_timeout_ms = 0;
-    static time_t now_ms = 0;
+    static int64_t buzzer_busy_timeout_ms = 0;
+    static int64_t now_ms = 0;
     struct timespec now;
 
     /* No buzzer */
