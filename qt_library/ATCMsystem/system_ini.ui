@@ -106,7 +106,7 @@ QComboBox
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -975,6 +975,16 @@ QComboBox
            </item>
            <item>
             <property name="text">
+             <string>2400</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>4800</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>9600</string>
             </property>
            </item>
@@ -1217,6 +1227,16 @@ QComboBox
            <item>
             <property name="text">
              <string>0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2400</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>4800</string>
             </property>
            </item>
            <item>
@@ -1514,6 +1534,16 @@ QComboBox
            <item>
             <property name="text">
              <string>0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2400</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>4800</string>
             </property>
            </item>
            <item>
@@ -1840,6 +1870,16 @@ QComboBox
            <item>
             <property name="text">
              <string>0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2400</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>4800</string>
             </property>
            </item>
            <item>
