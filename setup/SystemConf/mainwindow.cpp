@@ -79,6 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QSettings settings(SYSTEM_INI, QSettings::IniFormat);
 
     LanguageMap.clear();
+    ui->comboBoxLanguage->clear();
 
     /* load the map of the language and his locale abbreviation */
     FILE * fp = fopen(LANGUAGE_MAP_FILE, "r");
@@ -154,6 +155,10 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         ui->comboBox_Baudrate_SERIAL_PORT_0->setCurrentIndex(index);
     }
+    else  {
+        // Disable all Tab
+        ui->tabWidget->setTabEnabled(1, false);
+    }
 
     value = settings.value("SERIAL_PORT_0/databits").toString();
     if (value.length() > 0)
@@ -204,6 +209,10 @@ MainWindow::MainWindow(QWidget *parent) :
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'baudrate' parameter for SERIAL_PORT_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_SERIAL_PORT_1->itemText(index)));
         }
         ui->comboBox_Baudrate_SERIAL_PORT_1->setCurrentIndex(index);
+    }
+    else  {
+        // Disable all Tab
+        ui->tabWidget->setTabEnabled(2, false);
     }
 
     value = settings.value("SERIAL_PORT_1/databits").toString();
@@ -256,6 +265,10 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         ui->comboBox_Baudrate_SERIAL_PORT_2->setCurrentIndex(index);
     }
+    else  {
+        // Disable all Tab
+        ui->tabWidget->setTabEnabled(3, false);
+    }
 
     value = settings.value("SERIAL_PORT_2/databits").toString();
     if (value.length() > 0)
@@ -306,6 +319,10 @@ MainWindow::MainWindow(QWidget *parent) :
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'baudrate' parameter for SERIAL_PORT_3 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_SERIAL_PORT_3->itemText(index)));
         }
         ui->comboBox_Baudrate_SERIAL_PORT_3->setCurrentIndex(index);
+    }
+    else  {
+        // Disable all Tab
+        ui->tabWidget->setTabEnabled(4, false);
     }
 
     value = settings.value("SERIAL_PORT_3/databits").toString();
@@ -361,6 +378,10 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         ui->comboBox_Baudrate_CANOPEN_0->setCurrentIndex(index);
     }
+    else  {
+        // Disable all Tab
+        ui->tabWidget->setTabEnabled(6, false);
+    }
 
     value = settings.value("CANOPEN_1/baudrate").toString();
     if (value.length() > 0)
@@ -372,6 +393,10 @@ MainWindow::MainWindow(QWidget *parent) :
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for CANOPEN_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_CANOPEN_1->itemText(index)));
         }
         ui->comboBox_Baudrate_CANOPEN_1->setCurrentIndex(index);
+    }
+    else  {
+        // Disable all Tab
+        ui->tabWidget->setTabEnabled(7, false);
     }
 }
 

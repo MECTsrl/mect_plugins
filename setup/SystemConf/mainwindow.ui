@@ -76,7 +76,7 @@ QTabWidget::tab-bar {
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>7</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -1657,6 +1657,16 @@ QTabWidget::tab-bar {
             </item>
             <item>
              <property name="text">
+              <string>2400</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4800</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>9600</string>
              </property>
             </item>
@@ -1926,6 +1936,16 @@ QTabWidget::tab-bar {
             <item>
              <property name="text">
               <string>0</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2400</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4800</string>
              </property>
             </item>
             <item>
@@ -2259,6 +2279,16 @@ QTabWidget::tab-bar {
             <item>
              <property name="text">
               <string>0</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2400</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4800</string>
              </property>
             </item>
             <item>
@@ -2621,6 +2651,16 @@ QTabWidget::tab-bar {
             <item>
              <property name="text">
               <string>0</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2400</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4800</string>
              </property>
             </item>
             <item>
