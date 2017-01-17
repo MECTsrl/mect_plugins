@@ -260,6 +260,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
                 memcpy(&value, &val_float, sizeof(u_int32_t));
                 break;
             }
+            case byte_e:
             case bytebit_e:
             case wordbit_e:
             case dwordbit_e:

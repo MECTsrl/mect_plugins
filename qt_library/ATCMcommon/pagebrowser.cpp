@@ -244,6 +244,7 @@ bool page::getFormattedVar(const char * varname, bool * formattedVar, QLabel * l
     int type = CtIndex2Type(ctIndex);
     
     if (
+            type == byte_e ||
             type == uintab_e ||
             type == uintba_e ||
             type == intab_e ||
@@ -259,11 +260,7 @@ bool page::getFormattedVar(const char * varname, bool * formattedVar, QLabel * l
             type == fabcd_e ||
             type == fbadc_e ||
             type == fcdab_e ||
-            type == fdcba_e ||
-            type == bytebit_e ||
-            type == wordbit_e ||
-            type == dwordbit_e ||
-            type == bit_e
+            type == fdcba_e
             )
     {
         LOG_PRINT(error_e, "Invalid type\n");

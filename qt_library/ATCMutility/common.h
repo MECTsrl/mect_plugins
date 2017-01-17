@@ -274,6 +274,7 @@ typedef struct store_s
 enum type_e
 {
     bit_e,
+    byte_e,
     uintab_e,
     uintba_e,
     intab_e,

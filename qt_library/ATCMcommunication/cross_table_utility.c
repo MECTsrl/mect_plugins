@@ -99,7 +99,7 @@ static write_queue_elem_t * queue_head = NULL, * queue_tail = NULL;
  * Enable:   Flag 0/1
  * PLC:      Flag 0/1
  * Tag:      char[16]
- * type:     UINT|INT|UDINTABCD|UDINTBADC|UDINTCDAB|UDINTDCBA|DINTABCD|DINTBADC|DINTCDAB|DINTDCBA|RABCD|RBADC|RCDAB|RDCBA
+ * type:     BYTE|UINT|INT|UDINTABCD|UDINTBADC|UDINTCDAB|UDINTDCBA|DINTABCD|DINTBADC|DINTCDAB|DINTDCBA|REAL|REALBADC|REALCDAB|REALDCBA
  * Decimal:  0-4|address
  * Protocol: RTU|TCP|TCPRTU
  * Port:     char[N]
@@ -259,7 +259,11 @@ size_t fillSyncroArea(void)
             return elem_nb;
         }
 
-        if (strcmp(p, "UINT") == 0 || strcmp(p, "UINTAB") == 0)
+        if (strcmp(p, "BYTE") == 0)
+        {
+            varNameArray[elem_nb].type = byte_e;
+        }
+        else if (strcmp(p, "UINT") == 0 || strcmp(p, "UINTAB") == 0)
         {
             varNameArray[elem_nb].type = uintab_e;
         }
@@ -307,19 +311,19 @@ size_t fillSyncroArea(void)
         {
             varNameArray[elem_nb].type = dint_dcba_e;
         }
-        else if (strcmp(p, "FABCD") == 0 || strcmp(p, "FLOAT") == 0 || strcmp(p, "RABCD") == 0 || strcmp(p, "REAL") == 0)
+        else if (strcmp(p, "FABCD") == 0 || strcmp(p, "FLOAT") == 0 || strcmp(p, "REALABCD") == 0 || strcmp(p, "REAL") == 0)
         {
             varNameArray[elem_nb].type = fabcd_e;
         }
-        else if (strcmp(p, "FBADC") == 0 || strcmp(p, "RBADC") == 0)
+        else if (strcmp(p, "FBADC") == 0 || strcmp(p, "REALBADC") == 0)
         {
             varNameArray[elem_nb].type = fbadc_e;
         }
-        else if (strcmp(p, "FCDAB") == 0 || strcmp(p, "RCDAB") == 0)
+        else if (strcmp(p, "FCDAB") == 0 || strcmp(p, "REALCDAB") == 0)
         {
             varNameArray[elem_nb].type = fcdab_e;
         }
-        else if (strcmp(p, "FDCBA") == 0 || strcmp(p, "RDCBA") == 0)
+        else if (strcmp(p, "FDCBA") == 0 || strcmp(p, "REALDCBA") == 0)
         {
             varNameArray[elem_nb].type = fdcba_e;
         }
@@ -356,6 +360,7 @@ size_t fillSyncroArea(void)
             return elem_nb;
         }
         if (
+                varNameArray[elem_nb].type == byte_e ||
                 varNameArray[elem_nb].type == bit_e ||
                 varNameArray[elem_nb].type == bytebit_e ||
                 varNameArray[elem_nb].type == wordbit_e ||
@@ -1106,12 +1111,13 @@ int readFromDb(int ctIndex, void * value)
         memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(DWORD));
         LOG_PRINT(verbose_e, "FLOAT: %f\n", *((float*)value));
         break;
+    case byte_e:
     case bit_e:
     case bytebit_e:
     case wordbit_e:
     case dwordbit_e:
         *((BYTE*)value) = pIODataAreaI[byte_nb];
-        LOG_PRINT(verbose_e, "BIT: %d\n", *((BYTE*)value));
+        LOG_PRINT(verbose_e, "BYTE/BIT: %d\n", *((BYTE*)value));
         break;
     default:
         LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
@@ -1193,6 +1199,7 @@ int writeToDb(int ctIndex, void * value)
         memcpy(&(pIODataAreaO[byte_nb]), (float*)value, sizeof(float));
         LOG_PRINT(verbose_e, "FLOAT %f -> .%X.%X.%X.%X.\n", *((float*)value), pIODataAreaO[byte_nb], pIODataAreaO[byte_nb + 1], pIODataAreaO[byte_nb + 2], pIODataAreaO[byte_nb + 3]);
         break;
+    case byte_e:
     case bit_e:
     case bytebit_e:
     case wordbit_e:
@@ -1394,6 +1401,7 @@ int formattedReadFromDb(int ctIndex, char * value)
         }
     }
         break;
+    case byte_e:
     case bit_e:
     case bytebit_e:
     case wordbit_e:
