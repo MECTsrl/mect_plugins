@@ -1571,7 +1571,7 @@ bool page::deactivateVarList(const QStringList listVarname)
     
     foreach(varname, listVarname)
     {
-        if (deactivateVar(varname.toAscii().data()) == false)
+        if (deactivateVar(varname.toAscii().data()) != 0)
         {
             LOG_PRINT(error_e, "cannot deactivate '%s'\n", varname.toAscii().data());
             ret = false;

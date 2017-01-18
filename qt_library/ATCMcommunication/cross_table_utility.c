@@ -780,8 +780,16 @@ int addSyncroElementbyIndex(const char * tag, int CtIndex)
     if (Tag2SynIndex(tag, &synIndex) != 0)
     {
         LOG_PRINT(verbose_e, "Adding tag %s, CtIndex %d SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
+
+#ifdef ENABLE_MUTEX
+        pthread_mutex_lock(&sync_send_mutex);
+#endif
         setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), CtIndex);
         SyncroAreaSize++;
+
+#ifdef ENABLE_MUTEX
+        pthread_mutex_unlock(&sync_send_mutex);
+#endif
         LOG_PRINT(verbose_e, "Added tag %s, CtIndex %d SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
         return 0;
     }
@@ -2679,12 +2687,12 @@ int deactivateVar(const char * varname)
     {
         /* check if the block of the variable is already active */
         retval = isBlockActive(varname, blockhead);
-        if (retval == 1)
+        if (retval == 0)
         {
-            LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varname);
+            LOG_PRINT(verbose_e, "The variable '%s' come from a block already inactive\n", varname);
             return 0;
         }
-        else if (retval == 0)
+        else if (retval == 1)
         {
 
             LOG_PRINT(verbose_e, "Deactivating block '%s' cause variable '%s' is deactivated\n", blockhead, varname);
