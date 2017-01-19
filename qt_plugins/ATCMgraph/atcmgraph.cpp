@@ -1038,7 +1038,7 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
         return true;
     }
     /* activate the variable */
-    if (activateVar(variable.trimmed().toAscii().data()) == 0)
+    if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
     {
         int myCtIndex = -1;
         LOG_PRINT(verbose_e, "extracting ctIndex of '%s'\n", variable.trimmed().toAscii().data());

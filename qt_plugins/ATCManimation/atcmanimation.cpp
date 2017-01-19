@@ -175,7 +175,7 @@ bool ATCManimation::setVariable(QString variable)
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (activateVar(variable.trimmed().toAscii().data()) == 0)
+        if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
         {
             m_variable = variable.trimmed();
             if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)

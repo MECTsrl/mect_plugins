@@ -360,7 +360,6 @@ size_t fillSyncroArea(void)
             return elem_nb;
         }
         if (
-                varNameArray[elem_nb].type == byte_e ||
                 varNameArray[elem_nb].type == bit_e ||
                 varNameArray[elem_nb].type == bytebit_e ||
                 varNameArray[elem_nb].type == wordbit_e ||
@@ -486,13 +485,13 @@ size_t fillSyncroArea(void)
         LOG_PRINT(verbose_e, "BLOCK %d VAR %s, line %s, p %s\n", varNameArray[elem_nb].block, varNameArray[elem_nb].tag, line, p);
 
         /* extract the block head */
-        if (elem_nb > 0 && varNameArray[elem_nb].block == varNameArray[elem_nb - 1].block)
+        if (elem_nb == 1  || varNameArray[elem_nb].block != varNameArray[elem_nb - 1].block)
         {
-            varNameArray[elem_nb].blockhead = varNameArray[elem_nb - 1].blockhead;
+            varNameArray[elem_nb].blockhead = elem_nb;
         }
         else
         {
-            varNameArray[elem_nb].blockhead = elem_nb;
+            varNameArray[elem_nb].blockhead = varNameArray[elem_nb - 1].blockhead;
         }
 
         /* NReg */

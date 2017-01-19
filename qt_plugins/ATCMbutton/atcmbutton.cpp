@@ -397,7 +397,7 @@ bool ATCMbutton::setStatusvar(QString variable)
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (activateVar(variable.trimmed().toAscii().data()) == 0)
+        if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
         {
             m_statusvar = variable.trimmed();
             if (Tag2CtIndex(m_statusvar.toAscii().data(), &m_CtIndex) != 0)
