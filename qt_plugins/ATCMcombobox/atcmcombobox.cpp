@@ -294,7 +294,7 @@ bool ATCMcombobox::writeValue(QString value)
     bool ret_val = true;
     refresh_timer->stop();
 
-    if (m_writeAcknowledge == false || QMessageBox::question(this, trUtf8("Conferma Scrittura"), trUtf8("Si vuole procedere alla scrittura del valore '%1'?").arg(value), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
+    if (m_writeAcknowledge == false || QMessageBox::question(this, trUtf8("Confirm Writing"), trUtf8("Do you want to save new value: '%1'?").arg(value), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
     {
         m_value = mapped2value(value);
         ret_val =  setFormattedVarByCtIndex(m_CtIndex, m_value.toAscii().data());
