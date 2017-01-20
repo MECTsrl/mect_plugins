@@ -371,7 +371,7 @@ bool ATCMbutton::setStatusvar(QString variable)
     disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
     if (isCheckable())
     {
-        connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
     }
     else
     {
@@ -840,16 +840,32 @@ void ATCMbutton::pressFunction()
         }
         goToPage();
     }
+    else {
+        // Password Failed
+        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+        setChecked(false);
+        connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+    }
 #endif
 }
 
 void ATCMbutton::releaseFunction()
 {
 #ifdef TARGET_ARM
-    if (m_CtIndex >= 0)
+    if (checkPassword())
     {
-        writeVarInQueueByCtIndex(m_CtIndex, m_statusreleaseval.toInt());
+        if (m_CtIndex >= 0)
+        {
+            writeVarInQueueByCtIndex(m_CtIndex, m_statusreleaseval.toInt());
+        }
     }
+    else {
+        // Password Failed
+        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+        setChecked(true);
+        connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+    }
+
 #endif
 }
 

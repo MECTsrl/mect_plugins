@@ -1269,7 +1269,7 @@ int formattedReadFromDb(int ctIndex, char * value)
     /* check if the variable is active (it is into the syncro vector or his head is into the syncrovector ) */
     if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
     {
-        if (activateVar(varNameArray[ctIndex].tag) != 0)
+        if (0) // Patch for H Vars 2.0.12rc2 activateVar(varNameArray[ctIndex].tag) != 0)
         {
             LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", ctIndex, varNameArray[ctIndex].tag);
             return 1;
@@ -1277,7 +1277,7 @@ int formattedReadFromDb(int ctIndex, char * value)
     }
     else if (CtIndex2SynIndex(varNameArray[ctIndex].blockhead, &SynIndex) != 0)
     {
-        if (activateVar(varNameArray[varNameArray[ctIndex].blockhead].tag) != 0)
+        if (0) // Patch for H Vars 2.0.12rc2 activateVar(varNameArray[varNameArray[ctIndex].blockhead].tag) != 0)
         {
             LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", varNameArray[ctIndex].blockhead, varNameArray[varNameArray[ctIndex].blockhead].tag);
             return 1;
@@ -1489,7 +1489,7 @@ int formattedWriteToDb(int ctIndex, void * value)
             int myCtIndex = varNameArray[ctIndex].blockhead;
             if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
             {
-                if (activateVar(varNameArray[myCtIndex].tag) != 0)
+                if (0) // Patch for H Vars 2.0.12rc2 activateVar(varNameArray[myCtIndex].tag) != 0)
                 {
                     LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
                     return 1;
@@ -2109,7 +2109,7 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
         int myCtIndex = varNameArray[ctIndex].blockhead;
         if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
         {
-            if (activateVar(varNameArray[myCtIndex].tag) != 0)
+            if (0) // Patch for H Vars 2.0.12rc2 activateVar(varNameArray[myCtIndex].tag) != 0)
             {
                 LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
                 return 1;
