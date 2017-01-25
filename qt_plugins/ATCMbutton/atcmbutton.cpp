@@ -371,7 +371,7 @@ bool ATCMbutton::setStatusvar(QString variable)
     disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
     if (isCheckable())
     {
-        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+        connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
     }
     else
     {
