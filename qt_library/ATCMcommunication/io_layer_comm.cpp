@@ -117,6 +117,7 @@ void io_layer_comm::run()
         notifySetSyncro();
         notifyGetData();
         notifyGetSyncro();
+        compactSyncWrites();
         update_all();
         pthread_cond_signal(&condvar);
     }

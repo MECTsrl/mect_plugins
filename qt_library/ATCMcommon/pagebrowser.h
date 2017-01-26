@@ -111,7 +111,6 @@ protected:
     bool getFormattedVar(const char * varname, QwtTextLabel * formattedVar, QLabel * led = NULL);
 #endif
     bool setFormattedVar(const char * varname, char * formattedVar);
-    char getStatusVar(const char * varname, char * msg = NULL);
     bool setStatusVar(const char * varname, char Status);
     bool setStatusVar(int SynIndex, char Status);
     bool isBlockFullUsed(int block, QStringList variablelist);

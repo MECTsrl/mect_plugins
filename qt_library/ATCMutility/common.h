@@ -25,7 +25,6 @@ extern "C" {
 #undef  DUMPSCREEN         /* enable the screen shot of the screen when new page is shown */
 #undef  COMPACT_ALARM      /* show the start and the end of an alarm in the same line */
 #undef  ENABLE_AUTODUMP    /* enable the automatic dump when you insert the USB key */
-#undef  ENABLE_DEVICE_DISCONNECT /* enable the device disconnected management */
 #define ENABLE_TRANSLATION
 
 /* this compilation warnig is shown cause the DUMPSCREEN option is quite heavy, so if it is not necessary is better turn it off */

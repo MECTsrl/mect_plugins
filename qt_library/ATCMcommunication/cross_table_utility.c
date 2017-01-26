@@ -38,11 +38,6 @@ WORD * pIOSyncroAreaO = &(IOSyncroAreaO[1]);
 WORD IOSyncroAreaI[SYNCRO_DB_SIZE_ELEM + 1];
 WORD * pIOSyncroAreaI = &(IOSyncroAreaI[1]);
 
-#ifdef ENABLE_DEVICE_DISCONNECT
-/*Array used to dinamically enable or disable a device */
-short int device_status[prot_none_e][MAX_DEVICE_NB];
-#endif
-
 sem_t theWritingSem;
 
 const char * _protocol_map_[] =
@@ -78,9 +73,7 @@ static int blockSize = 1;
 
 int cmpSyncroCtIndex(WORD address, int CtIndex);
 int setSyncroCtIndex(WORD * address, int CtIndex);
-static void localCheckWriting(void);
 int setStatusVar(const char * varname, char Status);
-int setStatusVarBySynIndex(int SynIndex, char Status);
 
 pthread_mutex_t data_recv_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t data_send_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -122,23 +115,11 @@ size_t fillSyncroArea(void)
     int bytebitperblock = 0;
     int wordbitperblock = 0;
     int dwordbitperblock = 0;
-    int isreading = 0;
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
     int isstores = 0;
     int isstoref = 0;
     int isstorev = 0;
     int isstorex = 0;
-#endif
-
-#ifdef ENABLE_DEVICE_DISCONNECT
-    int i, j;
-    for (i = 0; i < prot_none_e; i++)
-    {
-        for (j = 0; j < MAX_DEVICE_NB; j++)
-        {
-            device_status[i][j] = -1;
-        }
-    }
 #endif
 
     fp = fopen(CROSS_TABLE, "r");
@@ -215,12 +196,6 @@ size_t fillSyncroArea(void)
                 isstorex = 1;
             }
 #endif
-            isreading = 1;
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "NORMAL ELEMENT %d [%s]\n", elem_nb, line);
-            isreading = 0;
         }
 
         /* Tag */
@@ -613,42 +588,7 @@ size_t fillSyncroArea(void)
                 return elem_nb;
             }
         }
-        /* set reading */
-        if (isreading == 1)
-        {
-            int SynIndex = 0;
-            int CtIndex = 0;
-            char blockhead[TAG_LEN] = "";
 
-            LOG_PRINT(verbose_e, "ELEMENT %d is reading\n", elem_nb);
-
-            /* check if the block or if the variable is already active */
-            if (isBlockActive(varNameArray[elem_nb].tag, blockhead) == 0)
-            {
-                /* looking the variable index from the crosstable structure */
-                /* insert it into the syncrovector */
-                if (addSyncroElement(blockhead, &CtIndex) == 0)
-                {
-                    if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
-                    {
-                        LOG_PRINT(error_e, "cannot add the block to the syncroelement\n");
-                        return elem_nb;
-                    }
-                    /* enable it in reading */
-                    SET_SYNCRO_FLAG(SynIndex, READ_MASK);
-                    LOG_PRINT(verbose_e, "Set reading flag\n");
-                }
-                else
-                {
-                    LOG_PRINT(error_e, "cannot add the block to the syncroelement\n");
-                }
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varNameArray[elem_nb].tag);
-            }
-            varNameArray[elem_nb].active = 1;
-        }
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
         if (isstores == 1)
         {
@@ -717,18 +657,6 @@ size_t fillSyncroArea(void)
 #endif
     CrossTableErrorMsg[0] = '\0';
 
-#ifdef ENABLE_DEVICE_DISCONNECT
-    /* Initialize the arrays containg the status of active devices*/
-    for(i = 1; i < elem_nb; i++)
-    {
-
-        if (setupConnectedDevice(varNameArray[i].protocol, varNameArray[i].node) == 0)
-        {
-            LOG_PRINT(verbose_e, "Activated Protocol %d, Node %d VAR '%s' device_status %d\n", varNameArray[i].protocol, varNameArray[i].node, varNameArray[i].tag, device_status[varNameArray[i].protocol][varNameArray[i].node]);
-        }
-
-    }
-#endif
     return elem_nb;
 }
 
@@ -837,78 +765,6 @@ int addSyncroElement(const char * tag, int * CtIndex)
     }
 
     return addSyncroElementbyIndex(tag, *CtIndex);
-}
-
-/**
- * @brief delete an element from the Syncro vector that have the Tag "tag" into
- * the cross-table and set the variable CtIndex with the index of the variable
- * into the cross-table
- *
- */
-int delSyncroElement(const char * tag)
-{
-    int synIndex;
-    LOG_PRINT(verbose_e, "Deleting %s\n", tag);
-    if (Tag2SynIndex(tag, &synIndex) == 0)
-    {
-        return delSyncroElementByIndex(synIndex);
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-/**
- * @brief delete the element SynIndex from the Syncro vector
- */
-int delSyncroElementByIndex(int synIndex)
-{
-    unsigned int i;
-
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_send_mutex);
-#endif
-
-    for (i = synIndex; i < SyncroAreaSize; i++)
-    {
-        pIOSyncroAreaO[i] = pIOSyncroAreaO[i + 1];
-    }
-
-    SyncroAreaSize--;
-
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&sync_send_mutex);
-#endif
-
-    return 0;
-}
-
-/**
- * @brief delete all the element into the Syncro vector
- */
-int emptySyncroElement()
-{
-    int CtIndex = 0;
-    int i;
-
-    for (i = 0; (unsigned int)i < SyncroAreaSize; i++)
-    {
-        if (SynIndex2CtIndex(i, &CtIndex) == 0)
-        {
-            if (varNameArray[CtIndex].active == 0)
-            {
-                LOG_PRINT(verbose_e, "%d - '%s'\n", CtIndex, varNameArray[CtIndex].tag);
-                delSyncroElementByIndex(i);
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "'%s' is always active\n", varNameArray[CtIndex].tag);
-            }
-        }
-    }
-
-    return 0;
 }
 
 /** @brief Compare a cross table index and a syncro element
@@ -1063,22 +919,6 @@ int readFromDb(int ctIndex, void * value)
         return -1;
     }
 
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByCtIndex(ctIndex) != 1)
-    {
-        return -1;
-    }
-#endif
-
-#if 0
-    /* fieldbus in error */
-    if (getErrorBit(varNameArray[ctIndex].protocol, error_blacklist_e, varNameArray[ctIndex].node) == 1)
-    {
-        LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
-        return -1;
-    }
-#endif
-
     int byte_nb = (ctIndex - 1) * 4;
     LOG_PRINT(verbose_e, "'%s': %X\n", varNameArray[ctIndex].tag, pIODataAreaI[byte_nb]);
     int type = CtIndex2Type(ctIndex);
@@ -1151,22 +991,6 @@ int writeToDb(int ctIndex, void * value)
         LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
         return -1;
     }
-
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByCtIndex(ctIndex) != 1)
-    {
-        return -1;
-    }
-#endif
-
-#if 0
-    /* fieldbus in error */
-    if (getErrorBit(varNameArray[ctIndex].protocol, error_blacklist_e, varNameArray[ctIndex].node) == 1)
-    {
-        LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
-        return -1;
-    }
-#endif
 
     int type = CtIndex2Type(ctIndex);
 
@@ -1244,24 +1068,6 @@ int formattedReadFromDb(int ctIndex, char * value)
         LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
         return -1;
     }
-
-#ifdef ENABLE_DEVICE_DISCONNECT
-    /* device disconnected */
-    if (isDeviceConnectedByCtIndex(ctIndex) != 1)
-    {
-        LOG_PRINT(error_e, "Device disconnected Ctindex %d\n", ctIndex);
-        return -1;
-    }
-#endif
-
-#if 0
-    /* fieldbus in error */
-    if (getErrorBit(varNameArray[ctIndex].protocol, error_blacklist_e, varNameArray[ctIndex].node) == 1)
-    {
-        LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
-        return -1;
-    }
-#endif
 
     /* be sure that the variable is active */
     int SynIndex = -1;
@@ -1462,21 +1268,6 @@ int formattedWriteToDb(int ctIndex, void * value)
             return -1;
         }
 
-#ifdef ENABLE_DEVICE_DISCONNECT
-        if (isDeviceConnectedByCtIndex(ctIndex) != 1)
-        {
-            return -1;
-        }
-#endif
-#if 0
-        /* fieldbus in error */
-        if (getErrorBit(varNameArray[ctIndex].protocol, TAG_BLACKLIST, varNameArray[ctIndex].node) == 1)
-        {
-            LOG_PRINT(error_e, "Communication error for channel '%d'\n", varNameArray[ctIndex].protocol);
-            return -1;
-        }
-
-#endif
         LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
 
         /* be sure that the variable is active */
@@ -1648,55 +1439,19 @@ void writeVarQueuedByCtIndex(void)
  */
 int writeVarByCtIndex(const int ctIndex, void * value)
 {
-    int SynIndex = 0;
-
-    if (prepareWriteVarByCtIndex(ctIndex, value, &SynIndex,1,1) == DONE || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
+    if (prepareWriteVarByCtIndex(ctIndex, value, 1, 1, 1) == DONE)
     {
-        setStatusVarBySynIndex(SynIndex, BUSY);
-
-        /* update the write flag */
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
-#endif
-        CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
-        SET_SYNCRO_FLAG(SynIndex, WRITE_MASK);
-        /*rise write interrupt*/
-        SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
         return 0;
     }
-
     return 1;
 }
 
 int writeVarByCtIndex_nowait(const int ctIndex, void * value)
 {
-    int SynIndex = 0;
-
-    if (prepareWriteVarByCtIndex(ctIndex, value, &SynIndex,0,1) == DONE || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
+    if (prepareWriteVarByCtIndex(ctIndex, value, 0, 1, 1) == DONE )
     {
-        setStatusVarBySynIndex(SynIndex, BUSY);
-
-        /* update the write flag */
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
-#endif
-        CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
-        SET_SYNCRO_FLAG(SynIndex, WRITE_MASK);
-        /*rise write interrupt*/
-        SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
         return 0;
     }
-
     return 1;
 }
 
@@ -1717,17 +1472,21 @@ int writeVar(const char * varname, void * value)
 int writePending()
 {
     unsigned int SynIndex;
+#ifdef ENABLE_MUTEX
+        pthread_mutex_lock(&sync_send_mutex);
+#endif
     for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
     {
         if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
         {
-            setStatusVarBySynIndex(SynIndex, BUSY);
             LOG_PRINT(verbose_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
-            CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
             SET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK);
             LOG_PRINT(verbose_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
         }
     }
+#ifdef ENABLE_MUTEX
+        pthread_mutex_unlock(&sync_send_mutex);
+#endif
     return 0;
 }
 
@@ -1737,19 +1496,23 @@ int writePending()
 int writePendingInorder()
 {
     unsigned int SynIndex;
+#ifdef ENABLE_MUTEX
+        pthread_mutex_lock(&sync_send_mutex);
+#endif
     for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
     {
         if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
         {
-            setStatusVarBySynIndex(SynIndex, BUSY);
             LOG_PRINT(verbose_e, "Clear the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
-            CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
             SET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK);
             LOG_PRINT(verbose_e, "Writing the RCP_WRITE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
         }
     }
     /*rise write interrupt*/
     SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
+#ifdef ENABLE_MUTEX
+        pthread_mutex_unlock(&sync_send_mutex);
+#endif
     LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
     return 0;
 }
@@ -1822,7 +1585,7 @@ char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
         }
     }
 
-    switch(prepareWriteVarByCtIndex(ctIndex, value, NULL,1,1))
+    switch(prepareWriteVarByCtIndex(ctIndex, value, 1, 1, 0))
     {
     case DONE:
         LOG_PRINT(verbose_e,"################### Prepared VAR: %s = %s\n", varNameArray[ctIndex].tag, formattedVar);
@@ -1854,10 +1617,9 @@ char prepareFormattedVar(const char * varname, char * formattedVar)
  * to perform the write request, you need to enable the write flag.
  */
 
-char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, int dowait, int formatted)
+char prepareWriteVarByCtIndex(const int ctIndex, void * value, int dowait, int formatted, int execwrite)
 {
-    int mySynIndex = 0;
-    int *pSynIndex = NULL;
+    int SynIndex = 0;
 
     if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
     {
@@ -1865,37 +1627,20 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
         return ERROR;
     }
 
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByCtIndex(ctIndex) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varNameArray[ctIndex].tag);
-        return ERROR;
-    }
-#endif
-    if (SynIndex == NULL)
-    {
-        pSynIndex = &mySynIndex;
-    }
-    else
-    {
-        pSynIndex = SynIndex;
-    }
-
     LOG_PRINT(verbose_e, "Writing '%d'\n", ctIndex);
     /* if the variable is already active, clear the reading flag */
-    if (CtIndex2SynIndex(ctIndex, pSynIndex) == 0)
+    if (CtIndex2SynIndex(ctIndex, &SynIndex) == 0)
     {
         int count = 0, still_writing = 1;
         /* waiting for the variable is not in writing mode */
         do
         {
-            if ((GET_SYNCRO_FLAG(*pSynIndex, WRITE_MASK) == 1 || pIOSyncroAreaI[*pSynIndex] == 1))
+            if ((GET_SYNCRO_FLAG(SynIndex, WRITE_MASK) == 1 || pIOSyncroAreaI[SynIndex] == 1))
             {
                 if (dowait)
                 {
                     LOG_PRINT(verbose_e, "The variable '%d' is still in writing.\n", ctIndex);
                     usleep(1000 * IOLAYER_PERIOD_ms);
-                    checkSynIndexWriting(*pSynIndex);
                     count ++;
                 }
             }
@@ -1908,9 +1653,15 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
         {
             return BUSY;
         }
-        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
-        CLR_SYNCRO_FLAG(*pSynIndex, READ_MASK);
-        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
+        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
+#ifdef ENABLE_MUTEX
+        pthread_mutex_lock(&sync_send_mutex);
+#endif
+        CLR_SYNCRO_FLAG(SynIndex);
+#ifdef ENABLE_MUTEX
+        pthread_mutex_unlock(&sync_send_mutex);
+#endif
+        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
     }
     /* if the variable is not active, active it */
     else
@@ -1920,14 +1671,14 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
             LOG_PRINT(error_e, "cannot addSyncroElement\n");
             return ERROR;
         }
-        if (CtIndex2SynIndex(ctIndex, pSynIndex) != 0)
+        if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
         {
             LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", ctIndex);
             return ERROR;
         }
     }
 
-    if (*pSynIndex < 0)
+    if (SynIndex < 0)
     {
         LOG_PRINT(error_e, "cannot extract SynIndex\n");
         return ERROR;
@@ -1951,140 +1702,23 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, i
         }
     }
 
-    LOG_PRINT(verbose_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex], ctIndex, ctIndex);
-    SET_SYNCRO_FLAG(*pSynIndex, PREPARE_MASK);
-
-    return DONE;
-}
-
-char prepareWriteVar(const char * varname, void * value, int * SynIndex)
-{
-    int CtIndex = 0;
-    if (Tag2CtIndex(varname, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
-        return -1;
-    }
-    return prepareWriteVarByCtIndex(CtIndex, value, SynIndex, 1, 1);
-}
-
-/**
- * @brief prepare all the data in order to send a write request for the variable varname
- * to perform the write request for its blockhead, you need to enable the write flag.
- */
-char prepareWriteBlock(const char * varname, void * value, int * SynIndex)
-{
-    int CtIndex = -1;
-    int mySynIndex = 0;
-    int *pSynIndex = NULL;
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        return ERROR;
-    }
+    LOG_PRINT(verbose_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",SynIndex, pIOSyncroAreaO[SynIndex], ctIndex, ctIndex);
+#ifdef ENABLE_MUTEX
+        pthread_mutex_lock(&sync_send_mutex);
 #endif
-    if (SynIndex == NULL)
-    {
-        pSynIndex = &mySynIndex;
-    }
-    else
-    {
-        pSynIndex = SynIndex;
-    }
-
-    LOG_PRINT(verbose_e, "Writing '%s'\n", varname);
-    /* if the variable is already active, clear the reading flag */
-    if (Tag2SynIndex(varname, pSynIndex) == 0)
-    {
-        if (SynIndex2CtIndex(*pSynIndex, &CtIndex) != 0)
+        if (execwrite)
         {
-            LOG_PRINT(error_e, "cannot extract ctIndex\n");
-            return ERROR;
+            SET_SYNCRO_FLAG(SynIndex, WRITE_MASK);
         }
-        /* waiting for the variable is not in writing mode */
-        int count = 0;
-        while ((GET_SYNCRO_FLAG(*pSynIndex, WRITE_MASK) == 1 ||  pIOSyncroAreaI[*pSynIndex] == 1) && count < RETRY_NB)
+        else
         {
-            LOG_PRINT(verbose_e, "The variable '%s' is still in writing.\n", varname);
-            usleep(1000 * IOLAYER_PERIOD_ms);
-            localCheckWriting();
-            count++;
+            SET_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
         }
-        if (count > RETRY_NB)
-        {
-            return BUSY;
-        }
-        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
-        CLR_SYNCRO_FLAG(*pSynIndex, READ_MASK);
-        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex]);
-    }
-    /* if the variable is not active, active it */
-    else
-    {
-        char blockhead[TAG_LEN] = "";
-        int retval;
-        retval = isBlockActive(varname, blockhead);
-        if (retval == 1)
-        {
-            LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varname);
-            if (SynIndex != NULL && Tag2SynIndex(blockhead, pSynIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract SynIndex for variable '%s'\n", varname);
-                return ERROR;
-            }
-        }
-        else if (retval == 0)
-        {
-            if (addSyncroElement(blockhead, &CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot addSyncroElement\n");
-                return ERROR;
-            }
-            if (CtIndex2SynIndex(CtIndex, pSynIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", CtIndex);
-                return ERROR;
-            }
-        }
-    }
-
-    if (SynIndex != NULL && *pSynIndex < 0)
-    {
-        LOG_PRINT(error_e, "cannot extract SynIndex for variable '%s'\n", varname);
-        return ERROR;
-    }
-
-    /* update the value into the Data area */
-    if (Tag2CtIndex(varname, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex\n");
-        return ERROR;
-    }
-    if (formattedWriteToDb(CtIndex, value) != 0)
-    {
-        LOG_PRINT(error_e, "formattedWriteToDb\n");
-        return ERROR;
-    }
-
-    LOG_PRINT(verbose_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",*pSynIndex, pIOSyncroAreaO[*pSynIndex], CtIndex, CtIndex);
-    SET_SYNCRO_FLAG(*pSynIndex, PREPARE_MASK);
+#ifdef ENABLE_MUTEX
+        pthread_mutex_unlock(&sync_send_mutex);
+#endif
 
     return DONE;
-}
-
-/**
- * @brief re-checks the write flags in queue
- */
-static void localCheckWriting(void)
-{
-    unsigned int i;
-    /* scan all the syncro array */
-    for (i = 0; i < SyncroAreaSize; i++)
-    {
-        LOG_PRINT(verbose_e, "%X vs %X (%X vs %X) %d\n", GET_SYNCRO_FLAG(i, WRITE_MASK), pIOSyncroAreaI[i], pIOSyncroAreaO[i], pIOSyncroAreaI[i], i);
-        checkSynIndexWriting(i);
-    }
 }
 
 int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
@@ -2193,65 +1827,6 @@ int setFormattedVar(const char * varname, char * formattedVar)
     return setFormattedVarByCtIndex(ctIndex, formattedVar);
 }
 
-/**
- * @brief perform a block write request
- */
-int writeBlock(const char * varname)
-{
-    int SynIndex = -1;
-    char blockhead[TAG_LEN];
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        return 1;
-    }
-#endif
-
-    /* extract the block head */
-    isBlockActive(varname, blockhead);
-
-    LOG_PRINT(verbose_e, "writing Block '%s' of variable '%s'\n", blockhead, varname);
-    /* if the variable is into syncrovector */
-    if (Tag2SynIndex(blockhead, &SynIndex) != 0)
-    {
-        int CtIndex = -1;
-        if (addSyncroElement(blockhead, &CtIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot addSyncroElement\n");
-            return 1;
-        }
-        if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", CtIndex);
-            return 1;
-        }
-    }
-    else
-    {
-        unsigned int i;
-        setStatusVarBySynIndex(SynIndex, BUSY);
-
-        /* update the write flag */
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-        SET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK);
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-        for (i = 0; i < SyncroAreaSize; i++)
-        {
-            if (GET_SYNCRO_FLAG(i, PREPARE_MASK))
-            {
-                LOG_PRINT(verbose_e, "Cleaning the PREPARE FLAG %d -> %X\n", i, pIOSyncroAreaO[i]);
-                CLR_SYNCRO_FLAG(i, PREPARE_MASK);
-                LOG_PRINT(verbose_e, "Cleaned the PREPARE FLAG %d -> %X\n", i, pIOSyncroAreaO[i]);
-            }
-        }
-        /*rise write interrupt*/
-        SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-    }
-    return 0;
-}
-
 /** @brief check if the block of variable 'varname' is already active
  * @param const char * varname : name of the variable
  * @param char * varblockhead : string where will be put the variable's block name
@@ -2344,330 +1919,52 @@ int getHeadBlockName(const char * varname, char * varblockhead)
     return getHeadBlock(CtIndex, varblockhead);
 }
 
-#ifdef ENABLE_DEVICE_DISCONNECT
-int isDeviceConnected(enum protocol_e protocol, int node)
-{
-
-    /*Broadcast address 0 must be always connected*/
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "Internal variable\n");
-        return 1;
-    }
-    if (node <= 0 || node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d)\n", node, 1, MAX_DEVICE_NB);
-        return -1;
-    }
-
-    return device_status[protocol][node]
-#if 0
-            && !getErrorBit(protocol, error_blacklist_e, node)
-#endif
-            ;
-}
-
-int disconnectDevice(enum protocol_e protocol, int node)
-{
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "internal variable\n");
-        return 0;
-    }
-    /*Broadcast address 0 cannot be disconnected*/
-    if (node <= 0 || node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d)\n", node, 1, MAX_DEVICE_NB);
-        return -1;
-    }
-    if (protocol != prot_rtu_e && protocol != prot_tcp_e && protocol != prot_tcprtu_e)
-    {
-        LOG_PRINT(error_e, "Invalid protocol %d\n",protocol);
-        return -1;
-    }
-
-    device_status[protocol][node] = 0;
-
-    /*Deactivate already active variable in syncrotable*/
-    LOG_PRINT(error_e, "################### Disconnecting %d - %d\n",protocol, node);
-
-    unsigned int i;
-    int SynIndex;
-    int CtIndex;
-    for (i = 0; i < SyncroAreaSize; i++)
-    {
-        CtIndex = (pIOSyncroAreaO[i] & ADDRESS_MASK);
-        LOG_PRINT(verbose_e, "Candidate to removal CtIndex %d - [%x]\n", CtIndex, pIOSyncroAreaO[i]);
-
-        if (! isDeviceConnectedByCtIndex(CtIndex))
-        {
-            if ( CtIndex2SynIndex(CtIndex, &SynIndex) == 0)
-            {
-                delSyncroElementByIndex(SynIndex);
-                /*When an element gets deleted the search for element to be deleted
-                  must restart from the beginning of the queu to be sure to not skip any moved up elem*/
-                i=0;
-                LOG_PRINT(verbose_e, "Deleted SynIndex %d\n", SynIndex);
-            }
-        }
-    }
-    return 0;
-}
-
-int setupConnectedDeviceByName(const char * protocol, int node)
-{
-    enum protocol_e protocol_e;
-
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "Internal variable\n");
-        return 0;
-    }
-    /*Broadcast address 0 must be always connected*/
-    if (node < 0 || node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d)\n", node, 1, MAX_DEVICE_NB);
-        return -1;
-    }
-
-    if (strcmp(protocol, TAG_RTU) == 0)
-    {
-        protocol_e = prot_rtu_e;
-    }
-    else if (strcmp(protocol, TAG_TCP) == 0)
-    {
-        protocol_e = prot_tcp_e;
-    }
-    else if (strcmp(protocol, TAG_TCPRTU) == 0)
-    {
-        protocol_e = prot_tcprtu_e;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid protocol '%s', allowed are '%s' - '%s' - '%s'\n", protocol, TAG_RTU, TAG_TCP, TAG_TCPRTU);
-        return -1;
-    }
-
-    return setupConnectedDevice(protocol_e, node);
-}
-
-int setupConnectedDevice(enum protocol_e protocol, int node)
-{
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "Internal variable\n");
-        return 0;
-    }
-    /*Broadcast address 0 must be always connected*/
-    if (node < 0 || node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d)\n", node, 1, MAX_DEVICE_NB);
-        return -1;
-    }
-
-    device_status[protocol][node] = 1;
-    return 0;
-}
-
-int connectDevice(enum protocol_e protocol, int node)
-{
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "internal variable\n");
-        return 0;
-    }
-    /*Broadcast address 0 is always connected by default*/
-    if (node <= 0 || node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d)\n", node, 1, MAX_DEVICE_NB);
-        return -1;
-    }
-    if (protocol != prot_rtu_e && protocol != prot_tcp_e && protocol != prot_tcprtu_e)
-    {
-        LOG_PRINT(error_e, "Invalid protocol %d\n",protocol);
-        return -1;
-    }
-    device_status[protocol][node] = 1;
-
-    /*Add activation of eventually disconnected variables beloging to P, S categories*/
-    int i;
-    for (i = 1; i < DB_SIZE_ELEM +1 ; i++)
-    {
-        if ((varNameArray[i].node) == node && varNameArray[i].active == 1)
-        {
-            int SynIndex = 0;
-            int CtIndex = 0;
-            char blockhead[TAG_LEN] = "";
-
-            LOG_PRINT(verbose_e, "ELEMENT %d is reading\n", i);
-
-            /* check if the block of the variable is already active */
-            if (isBlockActive(varNameArray[i].tag, blockhead) == 0)
-            {
-                /* looking the variable index from the crosstable structure */
-                /* insert it into the syncrovector */
-                if (addSyncroElement(blockhead, &CtIndex) == 0)
-                {
-                    if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
-                    {
-                        LOG_PRINT(error_e, "cannot add the block to the syncroelement\n");
-                        /*failed reconnection*/
-                        return 1;
-                    }
-                    /* enable it in reading */
-                    SET_SYNCRO_FLAG(SynIndex, READ_MASK);
-                    LOG_PRINT(verbose_e, "Set reading flag\n");
-                }
-                else
-                {
-                    LOG_PRINT(error_e, "cannot add the block to the syncroelement\n");
-                }
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varNameArray[i].tag);
-            }
-        }
-    }
-    /*Add activation for page activated variables*/
-    DeviceReconnected = 1;
-    /*ok*/
-    return 0;
-}
-
-int disconnectDeviceByVarname(const char * varname)
-{
-    int CtIndex;
-
-    if (varname[0] == '\0')
-    {
-        LOG_PRINT(error_e, "'%s' Empty variable\n", varname);
-        return -1;
-    }
-
-    if (Tag2CtIndex(varname, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
-        return -1;
-    }
-    return disconnectDevice(varNameArray[CtIndex].protocol, varNameArray[CtIndex].node);
-}
-
-int connectDeviceByVarname(const char * varname)
-{
-    int CtIndex;
-
-    if (varname[0] == '\0')
-    {
-        LOG_PRINT(error_e, "'%s' Empty variable\n", varname);
-        return -1;
-    }
-
-    if (Tag2CtIndex(varname, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
-        return -1;
-    }
-
-    return connectDevice(varNameArray[CtIndex].protocol, varNameArray[CtIndex].node);
-}
-
-int isDeviceConnectedByVarname(const char * varname)
-{
-    int CtIndex;
-
-    if (varname[0] == '\0')
-    {
-        LOG_PRINT(error_e, "'%s' Empty variable\n", varname);
-        return -1;
-    }
-
-    if (Tag2CtIndex(varname, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "'%s' not found into DataVector - Ctindex %d\n", varname, CtIndex);
-        return -1;
-    }
-    if (varNameArray[CtIndex].node <= 0 || varNameArray[CtIndex].node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d for variable '%s' [%d])\n", varNameArray[CtIndex].node, 1, MAX_DEVICE_NB, varNameArray[CtIndex].tag, CtIndex);
-        return -1;
-    }
-
-    return isDeviceConnected(varNameArray[CtIndex].protocol, varNameArray[CtIndex].node);
-}
-
-int isDeviceConnectedByCtIndex(int CtIndex)
-{
-    if(CtIndex < 0 || CtIndex > DB_SIZE_ELEM )
-    {
-        LOG_PRINT(error_e, "invalid CtIndex %d.\n", CtIndex);
-        return -1;
-    }
-    if (varNameArray[CtIndex].node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "Internal variable\n");
-        return 1;
-    }
-    if (varNameArray[CtIndex].node <= 0 || varNameArray[CtIndex].node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d for variable '%s' [%d])\n", varNameArray[CtIndex].node, 1, MAX_DEVICE_NB, varNameArray[CtIndex].tag, CtIndex);
-        return -1;
-    }
-    return isDeviceConnected(varNameArray[CtIndex].protocol, varNameArray[CtIndex].node);
-}
-#endif
-
 /**
  * @brief comunicate to the communicatuion PLC that this variable must be read untill the page is active
  */
 int activateVar(const char * varname)
 {
-    int SynIndex = 0;
-    int CtIndex = 0;
-    char blockhead[TAG_LEN] = "";
-    int retval;
+    int CtIndex;
+    int found = 0;
+    int i;
 
-    LOG_PRINT(verbose_e, "Activating '%s'\n", varname);
-
-#if 0
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
+    if (varname[0] == '\0')
     {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
+        LOG_PRINT(error_e, "'%s' Empty variable\n", varname);
         return 1;
     }
-#endif
-#endif
-    /* check if the block of the variable is already active */
-    retval = isBlockActive(varname, blockhead);
-    if (retval == 1)
+    if (Tag2CtIndex(varname, &CtIndex) != 0)
     {
-        LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", varname);
-        return 0;
+        LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
+        return 1;
     }
-    else if (retval == 0)
+    if (varNameArray[CtIndex].blockhead != CtIndex)
     {
-        /* looking the variable index from the crosstable structure */
-        /* insert it into the syncrovector */
-        if (addSyncroElement(blockhead, &CtIndex) == 0)
+        LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
+        return 1;
+    }
+#ifdef ENABLE_MUTEX
+    pthread_mutex_lock(&sync_send_mutex);
+#endif
+    for (i = 0; i < SyncroAreaSize; i++)
+    {
+        if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 &&
+            GET_SYNCRO_FLAG(i, READ_MASK) == 1 )
         {
-            if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", CtIndex);
-                return 1;
-            }
-            LOG_PRINT(verbose_e, "Set reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-            /* enable it in reading */
-            SET_SYNCRO_FLAG(SynIndex, READ_MASK);
-            //			varNameArray[CtIndex].pageid = pageid;
-            LOG_PRINT(verbose_e, "Set reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-            varNameArray[CtIndex].visible = 1;
-            return 0;
+            found = 1;
+            break;
         }
-        LOG_PRINT(error_e, "cannot Activate '%s'\n", varname);
     }
-    LOG_PRINT(error_e, "IMPOSSIBLE RET VALUE '%d'\n", retval);
-    return 1;
+    if (! found) {
+        setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), CtIndex);
+        SET_SYNCRO_FLAG(SyncroAreaSize, READ_MASK);
+        SyncroAreaSize++;
+        varNameArray[CtIndex].visible = 1;
+    }
+#ifdef ENABLE_MUTEX
+    pthread_mutex_unlock(&sync_send_mutex);
+#endif
+    return 0;
 }
 
 /**
@@ -2675,50 +1972,43 @@ int activateVar(const char * varname)
  */
 int deactivateVar(const char * varname)
 {
-    char blockhead[TAG_LEN] = "";
-    int retval;
+    int CtIndex;
+    int retval = 1;
+    int i;
 
-#if 0
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) == 1)
-#endif
-#endif
+    if (varname[0] == '\0')
     {
-        /* check if the block of the variable is already active */
-        retval = isBlockActive(varname, blockhead);
-        if (retval == 0)
-        {
-            LOG_PRINT(verbose_e, "The variable '%s' come from a block already inactive\n", varname);
-            return 0;
-        }
-        else if (retval == 1)
-        {
-
-            LOG_PRINT(verbose_e, "Deactivating block '%s' cause variable '%s' is deactivated\n", blockhead, varname);
-            /* looking and delete the variable from the syncrotable */
-            if (delSyncroElement(blockhead) == 0)
-            {
-#if 0
-                for (i = 0; i < DB_SIZE_ELEM; i++)
-                {
-                    if (Tag2CtIndex(varname, &CtIndex) == 0)
-                    {
-                        varNameArray[CtIndex].pageid = 0;
-                    }
-                }
-#endif
-                int CtIndex = -1;
-                if (Tag2CtIndex(varname, &CtIndex) != 0)
-                {
-                    return 1;
-                }
-                varNameArray[CtIndex].visible = 0;
-                return 0;
-            }
-        }
-        return 1;
+        LOG_PRINT(error_e, "'%s' Empty variable\n", varname);
+        return retval;
     }
-    return 1;
+    if (Tag2CtIndex(varname, &CtIndex) != 0)
+    {
+        LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
+        return retval;
+    }
+    if (varNameArray[CtIndex].blockhead != CtIndex)
+    {
+        LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
+        return retval;
+    }
+#ifdef ENABLE_MUTEX
+    pthread_mutex_lock(&sync_send_mutex);
+#endif
+    for (i = 0; i < SyncroAreaSize; i++)
+    {
+        if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 &&
+            GET_SYNCRO_FLAG(i, READ_MASK) == 1 )
+        {
+            CLR_SYNCRO_FLAG(i);
+            varNameArray[CtIndex].visible = 0;
+            retval = 0;
+            break;
+        }
+    }
+#ifdef ENABLE_MUTEX
+    pthread_mutex_unlock(&sync_send_mutex);
+#endif
+    return retval;
 }
 
 /**
@@ -2739,89 +2029,33 @@ char getStatusVarByCtIndex(int CtIndex, char * msg)
         Status = ERROR;
         return Status;
     }
-#ifndef CHECK_SYNCRO
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_recv_mutex);
-#endif
-#else
-    int SynIndex;
-    /* get the variable address from syncrovector*/
-    if (CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
-    {
-        /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
-        myCtIndex = varNameArray[CtIndex].blockhead;
-        if (CtIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
-        {
-            Status = ERROR;
-            LOG_PRINT(error_e, "The variable %d - %s is not active.\n", myCtIndex, varNameArray[myCtIndex].tag);
-            if (msg != NULL)
-            {
-                strcpy(msg, VAR_UNKNOWN);
-            }
-            return Status;
-        }
-    }
-    /* force a status vector update before read the status */
-    checkSynIndexWriting(SynIndex);
 
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_recv_mutex);
-#endif
-
-    /* check if is still in read or write */
-    if (pIOSyncroAreaI[SynIndex] == 1 /* busy write */|| pIOSyncroAreaI[SynIndex] == 2 /* busy read */)
+    Status = pIODataStatusAreaI[myCtIndex];
+    if (Status == DONE)
     {
-        Status = BUSY;
-        //LOG_PRINT(error_e, "CtIndex '%d' SynIndex '%d' Syncro %c BUSY\n", myCtIndex, SynIndex, pIOSyncroAreaI[SynIndex]);
+        LOG_PRINT(verbose_e, "CtIndex '%d' Status %d DONE\n", myCtIndex, Status);
         if (msg != NULL)
         {
-            strcpy(msg, VAR_PROGRESS);
+            strcpy(msg, "");
         }
     }
-    else if (GET_SYNCRO_FLAG(SynIndex, WRITE_MASK) == 1 || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK) == 1 || GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK) == 1)
+    else if (Status == ERROR)
     {
-        Status = BUSY;
-        //LOG_PRINT(error_e, "CtIndex '%d' SynIndex '%d' Syncro %c BUSY\n", myCtIndex, SynIndex, pIOSyncroAreaI[SynIndex]);
+        LOG_PRINT(error_e, "CtIndex '%d' Status %d ERROR\n", myCtIndex, Status);
         if (msg != NULL)
         {
-            strcpy(msg, VAR_PROGRESS);
+            strcpy(msg, VAR_COMMUNICATION);
         }
     }
-    /* the variable is not into the syncro vector */
     else
-#endif
     {
-        Status = pIODataStatusAreaI[myCtIndex];
-        if (Status == DONE)
+        LOG_PRINT(error_e, "CtIndex '%d' Status %d UNKNOWN\n", myCtIndex, Status);
+        Status = ERROR;
+        if (msg != NULL)
         {
-            LOG_PRINT(verbose_e, "CtIndex '%d' Status %d DONE\n", myCtIndex, Status);
-            if (msg != NULL)
-            {
-                strcpy(msg, "");
-            }
-        }
-        else if (Status == ERROR)
-        {
-            LOG_PRINT(error_e, "CtIndex '%d' Status %d ERROR\n", myCtIndex, Status);
-            if (msg != NULL)
-            {
-                strcpy(msg, VAR_COMMUNICATION);
-            }
-        }
-        else
-        {
-            LOG_PRINT(error_e, "CtIndex '%d' Status %d UNKNOWN\n", myCtIndex, Status);
-            Status = ERROR;
-            if (msg != NULL)
-            {
-                strcpy(msg, VAR_UNKNOWN);
-            }
+            strcpy(msg, VAR_UNKNOWN);
         }
     }
-
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&sync_recv_mutex);
-#endif
 
     return Status;
 }
@@ -2859,677 +2093,6 @@ int setStatusVar(const char * varname, char Status)
 }
 
 /**
- * @brief set the actual status.
- * The status could be:
- * - ERROR:  error flag is set to 1
- * - DONE:   error flag is set to 0
- * - BUSY:   error flag is set to 0
- */
-int setStatusVarBySynIndex(int SynIndex, char Status)
-{
-    int CtIndex;
-    int retval = 0;
-
-    /* get the variable address from syncrovector */
-    if (SynIndex2CtIndex(SynIndex, &CtIndex) == 0)
-    {
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
-#endif
-        pIODataStatusAreaO[CtIndex] = Status;
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
-        LOG_PRINT(verbose_e, "Status '%d' is '%c'\n", CtIndex, Status);
-        retval = 0;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "cannot set the status '%c' the variable '%d'\n", Status, CtIndex);
-        retval = 1;
-    }
-    return retval;
-}
-
-int getString(const char* varname, int size, char * string)
-{
-    int ctIndex = -1;
-    unsigned short value;
-    int i;
-#if 0
-    if (getFormattedVar(varname, &value) == false)
-    {
-        LOG_PRINT(error_e, "cannot read the variable '%s'\n", varname);
-        return false;
-    }
-#else
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        return 1;
-    }
-#endif
-
-    if (Tag2CtIndex(varname, &ctIndex) != 0)
-    {
-        return 1;
-    }
-
-    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
-
-    if (varNameArray[ctIndex].decimal > 0)
-    {
-        LOG_PRINT(error_e, "Invalid type\n");
-        return 1;
-    }
-    if(CtIndex2Type(ctIndex) == uintab_e || CtIndex2Type(ctIndex) == uintba_e)
-    {
-        if (readFromDb(ctIndex, &value) != 0)
-        {
-            LOG_PRINT(error_e, "readFromDb\n");
-            return 1;
-        }
-        switch (getStatusVarByCtIndex(ctIndex, NULL))
-        {
-        case BUSY:
-            break;
-        case ERROR:
-            return 1;
-            break;
-        case DONE:
-            break;
-        default:
-            return 1;
-            break;
-        }
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid type\n");
-        return 1;
-    }
-
-#endif
-    LOG_PRINT(verbose_e, "get var name '%s' size %d\n", varname, size);
-    if (Tag2CtIndex(varname, &ctIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex for variable %s\n", varname);
-        return 1;
-    }
-    for (i = 0; i < size; i++)
-    {
-        if (i%2==0)
-        {
-            if (readFromDb(ctIndex, &value) != 0)
-            {
-                LOG_PRINT(error_e, "cannot read the variable at ctIndex %d\n", ctIndex);
-                return 1;
-            }
-            LOG_PRINT(verbose_e, "%d value[%d] = %d\n",ctIndex, i, value);
-            string[i] = value & 0xFF;
-            string[i+1] = (value >> 8) & 0xFF;
-            ctIndex++;
-        }
-    }
-    string[size]='\0';
-    LOG_PRINT(verbose_e, "get string '%s'\n", string);
-    return 0;
-}
-
-int setString(const char* varname, int size, char * string)
-{
-    char tag[TAG_LEN];
-    int ctIndex = -1;
-    unsigned short value;
-    int i;
-
-    if (Tag2CtIndex(varname, &ctIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex for variable %s\n", varname);
-        return 1;
-    }
-
-    for (i = 0; i < size; i++)
-    {
-        if (i%2==0)
-        {
-            if (CtIndex2Tag(ctIndex, tag) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract tag name from variable at ctIndex %d\n", ctIndex);
-                return 1;
-            }
-            value = (string[i] | (string[i+1] << 8));
-            LOG_PRINT(verbose_e, "'%c' '%c' -> %x %x -> %x\n", string[i], string[i+1], string[i], string[i+1], value);
-            if (prepareWriteBlock(tag, &value, NULL) != DONE)
-            {
-                LOG_PRINT(error_e, "cannot prepare the write value into variable %s\n", tag);
-                return 1;
-            }
-            ctIndex++;
-        }
-    }
-    if (writeBlock(varname) != 0)
-    {
-        LOG_PRINT(error_e, "cannot perform the write of the block %s\n", varname);
-        return 0;
-    }
-    LOG_PRINT(verbose_e, "set string '%s'\n", string);
-    return 0;
-}
-
-int deleteUnusedSynIndex(int SynIndex)
-{
-    int CtIndex = -1;
-    /* if the element is not yet active, delete it */
-    if (
-            GET_SYNCRO_FLAG(SynIndex, WRITE_MASK)     == 0  && GET_SYNCRO_FLAG(SynIndex, READ_MASK)            == 0 &&
-            GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK)   == 0  && GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK)     == 0 &&
-            GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK) == 0  && GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_RCP_MASK) == 0 &&
-            pIOSyncroAreaI[SynIndex] == 0
-            )
-    {
-        CtIndex = (pIOSyncroAreaO[SynIndex] & ADDRESS_MASK);
-        LOG_PRINT(verbose_e, "The variable %d CtIndex %d state is READ %d WRITE %d PREPARE %d MULTI_WRITE %d WRITE_RCP  %d pIOSyncroAreaI[%d] %d\n",
-                  SynIndex,
-                  CtIndex,
-                  GET_SYNCRO_FLAG(SynIndex, READ_MASK),
-                  GET_SYNCRO_FLAG(SynIndex, WRITE_MASK),
-                  GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK),
-                  GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK),
-                  GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK),
-                  SynIndex,
-                  pIOSyncroAreaI[SynIndex]);
-        LOG_PRINT(verbose_e, "Clear the write flag for the variable '%s' WRITE_MASK %d SyncroArea %X - %X index: %d CT %d\n", varNameArray[CtIndex].tag, GET_SYNCRO_FLAG(SynIndex, WRITE_MASK), pIOSyncroAreaI[SynIndex], *(unsigned char *)(&(pIOSyncroAreaI[SynIndex])), SynIndex, CtIndex);
-        if (CtIndex < 0 || CtIndex > DB_SIZE_ELEM)
-        {
-            LOG_PRINT(error_e, "Invalid CtIndex = %d for variable '%s'.\n", CtIndex, varNameArray[CtIndex].tag);
-            LOG_PRINT(verbose_e, "Clean the inactive variable %d\n", SynIndex);
-            delSyncroElementByIndex(SynIndex);
-            return 1;
-        }
-        else
-        {
-            /* if is 'S' variable, if is 'P' variable, if it is enabled into the actual page, set the reading flag */
-            if (
-        #if (MIR_REG_NB + MIR_BIT_NB)
-                    (CtIndex * 4 > MIR_REG_BASE_BYTE && CtIndex * 4 < MIR_REG_BASE_BYTE + MIR_REG_SIZE_BYTE) ||
-        #endif
-                    varNameArray[CtIndex].visible == 1 ||
-                    varNameArray[CtIndex].active == 1
-                    )
-            {
-                //delSyncroElementByIndex(SynIndex);
-                //activateVar(varNameArray[CtIndex].tag);
-                char blockhead[TAG_LEN];
-                /* if it is a variable in a block already active, remove it from the queue */
-                if (isBlockActiveByCtIndex(CtIndex, blockhead) && strcmp(blockhead, varNameArray[CtIndex].tag) != 0)
-                {
-                    delSyncroElementByIndex(SynIndex);
-                    LOG_PRINT(verbose_e, "DELETE SYNINDEX %d\n", SynIndex);
-                }
-                /* if it isn't a variable into a block or if it is a head block, reactivate it */
-                else
-                {
-                    LOG_PRINT(verbose_e, "Set the read flag for the variable head '%s' var '%s'\n", blockhead, varNameArray[CtIndex].tag);
-                    SET_SYNCRO_FLAG(SynIndex, READ_MASK);
-                    LOG_PRINT(verbose_e, "Set the read flag for the variable '%s'\n", varNameArray[CtIndex].tag);
-                }
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "Clean the inactive variable %d\n", SynIndex);
-                delSyncroElementByIndex(SynIndex);
-                return 0;
-            }
-        }
-    }
-    return 0;
-}
-
-void checkTagWriting(const char * varname)
-{
-    int SynIndex;
-
-    if (strlen(varname) == 0)
-    {
-        LOG_PRINT(error_e, "empty variable '%s'\n", varname);
-        return;
-    }
-
-    if (Tag2SynIndex(varname, &SynIndex) != 0)
-    {
-        char blockhead[TAG_LEN] = "";
-        isBlockActive(varname, blockhead);
-        if (Tag2SynIndex(blockhead, &SynIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot find the Syn index of variable '%s'\n", varname);
-            return;
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "the variable '%s' is a variable of the block '%s'\n", varname, blockhead);
-        }
-    }
-    // The return value does not need to be checked it is needed by checkwriting when looping on the whole syncro area
-    checkSynIndexWriting(SynIndex);
-}
-
-#if 0
-unsigned short int getCommunicationEngineMainRevision(void)
-{
-    unsigned short int value;
-    GET_WORD_FROM_WORD(value, IOSyncroAreaI, PLC_MAIN_REV);
-    LOG_PRINT_NO_INFO(verbose_e, "@@@@@@@@@@@ Main Revision VALUE: .%X.  \n",  value );
-
-    return value;
-}
-
-unsigned short int getCommunicationEngineMinorRevision(void)
-{
-    unsigned short int value;
-
-    GET_WORD_FROM_WORD(value, IOSyncroAreaI, PLC_MINOR_REV);
-    LOG_PRINT_NO_INFO(verbose_e, "@@@@@@@@@@@ Minor Revision VALUE: .%X.  \n",  value );
-
-    return value;
-}
-
-int resetError(enum protocol_e protocol)
-{
-    if(protocol == prot_rtu_e)
-    {
-        SET_WORD_FROM_WORD(RESET_ERROR_ON, IOSyncroAreaO, RESET_RTU_ERROR);
-        return 0;
-    }
-    else if(protocol == prot_tcp_e)
-    {
-        SET_WORD_FROM_WORD(RESET_ERROR_ON, IOSyncroAreaO, RESET_TCP_ERROR);
-        return 0;
-    }
-    else if(protocol == prot_tcprtu_e)
-    {
-        SET_WORD_FROM_WORD(RESET_ERROR_ON, IOSyncroAreaO, RESET_TCPRTU_ERROR);
-        return 0;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Unrecognized error reset command\n");
-        return 1;
-    }
-}
-
-int resetErrorByName(const char *protocol)
-{
-    enum protocol_e protocol_e;
-
-    if (strcmp(protocol, TAG_RTU) == 0)
-    {
-        protocol_e = prot_rtu_e;
-    }
-    else if (strcmp(protocol, TAG_TCP) == 0)
-    {
-        protocol_e = prot_tcp_e;
-    }
-    else if (strcmp(protocol, TAG_TCPRTU) == 0)
-    {
-        protocol_e = prot_tcprtu_e;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid protocol '%s', allowed are '%s' - '%s' - '%s'\n", protocol, TAG_RTU, TAG_TCP, TAG_TCPRTU);
-        return -1;
-    }
-
-    return resetError(protocol_e);
-}
-
-short int getErrorCounter(enum protocol_e protocol, int node)
-{
-    short int value;
-
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "internal variable\n");
-        return 0;
-    }
-
-    if (node <= 0 || node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d)\n", node, 1, MAX_DEVICE_NB);
-        return -1;
-    }
-
-    if(protocol == prot_rtu_e)
-    {
-        GET_WORD_FROM_WORD(value, IOSyncroAreaI, (COUNTER_RTU_ERROR + (node  * 2 ) ) );
-        return value;
-    }
-    else if(protocol == prot_tcp_e)
-    {
-        GET_WORD_FROM_WORD(value, IOSyncroAreaI, (COUNTER_TCP_ERROR + (node * 2 ) ) );
-        return value;
-    }
-    else if(protocol == prot_tcprtu_e)
-
-    {
-        GET_WORD_FROM_WORD(value, IOSyncroAreaI, (COUNTER_TCPRTU_ERROR + (node  * 2 ) ) );
-        return value;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid protocol, allowed are '%s - %s - %s'\n", TAG_RTU, TAG_TCP, TAG_TCPRTU);
-        return -1;
-    }
-}
-
-short int getErrorCounterByName(const char *protocol, int node)
-{
-    enum protocol_e protocol_e;
-
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "internal variable\n");
-        return 0;
-    }
-
-    if (node <= 0 || node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid node number %d (%d-%d)\n", node, 1, MAX_DEVICE_NB);
-        return -1;
-    }
-
-    if (strcmp(protocol, TAG_RTU) == 0)
-    {
-        protocol_e = prot_rtu_e;
-    }
-    else if (strcmp(protocol, TAG_TCP) == 0)
-    {
-        protocol_e = prot_tcp_e;
-    }
-    else if (strcmp(protocol, TAG_TCPRTU) == 0)
-    {
-        protocol_e = prot_tcprtu_e;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid protocol '%s', allowed are '%s' - '%s' - '%s'\n", protocol, TAG_RTU, TAG_TCP, TAG_TCPRTU);
-        return -1;
-    }
-
-    return getErrorCounter(protocol_e, node);
-}
-
-short int getErrorStatus(enum protocol_e protocol, enum error_kind_e kind)
-{
-    short int value;
-
-    if(protocol == prot_rtu_e)
-    {
-        if(kind == error_blacklist_e)
-        {
-            GET_WORD_FROM_WORD(value, IOSyncroAreaI, BLACKLIST_RTU_ERROR_WORD );
-        }
-        else if(kind == error_other_e)
-        {
-            GET_WORD_FROM_WORD(value, IOSyncroAreaI, OTHER_RTU_ERROR_WORD );
-        }
-        else
-        {
-            LOG_PRINT(error_e, "Invalid kind of error. Allowed are '%s' - '%s'\n", TAG_BLACKLIST, TAG_OTHER);
-            return -1;
-        }
-        return value;
-    }
-    else if(protocol == prot_tcp_e)
-    {
-        if(kind == error_blacklist_e)
-        {
-            GET_WORD_FROM_WORD(value, IOSyncroAreaI, BLACKLIST_TCP_ERROR_WORD );
-        }
-        else if(kind == error_other_e)
-        {
-            GET_WORD_FROM_WORD(value, IOSyncroAreaI, OTHER_TCP_ERROR_WORD );
-        }
-        else
-        {
-            LOG_PRINT(error_e, "Invalid kind of error. Allowed are '%s' - '%s'\n", TAG_BLACKLIST, TAG_OTHER);
-            return -1;
-        }
-    }
-    else if(protocol == prot_tcprtu_e)
-    {
-        if(kind == error_blacklist_e)
-        {
-            GET_WORD_FROM_WORD(value, IOSyncroAreaI, BLACKLIST_TCPRTU_ERROR_WORD );
-        }
-        else if(kind == error_other_e)
-        {
-            GET_WORD_FROM_WORD(value, IOSyncroAreaI, OTHER_TCPRTU_ERROR_WORD );
-        }
-        else
-        {
-            LOG_PRINT(error_e, "Invalid kind of error. Allowed are '%s' - '%s'\n", TAG_BLACKLIST, TAG_OTHER);
-            return -1;
-        }
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid protocol. Allowed are '%s' - '%s' - '%s'\n", TAG_RTU, TAG_TCP, TAG_TCPRTU);
-        return -1;
-    }
-    return 0;
-}
-
-short int getErrorStatusByName(const char *protocol, const char *kind)
-{
-    enum error_kind_e kind_e;
-    enum protocol_e protocol_e;
-
-    if (strcmp(kind, TAG_BLACKLIST) == 0)
-    {
-        kind_e = error_blacklist_e;
-    }
-    else if (strcmp(kind, TAG_OTHER) == 0)
-    {
-        kind_e = error_other_e;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid kind of error '%s', allowed are '%s' - '%s'\n", protocol, TAG_BLACKLIST, TAG_OTHER);
-        return -1;
-    }
-
-    if (strcmp(kind, TAG_RTU) == 0)
-    {
-        protocol_e = prot_rtu_e;
-    }
-    else if (strcmp(kind, TAG_TCP) == 0)
-    {
-        protocol_e = prot_tcp_e;
-    }
-    else if (strcmp(kind, TAG_TCPRTU) == 0)
-    {
-        protocol_e = prot_tcprtu_e;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid protocol '%s', allowed are '%s' - '%s' - '%s'\n", protocol, TAG_RTU, TAG_TCP, TAG_TCPRTU);
-        return -1;
-    }
-
-    return getErrorStatus(protocol_e, kind_e);
-}
-
-short int getErrorBit(enum protocol_e protocol, enum error_kind_e kind, int node)
-{
-    int value;
-
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "internal variable\n");
-        return 0;
-    }
-    if (node <= 0 || node > MAX_DEVICE_NB)
-    {
-        LOG_PRINT(error_e, "Invalid NodeId %d [%d:%d]\n", node, 0, MAX_DEVICE_NB);
-        return -1;
-    }
-
-    switch(protocol)
-    {
-    case prot_rtu_e:
-        if(kind == error_blacklist_e)
-        {
-            if (node < MAX_DEVICE_NB/2 )
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, BLACKLIST_RTU_BIT_ERROR);
-                LOG_PRINT(verbose_e,"BLACKLIST LOW DWORD 0x%x BIT %d\n", value, node - 1);
-                return (short int)(GET_FLAG(value, (node - 1)));
-            }
-            else
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, (BLACKLIST_RTU_BIT_ERROR + SYNCRO_EXCHANGE_DWORD_SIZE) );
-                LOG_PRINT(verbose_e,"BLACKLIST HIGH DWORD 0x%x BIT %d\n", value, node - MAX_DEVICE_NB/2 - 1);
-                return (short int)(GET_FLAG(value, (node - MAX_DEVICE_NB/2 - 1)));
-            }
-        }
-        else
-        {
-            if (node < MAX_DEVICE_NB/2 )
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, OTHER_RTU_BIT_ERROR  );
-                LOG_PRINT(verbose_e,"COMM LOW DWORD 0x%x\n", value);
-                return (short int)(GET_FLAG(value, (node - 1)));
-            }
-            else
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, (OTHER_RTU_BIT_ERROR + SYNCRO_EXCHANGE_DWORD_SIZE) );
-                LOG_PRINT(verbose_e,"COMM HIGH DWORD 0x%x\n", value);
-                return (short int)(GET_FLAG(value, (node - MAX_DEVICE_NB/2 - 1 )));
-            }
-        }
-        break;
-    case prot_tcp_e:
-        if(kind == error_blacklist_e)
-        {
-            if (node < MAX_DEVICE_NB/2 )
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, BLACKLIST_TCP_BIT_ERROR  );
-                return (short int)(GET_FLAG(value, (node - 1)));
-            }
-            else
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, (BLACKLIST_TCP_BIT_ERROR + SYNCRO_EXCHANGE_DWORD_SIZE) );
-                return (short int)(GET_FLAG(value, (node - MAX_DEVICE_NB/2 - 1)));
-            }
-        }
-        else
-        {
-            if (node < MAX_DEVICE_NB/2 )
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, OTHER_TCP_BIT_ERROR  );
-                return (short int)(GET_FLAG(value, (node - 1)));
-            }
-            else
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, (OTHER_TCP_BIT_ERROR + SYNCRO_EXCHANGE_DWORD_SIZE) );
-                return (short int)(GET_FLAG(value, (node - MAX_DEVICE_NB/2 - 1)));
-            }
-        }
-        break;
-    case prot_tcprtu_e:
-        if(kind == error_blacklist_e)
-        {
-            if (node < MAX_DEVICE_NB/2 )
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, BLACKLIST_TCPRTU_BIT_ERROR  );
-                return (short int)(GET_FLAG(value, (node - 1)));
-            }
-            else
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, (BLACKLIST_TCPRTU_BIT_ERROR + SYNCRO_EXCHANGE_DWORD_SIZE) );
-                return (short int)(GET_FLAG(value, (node - MAX_DEVICE_NB/2 - 1)));
-            }
-        }
-        else
-        {
-            if (node < MAX_DEVICE_NB/2 )
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, OTHER_TCPRTU_BIT_ERROR  );
-                return (short int)(GET_FLAG(value, (node - 1)));
-            }
-            else
-            {
-                GET_DWORD_FROM_WORD(value, IOSyncroAreaI, (OTHER_TCPRTU_BIT_ERROR + SYNCRO_EXCHANGE_DWORD_SIZE) );
-                return (short int)(GET_FLAG(value, (node - MAX_DEVICE_NB/2 - 1)));
-            }
-        }
-        break;
-    case prot_none_e:
-        LOG_PRINT(verbose_e, "Internal variable\n");
-        return 0;
-        break;
-    default:
-        LOG_PRINT(error_e, "Invalid protocol '%d', allowed are '%s' - '%s' - '%s'\n", protocol, TAG_RTU, TAG_TCP, TAG_TCPRTU);
-        return -1;
-        break;
-    }
-}
-
-short int getErrorBitByName(const char *protocol, const char *kind, int node)
-{
-    enum error_kind_e kind_e;
-    enum protocol_e protocol_e;
-
-    if (node == INTERNAL_VARIABLE_FAKE_NODEID)
-    {
-        LOG_PRINT(verbose_e, "internal variable\n");
-        return 0;
-    }
-
-    if ((node <= 0 || node > MAX_DEVICE_NB) )
-    {
-        LOG_PRINT(error_e, "Requested error bit does not exist. Allowed nodes are %d (%d-%d)\n", node, 1, MAX_DEVICE_NB);
-        return -1;
-    }
-
-    if (strcmp(kind, TAG_BLACKLIST) == 0)
-    {
-        kind_e = error_blacklist_e;
-    }
-    else if (strcmp(kind, TAG_OTHER) == 0)
-    {
-        kind_e = error_other_e;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid kind of error '%s', allowed are '%s' - '%s'\n", protocol, TAG_BLACKLIST, TAG_OTHER);
-        return -1;
-    }
-
-    if (strcmp(kind, TAG_RTU) == 0)
-    {
-        protocol_e = prot_rtu_e;
-    }
-    else if (strcmp(kind, TAG_TCP) == 0)
-    {
-        protocol_e = prot_tcp_e;
-    }
-    else if (strcmp(kind, TAG_TCPRTU) == 0)
-    {
-        protocol_e = prot_tcprtu_e;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "Invalid protocol '%s', allowed are '%s' - '%s' - '%s'\n", protocol, TAG_RTU, TAG_TCP, TAG_TCPRTU);
-        return -1;
-    }
-
-    return getErrorBit(protocol_e, kind_e,  node);
-}
-#endif
-/**
  * @brief check the syncro data input to verify if all pending recipe write are finished.
  *
  */
@@ -3550,141 +2113,38 @@ int checkRecipeWriting(void)
 
     return ((active_writing ) ? 1 : 0 );
 }
-/**
- * @brief clean the syncro data for all pending write recipe requests.
- *
- */
-void cleanRecipeWriting(void)
-{
-    unsigned int i;
-
-    for (i = 0; i < SyncroAreaSize; i++)
-    {
-        LOG_PRINT(verbose_e, "%X vs %X (%X vs %X) %d\n", GET_SYNCRO_FLAG(i, WRITE_RCP_MASK), pIOSyncroAreaI[i], pIOSyncroAreaO[i], pIOSyncroAreaI[i], i);
-
-        if ( GET_SYNCRO_FLAG(i, WRITE_RCP_MASK) == 1 )
-        {
-            delSyncroElementByIndex(i);
-        }
-    }
-
-}
-
-int checkSynIndexWriting(int SynIndex)
-{
-    int write_pending = 0;
-    int CtIndex = -1;
-
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_recv_mutex);
-#endif
-    /* if the element is not yet active, delete it */
-    if (
-            GET_SYNCRO_FLAG(SynIndex, WRITE_MASK)     == 0  && GET_SYNCRO_FLAG(SynIndex, READ_MASK)            == 0 &&
-            GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK)   == 0  && GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK)     == 0 &&
-            GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK) == 0  && GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_RCP_MASK) == 0 &&
-            pIOSyncroAreaI[SynIndex] == 0
-            )
-    {
-    }
-    else if (
-             GET_SYNCRO_FLAG(SynIndex, WRITE_MASK)       == 1 ||
-             GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK)   == 1 ||
-             GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK)     == 1 ||
-             GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK) == 1
-             )
-    {
-        CtIndex = (pIOSyncroAreaO[SynIndex] & ADDRESS_MASK);
-        if(	GET_SYNCRO_FLAG(SynIndex, WRITE_MASK)       == 1 ||
-                GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK)   == 1 ||
-                GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK) == 1
-                )
-        {
-            write_pending = 1;
-        }
-        LOG_PRINT(verbose_e, "The variable %d CtIndex %d is still active READ %d WRITE %d PREPARE %d MULTI_WRITE %d WRITE_RCP  %d pIOSyncroAreaI[%d] %d write_pending '%d'\n",
-                  SynIndex,
-                  CtIndex,
-                  GET_SYNCRO_FLAG(SynIndex, READ_MASK),
-                  GET_SYNCRO_FLAG(SynIndex, WRITE_MASK),
-                  GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK),
-                  GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK),
-                  GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK),
-                  SynIndex,
-                  pIOSyncroAreaI[SynIndex],
-                  write_pending);
-    }
-    /* if the write operation is done, clear the write flag and if it is necessary set the read flag */
-    if (
-            (
-                GET_SYNCRO_FLAG(SynIndex, WRITE_MASK)           == 1 ||
-                GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK)     == 1 ||
-                GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK)       == 1 ||
-                GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_RCP_MASK) == 1
-                ) && pIOSyncroAreaI[SynIndex] == 1)
-    {
-
-        if (GET_SYNCRO_FLAG(SynIndex, WRITE_MASK))
-        {
-            CLR_SYNCRO_FLAG(SynIndex, WRITE_MASK);
-        }
-        if (GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK))
-        {
-            CLR_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK);
-        }
-        if (GET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK))
-        {
-            CLR_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK);
-        }
-        if (GET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_RCP_MASK))
-        {
-            CLR_SYNCRO_FLAG(SynIndex, MULTI_WRITE_RCP_MASK);
-        }
-        write_pending = 1;
-        LOG_PRINT(verbose_e, "The write is taken in order\n");
-        LOG_PRINT(verbose_e, "Writing has been done\n");
-    }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&sync_recv_mutex);
-#endif
-    /* if the read operation is done, reset the syncro area */
-    if (GET_SYNCRO_FLAG(SynIndex, READ_MASK) == 1 && pIOSyncroAreaI[SynIndex] == 2)
-    {
-        deleteUnusedSynIndex(SynIndex);
-        //pIOSyncroAreaI[SynIndex] = 0;
-    }
-    LOG_PRINT(verbose_e, "Nothing to do\n");
-    return write_pending;
-}
 
 /**
  * @brief check the syncro data input to verify if a pending write finish,
  * if yes, update the syncro data output.
  */
-void checkWriting(void)
+void compactSyncWrites(void)
 {
-    unsigned int i;
-    int write_pending = 0;
+    unsigned int  SynIndex;
 
-    /* scan all the syncro array */
-    for (i = 0; i < SyncroAreaSize; i++)
+#ifdef ENABLE_MUTEX
+    pthread_mutex_lock(&sync_send_mutex);
+#endif
+    for (SynIndex = SyncroAreaSize - 1; SynIndex >= 0; --SynIndex)
     {
-        LOG_PRINT(verbose_e, "%X vs %X (%X vs %X) %d\n", GET_SYNCRO_FLAG(i, WRITE_MASK), pIOSyncroAreaI[i], pIOSyncroAreaO[i], pIOSyncroAreaI[i], i);
-        if (checkSynIndexWriting(i) == 1)
+        if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1) // QUEUE_BUSY_WRITE
+           || IS_EMPTY_SYNCRO_FLAG(SynIndex) )
         {
-            write_pending = 1;
+            // Write acknowledged, entry cleared
+            int i = 0;
+            for (i = SynIndex; i < SyncroAreaSize; i++)
+            {
+                pIOSyncroAreaO[i] = pIOSyncroAreaO[i + 1];
+                pIOSyncroAreaI[i] = pIOSyncroAreaI[i + 1];
+            }
+            SyncroAreaSize--;
+            pIOSyncroAreaO[SyncroAreaSize] = 0x0000;
+            pIOSyncroAreaI[SyncroAreaSize] = 0x0000;
         }
     }
-    if (write_pending == 0)
-    {
-        size_t SynIndex;
-        SET_WORD_FROM_WORD(WRITE_IRQ_OFF, IOSyncroAreaO, WRITE_IRQ_VAR);
-        for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
-        {
-            deleteUnusedSynIndex(SynIndex);
-            LOG_PRINT(verbose_e, "DELETE SYNINDEX %d\n", SynIndex);
-        }
-    }
+#ifdef ENABLE_MUTEX
+    pthread_mutex_unlock(&sync_send_mutex);
+#endif
 }
 
 int  getVarDivisor(const int ctIndex)
@@ -3784,28 +2244,10 @@ int getVarDecimalByName(const char * varname)
 
 int doWrite(int ctIndex, void * value)
 {
-    int SynIndex = 0;
-
-    if (prepareWriteVarByCtIndex(ctIndex, value, &SynIndex,1, 0) == DONE || GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
+    if (prepareWriteVarByCtIndex(ctIndex, value, 1, 0, 1) == DONE )
     {
-        setStatusVarBySynIndex(SynIndex, BUSY);
-
-        /* update the write flag */
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
-#endif
-        CLR_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
-        SET_SYNCRO_FLAG(SynIndex, WRITE_MASK);
-        /*rise write interrupt*/
-        SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
-        LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
         return 0;
     }
-
     return 1;
 }
 
@@ -3816,5 +2258,5 @@ int getStatus(int CtIndex)
 
 int addWrite(int ctIndex, void * value)
 {
-    return (prepareWriteVarByCtIndex(ctIndex, value, NULL, 0, 0) == ERROR);
+    return (prepareWriteVarByCtIndex(ctIndex, value, 0, 0, 0) == ERROR);
 }

@@ -30,9 +30,11 @@ extern "C" {
 #define WRITE_RCP_MASK       0x6 /* 110 */
 #define MULTI_WRITE_RCP_MASK 0x7 /* 111 */
 
+#define IS_EMPTY_SYNCRO_FLAG(index) (pIOSyncroAreaO[index] & 0xE000)
+#define IS_WRITE_SYNCRO_FLAG(index) (pIOSyncroAreaO[index] & 0x8000)
 #define GET_SYNCRO_FLAG(index, flag) ((pIOSyncroAreaO[index] >> 13) == flag)
-#define SET_SYNCRO_FLAG(index, flag) {CLR_SYNCRO_FLAG(index, flag); pIOSyncroAreaO[index] |= (flag << 13);}
-#define CLR_SYNCRO_FLAG(index, flag) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
+#define SET_SYNCRO_FLAG(index, flag) {CLR_SYNCRO_FLAG(index); pIOSyncroAreaO[index] |= (flag << 13);}
+#define CLR_SYNCRO_FLAG(index) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
 
 #define beginWrite() {}
 #define endWrite()  writePendingInorder()
@@ -63,9 +65,6 @@ extern "C" {
 size_t fillSyncroArea(void);
 int addSyncroElementbyIndex(const char * tag, int index);
 int addSyncroElement(const char * tag, int * CtIndex);
-int delSyncroElement(const char * tag);
-int delSyncroElementByIndex(int synIndex);
-int emptySyncroElement();
 int indexSyncroElement();
 int Tag2SynIndex(const char * tag, int * SynIndex);
 int Tag2CtIndex(const char * Tag, int * CtIndex);
@@ -99,21 +98,13 @@ extern char DeviceReconnected;
 extern int setFormattedVar(const char * varname, char * formattedVar);
 extern int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
 extern char getStatusVarByCtIndex(int CtIndex, char * msg);
-extern int getString(const char* varname, int size, char * string);
-extern int setString(const char* varname, int size, char * string);
-extern void checkTagWriting(const char * varname);
-extern int checkSynIndexWriting(int SynIndex);
 extern int deactivateVar(const char * varname);
 extern int activateVar(const char * varname);
-extern char prepareWriteVar(const char * varname, void * value, int * SynIndex);
-extern char prepareWriteBlock(const char * varname, void * value, int * SynIndex);
-extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int * SynIndex, int dowait, int formatted);
+extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int dowait, int formatted, int execwrite);
 extern int readVar(const char * varname, void * value);
 extern int writeVar(const char * varname, void * value);
 extern int writeVarByCtIndex(const int ctIndex, void * value);
 extern int writeVarByCtIndex_nowait(const int ctIndex, void * value);
-extern int writeBlock(const char * varname);
-extern int deleteUnusedSynIndex(int SynIndex);
 extern int getVarDecimal(const int ctIndex);
 extern int getVarDecimalByCtIndex(const int ctIndex);
 extern int getVarDecimalByName(const char * varname);
@@ -199,8 +190,7 @@ void writeVarQueuedByCtIndex(void);
 int readVar(const char * varname, void * value);
 
 int checkRecipeWriting(void);
-void cleanRecipeWriting(void);
-void checkWriting(void);
+void compactSyncWrites(void);
 char prepareFormattedVar(const char * varname, char * formattedVar);
 char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
 int  getVarDivisorByName(const char * varname);

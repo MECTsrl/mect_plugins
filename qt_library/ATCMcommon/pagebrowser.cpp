@@ -1,12 +1,3 @@
-/**
- * @file
- * @author Emiliano Bergamaschini <ebergamaschini@mect.it>
- *
- * @section LICENSE
- * Copyright Mect s.r.l. 2013
- *
- * @brief Page browswer base class
- */
 #include <QDateTime>
 #include <QLineEdit>
 #include <QMessageBox>
@@ -189,16 +180,6 @@ void page::updateData()
     {
         labelUserName->setText(trUtf8("User: %1").arg(PasswordsString[active_password]));
     }
-#ifdef ENABLE_DEVICE_DISCONNECT
-    /*Re-activate variables local to a page in case of device reconnection*/
-    if(DeviceReconnected)
-    {
-        this->reload();
-        DeviceReconnected = 0;
-    }
-#endif
-    
-    checkWriting();
 
     /*
     if(IS_ENGINE_READY == 0)
@@ -225,15 +206,6 @@ bool page::getFormattedVar(const char * varname, bool * formattedVar, QLabel * l
     int ctIndex;
     bool return_value = false;
     
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        if(led) led->setStyleSheet(STYLE_DISCONNECT);
-        *formattedVar = VAR_DISCONNECT;
-        return return_value;
-    }
-#endif
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
@@ -309,15 +281,6 @@ bool page::getFormattedVar(const char * varname, short int * formattedVar, QLabe
 {
     int ctIndex;
     bool return_value = false;
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        if(led) led->setStyleSheet(STYLE_DISCONNECT);
-        *formattedVar = (short int)VAR_NAN;
-        return return_value;
-    }
-#endif
     
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
@@ -377,15 +340,6 @@ bool page::getFormattedVar(const char * varname, unsigned short int * formattedV
 {
     int ctIndex;
     bool return_value = false;
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        if(led) led->setStyleSheet(STYLE_DISCONNECT);
-        *formattedVar = (unsigned short int)VAR_NAN;
-        return return_value;
-    }
-#endif
     
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
@@ -448,15 +402,6 @@ bool page::getFormattedVar(const char * varname, int * formattedVar, QLabel * le
 {
     int ctIndex;
     bool return_value = false;
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        if(led) led->setStyleSheet(STYLE_DISCONNECT);
-        *formattedVar = (int)VAR_NAN;
-        return return_value;
-    }
-#endif
     
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
@@ -521,16 +466,7 @@ bool page::getFormattedVar(const char * varname, unsigned int * formattedVar, QL
 {
     int ctIndex;
     bool return_value = false;
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        if(led) led->setStyleSheet(STYLE_DISCONNECT);
-        *formattedVar = (unsigned int)VAR_NAN;
-        return return_value;
-    }
-#endif
-    
+
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
         LOG_PRINT(error_e, "cannot extract ctIndex\n");
@@ -596,15 +532,6 @@ bool page::getFormattedVar(const char * varname, float * formattedVar, QLabel * 
     bool return_value = false;
     char fmt[8] = "";
     int decimal = 0;
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        if(led) led->setStyleSheet(STYLE_DISCONNECT);
-        *formattedVar = (float)VAR_NAN;
-        return return_value;
-    }
-#endif
     
     if (Tag2CtIndex(varname, &ctIndex) != 0)
     {
@@ -940,15 +867,6 @@ bool page::getFormattedVar(const char * varname, QString * formattedVar, QLabel 
     int CtIndex;
     char value[TAG_LEN];
     char status[TAG_LEN];
-#ifdef ENABLE_DEVICE_DISCONNECT
-    if (isDeviceConnectedByVarname(varname) != 1)
-    {
-        LOG_PRINT(warning_e, "device disconnected for variable '%s'\n", varname);
-        if(led) led->setStyleSheet(STYLE_DISCONNECT);
-        *formattedVar = VAR_DISCONNECT;
-        return false;
-    }
-#endif
     
     formattedVar->clear();
     if (Tag2CtIndex(varname, &CtIndex) != 0)
@@ -1274,8 +1192,6 @@ bool page::goto_page(const char * page_name, bool remember)
         History.push(this->windowTitle());
     }
     
-    /* clear the variable of the actual page */
-    emptySyncroElement();
     
 #ifdef ENABLE_TREND
     /* destroy trend page */
@@ -1583,57 +1499,6 @@ bool page::deactivateVarList(const QStringList listVarname)
     }
     
     return ret;
-}
-
-
-/**
- * @brief get the actual status.
- * The status could be:
- * - ERROR:  error flag is set to 1
- * - DONE:   error flag is set to 0
- * - BUSY:   error flag is set to 0
- */
-char page::getStatusVar(const char * varname, char * msg)
-{
-    char Status = DONE;
-    char StatusComm = (ioComm == NULL) ? ERROR : ioComm->getStatusIO();
-    int CtIndex = - 1;
-    
-    /* force a status vector update before read the status */
-    checkWriting();
-    
-    if (StatusComm == ERROR)
-    {
-        Status = ERROR;
-        LOG_PRINT(verbose_e, "ioLayer: '%c' [ERROR]\n", StatusComm);
-        if (msg != NULL)
-        {
-            strcpy(msg, VAR_COMMUNICATION);
-        }
-        return Status;
-    }
-    else if (StatusComm == BUSY)
-    {
-        Status = BUSY;
-        LOG_PRINT(verbose_e, "ioLayer: '%c' [BUSY]\n", StatusComm);
-        if (msg != NULL)
-        {
-            strcpy(msg, VAR_PROGRESS);
-        }
-    }
-    
-    if (Tag2CtIndex(varname, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "CtIndex '%d' Status %d ERROR\n", CtIndex, Status);
-        if (msg != NULL)
-        {
-            strcpy(msg, VAR_UNKNOWN);
-        }
-        return ERROR;
-    }
-    
-    Status = getStatusVarByCtIndex(CtIndex, msg);
-    return Status;
 }
 
 /**
