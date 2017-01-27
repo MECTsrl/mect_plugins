@@ -2125,7 +2125,7 @@ void compactSyncWrites(void)
 #ifdef ENABLE_MUTEX
     pthread_mutex_lock(&sync_send_mutex);
 #endif
-    for (SynIndex = SyncroAreaSize - 1; SynIndex >= 0; --SynIndex)
+    for (SynIndex = 0; SynIndex < SyncroAreaSize; ++SynIndex)
     {
         if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1) // QUEUE_BUSY_WRITE
            || IS_EMPTY_SYNCRO_FLAG(SynIndex) )
