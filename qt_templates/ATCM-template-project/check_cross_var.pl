@@ -37,7 +37,6 @@ my @ui_keyword = (
 
 my @cppfiles =  bsd_glob( $srcdirname . '/*.cpp' );
 my @cpp_keyword = (
-"isBlockActive",
 "getHeadBlockName",
 "disconnectDeviceByVarname",
 "connectDeviceByVarname",

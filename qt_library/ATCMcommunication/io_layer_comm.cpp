@@ -80,7 +80,7 @@ void io_layer_comm::run()
     }
 
     /* set the absolute time */
-    int recompute_abstime = true;
+    bool recompute_abstime = true;
     struct timespec abstime;
     sem_init(&theWritingSem, 0, 0);
 
@@ -102,24 +102,25 @@ void io_layer_comm::run()
         }
         int rc = sem_timedwait(&theWritingSem, &abstime);
         if (rc  == -1 && errno == EINTR){
-            recompute_abstime = true;
             continue;
         }
         else if (rc == 0) {
             writeVarQueuedByCtIndex();
+        }
+        else if (rc  == -1 && errno == ETIMEDOUT) {
             recompute_abstime = true;
         }
-        else if (errno == ETIMEDOUT) {
-            recompute_abstime = true;
-        }
-        /* chiamata sia ogni periodo sia ad ogni scrittura in coda */
+
         notifySetData();
         notifySetSyncro();
         notifyGetData();
         notifyGetSyncro();
         compactSyncWrites();
         update_all();
-        pthread_cond_signal(&condvar);
+
+        if (recompute_abstime) {
+            pthread_cond_signal(&condvar);
+        }
     }
     LOG_PRINT(verbose_e, "Finish ioLayer syncronization\n");
 }

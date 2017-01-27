@@ -30,8 +30,8 @@ extern "C" {
 #define WRITE_RCP_MASK       0x6 /* 110 */
 #define MULTI_WRITE_RCP_MASK 0x7 /* 111 */
 
-#define IS_EMPTY_SYNCRO_FLAG(index) (pIOSyncroAreaO[index] & 0xE000)
-#define IS_WRITE_SYNCRO_FLAG(index) (pIOSyncroAreaO[index] & 0x8000)
+#define IS_EMPTY_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0xE000) == 0x0000)
+#define IS_WRITE_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0x8000) == 0x8000)
 #define GET_SYNCRO_FLAG(index, flag) ((pIOSyncroAreaO[index] >> 13) == flag)
 #define SET_SYNCRO_FLAG(index, flag) {CLR_SYNCRO_FLAG(index); pIOSyncroAreaO[index] |= (flag << 13);}
 #define CLR_SYNCRO_FLAG(index) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
@@ -63,21 +63,16 @@ extern "C" {
  * offset, R, W
  */
 size_t fillSyncroArea(void);
-int addSyncroElementbyIndex(const char * tag, int index);
-int addSyncroElement(const char * tag, int * CtIndex);
 int indexSyncroElement();
-int Tag2SynIndex(const char * tag, int * SynIndex);
 int Tag2CtIndex(const char * Tag, int * CtIndex);
 int CtIndex2Tag(int CtIndex, char * Tag);
 int SynIndex2CtIndex(int SynIndex, int * CtIndex);
-int CtIndex2SynIndex(int CtIndex, int * SynIndex);
 int CtIndex2Type(int CtIndex);
 int writeToDb(int ctIndex, void * value);
 int writeStringToDb(int ctIndex, char * value);
 int readFromDb(int ctIndex, void * value);
 int formattedReadFromDb(int ctIndex, char * value);
 int formattedWriteToDb(int ctIndex, void * value);
-int isBlockActive(const char * varname, char * varblockhead);
 int getHeadBlock(int CtIndex, char * varblockhead);
 int getHeadBlockName(const char * varname, char * varblockhead);
 int disconnectDevice(enum protocol_e protocol, int node);
@@ -100,7 +95,7 @@ extern int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
 extern char getStatusVarByCtIndex(int CtIndex, char * msg);
 extern int deactivateVar(const char * varname);
 extern int activateVar(const char * varname);
-extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int dowait, int formatted, int execwrite);
+extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int formatted, int execwrite);
 extern int readVar(const char * varname, void * value);
 extern int writeVar(const char * varname, void * value);
 extern int writeVarByCtIndex(const int ctIndex, void * value);
@@ -170,29 +165,15 @@ extern pthread_mutex_t data_send_mutex;
 extern pthread_mutex_t sync_recv_mutex;
 extern pthread_mutex_t sync_send_mutex;
 
-#if 0
-unsigned short int getCommunicationEngineMainRevision(void);
-unsigned short int getCommunicationEngineMinorRevision(void);
-int resetErrorByName(const char *protocol);
-int resetError(enum protocol_e protocol);
-short int getErrorCounterByName(const char *protocol, int node);
-short int getErrorCounter(enum protocol_e protocol, int node);
-short int getErrorStatusByName(const char *protocol, const char *kind);
-short int getErrorStatus(enum protocol_e protocol, enum error_kind_e kind);
-short int getErrorBitByName(const char *protocol, const char *kind, int node);
-short int getErrorBit(enum protocol_e protocol, enum error_kind_e kind, int node);
-#endif
 int writePending();
 int writePendingInorder();
 
-void writeVarInQueueByCtIndex(const int ctIndex, const int value);
+void writeVarInQueueByCtIndex(const int ctIndex, const int value, int formatted);
 void writeVarQueuedByCtIndex(void);
 int readVar(const char * varname, void * value);
 
 int checkRecipeWriting(void);
 void compactSyncWrites(void);
-char prepareFormattedVar(const char * varname, char * formattedVar);
-char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
 int  getVarDivisorByName(const char * varname);
 int  getVarDivisor(const int ctIndex);
 int  getVarDecimalByName(const char * varname);
@@ -201,8 +182,9 @@ int  getVarDecimal(const int ctIndex);
 typedef struct write_queue_elem_s {
     int ctIndex;
     int value;
+    int formatted;
     struct write_queue_elem_s * next;
-}write_queue_elem_t;
+} write_queue_elem_t;
 
 extern sem_t theWritingSem;
 

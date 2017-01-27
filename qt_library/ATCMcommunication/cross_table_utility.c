@@ -660,74 +660,6 @@ size_t fillSyncroArea(void)
     return elem_nb;
 }
 
-/**
- * @brief get the synIndex of the variable Tag if it is into the syncrotable
- */
-int Tag2SynIndex(const char * tag, int * SynIndex)
-{
-    int CtIndex = -1;
-
-    *SynIndex = -1;
-
-    if (tag[0] == '\0')
-    {
-        LOG_PRINT(error_e, "Empty tag '%s'\n", tag);
-        return -1;
-    }
-
-    if (Tag2CtIndex(tag, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "'%s' not found into DataVector\n", tag);
-        return -1;
-    }
-
-    LOG_PRINT(verbose_e, "'%s' CtIndex: %d - SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
-    CtIndex2SynIndex(CtIndex, SynIndex);
-
-    if (*SynIndex == -1)
-    {
-        LOG_PRINT(verbose_e, "'%s' not found into SyncroVector\n", tag);
-        return -1;
-    }
-    else
-    {
-        LOG_PRINT(verbose_e, "found '%s' -> %d into SyncroVector\n", tag, *SynIndex);
-        return 0;
-    }
-}
-
-/**
- * @brief add an element into the Syncro vector that have the Tag "tag" and the index CtIndex into
- * the cross-table
- *
- */
-int addSyncroElementbyIndex(const char * tag, int CtIndex)
-{
-    int synIndex = 0;
-    if (Tag2SynIndex(tag, &synIndex) != 0)
-    {
-        LOG_PRINT(verbose_e, "Adding tag %s, CtIndex %d SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
-
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
-#endif
-        setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), CtIndex);
-        SyncroAreaSize++;
-
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
-        LOG_PRINT(verbose_e, "Added tag %s, CtIndex %d SyncroAreaSize %d\n", tag, CtIndex, SyncroAreaSize);
-        return 0;
-    }
-    else
-    {
-        LOG_PRINT(verbose_e, "The tag %s, CtIndex %d synIndex %d already exist!\n", tag, CtIndex, synIndex);
-        return 0;
-    }
-    LOG_PRINT(verbose_e, "Cannot add tag %s, CtIndex %d\n", tag, CtIndex);
-    return -1;
-}
 
 /** @brief compare the block of two variables
  * @param int i: first cross table index
@@ -740,32 +672,6 @@ int cmpCrossTableBlock(int i, int j)
     return (varNameArray[i].block != varNameArray[j].block);
 }
 
-/**
- * @brief add a block of elements into the Syncro vector. The block is the element's block the that have the Tag "tag" into
- * the cross-table and set the variable index with the CtIndex of the variable
- * into the cross-table
- *
- */
-int addSyncroElement(const char * tag, int * CtIndex)
-{
-    *CtIndex = 0;
-
-    if (tag[0] == '\0')
-    {
-        LOG_PRINT(error_e, "Empty tag '%s'\n", tag);
-        return -1;
-    }
-
-    /* extract the cross-table index from the cross-table */
-    Tag2CtIndex(tag, CtIndex);
-    if(*CtIndex < 0)
-    {
-        LOG_PRINT(error_e, "cannot find the index for variable '%s'\n", tag);
-        return *CtIndex;
-    }
-
-    return addSyncroElementbyIndex(tag, *CtIndex);
-}
 
 /** @brief Compare a cross table index and a syncro element
  * @param WORD address :  syncro table element
@@ -820,36 +726,6 @@ int SynIndex2CtIndex(int SynIndex, int * CtIndex)
         return 0;
     }
     return 1;
-}
-
-/** @brief Extract the syncro table index from the cross table index
- * @param const char * Tag : variable tag
- * @param int * CtIndex :  cross table index
- * @return -1 Cross table element not found into the syncro table
- * @return otherwise syncro table index
- */
-int CtIndex2SynIndex(int CtIndex, int *SynIndex)
-{
-    *SynIndex = -1;
-    unsigned int i;
-
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_send_mutex);
-#endif
-
-    for (i = 0; i < SyncroAreaSize; i++)
-    {
-        if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0)
-        {
-            *SynIndex = i;
-            break;
-        }
-    }
-
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&sync_send_mutex);
-#endif
-    return (*SynIndex == -1);
 }
 
 /** @brief Extract the cross table index of the variable tagget as 'Tag'
@@ -1069,27 +945,6 @@ int formattedReadFromDb(int ctIndex, char * value)
         return -1;
     }
 
-    /* be sure that the variable is active */
-    int SynIndex = -1;
-
-    /* check if the variable is active (it is into the syncro vector or his head is into the syncrovector ) */
-    if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
-    {
-        if (0) // Patch for H Vars 2.0.12rc2 activateVar(varNameArray[ctIndex].tag) != 0)
-        {
-            LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", ctIndex, varNameArray[ctIndex].tag);
-            return 1;
-        }
-    }
-    else if (CtIndex2SynIndex(varNameArray[ctIndex].blockhead, &SynIndex) != 0)
-    {
-        if (0) // Patch for H Vars 2.0.12rc2 activateVar(varNameArray[varNameArray[ctIndex].blockhead].tag) != 0)
-        {
-            LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", varNameArray[ctIndex].blockhead, varNameArray[varNameArray[ctIndex].blockhead].tag);
-            return 1;
-        }
-    }
-
     LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
 
     decimal = getVarDecimal(ctIndex);
@@ -1270,32 +1125,6 @@ int formattedWriteToDb(int ctIndex, void * value)
 
         LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
 
-        /* be sure that the variable is active */
-        int SynIndex = -1;
-
-        /* get the variable address from syncrovector*/
-        if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
-        {
-            /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
-            int myCtIndex = varNameArray[ctIndex].blockhead;
-            if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
-            {
-                if (0) // Patch for H Vars 2.0.12rc2 activateVar(varNameArray[myCtIndex].tag) != 0)
-                {
-                    LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
-                    return 1;
-                }
-                else
-                {
-                    if (CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
-                    {
-                        LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
-                        return 1;
-                    }
-                }
-            }
-        }
-
         switch(varNameArray[ctIndex].type)
         {
         case uintab_e:
@@ -1383,12 +1212,13 @@ int readVar(const char * varname, void * value)
     }
 }
 
-void writeVarInQueueByCtIndex(const int ctIndex, const int value)
+void writeVarInQueueByCtIndex(const int ctIndex, const int value, const int formatted)
 {
     write_queue_elem_t * queue_elem = (write_queue_elem_t *)calloc(1, sizeof(write_queue_elem_t));
     queue_elem->next = NULL;
     queue_elem->ctIndex = ctIndex;
     queue_elem->value = value;
+    queue_elem->formatted = formatted;
     pthread_mutex_lock(&write_queue_mutex);
     {
         // put item to queue tail
@@ -1411,10 +1241,17 @@ void writeVarQueuedByCtIndex(void)
     int do_post = 0;
     pthread_mutex_lock(&write_queue_mutex);
     {
-        // get item from queue head
-        if (queue_head != NULL)
+       // get items from queue head
+        while (queue_head != NULL)
         {
-            if (writeVarByCtIndex_nowait(queue_head->ctIndex, &queue_head->value) == 0) {
+            if (prepareWriteVarByCtIndex(queue_head->ctIndex, &queue_head->value, queue_head->formatted, 1) == BUSY)
+            {
+                // rimane in coda
+                do_post = 1;
+            }
+            else
+            {
+                // DONE, ERROR
                 write_queue_elem_t * queue_elem = queue_head;
                 queue_head = queue_head->next;
                 if (queue_head == NULL)
@@ -1422,9 +1259,6 @@ void writeVarQueuedByCtIndex(void)
                     queue_tail = NULL;
                 }
                 free(queue_elem);
-            } else {
-                // rimane in coda
-                do_post = 1;
             }
         }
     }
@@ -1439,8 +1273,8 @@ void writeVarQueuedByCtIndex(void)
  */
 int writeVarByCtIndex(const int ctIndex, void * value)
 {
-    if (prepareWriteVarByCtIndex(ctIndex, value, 1, 1, 1) == DONE)
-    {
+    if (value) {
+        writeVarInQueueByCtIndex(ctIndex, *(int *)value, 1);
         return 0;
     }
     return 1;
@@ -1448,7 +1282,7 @@ int writeVarByCtIndex(const int ctIndex, void * value)
 
 int writeVarByCtIndex_nowait(const int ctIndex, void * value)
 {
-    if (prepareWriteVarByCtIndex(ctIndex, value, 0, 1, 1) == DONE )
+    if (prepareWriteVarByCtIndex(ctIndex, value, 1, 1) == DONE )
     {
         return 0;
     }
@@ -1517,171 +1351,35 @@ int writePendingInorder()
     return 0;
 }
 
-char prepareFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
-{
-    void * value = NULL;
-
-    short int var_int;
-    short unsigned int var_uint;
-    int var_dint;
-    unsigned int var_udint;
-    float var_float;
-    BYTE var_bit;
-
-    int decimal = 0;
-
-    decimal = getVarDecimal(ctIndex);
-
-    if (decimal > 0 || varNameArray[ctIndex].decimal > 4)
-    {
-        var_float = atof(formattedVar);
-        value = &var_float;
-        LOG_PRINT(verbose_e,"decimal %d [from %d] -> value %f\n", decimal, varNameArray[ctIndex].decimal, var_float);
-    }
-    else
-    {
-        switch(CtIndex2Type(ctIndex))
-        {
-        case intab_e:
-        case intba_e:
-            var_int = atoi(formattedVar);
-            value = &var_int;
-            break;
-        case uintab_e:
-        case uintba_e:
-            var_uint = atoi(formattedVar);
-            value = &var_uint;
-            LOG_PRINT(verbose_e,"UINT %s = %d\n", varNameArray[ctIndex].tag, var_uint);
-            break;
-        case dint_abcd_e:
-        case dint_badc_e:
-        case dint_cdab_e:
-        case dint_dcba_e:
-            var_dint = atoi(formattedVar);
-            value = &var_dint;
-            LOG_PRINT(verbose_e,"DINT %s = %d\n", varNameArray[ctIndex].tag, var_dint);
-            break;
-        case udint_abcd_e:
-        case udint_badc_e:
-        case udint_cdab_e:
-        case udint_dcba_e:
-            var_udint = atoi(formattedVar);
-            value = &var_udint;
-            LOG_PRINT(verbose_e,"UDINT %s = %d\n", varNameArray[ctIndex].tag, var_udint);
-            break;
-        case fabcd_e:
-        case fbadc_e:
-        case fcdab_e:
-        case fdcba_e:
-            var_float = atof(formattedVar);
-            value = &var_float;
-            LOG_PRINT(verbose_e,"FLOAT %s = %f\n", varNameArray[ctIndex].tag, var_float);
-            break;
-        default:
-            var_bit = (atoi(formattedVar) == 1);
-            value = &var_bit;
-            LOG_PRINT(verbose_e,"BIT %s = %d\n", varNameArray[ctIndex].tag, var_bit);
-            break;
-        }
-    }
-
-    switch(prepareWriteVarByCtIndex(ctIndex, value, 1, 1, 0))
-    {
-    case DONE:
-        LOG_PRINT(verbose_e,"################### Prepared VAR: %s = %s\n", varNameArray[ctIndex].tag, formattedVar);
-        return DONE;
-    case ERROR:
-        LOG_PRINT(error_e,"status ERROR\n");
-        return ERROR;
-    case BUSY:
-        LOG_PRINT(verbose_e,"status BUSY\n");
-        return BUSY;
-    default:
-        return ERROR;
-    }
-}
-
-char prepareFormattedVar(const char * varname, char * formattedVar)
-{
-    int ctIndex;
-    if (Tag2CtIndex(varname, &ctIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex for variable '%s'\n", varname);
-        return ERROR;
-    }
-    return prepareFormattedVarByCtIndex(ctIndex, formattedVar);
-}
-
 /**
  * @brief prepare all the data in order to send a write request for the variable varname
  * to perform the write request, you need to enable the write flag.
  */
 
-char prepareWriteVarByCtIndex(const int ctIndex, void * value, int dowait, int formatted, int execwrite)
+char prepareWriteVarByCtIndex(const int ctIndex, void * value, int formatted, int execwrite)
 {
-    int SynIndex = 0;
+    char retval = ERROR;
+    unsigned i;
 
     if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
     {
         LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
-        return ERROR;
+        return retval;
     }
 
     LOG_PRINT(verbose_e, "Writing '%d'\n", ctIndex);
-    /* if the variable is already active, clear the reading flag */
-    if (CtIndex2SynIndex(ctIndex, &SynIndex) == 0)
-    {
-        int count = 0, still_writing = 1;
-        /* waiting for the variable is not in writing mode */
-        do
-        {
-            if ((GET_SYNCRO_FLAG(SynIndex, WRITE_MASK) == 1 || pIOSyncroAreaI[SynIndex] == 1))
-            {
-                if (dowait)
-                {
-                    LOG_PRINT(verbose_e, "The variable '%d' is still in writing.\n", ctIndex);
-                    usleep(1000 * IOLAYER_PERIOD_ms);
-                    count ++;
-                }
-            }
-            else
-            {
-                still_writing = 0;
-            }
-        } while (still_writing && dowait && count < RETRY_NB);
-        if (still_writing || count > RETRY_NB)
-        {
-            return BUSY;
-        }
-        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
 #ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
+    pthread_mutex_lock(&sync_send_mutex);
 #endif
-        CLR_SYNCRO_FLAG(SynIndex);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
-        LOG_PRINT(verbose_e, "Clear reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-    }
-    /* if the variable is not active, active it */
-    else
+    /* search for pending writes on the same variable */
+    for (i = 0; i < SyncroAreaSize; i++)
     {
-        if (addSyncroElementbyIndex(varNameArray[ctIndex].tag, ctIndex) != 0)
+        if ((pIOSyncroAreaO[i] & ADDRESS_MASK) == ctIndex &&  IS_WRITE_SYNCRO_FLAG(i))
         {
-            LOG_PRINT(error_e, "cannot addSyncroElement\n");
-            return ERROR;
+            LOG_PRINT(error_e, "busy writing %d (%u/%u)\n", ctIndex, i, SyncroAreaSize);
+            retval = BUSY;
+            goto exit_function;
         }
-        if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot find the variable '%d'' into the syncro vector\n", ctIndex);
-            return ERROR;
-        }
-    }
-
-    if (SynIndex < 0)
-    {
-        LOG_PRINT(error_e, "cannot extract SynIndex\n");
-        return ERROR;
     }
 
     /* update the value into the Data area */
@@ -1690,35 +1388,39 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int dowait, int f
         if (formattedWriteToDb(ctIndex, value) != 0)
         {
             LOG_PRINT(error_e, "formattedWriteToDb\n");
-            return ERROR;
+            goto exit_function;
         }
     }
     else
     {
         if (writeToDb(ctIndex, value) != 0)
         {
-            LOG_PRINT(error_e, "formattedWriteToDb\n");
-            return ERROR;
+            LOG_PRINT(error_e, "writeToDb\n");
+            goto exit_function;
         }
     }
 
-    LOG_PRINT(verbose_e, "Set prepare flag  pIOSyncroAreaO[%d] '%X' CtIndex %d - 0x%X\n",SynIndex, pIOSyncroAreaO[SynIndex], ctIndex, ctIndex);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
-#endif
-        if (execwrite)
-        {
-            SET_SYNCRO_FLAG(SynIndex, WRITE_MASK);
+    if (SyncroAreaSize < SYNCRO_DB_SIZE_ELEM)
+    {
+        setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), ctIndex);
+        if (execwrite) {
+            SET_SYNCRO_FLAG(SyncroAreaSize, WRITE_MASK);
+        } else {
+            SET_SYNCRO_FLAG(SyncroAreaSize, PREPARE_MASK);
         }
-        else
-        {
-            SET_SYNCRO_FLAG(SynIndex, PREPARE_MASK);
-        }
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
+        SyncroAreaSize++;
+    } else {
+        retval = BUSY;
+        LOG_PRINT(error_e, "full writing %d\n", ctIndex);
+        goto exit_function;
+    }
+    retval = DONE;
 
-    return DONE;
+exit_function:
+#ifdef ENABLE_MUTEX
+    pthread_mutex_unlock(&sync_send_mutex);
+#endif
+        return retval;
 }
 
 int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
@@ -1732,32 +1434,6 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
     float var_float;
     BYTE var_bit;
     int decimal = 0;
-
-    /* be sure that the variable is active */
-    int SynIndex = -1;
-
-    /* get the variable address from syncrovector*/
-    if (CtIndex2SynIndex(ctIndex, &SynIndex) != 0)
-    {
-        /* if not exist this variable into the syncro vector, check if exist his headblock, and get the its CtIndex */
-        int myCtIndex = varNameArray[ctIndex].blockhead;
-        if (ctIndex == myCtIndex || CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
-        {
-            if (0) // Patch for H Vars 2.0.12rc2 activateVar(varNameArray[myCtIndex].tag) != 0)
-            {
-                LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
-                return 1;
-            }
-            else
-            {
-                if (CtIndex2SynIndex(myCtIndex, &SynIndex) != 0)
-                {
-                    LOG_PRINT(error_e, "The variable %d - %s is not active and is not activable\n", myCtIndex, varNameArray[myCtIndex].tag);
-                    return 1;
-                }
-            }
-        }
-    }
 
     decimal = getVarDecimal(ctIndex);
 
@@ -1827,57 +1503,6 @@ int setFormattedVar(const char * varname, char * formattedVar)
     return setFormattedVarByCtIndex(ctIndex, formattedVar);
 }
 
-/** @brief check if the block of variable 'varname' is already active
- * @param const char * varname : name of the variable
- * @param char * varblockhead : string where will be put the variable's block name
- * @return 1 block active
- * @return 0 block inactive
- */
-int isBlockActiveByCtIndex(const int CtIndex, char * varblockhead)
-{
-    int CtIndexHead;
-
-    CtIndexHead = (varNameArray[CtIndex].blockhead == 0) ? CtIndex : varNameArray[CtIndex].blockhead;
-
-    if (CtIndexHead > 0 && strlen(varNameArray[CtIndexHead].tag))
-    {
-        strcpy(varblockhead, varNameArray[CtIndexHead].tag);
-    }
-    else
-    {
-        LOG_PRINT(error_e, "cannot find the head block of '%s' ('%s', %d)\n", varNameArray[CtIndex].tag, varNameArray[CtIndexHead].tag, CtIndexHead);
-    }
-
-    int SynIndex = 0;
-    if (CtIndex2SynIndex(CtIndexHead, &SynIndex) == 0)
-    {
-        LOG_PRINT(verbose_e, "Block is aready active var %s, block %s.\n", varNameArray[CtIndex].tag, varNameArray[CtIndexHead].tag);
-        return 1;
-    }
-    else
-    {
-        LOG_PRINT(verbose_e, "Block is not active, activate it.\n");
-        return 0;
-    }
-}
-
-int isBlockActive(const char * varname, char * varblockhead)
-{
-    int CtIndex;
-    if (varname[0] == '\0')
-    {
-        LOG_PRINT(error_e, "'%s' Empty variable\n", varname);
-        return -1;
-    }
-
-    if (Tag2CtIndex(varname, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
-        return -1;
-    }
-    return isBlockActiveByCtIndex(CtIndex, varblockhead);
-}
-
 /**
  * @brief get the block head and the block number of variable at position CtIndex
  * @param int CtIndex : variable position
@@ -1926,7 +1551,7 @@ int activateVar(const char * varname)
 {
     int CtIndex;
     int found = 0;
-    int i;
+    unsigned i;
 
     if (varname[0] == '\0')
     {
@@ -1974,7 +1599,7 @@ int deactivateVar(const char * varname)
 {
     int CtIndex;
     int retval = 1;
-    int i;
+    unsigned i;
 
     if (varname[0] == '\0')
     {
@@ -2127,19 +1752,22 @@ void compactSyncWrites(void)
 #endif
     for (SynIndex = 0; SynIndex < SyncroAreaSize; ++SynIndex)
     {
-        if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1) // QUEUE_BUSY_WRITE
-           || IS_EMPTY_SYNCRO_FLAG(SynIndex) )
+        if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1)) // QUEUE_BUSY_WRITE
+        {
+            CLR_SYNCRO_FLAG(SynIndex);
+        }
+        else if (IS_EMPTY_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 0)) // QUEUE_EMPTY
         {
             // Write acknowledged, entry cleared
-            int i = 0;
+            unsigned i = 0;
             for (i = SynIndex; i < SyncroAreaSize; i++)
             {
                 pIOSyncroAreaO[i] = pIOSyncroAreaO[i + 1];
                 pIOSyncroAreaI[i] = pIOSyncroAreaI[i + 1];
             }
+            pIOSyncroAreaO[SyncroAreaSize - 1] = 0x0000;
+            pIOSyncroAreaI[SyncroAreaSize - 1] = 0x0000;
             SyncroAreaSize--;
-            pIOSyncroAreaO[SyncroAreaSize] = 0x0000;
-            pIOSyncroAreaI[SyncroAreaSize] = 0x0000;
         }
     }
 #ifdef ENABLE_MUTEX
@@ -2244,8 +1872,8 @@ int getVarDecimalByName(const char * varname)
 
 int doWrite(int ctIndex, void * value)
 {
-    if (prepareWriteVarByCtIndex(ctIndex, value, 1, 0, 1) == DONE )
-    {
+    if (value) {
+        writeVarInQueueByCtIndex(ctIndex, *(int *)value, 0);
         return 0;
     }
     return 1;
@@ -2258,5 +1886,5 @@ int getStatus(int CtIndex)
 
 int addWrite(int ctIndex, void * value)
 {
-    return (prepareWriteVarByCtIndex(ctIndex, value, 0, 0, 0) == ERROR);
+    return (prepareWriteVarByCtIndex(ctIndex, value, 0, 0) == ERROR);
 }

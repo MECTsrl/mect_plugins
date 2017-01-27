@@ -120,42 +120,7 @@ bool ATCMlcdnumber::setVariable(QString variable)
 {
 	m_variable = variable;
 #ifdef TARGET_ARM
-	int SynIndex = 0;
-	int CtIndex = 0;
-	char blockhead[TAG_LEN] = "";
-	int retval;
 
-	LOG_PRINT(verbose_e, "Activating '%s'\n", m_variable.toAscii().data());
-
-	/* check if the block of the variable is already active */
-	retval = isBlockActive(m_variable.toAscii().data(), blockhead);
-	if (retval == 1)
-	{
-        LOG_PRINT(verbose_e, "The variable '%s' come from a block already active\n", m_variable.toAscii().data());
-		return true;
-	}
-	else if (retval == 0)
-	{
-		/* looking the variable index from the crosstable structure */
-		/* insert it into the syncrovector */
-		if (addSyncroElement(blockhead, &CtIndex) == 0)
-		{
-			if (CtIndex2SynIndex(CtIndex, &SynIndex) != 0)
-			{
-				LOG_PRINT(error_e, "Cannot find the variable '%d'' into the syncro vector\n", CtIndex);
-				return false;
-			}
-			LOG_PRINT(verbose_e, "Set reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-			/* enable it in reading */
-			SET_SYNCRO_FLAG(SynIndex, READ_MASK);
-			LOG_PRINT(verbose_e, "Set reading flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
-			return true;
-		}
-		LOG_PRINT(error_e, "Cannot Activate '%s'\n", m_variable.toAscii().data());
-	}
-	LOG_PRINT(error_e, "IMPOSSIBLE RET VALUE '%d'\n", retval);
-	m_status = ERROR;
-	m_value = VAR_UNKNOWN;
 #endif
 	return false;
 }
