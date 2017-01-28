@@ -105,10 +105,14 @@ void io_layer_comm::run()
             continue;
         }
         else if (rc == 0) {
-            writeVarQueuedByCtIndex();
+            do {
+                writeVarQueuedByCtIndex();
+                rc = sem_trywait(&theWritingSem);
+            } while (rc == 0);
         }
         else if (rc  == -1 && errno == ETIMEDOUT) {
             recompute_abstime = true;
+            writeVarQueuedByCtIndex(); // another loop for the BUSY cases
         }
 
         notifySetData();

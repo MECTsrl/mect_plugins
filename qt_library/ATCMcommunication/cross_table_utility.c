@@ -1238,7 +1238,6 @@ void writeVarInQueueByCtIndex(const int ctIndex, const int value, const int form
 
 void writeVarQueuedByCtIndex(void)
 {
-    int do_post = 0;
     pthread_mutex_lock(&write_queue_mutex);
     {
        // get items from queue head
@@ -1247,7 +1246,6 @@ void writeVarQueuedByCtIndex(void)
             if (prepareWriteVarByCtIndex(queue_head->ctIndex, &queue_head->value, queue_head->formatted, 1) == BUSY)
             {
                 // rimane in coda
-                do_post = 1;
             }
             else
             {
@@ -1263,30 +1261,6 @@ void writeVarQueuedByCtIndex(void)
         }
     }
     pthread_mutex_unlock(&write_queue_mutex);
-    if (do_post) {
-        sem_post(&theWritingSem);
-    }
-}
-
-/**
- * @brief perform a write request
- */
-int writeVarByCtIndex(const int ctIndex, void * value)
-{
-    if (value) {
-        writeVarInQueueByCtIndex(ctIndex, *(int *)value, 1);
-        return 0;
-    }
-    return 1;
-}
-
-int writeVarByCtIndex_nowait(const int ctIndex, void * value)
-{
-    if (prepareWriteVarByCtIndex(ctIndex, value, 1, 1) == DONE )
-    {
-        return 0;
-    }
-    return 1;
 }
 
 int writeVar(const char * varname, void * value)
@@ -1297,7 +1271,7 @@ int writeVar(const char * varname, void * value)
         LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
         return -1;
     }
-    return writeVarByCtIndex(CtIndex, value);
+    return doWriteFormatted(CtIndex, value);
 }
 
 /**
@@ -1484,7 +1458,7 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
             break;
         }
     }
-    if (writeVarByCtIndex(ctIndex, value) == 0)
+    if (doWriteFormatted(ctIndex, value) == 0)
     {
         LOG_PRINT(verbose_e,"################### %d = %s\n", ctIndex, formattedVar);
         return 0;
@@ -1874,6 +1848,15 @@ int doWrite(int ctIndex, void * value)
 {
     if (value) {
         writeVarInQueueByCtIndex(ctIndex, *(int *)value, 0);
+        return 0;
+    }
+    return 1;
+}
+
+int doWriteFormatted(const int ctIndex, void * value)
+{
+    if (value) {
+        writeVarInQueueByCtIndex(ctIndex, *(int *)value, 1);
         return 0;
     }
     return 1;
