@@ -92,24 +92,6 @@ protected:
 #endif
     bool activateVarList(const QStringList listVarname);
     bool deactivateVarList(const QStringList listVarname);
-    bool getFormattedVar(const char * varname, bool * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, short int * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, unsigned short int * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, int * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, unsigned int * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, float * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QString * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QLabel * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QLineEdit * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QPushButton * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QSpinBox * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QDoubleSpinBox * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QComboBox * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QComboBox * formattedVar, QStringList map, QLabel * led = NULL);
-#if 0
-    bool getFormattedVar(const char * varname, QLCDNumber * formattedVar, QLabel * led = NULL);
-    bool getFormattedVar(const char * varname, QwtTextLabel * formattedVar, QLabel * led = NULL);
-#endif
     bool setFormattedVar(const char * varname, char * formattedVar);
     bool setStatusVar(const char * varname, char Status);
     bool setStatusVar(int SynIndex, char Status);

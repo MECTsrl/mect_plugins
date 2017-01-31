@@ -33,7 +33,7 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
     m_max = "NAN";
     m_status = UNK;
     m_CtIndex = -1;
-    m_CtVisibilityIndex = -1;
+    m_CtVisibilityIndex = 0;
     m_objectstatus = false;
     m_visibilityvar = "";
     m_format = Dec;
@@ -255,7 +255,7 @@ bool ATCMlabel::setVisibilityVar(QString visibilityVar)
     if (visibilityVar.trimmed().length() == 0)
     {
         m_visibilityvar.clear();
-        m_CtVisibilityIndex = -1;
+        m_CtVisibilityIndex = 0;
         return true;
     }
     else
@@ -277,6 +277,7 @@ bool ATCMlabel::setVisibilityVar(QString visibilityVar)
         }
         else
         {
+            m_CtVisibilityIndex = 0;
             LOG_PRINT(error_e,"visibilityVar '%s', CtIndex %d\n", visibilityVar.trimmed().toAscii().data(), CtIndex);
             return false;
         }
@@ -420,18 +421,19 @@ void ATCMlabel::updateData()
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
 
-    if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
-    {
-        if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
-        {
+    if (m_CtVisibilityIndex > 0) {
+        uint32_t visible = 0;
+        if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
             m_status = DONE;
-            LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
-            setVisible(atoi(value) != 0);
+            if (visible && ! this->isVisible()) {
+                this->setVisible(true);
+            }
+            else if (! visible && this->isVisible()) {
+                this->setVisible(false);
+            }
         }
-        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
-    if (this->isVisible() == false)
-    {
+    if (! this->isVisible()) {
         return;
     }
 
@@ -473,7 +475,7 @@ void ATCMlabel::updateData()
                 case dint_cdab_e:
                 case dint_dcba_e:
                 {
-                    int32_t val = strtoll(value, NULL, 10);
+                    int32_t val = strtol(value, NULL, 10);
                     m_value = QString("0x") + QString::number(val, 16);
                     break;
                 }
@@ -482,7 +484,7 @@ void ATCMlabel::updateData()
                 case udint_cdab_e:
                 case udint_dcba_e:
                 {
-                    uint32_t val = strtoull(value, NULL, 10);
+                    uint32_t val = strtoul(value, NULL, 10);
                     m_value = QString("0x") + QString::number(val, 16);
                     break;
                 }

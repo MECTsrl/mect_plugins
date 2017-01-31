@@ -140,10 +140,11 @@ void info::reload()
     }
 
     /* RT */
-    getFormattedVar("PLC_Version", ui->labelFcrtsval, NULL);
+    uint16_t PLC_Version;
+    readFromDb(5394, &PLC_Version);
+    ui->labelFcrtsval->setText(QString("%1").arg((float)PLC_Version/1000.0, 0, 'f', 3));
 
     /* PLC */
-    //getFormattedVar("PLC_Version", ui->labelPLCval, NULL);
     ui->labelPLCval->setText("-");
 
     /* HMI */

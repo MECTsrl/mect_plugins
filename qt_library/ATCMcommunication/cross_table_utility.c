@@ -796,10 +796,10 @@ int readFromDb(int ctIndex, void * value)
 
     int byte_nb = (ctIndex - 1) * 4;
     LOG_PRINT(verbose_e, "'%s': %X\n", varNameArray[ctIndex].tag, pIODataAreaI[byte_nb]);
-    int type = CtIndex2Type(ctIndex);
+
     pthread_mutex_lock(&datasync_recv_mutex);
     {
-        switch(type)
+        switch(varNameArray[ctIndex].type)
         {
         case uintab_e:
         case uintba_e:
@@ -949,7 +949,7 @@ int formattedReadFromDb(int ctIndex, char * value)
 
     LOG_PRINT(verbose_e, "CURRENT Decimal is %d to be used for VARIABLE %s\n", decimal, varNameArray[ctIndex].tag);
 
-    switch(	CtIndex2Type(ctIndex))
+    switch(varNameArray[ctIndex].type)
     {
     case uintab_e:
     case uintba_e:

@@ -27,7 +27,7 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
     m_status = UNK;
     m_initialization = true;
     m_CtIndex = -1;
-    m_CtVisibilityIndex = -1;
+    m_CtVisibilityIndex = 0;
     m_labelcolor = QColor(230,230,230);
     m_objectstatus = false;
     m_visibilityvar = "";
@@ -182,7 +182,7 @@ bool ATCMspinbox::setVisibilityVar(QString visibilityVar)
     if (visibilityVar.trimmed().length() == 0)
     {
         m_visibilityvar.clear();
-        m_CtVisibilityIndex = -1;
+        m_CtVisibilityIndex = 0;
         return true;
     }
     else
@@ -204,6 +204,7 @@ bool ATCMspinbox::setVisibilityVar(QString visibilityVar)
         }
         else
         {
+            m_CtVisibilityIndex = 0;
             LOG_PRINT(error_e,"visibilityVar '%s', CtIndex %d\n", visibilityVar.trimmed().toAscii().data(), CtIndex);
             return false;
         }
@@ -445,18 +446,19 @@ void ATCMspinbox::updateData()
     char statusMsg[TAG_LEN] = "";
     char value[TAG_LEN] = "";
 
-    if (m_visibilityvar.length() > 0 && m_CtVisibilityIndex >= 0)
-    {
-        if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
-        {
+    if (m_CtVisibilityIndex > 0) {
+        uint32_t visible = 0;
+        if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
             m_status = DONE;
-            LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
-            setVisible(atoi(value) != 0);
+            if (visible && ! this->isVisible()) {
+                this->setVisible(true);
+            }
+            else if (! visible && this->isVisible()) {
+                this->setVisible(false);
+            }
         }
-        LOG_PRINT(verbose_e, "'%s': '%s' visibility status '%c' \n", m_variable.toAscii().data(), value, m_status);
     }
-    if (this->isVisible() == false)
-    {
+    if (! this->isVisible()) {
         return;
     }
 

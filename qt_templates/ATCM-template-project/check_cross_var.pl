@@ -51,8 +51,7 @@ my @cpp_keyword = (
 "writeBlock",
 "getVarDecimalByName",
 "getVarDivisor",
-"getVarDecimal",
-"getFormattedVar"
+"getVarDecimal"
 );
 
 # extract extract all variable from the crosstable

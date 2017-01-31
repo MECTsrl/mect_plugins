@@ -38,7 +38,7 @@ ATCMbutton::ATCMbutton(QWidget * parent):
     m_remember = true;
     m_status = UNK;
     m_CtIndex = -1;
-    m_CtVisibilityIndex = -1;
+    m_CtVisibilityIndex = 0;
     m_CtPasswordVarIndex = -1;
     m_text = "";
     m_text_press = "";
@@ -298,7 +298,7 @@ bool ATCMbutton::setVisibilityVar(QString visibilityVar)
     if (visibilityVar.trimmed().length() == 0)
     {
         m_visibilityvar.clear();
-        m_CtVisibilityIndex = -1;
+        m_CtVisibilityIndex = 0;
         return true;
     }
     else
@@ -320,6 +320,7 @@ bool ATCMbutton::setVisibilityVar(QString visibilityVar)
         }
         else
         {
+            m_CtVisibilityIndex = 0;
             LOG_PRINT(verbose_e,"visibilityVar '%s', CtIndex %d\n", visibilityVar.trimmed().toAscii().data(), CtIndex);
             return false;
         }
@@ -529,26 +530,19 @@ void ATCMbutton::updateData()
 {
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
-    if (m_visibilityvar.length() > 0)
-    {
-        if (m_CtVisibilityIndex >= 0)
-        {
-            LOG_PRINT(verbose_e, "visibility var %s, index %d\n", m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
-            if (formattedReadFromDb(m_CtVisibilityIndex, value) == 0 && strlen(value) > 0)
-            {
-                m_status = DONE;
-                setVisible(atoi(value) != 0);
-                LOG_PRINT(verbose_e, "VISIBILITY %d\n", atoi(value));
+    if (m_CtVisibilityIndex > 0) {
+        uint32_t visible = 0;
+        if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
+            m_status = DONE;
+            if (visible && ! this->isVisible()) {
+                this->setVisible(true);
             }
-            LOG_PRINT(verbose_e, "T: '%s' - visibility var %s, index %d\n", m_text.toAscii().data(), m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "T: '%s' - NO visibility var %s, index %d\n", m_text.toAscii().data(), m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
+            else if (! visible && this->isVisible()) {
+                this->setVisible(false);
+            }
         }
     }
-    if (this->isVisible() == false)
-    {
+    if (! this->isVisible()) {
         goto exit_function;
     }
     if (m_passwordVar.length() > 0)
