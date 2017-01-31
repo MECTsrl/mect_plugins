@@ -75,10 +75,8 @@ int cmpSyncroCtIndex(WORD address, int CtIndex);
 int setSyncroCtIndex(WORD * address, int CtIndex);
 int setStatusVar(const char * varname, char Status);
 
-pthread_mutex_t data_recv_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t data_send_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t sync_recv_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t sync_send_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t datasync_recv_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t datasync_send_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_mutex_t write_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 static write_queue_elem_t * queue_head = NULL, * queue_tail = NULL;
@@ -783,6 +781,7 @@ int CtIndex2Type(int CtIndex)
  */
 int readFromDb(int ctIndex, void * value)
 {
+    int retval = 0;
     if (value == NULL)
     {
         LOG_PRINT(error_e, "NULL value pointer\n");
@@ -798,82 +797,69 @@ int readFromDb(int ctIndex, void * value)
     int byte_nb = (ctIndex - 1) * 4;
     LOG_PRINT(verbose_e, "'%s': %X\n", varNameArray[ctIndex].tag, pIODataAreaI[byte_nb]);
     int type = CtIndex2Type(ctIndex);
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&data_recv_mutex);
-#endif
-    switch(type)
+    pthread_mutex_lock(&datasync_recv_mutex);
     {
-    case uintab_e:
-    case uintba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(unsigned short));
-        LOG_PRINT(verbose_e, "uint_e: %d\n", *((unsigned short*)value));
-        break;
-    case intab_e:
-    case intba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(short));
-        LOG_PRINT(verbose_e, "int_e: %d\n", *((short*)value));
-        break;
-    case udint_abcd_e:
-    case udint_badc_e:
-    case udint_cdab_e:
-    case udint_dcba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(unsigned int));
-        LOG_PRINT(verbose_e, "udint_e: %d\n", *((unsigned int*)value));
-        break;
-    case dint_abcd_e:
-    case dint_badc_e:
-    case dint_cdab_e:
-    case dint_dcba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(int));
-        LOG_PRINT(verbose_e, "dint_e: %d\n", *((int*)value));
-        break;
-    case fabcd_e:
-    case fbadc_e:
-    case fcdab_e:
-    case fdcba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(DWORD));
-        LOG_PRINT(verbose_e, "FLOAT: %f\n", *((float*)value));
-        break;
-    case byte_e:
-    case bit_e:
-    case bytebit_e:
-    case wordbit_e:
-    case dwordbit_e:
-        *((BYTE*)value) = pIODataAreaI[byte_nb];
-        LOG_PRINT(verbose_e, "BYTE/BIT: %d\n", *((BYTE*)value));
-        break;
-    default:
-        LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
-        return -1;
-        break;
+        switch(type)
+        {
+        case uintab_e:
+        case uintba_e:
+            memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(unsigned short));
+            LOG_PRINT(verbose_e, "uint_e: %d\n", *((unsigned short*)value));
+            break;
+        case intab_e:
+        case intba_e:
+            memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(short));
+            LOG_PRINT(verbose_e, "int_e: %d\n", *((short*)value));
+            break;
+        case udint_abcd_e:
+        case udint_badc_e:
+        case udint_cdab_e:
+        case udint_dcba_e:
+            memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(unsigned int));
+            LOG_PRINT(verbose_e, "udint_e: %d\n", *((unsigned int*)value));
+            break;
+        case dint_abcd_e:
+        case dint_badc_e:
+        case dint_cdab_e:
+        case dint_dcba_e:
+            memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(int));
+            LOG_PRINT(verbose_e, "dint_e: %d\n", *((int*)value));
+            break;
+        case fabcd_e:
+        case fbadc_e:
+        case fcdab_e:
+        case fdcba_e:
+            memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(float));
+            LOG_PRINT(verbose_e, "FLOAT: %f\n", *((float*)value));
+            break;
+        case byte_e:
+        case bit_e:
+        case bytebit_e:
+        case wordbit_e:
+        case dwordbit_e:
+            *((BYTE*)value) = pIODataAreaI[byte_nb];
+            LOG_PRINT(verbose_e, "BYTE/BIT: %d\n", *((BYTE*)value));
+            break;
+        default:
+            LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
+            retval = -1;
+        }
     }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&data_recv_mutex);
-#endif
-    return 0;
+    pthread_mutex_unlock(&datasync_recv_mutex);
+    return retval;
 }
 
-/** @brief Write the value 'value' into the internal DB at psition 'ctIndex'
- * @param int ctIndex : Cross table index of the variable to write
- * @param void * value: value to write
- * @return 1 Some error occured
- * @return 0 Write done
- */
-int writeToDb(int ctIndex, void * value)
+static inline int writeToDb_nolock(int CtIndex, void *value)
 {
-    int byte_nb = (ctIndex - 1) * 4;
-    if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
+    int byte_nb = (CtIndex - 1) * 4;
+
+    if (CtIndex <= 0 || CtIndex > DB_SIZE_ELEM)
     {
-        LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
+        LOG_PRINT(error_e, "invalid Ctindex %d\n", CtIndex);
         return -1;
     }
 
-    int type = CtIndex2Type(ctIndex);
-
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&data_send_mutex);
-#endif
-    switch(type)
+    switch (varNameArray[CtIndex].type)
     {
     case uintab_e:
     case uintba_e:
@@ -915,16 +901,28 @@ int writeToDb(int ctIndex, void * value)
         pIODataAreaO[byte_nb] = (WORD)(*((BYTE*)value));
         break;
     default:
-        LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
+        LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[CtIndex].type);
         return -1;
-        break;
     }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&data_send_mutex);
-#endif
-    LOG_PRINT(verbose_e, "%d %d '%s': %X\n", ctIndex, byte_nb, varNameArray[ctIndex].tag, pIODataAreaO[byte_nb]);
-
     return 0;
+}
+
+/** @brief Write the value 'value' into the internal DB at position 'ctIndex'
+ * @param int ctIndex : Cross table index of the variable to write
+ * @param void * value: value to write
+ * @return 1 Some error occured
+ * @return 0 Write done
+ */
+int writeToDb(int ctIndex, void * value)
+{
+    int retval;
+
+    pthread_mutex_lock(&datasync_send_mutex);
+    {
+        retval = writeToDb_nolock(ctIndex, value);
+    }
+    pthread_mutex_unlock(&datasync_send_mutex);
+    return retval;
 }
 
 /** @brief Read the value from the internal DB at psition 'ctIndex'
@@ -1110,82 +1108,6 @@ int formattedReadFromDb(int ctIndex, char * value)
     return 0;
 }
 
-int formattedWriteToDb(int ctIndex, void * value)
-{
-    int decimal = 0;
-    decimal = getVarDecimal(ctIndex);
-
-    if (decimal > 0 || varNameArray[ctIndex].decimal > 4)
-    {
-        if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
-        {
-            LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
-            return -1;
-        }
-
-        LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
-
-        switch(varNameArray[ctIndex].type)
-        {
-        case uintab_e:
-        case uintba_e:
-        {
-            unsigned short value2 = (unsigned short)((*(float*)value) * powf(10,decimal));
-            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
-            return writeToDb(ctIndex, &value2);
-        }
-            break;
-        case intab_e:
-        case intba_e:
-        {
-            short value2 = (short)((*(float*)value) * powf(10,decimal));
-            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
-            return writeToDb(ctIndex, &value2);
-        }
-            break;
-        case udint_abcd_e:
-        case udint_badc_e:
-        case udint_cdab_e:
-        case udint_dcba_e:
-        {
-            unsigned int value2 = (unsigned int)((*(float*)value) * powf(10,decimal));
-            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
-            return writeToDb(ctIndex, &value2);
-        }
-            break;
-        case dint_abcd_e:
-        case dint_badc_e:
-        case dint_cdab_e:
-        case dint_dcba_e:
-        {
-            int value2 = (int)((*(float*)value) * powf(10,decimal));
-            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %d\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
-            return writeToDb(ctIndex, &value2);
-        }
-            break;
-        case fabcd_e:
-        case fbadc_e:
-        case fcdab_e:
-        case fdcba_e:
-        {
-            float value2 = (float)((*(float*)value) /** powf(10,decimal)*/);
-            LOG_PRINT(verbose_e, "'%s' decimal %d old %f new %f\n", varNameArray[ctIndex].tag, decimal, *(float*)value, value2);
-            return writeToDb(ctIndex, &value2);
-        }
-            break;
-        default:
-            LOG_PRINT(verbose_e, "Unkown %d '%s' decimal %d value %x\n", varNameArray[ctIndex].type, varNameArray[ctIndex].tag, decimal, *(int*)value);
-            return writeToDb(ctIndex, value);
-            break;
-        }
-    }
-    else
-    {
-        LOG_PRINT(verbose_e, "DONE ctIndex %d value %X\n", ctIndex, *((int*)value));
-        return writeToDb(ctIndex, value);
-    }
-}
-
 /**
  * @brief perform a read request
  */
@@ -1212,13 +1134,12 @@ int readVar(const char * varname, void * value)
     }
 }
 
-void writeVarInQueueByCtIndex(const int ctIndex, const int value, const int formatted)
+void writeVarInQueueByCtIndex(const int ctIndex, const int value)
 {
     write_queue_elem_t * queue_elem = (write_queue_elem_t *)calloc(1, sizeof(write_queue_elem_t));
     queue_elem->next = NULL;
     queue_elem->ctIndex = ctIndex;
     queue_elem->value = value;
-    queue_elem->formatted = formatted;
     pthread_mutex_lock(&write_queue_mutex);
     {
         // put item to queue tail
@@ -1240,62 +1161,42 @@ void writeVarQueuedByCtIndex(void)
 {
     pthread_mutex_lock(&write_queue_mutex);
     {
-       // get items from queue head
-        while (queue_head != NULL)
+        // get items from queue head
+        write_queue_elem_t * queue_elem = queue_head;
+        write_queue_elem_t * queue_prev = NULL;
+        while (queue_elem != NULL)
         {
-            if (prepareWriteVarByCtIndex(queue_head->ctIndex, &queue_head->value, queue_head->formatted, 1) == BUSY)
+            if (prepareWriteVarByCtIndex(queue_elem->ctIndex, &queue_elem->value, 1) == BUSY)
             {
-                // rimane in coda
+                // BUSY: rimane in coda
+                queue_prev = queue_elem;
+                queue_elem = queue_elem->next;
             }
             else
             {
-                // DONE, ERROR
-                write_queue_elem_t * queue_elem = queue_head;
-                queue_head = queue_head->next;
-                if (queue_head == NULL)
+                // DONE, ERROR: toglie dalla coda
+                if (queue_head == queue_elem)
                 {
-                    queue_tail = NULL;
+                    // toglie dalla testa
+                    queue_head = queue_elem->next;
+                    if (queue_head == NULL)
+                    {
+                        queue_tail = NULL;
+                    }
+                    free(queue_elem);
+                    queue_elem = queue_head;
                 }
-                free(queue_elem);
+                else
+                {
+                    // toglie da in mezzo
+                    queue_prev->next = queue_elem->next;
+                    free(queue_elem);
+                    queue_elem = queue_prev->next;
+                }
             }
         }
     }
     pthread_mutex_unlock(&write_queue_mutex);
-}
-
-int writeVar(const char * varname, void * value)
-{
-    int CtIndex = 0;
-    if (Tag2CtIndex(varname, &CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
-        return -1;
-    }
-    return doWriteFormatted(CtIndex, value);
-}
-
-/**
- * @brief perform a block write request
- */
-int writePending()
-{
-    unsigned int SynIndex;
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
-#endif
-    for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
-    {
-        if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
-        {
-            LOG_PRINT(verbose_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
-            SET_SYNCRO_FLAG(SynIndex, MULTI_WRITE_MASK);
-            LOG_PRINT(verbose_e, "Writing the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
-        }
-    }
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
-    return 0;
 }
 
 /**
@@ -1304,23 +1205,19 @@ int writePending()
 int writePendingInorder()
 {
     unsigned int SynIndex;
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(&sync_send_mutex);
-#endif
-    for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
+    pthread_mutex_lock(&datasync_send_mutex);
     {
-        if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
+        for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
         {
-            LOG_PRINT(verbose_e, "Clear the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
-            SET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK);
-            LOG_PRINT(verbose_e, "Writing the RCP_WRITE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
+            if (GET_SYNCRO_FLAG(SynIndex, PREPARE_MASK))
+            {
+                LOG_PRINT(verbose_e, "Clear the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
+                SET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK);
+                LOG_PRINT(verbose_e, "Writing the RCP_WRITE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
+            }
         }
     }
-    /*rise write interrupt*/
-    SET_WORD_FROM_WORD(WRITE_IRQ_ON, IOSyncroAreaO, WRITE_IRQ_VAR);
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(&sync_send_mutex);
-#endif
+    pthread_mutex_unlock(&datasync_send_mutex);
     LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
     return 0;
 }
@@ -1330,7 +1227,7 @@ int writePendingInorder()
  * to perform the write request, you need to enable the write flag.
  */
 
-char prepareWriteVarByCtIndex(const int ctIndex, void * value, int formatted, int execwrite)
+char prepareWriteVarByCtIndex(const int ctIndex, void * value, int execwrite)
 {
     char retval = ERROR;
     unsigned i;
@@ -1342,59 +1239,52 @@ char prepareWriteVarByCtIndex(const int ctIndex, void * value, int formatted, in
     }
 
     LOG_PRINT(verbose_e, "Writing '%d'\n", ctIndex);
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_send_mutex);
-#endif
-    /* search for pending writes on the same variable */
-    for (i = 0; i < SyncroAreaSize; i++)
+    pthread_mutex_lock(&datasync_send_mutex);
     {
-        if ((pIOSyncroAreaO[i] & ADDRESS_MASK) == ctIndex &&  IS_WRITE_SYNCRO_FLAG(i))
+        /* search for pending writes on the same variable */
+        for (i = 0; i < SyncroAreaSize; i++)
         {
-            LOG_PRINT(error_e, "busy writing %d (%u/%u)\n", ctIndex, i, SyncroAreaSize);
-            retval = BUSY;
-            goto exit_function;
+            if ((pIOSyncroAreaO[i] & ADDRESS_MASK) == ctIndex
+                && (IS_WRITE_SYNCRO_FLAG(i) || IS_PREPARE_SYNCRO_FLAG(i)))
+            {
+                if (execwrite) {
+                    LOG_PRINT(error_e, "busy writing(W) #%d (%u/%u)\n", ctIndex, i, SyncroAreaSize);
+                } else {
+                    LOG_PRINT(error_e, "busy writing(P) #%d (%u/%u)\n", ctIndex, i, SyncroAreaSize);
+                }
+                retval = BUSY;
+                goto exit_function;
+            }
         }
-    }
 
-    /* update the value into the Data area */
-    if (formatted == 1)
-    {
-        if (formattedWriteToDb(ctIndex, value) != 0)
+        /* create a new item in Syncro area */
+        if (SyncroAreaSize < SYNCRO_DB_SIZE_ELEM)
         {
-            LOG_PRINT(error_e, "formattedWriteToDb\n");
+            setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), ctIndex);
+            if (execwrite) {
+                SET_SYNCRO_FLAG(SyncroAreaSize, WRITE_MASK);
+            } else {
+                SET_SYNCRO_FLAG(SyncroAreaSize, PREPARE_MASK);
+            }
+            SyncroAreaSize++;
+        } else {
+            retval = BUSY;
+            LOG_PRINT(error_e, "full writing %d\n", ctIndex);
             goto exit_function;
         }
-    }
-    else
-    {
-        if (writeToDb(ctIndex, value) != 0)
+
+        /* update the value into the Data area */
+        if (writeToDb_nolock(ctIndex, value) != 0)
         {
             LOG_PRINT(error_e, "writeToDb\n");
             goto exit_function;
         }
-    }
 
-    if (SyncroAreaSize < SYNCRO_DB_SIZE_ELEM)
-    {
-        setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), ctIndex);
-        if (execwrite) {
-            SET_SYNCRO_FLAG(SyncroAreaSize, WRITE_MASK);
-        } else {
-            SET_SYNCRO_FLAG(SyncroAreaSize, PREPARE_MASK);
-        }
-        SyncroAreaSize++;
-    } else {
-        retval = BUSY;
-        LOG_PRINT(error_e, "full writing %d\n", ctIndex);
-        goto exit_function;
+        retval = DONE;
     }
-    retval = DONE;
-
 exit_function:
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&sync_send_mutex);
-#endif
-        return retval;
+    pthread_mutex_unlock(&datasync_send_mutex);
+    return retval;
 }
 
 int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
@@ -1409,13 +1299,49 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
     BYTE var_bit;
     int decimal = 0;
 
-    decimal = getVarDecimal(ctIndex);
+    decimal = getVarDecimal(ctIndex); // for *bit is set to 0
 
     if (decimal > 0 || varNameArray[ctIndex].decimal > 4)
     {
-        var_float = atof(formattedVar);
-        value = &var_float;
-        LOG_PRINT(verbose_e,"FLOAT %d = %f\n", ctIndex, var_float);
+        float fvalue = atof(formattedVar);
+        switch(varNameArray[ctIndex].type)
+        {
+        case uintab_e:
+        case uintba_e:
+            var_uint = (unsigned short)(fvalue * powf(10,decimal));
+            value = &var_uint;
+            break;
+        case intab_e:
+        case intba_e:
+            var_int = (short)(fvalue * powf(10,decimal));
+            value = &var_int;
+            break;
+        case udint_abcd_e:
+        case udint_badc_e:
+        case udint_cdab_e:
+        case udint_dcba_e:
+            var_udint = (unsigned int)(fvalue * powf(10,decimal));
+            value = &var_udint;
+            break;
+        case dint_abcd_e:
+        case dint_badc_e:
+        case dint_cdab_e:
+        case dint_dcba_e:
+            var_dint = (int)(fvalue * powf(10,decimal));
+            value = &var_dint;
+            break;
+        case fabcd_e:
+        case fbadc_e:
+        case fcdab_e:
+        case fdcba_e:
+            var_float = (float)(fvalue /** powf(10,decimal)*/); // decimal is only for sprintf
+            value = &var_float;
+            break;
+        default:
+            LOG_PRINT(error_e, "wrong %d '%s' decimal %d value 0x%x\n", varNameArray[ctIndex].type, varNameArray[ctIndex].tag, decimal, *(int*)value);
+            var_uint = 0;
+            value = &var_uint;
+        }
     }
     else
     {
@@ -1455,15 +1381,10 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
         default:
             var_bit = (atoi(formattedVar) == 1);
             value = &var_bit;
-            break;
         }
     }
-    if (doWriteFormatted(ctIndex, value) == 0)
-    {
-        LOG_PRINT(verbose_e,"################### %d = %s\n", ctIndex, formattedVar);
-        return 0;
-    }
-    return 1;
+    writeVarInQueueByCtIndex(ctIndex, *(int *)value);
+    return 0;
 }
 
 int setFormattedVar(const char * varname, char * formattedVar)
@@ -1542,27 +1463,25 @@ int activateVar(const char * varname)
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
         return 1;
     }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_send_mutex);
-#endif
-    for (i = 0; i < SyncroAreaSize; i++)
+    pthread_mutex_lock(&datasync_send_mutex);
     {
-        if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 &&
-            GET_SYNCRO_FLAG(i, READ_MASK) == 1 )
+        for (i = 0; i < SyncroAreaSize; i++)
         {
-            found = 1;
-            break;
+            if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 &&
+                GET_SYNCRO_FLAG(i, READ_MASK) == 1 )
+            {
+                found = 1;
+                break;
+            }
+        }
+        if (! found) {
+            setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), CtIndex);
+            SET_SYNCRO_FLAG(SyncroAreaSize, READ_MASK);
+            SyncroAreaSize++;
+            varNameArray[CtIndex].visible = 1;
         }
     }
-    if (! found) {
-        setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), CtIndex);
-        SET_SYNCRO_FLAG(SyncroAreaSize, READ_MASK);
-        SyncroAreaSize++;
-        varNameArray[CtIndex].visible = 1;
-    }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&sync_send_mutex);
-#endif
+    pthread_mutex_unlock(&datasync_send_mutex);
     return 0;
 }
 
@@ -1590,23 +1509,21 @@ int deactivateVar(const char * varname)
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
         return retval;
     }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_send_mutex);
-#endif
-    for (i = 0; i < SyncroAreaSize; i++)
+    pthread_mutex_lock(&datasync_send_mutex);
     {
-        if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 &&
-            GET_SYNCRO_FLAG(i, READ_MASK) == 1 )
+        for (i = 0; i < SyncroAreaSize; i++)
         {
-            CLR_SYNCRO_FLAG(i);
-            varNameArray[CtIndex].visible = 0;
-            retval = 0;
-            break;
+            if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 &&
+                GET_SYNCRO_FLAG(i, READ_MASK) == 1 )
+            {
+                CLR_SYNCRO_FLAG(i);
+                varNameArray[CtIndex].visible = 0;
+                retval = 0;
+                break;
+            }
         }
     }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&sync_send_mutex);
-#endif
+    pthread_mutex_unlock(&datasync_send_mutex);
     return retval;
 }
 
@@ -1721,32 +1638,30 @@ void compactSyncWrites(void)
 {
     unsigned int  SynIndex;
 
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(&sync_send_mutex);
-#endif
-    for (SynIndex = 0; SynIndex < SyncroAreaSize; ++SynIndex)
+    pthread_mutex_lock(&datasync_send_mutex);
     {
-        if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1)) // QUEUE_BUSY_WRITE
+        for (SynIndex = 0; SynIndex < SyncroAreaSize; ++SynIndex)
         {
-            CLR_SYNCRO_FLAG(SynIndex);
-        }
-        else if (IS_EMPTY_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 0)) // QUEUE_EMPTY
-        {
-            // Write acknowledged, entry cleared
-            unsigned i = 0;
-            for (i = SynIndex; i < SyncroAreaSize; i++)
+            if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1)) // QUEUE_BUSY_WRITE
             {
-                pIOSyncroAreaO[i] = pIOSyncroAreaO[i + 1];
-                pIOSyncroAreaI[i] = pIOSyncroAreaI[i + 1];
+                CLR_SYNCRO_FLAG(SynIndex);
             }
-            pIOSyncroAreaO[SyncroAreaSize - 1] = 0x0000;
-            pIOSyncroAreaI[SyncroAreaSize - 1] = 0x0000;
-            SyncroAreaSize--;
+            else if (IS_EMPTY_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 0)) // QUEUE_EMPTY
+            {
+                // Write acknowledged, entry cleared
+                unsigned i = 0;
+                for (i = SynIndex; i < SyncroAreaSize; i++)
+                {
+                    pIOSyncroAreaO[i] = pIOSyncroAreaO[i + 1];
+                    pIOSyncroAreaI[i] = pIOSyncroAreaI[i + 1];
+                }
+                pIOSyncroAreaO[SyncroAreaSize - 1] = 0x0000;
+                pIOSyncroAreaI[SyncroAreaSize - 1] = 0x0000;
+                SyncroAreaSize--;
+            }
         }
     }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(&sync_send_mutex);
-#endif
+    pthread_mutex_unlock(&datasync_send_mutex);
 }
 
 int  getVarDivisor(const int ctIndex)
@@ -1799,7 +1714,7 @@ int getVarDecimal(const int ctIndex)
 {
     int decimal = 0;
 
-    decimal = varNameArray[ctIndex].decimal;
+    decimal = varNameArray[ctIndex].decimal; // for *bit is set to 0
     if (decimal > 4)
     {
         if (decimal < ctIndex) //We have a dependent decimal
@@ -1847,16 +1762,7 @@ int getVarDecimalByName(const char * varname)
 int doWrite(int ctIndex, void * value)
 {
     if (value) {
-        writeVarInQueueByCtIndex(ctIndex, *(int *)value, 0);
-        return 0;
-    }
-    return 1;
-}
-
-int doWriteFormatted(const int ctIndex, void * value)
-{
-    if (value) {
-        writeVarInQueueByCtIndex(ctIndex, *(int *)value, 1);
+        writeVarInQueueByCtIndex(ctIndex, *(int *)value);
         return 0;
     }
     return 1;
@@ -1869,5 +1775,20 @@ int getStatus(int CtIndex)
 
 int addWrite(int ctIndex, void * value)
 {
-    return (prepareWriteVarByCtIndex(ctIndex, value, 0, 0) == ERROR);
+    char retval;
+
+    retval = prepareWriteVarByCtIndex(ctIndex, value, 0);
+
+    switch (retval) {
+    case DONE:
+        return 0;
+    case BUSY:
+        LOG_PRINT(error_e, "busy adding #%d\n", ctIndex);
+        return 1;
+    case ERROR:
+        LOG_PRINT(error_e, "error adding #%d\n", ctIndex);
+        return 1;
+    default:
+        return 1;
+    }
 }

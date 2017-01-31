@@ -27,14 +27,16 @@ static void *automation_thread(void *arg);
 void *automation_thread(void *arg)
 {
     pthread_mutex_lock(&mutex);
-    pthread_cond_wait(&condvar, &mutex);
-    setup();
-    do
     {
         pthread_cond_wait(&condvar, &mutex);
-        loop();
+        setup();
+        do
+        {
+            pthread_cond_wait(&condvar, &mutex);
+            loop();
+        }
+        while (1);
     }
-    while (1);
     pthread_mutex_unlock(&mutex);
     return arg;
 }
@@ -115,10 +117,18 @@ void io_layer_comm::run()
             writeVarQueuedByCtIndex(); // another loop for the BUSY cases
         }
 
-        notifySetData();
-        notifySetSyncro();
-        notifyGetData();
-        notifyGetSyncro();
+        pthread_mutex_lock(the_send_mutex);
+        {
+            notifySetData();
+            notifySetSyncro();
+        }
+        pthread_mutex_unlock(the_send_mutex);
+        pthread_mutex_lock(the_recv_mutex);
+        {
+            notifyGetData();
+            notifyGetSyncro();
+        }
+        pthread_mutex_unlock(the_recv_mutex);
         compactSyncWrites();
         update_all();
 
@@ -337,9 +347,6 @@ bool io_layer_comm::notifyGetData(void)
     tv.tv_sec = TIMEOUT_MS / 1000;
     tv.tv_usec = (TIMEOUT_MS % 1000) * 1000;
     if (select(iServerSocketData + 1, &recv_set, NULL, NULL, &tv) > 0) {
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(the_recv_mutex);
-#endif
         size_t received;
         int iByteNum;
         do {
@@ -362,9 +369,6 @@ bool io_layer_comm::notifyGetData(void)
         if (_getStatusIO == BUSY) {
             _getStatusIO = DONE;
         }
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(the_recv_mutex);
-#endif
     }
     return  (_getStatusIO == DONE);
 }
@@ -373,9 +377,6 @@ bool io_layer_comm::notifySetData(void)
 {
     size_t iByteNum;
     _setStatusIO = BUSY;
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(the_send_mutex);
-#endif
     size_t received = 0;
     do {
         iByteNum = sendto(iClientSocketData, (char *)SendDataData + received, SendSizeData - received, 0,
@@ -391,9 +392,6 @@ bool io_layer_comm::notifySetData(void)
     if (_getStatusIO == BUSY) {
         _getStatusIO = DONE;
     }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(the_send_mutex);
-#endif
     return (_setStatusIO == DONE);
 }
 
@@ -409,9 +407,6 @@ bool io_layer_comm::notifyGetSyncro(void)
     tv.tv_sec = TIMEOUT_MS / 1000;
     tv.tv_usec = (TIMEOUT_MS % 1000) * 1000;
     if (select(iServerSocketSyncro + 1, &recv_set, NULL, NULL, &tv) > 0) {
-#ifdef ENABLE_MUTEX
-        pthread_mutex_lock(the_recv_mutex);
-#endif
         size_t received;
         int iByteNum;
         do {
@@ -434,9 +429,6 @@ bool io_layer_comm::notifyGetSyncro(void)
         if (_getStatusIO == BUSY) {
             _getStatusIO = DONE;
         }
-#ifdef ENABLE_MUTEX
-        pthread_mutex_unlock(the_recv_mutex);
-#endif
     }
     return  (_getStatusIO == DONE);
 }
@@ -445,9 +437,6 @@ bool io_layer_comm::notifySetSyncro(void)
 {
     size_t iByteNum;
     _setStatusIO = BUSY;
-#ifdef ENABLE_MUTEX
-    pthread_mutex_lock(the_send_mutex);
-#endif
     size_t received = 0;
     do {
         iByteNum = sendto(iClientSocketSyncro, (char *)SendDataSyncro + received, SendSizeSyncro - received, 0,
@@ -463,9 +452,6 @@ bool io_layer_comm::notifySetSyncro(void)
     if (_getStatusIO == BUSY) {
         _getStatusIO = DONE;
     }
-#ifdef ENABLE_MUTEX
-    pthread_mutex_unlock(the_send_mutex);
-#endif
     return (_setStatusIO == DONE);
 }
 

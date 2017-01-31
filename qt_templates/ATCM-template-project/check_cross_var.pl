@@ -48,7 +48,6 @@ my @cpp_keyword = (
 "activateVar",
 "prepareWriteBlock",
 "readVar",
-"writeVar",
 "writeBlock",
 "getVarDecimalByName",
 "getVarDivisor",

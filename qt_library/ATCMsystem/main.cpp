@@ -19,6 +19,7 @@
 #ifdef FORCE_CORE_UNLIMITED
 #include <sys/resource.h>
 #endif
+#include "pthread.h"
 
 #include "main.h"
 #include "app_logprint.h"
@@ -121,6 +122,10 @@ int main(int argc, char *argv[])
     {
         signal(i, signal_callback_handler);
     }
+
+    pthread_mutex_init(&datasync_send_mutex, NULL);
+    pthread_mutex_init(&datasync_recv_mutex, NULL);
+    pthread_mutex_init(&write_queue_mutex, NULL);
 
     /* instantiate the GUI application object */
 

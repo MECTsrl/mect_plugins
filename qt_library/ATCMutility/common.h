@@ -77,53 +77,6 @@ extern "C" {
 #define SET_FLAG(data, flag) { (data) =  (  (data)  | (0x1 << (flag)));}
 #define CLR_FLAG(data, flag) { (data) = ~((~(data)) | (0x1 << (flag)));}
 
-#define SET_SIZE_BYTE(area, size) { \
-    (area)[1] = ((size) >> 8); \
-    (area)[0] = ((size) & 0x00FF); \
-}
-
-#define SET_SIZE_WORD(area, size) { \
-    (area)[0] = (size); \
-}
-/*
-Used when getting a value on the IOSyncroArea which is a WORD area.
-The values are defined as DWORD on the plc side
-Index is the index used to access the IOSyncroArea as array of byte hence to access it as WORD it must halved
-*/
-#define GET_DWORD_FROM_WORD(value, area, index) { \
-    value = ((area)[(index)/2] + ((area)[(index)/2 + 1] << 16)); \
-}
-
-#define SET_WORD_FROM_DWORD(value, area, index) { \
-     (area)[(index)/2] = ((value) & 0x0000FFFF); \
-     (area)[(index)/2 + 1] = (((value) & 0xFFFF0000) >> 16); \
-}
-
-/*
-Used when getting a value on the IOSyncroArea which is a WORD area.
-The values are defined as WORD on the plc side
-Index is the index used to access the IOSyncroArea as array of byte hence to access it as WORD it must halved
-*/
-#define GET_WORD_FROM_WORD(value, area, index) { \
-    value = ((area)[(index)/2] ); \
-}
-#define SET_WORD_FROM_WORD(value, area, index) { \
-    ((area)[(index)/2] ) = value; \
-}
-
-#define WRITE_IRQ_VAR SYNCRO_EXCHANGE_BASE_BYTE //11000
-#define WRITE_IRQ_ON	0x1
-#define WRITE_IRQ_OFF	0x0
-
-/* (IOSyncroAreaI)[5707])
- * hidle 0
- * inizialised 1
- * running 2
- * error 3
- * exit 4
- */
-#define IS_ENGINE_READY ((((IOSyncroAreaI)[5707]) & 0x02) == 0x02)
-
 /**
  * @brief Status description
  */

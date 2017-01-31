@@ -836,7 +836,7 @@ void ATCMbutton::pressFunction()
     {
         if (m_CtIndex >= 0)
         {
-            writeVarInQueueByCtIndex(m_CtIndex, m_statuspressval.toInt(), 1);
+            setFormattedVarByCtIndex(m_CtIndex, m_statuspressval.toAscii().data());
         }
         goToPage();
     }
@@ -856,7 +856,7 @@ void ATCMbutton::releaseFunction()
     {
         if (m_CtIndex >= 0)
         {
-            writeVarInQueueByCtIndex(m_CtIndex, m_statusreleaseval.toInt(), 1);
+            setFormattedVarByCtIndex(m_CtIndex, m_statusreleaseval.toAscii().data());
         }
     }
     else {

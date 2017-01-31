@@ -394,17 +394,8 @@ bool CommStart()
 #endif
 
     /* start the io layers */
-    ioComm = new io_layer_comm(&data_send_mutex, &data_recv_mutex);
+    ioComm = new io_layer_comm(&datasync_send_mutex, &datasync_recv_mutex);
     LOG_PRINT(verbose_e, "Starting IOLayer Data\n");
-
-    /* setting output data area size */
-    SET_SIZE_BYTE(IODataAreaO + DB_OUT_BASE_BYTE, DB_SIZE_ELEM);
-    /* setting status area size */
-    SET_SIZE_BYTE(IODataAreaO + STATUS_BASE_BYTE, DB_SIZE_ELEM);
-
-    /* setting input data area size (shouldn't be necessary) -- it has been checked at least for array init*/
-    //SET_SIZE_BYTE(IODataAreaI + DB_IN_BASE_BYTE, DB_SIZE_ELEM);
-    //SET_SIZE_BYTE(IODataAreaI + STATUS_BASE_BYTE, DB_SIZE_ELEM);
 
     if (ioComm->initializeData(LOCAL_SERVER_ADDR, LOCAL_SERVER_DATA_RX_PORT, LOCAL_SERVER_DATA_TX_PORT, IODataAreaI, STATUS_BASE_BYTE + DB_SIZE_BYTE, IODataAreaO, STATUS_BASE_BYTE + DB_SIZE_BYTE) == false)
     {
@@ -412,9 +403,6 @@ bool CommStart()
         QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
         return false;
     }
-
-    /* setting output syncro area size, for the corresponding reading area it's not necessary */
-    SET_SIZE_WORD(IOSyncroAreaO + SYNCRO_BASE_BYTE, DB_SIZE_ELEM);
 
     if (ioComm->initializeSyncro(LOCAL_SERVER_ADDR, LOCAL_SERVER_SYNCRO_RX_PORT, LOCAL_SERVER_SYNCRO_TX_PORT, IOSyncroAreaI, SYNCRO_SIZE_BYTE, IOSyncroAreaO, SYNCRO_SIZE_BYTE) == false)
     {

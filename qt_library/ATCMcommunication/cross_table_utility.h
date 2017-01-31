@@ -17,8 +17,6 @@ extern "C" {
 #include "common.h"
 #include <semaphore.h>
 
-#define ENABLE_MUTEX
-
 #define LISTENING_PERIOD_US 1000000
 
 #define ADDRESS_MASK 0x1FFF
@@ -31,7 +29,8 @@ extern "C" {
 #define MULTI_WRITE_RCP_MASK 0x7 /* 111 */
 
 #define IS_EMPTY_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0xE000) == 0x0000)
-#define IS_WRITE_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0x8000) == 0x8000)
+#define IS_WRITE_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0x8000) == 0x8000) /* a*/
+#define IS_PREPARE_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0x2000) == 0x2000)
 #define GET_SYNCRO_FLAG(index, flag) ((pIOSyncroAreaO[index] >> 13) == flag)
 #define SET_SYNCRO_FLAG(index, flag) {CLR_SYNCRO_FLAG(index); pIOSyncroAreaO[index] |= (flag << 13);}
 #define CLR_SYNCRO_FLAG(index) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
@@ -72,7 +71,6 @@ int writeToDb(int ctIndex, void * value);
 int writeStringToDb(int ctIndex, char * value);
 int readFromDb(int ctIndex, void * value);
 int formattedReadFromDb(int ctIndex, char * value);
-int formattedWriteToDb(int ctIndex, void * value);
 int getHeadBlock(int CtIndex, char * varblockhead);
 int getHeadBlockName(const char * varname, char * varblockhead);
 int disconnectDevice(enum protocol_e protocol, int node);
@@ -95,10 +93,8 @@ extern int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
 extern char getStatusVarByCtIndex(int CtIndex, char * msg);
 extern int deactivateVar(const char * varname);
 extern int activateVar(const char * varname);
-extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int formatted, int execwrite);
+extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int execwrite);
 extern int readVar(const char * varname, void * value);
-extern int writeVar(const char * varname, void * value);
-extern int doWriteFormatted(const int ctIndex, void * value);
 extern int getVarDecimal(const int ctIndex);
 extern int getVarDecimalByCtIndex(const int ctIndex);
 extern int getVarDecimalByName(const char * varname);
@@ -159,15 +155,14 @@ extern int store_elem_nb_X;
 
 extern short int device_status[prot_none_e][MAX_DEVICE_NB];
 
-extern pthread_mutex_t data_recv_mutex;
-extern pthread_mutex_t data_send_mutex;
-extern pthread_mutex_t sync_recv_mutex;
-extern pthread_mutex_t sync_send_mutex;
+extern pthread_mutex_t datasync_recv_mutex;
+extern pthread_mutex_t datasync_send_mutex;
+extern pthread_mutex_t write_queue_mutex;
 
 int writePending();
 int writePendingInorder();
 
-void writeVarInQueueByCtIndex(const int ctIndex, const int value, int formatted);
+void writeVarInQueueByCtIndex(const int ctIndex, const int value);
 void writeVarQueuedByCtIndex(void);
 int readVar(const char * varname, void * value);
 
@@ -181,7 +176,6 @@ int  getVarDecimal(const int ctIndex);
 typedef struct write_queue_elem_s {
     int ctIndex;
     int value;
-    int formatted;
     struct write_queue_elem_s * next;
 } write_queue_elem_t;
 

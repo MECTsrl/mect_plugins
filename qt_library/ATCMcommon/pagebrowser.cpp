@@ -181,14 +181,6 @@ void page::updateData()
         labelUserName->setText(trUtf8("User: %1").arg(PasswordsString[active_password]));
     }
 
-    /*
-    if(IS_ENGINE_READY == 0)
-    {
-        QMessageBox::critical(0, "Communication Error", QString("Problem to start communication engine [0x%1].").arg(QString::number((IOSyncroAreaI)[5707]),16));
-    }
-
-    LOG_PRINT(verbose_e, "Communication engine started\n");
-    */
 #ifdef DUMPSCREEN
     QPixmap::grabWidget(this).save(this->windowTitle().append(".png").prepend("/local/root/"));
 #endif

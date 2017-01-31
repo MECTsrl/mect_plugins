@@ -74,6 +74,7 @@ trend::trend(QWidget *parent) :
      * protection_level = pwd_operator_e;
      */
     //setStyle::set(this);
+    pthread_mutex_init(&mutex, NULL);
 
     /* initialization */
     for (int i = 0; i < PEN_NB; i++)
@@ -563,10 +564,9 @@ void trend::changeEvent(QEvent * event)
 trend::~trend()
 {
     LOG_PRINT(verbose_e, "MUOIO\n");
+    pthread_mutex_destroy(&mutex);
     delete ui;
 }
-
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void trend::refreshEvent(trend_msg_t item_trend)
 {

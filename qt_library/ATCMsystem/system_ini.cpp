@@ -394,25 +394,6 @@ void system_ini::updateData()
     }
     /* call the parent updateData member */
     page::updateData();
-    /* This code show how to connect
-     * the cross table variable named "RET_REG_1" to the HMI label "label1val"
-     * and if it is not NULL, set the Status led "led1" without using ATCM plugins
-     *    WARNING: only MIRROR variable can be read or the variable listed
-     *            into the active variable list variableList defined at the top of this file
-     
-     if (getFormattedVar("RET_REG_1", ui->label1val, ui->led1) == false)
-     {
-        LOG_PRINT(error_e, "cannot read variable '%s'","RET_REG_1" );
-     }
-     */
-    /* This code show how to write a cross table variable named "NRE_REG_1"  without using ATCM plugins.
-     * Usually this code is putted into a button slot.
-     * The variable could be not present into the active variable list "variableList"
-     if (writeVar("NRE_REG_1", &value) == true)
-     {
-         LOG_PRINT(verbose_e,"################### NRE_REG_1 %d\n", value);
-     }
-     */
 }
 
 /**
