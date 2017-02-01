@@ -147,7 +147,7 @@ void ATCMlcdnumber::updateData()
 	}
 	else
 	{
-		if (formattedReadFromDb(CtIndex, value) == 0 && strlen(value) > 0)
+		if (formattedReadFromDb_string(CtIndex, value) == 0 && strlen(value) > 0)
 		{
 			char statusMsg[TAG_LEN];
 			m_status = getStatusVarByCtIndex(CtIndex, statusMsg);

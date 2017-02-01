@@ -24,7 +24,7 @@ ATCManimation::ATCManimation(QWidget *parent) :
 	m_value = VAR_UNKNOWN;
 	m_variable = "";
 	m_status = UNK;
-	m_CtIndex = -1;
+    m_CtIndex = 0;
     m_CtVisibilityIndex = 0;
     m_refresh = DEFAULT_PLUGIN_REFRESH;
 	m_visibilityvar = "";
@@ -144,41 +144,19 @@ bool ATCManimation::setVisibilityVar(QString visibilityVar)
 /* Activate variable */
 bool ATCManimation::setVariable(QString variable)
 {
-    /* if the acual variable is different from actual variable, deactivate it */
-    if (m_variable.length() != 0 && variable.trimmed().compare(m_variable) != 0)
-    {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_variable.trimmed().toAscii().data()) == 0)
-        {
-#endif
-            m_variable.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
-    }
-
     /* if the acual variable is empty activate it */
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_variable = variable.trimmed();
+        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_variable = variable.trimmed();
-            if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                m_value = VAR_UNKNOWN;
-                m_CtIndex = -1;
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-        }
-        else
-        {
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
             m_status = ERROR;
             m_value = VAR_UNKNOWN;
+            m_CtIndex = 0;
         }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
 #else
         m_variable = variable.trimmed();
 #endif
@@ -253,13 +231,13 @@ void ATCManimation::updateData()
 		return;
 	}
 
-	if (m_variable.length() > 0 && m_CtIndex >= 0)
+    if (m_CtIndex > 0)
 	{
-		if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
+		if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
 		{
             m_value = value;
             m_status = DONE;
-}
+        }
 		else
 		{
 			m_value = VAR_UNKNOWN;

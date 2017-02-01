@@ -36,13 +36,13 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     m_x1ticklabelvisible = false;
 
     m_y1Variable = "";
-    m_CtY1Index = -1;
+    m_CtY1Index = 0;
     m_y1status = UNK;
     m_y1MinVariable = "0";
-    m_CtY1MinIndex = -1;
+    m_CtY1MinIndex = 0;
     m_y1MinValue = 0;
     m_y1MaxVariable = "100";
-    m_CtY1MaxIndex = -1;
+    m_CtY1MaxIndex = 0;
     m_y1MaxValue = 100;
     m_y1step = 10;
     m_y1label = "";
@@ -66,13 +66,13 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     m_x2ticklabelvisible = false;
 
     m_y2Variable = "";
-    m_CtY2Index = -1;
+    m_CtY2Index = 0;
     m_y2status = UNK;
     m_y2MinVariable = "0";
-    m_CtY2MinIndex = -1;
+    m_CtY2MinIndex = 0;
     m_y2MinValue = 0;
     m_y2MaxVariable = "100";
-    m_CtY2MaxIndex = -1;
+    m_CtY2MaxIndex = 0;
     m_y2MaxValue = 100;
     m_y2step = 10;
     m_y2label = "";
@@ -957,24 +957,9 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
     /* reset the value */
     if (variable.trimmed().length() == 0)
     {
-        if (destination->length() != 0)
-        {
-#ifdef TARGET_ARM
-            if (deactivateVar(destination->trimmed().toAscii().data()) == 0)
-            {
-#endif
-                destination->clear();
-                *CtIndex = -1;
-                return true;
-#ifdef TARGET_ARM
-            }
-            else
-            {
-                return false;
-            }
-#endif
-        }
-        return false;
+        destination->clear();
+        *CtIndex = 0;
+        return true;
     }
 
 #ifdef TARGET_ARM
@@ -983,17 +968,18 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
     variable.toDouble(&valid);
     if (valid)
     {
-        *CtIndex = -1;
+        *CtIndex = 0;
         *destination = variable;
         return true;
     }
     /* activate the variable */
     if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
     {
-        int myCtIndex = -1;
+        int myCtIndex = 0;
         LOG_PRINT(verbose_e, "extracting ctIndex of '%s'\n", variable.trimmed().toAscii().data());
         if (Tag2CtIndex(variable.trimmed().toAscii().data(), &myCtIndex) != 0)
         {
+            *CtIndex = 0;
             LOG_PRINT(error_e,"variable '%s', CtIndex %d\n", destination->toAscii().data(), *CtIndex);
             return false;
         }
@@ -1003,10 +989,10 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
 
         return true;
     }
-    *CtIndex = -1;
+    *CtIndex = 0;
     *destination = variable;
 #else
-    *CtIndex = -1;
+    *CtIndex = 0;
     *destination = variable;
 #endif
     return true;
@@ -1015,82 +1001,21 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
 #ifdef TARGET_ARM
 char ATCMgraph::readVariable(int CtIndex, double * valuef)
 {
-    char value[16];
-    if (formattedReadFromDb(CtIndex, value) == 0 && strlen(value) > 0)
+    float value;
+    if (formattedReadFromDb_float(CtIndex, &value) == 0)
     {
-        *valuef = atof(value);
+        *valuef = value;
         return DONE;
     }
     else
     {
         *valuef = VAR_NAN;
         return ERROR;
-        LOG_PRINT(error_e, "Invalid value '%s'\n", value);
     }
 }
-#if 0
-bool ATCMgraph::read4Variables(int CtIndex1, int CtIndex1, int CtIndex1, int CtIndex4,
-                               double * valuef1, double * valuef2, double * valuef3, double * valuef4)
-{
-    char value[16];
-    char StatusData = ioDataComm->getStatusIO();
-    char StatusSyncro = ioSyncroComm->getStatusIO();
-    bool status = true;
 
-    *valuef1 = VAR_NAN;
-    *valuef2 = VAR_NAN;
-    *valuef3 = VAR_NAN;
-    *valuef4 = VAR_NAN;
-
-    if (StatusData == ERROR || StatusSyncro == ERROR)
-    {
-        LOG_PRINT(error_e, "ERROR PROBLEM INTO SET COMMUNICATION StatusData %X StatusSyncro %X ERROR %X\n", StatusData, StatusSyncro, ERROR);
-        return false;
-    }
-    else if (StatusData == BUSY || StatusSyncro == BUSY)
-    {
-        LOG_PRINT(verbose_e, "'%s' StatusData or StatusSyncro id BUSY\n", variable.toAscii().data());
-        return false;
-    }
-
-    if (CtIndex1 >= 0)
-    {
-        if (formattedReadFromDb(CtIndex1, value) == 0 && strlen(value) <= 0)
-        {
-            *valuef1 = VAR_NAN;
-            status = false;
-        }
-    }
-    if (CtIndex2 >= 0)
-    {
-        if (formattedReadFromDb(CtIndex2, value) == 0 && strlen(value) <= 0)
-        {
-            *valuef2 = VAR_NAN;
-            status = false;
-        }
-    }
-    if (CtIndex3 >= 0)
-    {
-        if (formattedReadFromDb(CtIndex3, value) == 0 && strlen(value) <= 0)
-        {
-            *valuef3 = VAR_NAN;
-            status = false;
-        }
-    }
-    if (CtIndex4 >= 0)
-    {
-        if (formattedReadFromDb(CtIndex4, value) == 0 && strlen(value) <= 0)
-        {
-            *valuef4 = VAR_NAN;
-            status = false;
-        }
-    }
-    return status;
-}
-#endif
 bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
 {
-    double myvalue;
     /* it is empty */
     if (variable.length() == 0)
     {
@@ -1098,10 +1023,10 @@ bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
         return true;
     }
     /* it is a constant value */
-    else if (CtIndex < 0)
+    else if (CtIndex <= 0)
     {
         bool valid;
-        myvalue = variable.toDouble(&valid);
+        double myvalue = variable.toDouble(&valid);
         if (valid)
         {
             *value = myvalue;
@@ -1118,15 +1043,13 @@ bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
     }
 #ifdef TARGET_ARM
     /* it is a variable value */
-    else if (readVariable(CtIndex, &myvalue) == DONE)
+    else if (readVariable(CtIndex, value) == DONE)
     {
-        *value = myvalue;
         return true;
     }
     /* it is a variable value but some error occurred during value reading */
     else
     {
-        *value = VAR_NAN;
         return false;
     }
 #endif

@@ -26,7 +26,7 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
     m_variable = "";
     m_status = UNK;
     m_initialization = true;
-    m_CtIndex = -1;
+    m_CtIndex = 0;
     m_CtVisibilityIndex = 0;
     m_labelcolor = QColor(230,230,230);
     m_objectstatus = false;
@@ -216,7 +216,7 @@ bool ATCMspinbox::writeValue(double value)
         return true;
     }
 #ifdef TARGET_ARM
-    if (m_CtIndex >= 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(value).toAscii().data()) == 0)
+    if (m_CtIndex > 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(value).toAscii().data()) == 0)
     {
         LOG_PRINT(verbose_e, "WRITE %f \n", m_value);
         m_value = (float)value;
@@ -243,20 +243,6 @@ bool ATCMspinbox::writeValue(double value)
 /* Activate variable */
 bool ATCMspinbox::setVariable(QString variable)
 {
-    /* if the acual variable is different from actual variable, deactivate it */
-    if (m_variable.length() != 0 && variable.trimmed().compare(m_variable) != 0)
-    {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_variable.trimmed().toAscii().data()) == 0)
-        {
-#endif
-            m_variable.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
-    }
-
     /* if the acual variable is empty activate it */
     if (variable.trimmed().length() > 0)
     {
@@ -269,7 +255,7 @@ bool ATCMspinbox::setVariable(QString variable)
                 LOG_PRINT(error_e, "cannot extract ctIndex\n");
                 m_status = ERROR;
                 //m_value = VAR_UNKNOWN;
-                m_CtIndex = -1;
+                m_CtIndex = 0;
             }
             else
             {
@@ -415,7 +401,6 @@ void ATCMspinbox::updateData()
 {
 #ifdef TARGET_ARM
     char statusMsg[TAG_LEN] = "";
-    char value[TAG_LEN] = "";
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
@@ -433,28 +418,24 @@ void ATCMspinbox::updateData()
         return;
     }
 
-    if (m_variable.length() == 0)
+    if (m_CtIndex > 0)
     {
-        if (m_CtIndex >= 0)
+        float fvalue;
+        if (formattedReadFromDb_float(m_CtIndex, &fvalue) == 0)
         {
-            if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
-            {
-                m_status = DONE;
-                m_value = atof(value);
-            }
-            else
-            {
-                //m_value = VAR_UNKNOWN;
-                m_status = ERROR;
-            }
+            m_status = DONE;
+            m_value = fvalue;
         }
         else
         {
+            //m_value = VAR_UNKNOWN;
             m_status = ERROR;
-            LOG_PRINT(error_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
         }
     }
-    LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
+    else
+    {
+        m_status = ERROR;
+    }
 
     disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
     if (m_status == ERROR)

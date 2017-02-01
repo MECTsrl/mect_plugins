@@ -321,17 +321,17 @@ void Logger::run()
         /* waiting for maximum _period_msec */
         int rc = sem_timedwait(&theLoggingSem, &abstime);
         if (rc  == -1 && errno == EINTR){
-            recompute_abstime = true;
             continue;
         }
         else if (rc == 0) {
-            recompute_abstime = true;
             /* shot */
         }
         else if (errno == ETIMEDOUT) {
             /* timeout */
             counterS++;
             counterF++;
+            recompute_abstime = true;
+        } else {
             recompute_abstime = true;
         }
 
@@ -1165,7 +1165,7 @@ bool Logger::checkVariation()
     {
         /* if is active, dump if it is necessary and emit the signal */
         LOG_PRINT(verbose_e, "Reading '%s'\n", StoreArrayV[i].tag);
-        if (formattedReadFromDb(StoreArrayV[i].CtIndex, value) != 0)
+        if (formattedReadFromDb_string(StoreArrayV[i].CtIndex, value) != 0)
         {
             LOG_PRINT(error_e, "cannot read variable %d '%s'\n", StoreArrayV[i].CtIndex, StoreArrayV[i].tag );
             continue;
@@ -1225,7 +1225,7 @@ bool Logger::dumpStorage()
         {
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading F '%s'\n", StoreArrayS[iS].tag);
-            if (formattedReadFromDb(StoreArrayS[iS].CtIndex, value) != 0)
+            if (formattedReadFromDb_string(StoreArrayS[iS].CtIndex, value) != 0)
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayS[iS].tag );
                 strcpy(value, TAG_NAN);
@@ -1277,7 +1277,7 @@ bool Logger::dumpStorage()
         {
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading F '%s'\n", StoreArrayF[iF].tag);
-            if (formattedReadFromDb(StoreArrayF[iF].CtIndex, value) != 0)
+            if (formattedReadFromDb_string(StoreArrayF[iF].CtIndex, value) != 0)
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayF[iF].tag );
                 strcpy(value, TAG_NAN);
@@ -1328,7 +1328,7 @@ bool Logger::dumpStorage()
         {
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading V '%s'\n", StoreArrayV[iV].tag);
-            if (formattedReadFromDb(StoreArrayV[iV].CtIndex, value) != 0)
+            if (formattedReadFromDb_string(StoreArrayV[iV].CtIndex, value) != 0)
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayV[iV].tag );
                 strcpy(value, TAG_NAN);
@@ -1393,7 +1393,7 @@ bool Logger::dumpStorage()
         {
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading X '%s'\n", StoreArrayX[iX].tag);
-            if (formattedReadFromDb(StoreArrayX[iX].CtIndex, value) != 0)
+            if (formattedReadFromDb_string(StoreArrayX[iX].CtIndex, value) != 0)
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayX[iX].tag );
                 strcpy(value, TAG_NAN);

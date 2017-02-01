@@ -37,7 +37,7 @@ ATCMbutton::ATCMbutton(QWidget * parent):
     m_pagename = "";
     m_remember = true;
     m_status = UNK;
-    m_CtIndex = -1;
+    m_CtIndex = 0;
     m_CtVisibilityIndex = 0;
     m_CtPasswordVarIndex = -1;
     m_text = "";
@@ -369,39 +369,19 @@ bool ATCMbutton::setStatusvar(QString variable)
         connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
     }
 #endif
-    /* if the actual variable is different from actual variable, deactivate it */
-    if (m_statusvar.length() != 0 && variable.trimmed().compare(m_statusvar) != 0)
-    {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_statusvar.toAscii().data()) == 0)
-        {
-#endif
-            m_statusvar.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
-    }
 
     /* if the acual variable is empty activate it */
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_statusvar = variable.trimmed();
+        if (Tag2CtIndex(m_statusvar.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_statusvar = variable.trimmed();
-            if (Tag2CtIndex(m_statusvar.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                m_CtIndex = -1;
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_statusvar.toAscii().data(), m_CtIndex);
-        }
-        else
-        {
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
             m_status = ERROR;
+            m_CtIndex = 0;
         }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_statusvar.toAscii().data(), m_CtIndex);
 #else
         m_statusvar = variable.trimmed();
 #endif
@@ -527,7 +507,7 @@ void ATCMbutton::updateData()
         if (m_CtPasswordVarIndex >= 0)
         {
             LOG_PRINT(verbose_e, "password var %s, index %d\n", m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
-            if (formattedReadFromDb(m_CtPasswordVarIndex, value) == 0 && strlen(value) > 0)
+            if (formattedReadFromDb_string(m_CtPasswordVarIndex, value) == 0 && strlen(value) > 0)
             {
                 m_status = DONE;
                 LOG_PRINT(verbose_e, "PASSWORD %d\n", atoi(value));
@@ -542,11 +522,11 @@ void ATCMbutton::updateData()
         }
     }
 
-    if (m_statusvar.length() > 0 && m_CtIndex >= 0)
+    if (m_CtIndex > 0)
     {
         if (getStatusVarByCtIndex(m_CtIndex, NULL) != BUSY)
         {
-            if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
+            if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
             {
                 if (m_statusactualval != value
                         ||
@@ -777,7 +757,7 @@ void ATCMbutton::pressFunction()
 #ifdef TARGET_ARM
     if (checkPassword())
     {
-        if (m_CtIndex >= 0)
+        if (m_CtIndex > 0)
         {
             setFormattedVarByCtIndex(m_CtIndex, m_statuspressval.toAscii().data());
         }
@@ -797,7 +777,7 @@ void ATCMbutton::releaseFunction()
 #ifdef TARGET_ARM
     if (checkPassword())
     {
-        if (m_CtIndex >= 0)
+        if (m_CtIndex > 0)
         {
             setFormattedVarByCtIndex(m_CtIndex, m_statusreleaseval.toAscii().data());
         }

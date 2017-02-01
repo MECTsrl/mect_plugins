@@ -48,7 +48,6 @@ const char * _protocol_map_[] =
     ""
 };
 
-char DeviceReconnected;
 size_t SyncroAreaSize = 0;
 
 variable_t varNameArray[DB_SIZE_ELEM + 1];
@@ -932,7 +931,7 @@ int writeToDb(int ctIndex, void * value)
  * @return 1 Some error occured
  * @return 0 Write done
  */
-int formattedReadFromDb(int ctIndex, char * value)
+int formattedReadFromDb_string(int ctIndex, char * value)
 {
     int decimal = 0;
 
@@ -1105,6 +1104,331 @@ int formattedReadFromDb(int ctIndex, char * value)
     }
 
     LOG_PRINT(verbose_e, "HEX %X - FORMATTED '%s': '%s'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, value);
+    return 0;
+}
+
+int formattedReadFromDb_float(int ctIndex, float * fvalue)
+{
+    int decimal = 0;
+
+    /* invalid ctIndex */
+    if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
+    {
+        LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
+        return -1;
+    }
+
+    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+
+    decimal = getVarDecimal(ctIndex);
+
+    LOG_PRINT(verbose_e, "CURRENT Decimal is %d to be used for VARIABLE %s\n", decimal, varNameArray[ctIndex].tag);
+
+    switch(varNameArray[ctIndex].type)
+    {
+    case uintab_e:
+    case uintba_e:
+    {
+        unsigned short int _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %u decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *fvalue = (float)_value / pow(10,decimal);
+        }
+        else
+        {
+            *fvalue = (float)_value;
+        }
+    }
+        break;
+    case intab_e:
+    case intba_e:
+    {
+        short int _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %d decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *fvalue = (float)_value / pow(10,decimal);
+        }
+        else
+        {
+            *fvalue = (float)_value;
+        }
+    }
+        break;
+    case udint_abcd_e:
+    case udint_badc_e:
+    case udint_cdab_e:
+    case udint_dcba_e:
+    {
+        unsigned int _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %u decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *fvalue = (float)_value / pow(10,decimal);
+        }
+        else
+        {
+            *fvalue = (float)_value;
+        }
+    }
+        break;
+    case dint_abcd_e:
+    case dint_badc_e:
+    case dint_cdab_e:
+    case dint_dcba_e:
+    {
+        int _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %d decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *fvalue = (float)_value / pow(10,decimal);
+        }
+        else
+        {
+            *fvalue = (float)_value;
+        }
+    }
+        break;
+    case fabcd_e:
+    case fbadc_e:
+    case fcdab_e:
+    case fdcba_e:
+    {
+        float _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %f decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        *fvalue = _value;
+    }
+        break;
+    case byte_e:
+    case bit_e:
+    case bytebit_e:
+    case wordbit_e:
+    case dwordbit_e:
+    {
+        BYTE _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        *fvalue = (float)_value;
+    }
+        break;
+    default:
+        LOG_PRINT(error_e, "unknown type %d\n", ctIndex);
+        return -1;
+        break;
+    }
+
+    switch (getStatusVarByCtIndex(ctIndex, NULL))
+    {
+    case DONE:
+        break;
+    case ERROR:
+        LOG_PRINT(error_e, "getStatusVarByCtIndex ERROR %d\n", ctIndex);
+        return -1;
+        break;
+    case BUSY:
+        break;
+    default:
+        LOG_PRINT(error_e, "getStatusVarByCtIndex default %d\n", ctIndex);
+        return -1;
+        break;
+    }
+
+    LOG_PRINT(verbose_e, "HEX %X - FORMATTED float '%s': %f\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *fvalue);
+    return 0;
+}
+
+int formattedReadFromDb_int(int ctIndex, int * ivalue)
+{
+    int decimal = 0;
+
+    /* invalid ctIndex */
+    if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
+    {
+        LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
+        return -1;
+    }
+
+    LOG_PRINT(verbose_e, "HEXADECIMAL CTI: %d BYTE %d - '%s': 0x%X\n", ctIndex, (ctIndex - 1) * 4, varNameArray[ctIndex].tag, pIODataAreaI[(ctIndex - 1) * 4]);
+
+    decimal = getVarDecimal(ctIndex);
+
+    LOG_PRINT(verbose_e, "CURRENT Decimal is %d to be used for VARIABLE %s\n", decimal, varNameArray[ctIndex].tag);
+
+    switch(varNameArray[ctIndex].type)
+    {
+    case uintab_e:
+    case uintba_e:
+    {
+        unsigned short int _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %u decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *ivalue = (int)_value / pow(10,decimal);
+        }
+        else
+        {
+            *ivalue = (int)_value;
+        }
+    }
+        break;
+    case intab_e:
+    case intba_e:
+    {
+        short int _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %d decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *ivalue = (int)_value / pow(10,decimal);
+        }
+        else
+        {
+            *ivalue = (int)_value;
+        }
+    }
+        break;
+    case udint_abcd_e:
+    case udint_badc_e:
+    case udint_cdab_e:
+    case udint_dcba_e:
+    {
+        unsigned int _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %u decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *ivalue = (int)_value / pow(10,decimal);
+        }
+        else
+        {
+            *ivalue = (int)_value;
+        }
+    }
+        break;
+    case dint_abcd_e:
+    case dint_badc_e:
+    case dint_cdab_e:
+    case dint_dcba_e:
+    {
+        int _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %d decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *ivalue = (int)_value / pow(10,decimal);
+        }
+        else
+        {
+            *ivalue = (int)_value;
+        }
+    }
+        break;
+    case fabcd_e:
+    case fbadc_e:
+    case fcdab_e:
+    case fdcba_e:
+    {
+        float _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        LOG_PRINT(verbose_e, "%s - value %f decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
+        if (decimal > 0)
+        {
+            *ivalue = (int)(_value / pow(10,decimal));
+        }
+        else
+        {
+            *ivalue = (int)_value;
+        }
+    }
+        break;
+    case byte_e:
+    case bit_e:
+    case bytebit_e:
+    case wordbit_e:
+    case dwordbit_e:
+    {
+        BYTE _value;
+        if (readFromDb(ctIndex, &_value) != 0)
+        {
+            LOG_PRINT(error_e, "readFromDb\n");
+            return -1;
+        }
+        *ivalue = (int)_value;
+    }
+        break;
+    default:
+        LOG_PRINT(error_e, "unknown type %d\n", ctIndex);
+        return -1;
+        break;
+    }
+
+    switch (getStatusVarByCtIndex(ctIndex, NULL))
+    {
+    case DONE:
+        break;
+    case ERROR:
+        LOG_PRINT(error_e, "getStatusVarByCtIndex ERROR %d\n", ctIndex);
+        return -1;
+        break;
+    case BUSY:
+        break;
+    default:
+        LOG_PRINT(error_e, "getStatusVarByCtIndex default %d\n", ctIndex);
+        return -1;
+        break;
+    }
+
+    LOG_PRINT(verbose_e, "HEX %X - FORMATTED int '%s': %d\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *ivalue);
     return 0;
 }
 

@@ -305,41 +305,19 @@ bool ATCMcombobox::writeValue(QString value)
 /* Activate variable */
 bool ATCMcombobox::setVariable(QString variable)
 {
-    /* if the acual variable is different from actual variable, deactivate it */
-    if (m_variable.length() != 0 && variable.trimmed().compare(m_variable) != 0)
-    {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_variable.trimmed().toAscii().data()) == 0)
-        {
-#endif
-            m_variable.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
-    }
-
     /* if the acual variable is empty activate it */
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_variable = variable.trimmed();
+        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_variable = variable.trimmed();
-            if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                m_value = VAR_UNKNOWN;
-                m_CtIndex = -1;
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-        }
-        else
-        {
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
             m_status = ERROR;
             m_value = VAR_UNKNOWN;
+            m_CtIndex = -1;
         }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
 #else
         m_variable = variable.trimmed();
 #endif
@@ -414,6 +392,7 @@ bool ATCMcombobox::setRefresh(int refresh)
 /* read variable */
 void ATCMcombobox::updateData()
 {
+    bool isChanged = true;
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
 
@@ -440,8 +419,10 @@ void ATCMcombobox::updateData()
     {
         if (m_CtIndex >= 0)
         {
-            if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
+            if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
             {
+                QString new_value = value;
+                isChanged = (m_value != new_value);
                 m_status = DONE;
                 m_value = value;
             }
@@ -460,7 +441,7 @@ void ATCMcombobox::updateData()
     }
     LOG_PRINT(verbose_e, "'%s': '%s' status '%c' \n", m_variable.toAscii().data(), value, m_status);
 #endif
-    if (m_status == DONE)
+    if (m_status == DONE && isChanged)
     {
         setcomboValue();
     }

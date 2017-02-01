@@ -70,7 +70,9 @@ int CtIndex2Type(int CtIndex);
 int writeToDb(int ctIndex, void * value);
 int writeStringToDb(int ctIndex, char * value);
 int readFromDb(int ctIndex, void * value);
-int formattedReadFromDb(int ctIndex, char * value);
+int formattedReadFromDb_string(int ctIndex, char * value);
+int formattedReadFromDb_float(int ctIndex, float * fvalue);
+int formattedReadFromDb_int(int ctIndex, int * ivalue);
 int getHeadBlock(int CtIndex, char * varblockhead);
 int getHeadBlockName(const char * varname, char * varblockhead);
 int disconnectDevice(enum protocol_e protocol, int node);
@@ -85,8 +87,6 @@ int isDeviceConnectedByCtIndex(int CtIndex);
 
 int setupConnectedDevice(enum protocol_e protocol, int node);
 int setupConnectedDeviceByName(const char * protocol, int node);
-
-extern char DeviceReconnected;
 
 extern int setFormattedVar(const char * varname, char * formattedVar);
 extern int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar);

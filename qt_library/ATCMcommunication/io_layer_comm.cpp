@@ -115,6 +115,8 @@ void io_layer_comm::run()
         else if (rc  == -1 && errno == ETIMEDOUT) {
             recompute_abstime = true;
             writeVarQueuedByCtIndex(); // another loop for the BUSY cases
+        } else {
+            recompute_abstime = true;
         }
 
         pthread_mutex_lock(the_send_mutex);

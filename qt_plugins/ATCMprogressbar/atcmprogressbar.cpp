@@ -26,7 +26,7 @@ ATCMprogressbar::ATCMprogressbar(QWidget *parent) :
 	m_value = 0;
 	m_variable = "";
 	m_status = UNK;
-	m_CtIndex = -1;
+    m_CtIndex = 0;
     m_CtVisibilityIndex = 0;
 	m_barColor = QColor(255,127,80);
 	m_visibilityvar = "";
@@ -195,41 +195,19 @@ bool ATCMprogressbar::setVisibilityVar(QString visibilityVar)
 /* Activate variable */
 bool ATCMprogressbar::setVariable(QString variable)
 {
-    /* if the acual variable is different from actual variable, deactivate it */
-    if (m_variable.length() != 0 && variable.trimmed().compare(m_variable) != 0)
-    {
-#ifdef TARGET_ARM
-        if (deactivateVar(m_variable.trimmed().toAscii().data()) == 0)
-        {
-#endif
-            m_variable.clear();
-            m_CtIndex = -1;
-#ifdef TARGET_ARM
-        }
-#endif
-    }
-
     /* if the acual variable is empty activate it */
     if (variable.trimmed().length() > 0)
     {
 #ifdef TARGET_ARM
-        if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
+        m_variable = variable.trimmed();
+        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
         {
-            m_variable = variable.trimmed();
-            if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                //m_value = VAR_UNKNOWN;
-                m_CtIndex = -1;
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-        }
-        else
-        {
+            LOG_PRINT(error_e, "cannot extract ctIndex\n");
             m_status = ERROR;
             //m_value = VAR_UNKNOWN;
+            m_CtIndex = 0;
         }
+        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
 #else
         m_variable = variable.trimmed();
 #endif
@@ -305,8 +283,6 @@ bool ATCMprogressbar::setRefresh(int refresh)
 void ATCMprogressbar::updateData()
 {
 #ifdef TARGET_ARM
-	char value[TAG_LEN] = "";
-
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
         if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
@@ -323,12 +299,13 @@ void ATCMprogressbar::updateData()
         return;
     }
 
-	if (m_variable.length() > 0 && m_CtIndex >= 0)
+    if (m_CtIndex >= 0)
 	{
-		if (formattedReadFromDb(m_CtIndex, value) == 0 && strlen(value) > 0)
+        int ivalue;
+        if (formattedReadFromDb_int(m_CtIndex, &ivalue) == 0)
 		{
             m_status = DONE;
-            m_value = atoi(value);
+            m_value = ivalue;
 		}
 		else
 		{
@@ -340,9 +317,7 @@ void ATCMprogressbar::updateData()
 	{
 		m_status = ERROR;
 		m_value = -1;
-		LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
 	}
-	LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 #endif
 	if (m_status == DONE)
 	{
