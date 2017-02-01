@@ -90,8 +90,8 @@ class
 
 	public Q_SLOTS:
 		bool setVariable(QString);
-        bool setRefresh(int) const {return true;}
-        bool unsetRefresh() const {return true;}
+        bool setRefresh(int);
+        void unsetRefresh();
         void setViewStatus(bool);
 		bool setVisibilityVar(QString);
 		void setOffIcon(const QIcon& icon);

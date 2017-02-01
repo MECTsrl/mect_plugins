@@ -182,12 +182,12 @@ void ATCMled::unsetVariable()
 {
     setVariable("");
 }
-/*
+
 void ATCMled::unsetRefresh()
 {
     setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
-*/
+
 void ATCMled::unsetViewStatus()
 {
     setViewStatus(false);
@@ -241,6 +241,11 @@ bool ATCMled::setVisibilityVar(QString visibilityVar)
         }
 #endif
     }
+}
+
+bool ATCMled::setRefresh(int refresh)
+{
+    return true;
 }
 
 /*
