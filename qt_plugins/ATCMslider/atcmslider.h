@@ -94,8 +94,8 @@ class
 
         enum QFrame::Shadow apparence() const;
 
-		bool startAutoReading();
-		bool stopAutoReading();
+        bool startAutoReading() const { return true; }
+        bool stopAutoReading()  const { return true; }
 
 	public Q_SLOTS:
 			bool writeValue(int);
@@ -147,7 +147,7 @@ protected Q_SLOTS:
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

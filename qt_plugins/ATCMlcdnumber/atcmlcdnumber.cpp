@@ -43,26 +43,17 @@ ATCMlcdnumber::ATCMlcdnumber(QWidget *parent) :
 			"}"
 #endif
 			);
-
-	if (m_refresh > 0)
-	{
-		refresh_timer = new QTimer(this);
-		connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-		refresh_timer->start(m_refresh);
-	}
-	else
-	{
-		refresh_timer = NULL;
-	}
+    m_parent = parent;
+#ifdef TARGET_ARM
+    if (m_refresh > 0)
+    {
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
+#endif
 }
 
 ATCMlcdnumber::~ATCMlcdnumber()
 {
-	if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-		delete refresh_timer;
-	}
 }
 
 void ATCMlcdnumber::paintEvent(QPaintEvent * e)
@@ -128,22 +119,6 @@ bool ATCMlcdnumber::setVariable(QString variable)
 bool ATCMlcdnumber::setRefresh(int refresh)
 {
 	m_refresh = refresh;
-	if (refresh_timer == NULL && m_refresh > 0)
-	{
-		refresh_timer = new QTimer(this);
-
-		connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-
-		refresh_timer->start(m_refresh);
-	}
-	else if (m_refresh > 0)
-	{
-		refresh_timer->start(m_refresh);
-	}
-	else if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-	}
 	return true;
 }
 
@@ -202,26 +177,6 @@ void ATCMlcdnumber::updateData()
 #endif
 	this->update();
 	this->display(m_value);
-}
-
-bool ATCMlcdnumber::startAutoReading()
-{
-	if (refresh_timer != NULL && m_refresh > 0)
-	{
-		refresh_timer->start(m_refresh);
-		return true;
-	}
-	return false;
-}
-
-bool ATCMlcdnumber::stopAutoReading()
-{
-	if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-		return true;
-	}
-	return false;
 }
 
 bool ATCMlcdnumber::setViewStatus(bool status)

@@ -84,10 +84,11 @@ class
 		QColor borderColor() const;
 		QColor barColor() const;
 
+        bool startAutoReading() const { return true; }
+        bool stopAutoReading()  const { return true; }
+
         enum QFrame::Shadow apparence() const;
 
-		bool startAutoReading();
-		bool stopAutoReading();
 
 	public Q_SLOTS:
 		bool setVariable(QString);
@@ -134,7 +135,7 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

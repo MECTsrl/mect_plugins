@@ -87,30 +87,17 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
                 "*/\n"
             #endif
                 );
-
+    m_parent = parent;
 #ifdef TARGET_ARM
     if (m_refresh > 0)
     {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     }
-    else
 #endif
-    {
-        refresh_timer = NULL;
-    }
-
-    //connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 }
 
 ATCMspinbox::~ATCMspinbox()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMspinbox::paintEvent(QPaintEvent * e)
@@ -420,22 +407,6 @@ void ATCMspinbox::setBorderRadius(int radius)
 bool ATCMspinbox::setRefresh(int refresh)
 {
     m_refresh = refresh;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
     return true;
 }
 
@@ -501,34 +472,6 @@ void ATCMspinbox::updateData()
     connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #endif
     this->update();
-}
-
-bool ATCMspinbox::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-bool ATCMspinbox::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
 }
 
 enum QFrame::Shadow ATCMspinbox::apparence() const

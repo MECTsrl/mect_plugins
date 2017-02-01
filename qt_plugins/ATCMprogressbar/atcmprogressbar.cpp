@@ -80,28 +80,18 @@ ATCMprogressbar::ATCMprogressbar(QWidget *parent) :
 #endif
 			);
 
+    m_parent = parent;
 #ifdef TARGET_ARM
-	if (m_refresh > 0)
-	{
-		refresh_timer = new QTimer(this);
-		connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-		refresh_timer->start(m_refresh);
-	}
-	else
+    if (m_refresh > 0)
+    {
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
 #endif
-	{
-		refresh_timer = NULL;
-	}
 
 }
 
 ATCMprogressbar::~ATCMprogressbar()
 {
-	if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-		delete refresh_timer;
-	}
 }
 
 void ATCMprogressbar::paintEvent(QPaintEvent * e)
@@ -189,10 +179,6 @@ bool ATCMprogressbar::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -312,22 +298,6 @@ void ATCMprogressbar::setBorderRadius(int radius)
 bool ATCMprogressbar::setRefresh(int refresh)
 {
 	m_refresh = refresh;
-#ifdef TARGET_ARM
-	if (refresh_timer == NULL && m_refresh > 0)
-	{
-		refresh_timer = new QTimer(this);
-		connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-		refresh_timer->start(m_refresh);
-	}
-	else if (m_refresh > 0)
-	{
-		refresh_timer->start(m_refresh);
-	}
-	else if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-	}
-#endif
 	return true;
 }
 
@@ -381,33 +351,6 @@ void ATCMprogressbar::updateData()
 	this->update();
 }
 
-bool ATCMprogressbar::startAutoReading()
-{
-#ifdef TARGET_ARM
-	if (refresh_timer != NULL && m_refresh > 0)
-	{
-		refresh_timer->start(m_refresh);
-		return true;
-	}
-	return false;
-#else
-	return true;
-#endif
-}
-
-bool ATCMprogressbar::stopAutoReading()
-{
-#ifdef TARGET_ARM
-	if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-		return true;
-	}
-	return false;
-#else
-	return true;
-#endif
-}
 
 enum QFrame::Shadow ATCMprogressbar::apparence() const
 {

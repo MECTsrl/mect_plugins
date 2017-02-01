@@ -29,8 +29,8 @@ public:
     int refresh()      const { return m_refresh; }
     char status()      const { return m_status; }
     bool viewStatus()  const { return m_viewstatus; }
-    bool startAutoReading();
-    bool stopAutoReading();
+    bool startAutoReading() const { return true; }
+    bool stopAutoReading()  const { return true; }
 
 public Q_SLOTS:
     bool writeValue(QString);
@@ -52,7 +52,7 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 private:
-    QTimer * refresh_timer;
+    QWidget *m_parent;
 };
 
 #endif
