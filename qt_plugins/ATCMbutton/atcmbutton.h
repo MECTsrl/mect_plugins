@@ -224,7 +224,7 @@ class
 
 	private:
         QWidget *m_parent;
-        QMutex theMutex;
+        bool m_fBusy;
 };
 
 #endif

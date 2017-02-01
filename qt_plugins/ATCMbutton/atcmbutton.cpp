@@ -175,7 +175,7 @@ ATCMbutton::ATCMbutton(QWidget * parent):
         connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     }
 #endif
-
+    m_fBusy = false;
 }
 
 ATCMbutton::~ATCMbutton()
@@ -503,6 +503,9 @@ void ATCMbutton::updateData()
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
 
+    if (m_fBusy)
+        return;
+
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
         if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
@@ -730,7 +733,7 @@ bool ATCMbutton::checkPassword()
         numpad * dk;
         int value = 0;
 
-        refresh_timer->stop();
+        m_fBusy = true;
         dk = new numpad(&value, NO_DEFAULT, 0, 0, input_dec, true, 0);
 
         dk->showFullScreen();
@@ -753,7 +756,7 @@ bool ATCMbutton::checkPassword()
             retval = false;
         }
         delete dk;
-        refresh_timer->start(m_refresh);
+        m_fBusy = false;
     }
     else
     {

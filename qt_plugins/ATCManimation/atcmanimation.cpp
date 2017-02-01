@@ -277,16 +277,6 @@ void ATCManimation::updateData()
 	this->update();
 }
 
-bool ATCManimation::startAutoReading()
-{
-	return true;
-}
-
-bool ATCManimation::stopAutoReading()
-{
-	return true;
-}
-
 bool ATCManimation::setMapping(QString mapping)
 {
 	m_mapping = mapping;
