@@ -321,6 +321,8 @@ public:
 #if 0
     descriptor::atcm_axisDescriptor x1axis() const { return m_x1axis; }
 #endif
+    bool startAutoReading() const { return true; }
+    bool stopAutoReading()  const { return true; }
 
     bool gridVisible() const { return m_gridvisible; }
     QString title() const { return m_title; }
@@ -332,8 +334,6 @@ public:
     char status()      const { return m_x1status && m_y1status && m_x2status && m_y2status; }
     bool viewStatus()  const { return m_viewstatus; }
     bool legendVisible()  const { return m_legendvisible; }
-    bool startAutoReading();
-    bool stopAutoReading();
     void RunStop();
 
 public slots:
@@ -557,8 +557,8 @@ private:
     char readVariable(int CtIndex, double * value);
 #endif
 private:
-    QTimer * refresh_timer;
-    bool m_run_stop;
+    QWidget *m_parent;
+    bool m_fStop;
     QMutex sample_mutex;
 };
 

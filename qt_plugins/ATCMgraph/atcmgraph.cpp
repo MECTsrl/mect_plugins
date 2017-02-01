@@ -88,7 +88,7 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     m_pen1color = QColor(255,0,0);
     m_pen2color = QColor(0,0,255);
 
-    m_run_stop = true;
+    m_fStop = false;
 
     m_x1ArrayValue = (double*)calloc(MAX_SAMPLES + 1, sizeof (double));
     m_x2ArrayValue = (double*)calloc(MAX_SAMPLES + 1, sizeof (double));
@@ -193,22 +193,13 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     PLOT->replot();
 #endif
 
-    /*
-     * put there a default stylesheet
-     *label->setStyleSheet("padding: 5px;");
-     */
+    m_parent = parent;
 #ifdef TARGET_ARM
     if (m_refresh > 0)
     {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     }
-    else
 #endif
-    {
-        refresh_timer = NULL;
-    }
 }
 
 QSize ATCMgraph::sizeHint() const
@@ -218,11 +209,6 @@ QSize ATCMgraph::sizeHint() const
 
 ATCMgraph::~ATCMgraph()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
     free(m_x1ArrayValue);
     m_x1ArrayValue = NULL;
     free(m_x2ArrayValue);
@@ -484,22 +470,6 @@ void ATCMgraph::setY2Label(QString y2Label)
 bool ATCMgraph::setRefresh(int refresh)
 {
     m_refresh = refresh;
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
     return true;
 }
 
@@ -537,7 +507,7 @@ void ATCMgraph::updateData()
     bool pen1 = true;
     bool pen2 = true;
 
-    if (PLOT->isVisible() == false)
+    if (PLOT->isVisible() == false || m_fStop)
     {
         return;
     }
@@ -601,26 +571,6 @@ void ATCMgraph::updateData()
         PLOT->updateAxes();
         PLOT->replot();
     }
-}
-
-bool ATCMgraph::startAutoReading()
-{
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-}
-
-bool ATCMgraph::stopAutoReading()
-{
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
 }
 
 bool ATCMgraph::setViewStatus(bool status)
@@ -1184,21 +1134,7 @@ bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
 
 void ATCMgraph::RunStop()
 {
-    m_run_stop = !m_run_stop;
-    if (refresh_timer != NULL)
-    {
-        if (m_run_stop)
-        {
-            if (m_refresh > 0)
-            {
-                refresh_timer->start(m_refresh);
-            }
-        }
-        else
-        {
-            refresh_timer->stop();
-        }
-    }
+    m_fStop = !m_fStop;
 }
 
 void ATCMInterruptedCurve::drawCurve( QPainter *painter, __attribute__((unused))int style, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect, int from, int to ) const

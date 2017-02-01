@@ -49,28 +49,16 @@ ATCMled::ATCMled(QWidget *parent) :
 #ifdef TARGET_ARM
     if (m_refresh > 0)
     {
-        /*
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-        */
     }
     else
 #endif
     {
-        // refresh_timer = NULL;
     }
 }
 
 ATCMled::~ATCMled()
 {
-    /*
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
-    */
+
 }
 
 void ATCMled::paintEvent(QPaintEvent * e)
@@ -245,42 +233,15 @@ bool ATCMled::setVisibilityVar(QString visibilityVar)
 
 bool ATCMled::setRefresh(int refresh)
 {
-    return true;
-}
-
-/*
-bool ATCMled::setRefresh(int refresh)
-{
     m_refresh = refresh;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
     return true;
 }
 
-*/
 /* read variable */
 void ATCMled::updateData()
 {
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
-
-    if (!m_parent->isVisible())  {
-        return;
-    }
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
@@ -321,37 +282,6 @@ void ATCMled::updateData()
 #endif
     this->update();
 }
-
-/*
-bool ATCMled::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-bool ATCMled::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-*/
 
 QIcon ATCMled::onIcon() const
 {

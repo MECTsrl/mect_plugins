@@ -128,8 +128,8 @@ class
 
 		enum QFrame::Shadow apparence() const;
 
-		bool startAutoReading();
-		bool stopAutoReading();
+        bool startAutoReading() const { return true; }
+        bool stopAutoReading()  const { return true; }
 
 	public Q_SLOTS:
 		void setPageName(QString);
@@ -223,7 +223,7 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
         QMutex theMutex;
 };
 

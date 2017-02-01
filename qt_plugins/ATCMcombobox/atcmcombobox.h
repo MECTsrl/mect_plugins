@@ -97,12 +97,13 @@ class
 		QColor bgColor() const;
 		QColor borderColor() const;
 		QColor fontColor() const;
-		bool startAutoReading();
 		//atcmcomboboxTaskMenu * prova() { return m_prova; }
 
 		enum QFrame::Shadow apparence() const;
 
-		bool stopAutoReading();
+        bool startAutoReading() const { return true; }
+        bool stopAutoReading()  const { return true; }
+
 
 		public Q_SLOTS:
 			bool writeValue(QString);
@@ -165,7 +166,8 @@ class
 		QString mapped2value( QString mapped );
 
 	private:
-		QTimer * refresh_timer;
+        bool    m_fBusy;
+        QWidget *m_parent;
 };
 
 #endif

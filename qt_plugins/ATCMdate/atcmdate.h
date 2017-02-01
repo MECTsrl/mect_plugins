@@ -96,8 +96,9 @@ class
 		QColor bgSelectColor() const;
 		QColor borderSelectColor() const;
 		QColor fontSelectColor() const;
-		bool startAutoReading();
-        
+        bool startAutoReading() const { return true; }
+        bool stopAutoReading()  const { return true; }
+
 		enum QFrame::Shadow apparence() const;
         enum ATCMDateFormat format() const
         {
@@ -111,7 +112,6 @@ class
             }
         }
 
-		bool stopAutoReading();
 
 	public Q_SLOTS:
 		void setBgColor(const QColor& bgColor);
@@ -149,7 +149,7 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

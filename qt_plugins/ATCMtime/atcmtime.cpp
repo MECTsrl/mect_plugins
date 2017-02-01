@@ -116,18 +116,17 @@ ATCMtime::ATCMtime(QWidget *parent) :
             #endif
                 );
 
-    refresh_timer = new QTimer(this);
-    connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-    refresh_timer->start(500);
+    m_parent = parent;
+#ifdef TARGET_ARM
+    if (m_refresh > 0)
+    {
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
+#endif
 }
 
 ATCMtime::~ATCMtime()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMtime::paintEvent(QPaintEvent * e)

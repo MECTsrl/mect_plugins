@@ -29,6 +29,7 @@
 ATCMcombobox::ATCMcombobox(QWidget *parent) :
     QComboBox(parent)
 {
+    m_fBusy = false;
     m_value = "";
     m_variable = "";
     m_status = UNK;
@@ -122,30 +123,17 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
                 "*/"
             #endif
                 );
-
+    m_parent = parent;
 #ifdef TARGET_ARM
     if (m_refresh > 0)
     {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     }
-    else
 #endif
-    {
-        refresh_timer = NULL;
-    }
-
-    //connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
 }
 
 ATCMcombobox::~ATCMcombobox()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMcombobox::paintEvent(QPaintEvent * e)
@@ -293,7 +281,8 @@ bool ATCMcombobox::writeValue(QString value)
     }
 #ifdef TARGET_ARM
     bool ret_val = true;
-    refresh_timer->stop();
+
+    m_fBusy = true;
 
     if (m_writeAcknowledge == false || QMessageBox::question(this, trUtf8("Confirm Writing"), trUtf8("Do you want to save new value: '%1'?").arg(value), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
     {
@@ -304,7 +293,8 @@ bool ATCMcombobox::writeValue(QString value)
 
     setcomboValue();
 
-    refresh_timer->start(m_refresh);
+    m_fBusy = false;
+
     return ret_val;
 #else
     Q_UNUSED( value );
@@ -418,22 +408,6 @@ void ATCMcombobox::setBorderRadius(int radius)
 bool ATCMcombobox::setRefresh(int refresh)
 {
     m_refresh = refresh;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
     return true;
 }
 
@@ -442,6 +416,9 @@ void ATCMcombobox::updateData()
 {
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
+
+    if (m_fBusy)
+        return;
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
@@ -490,33 +467,7 @@ void ATCMcombobox::updateData()
     this->update();
 }
 
-bool ATCMcombobox::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
 
-bool ATCMcombobox::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
 
 enum QFrame::Shadow ATCMcombobox::apparence() const
 {

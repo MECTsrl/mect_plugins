@@ -131,18 +131,13 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
             #endif
                 );
 
+    m_parent = parent;
 #ifdef TARGET_ARM
     if (m_refresh > 0)
     {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     }
-    else
 #endif
-    {
-        refresh_timer = NULL;
-    }
 
     connect( this, SIGNAL( pressed() ), this, SLOT( writeAction() ) );
     connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
@@ -150,11 +145,6 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
 
 ATCMlabel::~ATCMlabel()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMlabel::paintEvent(QPaintEvent * e)
@@ -396,22 +386,6 @@ void ATCMlabel::setBorderRadius(int radius)
 bool ATCMlabel::setRefresh(int refresh)
 {
     m_refresh = refresh;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
     return true;
 }
 
@@ -521,34 +495,6 @@ void ATCMlabel::updateData()
     LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 #endif
     this->update();
-}
-
-bool ATCMlabel::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-bool ATCMlabel::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
 }
 
 void ATCMlabel::setBgSelectColor(const QColor& color)

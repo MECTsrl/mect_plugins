@@ -74,9 +74,9 @@ class
 		char status()      const { return m_status; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
-		bool startAutoReading();
-		bool stopAutoReading();
-		virtual QSize 	sizeHint () { return QSize(50,50); }
+        bool startAutoReading() const { return true; }
+        bool stopAutoReading()  const { return true; }
+        virtual QSize 	sizeHint () { return QSize(50,50); }
 
 	public Q_SLOTS:
 		bool setVariable(QString);
@@ -110,7 +110,7 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

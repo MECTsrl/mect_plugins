@@ -122,11 +122,11 @@ class
 		QColor bgSelectColor() const;
 		QColor borderSelectColor() const;
 		QColor fontSelectColor() const;
-		bool startAutoReading();
         
 		enum QFrame::Shadow apparence() const;
 
-		bool stopAutoReading();
+        bool startAutoReading() const { return true; }
+        bool stopAutoReading()  const { return true; }
 
 	public Q_SLOTS:
 		bool writeValue(QString);
@@ -198,7 +198,7 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

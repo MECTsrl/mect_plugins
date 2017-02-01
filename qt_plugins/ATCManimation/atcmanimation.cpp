@@ -36,32 +36,18 @@ ATCManimation::ATCManimation(QWidget *parent) :
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	setMinimumSize(15,15);
 
-	/*
-	 * put there a default stylesheet
-	 *led->setStyleSheet("padding: 5px;");
-	 */
-
+    m_parent = parent;
 #ifdef TARGET_ARM
-	if (m_refresh > 0)
-	{
-		refresh_timer = new QTimer(this);
-		connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-		refresh_timer->start(m_refresh);
-	}
-	else
+    if (m_refresh > 0)
+    {
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
 #endif
-	{
-		refresh_timer = NULL;
-	}
 }
 
 ATCManimation::~ATCManimation()
 {
-	if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-		delete refresh_timer;
-	}
+
 }
 
 void ATCManimation::paintEvent(QPaintEvent * e)
@@ -241,22 +227,6 @@ void ATCManimation::unsetMapping()
 bool ATCManimation::setRefresh(int refresh)
 {
 	m_refresh = refresh;
-#ifdef TARGET_ARM
-	if (refresh_timer == NULL && m_refresh > 0)
-	{
-		refresh_timer = new QTimer(this);
-		connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-		refresh_timer->start(m_refresh);
-	}
-	else if (m_refresh > 0)
-	{
-		refresh_timer->start(m_refresh);
-	}
-	else if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-	}
-#endif
 	return true;
 }
 
@@ -278,6 +248,7 @@ void ATCManimation::updateData()
             }
 		}
 	}
+
     if (! this->isVisible()) {
 		return;
 	}
@@ -308,30 +279,12 @@ void ATCManimation::updateData()
 
 bool ATCManimation::startAutoReading()
 {
-#ifdef TARGET_ARM
-	if (refresh_timer != NULL && m_refresh > 0)
-	{
-		refresh_timer->start(m_refresh);
-		return true;
-	}
-	return false;
-#else
 	return true;
-#endif
 }
 
 bool ATCManimation::stopAutoReading()
 {
-#ifdef TARGET_ARM
-	if (refresh_timer != NULL)
-	{
-		refresh_timer->stop();
-		return true;
-	}
-	return false;
-#else
 	return true;
-#endif
 }
 
 bool ATCManimation::setMapping(QString mapping)

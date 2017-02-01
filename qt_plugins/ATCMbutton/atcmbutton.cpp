@@ -168,29 +168,18 @@ ATCMbutton::ATCMbutton(QWidget * parent):
             #endif
                 );
 
+    m_parent = parent;
 #ifdef TARGET_ARM
     if (m_refresh > 0)
     {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
+        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     }
-    else
 #endif
-    {
-        refresh_timer = NULL;
-    }
 
-    /* connect spostate in setStatusVar */
 }
 
 ATCMbutton::~ATCMbutton()
 {
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        delete refresh_timer;
-    }
 }
 
 void ATCMbutton::paintEvent(QPaintEvent * e)
@@ -505,23 +494,6 @@ bool ATCMbutton::setRefresh(int refresh)
 {
     Q_UNUSED( refresh );
     m_refresh = refresh;
-    //m_refresh = DEFAULT_PLUGIN_REFRESH;
-#ifdef TARGET_ARM
-    if (refresh_timer == NULL && m_refresh > 0)
-    {
-        refresh_timer = new QTimer(this);
-        connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
-        refresh_timer->start(m_refresh);
-    }
-    else if (m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-    }
-    else if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-    }
-#endif
     return true;
 }
 
@@ -530,6 +502,7 @@ void ATCMbutton::updateData()
 {
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
+
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
         if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
@@ -542,6 +515,7 @@ void ATCMbutton::updateData()
             }
         }
     }
+
     if (! this->isVisible()) {
         goto exit_function;
     }
@@ -610,34 +584,6 @@ void ATCMbutton::updateData()
 
 exit_function:
     this->update();
-#endif
-}
-
-bool ATCMbutton::startAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL && m_refresh > 0)
-    {
-        refresh_timer->start(m_refresh);
-        return true;
-    }
-    return false;
-#else
-    return true;
-#endif
-}
-
-bool ATCMbutton::stopAutoReading()
-{
-#ifdef TARGET_ARM
-    if (refresh_timer != NULL)
-    {
-        refresh_timer->stop();
-        return true;
-    }
-    return false;
-#else
-    return true;
 #endif
 }
 
