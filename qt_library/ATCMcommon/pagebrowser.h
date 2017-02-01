@@ -66,6 +66,7 @@ public:
     virtual void reload(void) = 0;
 protected slots:
     virtual void updateData();
+    void refreshPage();
     bool go_back(void);
     bool go_home(void);
     bool goto_page(const char * page_name, bool remember = true);
@@ -117,6 +118,9 @@ protected slots:
 signals:
     void new_ack(event_msg_t * msg);
 #endif
+signals:
+    /* widget refresh AND request for new value for H-type variables */
+    void varRefresh();
 protected:
     QTimer * refresh_timer;
     QLabel * labelIcon;

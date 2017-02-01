@@ -67,7 +67,7 @@ page::page(QWidget *parent) :
 {
     /* set up the time for set the refresh timeout */
     refresh_timer = new QTimer(this);
-    connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
+    connect(refresh_timer, SIGNAL(timeout()), this, SLOT(refreshPage()));
     refresh_timer->start(REFRESH_MS);
     labelDataOra = NULL;
     labelUserName = NULL;
@@ -81,6 +81,18 @@ page::page(QWidget *parent) :
     {
         Tag2CtIndex("PLC_buzzerOn", &ID_FORCE_BUZZER);
     }
+}
+
+void page::refreshPage()
+{
+    if (this->isVisible() == false)
+    {
+        /* should never happen */
+        refresh_timer->stop();
+        return;
+    }
+    updateData();
+    emit varRefresh();
 }
 
 /**

@@ -84,20 +84,20 @@ class
 		QIcon onIcon() const;
 		QIcon offIcon() const;
 		int value()    const { return m_value; }
-		bool startAutoReading();
-		bool stopAutoReading();
+        bool startAutoReading() const { return true; }
+        bool stopAutoReading()  const { return true; }
 		virtual QSize 	sizeHint () { return QSize(15,15); }
 
 	public Q_SLOTS:
 		bool setVariable(QString);
-		bool setRefresh(int);
-		void setViewStatus(bool);
+        bool setRefresh(int) const {return true;}
+        bool unsetRefresh() const {return true;}
+        void setViewStatus(bool);
 		bool setVisibilityVar(QString);
 		void setOffIcon(const QIcon& icon);
 		void setOnIcon(const QIcon& icon);
 
 		void unsetVariable();
-		void unsetRefresh();
 		void unsetViewStatus();
 		void unsetVisibilityVar();
 		void unsetOnIcon();
@@ -124,7 +124,7 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QTimer * refresh_timer;
+        QWidget *m_parent;
 };
 
 #endif

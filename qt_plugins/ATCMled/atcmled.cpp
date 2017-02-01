@@ -38,6 +38,9 @@ ATCMled::ATCMled(QWidget *parent) :
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setMinimumSize(15,15);
 
+	m_parent = parent;
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+
     /*
      * put there a default stylesheet
      *led->setStyleSheet("padding: 5px;");
@@ -46,24 +49,28 @@ ATCMled::ATCMled(QWidget *parent) :
 #ifdef TARGET_ARM
     if (m_refresh > 0)
     {
+        /*
         refresh_timer = new QTimer(this);
         connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
         refresh_timer->start(m_refresh);
+        */
     }
     else
 #endif
     {
-        refresh_timer = NULL;
+        // refresh_timer = NULL;
     }
 }
 
 ATCMled::~ATCMled()
 {
+    /*
     if (refresh_timer != NULL)
     {
         refresh_timer->stop();
         delete refresh_timer;
     }
+    */
 }
 
 void ATCMled::paintEvent(QPaintEvent * e)
@@ -175,12 +182,12 @@ void ATCMled::unsetVariable()
 {
     setVariable("");
 }
-
+/*
 void ATCMled::unsetRefresh()
 {
     setRefresh(DEFAULT_PLUGIN_REFRESH);
 }
-
+*/
 void ATCMled::unsetViewStatus()
 {
     setViewStatus(false);
@@ -236,7 +243,7 @@ bool ATCMled::setVisibilityVar(QString visibilityVar)
     }
 }
 
-
+/*
 bool ATCMled::setRefresh(int refresh)
 {
     m_refresh = refresh;
@@ -259,11 +266,16 @@ bool ATCMled::setRefresh(int refresh)
     return true;
 }
 
+*/
 /* read variable */
 void ATCMled::updateData()
 {
 #ifdef TARGET_ARM
     char value[TAG_LEN] = "";
+
+    if (!m_parent->isVisible())  {
+        return;
+    }
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
@@ -277,6 +289,7 @@ void ATCMled::updateData()
             }
         }
     }
+
     if (! this->isVisible()) {
         return;
     }
@@ -304,6 +317,7 @@ void ATCMled::updateData()
     this->update();
 }
 
+/*
 bool ATCMled::startAutoReading()
 {
 #ifdef TARGET_ARM
@@ -331,6 +345,8 @@ bool ATCMled::stopAutoReading()
     return true;
 #endif
 }
+
+*/
 
 QIcon ATCMled::onIcon() const
 {
