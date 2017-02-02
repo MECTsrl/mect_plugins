@@ -15,6 +15,7 @@
 #include <QDirIterator>
 #include <QFontDatabase>
 //#include "app_config.h"
+#include "pthread.h"
 
 /**
  * @brief load the passwords
@@ -348,22 +349,71 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 
 int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 {
-    int errors = 0;
-
     if (step >= MAX_RCP_STEP)
     {
         return -1;
     }
+    LOG_PRINT(error_e, "writeRecipe() %d (step=%d,indexes=%p) .....\n", table[step].count(), step, indexes);
+#ifdef AVOID_RECIPES
+    for (int i = 0; i < table[step].count(); i++)
+    {
+        u_int16_t ctIndex = indexes->at(i);
+        u_int32_t value = table[step].at(i);
+
+        writeVarInQueueByCtIndex(ctIndex, value);
+    }
+#else
     beginWrite();
     for (int i = 0; i < table[step].count(); i++)
     {
-        u_int16_t addr = indexes->at(i);
-        u_int32_t value = table[step].at(i);
-        errors += addWrite(addr, &value);
+        char retval;
+
+        u_int16_t ctIndex = indexes->at(i);
+        u_int32_t value = table[step].at(i);        
+
+        retval = prepareWriteVarByCtIndex(ctIndex, &value, 0);
+
+        switch (retval) {
+        case DONE:
+            break;
+        case BUSY:
+        case ERROR:
+            if (pthread_mutex_lock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+            {
+                for (int j = i - 1; j > 0; --j) {
+                    ctIndex = indexes->at(j);
+                    uint16_t addr;
+
+                    for (int k = SyncroAreaSize - 1; k > 0; --k)
+                    {
+                        addr = pIOSyncroAreaO[k] & ADDRESS_MASK;
+                        if (addr == ctIndex && IS_PREPARE_SYNCRO_FLAG(k))
+                        {
+                            for (int n = k; n < SyncroAreaSize; n++)
+                            {
+                                pIOSyncroAreaO[n] = pIOSyncroAreaO[n + 1];
+                                pIOSyncroAreaI[n] = pIOSyncroAreaI[n + 1];
+                            }
+                            pIOSyncroAreaO[SyncroAreaSize - 1] = 0x0000;
+                            pIOSyncroAreaI[SyncroAreaSize - 1] = 0x0000;
+                            SyncroAreaSize--;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+            LOG_PRINT(error_e, "..... BUSY @%d/%d (step=%d,indexes=%p)\n", i, table[step].count(), step, indexes);
+            return 1;
+        default:
+            LOG_PRINT(error_e, "..... ERROR @%d/%d (step=%d,indexes=%p)\n", i, table[step].count(), step, indexes);
+            return 1;
+        }
     }
     endWrite();
-
-    return errors;
+#endif
+    LOG_PRINT(error_e, "..... %d (step=%d,indexes=%p)\n", table[step].count(), step, indexes);
+    return 0;
 }
 
 bool CommStart()

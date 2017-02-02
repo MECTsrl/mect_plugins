@@ -1981,7 +1981,7 @@ void InterruptedCurve::drawCurve( QPainter *painter, __attribute__((unused))int 
 void trend::loadOrientedWindow()
 {
     LOG_PRINT(verbose_e,"loadWindow\n");
-    pthread_mutex_lock(&mutex);
+    if (pthread_mutex_lock(&mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
     if (_layout_ == PORTRAIT)
     {
         LOG_PRINT(verbose_e, "Current '%s' Tmin '%s' Tmax '%s' VisibleWindowSec %d\n",
@@ -2008,7 +2008,7 @@ void trend::loadOrientedWindow()
                     actualTzero.addSecs(actualVisibleWindowSec)
                     );
     }
-    pthread_mutex_unlock(&mutex);
+    if (pthread_mutex_unlock(&mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
 }
 
 

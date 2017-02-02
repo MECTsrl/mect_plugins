@@ -19,21 +19,23 @@ extern "C" {
 
 #define LISTENING_PERIOD_US 1000000
 
-#define ADDRESS_MASK 0x1FFF
+#define AVOID_RECIPES
 
-#define WRITE_MASK           0x4 /* 100 */
-#define MULTI_WRITE_MASK     0x5 /* 101 */
-#define PREPARE_MASK         0x1 /* 001 */
-#define READ_MASK            0x2 /* 010 */
-#define WRITE_RCP_MASK       0x6 /* 110 */
-#define MULTI_WRITE_RCP_MASK 0x7 /* 111 */
+#define OPER_MASK            0xE000
+#define PREPARE_MASK         0x2000
+#define READ_MASK            0x4000
+#define WRITE_MASK           0x8000
+#define MULTI_WRITE_MASK     0xA000
+#define WRITE_RCP_MASK       0xC000
+#define MULTI_WRITE_RCP_MASK 0xE000
+#define ADDRESS_MASK         0x1FFF
 
-#define IS_EMPTY_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0xE000) == 0x0000)
-#define IS_WRITE_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0x8000) == 0x8000) /* a*/
-#define IS_PREPARE_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & 0x2000) == 0x2000)
-#define GET_SYNCRO_FLAG(index, flag) ((pIOSyncroAreaO[index] >> 13) == flag)
-#define SET_SYNCRO_FLAG(index, flag) {CLR_SYNCRO_FLAG(index); pIOSyncroAreaO[index] |= (flag << 13);}
-#define CLR_SYNCRO_FLAG(index) (pIOSyncroAreaO[index] &= ADDRESS_MASK)
+#define IS_EMPTY_SYNCRO_FLAG(index)   ((pIOSyncroAreaO[index] & OPER_MASK) == 0x0000)
+#define IS_PREPARE_SYNCRO_FLAG(index) ((pIOSyncroAreaO[index] & OPER_MASK) == 0x2000)
+#define IS_READ_SYNCRO_FLAG(index)    ((pIOSyncroAreaO[index] & OPER_MASK) == 0x4000)
+#define IS_WRITE_SYNCRO_FLAG(index)   ((pIOSyncroAreaO[index] & 0x8000) == 0x8000) /* all writes */
+#define SET_SYNCRO_FLAG(index, flag)  { CLR_SYNCRO_FLAG(index); pIOSyncroAreaO[index] |= flag; }
+#define CLR_SYNCRO_FLAG(index)        { pIOSyncroAreaO[index] &= ADDRESS_MASK; }
 
 #define beginWrite() {}
 #define endWrite()  writePendingInorder()
@@ -166,7 +168,6 @@ void writeVarInQueueByCtIndex(const int ctIndex, const int value);
 void writeVarQueuedByCtIndex(void);
 int readVar(const char * varname, void * value);
 
-int checkRecipeWriting(void);
 void compactSyncWrites(void);
 int  getVarDivisorByName(const char * varname);
 int  getVarDivisor(const int ctIndex);

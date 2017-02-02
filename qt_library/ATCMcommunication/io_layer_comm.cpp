@@ -26,7 +26,7 @@ static void *automation_thread(void *arg);
 
 void *automation_thread(void *arg)
 {
-    pthread_mutex_lock(&mutex);
+    if (pthread_mutex_lock(&mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
     {
         pthread_cond_wait(&condvar, &mutex);
         setup();
@@ -37,7 +37,7 @@ void *automation_thread(void *arg)
         }
         while (1);
     }
-    pthread_mutex_unlock(&mutex);
+    if (pthread_mutex_unlock(&mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
     return arg;
 }
 
@@ -107,10 +107,10 @@ void io_layer_comm::run()
             continue;
         }
         else if (rc == 0) {
-            do {
+            //do {
                 writeVarQueuedByCtIndex();
-                rc = sem_trywait(&theWritingSem);
-            } while (rc == 0);
+            //    rc = sem_trywait(&theWritingSem);
+            //} while (rc == 0);
         }
         else if (rc  == -1 && errno == ETIMEDOUT) {
             recompute_abstime = true;
@@ -119,18 +119,18 @@ void io_layer_comm::run()
             recompute_abstime = true;
         }
 
-        pthread_mutex_lock(the_send_mutex);
+        if (pthread_mutex_lock(the_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
         {
             notifySetData();
             notifySetSyncro();
         }
-        pthread_mutex_unlock(the_send_mutex);
-        pthread_mutex_lock(the_recv_mutex);
+        if (pthread_mutex_unlock(the_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+        if (pthread_mutex_lock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
         {
             notifyGetData();
             notifyGetSyncro();
         }
-        pthread_mutex_unlock(the_recv_mutex);
+        if (pthread_mutex_unlock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
         compactSyncWrites();
         update_all();
 
@@ -351,6 +351,16 @@ bool io_layer_comm::notifyGetData(void)
     if (select(iServerSocketData + 1, &recv_set, NULL, NULL, &tv) > 0) {
         size_t received;
         int iByteNum;
+#if 1
+#define THE_DATA_UDP_SIZE 30720
+        iByteNum = recv(iServerSocketData, ReceiveDataData, THE_DATA_UDP_SIZE, 0); //ReceiveSizeData
+        if (iByteNum == THE_DATA_UDP_SIZE) {
+            _getStatusIO = DONE;
+        } else {
+            LOG_PRINT(error_e, "recv fail: %d/%u [%s]\n", iByteNum, THE_DATA_UDP_SIZE, strerror(errno))
+           _getStatusIO = ERROR;
+        }
+#else
         do {
             received = 0;
             do {
@@ -371,6 +381,7 @@ bool io_layer_comm::notifyGetData(void)
         if (_getStatusIO == BUSY) {
             _getStatusIO = DONE;
         }
+#endif
     }
     return  (_getStatusIO == DONE);
 }
@@ -380,6 +391,17 @@ bool io_layer_comm::notifySetData(void)
     size_t iByteNum;
     _setStatusIO = BUSY;
     size_t received = 0;
+#if 1
+    iByteNum = sendto(iClientSocketData, SendDataData, THE_DATA_UDP_SIZE, 0, // SendSizeData
+                      (struct sockaddr *) &DestinationAddressData,
+                      sizeof(DestinationAddressData));
+    if (iByteNum == THE_DATA_UDP_SIZE) {
+        _setStatusIO = DONE;
+    } else {
+        LOG_PRINT(error_e, "sendto fail: %d/%u [%s]\n", iByteNum, THE_DATA_UDP_SIZE, strerror(errno))
+       _setStatusIO = ERROR;
+    }
+#else
     do {
         iByteNum = sendto(iClientSocketData, (char *)SendDataData + received, SendSizeData - received, 0,
                           (struct sockaddr *) &DestinationAddressData,
@@ -391,9 +413,10 @@ bool io_layer_comm::notifySetData(void)
             _setStatusIO = ERROR;
         }
     } while (received != SendSizeData);
-    if (_getStatusIO == BUSY) {
-        _getStatusIO = DONE;
+    if (_setStatusIO == BUSY) {
+        _setStatusIO = DONE;
     }
+#endif
     return (_setStatusIO == DONE);
 }
 
@@ -411,6 +434,16 @@ bool io_layer_comm::notifyGetSyncro(void)
     if (select(iServerSocketSyncro + 1, &recv_set, NULL, NULL, &tv) > 0) {
         size_t received;
         int iByteNum;
+#if 1
+#define THE_SYNC_UDP_SIZE   11462
+        iByteNum = recv(iServerSocketSyncro, ReceiveDataSyncro, THE_SYNC_UDP_SIZE, 0); // ReceiveSizeSyncro
+        if (iByteNum == THE_SYNC_UDP_SIZE) {
+            _getStatusIO = DONE;
+        } else {
+            LOG_PRINT(error_e, "recv fail: %d/%u [%s]\n", iByteNum, THE_SYNC_UDP_SIZE, strerror(errno))
+           _getStatusIO = ERROR;
+        }
+#else
         do {
             received = 0;
             do {
@@ -431,6 +464,7 @@ bool io_layer_comm::notifyGetSyncro(void)
         if (_getStatusIO == BUSY) {
             _getStatusIO = DONE;
         }
+#endif
     }
     return  (_getStatusIO == DONE);
 }
@@ -440,6 +474,17 @@ bool io_layer_comm::notifySetSyncro(void)
     size_t iByteNum;
     _setStatusIO = BUSY;
     size_t received = 0;
+#if 1
+    iByteNum = sendto(iClientSocketSyncro, SendDataSyncro, THE_SYNC_UDP_SIZE, 0, // SendSizeSyncro
+                      (struct sockaddr *) &DestinationAddressSyncro,
+                      sizeof(DestinationAddressSyncro));
+    if (iByteNum == THE_SYNC_UDP_SIZE) {
+        _setStatusIO = DONE;
+    } else {
+        LOG_PRINT(error_e, "sendto fail: %d/%u [%s]\n", iByteNum, THE_SYNC_UDP_SIZE, strerror(errno))
+       _setStatusIO = ERROR;
+    }
+#else
     do {
         iByteNum = sendto(iClientSocketSyncro, (char *)SendDataSyncro + received, SendSizeSyncro - received, 0,
                           (struct sockaddr *) &DestinationAddressSyncro,
@@ -451,9 +496,10 @@ bool io_layer_comm::notifySetSyncro(void)
             _setStatusIO = ERROR;
         }
     } while (received != SendSizeSyncro);
-    if (_getStatusIO == BUSY) {
-        _getStatusIO = DONE;
+    if (_setStatusIO == BUSY) {
+        _setStatusIO = DONE;
     }
+#endif
     return (_setStatusIO == DONE);
 }
 
