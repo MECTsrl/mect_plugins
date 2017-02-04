@@ -19,7 +19,7 @@ extern "C" {
 
 #define LISTENING_PERIOD_US 1000000
 
-#define AVOID_RECIPES
+#undef AVOID_RECIPES
 
 #define OPER_MASK            0xE000
 #define PREPARE_MASK         0x2000
@@ -67,11 +67,10 @@ size_t fillSyncroArea(void);
 int indexSyncroElement();
 int Tag2CtIndex(const char * Tag, int * CtIndex);
 int CtIndex2Tag(int CtIndex, char * Tag);
-int SynIndex2CtIndex(int SynIndex, int * CtIndex);
 int CtIndex2Type(int CtIndex);
-int writeToDb(int ctIndex, void * value);
 int writeStringToDb(int ctIndex, char * value);
 int readFromDb(int ctIndex, void * value);
+int readFromDbLock(int ctIndex, void * value);
 int formattedReadFromDb_string(int ctIndex, char * value);
 int formattedReadFromDb_float(int ctIndex, float * fvalue);
 int formattedReadFromDb_int(int ctIndex, int * ivalue);
@@ -95,14 +94,11 @@ extern int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
 extern char getStatusVarByCtIndex(int CtIndex, char * msg);
 extern int deactivateVar(const char * varname);
 extern int activateVar(const char * varname);
-extern char prepareWriteVarByCtIndex(const int ctIndex, void * value, int execwrite);
-extern int readVar(const char * varname, void * value);
-extern int getVarDecimal(const int ctIndex);
 extern int getVarDecimalByCtIndex(const int ctIndex);
 extern int getVarDecimalByName(const char * varname);
-extern int doWrite(int ctIndex, void * value);
+extern int doWrite(int ctIndex, void * valuep);
 extern int getStatus(int CtIndex);
-extern int addWrite(int ctIndex, void * value);
+extern int addWrite(int ctIndex, void * valuep);
 
 /**
  * @brief enable the update of a variable into internal database
@@ -160,19 +156,19 @@ extern short int device_status[prot_none_e][MAX_DEVICE_NB];
 extern pthread_mutex_t datasync_recv_mutex;
 extern pthread_mutex_t datasync_send_mutex;
 extern pthread_mutex_t write_queue_mutex;
+extern pthread_cond_t theWritingCondvar;
+extern pthread_mutex_t theWritingMutex;
+
+extern char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite);
 
 int writePending();
 int writePendingInorder();
 
-void writeVarInQueueByCtIndex(const int ctIndex, const int value);
+void writeVarInQueueByCtIndex(int ctIndex, int value);
 void writeVarQueuedByCtIndex(void);
-int readVar(const char * varname, void * value);
 
 void compactSyncWrites(void);
-int  getVarDivisorByName(const char * varname);
-int  getVarDivisor(const int ctIndex);
 int  getVarDecimalByName(const char * varname);
-int  getVarDecimal(const int ctIndex);
 
 typedef struct write_queue_elem_s {
     int ctIndex;
@@ -180,7 +176,6 @@ typedef struct write_queue_elem_s {
     struct write_queue_elem_s * next;
 } write_queue_elem_t;
 
-extern sem_t theWritingSem;
 
 #ifdef __cplusplus
 }

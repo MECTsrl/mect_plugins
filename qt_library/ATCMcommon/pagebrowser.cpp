@@ -108,7 +108,7 @@ void page::updateData()
     if (ID_FORCE_BUZZER != -1)
     {
         bool FORCE_BUZZER;
-        if (readFromDb(ID_FORCE_BUZZER, &FORCE_BUZZER) == 0 && FORCE_BUZZER == true)
+        if (readFromDbLock(ID_FORCE_BUZZER, &FORCE_BUZZER) == 0 && FORCE_BUZZER == true)
         {
             beep(BUZZER_DURATION_MS);
         }
@@ -574,27 +574,8 @@ bool page::deactivateVarList(const QStringList listVarname)
  */
 bool page::setStatusVar(int SynIndex, char Status)
 {
-    int CtIndex;
-    
-    /* get the variable address from syncrovector */
-    if (SynIndex2CtIndex(SynIndex, &CtIndex) == 0)
-    {
-        if (Status == BUSY)
-        {
-            pIODataStatusAreaO[CtIndex] = Status;
-        }
-        else
-        {
-            pIODataStatusAreaO[CtIndex] = Status;
-        }
-        LOG_PRINT(verbose_e, "Status '%d' is '%c'\n", CtIndex, Status);
-        return true;
-    }
-    else
-    {
-        LOG_PRINT(error_e, "cannot set the status '%c' the variable '%d'\n", Status, CtIndex);
-        return false;
-    }
+    LOG_PRINT(error_e, "called  page::setStatusVar()\n");
+    return false;
 }
 
 /**

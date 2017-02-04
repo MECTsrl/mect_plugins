@@ -47,11 +47,10 @@ my @cpp_keyword = (
 "deactivateVar",
 "activateVar",
 "prepareWriteBlock",
-"readVar",
 "writeBlock",
 "getVarDecimalByName",
 "getVarDivisor",
-"getVarDecimal"
+"getVarDecimalByCtIndex"
 );
 
 # extract extract all variable from the crosstable

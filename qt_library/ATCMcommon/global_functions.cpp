@@ -297,63 +297,69 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     {
         return -1;
     }
-    for (int i = 0; i < table[step].count(); i++)
+    if (pthread_mutex_lock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
     {
-        char msg[TAG_LEN] = "";
-
-        uint32_t valueu = 0;
-        int ctIndex = (int)(indexes->at(i));
-        readFromDb(ctIndex, &valueu);
-        LOG_PRINT(verbose_e, "%d -> %d\n", ctIndex, valueu);
-
-        switch (getStatusVarByCtIndex(ctIndex, msg))
+        for (int i = 0; i < table[step].count(); i++)
         {
-        case BUSY:
-            //retry_nb = 0;
-            LOG_PRINT(verbose_e, "BUSY: %s\n", msg);
-            if (msg[0] == '\0')
+            char msg[TAG_LEN] = "";
+
+            uint32_t valueu = 0;
+            int ctIndex = (int)(indexes->at(i));
+            readFromDb(ctIndex, &valueu);
+            LOG_PRINT(verbose_e, "%d -> %d\n", ctIndex, valueu);
+
+            switch (getStatusVarByCtIndex(ctIndex, msg))
             {
-                strcpy(msg, VAR_PROGRESS);
+            case BUSY:
+                //retry_nb = 0;
+                LOG_PRINT(verbose_e, "BUSY: %s\n", msg);
+                if (msg[0] == '\0')
+                {
+                    strcpy(msg, VAR_PROGRESS);
+                }
+                errors++;
+                break;
+            case ERROR:
+                LOG_PRINT(verbose_e, "ERROR: %s\n", msg);
+                if (msg[0] == '\0')
+                {
+                    strcpy(msg, VAR_COMMUNICATION);
+                }
+                errors++;
+                break;
+            case DONE:
+                LOG_PRINT(verbose_e, "DONE step %d i %d value %d\n", step, i, valueu);
+                table[step][i] = valueu;
+                msg[0] = '\0';
+                break;
+            default:
+                LOG_PRINT(verbose_e, "OTHER: %s\n", msg);
+                if (msg[0] == '\0')
+                {
+                    strcpy(msg, VAR_UNKNOWN);
+                }
+                errors++;
+                break;
             }
-            errors++;
-            break;
-        case ERROR:
-            LOG_PRINT(verbose_e, "ERROR: %s\n", msg);
-            if (msg[0] == '\0')
+            if (msg[0] != '\0')
             {
-                strcpy(msg, VAR_COMMUNICATION);
+                LOG_PRINT(error_e, "Reading (%d) - '%s' - '%s'\n", i, varNameArray[ctIndex].tag, msg);
             }
-            errors++;
-            break;
-        case DONE:
-            LOG_PRINT(verbose_e, "DONE step %d i %d value %d\n", step, i, valueu);
-            table[step][i] = valueu;
-            msg[0] = '\0';
-            break;
-        default:
-            LOG_PRINT(verbose_e, "OTHER: %s\n", msg);
-            if (msg[0] == '\0')
-            {
-                strcpy(msg, VAR_UNKNOWN);
-            }
-            errors++;
-            break;
-        }
-        if (msg[0] != '\0')
-        {
-            LOG_PRINT(error_e, "Reading (%d) - '%s' - '%s'\n", i, varNameArray[ctIndex].tag, msg);
         }
     }
+    if (pthread_mutex_unlock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
     return errors;
 }
 
 int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 {
+    int busy = 0;
+
     if (step >= MAX_RCP_STEP)
     {
         return -1;
     }
-    LOG_PRINT(error_e, "writeRecipe() %d (step=%d,indexes=%p) .....\n", table[step].count(), step, indexes);
+    LOG_PRINT(info_e, "writeRecipe() %d (step=%d,indexes=%p) .....\n", table[step].count(), step, indexes);
 #ifdef AVOID_RECIPES
     for (int i = 0; i < table[step].count(); i++)
     {
@@ -364,6 +370,37 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     }
 #else
     beginWrite();
+    if (pthread_mutex_lock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    {
+        uint16_t oper;
+        uint16_t addr;
+
+        /* search for pending writes on the recipe variables */
+        for (int i = 0; i < table[step].count() && ! busy; ++i)
+        {
+            u_int16_t ctIndex = indexes->at(i);
+
+            for (int j = 0; j < SyncroAreaSize; ++j)
+            {
+                addr = pIOSyncroAreaO[j] & ADDRESS_MASK;
+                oper = pIOSyncroAreaO[j] & OPER_MASK;
+                   /* marked               all writes             prepare            empty */
+                if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
+                {
+                    busy = 1;
+                    LOG_PRINT(warning_e, "busy variable '%s'\n", varNameArray[ctIndex].tag);
+                    break;
+                }
+            }
+        }
+    }
+    if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+
+    if (busy)
+    {
+        return 1;
+    }
+
     for (int i = 0; i < table[step].count(); i++)
     {
         char retval;
@@ -371,38 +408,13 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         u_int16_t ctIndex = indexes->at(i);
         u_int32_t value = table[step].at(i);        
 
-        retval = prepareWriteVarByCtIndex(ctIndex, &value, 0);
+        retval = prepareWriteVarByCtIndex(ctIndex, value, 0);
 
         switch (retval) {
         case DONE:
             break;
         case BUSY:
         case ERROR:
-            if (pthread_mutex_lock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
-            {
-                for (int j = i - 1; j > 0; --j) {
-                    ctIndex = indexes->at(j);
-                    uint16_t addr;
-
-                    for (int k = SyncroAreaSize - 1; k > 0; --k)
-                    {
-                        addr = pIOSyncroAreaO[k] & ADDRESS_MASK;
-                        if (addr == ctIndex && IS_PREPARE_SYNCRO_FLAG(k))
-                        {
-                            for (int n = k; n < SyncroAreaSize; n++)
-                            {
-                                pIOSyncroAreaO[n] = pIOSyncroAreaO[n + 1];
-                                pIOSyncroAreaI[n] = pIOSyncroAreaI[n + 1];
-                            }
-                            pIOSyncroAreaO[SyncroAreaSize - 1] = 0x0000;
-                            pIOSyncroAreaI[SyncroAreaSize - 1] = 0x0000;
-                            SyncroAreaSize--;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
             LOG_PRINT(error_e, "..... BUSY @%d/%d (step=%d,indexes=%p)\n", i, table[step].count(), step, indexes);
             return 1;
         default:
@@ -412,7 +424,7 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     }
     endWrite();
 #endif
-    LOG_PRINT(error_e, "..... %d (step=%d,indexes=%p)\n", table[step].count(), step, indexes);
+    LOG_PRINT(info_e, "..... %d (step=%d,indexes=%p)\n", table[step].count(), step, indexes);
     return 0;
 }
 

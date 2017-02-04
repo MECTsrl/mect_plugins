@@ -94,7 +94,6 @@ protected:
     bool activateVarList(const QStringList listVarname);
     bool deactivateVarList(const QStringList listVarname);
     bool setFormattedVar(const char * varname, char * formattedVar);
-    bool setStatusVar(const char * varname, char Status);
     bool setStatusVar(int SynIndex, char Status);
     bool isBlockFullUsed(int block, QStringList variablelist);
     QStringList getBlocksToFill(QStringList variablelist);

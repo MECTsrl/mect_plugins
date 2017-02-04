@@ -283,7 +283,7 @@ bool ATCMspinbox::setVariable(QString variable)
                     int decimal = 0;
                     if (varNameArray[m_CtIndex].decimal > 4)
                     {
-                        if (readFromDb(varNameArray[m_CtIndex].decimal, &decimal) != 0)
+                        if (readFromDbLock(varNameArray[m_CtIndex].decimal, &decimal) != 0)
                         {
                             decimal = 0;
                         }
@@ -404,7 +404,7 @@ void ATCMspinbox::updateData()
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
-        if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
+        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
             m_status = DONE;
             if (visible && ! this->isVisible()) {
                 this->setVisible(true);

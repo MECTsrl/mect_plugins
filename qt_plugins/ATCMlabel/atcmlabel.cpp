@@ -375,7 +375,7 @@ void ATCMlabel::updateData()
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
-        if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
+        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
             m_status = DONE;
             if (visible && ! this->isVisible()) {
                 this->setVisible(true);
@@ -581,7 +581,7 @@ void ATCMlabel::writeAction()
     QString strvalue;
     if (m_CtIndex > 0)
     {
-        int decimal = getVarDecimal(m_CtIndex);
+        int decimal = getVarDecimalByCtIndex(m_CtIndex);
         numpad * dk;
         switch (CtIndex2Type(m_CtIndex))
         {

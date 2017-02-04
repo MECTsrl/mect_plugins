@@ -691,7 +691,6 @@ void ATCMgraph::setX1TickLabelFormat(enum ATCMAxisFormat fmt)
     else
     {
 #ifdef TARGET_ARM
-        //int decimal =  getVarDecimal(m_x1Variable);
         int decimal =  0;
 #else
         int decimal =  0;
@@ -711,7 +710,6 @@ void ATCMgraph::setY1TickLabelFormat(enum ATCMAxisFormat fmt)
     else
     {
 #ifdef TARGET_ARM
-        //int decimal =  getVarDecimal(m_y1variable);
         int decimal =  0;
 #else
         int decimal =  0;
@@ -731,7 +729,6 @@ void ATCMgraph::setX2TickLabelFormat(enum ATCMAxisFormat fmt)
     else
     {
 #ifdef TARGET_ARM
-        //int decimal =  getVarDecimal(m_x2variable);
         int decimal =  0;
 #else
         int decimal =  0;
@@ -751,7 +748,6 @@ void ATCMgraph::setY2TickLabelFormat(enum ATCMAxisFormat fmt)
     else
     {
 #ifdef TARGET_ARM
-        //int decimal =  getVarDecimal(m_y1variable);
         int decimal =  0;
 #else
         int decimal =  0;

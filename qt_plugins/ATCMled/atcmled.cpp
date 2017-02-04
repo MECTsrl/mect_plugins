@@ -221,7 +221,7 @@ void ATCMled::updateData()
 #ifdef TARGET_ARM
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
-        if (readFromDb(m_CtVisibilityIndex, &visible) == 0) {
+        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
             m_status = DONE;
             if (visible && ! this->isVisible()) {
                 this->setVisible(true);

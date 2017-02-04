@@ -19,6 +19,9 @@
 #define TIMEOUT_MS 100
 #define RETRY_NB 3
 
+pthread_cond_t theWritingCondvar;
+pthread_mutex_t theWritingMutex;
+
 static pthread_t theThread;
 static pthread_cond_t condvar;
 static pthread_mutex_t mutex;
@@ -28,11 +31,11 @@ void *automation_thread(void *arg)
 {
     if (pthread_mutex_lock(&mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
     {
-        pthread_cond_wait(&condvar, &mutex);
+        if (pthread_cond_wait(&condvar, &mutex)) {LOG_PRINT(error_e, "cond wait\n");};
         setup();
         do
         {
-            pthread_cond_wait(&condvar, &mutex);
+            if (pthread_cond_wait(&condvar, &mutex)) {LOG_PRINT(error_e, "cond wait\n");};
             loop();
         }
         while (1);
@@ -84,7 +87,6 @@ void io_layer_comm::run()
     /* set the absolute time */
     bool recompute_abstime = true;
     struct timespec abstime;
-    sem_init(&theWritingSem, 0, 0);
 
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&condvar, NULL);
@@ -102,38 +104,46 @@ void io_layer_comm::run()
                 abstime.tv_nsec = abstime.tv_nsec % (1000*1000*1000);
             }
         }
-        int rc = sem_timedwait(&theWritingSem, &abstime);
-        if (rc  == -1 && errno == EINTR){
-            continue;
-        }
-        else if (rc == 0) {
-            //do {
-                writeVarQueuedByCtIndex();
-            //    rc = sem_trywait(&theWritingSem);
-            //} while (rc == 0);
-        }
-        else if (rc  == -1 && errno == ETIMEDOUT) {
-            recompute_abstime = true;
-            writeVarQueuedByCtIndex(); // another loop for the BUSY cases
-        } else {
-            recompute_abstime = true;
-        }
 
+        // wait for either period 100ms or write occurrence
         if (pthread_mutex_lock(the_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
         {
+            int rc = pthread_cond_timedwait(&theWritingCondvar, the_send_mutex, &abstime);
+            if (rc == 0) {
+                // run from signal
+            } else if (rc == ETIMEDOUT) {
+                // run from timeout
+                recompute_abstime = true;
+            } else {
+                // error
+                recompute_abstime = true;
+                LOG_PRINT(error_e, "pthread_cond_timedwait %d\n", rc);
+            }
+
+            // send
             notifySetData();
             notifySetSyncro();
+
+            if (pthread_mutex_lock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+            {
+                // recv
+                notifyGetData();
+                notifyGetSyncro();
+
+                // update local variables
+                update_all(); // readFromDb
+            }
+            if (pthread_mutex_unlock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+
+            // update sync queue
+            compactSyncWrites();
         }
         if (pthread_mutex_unlock(the_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
-        if (pthread_mutex_lock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
-        {
-            notifyGetData();
-            notifyGetSyncro();
-        }
-        if (pthread_mutex_unlock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
-        compactSyncWrites();
-        update_all();
 
+        // another loop for the BUSY cases
+        writeVarQueuedByCtIndex();
+
+        // call the setup() and loop()
         if (recompute_abstime) {
             pthread_cond_signal(&condvar);
         }
@@ -382,6 +392,8 @@ bool io_layer_comm::notifyGetData(void)
             _getStatusIO = DONE;
         }
 #endif
+    } else {
+        LOG_PRINT(error_e, "select fail\n");
     }
     return  (_getStatusIO == DONE);
 }
@@ -465,6 +477,8 @@ bool io_layer_comm::notifyGetSyncro(void)
             _getStatusIO = DONE;
         }
 #endif
+    } else {
+        LOG_PRINT(error_e, "select fail\n");
     }
     return  (_getStatusIO == DONE);
 }

@@ -366,7 +366,7 @@ void Logger::run()
             }
             /* if is active, dump if it is necessary and emit the signal */
             LOG_PRINT(verbose_e, "Reading '%s' - %d\n", i.key().toAscii().data(), i.value()->CtIndex);
-            if (readFromDb(i.value()->CtIndex, &var) == 0)
+            if (readFromDbLock(i.value()->CtIndex, &var) == 0)
             {
                 LOG_PRINT(verbose_e, "Reading '%s' 0x%X\n", i.key().toAscii().data(), var);
                 /* an event is active */
