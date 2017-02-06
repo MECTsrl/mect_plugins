@@ -428,6 +428,41 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     return 0;
 }
 
+int checkRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
+{
+    int allOk = 1;
+
+    if (step >= MAX_RCP_STEP)
+    {
+        LOG_PRINT(error_e, "checkRecipe() wrong step %d\n", step);
+        return 0;
+    }
+    if (pthread_mutex_lock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    {
+        /* search for pending writes on the recipe variables */
+        for (int i = 0; i < table[step].count(); ++i)
+        {
+            u_int16_t ctIndex = indexes->at(i);
+            u_int32_t recipeValue = table[step].at(i);
+            u_int32_t actualValue = 0;
+
+            readFromDb(ctIndex, &actualValue);
+            if (recipeValue != actualValue) {
+                if (allOk) {
+                    allOk = 0;
+                    LOG_PRINT(error_e, "checkRecipe() failed for:\n");
+                }
+                LOG_PRINT(error_e, "\t%u/%d %s = 0x%08x vs 0x%08x\n", i, table[step].count(),
+                          varNameArray[ctIndex].tag, actualValue, recipeValue);
+            }
+        }
+    }
+    if (pthread_mutex_unlock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+
+    return allOk;
+}
+
+
 bool CommStart()
 {
     /* Load the cross-table in order to allocate the ioArea to the right size (should be fixed size) and fill the syncro table */

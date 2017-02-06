@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "app_logprint.h"
 #include "app_var_list.h"
@@ -827,6 +828,28 @@ int readFromDb(int ctIndex, void * value)
         LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
         retval = -1;
     }
+#ifdef VERBOSE_DEBUG
+    if (ctIndex == 196) {
+        int i;
+
+        for (i = 0; i < DB_SIZE_ELEM; i++)
+        {
+            uint16_t addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
+            uint16_t oper = pIOSyncroAreaO[i] & OPER_MASK;
+            uint16_t retv = pIOSyncroAreaI[i];
+               /* marked               all writes             prepare            empty */
+            if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
+            {
+                int *pI = (int *)IODataAreaI;
+                int *pO = (int *)IODataAreaO;
+                struct timespec now;
+                clock_gettime(CLOCK_REALTIME, &now);
+                fprintf(stderr, "readFromDb STATUS=%d @%d/%u 0x%04x|%u (%d) (%lds,%ldns)\n",
+                        pI[ctIndex], i, SyncroAreaSize, oper, retv, pO[ctIndex], now.tv_sec, now.tv_nsec);
+            }
+        }
+    }
+#endif
     return retval;
 }
 
@@ -1419,7 +1442,7 @@ int writePendingInorder()
         }
         if (do_signal)
         {
-            pthread_cond_signal(&theWritingCondvar);
+            // pthread_cond_signal(&theWritingCondvar);
         }
     }
     if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
@@ -1469,31 +1492,51 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
         }
 
         /* create a new item in Syncro area */
-        if (SyncroAreaSize < SYNCRO_DB_SIZE_ELEM)
+        if (SyncroAreaSize >= SYNCRO_DB_SIZE_ELEM)
         {
-            setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), ctIndex);
-            if (execwrite) {
-                SET_SYNCRO_FLAG(SyncroAreaSize, WRITE_MASK);
-            } else {
-                SET_SYNCRO_FLAG(SyncroAreaSize, PREPARE_MASK);
-            }
-            SyncroAreaSize++;
-        } else {
             retval = BUSY;
             LOG_PRINT(error_e, "full writing %d\n", ctIndex);
             goto exit_function;
         }
+        pIOSyncroAreaO[SyncroAreaSize] = ctIndex & ADDRESS_MASK;
+        if (execwrite) {
+            SET_SYNCRO_FLAG(SyncroAreaSize, WRITE_MASK);
+        } else {
+            SET_SYNCRO_FLAG(SyncroAreaSize, PREPARE_MASK);
+        }
+        SyncroAreaSize++;
 
         /* update the value into the Data area */
         int *p = (int *)IODataAreaO;
         p[ctIndex] = value;
-
+#ifdef VERBOSE_DEBUG
+        if (ctIndex == 196)
+        {
+            int i;
+            for (i = 0; i < DB_SIZE_ELEM; i++)
+            {
+                uint16_t addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
+                uint16_t oper = pIOSyncroAreaO[i] & OPER_MASK;
+                uint16_t retv = pIOSyncroAreaI[i];
+                   /* marked               all writes             prepare            empty */
+                if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
+                {
+                    int *pI = (int *)IODataAreaI;
+                    int *pO = (int *)IODataAreaO;
+                    struct timespec now;
+                    clock_gettime(CLOCK_REALTIME, &now);
+                    fprintf(stderr, "after write STATUS=%d @%d/%u 0x%04x|%u (%d) (%lds,%ldns)\n",
+                            pI[ctIndex], i, SyncroAreaSize, oper, retv, pO[ctIndex], now.tv_sec, now.tv_nsec);
+                }
+            }
+        }
+#endif
         retval = DONE;
     }
 exit_function:
     if (retval == DONE && execwrite)
     {
-        pthread_cond_signal(&theWritingCondvar);
+        // pthread_cond_signal(&theWritingCondvar);
     }
     if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
     return retval;
@@ -1807,9 +1850,34 @@ void compactSyncWrites(void)
 {
     unsigned int  SynIndex;
 
-    // already locked
+    // already locked both for send and recv
+#ifdef VERBOSE_DEBUG
+    {
+        int ctIndex = 196;
+        int i;
+        for (i = 0; i < DB_SIZE_ELEM; i++)
+        {
+            uint16_t addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
+            uint16_t oper = pIOSyncroAreaO[i] & OPER_MASK;
+            uint16_t retv = pIOSyncroAreaI[i];
+               /* marked               all writes             prepare            empty */
+            if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
+            {
+                int *pI = (int *)IODataAreaI;
+                int *pO = (int *)IODataAreaO;
+                struct timespec now;
+                clock_gettime(CLOCK_REALTIME, &now);
+                fprintf(stderr, "before compactSyncWrites STATUS=%d @%d/%u 0x%04x|%u (%d) (%lds,%ldns)\n",
+                        pI[ctIndex], i, SyncroAreaSize, oper, retv, pO[ctIndex], now.tv_sec, now.tv_nsec);
+            }
+        }
+    }
+#endif
     for (SynIndex = 0; SynIndex < SyncroAreaSize; ++SynIndex)
     {
+        if ((pIOSyncroAreaO[SynIndex] & ADDRESS_MASK) == 0x0000) {
+            LOG_PRINT(error_e, "zero address @ %u/%u\n", SynIndex, SyncroAreaSize);
+        }
         if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1)) // QUEUE_BUSY_WRITE
         {
             CLR_SYNCRO_FLAG(SynIndex);
@@ -1818,7 +1886,7 @@ void compactSyncWrites(void)
         {
             // Write acknowledged, entry cleared
             unsigned i = 0;
-            for (i = SynIndex; i < SyncroAreaSize; i++)
+            for (i = SynIndex; i < (SyncroAreaSize - 1); i++)
             {
                 pIOSyncroAreaO[i] = pIOSyncroAreaO[i + 1];
                 pIOSyncroAreaI[i] = pIOSyncroAreaI[i + 1];
@@ -1828,6 +1896,28 @@ void compactSyncWrites(void)
             SyncroAreaSize--;
         }
     }
+#ifdef VERBOSE_DEBUG
+    {
+        int ctIndex = 196;
+        int i;
+        for (i = 0; i < DB_SIZE_ELEM; i++)
+        {
+            uint16_t addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
+            uint16_t oper = pIOSyncroAreaO[i] & OPER_MASK;
+            uint16_t retv = pIOSyncroAreaI[i];
+               /* marked               all writes             prepare            empty */
+            if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
+            {
+                int *pI = (int *)IODataAreaI;
+                int *pO = (int *)IODataAreaO;
+                struct timespec now;
+                clock_gettime(CLOCK_REALTIME, &now);
+                fprintf(stderr, "after compactSyncWrites STATUS=%d @%d/%u 0x%04x|%u (%d) (%lds,%ldns)\n",
+                        pI[ctIndex], i, SyncroAreaSize, oper, retv, pO[ctIndex], now.tv_sec, now.tv_nsec);
+            }
+        }
+    }
+#endif
 }
 
 int getVarDecimalByCtIndex(const int ctIndex)
@@ -1881,7 +1971,7 @@ int getVarDecimalByName(const char * varname)
 
 inline int theValue(int ctIndex, void * valuep)
 {
-    int value;
+    int value = 0;
 
     if (!valuep || ctIndex <= 0 || ctIndex > DB_SIZE_ELEM) {
         LOG_PRINT(error_e, "wrong args %d %p\n", ctIndex, valuep);
@@ -1919,7 +2009,7 @@ inline int theValue(int ctIndex, void * valuep)
             value = *(int8_t *)valuep;
             break;
         default:
-            LOG_PRINT(error_e, "wrong type %d '%d'\n", varNameArray[ctIndex].type);
+            LOG_PRINT(error_e, "wrong type %d '%d'\n", ctIndex, varNameArray[ctIndex].type);
             value = -1;
         }
     }

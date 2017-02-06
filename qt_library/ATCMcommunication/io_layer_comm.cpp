@@ -120,23 +120,23 @@ void io_layer_comm::run()
                 LOG_PRINT(error_e, "pthread_cond_timedwait %d\n", rc);
             }
 
-            // send
-            notifySetData();
-            notifySetSyncro();
-
             if (pthread_mutex_lock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
             {
+                // send
+                notifySetData();
+                notifySetSyncro();
+
                 // recv
                 notifyGetData();
                 notifyGetSyncro();
+
+                // update sync queue
+                compactSyncWrites();
 
                 // update local variables
                 update_all(); // readFromDb
             }
             if (pthread_mutex_unlock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
-
-            // update sync queue
-            compactSyncWrites();
         }
         if (pthread_mutex_unlock(the_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
 

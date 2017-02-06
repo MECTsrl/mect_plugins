@@ -211,6 +211,7 @@ bool ATCManimation::setRefresh(int refresh)
 /* read variable */
 void ATCManimation::updateData()
 {
+    bool do_update = false;
 #ifdef TARGET_ARM
 	char value[TAG_LEN] = "";
 
@@ -235,24 +236,36 @@ void ATCManimation::updateData()
 	{
 		if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
 		{
-            m_value = value;
             m_status = DONE;
+            if (m_value.compare(value)) {
+                m_value = value;
+                do_update = true;
+            }
         }
 		else
 		{
-			m_value = VAR_UNKNOWN;
-			m_status = ERROR;
+            m_status = ERROR;
+            if (m_value.compare(VAR_UNKNOWN)) {
+                m_value = VAR_UNKNOWN;
+                do_update = true;
+            }
 		}
 	}
 	else
 	{
 		m_status = ERROR;
-		m_value = VAR_UNKNOWN;
-		LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
+        if (m_value.compare(VAR_UNKNOWN)) {
+            m_value = VAR_UNKNOWN;
+            do_update = true;
+        }
+        LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
 	}
 	LOG_PRINT(verbose_e, "'%s': '%s' status '%c' \n", m_variable.toAscii().data(), value, m_status);
+#else
+    do_update = true;
 #endif
-	this->update();
+    if (do_update)
+        this->update();
 }
 
 bool ATCManimation::setMapping(QString mapping)

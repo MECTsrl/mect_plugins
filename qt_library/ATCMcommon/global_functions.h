@@ -158,6 +158,8 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[]);
  */
 int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[]);
 
+int checkRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[]);
+
 /**
  * @brief set the backlight level
  *
