@@ -7,11 +7,14 @@
  *
  * @brief Info page
  */
+#include <QString>
 #include "app_logprint.h"
 #include "info.h"
 #include "global_functions.h"
 #include "ui_info.h"
 #include "app_config.h"
+#include "qrcode.h"
+
 #if 0
 #include "fw_build_version.h"
 #else
@@ -141,7 +144,7 @@ void info::reload()
 
     /* RT */
     uint16_t PLC_Version;
-    readFromDbLock(5394, &PLC_Version);
+    readFromDb(5394, &PLC_Version);
     ui->labelFcrtsval->setText(QString("%1").arg((float)PLC_Version/1000.0, 0, 'f', 3));
 
     /* PLC */
@@ -322,4 +325,88 @@ bool info::getVersion(const char * command, char * version, int maxsize)
 void info::on_pushButtonBack_clicked()
 {
     go_back();
+}
+
+void info::on_pushButtonQrc_clicked()
+{
+    QString szMessage;
+    QString szFile("Info.png");
+    qrcode  * myCode;
+    int     nRes = 0;
+    char command[1024];
+
+    // Serial #
+    szMessage.append(ui->labelSNtxt->text());
+    szMessage.append(ui->labelSNval->text());
+    szMessage.append("\n");
+    // Build
+    szMessage.append(ui->labelSOtxt->text());
+    szMessage.append(ui->labelSOval->text());
+    szMessage.append("\n");
+    // Target
+    szMessage.append(ui->labelTargettxt->text());
+    szMessage.append(ui->labelTargetval->text());
+    szMessage.append("\n");
+    // Build Version
+    szMessage.append(ui->labelMectLibtxt->text());
+    szMessage.append(ui->labelMectLib->text());
+    szMessage.append("\n");
+    // Real Time
+    szMessage.append(ui->labelFcrtstxt->text());
+    szMessage.append(ui->labelFcrtsval->text());
+    szMessage.append("\n");
+    // PLC
+    szMessage.append(ui->labelPLCtxt->text());
+    szMessage.append(ui->labelPLCval->text());
+    szMessage.append("\n");
+    // HMI
+    szMessage.append(ui->labelHMItxt->text());
+    szMessage.append(ui->labelHMIval->text());
+    szMessage.append("\n");
+    // MAC
+    szMessage.append(ui->labelMACtxt->text());
+    szMessage.append(ui->labelMACval->text());
+    szMessage.append("\n");
+    // IP
+    szMessage.append(ui->labelIPtxt->text());
+    szMessage.append(ui->labelIPval->text());
+    szMessage.append("\n");
+    // NET MASK
+    szMessage.append(ui->labelNetMasktxt->text());
+    szMessage.append(ui->labelNetMaskval->text());
+    szMessage.append("\n");
+    // Gateway
+    szMessage.append(ui->labelGatewaytxt->text());
+    szMessage.append(ui->labelGatewayval->text());
+    szMessage.append("\n");
+    // DNS1
+    szMessage.append(ui->labelDNS1txt->text());
+    szMessage.append(ui->labelDNS1val->text());
+    szMessage.append("\n");
+    // DNS2
+    szMessage.append(ui->labelDNS2txt->text());
+    szMessage.append(ui->labelDNS2val->text());
+    szMessage.append("\n");
+    // SD Card
+    szMessage.append(ui->labelSDtxt->text());
+    szMessage.append(ui->labelSDval->text());
+    szMessage.append("\n");
+    // USB Port
+    szMessage.append(ui->labelUSBtxt->text());
+    szMessage.append(ui->labelUSBval->text());
+    szMessage.append("\n");
+    // License
+    szMessage.append(ui->labelLICtxt->text());
+    szMessage.append(ui->labelLICval->text());
+    szMessage.append("\n");
+
+    // Compose Command
+    sprintf(command,"qrencode -t PNG -o %s \"%s\" > /dev/null 2>&1", szFile, szMessage.toAscii().data());
+    // Create PNG
+    if (system (command) == 0)  {
+        myCode = new qrcode(szFile, this);
+        myCode->setModal(true);
+        nRes = myCode->exec();
+        delete myCode;
+    }
 }

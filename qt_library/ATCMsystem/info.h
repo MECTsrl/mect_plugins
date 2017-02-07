@@ -35,6 +35,8 @@ private slots:
 
     void on_pushButtonBack_clicked();
 
+    void on_pushButtonQrc_clicked();
+
 private:
     Ui::info *ui;
 };

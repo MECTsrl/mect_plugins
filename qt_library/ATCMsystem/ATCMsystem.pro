@@ -49,7 +49,8 @@ options.cpp \
 time_set.cpp \
 net_conf.cpp \
 page0.cpp \
-main.cpp
+main.cpp \
+qrcode.cpp
 
 HEADERS += \
 system_ini.h \
@@ -63,7 +64,8 @@ options.h \
 time_set.h \
 net_conf.h \
 page0.h \
-main.h
+main.h \
+qrcode.h
 
 FORMS += \
 system_ini.ui \
@@ -76,7 +78,8 @@ menu.ui \
 options.ui \
 time_set.ui \
 net_conf.ui \
-page0.ui
+page0.ui \
+qrcode.ui
 
 # install
 target.path = $${ATCM_ARM_LIBRARY_INSTALL_LIBPATH}
