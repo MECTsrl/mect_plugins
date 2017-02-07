@@ -1442,7 +1442,7 @@ int writePendingInorder()
         }
         if (do_signal)
         {
-            // pthread_cond_signal(&theWritingCondvar);
+            pthread_cond_signal(&theWritingCondvar);
         }
     }
     if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
@@ -1536,7 +1536,7 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
 exit_function:
     if (retval == DONE && execwrite)
     {
-        // pthread_cond_signal(&theWritingCondvar);
+        pthread_cond_signal(&theWritingCondvar);
     }
     if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
     return retval;
@@ -1848,7 +1848,7 @@ int setStatusVar(const char * varname, char Status)
  */
 void compactSyncWrites(void)
 {
-    unsigned int  SynIndex;
+    int  SynIndex;
 
     // already locked both for send and recv
 #ifdef VERBOSE_DEBUG
@@ -1873,27 +1873,26 @@ void compactSyncWrites(void)
         }
     }
 #endif
+    // (Wadr,0) --> (0Adr,0)
+    // (0Adr,0) --> (0,0)
     for (SynIndex = 0; SynIndex < SyncroAreaSize; ++SynIndex)
     {
-        if ((pIOSyncroAreaO[SynIndex] & ADDRESS_MASK) == 0x0000) {
-            LOG_PRINT(error_e, "zero address @ %u/%u\n", SynIndex, SyncroAreaSize);
-        }
         if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1)) // QUEUE_BUSY_WRITE
         {
             CLR_SYNCRO_FLAG(SynIndex);
         }
-        else if (IS_EMPTY_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 0)) // QUEUE_EMPTY
+        else if (IS_EMPTY_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 0))
         {
-            // Write acknowledged, entry cleared
-            unsigned i = 0;
-            for (i = SynIndex; i < (SyncroAreaSize - 1); i++)
-            {
-                pIOSyncroAreaO[i] = pIOSyncroAreaO[i + 1];
-                pIOSyncroAreaI[i] = pIOSyncroAreaI[i + 1];
-            }
-            pIOSyncroAreaO[SyncroAreaSize - 1] = 0x0000;
-            pIOSyncroAreaI[SyncroAreaSize - 1] = 0x0000;
-            SyncroAreaSize--;
+            pIOSyncroAreaO[SynIndex] = 0x0000;
+        }
+    }
+    // (0000,0) --> --SyncroAreaSize
+    while (SyncroAreaSize > 0) {
+        SynIndex = SyncroAreaSize - 1;
+        if (pIOSyncroAreaO[SynIndex] == 0x0000 && pIOSyncroAreaI[SynIndex] == 0) {
+            --SyncroAreaSize;
+        } else {
+            break;
         }
     }
 #ifdef VERBOSE_DEBUG

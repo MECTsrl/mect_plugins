@@ -31,11 +31,30 @@ void *automation_thread(void *arg)
 {
     if (pthread_mutex_lock(&mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
     {
+#ifdef VERBOSE_DEBUG
+        struct timespec now;
+        long long last_time_ms;
+        long long actual_time_ms;
+        long long elapsed_ms;
+#endif
         if (pthread_cond_wait(&condvar, &mutex)) {LOG_PRINT(error_e, "cond wait\n");};
+#ifdef VERBOSE_DEBUG
+        clock_gettime(CLOCK_REALTIME, &now);
+        last_time_ms = now.tv_sec * 1000LL + now.tv_nsec / 1000000LL;
+#endif
         setup();
         do
         {
             if (pthread_cond_wait(&condvar, &mutex)) {LOG_PRINT(error_e, "cond wait\n");};
+#ifdef VERBOSE_DEBUG
+            clock_gettime(CLOCK_REALTIME, &now);
+            actual_time_ms = now.tv_sec * 1000LL + now.tv_nsec / 1000000LL;
+            elapsed_ms = actual_time_ms - last_time_ms;
+            last_time_ms = actual_time_ms;
+            if (elapsed_ms < 100 || elapsed_ms > 200) {
+                fprintf(stderr, "------------- calling loop() after %lld ms\n", elapsed_ms);
+            }
+#endif
             loop();
         }
         while (1);
