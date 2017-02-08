@@ -10,13 +10,12 @@ qrcode::qrcode(QString szFileQRC, QWidget *parent) :
 {
     ui->setupUi(this);
     this->setVisible(false);
-    this->setWindowFlags(Qt::Dialog | Qt::WindowFullScreen);
+    this->setWindowState(Qt::WindowFullScreen);
     QFileInfo fInfo(szFileQRC);
     if (fInfo.exists())  {
         QPixmap myPix;
         myPix.load(szFileQRC);
         ui->lblQrCode->setPixmap(myPix);
-        delete myPix;
     }
 }
 

@@ -401,7 +401,7 @@ void info::on_pushButtonQrc_clicked()
     szMessage.append("\n");
 
     // Compose Command
-    sprintf(command,"qrencode -t PNG -o %s \"%s\" > /dev/null 2>&1", szFile, szMessage.toAscii().data());
+    sprintf(command,"qrencode -t PNG -o %s \"%s\" > /dev/null 2>&1", szFile.toAscii().data(), szMessage.toAscii().data());
     // Create PNG
     if (system (command) == 0)  {
         myCode = new qrcode(szFile, this);
