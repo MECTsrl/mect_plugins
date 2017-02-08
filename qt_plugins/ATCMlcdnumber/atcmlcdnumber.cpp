@@ -150,7 +150,7 @@ void ATCMlcdnumber::updateData()
 		if (formattedReadFromDb_string(CtIndex, value) == 0 && strlen(value) > 0)
 		{
 			char statusMsg[TAG_LEN];
-			m_status = getStatusVarByCtIndex(CtIndex, statusMsg);
+            m_status = pIODataStatusAreaI[CtIndex];
 			switch (m_status)
 			{
 				case BUSY:

@@ -91,7 +91,6 @@ int setupConnectedDeviceByName(const char * protocol, int node);
 
 extern int setFormattedVar(const char * varname, char * formattedVar);
 extern int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar);
-extern char getStatusVarByCtIndex(int CtIndex, char * msg);
 extern int deactivateVar(const char * varname);
 extern int activateVar(const char * varname);
 extern int getVarDecimalByCtIndex(const int ctIndex);

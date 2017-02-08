@@ -1010,20 +1010,15 @@ int formattedReadFromDb_string(int ctIndex, char * value)
         break;
     }
 
-    switch (getStatusVarByCtIndex(ctIndex, NULL))
+    switch (pIODataStatusAreaI[ctIndex])
     {
     case DONE:
-        break;
-    case ERROR:
-        LOG_PRINT(error_e, "getStatusVarByCtIndex ERROR %d\n", ctIndex);
-        return -1;
-        break;
     case BUSY:
         break;
+    case ERROR:
     default:
-        LOG_PRINT(error_e, "getStatusVarByCtIndex default %d\n", ctIndex);
+        LOG_PRINT(verbose_e, "ERROR %d\n", ctIndex);
         return -1;
-        break;
     }
 
     LOG_PRINT(verbose_e, "HEX %X - FORMATTED '%s': '%s'\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, value);
@@ -1163,20 +1158,15 @@ int formattedReadFromDb_float(int ctIndex, float * fvalue)
         break;
     }
 
-    switch (getStatusVarByCtIndex(ctIndex, NULL))
+    switch (pIODataStatusAreaI[ctIndex])
     {
     case DONE:
-        break;
-    case ERROR:
-        LOG_PRINT(error_e, "getStatusVarByCtIndex ERROR %d\n", ctIndex);
-        return -1;
-        break;
     case BUSY:
         break;
+    case ERROR:
     default:
-        LOG_PRINT(error_e, "getStatusVarByCtIndex default %d\n", ctIndex);
+        LOG_PRINT(verbose_e, "ERROR %d\n", ctIndex);
         return -1;
-        break;
     }
 
     LOG_PRINT(verbose_e, "HEX %X - FORMATTED float '%s': %f\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *fvalue);
@@ -1323,20 +1313,15 @@ int formattedReadFromDb_int(int ctIndex, int * ivalue)
         break;
     }
 
-    switch (getStatusVarByCtIndex(ctIndex, NULL))
+    switch (pIODataStatusAreaI[ctIndex])
     {
     case DONE:
-        break;
-    case ERROR:
-        LOG_PRINT(error_e, "getStatusVarByCtIndex ERROR %d\n", ctIndex);
-        return -1;
-        break;
     case BUSY:
         break;
+    case ERROR:
     default:
-        LOG_PRINT(error_e, "getStatusVarByCtIndex default %d\n", ctIndex);
+        LOG_PRINT(verbose_e, "ERROR %d\n", ctIndex);
         return -1;
-        break;
     }
 
     LOG_PRINT(verbose_e, "HEX %X - FORMATTED int '%s': %d\n", pIODataAreaI[(ctIndex - 1) * 4], varNameArray[ctIndex].tag, *ivalue);
@@ -1542,106 +1527,6 @@ exit_function:
     return retval;
 }
 
-int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
-{
-    void * value = NULL;
-
-    short int var_int;
-    short unsigned int var_uint;
-    int var_dint;
-    unsigned int var_udint;
-    float var_float;
-    BYTE var_bit;
-    int decimal = 0;
-
-    decimal = getVarDecimalByCtIndex(ctIndex); // for *bit is set to 0
-
-    if (decimal > 0 || varNameArray[ctIndex].decimal > 4)
-    {
-        float fvalue = atof(formattedVar);
-        switch(varNameArray[ctIndex].type)
-        {
-        case uintab_e:
-        case uintba_e:
-            var_uint = (unsigned short)(fvalue * powf(10,decimal));
-            value = &var_uint;
-            break;
-        case intab_e:
-        case intba_e:
-            var_int = (short)(fvalue * powf(10,decimal));
-            value = &var_int;
-            break;
-        case udint_abcd_e:
-        case udint_badc_e:
-        case udint_cdab_e:
-        case udint_dcba_e:
-            var_udint = (unsigned int)(fvalue * powf(10,decimal));
-            value = &var_udint;
-            break;
-        case dint_abcd_e:
-        case dint_badc_e:
-        case dint_cdab_e:
-        case dint_dcba_e:
-            var_dint = (int)(fvalue * powf(10,decimal));
-            value = &var_dint;
-            break;
-        case fabcd_e:
-        case fbadc_e:
-        case fcdab_e:
-        case fdcba_e:
-            var_float = (float)(fvalue /** powf(10,decimal)*/); // decimal is only for sprintf
-            value = &var_float;
-            break;
-        default:
-            LOG_PRINT(error_e, "wrong %d '%s' decimal %d value 0x%x\n", varNameArray[ctIndex].type, varNameArray[ctIndex].tag, decimal, *(int*)value);
-            var_uint = 0;
-            value = &var_uint;
-        }
-    }
-    else
-    {
-        switch(CtIndex2Type(ctIndex))
-        {
-        case intab_e:
-        case intba_e:
-            var_int = atoi(formattedVar);
-            value = &var_int;
-            break;
-        case uintab_e:
-        case uintba_e:
-            var_uint = atoi(formattedVar);
-            value = &var_uint;
-            break;
-        case dint_abcd_e:
-        case dint_badc_e:
-        case dint_cdab_e:
-        case dint_dcba_e:
-            var_dint = atoi(formattedVar);
-            value = &var_dint;
-            break;
-        case udint_abcd_e:
-        case udint_badc_e:
-        case udint_cdab_e:
-        case udint_dcba_e:
-            var_udint = atoi(formattedVar);
-            value = &var_udint;
-            break;
-        case fabcd_e:
-        case fbadc_e:
-        case fcdab_e:
-        case fdcba_e:
-            var_float = atof(formattedVar);
-            value = &var_float;
-            break;
-        default:
-            var_bit = (atoi(formattedVar) == 1);
-            value = &var_bit;
-        }
-    }
-    writeVarInQueueByCtIndex(ctIndex, *(int *)value);
-    return 0;
-}
-
 int setFormattedVar(const char * varname, char * formattedVar)
 {
     int ctIndex;
@@ -1778,55 +1663,6 @@ int deactivateVar(const char * varname)
     }
     if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
     return retval;
-}
-
-/**
- * @brief get the actual status.
- * The status could be:
- * - ERROR:  error flag is set to 1
- * - DONE:   error flag is set to 0
- * - BUSY:   error flag is set to 0
- */
-char getStatusVarByCtIndex(int CtIndex, char * msg)
-{
-    char Status = DONE;
-    int myCtIndex = CtIndex;
-
-    if(myCtIndex < 0 || myCtIndex > DB_SIZE_ELEM )
-    {
-        LOG_PRINT(error_e, "invalid CtIndex %d.\n", myCtIndex);
-        Status = ERROR;
-        return Status;
-    }
-
-    Status = pIODataStatusAreaI[myCtIndex];
-    if (Status == DONE)
-    {
-        LOG_PRINT(verbose_e, "CtIndex '%d' Status %d DONE\n", myCtIndex, Status);
-        if (msg != NULL)
-        {
-            strcpy(msg, "");
-        }
-    }
-    else if (Status == ERROR)
-    {
-        LOG_PRINT(error_e, "CtIndex '%d' Status %d ERROR\n", myCtIndex, Status);
-        if (msg != NULL)
-        {
-            strcpy(msg, VAR_COMMUNICATION);
-        }
-    }
-    else
-    {
-        LOG_PRINT(error_e, "CtIndex '%d' Status %d UNKNOWN\n", myCtIndex, Status);
-        Status = ERROR;
-        if (msg != NULL)
-        {
-            strcpy(msg, VAR_UNKNOWN);
-        }
-    }
-
-    return Status;
 }
 
 /**
@@ -2015,6 +1851,68 @@ inline int theValue(int ctIndex, void * valuep)
     return value;
 }
 
+inline int theValue_string(int ctIndex, char * valuep)
+{
+    int value = 0;
+
+    if (!valuep || ctIndex <= 0 || ctIndex > DB_SIZE_ELEM) {
+        LOG_PRINT(error_e, "wrong args %d %p\n", ctIndex, valuep);
+        value = -1;
+    }
+    else
+    {
+        float fvalue = 0;
+
+        switch (varNameArray[ctIndex].type)
+        {
+        case uintab_e:
+        case uintba_e:
+        case intab_e:
+        case intba_e:
+        case udint_abcd_e:
+        case udint_badc_e:
+        case udint_cdab_e:
+        case udint_dcba_e:
+        case dint_abcd_e:
+        case dint_badc_e:
+        case dint_cdab_e:
+        case dint_dcba_e:
+        case byte_e:
+        case bit_e:
+        case bytebit_e:
+        case wordbit_e:
+        case dwordbit_e: {
+            int decimal = getVarDecimalByCtIndex(ctIndex); // for *bit is set to 0
+
+            if (decimal > 0) {
+                fvalue = atof(valuep) * powf(10, decimal);
+                value = (float)fvalue;
+            } else {
+                value = atoi(valuep);
+            }
+        }   break;
+        case fabcd_e:
+        case fbadc_e:
+        case fcdab_e:
+        case fdcba_e:
+            fvalue = atof(valuep);
+            memcpy(&value, &fvalue, sizeof(int));
+            break;
+        default:
+            LOG_PRINT(error_e, "wrong type %d '%d'\n", ctIndex, varNameArray[ctIndex].type);
+            value = -1;
+        }
+    }
+    return value;
+}
+
+int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
+{
+    int value = theValue_string(ctIndex, formattedVar);
+    writeVarInQueueByCtIndex(ctIndex, value);
+    return 0;
+}
+
 int doWrite(int ctIndex, void * valuep)
 {
     writeVarInQueueByCtIndex(ctIndex, theValue(ctIndex, valuep));
@@ -2023,7 +1921,7 @@ int doWrite(int ctIndex, void * valuep)
 
 int getStatus(int CtIndex)
 {
-    return getStatusVarByCtIndex(CtIndex, NULL);
+    return pIODataStatusAreaI[CtIndex];
 }
 
 int addWrite(int ctIndex, void * valuep)

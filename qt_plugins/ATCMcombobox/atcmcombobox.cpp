@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QStyleOption>
 #include <QMessageBox>
+#include <QStyledItemDelegate>
 
 #include "atcmcombobox.h"
 #include "common.h"
@@ -67,8 +68,11 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
+    setEditable(false);
+    QStyledItemDelegate *itDelegate = new QStyledItemDelegate();
+    setItemDelegate(itDelegate);
     setStyle(new ATCMStyle);
+
 #ifdef TARGET_ARM
     setToolTip("");
 #endif
@@ -536,8 +540,10 @@ QString ATCMcombobox::mapped2value( QString mapped )
 bool ATCMcombobox::setcomboValue()
 {
     QString mapped = value2mapped(m_value);
-    int index = this->findText(mapped);
+    int index = this->findText(mapped, Qt::MatchExactly);
 
+#ifdef TARGET_ARM
+#else
     /* code to manage a remapping value */
     if (index >= 0)
     {
@@ -545,68 +551,58 @@ bool ATCMcombobox::setcomboValue()
         if (m_remapping == true)
         {
             m_remapping = false;
-    #ifdef TARGET_ARM
-            LOG_PRINT(verbose_e, "Remapping...\n");
-    #endif
             setMapping(m_mapping);
+            setcomboValue();
         }
         this->setCurrentIndex(index);
         connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
     }
+#endif
 
-    if (index == this->currentIndex() )
+    if (index == this->currentIndex())
     {
         return true;
     }
     if (index >= 0)
     {
-        this->setEditable(false);
         disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
         this->setCurrentIndex(index);
         connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
-        setcomboValue();
+        return true;
     }
+
+    /* if is not managed, put an empty string */
+    /* if the actual status is an error, display error message */
+    if (m_status == ERROR)
+    {
+#ifdef TARGET_ARM
+        this->setEditText(VAR_UNKNOWN);
+        LOG_PRINT(verbose_e,"unknown value '%s'\n", m_value.toAscii().data());
+#endif
+    }
+    /* if the actual status is not expected, display the value */
     else
     {
 #ifdef TARGET_ARM
-        LOG_PRINT(verbose_e,"unkown value '%s'\n", m_value.toAscii().data());
-#endif
-        /* if is not managed, put an empty string */
-        /* if the actual status is an error, display error message */
-        if (m_status == ERROR)
+        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        this->setEditText("");
+        this->setCurrentIndex(-1);
+        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        LOG_PRINT(error_e,"unknown value '%s' for variable '%s'\n", m_value.toAscii().data(), m_variable.toAscii().data());
+#else
+        index = this->findText(m_value);
+        if (index < 0)
         {
-            this->setEditable(true);
-            this->setEditText(mapped);
-#ifdef TARGET_ARM
-            LOG_PRINT(verbose_e,"unkown value '%s'\n", m_value.toAscii().data());
-#endif
-        }
-        /* if the actual status is not expected, display the value */
-        else
-        {
-#ifdef TARGET_ARM
-            LOG_PRINT(error_e,"unkown value '%s' for variable '%s'\n", m_value.toAscii().data(), m_variable.toAscii().data());
-#endif
+            this->addItem(m_value);
             index = this->findText(m_value);
-            if (index < 0)
-            {
-                this->addItem(m_value);
-                index = this->findText(m_value);
-            }
-            disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
-            this->setCurrentIndex(index);
-            connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
-            m_remapping = true;
-            //this->setEditText(m_value);
         }
-        return false;
+        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        this->setCurrentIndex(index);
+        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        m_remapping = true;
+        //this->setEditText(m_value);
+#endif
     }
-    return true;
+    return false;
 }
 
-#if 0
-void ATCMcombobox::setProva(const atcmcomboboxTaskMenu * prova)
-{
-    m_prova = (atcmcomboboxTaskMenu *)prova;
-}
-#endif

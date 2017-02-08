@@ -524,7 +524,7 @@ void ATCMbutton::updateData()
 
     if (m_CtIndex > 0)
     {
-        if (getStatusVarByCtIndex(m_CtIndex, NULL) != BUSY)
+        if (pIODataStatusAreaI[m_CtIndex] != ERROR)
         {
             if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
             {

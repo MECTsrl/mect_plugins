@@ -78,7 +78,6 @@ class
 		Q_PROPERTY(enum QFrame::Shadow apparence READ apparence WRITE setApparence RESET unsetApparence)
 		/* set mapping string */
 		Q_PROPERTY(QString mapping READ mapping WRITE setMapping RESET unsetMapping)
-		//Q_PROPERTY(atcmcomboboxTaskMenu * prova READ prova WRITE setProva)
 #endif
 	public:
 		ATCMcombobox(QWidget *parent = 0);

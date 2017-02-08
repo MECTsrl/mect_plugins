@@ -301,49 +301,20 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     {
         for (int i = 0; i < table[step].count(); i++)
         {
-            char msg[TAG_LEN] = "";
-
             uint32_t valueu = 0;
             int ctIndex = (int)(indexes->at(i));
             readFromDb(ctIndex, &valueu);
-            LOG_PRINT(verbose_e, "%d -> %d\n", ctIndex, valueu);
 
-            switch (getStatusVarByCtIndex(ctIndex, msg))
+            switch (pIODataStatusAreaI[ctIndex])
             {
+            case DONE:
             case BUSY:
-                //retry_nb = 0;
-                LOG_PRINT(verbose_e, "BUSY: %s\n", msg);
-                if (msg[0] == '\0')
-                {
-                    strcpy(msg, VAR_PROGRESS);
-                }
-                errors++;
+                table[step][i] = valueu;
                 break;
             case ERROR:
-                LOG_PRINT(verbose_e, "ERROR: %s\n", msg);
-                if (msg[0] == '\0')
-                {
-                    strcpy(msg, VAR_COMMUNICATION);
-                }
-                errors++;
-                break;
-            case DONE:
-                LOG_PRINT(verbose_e, "DONE step %d i %d value %d\n", step, i, valueu);
-                table[step][i] = valueu;
-                msg[0] = '\0';
-                break;
             default:
-                LOG_PRINT(verbose_e, "OTHER: %s\n", msg);
-                if (msg[0] == '\0')
-                {
-                    strcpy(msg, VAR_UNKNOWN);
-                }
+                LOG_PRINT(error_e, "Error reading (%d) '%s'\n", i, varNameArray[ctIndex].tag);
                 errors++;
-                break;
-            }
-            if (msg[0] != '\0')
-            {
-                LOG_PRINT(error_e, "Reading (%d) - '%s' - '%s'\n", i, varNameArray[ctIndex].tag, msg);
             }
         }
     }
@@ -380,7 +351,7 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         {
             u_int16_t ctIndex = indexes->at(i);
 
-            for (int j = 0; j < SyncroAreaSize; ++j)
+            for (unsigned j = 0; j < SyncroAreaSize; ++j)
             {
                 addr = pIOSyncroAreaO[j] & ADDRESS_MASK;
                 oper = pIOSyncroAreaO[j] & OPER_MASK;
