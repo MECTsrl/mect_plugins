@@ -26,7 +26,6 @@ ATCManimation::ATCManimation(QWidget *parent) :
 	m_status = UNK;
     m_CtIndex = 0;
     m_CtVisibilityIndex = 0;
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
 	m_visibilityvar = "";
 	m_viewstatus = false;
 
@@ -38,10 +37,7 @@ ATCManimation::ATCManimation(QWidget *parent) :
 
     m_parent = parent;
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
 }
 
@@ -144,37 +140,28 @@ bool ATCManimation::setVisibilityVar(QString visibilityVar)
 /* Activate variable */
 bool ATCManimation::setVariable(QString variable)
 {
-    /* if the acual variable is empty activate it */
-    if (variable.trimmed().length() > 0)
-    {
+    m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-        m_variable = variable.trimmed();
-        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot extract ctIndex\n");
-            m_status = ERROR;
-            m_value = VAR_UNKNOWN;
-            m_CtIndex = 0;
-        }
-        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-#else
-        m_variable = variable.trimmed();
-#endif
-    }
-
-    if (m_status != ERROR)
+    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
     {
-#ifndef TARGET_ARM
-        setToolTip(m_variable);
-#else
-        setToolTip("");
-#endif
-        return true;
+        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+        m_status = ERROR;
+        m_value = VAR_UNKNOWN;
+        m_CtIndex = 0;
     }
     else
     {
-        return false;
+        m_status = DONE;
     }
+    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+#endif
+
+#ifndef TARGET_ARM
+    setToolTip(m_variable);
+#else
+    setToolTip("");
+#endif
+    return true;
 }
 
 void ATCManimation::unsetVariable()

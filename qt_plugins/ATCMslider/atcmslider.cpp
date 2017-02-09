@@ -32,8 +32,7 @@ ATCMslider::ATCMslider(QWidget *parent) :
 	m_addColor = QColor(255,127,80);
 	m_subColor = QColor(255,127,80);
 	m_icon = QIcon();
-	m_refresh = 0;
-	m_visibilityvar = "";
+    m_visibilityvar = "";
 	m_viewstatus = false;
 
     m_bordercolor = BORDER_COLOR_DEF;
@@ -80,10 +79,8 @@ ATCMslider::ATCMslider(QWidget *parent) :
 			);
     m_parent = parent;
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
+    connect(m_parent, SIGNAL( varRefresh() ), this, SLOT( updateData() ));
+    connect(this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ));
 #endif
 }
 
@@ -181,10 +178,6 @@ bool ATCMslider::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -201,16 +194,11 @@ bool ATCMslider::setVisibilityVar(QString visibilityVar)
 /* Write variable */
 bool ATCMslider::writeValue(int value)
 {
-	static int initialization = true;
 	if (m_variable.length() == 0)
 	{
 		return false;
 	}
-	if (initialization)
-	{
-		initialization = false;
-		return true;
-	}
+
 	m_value = value;
 	//this->setValue(m_value);
 #ifdef TARGET_ARM
@@ -230,37 +218,28 @@ bool ATCMslider::writeValue(int value)
 /* Activate variable */
 bool ATCMslider::setVariable(QString variable)
 {
-    /* if the acual variable is empty activate it */
-    if (variable.trimmed().length() > 0)
-    {
+    m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-        m_variable = variable.trimmed();
-        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot extract ctIndex\n");
-            m_status = ERROR;
-            //m_value = VAR_UNKNOWN;
-            m_CtIndex = 0;
-        }
-        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-#else
-        m_variable = variable.trimmed();
-#endif
-    }
-
-    if (m_status != ERROR)
+    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
     {
-#ifndef TARGET_ARM
-        setToolTip(m_variable);
-#else
-        setToolTip("");
-#endif
-        return true;
+        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+        m_status = ERROR;
+        //m_value = VAR_UNKNOWN;
+        m_CtIndex = 0;
     }
     else
     {
-        return false;
+        m_status = DONE;
     }
+    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+#endif
+
+#ifndef TARGET_ARM
+    setToolTip(m_variable);
+#else
+    setToolTip("");
+#endif
+    return true;
 }
 
 QColor ATCMslider::borderColor() const

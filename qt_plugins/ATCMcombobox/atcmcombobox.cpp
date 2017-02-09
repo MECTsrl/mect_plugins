@@ -129,10 +129,8 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
                 );
     m_parent = parent;
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
 #endif
 }
 
@@ -259,10 +257,6 @@ bool ATCMcombobox::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -309,37 +303,28 @@ bool ATCMcombobox::writeValue(QString value)
 /* Activate variable */
 bool ATCMcombobox::setVariable(QString variable)
 {
-    /* if the acual variable is empty activate it */
-    if (variable.trimmed().length() > 0)
-    {
+    m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-        m_variable = variable.trimmed();
-        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot extract ctIndex\n");
-            m_status = ERROR;
-            m_value = VAR_UNKNOWN;
-            m_CtIndex = -1;
-        }
-        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-#else
-        m_variable = variable.trimmed();
-#endif
-    }
-
-    if (m_status != ERROR)
+    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
     {
-#ifndef TARGET_ARM
-        setToolTip(m_variable);
-#else
-        setToolTip("");
-#endif
-        return true;
+        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+        m_status = ERROR;
+        m_value = VAR_UNKNOWN;
+        m_CtIndex = -1;
     }
     else
     {
-        return false;
+        m_status = DONE;
     }
+    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+#endif
+
+#ifndef TARGET_ARM
+    setToolTip(m_variable);
+#else
+    setToolTip("");
+#endif
+    return true;
 }
 
 QColor ATCMcombobox::bgColor() const
@@ -406,7 +391,6 @@ void ATCMcombobox::updateData()
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
         if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
-            m_status = DONE;
             if (visible && ! this->isVisible()) {
                 this->setVisible(true);
             }
@@ -419,29 +403,26 @@ void ATCMcombobox::updateData()
         return;
     }
 
-    if (m_variable.length() > 0)
+    if (m_CtIndex >= 0)
     {
-        if (m_CtIndex >= 0)
+        if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
         {
-            if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
-            {
-                QString new_value = value;
-                isChanged = (m_value != new_value);
-                m_status = DONE;
-                m_value = value;
-            }
-            else
-            {
-                m_value = VAR_UNKNOWN;
-                m_status = ERROR;
-            }
+            QString new_value = value;
+            isChanged = (m_value != new_value);
+            m_status = DONE;
+            m_value = value;
         }
         else
         {
-            m_status = ERROR;
             m_value = VAR_UNKNOWN;
-            LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
+            m_status = ERROR;
         }
+    }
+    else
+    {
+        m_status = ERROR;
+        m_value = VAR_UNKNOWN;
+        LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
     }
     LOG_PRINT(verbose_e, "'%s': '%s' status '%c' \n", m_variable.toAscii().data(), value, m_status);
 #endif

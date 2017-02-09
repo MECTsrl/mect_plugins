@@ -62,7 +62,6 @@ ATCMbutton::ATCMbutton(QWidget * parent):
     m_bordercolor_press = BORDER_COLOR_SEL_DEF;
     m_borderwidth = BORDER_WIDTH_DEF;
     m_borderradius = BORDER_RADIUS_DEF;
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -170,10 +169,7 @@ ATCMbutton::ATCMbutton(QWidget * parent):
 
     m_parent = parent;
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
     m_fBusy = false;
 }
@@ -380,6 +376,10 @@ bool ATCMbutton::setStatusvar(QString variable)
             LOG_PRINT(error_e, "cannot extract ctIndex\n");
             m_status = ERROR;
             m_CtIndex = 0;
+        }
+        else
+        {
+            m_status = DONE;
         }
         LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_statusvar.toAscii().data(), m_CtIndex);
 #else

@@ -45,10 +45,7 @@ ATCMlcdnumber::ATCMlcdnumber(QWidget *parent) :
 			);
     m_parent = parent;
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
 }
 
@@ -147,7 +144,8 @@ void ATCMlcdnumber::updateData()
 	}
 	else
 	{
-		if (formattedReadFromDb_string(CtIndex, value) == 0 && strlen(value) > 0)
+        m_status = DONE;
+        if (formattedReadFromDb_string(CtIndex, value) == 0 && strlen(value) > 0)
 		{
 			char statusMsg[TAG_LEN];
             m_status = pIODataStatusAreaI[CtIndex];

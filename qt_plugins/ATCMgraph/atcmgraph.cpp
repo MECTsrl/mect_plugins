@@ -21,7 +21,6 @@
 ATCMgraph::ATCMgraph(QWidget *parent) :
     MAINWIGET(parent)
 {
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
     m_x1Variable = "PLC_time";
     m_CtX1Index = 5390;
     m_x1status = UNK;
@@ -195,10 +194,7 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
 
     m_parent = parent;
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
 }
 

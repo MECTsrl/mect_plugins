@@ -330,7 +330,7 @@ void info::on_pushButtonBack_clicked()
 void info::on_pushButtonQrc_clicked()
 {
     QString szMessage;
-    QString szFile("Info.png");
+    QString szFile("/tmp/Info.png");
     qrcode  * myCode;
     int     nRes = 0;
     char command[1024];

@@ -828,28 +828,6 @@ int readFromDb(int ctIndex, void * value)
         LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
         retval = -1;
     }
-#ifdef VERBOSE_DEBUG
-    if (ctIndex == 196) {
-        int i;
-
-        for (i = 0; i < DB_SIZE_ELEM; i++)
-        {
-            uint16_t addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
-            uint16_t oper = pIOSyncroAreaO[i] & OPER_MASK;
-            uint16_t retv = pIOSyncroAreaI[i];
-               /* marked               all writes             prepare            empty */
-            if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
-            {
-                int *pI = (int *)IODataAreaI;
-                int *pO = (int *)IODataAreaO;
-                struct timespec now;
-                clock_gettime(CLOCK_REALTIME, &now);
-                fprintf(stderr, "readFromDb STATUS=%d @%d/%u 0x%04x|%u (%d) (%lds,%ldns)\n",
-                        pI[ctIndex], i, SyncroAreaSize, oper, retv, pO[ctIndex], now.tv_sec, now.tv_nsec);
-            }
-        }
-    }
-#endif
     return retval;
 }
 
@@ -1135,7 +1113,7 @@ int formattedReadFromDb_float(int ctIndex, float * fvalue)
             return -1;
         }
         LOG_PRINT(verbose_e, "%s - value %f decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
-        *fvalue = _value;
+        *fvalue = _value; // NO decimal
     }
         break;
     case byte_e:
@@ -1283,14 +1261,7 @@ int formattedReadFromDb_int(int ctIndex, int * ivalue)
             return -1;
         }
         LOG_PRINT(verbose_e, "%s - value %f decimal %d divisor %f\n", varNameArray[ctIndex].tag, _value, decimal, pow(10,decimal));
-        if (decimal > 0)
-        {
-            *ivalue = (int)(_value / pow(10,decimal));
-        }
-        else
-        {
-            *ivalue = (int)_value;
-        }
+        *ivalue = (int)_value; // NO decimal
     }
         break;
     case byte_e:
@@ -1467,9 +1438,9 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
             if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
             {
                 if (execwrite) {
-                    LOG_PRINT(error_e, "busy writing(W) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                    LOG_PRINT(warning_e, "busy writing(W) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
                 } else {
-                    LOG_PRINT(error_e, "busy writing(P) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                    LOG_PRINT(warning_e, "busy writing(P) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
                 }
                 retval = BUSY;
                 goto exit_function;
@@ -1494,28 +1465,6 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
         /* update the value into the Data area */
         int *p = (int *)IODataAreaO;
         p[ctIndex] = value;
-#ifdef VERBOSE_DEBUG
-        if (ctIndex == 196)
-        {
-            int i;
-            for (i = 0; i < DB_SIZE_ELEM; i++)
-            {
-                uint16_t addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
-                uint16_t oper = pIOSyncroAreaO[i] & OPER_MASK;
-                uint16_t retv = pIOSyncroAreaI[i];
-                   /* marked               all writes             prepare            empty */
-                if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
-                {
-                    int *pI = (int *)IODataAreaI;
-                    int *pO = (int *)IODataAreaO;
-                    struct timespec now;
-                    clock_gettime(CLOCK_REALTIME, &now);
-                    fprintf(stderr, "after write STATUS=%d @%d/%u 0x%04x|%u (%d) (%lds,%ldns)\n",
-                            pI[ctIndex], i, SyncroAreaSize, oper, retv, pO[ctIndex], now.tv_sec, now.tv_nsec);
-                }
-            }
-        }
-#endif
         retval = DONE;
     }
 exit_function:
@@ -1687,28 +1636,6 @@ void compactSyncWrites(void)
     int  SynIndex;
 
     // already locked both for send and recv
-#ifdef VERBOSE_DEBUG
-    {
-        int ctIndex = 196;
-        int i;
-        for (i = 0; i < DB_SIZE_ELEM; i++)
-        {
-            uint16_t addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
-            uint16_t oper = pIOSyncroAreaO[i] & OPER_MASK;
-            uint16_t retv = pIOSyncroAreaI[i];
-               /* marked               all writes             prepare            empty */
-            if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
-            {
-                int *pI = (int *)IODataAreaI;
-                int *pO = (int *)IODataAreaO;
-                struct timespec now;
-                clock_gettime(CLOCK_REALTIME, &now);
-                fprintf(stderr, "before compactSyncWrites STATUS=%d @%d/%u 0x%04x|%u (%d) (%lds,%ldns)\n",
-                        pI[ctIndex], i, SyncroAreaSize, oper, retv, pO[ctIndex], now.tv_sec, now.tv_nsec);
-            }
-        }
-    }
-#endif
     // (Wadr,0) --> (0Adr,0)
     // (0Adr,0) --> (0,0)
     for (SynIndex = 0; SynIndex < SyncroAreaSize; ++SynIndex)
@@ -1731,28 +1658,6 @@ void compactSyncWrites(void)
             break;
         }
     }
-#ifdef VERBOSE_DEBUG
-    {
-        int ctIndex = 196;
-        int i;
-        for (i = 0; i < DB_SIZE_ELEM; i++)
-        {
-            uint16_t addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
-            uint16_t oper = pIOSyncroAreaO[i] & OPER_MASK;
-            uint16_t retv = pIOSyncroAreaI[i];
-               /* marked               all writes             prepare            empty */
-            if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
-            {
-                int *pI = (int *)IODataAreaI;
-                int *pO = (int *)IODataAreaO;
-                struct timespec now;
-                clock_gettime(CLOCK_REALTIME, &now);
-                fprintf(stderr, "after compactSyncWrites STATUS=%d @%d/%u 0x%04x|%u (%d) (%lds,%ldns)\n",
-                        pI[ctIndex], i, SyncroAreaSize, oper, retv, pO[ctIndex], now.tv_sec, now.tv_nsec);
-            }
-        }
-    }
-#endif
 }
 
 int getVarDecimalByCtIndex(const int ctIndex)

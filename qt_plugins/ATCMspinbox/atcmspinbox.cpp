@@ -25,7 +25,6 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
     m_value = 0;
     m_variable = "";
     m_status = UNK;
-    m_initialization = true;
     m_CtIndex = 0;
     m_CtVisibilityIndex = 0;
     m_labelcolor = QColor(230,230,230);
@@ -37,7 +36,6 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
     m_bordercolor = BORDER_COLOR_DEF;
     m_borderwidth = BORDER_WIDTH_DEF;
     m_borderradius = BORDER_RADIUS_DEF;
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -89,10 +87,8 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
                 );
     m_parent = parent;
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #endif
 }
 
@@ -182,10 +178,6 @@ bool ATCMspinbox::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -210,15 +202,9 @@ bool ATCMspinbox::writeValue(double value)
         connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         return false;
     }
-    if (m_initialization)
-    {
-        m_initialization = false;
-        return true;
-    }
 #ifdef TARGET_ARM
     if (m_CtIndex > 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(value).toAscii().data()) == 0)
     {
-        LOG_PRINT(verbose_e, "WRITE %f \n", m_value);
         m_value = (float)value;
         disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
@@ -227,7 +213,6 @@ bool ATCMspinbox::writeValue(double value)
     }
     else
     {
-        LOG_PRINT(verbose_e, "WRITE\n");
         disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
         connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
@@ -243,95 +228,74 @@ bool ATCMspinbox::writeValue(double value)
 /* Activate variable */
 bool ATCMspinbox::setVariable(QString variable)
 {
-    /* if the acual variable is empty activate it */
-    if (variable.trimmed().length() > 0)
-    {
+    m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-        if (true) // Patch for H Vars 2.0.12rc2  activateVar(variable.trimmed().toAscii().data()) == 0)
-        {
-            m_variable = variable.trimmed();
-            if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-            {
-                LOG_PRINT(error_e, "cannot extract ctIndex\n");
-                m_status = ERROR;
-                //m_value = VAR_UNKNOWN;
-                m_CtIndex = 0;
-            }
-            else
-            {
-                switch (CtIndex2Type(m_CtIndex))
-                {
-                case intab_e:
-                case intba_e:
-                case uintab_e:
-                case uintba_e:
-                case dint_abcd_e:
-                case dint_badc_e:
-                case dint_cdab_e:
-                case dint_dcba_e:
-                case udint_abcd_e:
-                case udint_badc_e:
-                case udint_cdab_e:
-                case udint_dcba_e:
-                    QDoubleSpinBox::setDecimals(0);
-                    break;
-                case fabcd_e:
-                case fbadc_e:
-                case fcdab_e:
-                case fdcba_e:
-                {
-                    int decimal = 0;
-                    if (varNameArray[m_CtIndex].decimal > 4)
-                    {
-                        if (readFromDbLock(varNameArray[m_CtIndex].decimal, &decimal) != 0)
-                        {
-                            decimal = 0;
-                        }
-                    }
-                    else if (varNameArray[m_CtIndex].decimal > 0)
-                    {
-                        LOG_PRINT(verbose_e, "Decimal %d\n", varNameArray[m_CtIndex].decimal);
-                        decimal = varNameArray[m_CtIndex].decimal;
-                    }
-                    else
-                    {
-                        decimal = 0;
-                    }
-
-                    QDoubleSpinBox::setDecimals(decimal);
-                }
-                    break;
-                default:
-                    QDoubleSpinBox::setDecimals(0);
-                    break;
-                }
-
-            }
-            LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-        }
-        else
-        {
-            m_status = ERROR;
-            //m_value = VAR_UNKNOWN;
-        }
-#else
-        m_variable = variable.trimmed();
-#endif
-    }
-
-    if (m_status != ERROR)
+    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
     {
-#ifndef TARGET_ARM
-        setToolTip(m_variable);
-#else
-        setToolTip("");
-#endif
-        return true;
+        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+        m_status = ERROR;
+        //m_value = VAR_UNKNOWN;
+        m_CtIndex = 0;
     }
     else
     {
-        return false;
+        m_status = DONE;
+        switch (CtIndex2Type(m_CtIndex))
+        {
+        case intab_e:
+        case intba_e:
+        case uintab_e:
+        case uintba_e:
+        case dint_abcd_e:
+        case dint_badc_e:
+        case dint_cdab_e:
+        case dint_dcba_e:
+        case udint_abcd_e:
+        case udint_badc_e:
+        case udint_cdab_e:
+        case udint_dcba_e:
+            QDoubleSpinBox::setDecimals(0);
+            break;
+        case fabcd_e:
+        case fbadc_e:
+        case fcdab_e:
+        case fdcba_e:
+        {
+            int decimal = 0;
+            if (varNameArray[m_CtIndex].decimal > 4)
+            {
+                if (readFromDbLock(varNameArray[m_CtIndex].decimal, &decimal) != 0)
+                {
+                    decimal = 0;
+                }
+            }
+            else if (varNameArray[m_CtIndex].decimal > 0)
+            {
+                LOG_PRINT(verbose_e, "Decimal %d\n", varNameArray[m_CtIndex].decimal);
+                decimal = varNameArray[m_CtIndex].decimal;
+            }
+            else
+            {
+                decimal = 0;
+            }
+
+            QDoubleSpinBox::setDecimals(decimal);
+        }
+            break;
+        default:
+            QDoubleSpinBox::setDecimals(0);
+        }
+
     }
+    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+#endif
+
+#ifndef TARGET_ARM
+    setToolTip(m_variable);
+#else
+    setToolTip("");
+#endif
+    return true;
 }
 
 QColor ATCMspinbox::bgColor() const

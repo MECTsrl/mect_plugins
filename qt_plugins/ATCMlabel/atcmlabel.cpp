@@ -46,7 +46,6 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
     m_bordercolor_select = BORDER_COLOR_SEL_DEF;
     m_borderwidth = BORDER_WIDTH_DEF;
     m_borderradius = BORDER_RADIUS_DEF;
-    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
@@ -133,14 +132,9 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
 
     m_parent = parent;
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-        connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
-
-    connect( this, SIGNAL( pressed() ), this, SLOT( writeAction() ) );
-    connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
+    connect( this, SIGNAL( clicked() ), this, SLOT( writeAction() ) );
 }
 
 ATCMlabel::~ATCMlabel()
@@ -258,10 +252,6 @@ bool ATCMlabel::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
@@ -278,37 +268,28 @@ bool ATCMlabel::setVisibilityVar(QString visibilityVar)
 /* Activate variable */
 bool ATCMlabel::setVariable(QString variable)
 {
-    /* if the acual variable is empty activate it */
-    if (variable.trimmed().length() > 0)
-    {
+    m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-        m_variable = variable.trimmed();
-        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot extract ctIndex\n");
-            m_status = ERROR;
-            m_value = VAR_UNKNOWN;
-            m_CtIndex = 0;
-        }
-        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-#else
-        m_variable = variable.trimmed();
-#endif
-    }
-
-    if (m_status != ERROR)
+    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
     {
-#ifndef TARGET_ARM
-        setToolTip(m_variable);
-#else
-        setToolTip("");
-#endif
-        return true;
+        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+        m_status = ERROR;
+        m_value = VAR_UNKNOWN;
+        m_CtIndex = 0;
     }
     else
     {
-        return false;
+        m_status = DONE;
     }
+    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+#endif
+
+#ifndef TARGET_ARM
+    setToolTip(m_variable);
+#else
+    setToolTip("");
+#endif
+    return true;
 }
 
 QColor ATCMlabel::bgColor() const
@@ -576,13 +557,13 @@ void ATCMlabel::setSuffix(QString suffix)
 void ATCMlabel::writeAction()
 {
     m_objectstatus = true;
-    update();
 #ifdef TARGET_ARM
-    QString strvalue;
     if (m_CtIndex > 0)
     {
+        QString strvalue("");
         int decimal = getVarDecimalByCtIndex(m_CtIndex);
-        numpad * dk;
+        numpad * dk = NULL;
+
         switch (CtIndex2Type(m_CtIndex))
         {
         case intab_e:
@@ -609,16 +590,11 @@ void ATCMlabel::writeAction()
                     if (min < max && (value < min || value > max))
                     {
                         QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
-                        delete dk;
-                        return;
                     }
-                    strvalue = QString::number(value);
-
-                }
-                else
-                {
-                    delete dk;
-                    return;
+                    else
+                    {
+                        strvalue = QString::number(value);
+                    }
                 }
                 LOG_PRINT(verbose_e,"intero %s = %d\n", m_variable.toAscii().data(), value);
             }
@@ -633,16 +609,11 @@ void ATCMlabel::writeAction()
                     if (min < max && (value < min || value > max))
                     {
                         QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
-                        delete dk;
-                        return;
                     }
-                    strvalue = QString::number(value);
-
-                }
-                else
-                {
-                    delete dk;
-                    return;
+                    else
+                    {
+                        strvalue = QString::number(value);
+                    }
                 }
                 LOG_PRINT(verbose_e,"decimale %s = %f decimali %d\n", m_variable.toAscii().data(), value,decimal);
             }
@@ -662,16 +633,11 @@ void ATCMlabel::writeAction()
                 if (min < max && (value < min || value > max))
                 {
                     QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
-                    delete dk;
-                    return;
                 }
-                strvalue = QString::number(value);
-
-            }
-            else
-            {
-                delete dk;
-                return;
+                else
+                {
+                    strvalue = QString::number(value);
+                }
             }
             LOG_PRINT(verbose_e,"decimale %s = %f\n", m_variable.toAscii().data(), value);
         }
@@ -688,25 +654,26 @@ void ATCMlabel::writeAction()
                 if (min < max && (value < min || value > max))
                 {
                     QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
-                    delete dk;
-                    return;
                 }
-                strvalue = QString::number(value);
-
-            }
-            else
-            {
-                delete dk;
-                return;
+                else
+                {
+                    strvalue = QString::number(value);
+                }
             }
             LOG_PRINT(verbose_e,"bit %s = %d\n", m_variable.toAscii().data(), value);
         }
-            break;
         }
-        writeValue(strvalue);
-        delete dk;
+        if (dk != NULL)
+        {
+            delete dk;
+            if (!strvalue.isEmpty())
+            {
+                writeValue(strvalue);
+            }
+        }
     }
 #endif
+    update();
 }
 
 void ATCMlabel::releaseAction()
@@ -718,12 +685,6 @@ void ATCMlabel::releaseAction()
 /* Write variable */
 bool ATCMlabel::writeValue(QString value)
 {
-    if (m_variable.length() == 0)
-    {
-        m_value = value;
-        this->setText(m_value);
-        return false;
-    }
 #ifdef TARGET_ARM
     if (m_CtIndex > 0 && setFormattedVarByCtIndex(m_CtIndex, value.toAscii().data()) == 0)
     {

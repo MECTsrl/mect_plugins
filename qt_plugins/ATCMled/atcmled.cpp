@@ -29,7 +29,6 @@ ATCMled::ATCMled(QWidget *parent) :
     m_onicon = QIcon(":/on.png");
     m_officon = QIcon(":/off.png");
     m_objectstatus = false;
-    m_refresh = 0;
     m_visibilityvar = "";
     m_viewstatus = false;
 
@@ -39,21 +38,10 @@ ATCMled::ATCMled(QWidget *parent) :
     setMinimumSize(15,15);
 
 	m_parent = parent;
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-
-    /*
-     * put there a default stylesheet
-     *led->setStyleSheet("padding: 5px;");
-     */
 
 #ifdef TARGET_ARM
-    if (m_refresh > 0)
-    {
-    }
-    else
+    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
-    {
-    }
 }
 
 ATCMled::~ATCMled()
@@ -111,37 +99,28 @@ void ATCMled::setViewStatus(bool status)
 /* Activate variable */
 bool ATCMled::setVariable(QString variable)
 {
-    /* if the acual variable is empty activate it */
-    if (variable.trimmed().length() > 0)
-    {
+    m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-        m_variable = variable.trimmed();
-        if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot extract ctIndex\n");
-            m_status = ERROR;
-            //m_value = VAR_UNKNOWN;
-            m_CtIndex = 0;
-        }
-        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-#else
-        m_variable = variable.trimmed();
-#endif
-    }
-
-    if (m_status != ERROR)
+    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
     {
-#ifndef TARGET_ARM
-        setToolTip(m_variable);
-#else
-        setToolTip("");
-#endif
-        return true;
+        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+        m_status = ERROR;
+        //m_value = VAR_UNKNOWN;
+        m_CtIndex = 0;
     }
     else
     {
-        return false;
+        m_status = DONE;
     }
+    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+#endif
+
+#ifndef TARGET_ARM
+    setToolTip(m_variable);
+#else
+    setToolTip("");
+#endif
+    return true;
 }
 
 void ATCMled::unsetVariable()
@@ -192,10 +171,6 @@ bool ATCMled::setVisibilityVar(QString visibilityVar)
             m_CtVisibilityIndex = CtIndex;
 #endif
             m_visibilityvar = visibilityVar.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
             return true;
 #ifdef TARGET_ARM
         }
