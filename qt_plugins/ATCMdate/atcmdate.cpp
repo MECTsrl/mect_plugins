@@ -120,11 +120,23 @@ ATCMdate::ATCMdate(QWidget *parent) :
     m_parent = parent;
 #ifdef TARGET_ARM
     connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+#else
+    refresh_timer = new QTimer(this);
+    connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
+    refresh_timer->start(1000);
 #endif
 }
 
 ATCMdate::~ATCMdate()
 {
+#ifdef TARGET_ARM
+#else
+    if (refresh_timer != NULL)
+    {
+        refresh_timer->stop();
+        delete refresh_timer;
+    }
+#endif
 }
 
 void ATCMdate::paintEvent(QPaintEvent * e)
