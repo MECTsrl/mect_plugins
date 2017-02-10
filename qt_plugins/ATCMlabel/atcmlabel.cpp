@@ -380,7 +380,7 @@ void ATCMlabel::updateData()
     {
         int ivalue;
         static int iprevious = 0;
-        int *p = (int *)IODataAreaO;
+        int *p = (int *)IODataAreaI;
 
         ivalue = p[m_CtIndex];
         do_update = (m_status != DONE) || (iprevious != ivalue);
