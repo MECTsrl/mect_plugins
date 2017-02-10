@@ -690,7 +690,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string notr="true">Canc</string>
+        <string notr="true">&lt;--</string>
        </property>
        <property name="iconSize">
         <size>
