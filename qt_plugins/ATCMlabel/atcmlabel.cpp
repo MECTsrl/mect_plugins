@@ -133,8 +133,8 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
     m_parent = parent;
 #ifdef TARGET_ARM
     connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
-#endif
     connect( this, SIGNAL( clicked() ), this, SLOT( writeAction() ) );
+#endif
 }
 
 ATCMlabel::~ATCMlabel()
@@ -270,25 +270,30 @@ bool ATCMlabel::setVariable(QString variable)
 {
     m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+    if (m_variable.isEmpty()) {
         m_status = ERROR;
-        m_value = VAR_UNKNOWN;
+        m_value = "";
         m_CtIndex = 0;
+        LOG_PRINT(verbose_e, "empty variable\n");
+    }
+    else if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
+    {
+        m_status = ERROR;
+        m_value = "";
+        m_CtIndex = 0;
+        LOG_PRINT(error_e, "unknown variable '%s'\n", variable.trimmed().toAscii().data());
     }
     else
     {
-        m_status = DONE;
+        m_status = UNK; // not read yet
+        m_value =  "";
+        LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
     }
-    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+    setToolTip("");
+#else
+    setToolTip(m_variable);
 #endif
 
-#ifndef TARGET_ARM
-    setToolTip(m_variable);
-#else
-    setToolTip("");
-#endif
     return true;
 }
 
@@ -352,7 +357,7 @@ bool ATCMlabel::setRefresh(int refresh)
 void ATCMlabel::updateData()
 {
 #ifdef TARGET_ARM
-    char value[TAG_LEN] = "";
+    bool do_update = false;
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
@@ -366,94 +371,102 @@ void ATCMlabel::updateData()
             }
         }
     }
+
     if (! this->isVisible()) {
         return;
     }
 
-    if (m_variable.length() == 0)
+    if (m_CtIndex > 0)
     {
-        m_status = DONE;
-        m_value = VAR_UNKNOWN;
-    }
-    else if (m_CtIndex > 0)
-    {
-        if (formattedReadFromDb_string(m_CtIndex, value) == 0)
-        {
-            m_status = DONE;
-            if (m_format == Bin)
-            {
-                m_value = QString::number(atoi(value), 2) + QString("b");
+        int ivalue;
+        static int iprevious = 0;
+        int *p = (int *)IODataAreaO;
 
-            }
-            else if (m_format == Hex)
+        ivalue = p[m_CtIndex];
+        do_update = (m_status != DONE) || (iprevious != ivalue);
+
+        if (do_update)
+        {
+            iprevious = ivalue;
+
+            char svalue[42];
+//            int decimal = getVarDecimalByCtIndex(ctIndex);
+//            sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal);
+
+            if (formattedReadFromDb_string(m_CtIndex, svalue) == 0)
             {
-                switch (CtIndex2Type(m_CtIndex))
+                m_status = DONE;
+                switch (m_format)
                 {
-                case intab_e:
-                case intba_e:
-                {
-                    int16_t val = strtol(value, NULL, 10);
-                    m_value = QString("0x") + QString::number(val, 16);
+                case Bin:
+                    m_value = QString::number(atoi(svalue), 2) + QString("b");
                     break;
-                }
-                case uintab_e:
-                case uintba_e:
-                {
-                    uint16_t val = strtoul(value, NULL, 10);
-                    m_value = QString("0x") + QString::number(val, 16);
+
+                case Hex:
+                    switch (CtIndex2Type(m_CtIndex))
+                    {
+                    case intab_e:
+                    case intba_e:
+                    {
+                        int16_t val = strtol(svalue, NULL, 10);
+                        m_value = QString("0x") + QString::number(val, 16);
+                        break;
+                    }
+                    case uintab_e:
+                    case uintba_e:
+                    {
+                        uint16_t val = strtoul(svalue, NULL, 10);
+                        m_value = QString("0x") + QString::number(val, 16);
+                        break;
+                    }
+                    case dint_abcd_e:
+                    case dint_badc_e:
+                    case dint_cdab_e:
+                    case dint_dcba_e:
+                    {
+                        int32_t val = strtol(svalue, NULL, 10);
+                        m_value = QString("0x") + QString::number(val, 16);
+                        break;
+                    }
+                    case udint_abcd_e:
+                    case udint_badc_e:
+                    case udint_cdab_e:
+                    case udint_dcba_e:
+                    {
+                        uint32_t val = strtoul(svalue, NULL, 10);
+                        m_value = QString("0x") + QString::number(val, 16);
+                        break;
+                    }
+                    case fabcd_e:
+                    case fbadc_e:
+                    case fcdab_e:
+                    case fdcba_e:
+                        m_value = svalue;
+                        break;
+                    default:
+                        m_value = QString("0x") + QString::number(atoi(svalue), 16);
+                    }
                     break;
-                }
-                case dint_abcd_e:
-                case dint_badc_e:
-                case dint_cdab_e:
-                case dint_dcba_e:
-                {
-                    int32_t val = strtol(value, NULL, 10);
-                    m_value = QString("0x") + QString::number(val, 16);
-                    break;
-                }
-                case udint_abcd_e:
-                case udint_badc_e:
-                case udint_cdab_e:
-                case udint_dcba_e:
-                {
-                    uint32_t val = strtoul(value, NULL, 10);
-                    m_value = QString("0x") + QString::number(val, 16);
-                    break;
-                }
-                case fabcd_e:
-                case fbadc_e:
-                case fcdab_e:
-                case fdcba_e:
-                    m_value = value;
-                    break;
+
+                case Dec:
                 default:
-                    m_value = QString("0x") + QString::number(atoi(value), 16);
-                    break;
+                    m_value = svalue;
                 }
             }
             else
             {
-                m_value = value;
+                do_update = (m_status != ERROR);
+                m_status = ERROR;
+                m_value = "";
             }
         }
-        else
-        {
-            m_value = VAR_UNKNOWN;
-            m_status = ERROR;
-            LOG_PRINT(verbose_e,"variable '%s', CtIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
-        }
+    }
+
+    if (do_update) {
         this->setText(m_value);
+        this->update();
     }
-    else
-    {
-        m_status = ERROR;
-        m_value = VAR_UNKNOWN;
-        LOG_PRINT(error_e, "Invalid CtIndex %d for variable '%s' object '%s'\n", m_CtIndex, m_variable.toAscii().data(), this->objectName().toAscii().data());
-    }
-    LOG_PRINT(verbose_e, " %d '%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_CtIndex, m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
 #endif
-    this->update();
 }
 
 void ATCMlabel::setBgSelectColor(const QColor& color)
@@ -673,6 +686,7 @@ void ATCMlabel::writeAction()
         }
     }
 #endif
+    m_objectstatus = false;
     update();
 }
 

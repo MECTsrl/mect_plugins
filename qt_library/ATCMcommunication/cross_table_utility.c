@@ -831,13 +831,116 @@ int readFromDb(int ctIndex, void * value)
     return retval;
 }
 
-/** @brief Read the value from the internal DB at psition 'ctIndex'
- * and print into the string 'value' in according with the format described into the cross table
- * @param int ctIndex : Cross table index of the variable to read
- * @param void * value: value read and print in the right format
- * @return 1 Some error occured
- * @return 0 Write done
- */
+void sprintf_fromValue(char *s, int ctIndex, int value, int decimal)
+{
+    // 0. variables
+    union {
+        uint8_t  uint8_var;
+        uint16_t uint16_var;
+        uint32_t uint32_var;
+        int16_t  int16_var;
+        int32_t  int32_var;
+        float    float_var;
+    } var;
+
+    // 1. memcpy
+    var.int32_var = value;
+
+    // 2. sprintf
+    if (s == NULL) {
+        return;
+    }
+    switch(varNameArray[ctIndex].type)
+    {
+    case uintab_e:
+    case uintba_e:
+        if (decimal > 0)
+        {
+            char fmt[8] = "";
+            sprintf (fmt, "%%.%df", decimal);
+            sprintf(s, fmt, (float)var.uint16_var / pow(10,decimal));
+        }
+        else
+        {
+            sprintf(s, "%u", var.uint16_var);
+        }
+        break;
+
+    case intab_e:
+    case intba_e:
+        if (decimal > 0)
+        {
+            char fmt[8] = "";
+            sprintf (fmt, "%%.%df", decimal);
+            sprintf(s, fmt, (float)var.int16_var / pow(10,decimal));
+        }
+        else
+        {
+            sprintf(s, "%d", var.int16_var);
+        }
+        break;
+
+    case udint_abcd_e:
+    case udint_badc_e:
+    case udint_cdab_e:
+    case udint_dcba_e:
+        if (decimal > 0)
+        {
+            char fmt[8] = "";
+            sprintf (fmt, "%%.%df", decimal);
+            sprintf(s, fmt, (float)var.uint32_var / pow(10,decimal));
+        }
+        else
+        {
+            sprintf(s, "%u", var.uint32_var);
+        }
+        break;
+
+    case dint_abcd_e:
+    case dint_badc_e:
+    case dint_cdab_e:
+    case dint_dcba_e:
+        if (decimal > 0)
+        {
+            char fmt[8] = "";
+            sprintf (fmt, "%%.%df", decimal);
+            sprintf(s, fmt, (float)var.int32_var / pow(10,decimal));
+        }
+        else
+        {
+            sprintf(s, "%d", var.int32_var);
+        }
+        break;
+
+    case fabcd_e:
+    case fbadc_e:
+    case fcdab_e:
+    case fdcba_e:
+        if (decimal > 0)
+        {
+            char fmt[8] = "";
+            sprintf (fmt, "%%.%df", decimal);
+            sprintf(s, fmt, (float)var.float_var);
+        }
+        else
+        {
+            sprintf(s, "%.0f", (float)var.float_var);
+        }
+        break;
+
+    case byte_e:
+    case bit_e:
+    case bytebit_e:
+    case wordbit_e:
+    case dwordbit_e:
+        sprintf(s, "%u", var.uint8_var);
+        break;
+
+    default:
+        sprintf(s, "??");
+    }
+}
+
 int formattedReadFromDb_string(int ctIndex, char * value)
 {
     int decimal = 0;

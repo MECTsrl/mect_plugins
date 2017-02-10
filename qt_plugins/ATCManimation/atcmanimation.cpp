@@ -142,25 +142,30 @@ bool ATCManimation::setVariable(QString variable)
 {
     m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+    if (m_variable.isEmpty()) {
         m_status = ERROR;
-        m_value = VAR_UNKNOWN;
+        m_value = "";
         m_CtIndex = 0;
+        LOG_PRINT(verbose_e, "empty variable\n");
+    }
+    else if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
+    {
+        m_status = ERROR;
+        m_value = "";
+        m_CtIndex = 0;
+        LOG_PRINT(error_e, "unknown variable '%s'\n", variable.trimmed().toAscii().data());
     }
     else
     {
-        m_status = DONE;
+        m_status = UNK; // not read yet
+        m_value =  "";
+        LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
     }
-    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+    setToolTip("");
+#else
+    setToolTip(m_variable);
 #endif
 
-#ifndef TARGET_ARM
-    setToolTip(m_variable);
-#else
-    setToolTip("");
-#endif
     return true;
 }
 
@@ -198,9 +203,8 @@ bool ATCManimation::setRefresh(int refresh)
 /* read variable */
 void ATCManimation::updateData()
 {
-    bool do_update = false;
 #ifdef TARGET_ARM
-	char value[TAG_LEN] = "";
+    bool do_update = false;
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
@@ -221,38 +225,28 @@ void ATCManimation::updateData()
 
     if (m_CtIndex > 0)
 	{
-		if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
+        char value[42] = "";
+        if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
 		{
+            do_update = (m_status != DONE) || (m_value.compare(value) != 0);
             m_status = DONE;
-            if (m_value.compare(value)) {
+            if (do_update)
+            {
                 m_value = value;
-                do_update = true;
             }
         }
 		else
 		{
+            do_update = (m_status != ERROR);
             m_status = ERROR;
-            if (m_value.compare(VAR_UNKNOWN)) {
-                m_value = VAR_UNKNOWN;
-                do_update = true;
-            }
-		}
-	}
-	else
-	{
-		m_status = ERROR;
-        if (m_value.compare(VAR_UNKNOWN)) {
             m_value = VAR_UNKNOWN;
-            do_update = true;
         }
-        LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
-	}
-	LOG_PRINT(verbose_e, "'%s': '%s' status '%c' \n", m_variable.toAscii().data(), value, m_status);
-#else
-    do_update = true;
-#endif
-    if (do_update)
+    }
+
+    if (do_update) {
         this->update();
+    }
+#endif
 }
 
 bool ATCManimation::setMapping(QString mapping)

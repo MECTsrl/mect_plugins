@@ -1160,7 +1160,7 @@ bool Logger::closeStorageFile()
 
 bool Logger::checkVariation()
 {
-    char value [TAG_LEN] = "";
+    char value [42] = "";
     for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
     {
         /* if is active, dump if it is necessary and emit the signal */
@@ -1184,7 +1184,7 @@ bool Logger::checkVariation()
 bool Logger::dumpStorage()
 {
     char buffer [FILENAME_MAX] = "";
-    char value [TAG_LEN] = "";
+    char value [42] = "";
     int iF, iS, iV, iX;
 #ifdef ENABLE_TREND
     trend_msg_t info_msg;

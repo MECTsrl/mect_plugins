@@ -91,7 +91,10 @@ recipe::recipe(QWidget *parent) :
 
 void recipe::horizontalHeaderClicked(int column)
 {
-    if(column <= 0) return; //first column is names, doesn't represent a segment
+     // column #0 is names, last is #(1+stepNbMax-1)
+    if (column <= 0 || column > stepNbMax) {
+        return;
+    }
 
     ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectColumns);
@@ -514,22 +517,31 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
                                                  new QTableWidgetItem(QString::number(stepIndex + 1))
                                                  );
     }
+    // ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
     /* variable rows */
+    char buf[42];
+
     ui->progressBarStatus->setMaximum(varNbMax);
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
+        int ctIndex = testsIndexes[varIndex];
+        int decimal = getVarDecimalByCtIndex(ctIndex);
+
         ui->progressBarStatus->setValue(varIndex);
-        int decimal = getVarDecimalByCtIndex(testsIndexes[varIndex]);
-        ui->tableWidget->setItem(varIndex, 0, new QTableWidgetItem(varNameArray[testsIndexes[varIndex]].tag));
+        ui->tableWidget->setItem(varIndex, 0, new QTableWidgetItem(QString(varNameArray[ctIndex].tag)));
 
         for (int stepIndex = 0; stepIndex < stepNbMax; stepIndex++)
         {
-            ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString::number(testsTable[stepIndex][varIndex] / pow(10,decimal), 'f', decimal)));
+            int value = testsTable[stepIndex].at(varIndex);
+
+            sprintf_fromValue(buf, ctIndex, value, decimal);
+            ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
         }
     }
 
-    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableWidget->resizeColumnsToContents();
     ui->progressBarStatus->setVisible(false);
 
     return true;

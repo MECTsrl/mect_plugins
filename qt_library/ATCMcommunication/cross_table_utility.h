@@ -71,6 +71,7 @@ int CtIndex2Type(int CtIndex);
 int writeStringToDb(int ctIndex, char * value);
 int readFromDb(int ctIndex, void * value);
 int readFromDbLock(int ctIndex, void * value);
+void sprintf_fromValue(char *s, int ctIndex, int value, int decimal);
 int formattedReadFromDb_string(int ctIndex, char * value);
 int formattedReadFromDb_float(int ctIndex, float * fvalue);
 int formattedReadFromDb_int(int ctIndex, int * ivalue);

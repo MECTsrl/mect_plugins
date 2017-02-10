@@ -230,71 +230,30 @@ bool ATCMspinbox::setVariable(QString variable)
 {
     m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+    if (m_variable.isEmpty()) {
         m_status = ERROR;
-        //m_value = VAR_UNKNOWN;
+        m_value = minimum();
         m_CtIndex = 0;
+        LOG_PRINT(verbose_e, "empty variable\n");
+    }
+    else if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
+    {
+        m_status = ERROR;
+        m_value = minimum();
+        m_CtIndex = 0;
+        LOG_PRINT(error_e, "unknown variable '%s'\n", variable.trimmed().toAscii().data());
     }
     else
     {
-        m_status = DONE;
-        switch (CtIndex2Type(m_CtIndex))
-        {
-        case intab_e:
-        case intba_e:
-        case uintab_e:
-        case uintba_e:
-        case dint_abcd_e:
-        case dint_badc_e:
-        case dint_cdab_e:
-        case dint_dcba_e:
-        case udint_abcd_e:
-        case udint_badc_e:
-        case udint_cdab_e:
-        case udint_dcba_e:
-            QDoubleSpinBox::setDecimals(0);
-            break;
-        case fabcd_e:
-        case fbadc_e:
-        case fcdab_e:
-        case fdcba_e:
-        {
-            int decimal = 0;
-            if (varNameArray[m_CtIndex].decimal > 4)
-            {
-                if (readFromDbLock(varNameArray[m_CtIndex].decimal, &decimal) != 0)
-                {
-                    decimal = 0;
-                }
-            }
-            else if (varNameArray[m_CtIndex].decimal > 0)
-            {
-                LOG_PRINT(verbose_e, "Decimal %d\n", varNameArray[m_CtIndex].decimal);
-                decimal = varNameArray[m_CtIndex].decimal;
-            }
-            else
-            {
-                decimal = 0;
-            }
-
-            QDoubleSpinBox::setDecimals(decimal);
-        }
-            break;
-        default:
-            QDoubleSpinBox::setDecimals(0);
-        }
-
+        m_status = UNK; // not read yet
+        m_value = minimum();
+        LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
     }
-    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+    setToolTip("");
+#else
+    setToolTip(m_variable);
 #endif
 
-#ifndef TARGET_ARM
-    setToolTip(m_variable);
-#else
-    setToolTip("");
-#endif
     return true;
 }
 
@@ -364,7 +323,7 @@ bool ATCMspinbox::setRefresh(int refresh)
 void ATCMspinbox::updateData()
 {
 #ifdef TARGET_ARM
-    char statusMsg[TAG_LEN] = "";
+    bool do_update = false;
 
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
@@ -387,36 +346,35 @@ void ATCMspinbox::updateData()
         float fvalue;
         if (formattedReadFromDb_float(m_CtIndex, &fvalue) == 0)
         {
+            float new_value;
+
+            if (fvalue > (float)this->maximum()) {
+                new_value = (float)this->maximum();
+            } else if (fvalue < (float)this->minimum()) {
+                new_value = (float)this->minimum();
+            } else {
+                new_value = fvalue;
+            }
+            do_update = (m_status != DONE) || (m_value != new_value);
             m_status = DONE;
-            m_value = fvalue;
+            m_value = new_value;
         }
         else
         {
-            //m_value = VAR_UNKNOWN;
+            m_value = (float)this->minimum();
+            do_update = (m_status != ERROR);
             m_status = ERROR;
         }
     }
-    else
-    {
-        m_status = ERROR;
-    }
 
-    disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-    if (m_status == ERROR)
+    if (do_update)
     {
-        /* set error MSG */
-        if (strlen(statusMsg) > 0)
-        {
-            setSpecialValueText(statusMsg);
-        }
-    }
-    else if (m_status == DONE)
-    {
+        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
+        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+        this->update();
     }
-    connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #endif
-    this->update();
 }
 
 enum QFrame::Shadow ATCMspinbox::apparence() const

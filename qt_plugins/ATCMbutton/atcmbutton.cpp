@@ -39,7 +39,7 @@ ATCMbutton::ATCMbutton(QWidget * parent):
     m_status = UNK;
     m_CtIndex = 0;
     m_CtVisibilityIndex = 0;
-    m_CtPasswordVarIndex = -1;
+    m_CtPasswordVarIndex = 0;
     m_text = "";
     m_text_press = "";
     m_icon = QIcon();
@@ -167,11 +167,12 @@ ATCMbutton::ATCMbutton(QWidget * parent):
             #endif
                 );
 
+    m_fBusy = false;
     m_parent = parent;
 #ifdef TARGET_ARM
     connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    // at this time "checkable" is not yet determined
 #endif
-    m_fBusy = false;
 }
 
 ATCMbutton::~ATCMbutton()
@@ -258,9 +259,9 @@ void ATCMbutton::paintEvent(QPaintEvent * e)
         case ERROR:
             palette.setColor(QPalette::Foreground, Qt::red);
             break;
+        case UNK:
         default /*UNKNOWN*/:
             palette.setColor(QPalette::Foreground, Qt::gray);
-            break;
         }
     }
 #endif
@@ -351,10 +352,29 @@ void ATCMbutton::unsetVisibilityVar()
 /* Activate variable */
 bool ATCMbutton::setStatusvar(QString variable)
 {
+    m_statusvar = variable.trimmed();
 #ifdef TARGET_ARM
-    disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
-    disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) );
-    disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
+    if (m_statusvar.isEmpty()) {
+        m_status = ERROR;
+        m_text = "";
+        m_CtIndex = 0;
+        LOG_PRINT(verbose_e, "empty variable\n");
+    }
+    else if (Tag2CtIndex(m_statusvar.toAscii().data(), &m_CtIndex) != 0)
+    {
+        m_status = ERROR;
+        m_text = "";
+        m_CtIndex = 0;
+        LOG_PRINT(error_e, "unknown variable '%s'\n", m_statusvar.trimmed().toAscii().data());
+    }
+    else
+    {
+        m_status = UNK; // not read yet
+        m_text =  "";
+        LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_statusvar.toAscii().data());
+    }
+    setToolTip("");
+    // here because in the constructor checkable is not yet determined
     if (isCheckable())
     {
         connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
@@ -364,59 +384,23 @@ bool ATCMbutton::setStatusvar(QString variable)
         connect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) , Qt::DirectConnection);
         connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
     }
+#else
+    setToolTip(m_statusvar);
 #endif
 
-    /* if the acual variable is empty activate it */
-    if (variable.trimmed().length() > 0)
-    {
-#ifdef TARGET_ARM
-        m_statusvar = variable.trimmed();
-        if (Tag2CtIndex(m_statusvar.toAscii().data(), &m_CtIndex) != 0)
-        {
-            LOG_PRINT(error_e, "cannot extract ctIndex\n");
-            m_status = ERROR;
-            m_CtIndex = 0;
-        }
-        else
-        {
-            m_status = DONE;
-        }
-        LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_statusvar.toAscii().data(), m_CtIndex);
-#else
-        m_statusvar = variable.trimmed();
-#endif
-    }
 
-    if (m_status != ERROR)
-    {
-#ifndef TARGET_ARM
-        setToolTip(m_statusvar);
-#else
-        setToolTip("");
-#endif
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return true;
 }
 
 bool ATCMbutton::setStatusPressedValue(QString variable)
 {
     m_statuspressval = variable;
-    if (isChecked()) {
-        m_statusactualval = m_statuspressval;
-    }
     return true;
 }
 
 bool ATCMbutton::setStatusReleasedValue(QString variable)
 {
     m_statusreleaseval = variable;
-    if (!isChecked()) {
-        m_statusactualval = m_statusreleaseval;
-    }
     return true;
 }
 
@@ -481,7 +465,8 @@ bool ATCMbutton::setRefresh(int refresh)
 void ATCMbutton::updateData()
 {
 #ifdef TARGET_ARM
-    char value[TAG_LEN] = "";
+    bool do_update = false;
+    char value[42] = "";
 
     if (m_fBusy)
         return;
@@ -500,26 +485,17 @@ void ATCMbutton::updateData()
     }
 
     if (! this->isVisible()) {
-        goto exit_function;
+        return;
     }
-    if (m_passwordVar.length() > 0)
+
+    if (m_CtPasswordVarIndex > 0)
     {
-        if (m_CtPasswordVarIndex >= 0)
+        if (formattedReadFromDb_string(m_CtPasswordVarIndex, value) == 0 && strlen(value) > 0)
         {
-            LOG_PRINT(verbose_e, "password var %s, index %d\n", m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
-            if (formattedReadFromDb_string(m_CtPasswordVarIndex, value) == 0 && strlen(value) > 0)
-            {
-                m_status = DONE;
-                LOG_PRINT(verbose_e, "PASSWORD %d\n", atoi(value));
-                m_passwordValue = value;
-            }
-            LOG_PRINT(verbose_e, "T: '%s' - password var %s, index %d\n", m_text.toAscii().data(), m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
+            m_status = DONE;
+            m_passwordValue = value;
         }
-        else
-        {
-            /* the password is a static password */
-            //LOG_PRINT(error_e, "T: '%s' - NO password var %s, index %d\n", m_text.toAscii().data(), m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
-        }
+        LOG_PRINT(verbose_e, "T: '%s' - password var %s, index %d\n", m_text.toAscii().data(), m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
     }
 
     if (m_CtIndex > 0)
@@ -528,45 +504,41 @@ void ATCMbutton::updateData()
         {
             if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
             {
-                if (m_statusactualval != value
-                        ||
-                        (m_statusactualval == m_statuspressval && isDown() == false)
-                        ||
-                        (m_statusactualval != m_statuspressval && isDown() == true)
-                        )
+                bool isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
+                do_update = (m_status != DONE) || (m_statusactualval.compare(QString(value)) != 0)
+                         || (isPressed && ! isDown()) || (! isPressed && isDown());
+                m_status = DONE;
+                if (do_update)
                 {
                     m_statusactualval = value;
-                    bool press = (m_statusactualval == m_statuspressval);
+                    isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
+                    if (isCheckable())
                     {
-                        if (isCheckable())
-                        {
-                            disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
-                            setChecked(press); // emit toggled(true);
-                            LOG_PRINT(verbose_e, "setChecked(%d)\n", press);
-                            connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
-                        }
-                        else
-                        {
-                            disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) );
-                            disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
-                            setDown(press); // emit pressed();
-                            LOG_PRINT(verbose_e, "setDown(%d)\n", press);
-                            connect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) , Qt::DirectConnection);
-                            connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
-                        }
+                        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+                        setChecked(isPressed);
+                        connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+                    }
+                    else
+                    {
+                        disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) );
+                        disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
+                        setDown(isPressed);
+                        connect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) , Qt::DirectConnection);
+                        connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
                     }
                 }
             }
+            else
+            {
+                do_update = (m_status != ERROR);
+                m_status = ERROR;
+            }
         }
     }
-    else
-    {
-        m_status = ERROR;
-        LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_statusvar.toAscii().data());
-    }
 
-exit_function:
-    this->update();
+    if (do_update) {
+        this->update();
+    }
 #endif
 }
 
@@ -708,7 +680,7 @@ bool ATCMbutton::checkPassword()
     bool retval = true;
 
 #ifdef TARGET_ARM
-    if (m_passwordVar.length() > 0 && m_passwordValue.length() > 0)
+    if (m_CtPasswordVarIndex > 0)
     {
         numpad * dk;
         int value = 0;
@@ -738,10 +710,6 @@ bool ATCMbutton::checkPassword()
         delete dk;
         m_fBusy = false;
     }
-    else
-    {
-        retval = true;
-    }
 #endif
     return retval;
 }
@@ -763,11 +731,15 @@ void ATCMbutton::pressFunction()
         }
         goToPage();
     }
-    else {
+    else
+    {
         // Password Failed
-        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
-        setChecked(false);
-        connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+        if (isCheckable())
+        {
+            disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+            setChecked(false);
+            connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+        }
     }
 #endif
 }
@@ -782,11 +754,15 @@ void ATCMbutton::releaseFunction()
             setFormattedVarByCtIndex(m_CtIndex, m_statusreleaseval.toAscii().data());
         }
     }
-    else {
+    else
+    {
         // Password Failed
-        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
-        setChecked(true);
-        connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+        if (isCheckable())
+        {
+            disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+            setChecked(true);
+            connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+        }
     }
 
 #endif
@@ -795,49 +771,34 @@ void ATCMbutton::releaseFunction()
 void ATCMbutton::pressAction()
 {
 #ifdef TARGET_ARM
-    //setEnabled(false);
-#if 0
-    if (!isCheckable())
-    {
-        disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) );
-    }
-#endif
+    m_fBusy = true;
     pressFunction();
+    m_fBusy = false;
 #endif
 }
 
 void ATCMbutton::releaseAction()
 {
 #ifdef TARGET_ARM
-#if 0
-    if (!isCheckable())
-    {
-        disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
-    }
-#endif
+    m_fBusy = true;
     releaseFunction();
-#if 0
-    //setEnabled(true);
-    if (!isCheckable())
-    {
-        connect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) , Qt::DirectConnection);
-        connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
-    }
-#endif
+    m_fBusy = false;
 #endif
 }
 
 void ATCMbutton::toggleAction(bool status)
 {
 #ifdef TARGET_ARM
+    m_fBusy = true;
     if (status)
     {
-        pressAction();
+        pressFunction();
     }
     else
     {
-        releaseAction();
+        releaseFunction();
     }
+    m_fBusy = false;
 #endif
 }
 
@@ -846,7 +807,7 @@ bool ATCMbutton::setPasswordVar(QString password)
     if (password.trimmed().length() == 0)
     {
         m_passwordVar.clear();
-        m_CtPasswordVarIndex = -1;
+        m_CtPasswordVarIndex = 0;
         return true;
     }
     else

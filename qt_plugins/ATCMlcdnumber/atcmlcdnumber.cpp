@@ -106,11 +106,32 @@ bool ATCMlcdnumber::writeValue(QString value)
 /* Activate variable */
 bool ATCMlcdnumber::setVariable(QString variable)
 {
-	m_variable = variable;
+    m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-
+//    if (m_variable.isEmpty()) {
+//        m_status = ERROR;
+//        m_value = "";
+//        m_CtIndex = 0;
+//        LOG_PRINT(verbose_e, "empty variable\n");
+//    }
+//    else if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
+//    {
+//        m_status = ERROR;
+//        m_value = "";
+//        m_CtIndex = 0;
+//        LOG_PRINT(error_e, "unknown variable '%s'\n", variable.trimmed().toAscii().data());
+//    }
+//    else
+//    {
+        m_status = UNK; // not read yet
+        m_value =  "";
+//        LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
+//    }
+    setToolTip("");
+#else
+    setToolTip(m_variable);
 #endif
-	return false;
+    return false;
 }
 
 bool ATCMlcdnumber::setRefresh(int refresh)
@@ -124,7 +145,7 @@ void ATCMlcdnumber::updateData()
 {
 #ifdef TARGET_ARM
 	int CtIndex;
-	char value[TAG_LEN] = "";
+    char value[42] = "";
 
 	if (this->isVisible() == false)
 	{

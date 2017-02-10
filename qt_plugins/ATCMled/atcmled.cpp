@@ -10,6 +10,7 @@
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QStyleOption>
+#include <QFileInfo>
 
 #include "atcmled.h"
 #include "common.h"
@@ -21,7 +22,7 @@
 ATCMled::ATCMled(QWidget *parent) :
     QLabel(parent)
 {
-    m_value = 0;
+    m_value = -1;
     m_variable = "";
     m_status = UNK;
     m_CtIndex = 0;
@@ -54,7 +55,8 @@ void ATCMled::paintEvent(QPaintEvent * e)
     QPainter p(this);
     QIcon::State state;
     QIcon::Mode mode;
-    QIcon icon = QIcon(":/unk.png");
+    QIcon icon;
+    static QIcon unk(":/unk.png");
 
     switch(m_value)
     {
@@ -68,11 +70,11 @@ void ATCMled::paintEvent(QPaintEvent * e)
         mode = QIcon::Normal;
         state = QIcon::On;
         break;
+    case -1:
     default:
-        icon = QIcon(":/unk.png");
-        state = QIcon::Off;
+        icon = unk;
         mode = QIcon::Disabled;
-        break;
+        state = QIcon::Off;
     }
 
     if (m_viewstatus == true && m_status == ERROR)
@@ -101,25 +103,30 @@ bool ATCMled::setVariable(QString variable)
 {
     m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+    if (m_variable.isEmpty()) {
         m_status = ERROR;
-        //m_value = VAR_UNKNOWN;
+        m_value = -1;
         m_CtIndex = 0;
+        LOG_PRINT(verbose_e, "empty variable\n");
+    }
+    else if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
+    {
+        m_status = ERROR;
+        m_value = -1;
+        m_CtIndex = 0;
+        LOG_PRINT(error_e, "unknown variable '%s'\n", variable.trimmed().toAscii().data());
     }
     else
     {
-        m_status = DONE;
+        m_status = UNK; // not read yet
+        m_value =  -1;
+        LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
     }
-    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+    setToolTip("");
+#else
+    setToolTip(m_variable);
 #endif
 
-#ifndef TARGET_ARM
-    setToolTip(m_variable);
-#else
-    setToolTip("");
-#endif
     return true;
 }
 
@@ -194,6 +201,8 @@ bool ATCMled::setRefresh(int refresh)
 void ATCMled::updateData()
 {
 #ifdef TARGET_ARM
+    bool do_update = false;
+
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
         if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
@@ -216,21 +225,29 @@ void ATCMled::updateData()
         int ivalue;
         if (formattedReadFromDb_int(m_CtIndex, &ivalue) == 0)
         {
-            m_value = (ivalue != 0);
+            int new_value;
+
+            if (ivalue == 0) {
+                new_value = 0;
+            } else {
+                new_value = 1;
+            }
+            do_update = (m_status != DONE) || (m_value != new_value);
             m_status = DONE;
+            m_value = new_value;
         }
         else
         {
-            //m_value = -1;
+            m_value = -1;
+            do_update = (m_status != ERROR);
             m_status = ERROR;
         }
     }
-    else
-    {
-        m_status = ERROR;
+
+    if (do_update) {
+        this->update();
     }
 #endif
-    this->update();
 }
 
 QIcon ATCMled::onIcon() const

@@ -220,25 +220,30 @@ bool ATCMslider::setVariable(QString variable)
 {
     m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+    if (m_variable.isEmpty()) {
         m_status = ERROR;
-        //m_value = VAR_UNKNOWN;
+        m_value = minimum();
         m_CtIndex = 0;
+        LOG_PRINT(verbose_e, "empty variable\n");
+    }
+    else if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
+    {
+        m_status = ERROR;
+        m_value = minimum();
+        m_CtIndex = 0;
+        LOG_PRINT(error_e, "unknown variable '%s'\n", variable.trimmed().toAscii().data());
     }
     else
     {
-        m_status = DONE;
+        m_status = UNK; // not read yet
+        m_value = minimum();
+        LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
     }
-    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+    setToolTip("");
+#else
+    setToolTip(m_variable);
 #endif
 
-#ifndef TARGET_ARM
-    setToolTip(m_variable);
-#else
-    setToolTip("");
-#endif
     return true;
 }
 
@@ -308,6 +313,8 @@ bool ATCMslider::setRefresh(int refresh)
 void ATCMslider::updateData()
 {
 #ifdef TARGET_ARM
+    bool do_update = false;
+
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
         if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
@@ -320,6 +327,7 @@ void ATCMslider::updateData()
             }
         }
     }
+
     if (! this->isVisible()) {
         return;
     }
@@ -329,27 +337,35 @@ void ATCMslider::updateData()
         int ivalue;
         if (formattedReadFromDb_int(m_CtIndex, &ivalue) == 0)
 		{
-            m_value = ivalue;
+            int new_value;
+
+            if (ivalue > this->maximum()) {
+                new_value = this->maximum();
+            } else if (ivalue < this->minimum()) {
+                new_value = this->minimum();
+            } else {
+                new_value = ivalue;
+            }
+            do_update = (m_status != DONE) || (m_value != new_value);
             m_status = DONE;
+            m_value = new_value;
         }
-		else
-		{
-			//m_value = VAR_UNKNOWN;
-			m_status = ERROR;
-		}
-	}
-	else
-	{
-		m_status = ERROR;
-	}
-#endif
-	if (m_status == DONE)
+        else
+        {
+            m_value = this->minimum();
+            do_update = (m_status != ERROR);
+            m_status = ERROR;
+        }
+    }
+
+    if (do_update)
 	{
         disconnect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
         this->setValue(m_value);
         connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+        this->update();
     }
-	this->update();
+#endif
 }
 
 QIcon ATCMslider::icon() const

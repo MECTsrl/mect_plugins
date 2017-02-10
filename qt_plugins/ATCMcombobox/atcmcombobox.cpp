@@ -47,24 +47,6 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
     m_borderradius = BORDER_RADIUS_DEF;
     m_refresh = DEFAULT_PLUGIN_REFRESH;
 
-#if 0
-#ifndef TARGET_ARM
-    CrossTableManager *filePathManager;
-    CrossTableEditFactory *fileEditFactory;
-    QtProperty *example;
-
-    filePathManager = new CrossTableManager;
-    example = filePathManager->addProperty("Example");
-
-    filePathManager->setValue(example, "main.cpp");
-    filePathManager->setFilter(example, "Source files (*.cpp *.c)");
-
-    fileEditFactory = new CrossTableEditFactory;
-    browser->setFactoryForManager(filePathManager, fileEditFactory);
-    addSubProperty(example);
-#endif
-#endif
-
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -305,25 +287,30 @@ bool ATCMcombobox::setVariable(QString variable)
 {
     m_variable = variable.trimmed();
 #ifdef TARGET_ARM
-    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
-    {
-        LOG_PRINT(error_e, "cannot extract ctIndex\n");
+    if (m_variable.isEmpty()) {
         m_status = ERROR;
-        m_value = VAR_UNKNOWN;
-        m_CtIndex = -1;
+        m_value = "";
+        m_CtIndex = 0;
+        LOG_PRINT(verbose_e, "empty variable\n");
+    }
+    else if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
+    {
+        m_status = ERROR;
+        m_value = "";
+        m_CtIndex = 0;
+        LOG_PRINT(error_e, "unknown variable '%s'\n", variable.trimmed().toAscii().data());
     }
     else
     {
-        m_status = DONE;
+        m_status = UNK; // not read yet
+        m_value =  "";
+        LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
     }
-    LOG_PRINT(verbose_e, "'%s' -> ctIndex %d\n", m_variable.toAscii().data(), m_CtIndex);
+    setToolTip("");
+#else
+    setToolTip(m_variable);
 #endif
 
-#ifndef TARGET_ARM
-    setToolTip(m_variable);
-#else
-    setToolTip("");
-#endif
     return true;
 }
 
@@ -381,9 +368,8 @@ bool ATCMcombobox::setRefresh(int refresh)
 /* read variable */
 void ATCMcombobox::updateData()
 {
-    bool isChanged = true;
 #ifdef TARGET_ARM
-    char value[TAG_LEN] = "";
+    bool do_update = false;
 
     if (m_fBusy)
         return;
@@ -399,38 +385,38 @@ void ATCMcombobox::updateData()
             }
         }
     }
+
     if (! this->isVisible()) {
         return;
     }
 
-    if (m_CtIndex >= 0)
+    if (m_CtIndex > 0)
     {
+        char value[42] = "";
+
         if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
         {
-            QString new_value = value;
-            isChanged = (m_value != new_value);
+            do_update = (m_status != DONE) || (m_value.compare(value) != 0);
             m_status = DONE;
-            m_value = value;
+            if (do_update)
+            {
+                m_value = value;
+            }
         }
         else
         {
-            m_value = VAR_UNKNOWN;
+            do_update = (m_status != ERROR);
             m_status = ERROR;
+            m_value = "";
         }
     }
-    else
-    {
-        m_status = ERROR;
-        m_value = VAR_UNKNOWN;
-        LOG_PRINT(verbose_e, "Invalid CtIndex %d for variable '%s'\n", m_CtIndex, m_variable.toAscii().data());
-    }
-    LOG_PRINT(verbose_e, "'%s': '%s' status '%c' \n", m_variable.toAscii().data(), value, m_status);
-#endif
-    if (m_status == DONE && isChanged)
+
+    if (do_update)
     {
         setcomboValue();
+        this->update();
     }
-    this->update();
+#endif
 }
 
 
@@ -524,11 +510,28 @@ bool ATCMcombobox::setcomboValue()
     int index = this->findText(mapped, Qt::MatchExactly);
 
 #ifdef TARGET_ARM
+    if (m_status == DONE)
+    {
+        if (index == this->currentIndex())
+        {
+            return true;
+        }
+        // (index >= 0) or -1 from findText
+        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        this->setCurrentIndex(index);
+        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        return true;
+    }
+    else if (this->currentIndex() >= 0) // when in ERROR or UNK
+    {
+        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        this->setCurrentIndex(-1);
+        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+    }
 #else
     /* code to manage a remapping value */
     if (index >= 0)
     {
-        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
         if (m_remapping == true)
         {
             m_remapping = false;
@@ -536,54 +539,23 @@ bool ATCMcombobox::setcomboValue()
             setcomboValue();
         }
         this->setCurrentIndex(index);
-        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
     }
-#endif
-
     if (index == this->currentIndex())
     {
         return true;
     }
-    if (index >= 0)
+    else if (index >= 0)
     {
-        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
         this->setCurrentIndex(index);
-        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
         return true;
     }
-
-    /* if is not managed, put an empty string */
-    /* if the actual status is an error, display error message */
-    if (m_status == ERROR)
-    {
-#ifdef TARGET_ARM
-        this->setEditText(VAR_UNKNOWN);
-        LOG_PRINT(verbose_e,"unknown value '%s'\n", m_value.toAscii().data());
-#endif
-    }
     /* if the actual status is not expected, display the value */
-    else
-    {
-#ifdef TARGET_ARM
-        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
-        this->setEditText("");
-        this->setCurrentIndex(-1);
-        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
-        LOG_PRINT(error_e,"unknown value '%s' for variable '%s'\n", m_value.toAscii().data(), m_variable.toAscii().data());
-#else
-        index = this->findText(m_value);
-        if (index < 0)
-        {
-            this->addItem(m_value);
-            index = this->findText(m_value);
-        }
-        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
-        this->setCurrentIndex(index);
-        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
-        m_remapping = true;
-        //this->setEditText(m_value);
+    this->addItem(m_value);
+    index = this->findText(m_value);
+    this->setCurrentIndex(index);
+    m_remapping = true;
+    //this->setEditText(m_value);
 #endif
-    }
     return false;
 }
 
