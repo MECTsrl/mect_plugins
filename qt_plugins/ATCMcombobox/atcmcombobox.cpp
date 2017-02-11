@@ -379,9 +379,11 @@ void ATCMcombobox::updateData()
         if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
             if (visible && ! this->isVisible()) {
                 this->setVisible(true);
+                m_status = UNK;
             }
             else if (! visible && this->isVisible()) {
                 this->setVisible(false);
+                m_status = UNK;
             }
         }
     }

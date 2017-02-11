@@ -209,12 +209,13 @@ void ATCManimation::updateData()
     if (m_CtVisibilityIndex > 0) {
         uint32_t visible = 0;
         if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
-            m_status = DONE;
             if (visible && ! this->isVisible()) {
                 this->setVisible(true);
+                m_status = UNK;
             }
             else if (! visible && this->isVisible()) {
                 this->setVisible(false);
+                m_status = UNK;
             }
 		}
 	}
