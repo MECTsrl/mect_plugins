@@ -1160,22 +1160,26 @@ bool Logger::closeStorageFile()
 
 bool Logger::checkVariation()
 {
-    char value [42] = "";
-    for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
+    char svalue [42] = "";
+    for (int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
     {
-        /* if is active, dump if it is necessary and emit the signal */
-        LOG_PRINT(verbose_e, "Reading '%s'\n", StoreArrayV[i].tag);
-        if (formattedReadFromDb_string(StoreArrayV[i].CtIndex, value) != 0)
-        {
+        register int ctIndex = StoreArrayV[i].CtIndex;
+        register char status = pIODataStatusAreaI[ctIndex];
+
+        if (status != DONE && status != BUSY) {
             LOG_PRINT(error_e, "cannot read variable %d '%s'\n", StoreArrayV[i].CtIndex, StoreArrayV[i].tag );
             continue;
-        }
+        } else {
+            register int *p = (int *)IODataAreaI;
+            register int ivalue = p[ctIndex]; // atomic, quick and dirty, without locking
+            register int decimal = getVarDecimalByCtIndex(ctIndex); // locks only if it's from another variable
 
-        /* dump only if the last value was different */
-        if (strcmp(StoreArrayV[i].value, value) != 0)
-        {
-            LOG_PRINT(verbose_e, "Found variation for '%s' [%s -> %s]\n", StoreArrayV[i].tag, StoreArrayV[i].value, value );
-            return true;
+            /* dump only if the last value was different */
+            sprintf_fromValue(svalue, ctIndex, ivalue, decimal, 10);
+            if (strcmp(StoreArrayV[i].value, svalue) != 0)
+            {
+                return true;
+            }
         }
     }
     return false;

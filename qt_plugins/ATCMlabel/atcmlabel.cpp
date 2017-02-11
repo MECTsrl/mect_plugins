@@ -378,83 +378,46 @@ void ATCMlabel::updateData()
 
     if (m_CtIndex > 0)
     {
-        int ivalue;
-        static int iprevious = 0;
-        int *p = (int *)IODataAreaI;
+        register int *p = (int *)IODataAreaI;
+        register int ivalue = p[m_CtIndex]; // atomic, quick and dirty, without locking
+        register char status = pIODataStatusAreaI[m_CtIndex];
 
-        ivalue = p[m_CtIndex];
-        do_update = (m_status != DONE) || (iprevious != ivalue);
-
+        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
         if (do_update)
         {
-            iprevious = ivalue;
-
-            char svalue[42];
-//            int decimal = getVarDecimalByCtIndex(ctIndex);
-//            sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal);
-
-            if (formattedReadFromDb_string(m_CtIndex, svalue) == 0)
+//            m_iprevious = ivalue;
+//            m_sprevious = status;
+            switch (status)
             {
-                m_status = DONE;
+            case DONE:
+            case BUSY: {
+                char svalue[42] = "";
+                register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
+
                 switch (m_format)
                 {
                 case Bin:
-                    m_value = QString::number(atoi(svalue), 2) + QString("b");
+                    sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 2);
                     break;
-
-                case Hex:
-                    switch (CtIndex2Type(m_CtIndex))
-                    {
-                    case intab_e:
-                    case intba_e:
-                    {
-                        int16_t val = strtol(svalue, NULL, 10);
-                        m_value = QString("0x") + QString::number(val, 16);
-                        break;
-                    }
-                    case uintab_e:
-                    case uintba_e:
-                    {
-                        uint16_t val = strtoul(svalue, NULL, 10);
-                        m_value = QString("0x") + QString::number(val, 16);
-                        break;
-                    }
-                    case dint_abcd_e:
-                    case dint_badc_e:
-                    case dint_cdab_e:
-                    case dint_dcba_e:
-                    {
-                        int32_t val = strtol(svalue, NULL, 10);
-                        m_value = QString("0x") + QString::number(val, 16);
-                        break;
-                    }
-                    case udint_abcd_e:
-                    case udint_badc_e:
-                    case udint_cdab_e:
-                    case udint_dcba_e:
-                    {
-                        uint32_t val = strtoul(svalue, NULL, 10);
-                        m_value = QString("0x") + QString::number(val, 16);
-                        break;
-                    }
-                    case fabcd_e:
-                    case fbadc_e:
-                    case fcdab_e:
-                    case fdcba_e:
-                        m_value = svalue;
-                        break;
-                    default:
-                        m_value = QString("0x") + QString::number(atoi(svalue), 16);
-                    }
-                    break;
-
                 case Dec:
+                    sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
+                    break;
+                case Hex:
+                    sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 16);
+                    break;
                 default:
+                    strcpy(svalue, "?");
+                }
+                do_update = (m_status != DONE) || (m_value.compare(QString(svalue)) != 0);
+                m_status = DONE;
+                if (do_update)
+                {
                     m_value = svalue;
                 }
-            }
-            else
-            {
+            }   break;
+
+            case ERROR:
+            default:
                 do_update = (m_status != ERROR);
                 m_status = ERROR;
                 m_value = "";

@@ -517,7 +517,7 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
                                                  new QTableWidgetItem(QString::number(stepIndex + 1))
                                                  );
     }
-    // ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
     /* variable rows */
     char buf[42];
@@ -535,7 +535,7 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
         {
             int value = testsTable[stepIndex].at(varIndex);
 
-            sprintf_fromValue(buf, ctIndex, value, decimal);
+            sprintf_fromValue(buf, ctIndex, value, decimal, 10);
             ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
         }
     }

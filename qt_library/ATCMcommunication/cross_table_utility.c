@@ -831,7 +831,80 @@ int readFromDb(int ctIndex, void * value)
     return retval;
 }
 
-void sprintf_fromValue(char *s, int ctIndex, int value, int decimal)
+inline void sprintf_fromFloat(char * s, float fvalue, int decimal)
+{
+    char fmt[8] = "";
+    sprintf (fmt, "%%.%df", decimal);
+    sprintf(s, fmt, fvalue / powf(10, decimal));
+}
+
+inline void sprintf_fromSigned(char * s, int ivalue, int decimal, int base, int bits)
+{
+    register int n, i;
+
+    // fixed point
+    for (n = 0; n < decimal; ++n) {
+        ivalue /= 10;
+    }
+    // formatting Dec, Hex, Bin
+    if (base == 10) {
+        sprintf(s, "%d", ivalue);
+    } else if (base == 16) {
+        char fmt[8] = "";
+        if (bits > 1) {
+            sprintf (fmt, "0x%%0%dx", bits / 4);
+        } else {
+            sprintf (fmt, "0x%%01x");
+        }
+        sprintf(s, fmt, ivalue);
+    } else if (base == 2) {
+        for (n = (bits - 1), i = 0; n >= 0; --n, ++i) {
+            if (ivalue & (1 << n)) {
+                s[i] = '1';
+            } else {
+                s[i] = '0';
+            }
+        }
+        s[i] = 'b';
+    } else {
+        strcat(s, "?");
+    }
+}
+
+inline void sprintf_fromUnsigned(char * s, unsigned uvalue, int decimal, int base, int bits)
+{
+    register int n, i;
+
+    // fixed point
+    for (n = 0; n < decimal; ++n) {
+        uvalue /= 10;
+    }
+    // formatting Dec, Hex, Bin
+    if (base == 10) {
+        sprintf(s, "%u", uvalue);
+    } else if (base == 16) {
+        char fmt[8] = "";
+        if (bits > 1) {
+            sprintf (fmt, "0x%%0%dx", bits / 4);
+        } else {
+            sprintf (fmt, "0x%%01x");
+        }
+        sprintf(s, fmt, uvalue);
+    } else if (base == 2) {
+        for (n = (bits - 1), i = 0; n >= 0; --n, ++i) {
+            if (uvalue & (1 << n)) {
+                s[i] = '1';
+            } else {
+                s[i] = '0';
+            }
+        }
+        s[i] = 'b';
+    } else {
+        strcat(s, "?");
+    }
+}
+
+void sprintf_fromValue(char *s, int ctIndex, int value, int decimal, int base)
 {
     // 0. variables
     union {
@@ -854,29 +927,19 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal)
     {
     case uintab_e:
     case uintba_e:
-        if (decimal > 0)
-        {
-            char fmt[8] = "";
-            sprintf (fmt, "%%.%df", decimal);
-            sprintf(s, fmt, (float)var.uint16_var / pow(10,decimal));
-        }
-        else
-        {
-            sprintf(s, "%u", var.uint16_var);
+        if (decimal > 0 && base == 10) {
+            sprintf_fromFloat(s, (float)var.uint16_var, decimal);
+        } else {
+            sprintf_fromUnsigned(s, var.uint16_var, decimal, base, 16);
         }
         break;
 
     case intab_e:
     case intba_e:
-        if (decimal > 0)
-        {
-            char fmt[8] = "";
-            sprintf (fmt, "%%.%df", decimal);
-            sprintf(s, fmt, (float)var.int16_var / pow(10,decimal));
-        }
-        else
-        {
-            sprintf(s, "%d", var.int16_var);
+        if (decimal > 0 && base == 10) {
+            sprintf_fromFloat(s, (float)var.int16_var, decimal);
+        } else {
+            sprintf_fromSigned(s, var.int16_var, decimal, base, 16);
         }
         break;
 
@@ -884,15 +947,10 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal)
     case udint_badc_e:
     case udint_cdab_e:
     case udint_dcba_e:
-        if (decimal > 0)
-        {
-            char fmt[8] = "";
-            sprintf (fmt, "%%.%df", decimal);
-            sprintf(s, fmt, (float)var.uint32_var / pow(10,decimal));
-        }
-        else
-        {
-            sprintf(s, "%u", var.uint32_var);
+        if (decimal > 0 && base == 10) {
+            sprintf_fromFloat(s, (float)var.uint32_var, decimal);
+        } else {
+            sprintf_fromUnsigned(s, var.uint32_var, decimal, base, 32);
         }
         break;
 
@@ -900,15 +958,10 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal)
     case dint_badc_e:
     case dint_cdab_e:
     case dint_dcba_e:
-        if (decimal > 0)
-        {
-            char fmt[8] = "";
-            sprintf (fmt, "%%.%df", decimal);
-            sprintf(s, fmt, (float)var.int32_var / pow(10,decimal));
-        }
-        else
-        {
-            sprintf(s, "%d", var.int32_var);
+        if (decimal > 0 && base == 10) {
+            sprintf_fromFloat(s, (float)var.int32_var, decimal);
+        } else {
+            sprintf_fromSigned(s, var.int32_var, decimal, base, 32);
         }
         break;
 
@@ -916,28 +969,32 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal)
     case fbadc_e:
     case fcdab_e:
     case fdcba_e:
-        if (decimal > 0)
-        {
-            char fmt[8] = "";
-            sprintf (fmt, "%%.%df", decimal);
-            sprintf(s, fmt, (float)var.float_var);
-        }
-        else
-        {
-            sprintf(s, "%.0f", (float)var.float_var);
-        }
+        // ignore base
+        sprintf_fromFloat(s, var.float_var, decimal);
         break;
 
     case byte_e:
+        if (decimal > 0 && base == 10) {
+            sprintf_fromFloat(s, (float)var.uint8_var, decimal);
+        } else {
+            sprintf_fromUnsigned(s, var.uint8_var, decimal, base, 8);
+        }
+        break;
+
     case bit_e:
     case bytebit_e:
     case wordbit_e:
     case dwordbit_e:
-        sprintf(s, "%u", var.uint8_var);
+        // ignore decimal
+        if (var.uint8_var == 0) {
+            sprintf_fromUnsigned(s, 0, 0, base, 1);
+        } else {
+            sprintf_fromUnsigned(s, 1, 0, base, 1);
+        }
         break;
 
     default:
-        sprintf(s, "??");
+        strcat(s, "?");
     }
 }
 

@@ -225,21 +225,38 @@ void ATCManimation::updateData()
 
     if (m_CtIndex > 0)
 	{
-        char value[42] = "";
-        if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
-		{
-            do_update = (m_status != DONE) || (m_value.compare(value) != 0);
-            m_status = DONE;
-            if (do_update)
+        register int *p = (int *)IODataAreaI;
+        register int ivalue = p[m_CtIndex]; // atomic, quick and dirty, without locking
+        register char status = pIODataStatusAreaI[m_CtIndex];
+
+        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
+        if (do_update)
+        {
+//            m_iprevious = ivalue;
+//            m_sprevious = status;
+            switch (status)
             {
-                m_value = value;
+            case DONE:
+            case BUSY: {
+                char svalue[42] = "";
+                register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
+                sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
+
+                do_update = (m_status != DONE) || (m_value.compare(QString(svalue)) != 0);
+                m_status = DONE;
+                if (do_update)
+                {
+                    m_value = svalue;
+                }
+
+            }   break;
+
+            case ERROR:
+            default:
+                do_update = (m_status != ERROR);
+                m_status = ERROR;
+                m_value = "";
             }
-        }
-		else
-		{
-            do_update = (m_status != ERROR);
-            m_status = ERROR;
-            m_value = VAR_UNKNOWN;
         }
     }
 

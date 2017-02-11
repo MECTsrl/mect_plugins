@@ -466,7 +466,6 @@ void ATCMbutton::updateData()
 {
 #ifdef TARGET_ARM
     bool do_update = false;
-    char value[42] = "";
 
     if (m_fBusy)
         return;
@@ -490,27 +489,54 @@ void ATCMbutton::updateData()
 
     if (m_CtPasswordVarIndex > 0)
     {
-        if (formattedReadFromDb_string(m_CtPasswordVarIndex, value) == 0 && strlen(value) > 0)
+        register int *p = (int *)IODataAreaI;
+        register int ivalue = p[m_CtPasswordVarIndex]; // atomic, quick and dirty, without locking
+        register char status = pIODataStatusAreaI[m_CtPasswordVarIndex];
+
+        switch (status)
         {
-            m_status = DONE;
-            m_passwordValue = value;
+        case DONE:
+        case BUSY: {
+            char svalue[42] = "";
+            register int decimal = getVarDecimalByCtIndex(m_CtPasswordVarIndex); // locks only if it's from another variable
+            sprintf_fromValue(svalue, m_CtPasswordVarIndex, ivalue, decimal, 10);
+
+            // only password status, no: m_status = DONE;
+            m_passwordValue = svalue;
+          } break;
+
+        case ERROR:
+        default:
+            ; // do nothing
         }
-        LOG_PRINT(verbose_e, "T: '%s' - password var %s, index %d\n", m_text.toAscii().data(), m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
     }
 
     if (m_CtIndex > 0)
     {
-        if (pIODataStatusAreaI[m_CtIndex] != ERROR)
+        register int *p = (int *)IODataAreaI;
+        register int ivalue = p[m_CtIndex]; // atomic, quick and dirty, without locking
+        register char status = pIODataStatusAreaI[m_CtIndex];
+
+        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
+        if (do_update)
         {
-            if (formattedReadFromDb_string(m_CtIndex, value) == 0 && strlen(value) > 0)
+//            m_iprevious = ivalue;
+//            m_sprevious = status;
+            switch (status)
             {
+            case DONE:
+            case BUSY: {
+                char svalue[42] = "";
+                register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
+                sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
+
                 bool isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
-                do_update = (m_status != DONE) || (m_statusactualval.compare(QString(value)) != 0)
+                do_update = (m_status != DONE) || (m_statusactualval.compare(QString(svalue)) != 0)
                          || (isPressed && ! isDown()) || (! isPressed && isDown());
                 m_status = DONE;
                 if (do_update)
                 {
-                    m_statusactualval = value;
+                    m_statusactualval = svalue;
                     isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
                     if (isCheckable())
                     {
@@ -527,11 +553,13 @@ void ATCMbutton::updateData()
                         connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
                     }
                 }
-            }
-            else
-            {
+              } break;
+
+            case ERROR:
+            default:
                 do_update = (m_status != ERROR);
                 m_status = ERROR;
+                m_statusactualval = "";
             }
         }
     }
