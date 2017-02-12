@@ -198,9 +198,6 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-        QWidget *m_parent;
-//        int m_iprevious;
-//        int m_sprevious;
 };
 
 #endif

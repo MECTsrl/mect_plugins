@@ -117,9 +117,8 @@ ATCMdate::ATCMdate(QWidget *parent) :
             #endif
                 );
 
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #else
     refresh_timer = new QTimer(this);
     connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));

@@ -109,9 +109,8 @@ ATCMcombobox::ATCMcombobox(QWidget *parent) :
                 "*/"
             #endif
                 );
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
 #endif
 }
@@ -255,31 +254,26 @@ bool ATCMcombobox::setVisibilityVar(QString visibilityVar)
 /* Write variable */
 bool ATCMcombobox::writeValue(QString value)
 {
-    if (m_variable.length() == 0)
-    {
+#ifdef TARGET_ARM
+    if (m_CtIndex <= 0 || m_status == UNK) {
         return false;
     }
-#ifdef TARGET_ARM
-    bool ret_val = true;
 
     m_fBusy = true;
 
-    if (m_writeAcknowledge == false || QMessageBox::question(this, trUtf8("Confirm Writing"), trUtf8("Do you want to save new value: '%1'?").arg(value), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
+    if (m_writeAcknowledge && QMessageBox::question(this, trUtf8("Confirm Writing"), trUtf8("Do you want to save new value: '%1'?").arg(value), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel)
     {
-        m_value = mapped2value(value);
-        ret_val =  setFormattedVarByCtIndex(m_CtIndex, m_value.toAscii().data());
-        //fprintf(stderr, "WRITING %d %s -> %s\n", m_CtIndex, value.toAscii().data(), m_value.toAscii().data());
+        return false;
     }
-
+    m_value = mapped2value(value);
+    setFormattedVarByCtIndex(m_CtIndex, m_value.toAscii().data());
     setcomboValue();
-
     m_fBusy = false;
 
-    return ret_val;
 #else
     Q_UNUSED( value );
-    return true;
 #endif
+    return true;
 }
 
 /* Activate variable */
@@ -375,16 +369,22 @@ void ATCMcombobox::updateData()
         return;
 
     if (m_CtVisibilityIndex > 0) {
-        uint32_t visible = 0;
-        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
-            if (visible && ! this->isVisible()) {
+        int ivalue;
+        switch (readFromDbQuick(m_CtVisibilityIndex, &ivalue)) {
+        case DONE:
+        case BUSY:
+            if (ivalue && ! this->isVisible()) {
                 this->setVisible(true);
                 m_status = UNK;
             }
-            else if (! visible && this->isVisible()) {
+            else if (! ivalue && this->isVisible()) {
                 this->setVisible(false);
                 m_status = UNK;
             }
+            break;
+        case ERROR:
+        default:
+            ; // do nothing
         }
     }
 
@@ -392,19 +392,13 @@ void ATCMcombobox::updateData()
         return;
     }
 
-    if (m_CtIndex > 0)
-    {
-        int *p = (int *)IODataAreaI;
-        int ivalue = p[m_CtIndex]; // atomic, quick and dirty, without locking
-        char status = pIODataStatusAreaI[m_CtIndex];
+    if (m_CtIndex > 0) {
+        int ivalue;
+        register char status = readFromDbQuick(m_CtIndex, &ivalue);
 
         do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
-        if (do_update)
-        {
-//            m_iprevious = ivalue;
-//            m_sprevious = status;
-            switch (status)
-            {
+        if (do_update) {
+            switch (status) {
             case DONE:
             case BUSY: {
                 char svalue[42] = "";
@@ -413,12 +407,10 @@ void ATCMcombobox::updateData()
                 sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
                 do_update = (m_status != DONE) || (m_value.compare(QString(svalue)) != 0);
                 m_status = DONE;
-                if (do_update)
-                {
+                if (do_update) {
                     m_value = svalue;
                 }
             }   break;
-
             case ERROR:
             default:
                 do_update = (m_status != ERROR);
@@ -428,8 +420,7 @@ void ATCMcombobox::updateData()
         }
     }
 
-    if (do_update)
-    {
+    if (do_update) {
         setcomboValue();
         this->update();
     }

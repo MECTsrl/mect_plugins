@@ -223,7 +223,6 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-        QWidget *m_parent;
         bool m_fBusy;
 };
 

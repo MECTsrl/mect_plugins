@@ -149,7 +149,6 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-        QWidget *m_parent;
 #ifdef TARGET_ARM
 #else
         QTimer * refresh_timer;

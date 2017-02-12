@@ -1227,13 +1227,7 @@ bool Logger::dumpStorage()
         counterS = 0;
         for ( iS = 0; StoreArrayS[iS].tag[0] != '\0'; iS++)
         {
-            /* if is active, dump if it is necessary and emit the signal */
-            LOG_PRINT(verbose_e, "Reading F '%s'\n", StoreArrayS[iS].tag);
-            if (formattedReadFromDb_string(StoreArrayS[iS].CtIndex, value) != 0)
-            {
-                LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayS[iS].tag );
-                strcpy(value, TAG_NAN);
-            }
+            float fvalue = sprintf_fromDb(value, StoreArrayS[iS].CtIndex);
             
             nb_of_char = fprintf(storefp, "; %s", value);
             if (nb_of_char != (int)strlen(value) + 2)
@@ -1246,15 +1240,7 @@ bool Logger::dumpStorage()
             /* emit a signal to the hmi with the new item to display */
             info_msg.CtIndex = StoreArrayS[iS].CtIndex;
             info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-            if (strcmp(value, TAG_NAN) == 0)
-            {
-                info_msg.value = NAN;
-                LOG_PRINT(warning_e, "invalid value for variable '%s'\n", varNameArray[info_msg.CtIndex].tag);
-            }
-            else
-            {
-                info_msg.value = atof(value);
-            }
+            info_msg.value = fvalue;
             emit new_trend(info_msg);
             LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
 #endif
@@ -1279,13 +1265,7 @@ bool Logger::dumpStorage()
         counterF = 0;
         for ( iF = 0; StoreArrayF[iF].tag[0] != '\0'; iF++)
         {
-            /* if is active, dump if it is necessary and emit the signal */
-            LOG_PRINT(verbose_e, "Reading F '%s'\n", StoreArrayF[iF].tag);
-            if (formattedReadFromDb_string(StoreArrayF[iF].CtIndex, value) != 0)
-            {
-                LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayF[iF].tag );
-                strcpy(value, TAG_NAN);
-            }
+            float fvalue = sprintf_fromDb(value, StoreArrayF[iF].CtIndex);
             
             nb_of_char = fprintf(storefp, "; %s", value);
             if (nb_of_char != (int)strlen(value) + 2)
@@ -1298,15 +1278,7 @@ bool Logger::dumpStorage()
             /* emit a signal to the hmi with the new item to display */
             info_msg.CtIndex = StoreArrayF[iF].CtIndex;
             info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-            if (strcmp(value, TAG_NAN) == 0)
-            {
-                info_msg.value = NAN;
-                LOG_PRINT(warning_e, "invalid value for variable '%s'\n", varNameArray[info_msg.CtIndex].tag);
-            }
-            else
-            {
-                info_msg.value = atof(value);
-            }
+            info_msg.value = fvalue;
             emit new_trend(info_msg);
             LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
 #endif
@@ -1330,13 +1302,7 @@ bool Logger::dumpStorage()
     {
         for ( iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
         {
-            /* if is active, dump if it is necessary and emit the signal */
-            LOG_PRINT(verbose_e, "Reading V '%s'\n", StoreArrayV[iV].tag);
-            if (formattedReadFromDb_string(StoreArrayV[iV].CtIndex, value) != 0)
-            {
-                LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayV[iV].tag );
-                strcpy(value, TAG_NAN);
-            }
+            float fvalue = sprintf_fromDb(value, StoreArrayV[iV].CtIndex);
 
             /* dump only if the last value was different */
             if (logger_shot || strcmp(StoreArrayV[iV].value, value) != 0)
@@ -1363,15 +1329,7 @@ bool Logger::dumpStorage()
             /* emit a signal to the hmi with the new item to display */
             info_msg.CtIndex = StoreArrayV[iV].CtIndex;
             info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-            if (strcmp(value, TAG_NAN) == 0)
-            {
-                info_msg.value = NAN;
-                LOG_PRINT(warning_e, "invalid value for variable '%s'\n", varNameArray[info_msg.CtIndex].tag);
-            }
-            else
-            {
-                info_msg.value = atof(value);
-            }
+            info_msg.value = fvalue;
             emit new_trend(info_msg);
             LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
 #endif
@@ -1395,13 +1353,7 @@ bool Logger::dumpStorage()
     {
         for ( iX = 0; StoreArrayX[iX].tag[0] != '\0'; iX++)
         {
-            /* if is active, dump if it is necessary and emit the signal */
-            LOG_PRINT(verbose_e, "Reading X '%s'\n", StoreArrayX[iX].tag);
-            if (formattedReadFromDb_string(StoreArrayX[iX].CtIndex, value) != 0)
-            {
-                LOG_PRINT(error_e, "cannot read variable '%s'\n", StoreArrayX[iX].tag );
-                strcpy(value, TAG_NAN);
-            }
+            float fvalue = sprintf_fromDb(value, StoreArrayX[iX].CtIndex);
 
             nb_of_char = fprintf(storefp, "; %s", value);
             if (nb_of_char != (int)strlen(value) + 2)
@@ -1414,15 +1366,7 @@ bool Logger::dumpStorage()
             /* emit a signal to the hmi with the new item to display */
             info_msg.CtIndex = StoreArrayX[iX].CtIndex;
             info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-            if (strcmp(value, TAG_NAN) == 0)
-            {
-                info_msg.value = NAN;
-                LOG_PRINT(warning_e, "invalid value for variable '%s'\n", varNameArray[info_msg.CtIndex].tag);
-            }
-            else
-            {
-                info_msg.value = atof(value);
-            }
+            info_msg.value = fvalue;
             emit new_trend(info_msg);
             LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
 #endif

@@ -79,9 +79,8 @@ ATCMprogressbar::ATCMprogressbar(QWidget *parent) :
 #endif
 			);
 
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
 
 }
@@ -278,51 +277,61 @@ void ATCMprogressbar::updateData()
     bool do_update = false;
 
     if (m_CtVisibilityIndex > 0) {
-        uint32_t visible = 0;
-        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
-            if (visible && ! this->isVisible()) {
+        int ivalue;
+        switch (readFromDbQuick(m_CtVisibilityIndex, &ivalue)) {
+        case DONE:
+        case BUSY:
+            if (ivalue && ! this->isVisible()) {
                 this->setVisible(true);
                 m_status = UNK;
             }
-            else if (! visible && this->isVisible()) {
+            else if (! ivalue && this->isVisible()) {
                 this->setVisible(false);
                 m_status = UNK;
             }
+            break;
+        case ERROR:
+        default:
+            ; // do nothing
         }
     }
+
     if (! this->isVisible()) {
         return;
     }
 
-    if (m_CtIndex > 0)
-	{
+    if (m_CtIndex > 0) {
         int ivalue;
-        if (formattedReadFromDb_int(m_CtIndex, &ivalue) == 0)
-        {
-            int new_value;
+        register char status = readFromDbQuick(m_CtIndex, &ivalue);
 
-            if (ivalue > this->maximum()) {
-                new_value = this->maximum();
-            } else if (ivalue < this->minimum()) {
-                new_value = this->minimum();
-            } else {
-                new_value = ivalue;
+        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
+        if (do_update) {
+            switch (status) {
+            case DONE:
+            case BUSY: {
+                register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
+                int new_value = int_fromValue(m_CtIndex, ivalue, decimal);
+
+                if (new_value > this->maximum()) {
+                    new_value = this->maximum();
+                } else if (new_value < this->minimum()) {
+                    new_value = this->minimum();
+                }
+                do_update = (m_status != DONE) || (m_value != new_value);
+                m_status = DONE;
+                m_value = new_value;
+              } break;
+            case ERROR:
+            default:
+                do_update = (m_status != ERROR);
+                m_status = ERROR;
+                m_value = -1;
             }
-            do_update = (m_status != DONE) || (m_value != new_value);
-            m_status = DONE;
-            m_value = new_value;
         }
-		else
-		{
-            m_value = this->minimum();
-            do_update = (m_status != ERROR);
-            m_status = ERROR;
-        }
-	}
+    }
 
-    if (do_update)
-	{
-		this->setValue(m_value);
+    if (do_update) {
+        this->setValue(m_value);
         this->update();
     }
 #endif

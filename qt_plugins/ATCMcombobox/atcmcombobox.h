@@ -166,9 +166,6 @@ class
 
 	private:
         bool    m_fBusy;
-        QWidget *m_parent;
-//        int m_iprevious;
-//        int m_sprevious;
 };
 
 #endif

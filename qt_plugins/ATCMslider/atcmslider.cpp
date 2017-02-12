@@ -77,9 +77,8 @@ ATCMslider::ATCMslider(QWidget *parent) :
 			"*/\n"
 #endif
 			);
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL( varRefresh() ), this, SLOT( updateData() ));
+    connect(parent, SIGNAL( varRefresh() ), this, SLOT( updateData() ));
     connect(this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ));
 #endif
 }
@@ -194,25 +193,16 @@ bool ATCMslider::setVisibilityVar(QString visibilityVar)
 /* Write variable */
 bool ATCMslider::writeValue(int value)
 {
-	if (m_variable.length() == 0)
-	{
-		return false;
-	}
-
-	m_value = value;
-	//this->setValue(m_value);
 #ifdef TARGET_ARM
-    if (m_CtIndex > 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data()) == 0)
-    {
-        return true;
-    }
-    else
-    {
+    if (m_CtIndex <= 0 || m_status == UNK) {
         return false;
     }
+    setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data());
+    m_value = value;
 #else
-	return true;
+    Q_UNUSED( value );
 #endif
+    return true;
 }
 
 /* Activate variable */
@@ -316,16 +306,22 @@ void ATCMslider::updateData()
     bool do_update = false;
 
     if (m_CtVisibilityIndex > 0) {
-        uint32_t visible = 0;
-        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
-            if (visible && ! this->isVisible()) {
+        int ivalue;
+        switch (readFromDbQuick(m_CtVisibilityIndex, &ivalue)) {
+        case DONE:
+        case BUSY:
+            if (ivalue && ! this->isVisible()) {
                 this->setVisible(true);
                 m_status = UNK;
             }
-            else if (! visible && this->isVisible()) {
+            else if (! ivalue && this->isVisible()) {
                 this->setVisible(false);
                 m_status = UNK;
             }
+            break;
+        case ERROR:
+        default:
+            ; // do nothing
         }
     }
 
@@ -333,34 +329,37 @@ void ATCMslider::updateData()
         return;
     }
 
-    if (m_CtIndex > 0)
-	{
+    if (m_CtIndex > 0) {
         int ivalue;
-        if (formattedReadFromDb_int(m_CtIndex, &ivalue) == 0)
-		{
-            int new_value;
+        register char status = readFromDbQuick(m_CtIndex, &ivalue);
 
-            if (ivalue > this->maximum()) {
-                new_value = this->maximum();
-            } else if (ivalue < this->minimum()) {
-                new_value = this->minimum();
-            } else {
-                new_value = ivalue;
+        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
+        if (do_update) {
+            switch (status) {
+            case DONE:
+            case BUSY: {
+                register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
+                int new_value = int_fromValue(m_CtIndex, ivalue, decimal);
+
+                if (new_value > this->maximum()) {
+                    new_value = this->maximum();
+                } else if (new_value < this->minimum()) {
+                    new_value = this->minimum();
+                }
+                do_update = (m_status != DONE) || (m_value != new_value);
+                m_status = DONE;
+                m_value = new_value;
+              } break;
+            case ERROR:
+            default:
+                do_update = (m_status != ERROR);
+                m_status = ERROR;
+                m_value = -1;
             }
-            do_update = (m_status != DONE) || (m_value != new_value);
-            m_status = DONE;
-            m_value = new_value;
-        }
-        else
-        {
-            m_value = this->minimum();
-            do_update = (m_status != ERROR);
-            m_status = ERROR;
         }
     }
 
-    if (do_update)
-	{
+    if (do_update) {
         disconnect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
         this->setValue(m_value);
         connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );

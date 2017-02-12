@@ -35,9 +35,8 @@ ATCManimation::ATCManimation(QWidget *parent) :
 	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	setMinimumSize(15,15);
 
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
 }
 
@@ -207,36 +206,36 @@ void ATCManimation::updateData()
     bool do_update = false;
 
     if (m_CtVisibilityIndex > 0) {
-        uint32_t visible = 0;
-        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
-            if (visible && ! this->isVisible()) {
+        int ivalue;
+        switch (readFromDbQuick(m_CtVisibilityIndex, &ivalue)) {
+        case DONE:
+        case BUSY:
+            if (ivalue && ! this->isVisible()) {
                 this->setVisible(true);
                 m_status = UNK;
             }
-            else if (! visible && this->isVisible()) {
+            else if (! ivalue && this->isVisible()) {
                 this->setVisible(false);
                 m_status = UNK;
             }
-		}
-	}
+            break;
+        case ERROR:
+        default:
+            ; // do nothing
+        }
+    }
 
     if (! this->isVisible()) {
-		return;
-	}
+        return;
+    }
 
-    if (m_CtIndex > 0)
-	{
-        register int *p = (int *)IODataAreaI;
-        register int ivalue = p[m_CtIndex]; // atomic, quick and dirty, without locking
-        register char status = pIODataStatusAreaI[m_CtIndex];
+    if (m_CtIndex > 0) {
+        int ivalue;
+        register char status = readFromDbQuick(m_CtIndex, &ivalue);
 
         do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
-        if (do_update)
-        {
-//            m_iprevious = ivalue;
-//            m_sprevious = status;
-            switch (status)
-            {
+        if (do_update) {
+            switch (status) {
             case DONE:
             case BUSY: {
                 char svalue[42] = "";
@@ -245,13 +244,10 @@ void ATCManimation::updateData()
 
                 do_update = (m_status != DONE) || (m_value.compare(QString(svalue)) != 0);
                 m_status = DONE;
-                if (do_update)
-                {
+                if (do_update) {
                     m_value = svalue;
                 }
-
-            }   break;
-
+             } break;
             case ERROR:
             default:
                 do_update = (m_status != ERROR);

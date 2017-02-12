@@ -142,7 +142,6 @@ public Q_SLOTS:
 		void paintEvent(QPaintEvent *event);
 
 	private:
-        QWidget *m_parent;
 };
 
 #endif

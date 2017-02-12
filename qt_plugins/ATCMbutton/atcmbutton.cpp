@@ -168,9 +168,8 @@ ATCMbutton::ATCMbutton(QWidget * parent):
                 );
 
     m_fBusy = false;
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     // at this time "checkable" is not yet determined
 #endif
 }
@@ -394,12 +393,18 @@ bool ATCMbutton::setStatusvar(QString variable)
 
 bool ATCMbutton::setStatusPressedValue(QString variable)
 {
+    if (m_statusactualval.compare(m_statuspressval) == 0) {
+        m_statusactualval = variable;
+    }
     m_statuspressval = variable;
     return true;
 }
 
 bool ATCMbutton::setStatusReleasedValue(QString variable)
 {
+    if (m_statusactualval.compare(m_statusreleaseval) == 0) {
+        m_statusactualval = variable;
+    }
     m_statusreleaseval = variable;
     return true;
 }
@@ -471,16 +476,22 @@ void ATCMbutton::updateData()
         return;
 
     if (m_CtVisibilityIndex > 0) {
-        uint32_t visible = 0;
-        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
-            if (visible && ! this->isVisible()) {
+        int ivalue;
+        switch (readFromDbQuick(m_CtVisibilityIndex, &ivalue)) {
+        case DONE:
+        case BUSY:
+            if (ivalue && ! this->isVisible()) {
                 this->setVisible(true);
                 m_status = UNK;
             }
-            else if (! visible && this->isVisible()) {
+            else if (! ivalue && this->isVisible()) {
                 this->setVisible(false);
                 m_status = UNK;
             }
+            break;
+        case ERROR:
+        default:
+            ; // do nothing
         }
     }
 
@@ -488,14 +499,9 @@ void ATCMbutton::updateData()
         return;
     }
 
-    if (m_CtPasswordVarIndex > 0)
-    {
-        register int *p = (int *)IODataAreaI;
-        register int ivalue = p[m_CtPasswordVarIndex]; // atomic, quick and dirty, without locking
-        register char status = pIODataStatusAreaI[m_CtPasswordVarIndex];
-
-        switch (status)
-        {
+    if (m_CtPasswordVarIndex > 0) {
+        int ivalue;
+        switch (readFromDbQuick(m_CtPasswordVarIndex, &ivalue)) {
         case DONE:
         case BUSY: {
             char svalue[42] = "";
@@ -505,26 +511,19 @@ void ATCMbutton::updateData()
             // only password status, no: m_status = DONE;
             m_passwordValue = svalue;
           } break;
-
         case ERROR:
         default:
             ; // do nothing
         }
     }
 
-    if (m_CtIndex > 0)
-    {
-        register int *p = (int *)IODataAreaI;
-        register int ivalue = p[m_CtIndex]; // atomic, quick and dirty, without locking
-        register char status = pIODataStatusAreaI[m_CtIndex];
+    if (m_CtIndex > 0) {
+        int ivalue;
+        register char status = readFromDbQuick(m_CtIndex, &ivalue);
 
         do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
-        if (do_update)
-        {
-//            m_iprevious = ivalue;
-//            m_sprevious = status;
-            switch (status)
-            {
+        if (do_update) {
+            switch (status) {
             case DONE:
             case BUSY: {
                 char svalue[42] = "";
@@ -535,18 +534,14 @@ void ATCMbutton::updateData()
                 do_update = (m_status != DONE) || (m_statusactualval.compare(QString(svalue)) != 0)
                          || (isPressed && ! isDown()) || (! isPressed && isDown());
                 m_status = DONE;
-                if (do_update)
-                {
+                if (do_update) {
                     m_statusactualval = svalue;
                     isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
-                    if (isCheckable())
-                    {
+                    if (isCheckable()) {
                         disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
                         setChecked(isPressed);
                         connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
-                    }
-                    else
-                    {
+                    } else {
                         disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) );
                         disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
                         setDown(isPressed);
@@ -555,7 +550,6 @@ void ATCMbutton::updateData()
                     }
                 }
               } break;
-
             case ERROR:
             default:
                 do_update = (m_status != ERROR);

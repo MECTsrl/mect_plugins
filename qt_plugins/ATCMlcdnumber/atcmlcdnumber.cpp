@@ -43,9 +43,8 @@ ATCMlcdnumber::ATCMlcdnumber(QWidget *parent) :
 			"}"
 #endif
 			);
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
 }
 
@@ -144,58 +143,52 @@ bool ATCMlcdnumber::setRefresh(int refresh)
 void ATCMlcdnumber::updateData()
 {
 #ifdef TARGET_ARM
-	int CtIndex;
-    char value[42] = "";
+    bool do_update = false;
+    int m_CtIndex; // <---=
 
-	if (this->isVisible() == false)
-	{
+    if (! this->isVisible() || m_variable.length() == 0) {
 		return;
 	}
 
-	if (m_variable.length() == 0)
-	{
-		return;
-	}
-
-	if (Tag2CtIndex(m_variable.toAscii().data(), &CtIndex) != 0)
-	{
+    if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0) {
 		LOG_PRINT(error_e, "cannot extract ctIndex\n");
-		m_status = ERROR;
-		m_value = VAR_UNKNOWN;
+        do_update = (m_status != ERROR);
+        m_status = ERROR;
+        m_value = "";
 	}
 	else
 	{
-        m_status = DONE;
-        if (formattedReadFromDb_string(CtIndex, value) == 0 && strlen(value) > 0)
-		{
-			char statusMsg[TAG_LEN];
-            m_status = pIODataStatusAreaI[CtIndex];
-			switch (m_status)
-			{
-				case BUSY:
-					m_value = value;
-					break;
-				case ERROR:
-					if (strlen(statusMsg) > 0) m_value = statusMsg;
-					break;
-				case DONE:
-					m_value = value;
-					break;
-				default:
-					m_value = VAR_UNKNOWN;
-					break;
-			}
-		}
-		else
-		{
-			m_value = VAR_UNKNOWN;
-			m_status = ERROR;
-		}
+        int ivalue;
+        register char status = readFromDbQuick(m_CtIndex, &ivalue);
+
+        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
+        if (do_update) {
+            switch (status) {
+            case DONE:
+            case BUSY: {
+                char svalue[42] = "";
+                register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
+
+                sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
+                do_update = (m_status != DONE) || (m_value.compare(QString(svalue)) != 0);
+                m_status = DONE;
+                if (do_update) {
+                    m_value = svalue;
+                }
+            }   break;
+            case ERROR:
+            default:
+                do_update = (m_status != ERROR);
+                m_status = ERROR;
+                m_value = "";
+            }
+        }
 	}
-	LOG_PRINT(verbose_e, "'%s': '%s' status '%c' (BUSY '%c' - ERROR '%c' - DONE '%c')\n", m_variable.toAscii().data(), value, m_status, BUSY, ERROR, DONE);
+    if (do_update) {
+        this->display(m_value);
+        this->update();
+    }
 #endif
-	this->update();
-	this->display(m_value);
 }
 
 bool ATCMlcdnumber::setViewStatus(bool status)

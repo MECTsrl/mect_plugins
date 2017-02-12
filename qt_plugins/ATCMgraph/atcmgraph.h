@@ -557,7 +557,6 @@ private:
     char readVariable(int CtIndex, double * value);
 #endif
 private:
-    QWidget *m_parent;
     bool m_fStop;
     QMutex sample_mutex;
 };

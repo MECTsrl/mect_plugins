@@ -111,7 +111,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>Data Ora</string>
+        <string>Date and Time</string>
        </property>
       </widget>
      </item>
@@ -182,7 +182,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>Data [gg/mm/aaaa]</string>
+        <string>Date [dd/mm/yyyy]</string>
        </property>
       </widget>
      </item>
@@ -213,7 +213,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>Ora [0-23]</string>
+        <string>Time [0-23]</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

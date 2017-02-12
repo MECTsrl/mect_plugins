@@ -52,7 +52,6 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 private:
-    QWidget *m_parent;
 };
 
 #endif

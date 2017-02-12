@@ -192,9 +192,8 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     PLOT->replot();
 #endif
 
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
 #endif
 }
 
@@ -993,14 +992,19 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
 #ifdef TARGET_ARM
 char ATCMgraph::readVariable(int CtIndex, double * valuef)
 {
-    float value;
-    if (formattedReadFromDb_float(CtIndex, &value) == 0)
-    {
-        *valuef = value;
+    int ivalue;
+
+    switch (readFromDbQuick(CtIndex, &ivalue)) {
+    case DONE:
+    case BUSY: {
+        register int decimal = getVarDecimalByCtIndex(CtIndex); // locks only if it's from another variable
+        register float fvalue = float_fromValue(CtIndex, ivalue, decimal);
+
+        *valuef = fvalue;
         return DONE;
-    }
-    else
-    {
+      } break;
+    case ERROR:
+    default:
         *valuef = VAR_NAN;
         return ERROR;
     }

@@ -85,9 +85,8 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
                 "*/\n"
             #endif
                 );
-    m_parent = parent;
 #ifdef TARGET_ARM
-    connect(m_parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
     connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #endif
 }
@@ -194,35 +193,20 @@ bool ATCMspinbox::setVisibilityVar(QString visibilityVar)
 /* Write variable */
 bool ATCMspinbox::writeValue(double value)
 {
-    if (m_variable.length() == 0)
-    {
-        m_value = (float)value;
-        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-        this->setValue(m_value);
-        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-        return false;
-    }
 #ifdef TARGET_ARM
-    if (m_CtIndex > 0 && setFormattedVarByCtIndex(m_CtIndex, QString::number(value).toAscii().data()) == 0)
-    {
-        m_value = (float)value;
-        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-        this->setValue(m_value);
-        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-        return true;
-    }
-    else
-    {
-        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
-        this->setValue(m_value);
-        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+    if (m_CtIndex <= 0 || m_status == UNK) {
         return false;
     }
+    m_value = (float)value;
+    setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data());
+    disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+    this->setValue(m_value);
+    connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #else
     m_value = (float)value;
     this->setValue(m_value);
-    return true;
 #endif
+    return true;
 }
 
 /* Activate variable */
@@ -326,50 +310,60 @@ void ATCMspinbox::updateData()
     bool do_update = false;
 
     if (m_CtVisibilityIndex > 0) {
-        uint32_t visible = 0;
-        if (readFromDbLock(m_CtVisibilityIndex, &visible) == 0) {
-            if (visible && ! this->isVisible()) {
+        int ivalue;
+        switch (readFromDbQuick(m_CtVisibilityIndex, &ivalue)) {
+        case DONE:
+        case BUSY:
+            if (ivalue && ! this->isVisible()) {
                 this->setVisible(true);
                 m_status = UNK;
             }
-            else if (! visible && this->isVisible()) {
+            else if (! ivalue && this->isVisible()) {
                 this->setVisible(false);
                 m_status = UNK;
             }
+            break;
+        case ERROR:
+        default:
+            ; // do nothing
         }
     }
+
     if (! this->isVisible()) {
         return;
     }
 
-    if (m_CtIndex > 0)
-    {
-        float fvalue;
-        if (formattedReadFromDb_float(m_CtIndex, &fvalue) == 0)
-        {
-            float new_value;
+    if (m_CtIndex > 0) {
+        int ivalue;
+        register char status = readFromDbQuick(m_CtIndex, &ivalue);
 
-            if (fvalue > (float)this->maximum()) {
-                new_value = (float)this->maximum();
-            } else if (fvalue < (float)this->minimum()) {
-                new_value = (float)this->minimum();
-            } else {
-                new_value = fvalue;
+        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
+        if (do_update) {
+            switch (status) {
+            case DONE:
+            case BUSY: {
+                register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
+                float new_value = float_fromValue(m_CtIndex, ivalue, decimal);
+
+                if (new_value > this->maximum()) {
+                    new_value = this->maximum();
+                } else if (new_value < this->minimum()) {
+                    new_value = this->minimum();
+                }
+                do_update = (m_status != DONE) || (m_value != new_value);
+                m_status = DONE;
+                m_value = new_value;
+              } break;
+            case ERROR:
+            default:
+                do_update = (m_status != ERROR);
+                m_status = ERROR;
+                m_value = (float)this->minimum();
             }
-            do_update = (m_status != DONE) || (m_value != new_value);
-            m_status = DONE;
-            m_value = new_value;
-        }
-        else
-        {
-            m_value = (float)this->minimum();
-            do_update = (m_status != ERROR);
-            m_status = ERROR;
         }
     }
 
-    if (do_update)
-    {
+    if (do_update) {
         disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
         this->setValue(m_value);
         connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
