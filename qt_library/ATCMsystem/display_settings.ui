@@ -82,7 +82,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>Display Settings</string>
+        <string>DISPLAY</string>
        </property>
       </widget>
      </item>

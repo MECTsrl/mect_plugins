@@ -57,7 +57,7 @@ int Buzzerfd = -1;
 bool BuzzerTouch = true;
 bool BuzzerAlarm = true;
 struct timespec LastTouch;
-int ID_FORCE_BUZZER =-1;
+int ID_FORCE_BUZZER = 0;
 
 /* Trend */
 #ifdef ENABLE_TREND

@@ -77,7 +77,7 @@ page::page(QWidget *parent) :
     protection_level = pwd_operator_e;
     //char vncDisplay[64];
     //printVncDisplayString(vncDisplay);
-    if (ID_FORCE_BUZZER == -1)
+    if (ID_FORCE_BUZZER <= 0)
     {
         Tag2CtIndex("PLC_buzzerOn", &ID_FORCE_BUZZER);
     }
@@ -85,13 +85,16 @@ page::page(QWidget *parent) :
 
 void page::refreshPage()
 {
-    if (this->isVisible() == false)
-    {
-        /* should never happen */
+    if (! isVisible()) {
+        // should never happen
         refresh_timer->stop();
         return;
     }
     updateData();
+    if (! isVisible()) {
+        // gone to another page ...
+        return;
+    }
     emit varRefresh();
 }
 
@@ -100,6 +103,12 @@ void page::refreshPage()
  */
 void page::updateData()
 {
+    if (! this->isVisible())
+    {
+        LOG_PRINT(warning_e, "page '%s' not visible but running.\n", this->windowTitle().toAscii().data());
+        return;
+    }
+
 #ifdef ENABLE_ALARMS
     setAlarmsBuzzer();
 #endif
@@ -107,18 +116,20 @@ void page::updateData()
     /* FIXME: use the static index of the new fix variable FORCE_BUZZER */
     if (ID_FORCE_BUZZER != -1)
     {
-        bool FORCE_BUZZER;
-        if (readFromDbLock(ID_FORCE_BUZZER, &FORCE_BUZZER) == 0 && FORCE_BUZZER == true)
-        {
-            beep(BUZZER_DURATION_MS);
+        int ivalue;
+        switch (readFromDbQuick(ID_FORCE_BUZZER, &ivalue)) {
+        case DONE:
+        case BUSY:
+            if (ivalue != 0) {
+                beep(BUZZER_DURATION_MS);
+            }
+            break;
+        case ERROR:
+        default:
+            ; // do nothing
         }
     }
 
-    if (this->isVisible() == false)
-    {
-        LOG_PRINT(warning_e, "page '%s' not visible but running.\n", this->windowTitle().toAscii().data());
-        return;
-    }
 #ifdef ENABLE_AUTODUMP
     {
         static bool inserted = false;
