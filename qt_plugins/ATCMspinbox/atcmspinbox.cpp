@@ -197,8 +197,12 @@ bool ATCMspinbox::writeValue(double value)
     if (m_CtIndex <= 0 || m_status == UNK) {
         return false;
     }
+
+    // do_write
     m_value = (float)value;
     setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data());
+
+    // do_update
     disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
     this->setValue(m_value);
     connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );

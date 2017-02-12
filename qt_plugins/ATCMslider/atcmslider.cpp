@@ -197,8 +197,15 @@ bool ATCMslider::writeValue(int value)
     if (m_CtIndex <= 0 || m_status == UNK) {
         return false;
     }
-    setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data());
+
+    // do_write
     m_value = value;
+    setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data());
+
+    // do_update
+    disconnect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    this->setValue(m_value);
+    connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
 #else
     Q_UNUSED( value );
 #endif
