@@ -1191,7 +1191,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                         {
                             for( int j = 0; j < PEN_NB; j++)
                             {
-                                if (((filter.at(i-2) >> j) & 0x1) == 0x1 && token[0] != '-')
+                                if (((filter.at(i-2) >> j) & 0x1) == 0x1 && !(token[0] == '-' && token[1] == 0))
                                 {
                                     LOG_PRINT(verbose_e, "tag '%s', '%d'\n", token, j);
                                     pens[j].y[pens[j].sample] = atof(token);
