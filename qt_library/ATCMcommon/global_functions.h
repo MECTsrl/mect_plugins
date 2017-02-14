@@ -176,4 +176,6 @@ int get_backlight_level(void);
 
 bool LoadTrend(const char * filename, QString * ErrorMsg);
 
+QObject *getPage(QObject *plugin);
+
 #endif // GLOBAL_FUNCTIONS_H

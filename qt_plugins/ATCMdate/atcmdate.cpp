@@ -17,6 +17,7 @@
 #include "atcmstyle.h"
 #ifdef TARGET_ARM
 #include "app_logprint.h"
+#include "global_functions.h"
 #endif
 
 ATCMdate::ATCMdate(QWidget *parent) :
@@ -118,7 +119,11 @@ ATCMdate::ATCMdate(QWidget *parent) :
                 );
 
 #ifdef TARGET_ARM
-    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    QObject *ancestor = getPage((QObject *)this);
+
+    if (ancestor != NULL) {
+        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
 #else
     refresh_timer = new QTimer(this);
     connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));

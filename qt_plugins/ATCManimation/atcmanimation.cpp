@@ -16,6 +16,7 @@
 #ifdef TARGET_ARM
 #include "app_logprint.h"
 #include "cross_table_utility.h"
+#include "global_functions.h"
 #endif
 
 ATCManimation::ATCManimation(QWidget *parent) :
@@ -36,7 +37,11 @@ ATCManimation::ATCManimation(QWidget *parent) :
 	setMinimumSize(15,15);
 
 #ifdef TARGET_ARM
-    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    QObject *ancestor = getPage((QObject *)this);
+
+    if (ancestor != NULL) {
+        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
 #endif
 }
 

@@ -14,6 +14,7 @@
 #include "utility.h"
 #include <QDirIterator>
 #include <QFontDatabase>
+#include <QMetaObject>
 //#include "app_config.h"
 #include "pthread.h"
 
@@ -1152,3 +1153,21 @@ bool LoadTrend(const char * filename, QString * ErrorMsg)
     if (ErrorMsg) *ErrorMsg = QObject::trUtf8("No visible pen");
     return false;
 }
+
+QObject *getPage(QObject *plugin)
+{
+    QObject *ancestor = plugin;
+
+    while (ancestor != NULL)
+    {
+        const char *className = ancestor->metaObject()->className();
+
+        if (strncmp(className, "page", 4) == 0)
+        {
+            break;
+        }
+        ancestor = ancestor->parent();
+    }
+    return ancestor;
+}
+

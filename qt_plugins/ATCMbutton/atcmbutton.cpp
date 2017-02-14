@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include "app_logprint.h"
 #include "cross_table_utility.h"
+#include "global_functions.h"
 #ifdef ENABLE_TREND
 extern bool _trend_data_reload_;
 extern char _actual_trend_[FILENAME_MAX];
@@ -169,7 +170,11 @@ ATCMbutton::ATCMbutton(QWidget * parent):
 
     m_fBusy = false;
 #ifdef TARGET_ARM
-    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    QObject *ancestor = getPage((QObject *)this);
+
+    if (ancestor != NULL) {
+        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
     // at this time "checkable" is not yet determined
 #endif
 }

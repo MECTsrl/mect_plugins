@@ -17,6 +17,7 @@
 #ifdef TARGET_ARM
 #include "app_logprint.h"
 #include "cross_table_utility.h"
+#include "global_functions.h"
 #endif
 
 ATCMspinbox::ATCMspinbox(QWidget *parent) :
@@ -86,7 +87,11 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
             #endif
                 );
 #ifdef TARGET_ARM
-    connect(parent, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    QObject *ancestor = getPage((QObject *)this);
+
+    if (ancestor != NULL) {
+        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
     connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
 #endif
 }
