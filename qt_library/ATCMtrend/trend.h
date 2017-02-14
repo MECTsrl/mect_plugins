@@ -177,7 +177,7 @@ private:
     int sample_to_skip;
     QString errormsg;
     bool popup_visible;
-    pthread_mutex_t mutex;
+
 };
 
 #endif // TREND_H

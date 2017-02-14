@@ -147,6 +147,7 @@ protected Q_SLOTS:
 		void paintEvent(QPaintEvent *event);
 
 	private:
+		QTimer * refresh_timer;
 };
 
 #endif

@@ -557,6 +557,7 @@ private:
     char readVariable(int CtIndex, double * value);
 #endif
 private:
+    QTimer * refresh_timer;
     bool m_fStop;
     QMutex sample_mutex;
 };

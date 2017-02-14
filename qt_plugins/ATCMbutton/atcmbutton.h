@@ -223,7 +223,8 @@ class
 		void paintEvent(QPaintEvent *event);
 
 	private:
-        bool m_fBusy;
+		QTimer * refresh_timer;
+		bool m_fBusy;
 };
 
 #endif

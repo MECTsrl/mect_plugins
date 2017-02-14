@@ -138,10 +138,13 @@ public Q_SLOTS:
 
         enum QFrame::Shadow m_apparence;
 
+		bool m_initialization;
+
 	protected:
 		void paintEvent(QPaintEvent *event);
 
 	private:
+		QTimer * refresh_timer;
 };
 
 #endif

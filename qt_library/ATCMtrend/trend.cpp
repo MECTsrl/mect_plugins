@@ -74,7 +74,6 @@ trend::trend(QWidget *parent) :
      * protection_level = pwd_operator_e;
      */
     //setStyle::set(this);
-    pthread_mutex_init(&mutex, NULL);
 
     /* initialization */
     for (int i = 0; i < PEN_NB; i++)
@@ -103,7 +102,8 @@ trend::trend(QWidget *parent) :
 #endif
 
     d_qwtplot = ui->qwtPlot;
-    
+    d_qwtplot->hide();
+
     //    d_qwtplot->plotLayout()->setAlignCanvasToScales(true);
     //    d_qwtplot->plotLayout()->setCanvasMargin 	( 40, -1 );
     d_qwtplot->setAxesCount( QwtPlot::xBottom, 1 );
@@ -402,12 +402,7 @@ void trend::updateData()
         LOG_PRINT(verbose_e, " RELOADED\n");
     }
 
-    if (! _trend_data_reload_ && ! first_time)
-    {
-        return;
-    }
-
-    if (force_back == true)
+    if (force_back)
     {
         /* select a new trend from CUSTOM_TREND_DIR directory */
         item_selector * sel;
@@ -488,7 +483,7 @@ void trend::updateData()
         return;
     }
 
-    if(first_time == true)
+    if (first_time)
     {
 #if 0
         d_qwtplot->setGeometry(ui->frame->rect());
@@ -541,12 +536,42 @@ void trend::updateData()
     }
     
     LOG_PRINT(verbose_e, "UPDATE\n");
-    if (popup_visible != false)
+    if (popup_visible)
     {
         popup->reload();
         popup->show();
         popup->raise();
     }
+
+    if (getOnline()){
+        static int counter = 0;
+        if (counter % 4 == 0)
+        {
+            ui->pushButtonOnline->setStyleSheet("QPushButton"
+                                                "{"
+                                                "border-image: url(:/libicons/img/Chess1.png);"
+                                                "qproperty-focusPolicy: NoFocus;"
+                                                "}");
+        }
+        else if (counter % 4 == 2)
+        {
+            ui->pushButtonOnline->setStyleSheet("QPushButton"
+                                                "{"
+                                                "border-image: url(:/libicons/img/Chess2.png);"
+                                                "qproperty-focusPolicy: NoFocus;"
+                                                "}");
+        }
+        ++counter;
+    }
+    else
+    {
+        ui->pushButtonOnline->setStyleSheet("QPushButton"
+                                            "{"
+                                            "border-image: url(:/libicons/img/Chess.png);"
+                                            "qproperty-focusPolicy: NoFocus;"
+                                            "}");
+    }
+    ui->pushButtonOnline->repaint();
 }
 
 #ifdef TRANSLATION
@@ -568,7 +593,6 @@ void trend::changeEvent(QEvent * event)
 trend::~trend()
 {
     LOG_PRINT(verbose_e, "MUOIO\n");
-    pthread_mutex_destroy(&mutex);
     delete ui;
 }
 
@@ -577,6 +601,10 @@ void trend::refreshEvent(trend_msg_t item_trend)
     LOG_PRINT(verbose_e,"NEW SAMPLE\n");
     static int last_ctindex = -1;
     
+    if (reloading || _trend_data_reload_ || first_time) {
+        return;
+    }
+
     if (item_trend.timestamp.isValid() == false)
     {
         LOG_PRINT(error_e,"invalid sample '%s'\n",  varNameArray[item_trend.CtIndex].tag);
@@ -651,36 +679,6 @@ void trend::refreshEvent(trend_msg_t item_trend)
     
     if (item_trend.CtIndex == last_ctindex)
     {
-        if (getOnline()){
-            static bool rounding = false;
-            if (rounding)
-            {
-                ui->pushButtonOnline->setStyleSheet("QPushButton"
-                                                    "{"
-                                                    "border-image: url(:/libicons/img/Chess1.png);"
-                                                    "qproperty-focusPolicy: NoFocus;"
-                                                    "}");
-            }
-            else
-            {
-                ui->pushButtonOnline->setStyleSheet("QPushButton"
-                                                    "{"
-                                                    "border-image: url(:/libicons/img/Chess2.png);"
-                                                    "qproperty-focusPolicy: NoFocus;"
-                                                    "}");
-            }
-            rounding = !rounding;
-        }
-        else
-        {
-            ui->pushButtonOnline->setStyleSheet("QPushButton"
-                                                "{"
-                                                "border-image: url(:/libicons/img/Chess.png);"
-                                                "qproperty-focusPolicy: NoFocus;"
-                                                "}");
-        }
-        ui->pushButtonOnline->repaint();
-        
         /* update the graph only if the status is online or if the new sample are visible */
         if (
                 _online_
@@ -1550,12 +1548,12 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
 
                     LOG_PRINT(verbose_e, "NEW SAMPLE LAST '%s'  %f %f in %d fin %d sample %d\n", pens[pen_index].tag, pens[pen_index].x[XindexFin-1], pens[pen_index].y[XindexFin-1], XindexIn, XindexFin, pens[pen_index].sample);
                 }
-                else
-                {
-                    LOG_PRINT(warning_e, "no point to show\n");
-                    showStatus(trUtf8("No point to show"), true);
-                    //return false;
-                }
+//                else
+//                {
+//                    LOG_PRINT(warning_e, "no point to show\n");
+//                    showStatus(trUtf8("No point to show"), true);
+//                    //return false;
+//                }
             }
         }
     }
@@ -1703,10 +1701,10 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             
             if (loadFromFile(Ti) == false)
             {
-                errormsg = trUtf8("Cannot found any data from %1 to %2").arg(actualTzero.toString().toAscii().data()).arg(QDateTime::currentDateTime().toString().toAscii().data());
-                showStatus(errormsg, true);
-                errormsg.clear();
-                LOG_PRINT(warning_e, "Cannot found any data from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
+//                errormsg = trUtf8("Cannot found any data from %1 to %2").arg(actualTzero.toString().toAscii().data()).arg(QDateTime::currentDateTime().toString().toAscii().data());
+//                showStatus(errormsg, true);
+//                errormsg.clear();
+                LOG_PRINT(warning_e, "Cannot find any data from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
                 //LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
                 //actualTzero = QDateTime::currentDateTime();
             }
@@ -1985,7 +1983,6 @@ void InterruptedCurve::drawCurve( QPainter *painter, __attribute__((unused))int 
 void trend::loadOrientedWindow()
 {
     LOG_PRINT(verbose_e,"loadWindow\n");
-    if (pthread_mutex_lock(&mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
     if (_layout_ == PORTRAIT)
     {
         LOG_PRINT(verbose_e, "Current '%s' Tmin '%s' Tmax '%s' VisibleWindowSec %d\n",
@@ -2012,7 +2009,6 @@ void trend::loadOrientedWindow()
                     actualTzero.addSecs(actualVisibleWindowSec)
                     );
     }
-    if (pthread_mutex_unlock(&mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
 }
 
 

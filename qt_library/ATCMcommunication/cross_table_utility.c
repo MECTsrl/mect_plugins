@@ -751,8 +751,15 @@ int CtIndex2Type(int CtIndex)
 char readFromDbQuick(int ctIndex, int * ivaluep)
 {
     register int *p = (int *)IODataAreaI;
-    register int ivalue = p[ctIndex]; // atomic, quick and dirty, without locking
-    register char status = pIODataStatusAreaI[ctIndex];
+    register int ivalue;
+    register char status;
+
+    if (pthread_mutex_lock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    {
+        ivalue = p[ctIndex];
+        status = pIODataStatusAreaI[ctIndex];
+    }
+    if (pthread_mutex_unlock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
 
     *ivaluep = ivalue;
     return status;
@@ -1034,6 +1041,7 @@ float sprintf_fromDb(char *s, int ctIndex)
         strcpy(s, TAG_NAN);
         retval = NAN;
     }
+    return retval;
 }
 
 float float_fromValue(int ctIndex, int value, int decimal)
@@ -1531,7 +1539,7 @@ int setStatusVar(const char * varname, char Status)
  */
 void compactSyncWrites(void)
 {
-    int  SynIndex;
+    unsigned  SynIndex;
 
     // already locked both for send and recv
     // (Wadr,0) --> (0Adr,0)
