@@ -92,24 +92,24 @@ protected:
 #endif
     bool activateVarList(const QStringList listVarname);
     bool deactivateVarList(const QStringList listVarname);
-    bool getFormattedVar(const char * varname, bool * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, short int * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, unsigned short int * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, int * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, unsigned int * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, float * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, QString * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, QLabel * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, QLineEdit * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, QPushButton * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, QSpinBox * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, QDoubleSpinBox * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, QComboBox * formattedVar, QLabel * led = NULL) const { return false; }
-    bool getFormattedVar(const char * varname, QComboBox * formattedVar, QStringList map, QLabel * led = NULL) const { return false; }
+    bool getFormattedVar(const char * varname, bool * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led); return false; }
+    bool getFormattedVar(const char * varname, short int * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led); return false; }
+    bool getFormattedVar(const char * varname, unsigned short int * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led);  return false; }
+    bool getFormattedVar(const char * varname, int * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led);  return false; }
+    bool getFormattedVar(const char * varname, unsigned int * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led);  return false; }
+    bool getFormattedVar(const char * varname, float * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led);  return false; }
+    bool getFormattedVar(const char * varname, QString * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led);  return false; }
+    bool getFormattedVar(const char * varname, QLabel * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led);  return false; }
+    bool getFormattedVar(const char * varname, QLineEdit * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led);  return false; }
+    bool getFormattedVar(const char * varname, QPushButton * formattedVar, QLabel * led = NULL) const {  Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led); return false; }
+    bool getFormattedVar(const char * varname, QSpinBox * formattedVar, QLabel * led = NULL) const {  Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led); return false; }
+    bool getFormattedVar(const char * varname, QDoubleSpinBox * formattedVar, QLabel * led = NULL) const {  Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led); return false; }
+    bool getFormattedVar(const char * varname, QComboBox * formattedVar, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(led);  return false; }
+    bool getFormattedVar(const char * varname, QComboBox * formattedVar, QStringList map, QLabel * led = NULL) const { Q_UNUSED(varname); Q_UNUSED(formattedVar); Q_UNUSED(map); Q_UNUSED(led);  return false; }
 
     bool setFormattedVar(const char * varname, char * formattedVar);
-    char getStatusVar(const char * varname, char * msg = NULL) const { return 0x0; }
-    bool setStatusVar(const char * varname, char Status) const { return false; }
+    char getStatusVar(const char * varname, char * msg = NULL) const { Q_UNUSED(varname); Q_UNUSED(msg); return 0x0; }
+    bool setStatusVar(const char * varname, char Status) const { Q_UNUSED(varname); Q_UNUSED(Status); return false; }
     bool setStatusVar(int SynIndex, char Status);
     bool isBlockFullUsed(int block, QStringList variablelist);
     QStringList getBlocksToFill(QStringList variablelist);
