@@ -200,12 +200,7 @@ void trend::updateData()
         {
             if (strlen(_actual_trend_) == 0)
             {
-                LOG_PRINT(warning_e, "No trend selected.\n");
-                LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
                 disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-                refresh_timer->stop();
-                errormsg = (trUtf8("No trend description specified."));
-                //QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("No trend description specified."));
                 force_back = true;
                 reloading = false;
                 LOG_PRINT(verbose_e, " RELOADED\n");
@@ -601,7 +596,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
     LOG_PRINT(verbose_e,"NEW SAMPLE\n");
     static int last_ctindex = -1;
     
-    if (reloading || _trend_data_reload_ || first_time) {
+    if (reloading || _trend_data_reload_ || first_time || force_back) {
         return;
     }
 
