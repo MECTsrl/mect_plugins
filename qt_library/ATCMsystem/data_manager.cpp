@@ -189,7 +189,7 @@ void data_manager::on_pushButtonTrend_clicked()
 #if defined(ENABLE_TREND)
     ui->labelStatus->setText(trUtf8("Loading trend..."));
     ui->labelStatus->repaint();
-    strcpy(_actual_trend_, "trend1");
+    strcpy(_actual_trend_, ""); // strcpy(_actual_trend_, "trend1");
     _trend_data_reload_ = true  ;
     LOG_PRINT(verbose_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
     goto_page("trend");
