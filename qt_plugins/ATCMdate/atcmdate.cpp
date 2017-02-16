@@ -293,5 +293,8 @@ void ATCMdate::setFormat(const enum ATCMDateFormat format)
     {
         m_format = ENGLISH_DATE;
     }
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
     update();
 }

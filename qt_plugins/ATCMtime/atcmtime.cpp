@@ -292,5 +292,8 @@ void ATCMtime::setFormat(const enum ATCMTimeFormat format)
     {
         m_format = TIME_24;
     }
+#ifdef TARGET_ARM
+    setToolTip("");
+#endif
     update();
 }

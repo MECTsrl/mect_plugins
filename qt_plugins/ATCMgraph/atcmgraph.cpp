@@ -987,9 +987,14 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
     }
     *CtIndex = 0;
     *destination = variable;
+    setToolTip("");
 #else
     *CtIndex = 0;
     *destination = variable;
+
+    QString text("Y1=%1\nY2=%2").arg(m_y1Variable).arg(m_y2Variable);
+    text.append()
+    setToolTip(text);
 #endif
     return true;
 }
