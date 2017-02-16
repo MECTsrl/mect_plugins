@@ -562,13 +562,13 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
         t = mktime(&tfile);
         if ( ti > t )
         {
-            /* to early */
+            /* too early */
             LOG_PRINT(verbose_e, "early\n");
             return 1;
         }
         if ( tf < t )
         {
-            /* to late */
+            /* too late */
             LOG_PRINT(verbose_e, "late %ld %ld %ld\n", ti, t, tf);
             return -1;
         }

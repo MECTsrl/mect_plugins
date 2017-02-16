@@ -7,6 +7,7 @@
  *
  * @brief Main page
  */
+#define __USE_XOPEN // strptime
 #include "app_logprint.h"
 #include "global_functions.h"
 #include "trend.h"
@@ -26,6 +27,8 @@
 #include <ctype.h>
 #include <QMessageBox>
 #include <unistd.h>
+
+#include <time.h>
 
 #undef STATIC_AXES
 
@@ -973,30 +976,22 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     for (int i = 0; i < logFileList.count(); i++)
     {
         // check if the log time is into the interval
-        if (
-                (
-                    begin <= QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(),"yyyy_MM_dd_HH_mm_ss")
-                    ||
-                    (
-                        i + 1 < logFileList.count()
-                        &&
-                        begin < QDateTime::fromString(QFileInfo(logFileList.at(i + 1)).baseName(),"yyyy_MM_dd_HH_mm_ss")
-                        )
-                    ||
-                    (
-                        i + 1 == logFileList.count()
-                        &&
-                        begin < QDateTime::currentDateTime()
-                        )
-                    )
-                &&
-                end >= QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(),"yyyy_MM_dd_HH_mm_ss")
+        if (  end >= QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(),"yyyy_MM_dd_HH_mm_ss")
+           &&
+             ( begin <= QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(),"yyyy_MM_dd_HH_mm_ss")
+             || (  i + 1 < logFileList.count()
+                && begin < QDateTime::fromString(QFileInfo(logFileList.at(i + 1)).baseName(),"yyyy_MM_dd_HH_mm_ss")
                 )
+             || (  i + 1 == logFileList.count()
+                && begin < QDateTime::currentDateTime()
+                )
+             )
+           )
         {
             LOG_PRINT(verbose_e, "PARSING TREND FILE '%s'\n", logFileList.at(i).toAscii().data());
             if (Load(QString("%1/%2").arg(STORE_DIR).arg(logFileList.at(i)).toAscii().data(), &begin, &end, skip) == false)
             {
-                LOG_PRINT(verbose_e, "Cannot load '%s'\n", logFileList.at(i).toAscii().data());
+                LOG_PRINT(warning_e, "Cannot load '%s'\n", logFileList.at(i).toAscii().data());
                 return false;
             }
             LOG_PRINT(verbose_e, "PARSED TREND FILE '%s'\n", logFileList.at(i).toAscii().data());
@@ -1006,7 +1001,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
 
     if (logfound == 0)
     {
-        LOG_PRINT(verbose_e, "cannot found any sample from begin '%s' to '%s'\n",
+        LOG_PRINT(verbose_e, "cannot find any sample from begin '%s' to '%s'\n",
                   begin.toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
                   end.toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
                   );
@@ -1021,212 +1016,162 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
 
 bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int skip)
 {
+    bool retval = false;
     char line[LINE_SIZE] = "";
     int found = -1;
     char * p = NULL, * r = NULL;
-    char token[LINE_SIZE] = "";
-
-    LOG_PRINT(verbose_e, "LOG_FILE '%s'\n", filename);
-    LOG_PRINT(verbose_e, "#######'%s' -> '%s'\n",
-              begin->toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
-              end->toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
-              );
-    
+    int count = 0;
+    time_t ti = begin->toTime_t();
+    time_t tf = end->toTime_t();
+    char buf[42];
+    int samples[PEN_NB] = {0, 0, 0, 0};
+    QList<int> filter;
     FILE * fp = NULL;
+    int row = 0;
+
+    LOG_PRINT(verbose_e, "'%s', %s, %s\n",
+              filename,
+              begin->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
+              end->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data()
+              );
+    fprintf(stderr, "from '%s' (%s, %s, %d):\n",
+            filename,
+            begin->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
+            end->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
+            skip);
+
     fp = fopen (filename, "r");
-    if (fp != 0)
-    {
-        LOG_PRINT(verbose_e, "FOUND LOG FILE '%s'\n", filename);
-        /*
-         * File format:
-         * <yyyy/MM/dd>; <HH:mm:ss>; <tag1> ... <tagN>
-         */
-        
-        /* extract title */
-        if (fgets(line, LINE_SIZE, fp) == NULL)
-        {
-            fclose(fp);
-            LOG_PRINT(error_e, "Cannot extract the title from '%s'\n", filename);
-            return false;
-        }
-        
-        /* date */
-        p = strtok_csv(line, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0' || strcmp(p, "date") != 0)
-        {
-            LOG_PRINT(error_e, "Invalid date field '%s' '%s'\n", line, p);
-            fclose(fp);
-            return false;
-        }
-        
-        /* time */
-        p = strtok_csv(NULL, SEPARATOR, &r);
-        if (p == NULL || p[0] == '\0' || strcmp(p, "time") != 0)
-        {
-            LOG_PRINT(error_e, "Invalid time field '%s' '%s'\n", line, p);
-            fclose(fp);
-            return false;
-        }
-        
-        QList<int> filter;
-
-        while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL)
-        {
-            found = -1;
-            for (int i = 0; i < PEN_NB; i++)
-            {
-                if (pens[i].curve == NULL)
-                {
-                    continue;
-                }
-                LOG_PRINT(verbose_e, "looking for '%s'' vs '%s'\n", pens[i].tag, p);
-                if (strcmp(pens[i].tag, p) == 0)
-                {
-                    if (found == -1)
-                    {
-                        found = 0x0;
-                    }
-                    found |=(0x1<< i);
-                    
-                    LOG_PRINT(verbose_e, "found tag '%s' filter %x\n", p, found);
-                }
-            }
-            
-            filter.append(found);
-        }
-
-        /* extract data */
-        QString dateandtime;
-        int count = 0;
-        int rownb = 0;
-        char beginstr [20];
-        char endstr [20];
-        char enddatestr [20];
-        strcpy(beginstr, begin->toString("HH:mm:ss").toAscii().data());
-        strcpy(endstr, end->toString("HH:mm:ss").toAscii().data());
-        strcpy(enddatestr, end->toString("yyyy/MM/dd").toAscii().data());
-        while (fgets(line, LINE_SIZE, fp) != NULL)
-        {
-            if (count < skip)
-            {
-                LOG_PRINT(verbose_e, "Skip\n");
-                count++;
-                continue;
-            }
-            bool valid = false;
-            bool finish = false;
-            count = 0;
-            
-            LINE2STR(line);
-            int i;
-            int len;
-            for (i = 0, p = line; p != NULL; p = strchr(p, ';'), i++)
-            {
-                if (p != NULL)
-                {
-                    if (p != line)
-                    {
-                        p++;
-                    }
-                    token[0] = '\0';
-                    if (strchr(p, ';'))
-                    {
-                        len = strchr(p, ';')-p;
-                        strncpy(token, p, len);
-                        token[len] = '\0';
-                    }
-                    else
-                    {
-                        strcpy(token, p);
-                    }
-                    sscanf(token, "%s", token);
-                    if (isspace(token[0]))
-                    {
-                        token[0] = '\0';
-                    }
-                    /* date */
-                    if(i == 0)
-                    {
-                        if (begin != NULL && strcmp(token, enddatestr) < 0)
-                        {
-                            valid = true;
-                        }
-                        dateandtime.clear();
-                        dateandtime.append(token);
-                        LOG_PRINT(verbose_e, "valid log '%s' < '%s' -> '%s'\n", token , enddatestr, dateandtime.toAscii().data());
-                    }
-                    /* time */
-                    else if(i == 1)
-                    {
-                        if (valid == false)
-                        {
-                            if (begin != NULL && strcmp(token, beginstr) < 0)
-                            {
-                                LOG_PRINT(verbose_e, "Skip old log ('%s') '%s'\n", begin->toString("HH:mm:ss").toAscii().data(), token);
-                                count = skip;
-                                break;
-                            }
-                            if (end != NULL && strcmp(token, endstr) > 0)
-                            {
-                                finish = true;
-                                LOG_PRINT(verbose_e, "last valid log '%s' ('%s')\n", token, end->toString("HH:mm:ss").toAscii().data());
-                                LOG_PRINT(verbose_e, "load DONE\n");
-                                break;
-                            }
-                        }
-                        dateandtime.append(" ");
-                        dateandtime.append(token);
-                        LOG_PRINT(verbose_e, "valid log '%s' < '%s' -> '%s'\n", token , enddatestr, dateandtime.toAscii().data());
-                    }
-                    else if (i > 1)
-                    {
-                        if (i-2 < filter.count() && filter.at(i-2) != -1)
-                        {
-                            for( int j = 0; j < PEN_NB; j++)
-                            {
-                                if (((filter.at(i-2) >> j) & 0x1) == 0x1 && !(token[0] == '-' && token[1] == 0))
-                                {
-                                    LOG_PRINT(verbose_e, "tag '%s', '%d'\n", token, j);
-                                    pens[j].y[pens[j].sample] = atof(token);
-                                    pens[j].x[pens[j].sample] = TzeroLoaded.secsTo(QDateTime::fromString(dateandtime, DATE_TIME_FMT));
-                                    LOG_PRINT(verbose_e, "%d %s : Y[%d]=%f\n", j, pens[j].tag, pens[j].sample, pens[j].y[pens[j].sample-1]);
-                                    pens[j].sample++;
-                                    if (pens[j].sample > MAX_SAMPLE_NB)
-                                    {
-                                        LOG_PRINT(verbose_e, "fatal error max sample %d reach! TrendPeriodSec %d LoadedWindowSec %d\n", MAX_SAMPLE_NB, TrendPeriodSec, LoadedWindowSec);
-                                        LOG_PRINT(verbose_e, "begin %s end %s skip %d\n", begin->toString(DATE_TIME_FMT).toAscii().data(), end->toString(DATE_TIME_FMT).toAscii().data(), skip);
-                                        //LOG_PRINT(verbose_e, "actual_date_time %s end %s\n", actual_date_time.toString(DATE_TIME_FMT).toAscii().data(), end->toString(DATE_TIME_FMT).toAscii().data());
-                                        LOG_PRINT(error_e, "Too many sample\n");
-                                        fclose(fp);
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    LOG_PRINT(verbose_e, "%d -> '%s'\n", i++, token);
-                }
-            }
-            if (finish == true)
-            {
-                LOG_PRINT(verbose_e, "load DONE\n");
-                break;
-            }
-            if (count != skip)
-            {
-                rownb++;
-            }
-        }
-        fclose(fp);
-        LOG_PRINT(verbose_e, "CLOSE TREND FILE '%s'\n", filename);
-    }
-    else
+    if (fp == NULL)
     {
         LOG_PRINT(error_e, "no trend file '%s'\n", filename);
         return false;
     }
-    LOG_PRINT(verbose_e, "LOADED TREND FILE '%s'\n", filename);
-    return true;
+
+    LOG_PRINT(verbose_e, "FOUND LOG FILE '%s'\n", filename);
+    /*
+     * File format:
+     * date      ;     time;   tag1 ; ...;   tagN
+     * yyyy/MM/dd; HH:mm:ss; 123.456; ...; 123.456
+     */
+
+    /* extract header */
+    if (fgets(line, LINE_SIZE, fp) == NULL)
+    {
+        LOG_PRINT(error_e, "Cannot read the header from '%s'\n", filename);
+        goto exit_function;
+    }
+
+    /* date */
+    p = strtok_csv(line, SEPARATOR, &r);
+    if (p == NULL || p[0] == '\0' || strcmp(p, "date") != 0)
+    {
+        LOG_PRINT(error_e, "Invalid date field '%s' '%s'\n", line, p);
+        goto exit_function;
+    }
+
+    /* time */
+    p = strtok_csv(NULL, SEPARATOR, &r);
+    if (p == NULL || p[0] == '\0' || strcmp(p, "time") != 0)
+    {
+        LOG_PRINT(error_e, "Invalid time field '%s' '%s'\n", line, p);
+        goto exit_function;
+    }
+
+    // tags
+    while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL)
+    {
+        found = -1;
+        for (int i = 0; i < PEN_NB; i++)
+        {
+            if (pens[i].curve == NULL)
+            {
+                continue;
+            }
+            if (strcmp(pens[i].tag, p) == 0)
+            {
+                found = i;
+                break;
+            }
+        }
+        filter.append(found);
+    }
+
+    /* extract data */
+    while (fgets(line, LINE_SIZE, fp) != NULL)
+    {
+        struct tm tfile;
+        time_t t;
+
+//        if (count < skip)
+//        {
+//            LOG_PRINT(verbose_e, "Skip\n");
+//            count++;
+//            continue;
+//        }
+
+        /*date*/
+        p = strtok_csv(line, SEPARATOR, &r);
+        if (p == NULL)
+        {
+            LOG_PRINT(error_e, "Cannot get date token\n");
+            break;
+        }
+        sprintf(buf, "%s_", p);
+
+        /*time*/
+        p = strtok_csv(NULL, SEPARATOR, &r);
+        if (p == NULL)
+        {
+            LOG_PRINT(error_e, "Cannot get time token\n");
+            break;
+        }
+        strcat(buf, p);
+
+        // check datetime
+        strptime(buf, "%Y/%m/%d_%H:%M:%S", &tfile);
+        tfile.tm_isdst = 0;
+        t = mktime(&tfile);
+        if ( t < ti )
+        {
+            /* too early */
+            break;
+        }
+        if ( tf < t )
+        {
+            /* too late */
+            break;
+        }
+
+        for (int i = 0; i < filter.count() && (p = strtok_csv(NULL, SEPARATOR, &r)) != NULL; ++i)
+        {
+            int j = filter.at(i);
+            if (j < 0 || (p[0] == '-' && p[1] == 0))
+            {
+                continue;
+            }
+            if (pens[j].sample < MAX_SAMPLE_NB) {
+                pens[j].y[pens[j].sample] = atof(p);
+                pens[j].x[pens[j].sample] = TzeroLoaded.secsTo(QDateTime::fromTime_t(t));
+                pens[j].sample++;
+
+                ++samples[j];
+            }
+            if (pens[j].sample >= MAX_SAMPLE_NB)
+            {
+                break;
+            }
+        }
+
+        fprintf(stderr, "[%d]\r", ++row);
+    }
+    retval = true;
+
+exit_function:
+    fclose(fp);
+    for (int j = 0; j < PEN_NB; ++j) {
+        fprintf(stderr, "[%d] %d samples\n", j, samples[j]);
+    }
+    return retval;
 }
 
 void trend::incrementTime(int direction)
@@ -1298,12 +1243,12 @@ bool trend::loadFromFile(QDateTime Ti)
     /* the data loaded will be not under-sampled */
     if (sample_to_skip > 0)
     {
-        LOG_PRINT(warning_e, "the data loaded will be under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
+        LOG_PRINT(error_e, "the data loaded will be under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
     }
     /* the data loaded will be under-sampled */
     else
     {
-        LOG_PRINT(verbose_e, "the data loaded will be not under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
+        LOG_PRINT(error_e, "the data loaded will be not under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
     }
     
     QDateTime Tfin;
