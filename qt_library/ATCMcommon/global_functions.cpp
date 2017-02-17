@@ -928,7 +928,7 @@ bool LoadTrend(const char * filename, QString * ErrorMsg)
             break;
         }
         LOG_PRINT(verbose_e, "line %s\n", line);
-        pens[rownb].visible = false;
+        pens[rownb].visible = 0;
         if (pens[rownb].curve != NULL)
         {
             //delete pens[rownb].curve;
@@ -962,7 +962,7 @@ bool LoadTrend(const char * filename, QString * ErrorMsg)
         }
         else if (p[0] == '\0')
         {
-            pens[rownb].visible = false;
+            pens[rownb].visible = 0;
         }
         else
         {
@@ -984,13 +984,13 @@ bool LoadTrend(const char * filename, QString * ErrorMsg)
         {
             LOG_PRINT(info_e, "Empty tag '%s' at line %d\n", p, rownb+1);
             pens[rownb].tag[0] = '\0';
-            pens[rownb].visible = false;
+            pens[rownb].visible = 0;
         }
         else if (Tag2CtIndex(p, &index) != 0)
         {
             LOG_PRINT(error_e, "The variable '%s' is not present into the Crosstable\n", p);
             pens[rownb].tag[0] = '\0';
-            pens[rownb].visible = false;
+            pens[rownb].visible = 0;
             pens[rownb].CtIndex = -1;
             if (ErrorMsg) *ErrorMsg = QObject::trUtf8("Cannot find the variable %1 into the Crosstable. The pen will be disabled.").arg(p);
             return false;
