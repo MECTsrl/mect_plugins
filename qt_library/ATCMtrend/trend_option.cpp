@@ -390,7 +390,7 @@ void trend_option::on_pushButtonDeletePen_clicked()
 
 void trend_option::on_checkBoxVisible_clicked(bool checked)
 {
-    pens[actualPen].visible = checked;
+    pens[actualPen].visible = (checked ? 1 : 0);
 }
 
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))

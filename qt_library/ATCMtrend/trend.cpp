@@ -558,14 +558,15 @@ void trend::updateData()
             }
             else
             {
-                int increment = (actualVisibleWindowSec/SHIFT_FACTOR < LogPeriodSec) ? LogPeriodSec : actualVisibleWindowSec/SHIFT_FACTOR;
+                int increment;
+                if (actualVisibleWindowSec/SHIFT_FACTOR < LogPeriodSec) {
+                    increment = LogPeriodSec;
+                } else {
+                    increment = actualVisibleWindowSec / SHIFT_FACTOR;
+                }
 
-                QDateTime limit;
-                limit = actualTzero.addSecs(actualVisibleWindowSec);
-
-                while (now > limit)
+                while (now > actualTzero.addSecs(actualVisibleWindowSec))
                 {
-                    limit = actualTzero.addSecs(actualVisibleWindowSec);
                     actualTzero = actualTzero.addSecs(increment);
                 }
             }
@@ -649,7 +650,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
             /* skip empty pen */
             continue;
         }
-        if (pens[i].visible == 0)
+        if (! pens[i].visible)
         {
             /* skip invisible pen */
             continue;
@@ -1314,12 +1315,10 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
               TzeroLoaded.toString().toAscii().data()
               );
 
-    double delta = (sfinal - sinint) / HORIZ_TICKS;
-
+    double deltax = (sfinal - sinint) / HORIZ_TICKS;
     for (int i = 0; i < (HORIZ_TICKS + 1); i++)
     {
-        double tick = sinint + i * delta;
-        arrayTimeTicks.append(tick);
+        arrayTimeTicks.append(sinint + i * deltax);
     }
     
     QwtScaleDiv scale = QwtScaleDiv(sinint,sfinal);
@@ -1332,43 +1331,62 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         if (pens[pen_index].curve != NULL)
         {
             /* calculate the initial index and the final index visible into the current window */
-            int XindexIn = 0, XindexFin = 0, nsec = 0;
-            nsec = TzeroLoaded.secsTo(Tmin);
-            for (XindexIn = 0; pens[pen_index].x[XindexIn] < nsec && XindexIn < pens[pen_index].sample; XindexIn++)
-            {
-                LOG_PRINT(verbose_e, "pens[%d].x[%d] = %f ?> nsec %d\n",
-                          pen_index,
-                          XindexIn,
-                          pens[pen_index].x[XindexIn],
-                          nsec
-                          );
-            }
-            XindexIn = ((XindexIn > 0 && pens[pen_index].x[XindexIn] > nsec) ? (XindexIn - 1): XindexIn);
-            LOG_PRINT(verbose_e, "pens[%d].x[%d] = %f > nsec %d\n",
-                      pen_index,
-                      XindexIn,
-                      pens[pen_index].x[XindexIn],
-                      nsec
-                      );
-            
-            int decimal = getVarDecimalByCtIndex(pens[pen_index].CtIndex);
-            
-            float n = (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS;
+            int XindexIn, XindexFin;
 
-            /* FIXME : write a better code to extract the decimal's number */
-            char tmp[32];
-            sprintf (tmp, "%.6f",n);
-            char *p = strchr(tmp, '.');
-            int mindecimal = 0;
-            for (mindecimal = 6; mindecimal > 0; mindecimal--)
+            int xmin = TzeroLoaded.secsTo(Tmin);
+            XindexIn = 0;
+            while (XindexIn < pens[pen_index].sample && pens[pen_index].x[XindexIn] < xmin)
             {
-                    if(p[mindecimal] != '0')
-                    {
-                            break;
-                    }
+                if (XindexIn < (pens[pen_index].sample - 1))
+                    ++XindexIn;
+                else
+                    break;
             }
+            if (XindexIn > 0 && pens[pen_index].x[XindexIn] > xmin)
+            {
+                    --XindexIn;
+            }
+            
+            int decimal;
+            switch (varNameArray[pens[pen_index].CtIndex].type)
+            {
+            case uintab_e:
+            case uintba_e:
+            case intab_e:
+            case intba_e:
+            case udint_abcd_e:
+            case udint_badc_e:
+            case udint_cdab_e:
+            case udint_dcba_e:
+            case dint_abcd_e:
+            case dint_badc_e:
+            case dint_cdab_e:
+            case dint_dcba_e:
+                decimal = getVarDecimalByCtIndex(pens[pen_index].CtIndex);
+                break;
 
-            decimal = (decimal < mindecimal) ? mindecimal : decimal;
+            case fabcd_e:
+            case fbadc_e:
+            case fcdab_e:
+            case fdcba_e:
+                decimal = getVarDecimalByCtIndex(pens[pen_index].CtIndex); // may change
+                break;
+
+            case byte_e:
+                decimal = getVarDecimalByCtIndex(pens[pen_index].CtIndex);
+                break;
+
+            case bit_e:
+            case bytebit_e:
+            case wordbit_e:
+            case dwordbit_e:
+                decimal = 0;
+                break;
+
+            default:
+                decimal = 0;
+            }
+            
 #ifdef STATIC_AXES
             if (valueScale[pen_index]->getDecimalNb() != decimal)
             {
@@ -1378,15 +1396,14 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             d_qwtplot->setAxisScaleDraw(QwtAxisId( valueAxisId, pen_index ), new NormalScaleDraw(decimal));
 #endif
             /* prepare the value axis tick */
-            LOG_PRINT(verbose_e, "SCALE %d, min %f max %f decimal %d\n", valueAxisId + pen_index, pens[pen_index].yMinActual, pens[pen_index].yMaxActual, decimal);
             QList<double> arrayTicks;
-            arrayTicks << pens[pen_index].yMinActual;
-            for (int i = 0; i < VERT_TICKS; i++)
+            double deltay = (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS;
+            for (int i = 0; i < (VERT_TICKS +1); i++)
             {
-                arrayTicks << pens[pen_index].yMinActual + (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) * i / VERT_TICKS;
+                arrayTicks.append(pens[pen_index].yMinActual + i * deltay);
             }
-            arrayTicks << pens[pen_index].yMaxActual;
             QwtScaleDiv scale = QwtScaleDiv(pens[pen_index].yMinActual,pens[pen_index].yMaxActual);
+
             //scale = d_qwtplot->axisScaleDiv(valueAxisId + pen_index);
             scale.setTicks(QwtScaleDiv::MajorTick, (arrayTicks));
             d_qwtplot->setAxisAutoScale(QwtAxisId( valueAxisId, pen_index ), false);
@@ -1396,30 +1413,28 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             if (_online_)
             {
                 XindexFin = pens[pen_index].sample;
-                LOG_PRINT(verbose_e, "pens[%d].x[%d] = %f > nsec %d\n",
-                          pen_index,
-                          XindexFin,
-                          pens[pen_index].x[XindexFin],
-                          nsec
-                          );
             }
             /* if offline, looking for the last sample */
             else
             {
-                int nsec = TzeroLoaded.secsTo(Tmax);
-                for (XindexFin = pens[pen_index].sample; pens[pen_index].x[XindexFin] > nsec && XindexFin > XindexIn; XindexFin--);
-                XindexFin = ((pens[pen_index].x[XindexFin] < nsec) ? (XindexFin + 1): XindexFin);
-                LOG_PRINT(verbose_e, "pens[%d].x[%d] = %f > nsec %d\n",
-                          pen_index,
-                          XindexFin,
-                          pens[pen_index].x[XindexFin],
-                          nsec
-                          );
+                int xmax = TzeroLoaded.secsTo(Tmax);
+                XindexFin = pens[pen_index].sample - 1;
+                while (XindexFin > XindexIn && pens[pen_index].x[XindexFin] > xmax)
+                {
+                    if (XindexFin > (XindexIn + 1))
+                        --XindexFin;
+                    else
+                        break;
+                }
+                if (XindexFin < (pens[pen_index].sample - 1) && pens[pen_index].x[XindexFin] < xmax)
+                {
+                    ++XindexFin;
+                }
             }
             
-            if (pens[pen_index].visible == true)
+            if (pens[pen_index].visible)
             {
-                if (XindexFin > XindexIn)
+                if (XindexIn < XindexFin)
                 {
                     /* set the y scale in according with the new window and the new scale of the activa pen */
                     if (ymin != ymax)
@@ -1444,25 +1459,18 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                         LOG_PRINT(verbose_e, "NEW RANGE pen %d %f %f from %f %f to %f %f\n", pen_index, ymin, ymax, pens[pen_index].yMin, pens[pen_index].yMax, pens[pen_index].yMinActual, pens[pen_index].yMaxActual );
                     }
 
+                    // set the new samples
                     if (_layout_ == PORTRAIT)
                     {
-                        LOG_PRINT(verbose_e, "PORTRAIT\n");
                         pens[pen_index].curve->setRawSamples(&(pens[pen_index].y[XindexIn]), &(pens[pen_index].x[XindexIn]), XindexFin - XindexIn);
                     }
                     else
                     {
                         pens[pen_index].curve->setRawSamples(&(pens[pen_index].x[XindexIn]), &(pens[pen_index].y[XindexIn]), XindexFin - XindexIn);
-                        LOG_PRINT(verbose_e, "LANDSCAPE \n");
                     }
 
                     LOG_PRINT(verbose_e, "NEW SAMPLE LAST '%s'  %f %f in %d fin %d sample %d\n", pens[pen_index].tag, pens[pen_index].x[XindexFin-1], pens[pen_index].y[XindexFin-1], XindexIn, XindexFin, pens[pen_index].sample);
                 }
-//                else
-//                {
-//                    LOG_PRINT(warning_e, "no point to show\n");
-//                    showStatus(trUtf8("No point to show"), true);
-//                    //return false;
-//                }
             }
         }
     }
@@ -1507,148 +1515,104 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         //warning
         LOG_PRINT(warning_e, "Tmin in the future! %s vs %s\n",Tmin.toString(DATE_TIME_FMT).toAscii().data(), Tmax.toString(DATE_TIME_FMT).toAscii().data());
     }
-    if (Tmin <= QDateTime::currentDateTime())
+
+    //verbose
+    LOG_PRINT(verbose_e, "actualVisibleWindowSec %d VisibleWindowSec %d actualTzero %s Tzero %s TzeroLoaded %s\n",
+              actualVisibleWindowSec,
+              VisibleWindowSec,
+              actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
+              Tzero.toString(DATE_TIME_FMT).toAscii().data(),
+              TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data());
+
+    /* calculate the TrendPeriodSec */
+    /* if it is less than LogPeriodSec, set at LogPeriodSec */
+    TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSec)) / MAX_SAMPLE_NB));
+    TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
+
+    int skip = (int)(TrendPeriodSec/LogPeriodSec)
+            +
+            ((TrendPeriodSec%LogPeriodSec == 0)  ? 0 : 1)
+            -
+            1;
+
+    if ( (  _layout_ == LANDSCAPE
+         && (  actualTzero < TzeroLoaded
+            || actualTzero.addSecs(actualVisibleWindowSec) > TzeroLoaded.addSecs(LoadedWindowSec)
+            )
+         )
+       || ( _layout_ == PORTRAIT
+          && (  actualTzero.addSecs(-actualVisibleWindowSec) < TzeroLoaded
+             || actualVisibleWindowSec > LoadedWindowSec
+             )
+          )
+       || sample_to_skip > skip
+       )
     {
-        /* set the actual Tzero and the actual VisibleWindowSec */
+        LOG_PRINT(verbose_e, "The new Tzero (%s) is out of bounds (%s ... %s), reload the data from the files (VisibleWindowSec %d)\n",
+                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
+                  TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data(),
+                  TzeroLoaded.addSecs(LoadedWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
+                  actualVisibleWindowSec
+                  );
+        LOG_PRINT(verbose_e, "The new time window (%d) is too big (%d), reload the data for the new window -> new Tzero will be %s\n",
+                  actualVisibleWindowSec,
+                  LoadedWindowSec,
+                  actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
+                  );
+
+        popup->enableButtonUp(false);
+        popup->enableButtonDown(false);
+        popup->enableButtonLeft(false);
+        popup->enableButtonRight(false);
+
+        showStatus(trUtf8("Loading..."), false);
+
+        if (VisibleWindowSec != actualVisibleWindowSec)
+        {
+            VisibleWindowSec = actualVisibleWindowSec;
+        }
+        LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
+
+        LOG_PRINT(verbose_e, "actualTzero '%s' LoadedWindowSec '%d' actualVisibleWindowSec '%d' -> loadedTzero %s\n",
+                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
+                  LoadedWindowSec,
+                  actualVisibleWindowSec,
+                  actualTzero.addSecs(- actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
+                  );
+
+        QDateTime Ti;
         if (_layout_ == LANDSCAPE)
         {
-            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), Tmin.toString().toAscii().data());
-            actualTzero = Tmin;
+            Ti = actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
         }
         else
         {
-            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), Tmax.toString().toAscii().data());
-            actualTzero = Tmax;
+            Ti = actualTzero.addSecs( - actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
         }
-        actualVisibleWindowSec = Tmin.secsTo(Tmax);
-        LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
-        LOG_PRINT(verbose_e, "@@@@@@@ NEW actualTzero %s actualVisibleWindowSec %d current '%s'\n",
-                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                  actualVisibleWindowSec,
-                  QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data()
-                  );
-        
-        
-        /* if for some reason the actual VisibleWindowSec is more little then the minimum sample
-         * distance, set it at minimum sample distance
-         */
-        if (actualVisibleWindowSec < LogPeriodSec)
+
+        if (loadFromFile(Ti) == false)
         {
-            //warning
-            LOG_PRINT(verbose_e, "Zoom to big! %d vs %d\n", actualVisibleWindowSec, LogPeriodSec);
-            actualVisibleWindowSec = LogPeriodSec;
-            LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
+//                errormsg = trUtf8("Cannot found any data from %1 to %2").arg(actualTzero.toString().toAscii().data()).arg(QDateTime::currentDateTime().toString().toAscii().data());
+//                showStatus(errormsg, true);
+//                errormsg.clear();
+            LOG_PRINT(warning_e, "Cannot find any data from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
+            //LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
+            //actualTzero = QDateTime::currentDateTime();
         }
-        //verbose
-        LOG_PRINT(verbose_e, "actualVisibleWindowSec %d VisibleWindowSec %d actualTzero %s Tzero %s TzeroLoaded %s\n",
-                  actualVisibleWindowSec,
-                  VisibleWindowSec,
-                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                  Tzero.toString(DATE_TIME_FMT).toAscii().data(),
-                  TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data());
-        
-        /* calculate the TrendPeriodSec */
-        /* if it is less than LogPeriodSec, set at LogPeriodSec */
-        TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSec)) / MAX_SAMPLE_NB));
-        TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
-        
-        int skip = (int)(TrendPeriodSec/LogPeriodSec)
-                +
-                ((TrendPeriodSec%LogPeriodSec == 0)  ? 0 : 1)
-                -
-                1;
-        
-        if ( (  _layout_ == LANDSCAPE
-             && (  actualTzero < TzeroLoaded
-                || actualTzero.addSecs(actualVisibleWindowSec) > TzeroLoaded.addSecs(LoadedWindowSec)
-                )
-             )
-           || ( _layout_ == PORTRAIT
-              && (  actualTzero.addSecs(-actualVisibleWindowSec) < TzeroLoaded
-                 || actualVisibleWindowSec > LoadedWindowSec
-                 )
-              )
-           || sample_to_skip > skip
-           )
+        else if (actualTzero < TzeroLoaded || actualVisibleWindowSec > LoadedWindowSec)
         {
-            LOG_PRINT(verbose_e, "The new Tzero (%s) is out of bounds (%s ... %s), reload the data from the files (VisibleWindowSec %d)\n",
+            LOG_PRINT(warning_e, "The new Tzero (%s) is still out of bounds (%s ... %s - VisibleWindowSec %d). Force the TzeroLoaded into the bound\n",
                       actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
                       TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data(),
                       TzeroLoaded.addSecs(LoadedWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
                       actualVisibleWindowSec
                       );
-            LOG_PRINT(verbose_e, "The new time window (%d) is too big (%d), reload the data for the new window -> new Tzero will be %s\n",
-                      actualVisibleWindowSec,
-                      LoadedWindowSec,
-                      actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
-                      );
-            
-            popup->enableButtonUp(false);
-            popup->enableButtonDown(false);
-            popup->enableButtonLeft(false);
-            popup->enableButtonRight(false);
-
-            showStatus(trUtf8("Loading..."), false);
-
-            if (VisibleWindowSec != actualVisibleWindowSec)
-            {
-                VisibleWindowSec = actualVisibleWindowSec;
-            }
-            LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
-            
-            LOG_PRINT(verbose_e, "actualTzero '%s' LoadedWindowSec '%d' actualVisibleWindowSec '%d' -> loadedTzero %s\n",
-                      actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                      LoadedWindowSec,
-                      actualVisibleWindowSec,
-                      actualTzero.addSecs(- actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
-                      );
-            
-            QDateTime Ti;
-            if (_layout_ == LANDSCAPE)
-            {
-                Ti = actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
-            }
-            else
-            {
-                Ti = actualTzero.addSecs( - actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
-            }
-            
-            if (loadFromFile(Ti) == false)
-            {
-//                errormsg = trUtf8("Cannot found any data from %1 to %2").arg(actualTzero.toString().toAscii().data()).arg(QDateTime::currentDateTime().toString().toAscii().data());
-//                showStatus(errormsg, true);
-//                errormsg.clear();
-                LOG_PRINT(warning_e, "Cannot find any data from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
-                //LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
-                //actualTzero = QDateTime::currentDateTime();
-            }
-            else if (actualTzero < TzeroLoaded || actualVisibleWindowSec > LoadedWindowSec)
-            {
-                LOG_PRINT(warning_e, "The new Tzero (%s) is still out of bounds (%s ... %s - VisibleWindowSec %d). Force the TzeroLoaded into the bound\n",
-                          actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                          TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data(),
-                          TzeroLoaded.addSecs(LoadedWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
-                          actualVisibleWindowSec
-                          );
-                LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.toString().toAscii().data());
-                actualTzero = TzeroLoaded;
-                d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
-            }
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "The new Tzero (%s) is in bounds %s and actual window %d is more little then the loaded window %d \n",
-                      actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                      TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data(),
-                      actualVisibleWindowSec,
-                      LoadedWindowSec
-                      );
+            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.toString().toAscii().data());
+            actualTzero = TzeroLoaded;
+            d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
         }
     }
-    else
-    {
-        LOG_PRINT(warning_e, "Tmin in the future! %s vs %s\n",Tmin.toString(DATE_TIME_FMT).toAscii().data(), QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data());
-    }
+
     bool ret_val = showWindow(Tmin, Tmax, ymin, ymax, pen);
     LOG_PRINT(verbose_e, "UUUUUUUUP pen %d Min %f Actual Min %f\n", actualPen, pens[actualPen].yMin, pens[actualPen].yMinActual);
     /* enable or disable up and down arrow in according with the available upper or lower point */
