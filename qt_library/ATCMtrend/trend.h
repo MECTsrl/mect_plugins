@@ -57,6 +57,34 @@ private:
     QTime baseTime;
 };
 
+class DateTimeScaleDraw: public QwtScaleDraw
+{
+public:
+    DateTimeScaleDraw(const QDateTime &base):
+        baseDateTime(base)
+    {
+    }
+    virtual QwtText label(double v) const
+    {
+        QDateTime labelDateTime = baseDateTime.addSecs((int)v);
+        if (v <= 86400.00) {
+            return labelDateTime.toString("hh:mm:ss");
+        } else {
+            return labelDateTime.toString("yyyy/MM/dd");
+        }
+    }
+    void setBaseDateTime(const QDateTime &base)
+    {
+        baseDateTime = base;
+    }
+    QDateTime getBaseDateTime()
+    {
+        return baseDateTime;
+    }
+private:
+    QDateTime baseDateTime;
+};
+
 #ifdef VALUE_TIME_SCALE
 class NormalScaleDraw: public QwtScaleDraw
 {

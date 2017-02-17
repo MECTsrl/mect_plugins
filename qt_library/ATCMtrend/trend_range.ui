@@ -96,7 +96,16 @@
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>4</number>
+   </property>
+   <property name="topMargin">
+    <number>4</number>
+   </property>
+   <property name="rightMargin">
+    <number>4</number>
+   </property>
+   <property name="bottomMargin">
     <number>4</number>
    </property>
    <item>
@@ -406,8 +415,14 @@
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
        <property name="maximum">
         <number>31</number>
+       </property>
+       <property name="value">
+        <number>1</number>
        </property>
       </widget>
      </item>
@@ -549,8 +564,14 @@
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
        <property name="maximum">
         <number>12</number>
+       </property>
+       <property name="value">
+        <number>1</number>
        </property>
       </widget>
      </item>
@@ -723,11 +744,14 @@
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
        <property name="maximum">
         <number>3000</number>
        </property>
        <property name="value">
-        <number>0</number>
+        <number>2017</number>
        </property>
       </widget>
      </item>

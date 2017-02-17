@@ -321,7 +321,7 @@ typedef union {
  * @brief Log setup and define
  */
 #define SAMPLE_PERIOD_SEC LOG_PERIOD_MS
-#define MAX_SAMPLE_NB 10240
+#define MAX_SAMPLE_NB 1600 // 10240
 #endif
 
 #ifdef ENABLE_ALARMS

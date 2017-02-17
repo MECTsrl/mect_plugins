@@ -36,7 +36,7 @@
 #define VERT_TICKS  4
 
 #define INCREMENT 1.0
-#define OVERLOAD_FACTOR 2
+#define OVERLOAD_SECONDS(Visible) (Visible * 20 / 10) // 800 + 100% = 1600
 #define SHIFT_FACTOR 10
 #define AXIS_STEP_DIVISOR 2
 #define DELTA_TIME_FACTOR (AXIS_STEP_DIVISOR * 2)
@@ -61,10 +61,11 @@
     mystyle.append("  background-color: rgb(255, 255, 255);"); \
     mystyle.append("  color: rgb(0, 0, 0);"); \
     mystyle.append("  background-image: url();"); \
-    mystyle.append("  font: 12pt \"DejaVu Sans Mono\";"); \
+    mystyle.append("  font: 10pt \"DejaVu Sans Mono\";"); \
     d_qwtplot->setStyleSheet(mystyle); \
     }
 
+static bool do_refresh_plot;
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
  */
@@ -153,6 +154,7 @@ trend::trend(QWidget *parent) :
     popup_visible = false;
     popup->hide();
     actualPen = 0;
+    do_refresh_plot = false;
 }
 
 #undef WINDOW_TITLE
@@ -302,11 +304,11 @@ void trend::updateData()
             overloadActualTzero = false;
         }
 
-        LoadedWindowSec = OVERLOAD_FACTOR * VisibleWindowSec;
+        LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
 
         /* calculate the TrendPeriodSec */
         /* if it is less than LogPeriodSec, set at LogPeriodSec */
-        LogPeriodSec = ((LogPeriodSecF>LogPeriodSecS)?LogPeriodSecF:LogPeriodSecS);
+        LogPeriodSec = ((LogPeriodSecF < LogPeriodSecS) ? LogPeriodSecF : LogPeriodSecS);
         TrendPeriodSec = (int)(LoadedWindowSec / MAX_SAMPLE_NB);
         TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
         /* set TzeroLoaded in the future to force the data load */
@@ -392,7 +394,7 @@ void trend::updateData()
         d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), false);
         LOG_PRINT(verbose_e, "####### Setting time axis\n");
     #else
-        d_qwtplot->setAxisScaleDraw(timeAxisId, new TimeScaleDraw(TzeroLoaded.time()));
+        d_qwtplot->setAxisScaleDraw(timeAxisId, new DateTimeScaleDraw(TzeroLoaded));
     #endif
 
         first_time = true;
@@ -541,6 +543,38 @@ void trend::updateData()
         popup->raise();
     }
 
+    if (do_refresh_plot)
+    {
+        /* update the graph only if the status is online or if the new sample are visible */
+        do_refresh_plot = false;
+        QDateTime now =  QDateTime::currentDateTime();
+
+        if (_online_)
+        {
+            /* online mode: if necessary center the actual data */
+            if (_layout_ == PORTRAIT)
+            {
+                actualTzero = now;
+            }
+            else
+            {
+                int increment = (actualVisibleWindowSec/SHIFT_FACTOR < LogPeriodSec) ? LogPeriodSec : actualVisibleWindowSec/SHIFT_FACTOR;
+
+                QDateTime limit;
+                limit = actualTzero.addSecs(actualVisibleWindowSec);
+
+                while (now > limit)
+                {
+                    limit = actualTzero.addSecs(actualVisibleWindowSec);
+                    actualTzero = actualTzero.addSecs(increment);
+                }
+            }
+        }
+
+        // refresh the plot
+        loadOrientedWindow();
+    }
+
     if (getOnline()){
         static int counter = 0;
         if (counter % 4 == 0)
@@ -595,11 +629,8 @@ trend::~trend()
 }
 
 void trend::refreshEvent(trend_msg_t item_trend)
-{
-    LOG_PRINT(verbose_e,"NEW SAMPLE\n");
-    static int last_ctindex = -1;
-    
-    if (reloading || _trend_data_reload_ || first_time || force_back) {
+{   
+    if (reloading || _trend_data_reload_ || first_time || force_back || !_online_) {
         return;
     }
 
@@ -625,123 +656,62 @@ void trend::refreshEvent(trend_msg_t item_trend)
         }
         /* found actual pen */
         if (pens[i].CtIndex == item_trend.CtIndex)
-        {
-            LOG_PRINT(verbose_e,"NEW SAMPLE ADD '%d' -> '%f' time: '%s' SAMPLE %d\n",  item_trend.CtIndex, item_trend.value,  item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data(), pens[i].sample);
-            if (last_ctindex == -1)
+        {            
+            /* update samples only if the status is online or if the new sample are visible */
+            if ( _online_
+              || item_trend.timestamp < actualTzero.addSecs(actualVisibleWindowSec)
+              || pens[actualPen].x[pens[actualPen].sample] < actualVisibleWindowSec
+               )
             {
-                last_ctindex = item_trend.CtIndex;
-            }
-            /* add a new sample to the plot */
-            if (pens[i].sample >= MAX_SAMPLE_NB) {
-                if (_online_){
-                    /* the buffer is full, shift all values of all pens, but each pen has a different period */
-                    double first_good = pens[i].x[MAX_SAMPLE_NB/SHIFT_FACTOR];
-                    
-                    /* maintain only the samples that are newer than the first good */
-                    for (int z = 0; z < PEN_NB; z++)
+                if (pens[i].sample >= MAX_SAMPLE_NB)
+                {
+                    if (_online_)
                     {
-                        if (pens[z].curve != NULL)
+                        /* the buffer is full, shift all values of all pens, but each pen has a different period */
+                        double first_good = pens[i].x[MAX_SAMPLE_NB/SHIFT_FACTOR];
+
+                        /* maintain only the samples that are newer than the first good */
+                        for (int z = 0; z < PEN_NB; z++)
                         {
-                            int sample = 0;
-                            for (int j = 0; j < MAX_SAMPLE_NB; ++j)
+                            if (pens[z].curve != NULL)
                             {
-                                if (pens[z].x[j] >= first_good) {
-                                    pens[z].x[sample] = pens[z].x[j];
-                                    pens[z].y[sample] = pens[z].y[j];
-                                    ++sample;
+                                int sample = 0;
+                                for (int j = 0; j < MAX_SAMPLE_NB; ++j)
+                                {
+                                    if (pens[z].x[j] >= first_good) {
+                                        pens[z].x[sample] = pens[z].x[j];
+                                        pens[z].y[sample] = pens[z].y[j];
+                                        ++sample;
+                                    }
                                 }
+                                pens[z].sample = sample;
                             }
-                            pens[z].sample = sample;
                         }
+                    } else {
+                        /* not enough space, we accept to lose samples */
+                        LOG_PRINT(warning_e, "we are off line and the new data is out of range.");
+                        break;
                     }
-                } else {
-                    /* not enough space, we accept to lose samples */
-                    LOG_PRINT(warning_e, "we are off line and the new data is out of range.");
-                    break;
                 }
-            }
-            /* update the actual x and y arrays */
-            pens[i].y[pens[i].sample] = item_trend.value;
-            pens[i].x[pens[i].sample] = TzeroLoaded.secsTo(item_trend.timestamp);
-            if (pens[i].y[pens[i].sample] > pens[i].yMaxActual)
-            {
-                usleep(1);
-                LOG_PRINT(warning_e, "out of range %f > %f.\n", pens[i].y[pens[i].sample], pens[i].yMaxActual);
-            }
-            pens[i].sample++;
+                /* update the actual x and y arrays */
+                pens[i].y[pens[i].sample] = item_trend.value;
+                pens[i].x[pens[i].sample] = TzeroLoaded.secsTo(item_trend.timestamp);
+                if (pens[i].y[pens[i].sample] > pens[i].yMaxActual)
+                {
+                    usleep(1);
+                    LOG_PRINT(warning_e, "out of range %f > %f.\n", pens[i].y[pens[i].sample], pens[i].yMaxActual);
+                }
+                pens[i].sample++;
 #ifdef SHOW_ACTUAL_VALUE
-            updatePenLabel();
+                updatePenLabel();
 #endif
-        }
-    }
-    
-    if (item_trend.CtIndex == last_ctindex)
-    {
-        /* update the graph only if the status is online or if the new sample are visible */
-        if (
-                _online_
-                ||
-                item_trend.timestamp < actualTzero.addSecs(actualVisibleWindowSec)
-                ||
-                pens[actualPen].x[pens[actualPen].sample] < actualVisibleWindowSec
-                )
-        {
-            if (_online_ == false)
-            {
-                LOG_PRINT(verbose_e,"OFFLINE BUT ARE VISIBLE CURRENT DATA: UPDATE IT _online_ %d timestamp '%s' - '%s' -> '%s'\n",
-                          _online_,
-                          item_trend.timestamp.toString("HH:mm:ss").toAscii().data(),
-                          actualTzero.toString("HH:mm:ss").toAscii().data(),
-                          actualTzero.addSecs(actualVisibleWindowSec).toString("HH:mm:ss").toAscii().data()
-                          );
+                /* will refresh the plot at the next updateData() */
+                do_refresh_plot = true;
+
             }
-            else
-            {
-                /* online mode: if necessary center the actual data */
-                LOG_PRINT(verbose_e,"ONLINE: CENTER to actual data actual sample %s actual Tmax %s\n",
-                          item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data(),
-                          actualTzero.addSecs(actualVisibleWindowSec).toString(DATE_TIME_FMT).toAscii().data()
-                          );
-                if (_layout_ == PORTRAIT)
-                {
-                    LOG_PRINT(verbose_e,"ONLINE ACTUAL T0 from '%s' to '%s\n",
-                              actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                              item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data()
-                              );
-                    LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), item_trend.timestamp.toString().toAscii().data());
-                    actualTzero = item_trend.timestamp;
-                }
-                else
-                {
-                    int increment = (actualVisibleWindowSec/SHIFT_FACTOR < LogPeriodSec) ? LogPeriodSec : actualVisibleWindowSec/SHIFT_FACTOR;
-                    
-                    QDateTime limit;
-                    limit = actualTzero.addSecs(actualVisibleWindowSec);
-                    
-                    while (item_trend.timestamp > limit)
-                    {
-                        limit = actualTzero.addSecs(actualVisibleWindowSec);
-                        LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), actualTzero.addSecs(increment).toString().toAscii().data());
-                        actualTzero = actualTzero.addSecs(increment);
-                        LOG_PRINT(verbose_e,"ONLINE: CENTER to actual data actual sample %s actual Tmin %s Tmax %s increment %d\n",
-                                  item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data(),
-                                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                                  actualTzero.addSecs(actualVisibleWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
-                                  increment
-                                  );
-                    }
-                }
-            }
-            LOG_PRINT(verbose_e,"NEW SAMPLE DRAWN '%s' -> '%f' time: '%s'\n",  varNameArray[item_trend.CtIndex].tag, item_trend.value,  item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data());
-            
-            loadOrientedWindow();
+            break;
         }
-        else
-        {
-            LOG_PRINT(verbose_e,"OFFLINE AND NOT VISIBLE CURRENT DATA: DO NOTHING _online_ %d timestamp '%s' - '%s' -> '%s'\n", _online_, item_trend.timestamp.toString("HH:mm:ss").toAscii().data(), actualTzero.toString("HH:mm:ss").toAscii().data(), actualTzero.addSecs(actualVisibleWindowSec).toString("HH:mm:ss").toAscii().data());
-        }
-    }
-    LOG_PRINT(verbose_e,"NEW SAMPLE\n");
+    }    
 }
 
 void trend::on_pushButtonPen_clicked()
@@ -1027,18 +997,13 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     int samples[PEN_NB] = {0, 0, 0, 0};
     QList<int> filter;
     FILE * fp = NULL;
-    int row = 0;
 
-    LOG_PRINT(verbose_e, "'%s', %s, %s\n",
+    LOG_PRINT(verbose_e, "'%s', %s, %s, %d\n",
               filename,
               begin->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
-              end->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data()
+              end->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
+              skip
               );
-    fprintf(stderr, "from '%s' (%s, %s, %d):\n",
-            filename,
-            begin->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
-            end->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
-            skip);
 
     fp = fopen (filename, "r");
     if (fp == NULL)
@@ -1102,12 +1067,13 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         struct tm tfile;
         time_t t;
 
-//        if (count < skip)
-//        {
-//            LOG_PRINT(verbose_e, "Skip\n");
-//            count++;
-//            continue;
-//        }
+        if (count < skip)
+        {
+            LOG_PRINT(verbose_e, "Skip\n");
+            count++;
+            continue;
+        }
+        count = 0;
 
         /*date*/
         p = strtok_csv(line, SEPARATOR, &r);
@@ -1162,14 +1128,16 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             }
         }
 
-        fprintf(stderr, "[%d]\r", ++row);
+        ui->labelDate->setText(QString::number(t, 16));
+        ui->labelDate->setStyleSheet("color: rgb(0,0,255);");
+        ui->labelDate->repaint();
     }
     retval = true;
 
 exit_function:
     fclose(fp);
     for (int j = 0; j < PEN_NB; ++j) {
-        fprintf(stderr, "[%d] %d samples\n", j, samples[j]);
+        LOG_PRINT(verbose_e, "[%d] %d samples\n", j, samples[j]);
     }
     return retval;
 }
@@ -1243,12 +1211,12 @@ bool trend::loadFromFile(QDateTime Ti)
     /* the data loaded will be not under-sampled */
     if (sample_to_skip > 0)
     {
-        LOG_PRINT(error_e, "the data loaded will be under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
+        LOG_PRINT(verbose_e, "the data loaded will be under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
     }
     /* the data loaded will be under-sampled */
     else
     {
-        LOG_PRINT(error_e, "the data loaded will be not under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
+        LOG_PRINT(verbose_e, "the data loaded will be not under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
     }
     
     QDateTime Tfin;
@@ -1286,7 +1254,7 @@ bool trend::loadFromFile(QDateTime Ti)
     d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
     LOG_PRINT(verbose_e, "Setting time axis\n");
 #else
-    d_qwtplot->setAxisScaleDraw(timeAxisId, new TimeScaleDraw(TzeroLoaded.time()));
+    d_qwtplot->setAxisScaleDraw(timeAxisId, new DateTimeScaleDraw(TzeroLoaded));
 #endif
 #ifdef VALUE_TIME_SCALE
     for (int i = 0; i < PEN_NB; i++)
@@ -1589,13 +1557,18 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                 -
                 1;
         
-        if (
-                (_layout_ == LANDSCAPE && (actualTzero < TzeroLoaded || actualVisibleWindowSec > LoadedWindowSec))
-                ||
-                (_layout_ == PORTRAIT && (actualTzero.addSecs(-actualVisibleWindowSec) < TzeroLoaded || actualVisibleWindowSec > LoadedWindowSec))
-                ||
-                sample_to_skip > skip
+        if ( (  _layout_ == LANDSCAPE
+             && (  actualTzero < TzeroLoaded
+                || actualTzero.addSecs(actualVisibleWindowSec) > TzeroLoaded.addSecs(LoadedWindowSec)
                 )
+             )
+           || ( _layout_ == PORTRAIT
+              && (  actualTzero.addSecs(-actualVisibleWindowSec) < TzeroLoaded
+                 || actualVisibleWindowSec > LoadedWindowSec
+                 )
+              )
+           || sample_to_skip > skip
+           )
         {
             LOG_PRINT(verbose_e, "The new Tzero (%s) is out of bounds (%s ... %s), reload the data from the files (VisibleWindowSec %d)\n",
                       actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
@@ -1620,7 +1593,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             {
                 VisibleWindowSec = actualVisibleWindowSec;
             }
-            LoadedWindowSec = OVERLOAD_FACTOR * VisibleWindowSec;
+            LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
             
             LOG_PRINT(verbose_e, "actualTzero '%s' LoadedWindowSec '%d' actualVisibleWindowSec '%d' -> loadedTzero %s\n",
                       actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
@@ -1975,7 +1948,7 @@ void trend::showStatus(QString message, bool iserror)
         ui->labelDate->setStyleSheet("");
         ui->pushButtonOnline->setStyleSheet("QPushButton"
                                             "{"
-                                            "border-image: url(:/libicons/img/Chess.png);"
+                                            "border-image: url(:/libicons/img/Hourglass.png);"
                                             "qproperty-focusPolicy: NoFocus;"
                                             "}");
         ui->labelDate->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
