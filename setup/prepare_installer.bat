@@ -1,6 +1,7 @@
 @echo off
 
-SET REVISION="2.0.12rc7"
+SET REV=2.0.12rc8
+SET REVISION="%REV%"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\mect_plugins"
@@ -15,6 +16,7 @@ SET QTPROJECT=1
 SET BUILD=1
 SET INSTALL=1
 SET UPDATE=1
+SET MECT_HELP=1
 
 IF %UPDATE% == 1 (
 	SET PREPARE_UPDATE=1
@@ -40,7 +42,30 @@ echo Creating the installer version %REVISION% > %OUT_DIR%\error.log
 
 SET ORIGINAL=%CD%
 
+rem Removing Qt485 Directory
 IF EXIST %OUT_DIR%\Qt485 RD /S /Q %OUT_DIR%\Qt485
+
+rem ##############################################
+rem MECT SUITE HELP
+rem ##############################################
+if %MECT_HELP% == 1 (
+	echo Checking help file...
+	if EXIST %OUT_DIR%\help_%REV%.zip (
+		echo Extracting help file...
+		"c:\Program Files\7-Zip\7z.exe" x  "%OUT_DIR%\help_%REV%.zip" -o"%OUT_DIR%" >> %OUT_DIR%\error.log
+		IF ERRORLEVEL 1 (
+			echo error extracting help file help_%REV%.zip 
+			pause
+			cd %ORIGINAL%
+			exit		
+		)
+	) else (
+		echo help file help_%REVISION%.zip not found
+		pause
+		cd %ORIGINAL%
+		exit	
+	)
+)
 
 rem ##############################################
 rem BUILDING VERSION
