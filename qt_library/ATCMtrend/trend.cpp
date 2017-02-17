@@ -1314,12 +1314,13 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
               TzeroLoaded.toString().toAscii().data()
               );
 
-    arrayTimeTicks << sinint;
-    for (int i = 0; i < HORIZ_TICKS; i++)
+    double delta = (sfinal - sinint) / HORIZ_TICKS;
+
+    for (int i = 0; i < (HORIZ_TICKS + 1); i++)
     {
-        arrayTimeTicks << sinint + (sfinal - sinint) * i / HORIZ_TICKS;
+        double tick = sinint + i * delta;
+        arrayTimeTicks.append(tick);
     }
-    arrayTimeTicks << sfinal;
     
     QwtScaleDiv scale = QwtScaleDiv(sinint,sfinal);
     scale.setTicks(QwtScaleDiv::MajorTick, (arrayTimeTicks));

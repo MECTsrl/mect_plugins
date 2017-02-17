@@ -64,14 +64,17 @@ public:
         baseDateTime(base)
     {
     }
-    virtual QwtText label(double v) const
+    virtual QwtText label(double tSecs) const
     {
-        QDateTime labelDateTime = baseDateTime.addSecs((int)v);
-        if (v <= 86400.00) {
-            return labelDateTime.toString("hh:mm:ss");
-        } else {
-            return labelDateTime.toString("yyyy/MM/dd");
-        }
+        int seconds = (int)tSecs;
+        QDateTime tDateTime = baseDateTime.addSecs(seconds);
+
+//        if (baseDateTime.secsTo(tDateTime) < 86400) {
+//            return tDateTime.toString("hh:mm:ss");
+//        } else {
+//            return tDateTime.toString("yyyy/MM/dd");
+//        }
+        return tDateTime.toString("yyyy/MM/dd\n hh:mm:ss");
     }
     void setBaseDateTime(const QDateTime &base)
     {
