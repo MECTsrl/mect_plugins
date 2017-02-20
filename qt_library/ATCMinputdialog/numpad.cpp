@@ -244,6 +244,7 @@ numpad::numpad(char* value, char* def, char* min, char* max, bool password, QWid
             strcpy(_values, value);
             _values[0] = '\0';
         }
+        ui->lineEditVal->setText("");
 
     }
     else

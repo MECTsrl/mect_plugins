@@ -61,6 +61,10 @@
     mystyle.append("  background-color: rgb(255, 255, 255);"); \
     mystyle.append("  color: rgb(0, 0, 0);"); \
     mystyle.append("  background-image: url();"); \
+    mystyle.append("  font: 9pt \"DejaVu Sans Mono\";"); \
+    d_qwtplot->setStyleSheet(mystyle); \
+    mystyle.clear(); \
+    mystyle.append(ui->labelDate->styleSheet()); \
     mystyle.append("  font: 10pt \"DejaVu Sans Mono\";"); \
     d_qwtplot->setStyleSheet(mystyle); \
     }
@@ -547,27 +551,26 @@ void trend::updateData()
     {
         /* update the graph only if the status is online or if the new sample are visible */
         do_refresh_plot = false;
-        QDateTime now =  QDateTime::currentDateTime();
 
         if (_online_)
         {
             /* online mode: if necessary center the actual data */
+            QDateTime now =  QDateTime::currentDateTime();
             if (_layout_ == PORTRAIT)
             {
                 actualTzero = now;
             }
-            else
+            else if (_layout_ == LANDSCAPE)
             {
-                int increment;
-                if (actualVisibleWindowSec/SHIFT_FACTOR < LogPeriodSec) {
-                    increment = LogPeriodSec;
-                } else {
-                    increment = actualVisibleWindowSec / SHIFT_FACTOR;
-                }
-
-                while (now > actualTzero.addSecs(actualVisibleWindowSec))
+                if (now > actualTzero.addSecs(actualVisibleWindowSec))
                 {
-                    actualTzero = actualTzero.addSecs(increment);
+                    int increment;
+                    increment = actualVisibleWindowSec / SHIFT_FACTOR;
+                    if (increment < LogPeriodSec)
+                    {
+                        increment = LogPeriodSec;
+                    }
+                    actualTzero = now.addSecs(-increment);
                 }
             }
         }
@@ -631,7 +634,7 @@ trend::~trend()
 
 void trend::refreshEvent(trend_msg_t item_trend)
 {   
-    if (reloading || _trend_data_reload_ || first_time || force_back || !_online_) {
+    if (reloading || _trend_data_reload_ || first_time || force_back) {
         return;
     }
 
@@ -697,11 +700,6 @@ void trend::refreshEvent(trend_msg_t item_trend)
                 /* update the actual x and y arrays */
                 pens[i].y[pens[i].sample] = item_trend.value;
                 pens[i].x[pens[i].sample] = TzeroLoaded.secsTo(item_trend.timestamp);
-                if (pens[i].y[pens[i].sample] > pens[i].yMaxActual)
-                {
-                    usleep(1);
-                    LOG_PRINT(warning_e, "out of range %f > %f.\n", pens[i].y[pens[i].sample], pens[i].yMaxActual);
-                }
                 pens[i].sample++;
 #ifdef SHOW_ACTUAL_VALUE
                 updatePenLabel();
@@ -734,6 +732,8 @@ void trend::on_pushButtonSelect_clicked()
         bringFront(actualPen);
     }
     
+    ui->labelDate->setText("     ");
+    ui->labelDate->repaint();
     updatePenLabel();
     
     /* update the pushButtonPenColor text with the current pen color */
@@ -1129,7 +1129,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             }
         }
 
-        ui->labelDate->setText(QString::number(t, 16));
+        ui->labelDate->setText(QString(" %1 ").arg(t, 8, 16));
         ui->labelDate->setStyleSheet("color: rgb(0,0,255);");
         ui->labelDate->repaint();
     }
@@ -1314,9 +1314,18 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
               sfinal,
               TzeroLoaded.toString().toAscii().data()
               );
-
-    double deltax = (sfinal - sinint) / HORIZ_TICKS;
-    for (int i = 0; i < (HORIZ_TICKS + 1); i++)
+    double horiz_ticks = HORIZ_TICKS;
+    if (this->width() <= 320){
+        horiz_ticks = 4;
+    } else if (this->width() <= 480){
+        horiz_ticks = 5;
+    } else if (this->width() <= 800){
+        horiz_ticks = 8;
+    } else {
+        horiz_ticks = 10;
+    }
+    double deltax = (sfinal - sinint) / horiz_ticks;
+    for (int i = 0; i < (horiz_ticks + 1); i++)
     {
         arrayTimeTicks.append(sinint + i * deltax);
     }
@@ -1468,6 +1477,15 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                     {
                         pens[pen_index].curve->setRawSamples(&(pens[pen_index].x[XindexIn]), &(pens[pen_index].y[XindexIn]), XindexFin - XindexIn);
                     }
+                    pens[pen_index].curve->attach(d_qwtplot);
+
+                    // update value (QLabel)
+                    if (pen_index == pen && this->isVisible())
+                    {
+                        ui->labelDate->setText(QString(" %1 ").arg(pens[pen].y[XindexFin - 1], 7, 'f', decimal));
+                        ui->labelDate->setStyleSheet("color: rgb(0,0,0);");
+                        ui->labelDate->repaint();
+                    }
 
                     LOG_PRINT(verbose_e, "NEW SAMPLE LAST '%s'  %f %f in %d fin %d sample %d\n", pens[pen_index].tag, pens[pen_index].x[XindexFin-1], pens[pen_index].y[XindexFin-1], XindexIn, XindexFin, pens[pen_index].sample);
                 }
@@ -1480,17 +1498,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     d_qwtplot->updateAxes();
     d_qwtplot->replot();
     LOG_PRINT(verbose_e, "UPDATE AXES AND REPLOT!\n");
-    
-    /* update the actual date label */
-    if (this->isVisible())
-    {
-        if (ui->labelDate->text().compare(actualTzero.toString("yyyy/MM/dd")) != 0)
-        {
-            showStatus(actualTzero.toString("yyyy/MM/dd"), false);
-        }
-    }
-    LOG_PRINT(verbose_e, "return!\n");
-    
+       
     return true;
 }
 
@@ -1527,7 +1535,8 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     /* calculate the TrendPeriodSec */
     /* if it is less than LogPeriodSec, set at LogPeriodSec */
     TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSec)) / MAX_SAMPLE_NB));
-    TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
+    if (TrendPeriodSec < LogPeriodSec)
+        TrendPeriodSec = LogPeriodSec;
 
     int skip = (int)(TrendPeriodSec/LogPeriodSec)
             +
@@ -1560,6 +1569,13 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                   actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
                   );
 
+        for (int i = 0; i < PEN_NB; i++)
+        {
+            if (pens[i].curve != NULL)
+            {
+                pens[i].curve->detach();
+            }
+        }
         popup->enableButtonUp(false);
         popup->enableButtonDown(false);
         popup->enableButtonLeft(false);
@@ -1701,19 +1717,19 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
 void trend::moved(const QPoint &pos)
 {
     int decimal =  getVarDecimalByName(pens[actualPen].tag);
-    QString x, y;
+    QString datetime, y;
     if (_layout_ == PORTRAIT)
     {
-        x = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.x()), 'f', decimal);
-        y = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.y()))).toString("HH:mm:ss");
+        y = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.x()), 'f', decimal);
+        datetime = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.y()))).toString("yyyy/MM/dd HH:mm:ss");
     }
     else
     {
-        x = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.x()))).toString("HH:mm:ss");
-        y = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.y()), 'f');
+        datetime = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.x()))).toString("yyyy/MM/dd HH:mm:ss");
+        y = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.y()), 'f', decimal);
     }
     
-    ui->labelvalue->setText(x + "; " + y);
+    ui->labelvalue->setText(datetime + "  " + y);
     ui->labelvalue->setStyleSheet(QString("border: 2px solid #%1;" "font: 14pt \"DejaVu Sans Mono\";").arg(pens[actualPen].color));
     ui->labelvalue->setVisible(true);
 
