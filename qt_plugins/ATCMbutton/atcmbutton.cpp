@@ -299,6 +299,7 @@ bool ATCMbutton::setVisibilityVar(QString visibilityVar)
         {
             LOG_PRINT(verbose_e,"visibilityVar '%s', CtIndex %d\n", m_visibilityvar.trimmed().toAscii().data(), m_CtVisibilityIndex);
             m_CtVisibilityIndex = CtIndex;
+            this->setVisible(false); // to avoid initial splash
 #endif
             m_visibilityvar = visibilityVar.trimmed();
             if (m_refresh == 0)
@@ -775,7 +776,7 @@ void ATCMbutton::pressFunction()
 void ATCMbutton::releaseFunction()
 {
 #ifdef TARGET_ARM
-    if (checkPassword())
+    if (!isCheckable() || checkPassword())
     {
         if (m_CtIndex > 0)
         {

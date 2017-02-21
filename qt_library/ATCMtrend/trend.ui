@@ -103,7 +103,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>Data del grafico</string>
+          <string>""</string>
          </property>
         </widget>
        </item>

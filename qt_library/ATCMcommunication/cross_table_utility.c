@@ -1344,9 +1344,9 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
             if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
             {
                 if (execwrite) {
-                    LOG_PRINT(warning_e, "busy writing(W) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                    LOG_PRINT(error_e, "busy variable(W) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
                 } else {
-                    LOG_PRINT(warning_e, "busy writing(P) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                    LOG_PRINT(error_e, "busy variable(P) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
                 }
                 retval = BUSY;
                 goto exit_function;
@@ -1357,7 +1357,7 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
         if (SyncroAreaSize >= SYNCRO_DB_SIZE_ELEM)
         {
             retval = BUSY;
-            LOG_PRINT(error_e, "full writing %d\n", ctIndex);
+            LOG_PRINT(error_e, "full area while writing %d\n", ctIndex);
             goto exit_function;
         }
         pIOSyncroAreaO[SyncroAreaSize] = ctIndex & ADDRESS_MASK;

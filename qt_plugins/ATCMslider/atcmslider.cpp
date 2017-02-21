@@ -180,6 +180,7 @@ bool ATCMslider::setVisibilityVar(QString visibilityVar)
         {
             LOG_PRINT(verbose_e,"visibilityVar '%s', CtIndex %d\n", m_visibilityvar.toAscii().data(), m_CtVisibilityIndex);
             m_CtVisibilityIndex = CtIndex;
+            this->setVisible(false); // to avoid initial splash
 #endif
             m_visibilityvar = visibilityVar.trimmed();
             return true;

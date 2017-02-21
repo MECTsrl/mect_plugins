@@ -360,7 +360,7 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
                 if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
                 {
                     busy = 1;
-                    LOG_PRINT(warning_e, "busy variable '%s'\n", varNameArray[ctIndex].tag);
+                    LOG_PRINT(error_e, "busy variable '%s'\n", varNameArray[ctIndex].tag);
                     break;
                 }
             }
