@@ -1269,7 +1269,7 @@ bool page::create_next_page(page ** p, const char * t)
 
         if (create_page_nb(p, pageNb)!= 0)
         {
-            LOG_PRINT(error_e, "cannot create ordinary page %d (%s)\n", pageNb, t);
+            LOG_PRINT(warning_e, "cannot create ordinary page %d (%s)\n", pageNb, t);
             return false;
         }
     }
