@@ -953,7 +953,13 @@ bool Logger::dumpAck(event_msg_e * info_msg)
             event_t * event = item.value();
             
             getElemAlarmStyleIndex(_active_alarms_events_.at(i));
-            
+
+            if (_active_alarms_events_.at(i)->type == EVENT)
+            {
+                // no EVENT logs
+                continue;
+            }
+
 #ifdef LEVEL_TYPE
             /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
             sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
@@ -1017,8 +1023,17 @@ bool Logger::dumpAck(event_msg_e * info_msg)
             {
                 LOG_PRINT(verbose_e, "Update existing event for %s\n", info_msg->tag);
                 getElemAlarmStyleIndex(_active_alarms_events_.at(i));
+                if (_active_alarms_events_.at(i)->type == EVENT)
+                {
+                    // no EVENT logs
+                    return true;
+                }
                 break;
             }
+        }
+        if (i == _active_alarms_events_.count()) {
+            LOG_PRINT(error_e, "tag not found\n");
+            return false;
         }
         
 #ifdef LEVEL_TYPE
