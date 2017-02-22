@@ -77,7 +77,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>MAIN PAGE</string>
+        <string>MENU</string>
        </property>
       </widget>
      </item>
