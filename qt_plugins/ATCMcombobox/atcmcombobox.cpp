@@ -391,12 +391,6 @@ void ATCMcombobox::updateData()
         return;
     }
 
-    static QString qs(" ");
-    if (findText(qs) < 0)
-    {
-        addItem(qs);
-    }
-
     if (m_CtIndex > 0) {
         int ivalue;
         register char status = readFromDbQuick(m_CtIndex, &ivalue);

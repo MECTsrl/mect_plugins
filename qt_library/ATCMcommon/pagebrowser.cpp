@@ -315,6 +315,16 @@ bool page::goto_page(const char * page_name, bool remember)
         return false;
     }
     p->reload();
+    // QComboBox workaround
+    QList <QComboBox *>list;
+    QComboBox *qcb;
+    static QString qstr(" ");
+    list = p->findChildren<QComboBox *>();
+    foreach (qcb, list)
+    {
+        qcb->addItem(qstr);
+        qcb->removeItem(qcb->count() - 1);
+    }
 
     if (p != this) {
         /* deactivate the old variables */
