@@ -197,7 +197,7 @@ void page::updateData()
     /* add here te code to be execute everytime */
     if (labelDataOra)
     {
-        labelDataOra->setText(QDateTime::currentDateTime().toString("dd/MM/yyyy - HH:mm:ss"));
+        labelDataOra->setText(QDateTime::currentDateTime().toString("yyyy/MM/dd - HH:mm:ss"));
     }
     if (labelUserName)
     {
