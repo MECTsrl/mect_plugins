@@ -130,7 +130,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>Tipo:</string>
+        <string>Alarms/Events:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
