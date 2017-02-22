@@ -872,11 +872,21 @@ int get_backlight_level(void)
     return level;
 }
 
-bool LoadTrend(const char * filename, QString * ErrorMsg)
+bool LoadTrend(const char * trend_name, QString * ErrorMsg)
 {
     FILE * fp;
     char line[LINE_SIZE] = "";
     char * p = NULL, *r = NULL;
+
+    char filename[FILENAME_MAX];
+    if (QFileInfo(trend_name).suffix().compare("csv") == 0)
+    {
+        sprintf(filename, "%s/%s", CUSTOM_TREND_DIR, trend_name);
+    }
+    else
+    {
+        sprintf(filename, "%s/%s.csv", CUSTOM_TREND_DIR, trend_name);
+    }
 
     fp = fopen(filename, "r");
     if (fp == NULL)

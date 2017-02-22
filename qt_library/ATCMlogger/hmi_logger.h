@@ -179,6 +179,7 @@ extern QHash<QString, event_t *> EventHash;
 
 extern Logger * logger;
 extern sem_t theLoggingSem;
+extern bool doReloadAlarmsLog;
 
 #define logStart() logger->logstart()
 #define logStop()  logger->logstop()

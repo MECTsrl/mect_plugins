@@ -895,6 +895,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
             fprintf(alarmsfp, "%s", msg);
             fflush(alarmsfp);
             sync();
+            doReloadAlarmsLog = true;
             LOG_PRINT(verbose_e, "DUMP: '%s'\n", msg);
             return true;
         }
@@ -991,6 +992,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
                 fprintf(alarmsfp, "%s", msg);
                 fflush(alarmsfp);
                 sync();
+                doReloadAlarmsLog = true;
                 LOG_PRINT(verbose_e, "DUMP: '%s'\n", msg);
                 return true;
             }
@@ -1067,6 +1069,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
             fprintf(alarmsfp, "%s", msg);
             fflush(alarmsfp);
             sync();
+            doReloadAlarmsLog = true;
             LOG_PRINT(verbose_e, "DUMP: '%s'\n", msg);
             return true;
         }

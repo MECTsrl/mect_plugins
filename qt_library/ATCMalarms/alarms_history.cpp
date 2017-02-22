@@ -31,6 +31,8 @@
     this->setStyleSheet(mystyle); \
     }
 
+bool doReloadAlarmsLog = false;
+
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
  */
@@ -146,6 +148,11 @@ void alarms_history::updateData()
     /* call the parent updateData member */
     page::updateData();
     ui->pushButtonSave->setEnabled(USBCheck());
+    if (doReloadAlarmsLog && _current == 0)
+    {
+        doReloadAlarmsLog = false;
+        loadLogFile(_current, _alarm, _event, _level);
+    }
 }
 
 #ifdef TRANSLATION

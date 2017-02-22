@@ -154,12 +154,11 @@ void trend_option::reload()
     QPixmap pixmap(25, 25);
     
     ui->comboBoxColor->clear();
-    ui->comboBoxColor->addItem("");
     for (int i = 0; i < curve_palette.count(); i++)
     {
         ui->comboBoxColor->addItem("");
         pixmap.fill(QColor(QString("#%1").arg(curve_palette.at(i))));
-        ui->comboBoxColor->setItemData(i + 1, pixmap, Qt::DecorationRole);
+        ui->comboBoxColor->setItemData(i, pixmap, Qt::DecorationRole);
     }
     ui->comboBoxColor->addItem("");
     pixmap.fill(QColor(QString("#%1").arg(pens[actualPen].color)));
@@ -294,7 +293,7 @@ void trend_option::on_pushButtonChangeNew_clicked()
         }
         /* force a online */
         actualVisibleWindowSec = 0;
-        LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), NULL);
+        LoadTrend(_actual_trend_, NULL);
         reload();
         _trend_data_reload_ = true;
     }
@@ -337,7 +336,7 @@ void trend_option::on_pushButtonChangeTrend_clicked()
         /* force a online */
         actualVisibleWindowSec = 0;
         QString(errormsg);
-        LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg);
+        LoadTrend(_actual_trend_, &errormsg);
         reload();
         _trend_data_reload_ = true;
     }
@@ -488,7 +487,7 @@ void trend_option::on_pushButtonSaveAs_clicked()
         sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, value);
         Save(fullfilename);
         strcpy(_actual_trend_, value);
-        LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), NULL);
+        LoadTrend(_actual_trend_, NULL);
         reload();
         _trend_data_reload_ = true;
     }
@@ -501,7 +500,14 @@ void trend_option::on_pushButtonSaveAs_clicked()
 void trend_option::on_pushButtonSave_clicked()
 {
     char fullfilename[FILENAME_MAX];
-    sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, _actual_trend_);
+    if (QFileInfo(_actual_trend_).suffix().compare("csv") == 0)
+    {
+        sprintf(fullfilename, "%s/%s", CUSTOM_TREND_DIR, _actual_trend_);
+    }
+    else
+    {
+        sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, _actual_trend_);
+    }
     Save(fullfilename);
     ui->pushButtonChangeTrend->setText(_actual_trend_);
 }
@@ -550,7 +556,7 @@ void trend_option::Save(const char * fullfilename)
         }
         fclose(fp);
         LOG_PRINT(verbose_e, "Saved '%s'\n", fullfilename);
-        QMessageBox::information(this,trUtf8("Save"), trUtf8("the trend configuration '%1' is saved into file '%2'").arg(_actual_trend_).arg(QFileInfo(fullfilename).baseName()));
+        QMessageBox::information(this,trUtf8("Save"), trUtf8("the trend configuration '%1' is saved into file '%2'").arg(_actual_trend_).arg(fullfilename));
     }
     /* force a reload */
     _trend_data_reload_ = true;
@@ -563,13 +569,13 @@ void trend_option::on_comboBoxColor_currentIndexChanged(int index)
     {
         return;
     }
-    if (index > 0)
+    if (index < curve_palette.count())
     {
-        strcpy(color, curve_palette.at(index - 1).toAscii().data());
+        strcpy(color, curve_palette.at(index).toAscii().data());
     }
     else
     {
-        strcpy(color, pens[index].color);
+        strcpy(color, pens[actualPen].color);
     }
     LOG_PRINT(verbose_e, "New color at index %d '%s'\n", index, color);
 }

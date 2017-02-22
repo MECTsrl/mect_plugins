@@ -221,18 +221,9 @@ void trend::updateData()
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotCurve);
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotScale);
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotUserItem);
-            char filename[FILENAME_MAX];
-            if (QFileInfo(_actual_trend_).suffix().compare("csv") == 0)
-            {
-                sprintf(filename, "%s/%s", CUSTOM_TREND_DIR, _actual_trend_);
-            }
-            else
-            {
-                sprintf(filename, "%s/%s.csv", CUSTOM_TREND_DIR, _actual_trend_);
-            }
 
             /* load the actual trend info */
-            if (LoadTrend(filename, &errormsg) == false)
+            if (LoadTrend(_actual_trend_, &errormsg) == false)
             {
                 force_back = true;
                 reloading = false;
@@ -423,8 +414,7 @@ void trend::updateData()
             if (sel->exec() == QDialog::Accepted)
             {
                 strcpy(_actual_trend_, QFileInfo(value).baseName().toAscii().data());
-                LOG_PRINT(verbose_e, "FULL NAME %s\n", QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data());
-                if (LoadTrend(QString("%1/%2.csv").arg(CUSTOM_TREND_DIR).arg(_actual_trend_).toAscii().data(), &errormsg) == false)
+                if (LoadTrend(_actual_trend_, &errormsg) == false)
                 {
                     refresh_timer->stop();
                     errormsg = trUtf8("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg);

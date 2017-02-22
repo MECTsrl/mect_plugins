@@ -603,18 +603,13 @@ bool page::setAsStartPage(char * window)
 #ifdef ENABLE_ALARMS
 void page::setAlarmsBuzzer(int period_ms)
 {
-    static int index = 0;
+    int index = 0;
     static int counter = 0;
     
-    if (BuzzerAlarm == false || HornACK == true)
+#ifdef BUZZER
+    if (! BuzzerAlarm || HornACK)
     {
         LOG_PRINT(verbose_e, "BuzzerAlarm '%d' HornACK '%d'\n", BuzzerAlarm, HornACK);
-        return;
-    }
-    
-    if (_active_alarms_events_.count() == 0)
-    {
-        LOG_PRINT(verbose_e, "NO ALARM '%d'\n", _active_alarms_events_.count());
         return;
     }
     
@@ -626,21 +621,14 @@ void page::setAlarmsBuzzer(int period_ms)
     }
     counter = 0;
     
-    for (; index < _active_alarms_events_.count() && _active_alarms_events_.at(index)->isack == true; index++);
-    
-#ifdef BUZZER
-    if (index < _active_alarms_events_.count() && _active_alarms_events_.at(index)->isack == false)
+    for (index = 0; index < _active_alarms_events_.count(); ++index)
     {
-        LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", period_ms/2);
-        if (_active_alarms_events_.at(index)->type == ALARM)
+        if (_active_alarms_events_.at(index)->type == ALARM && _active_alarms_events_.at(index)->isack == false)
         {
-            beep(period_ms/2);
+            LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", period_ms / 2);
+            beep(period_ms / 2);
+            break;
         }
-    }
-    else
-    {
-        LOG_PRINT(verbose_e, "NO ACTIVE ALARM FOUND\n");
-        index = 0;
     }
 #endif
 }

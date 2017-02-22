@@ -174,7 +174,7 @@ int set_backlight_level(int level);
  */
 int get_backlight_level(void);
 
-bool LoadTrend(const char * filename, QString * ErrorMsg);
+bool LoadTrend(const char * trend_name, QString * ErrorMsg);
 
 QObject *getPage(QObject *plugin);
 
