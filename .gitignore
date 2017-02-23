@@ -1,7 +1,6 @@
 setup/arm-2011.03-41-arm-none-linux-gnueabi.exe
 setup/ActivePerl-5.16.3.1603-MSWin32-x86-296746.msi
 setup/MectConfigurator
-setup/Fonts
 setup/*.7z
 setup/*.exe
 moc_*
