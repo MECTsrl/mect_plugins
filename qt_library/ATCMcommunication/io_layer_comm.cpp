@@ -37,7 +37,7 @@ void *automation_thread(void *arg)
         long long actual_time_ms;
         long long elapsed_ms;
 #endif
-        if (pthread_cond_wait(&condvar, &mutex))
+        pthread_cond_wait(&condvar, &mutex);
 #ifdef VERBOSE_DEBUG
         clock_gettime(CLOCK_REALTIME, &now);
         last_time_ms = now.tv_sec * 1000LL + now.tv_nsec / 1000000LL;
@@ -45,7 +45,7 @@ void *automation_thread(void *arg)
         setup();
         do
         {
-            if (pthread_cond_wait(&condvar, &mutex))
+            pthread_cond_wait(&condvar, &mutex);
 #ifdef VERBOSE_DEBUG
             clock_gettime(CLOCK_REALTIME, &now);
             actual_time_ms = now.tv_sec * 1000LL + now.tv_nsec / 1000000LL;
@@ -167,7 +167,6 @@ void io_layer_comm::run()
             pthread_cond_signal(&condvar);
         }
     }
-    LOG_PRINT(verbose_e, "Finish ioLayer syncronization\n");
 }
 
 bool io_layer_comm::initializeData(const char * RemoteAddress, const int iUdpRxPort, const int iUdpTxPort, void * ioAreaI, size_t ioAreaSizeI, void * ioAreaO, size_t ioAreaSizeO)
