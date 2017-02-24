@@ -552,7 +552,7 @@ void trend::updateData()
             }
             else if (_layout_ == LANDSCAPE)
             {
-                if (now > actualTzero.addSecs(actualVisibleWindowSec))
+                if (actualTzero.addSecs(actualVisibleWindowSec) < now)
                 {
                     int increment;
                     increment = actualVisibleWindowSec / SHIFT_FACTOR;
@@ -1306,13 +1306,11 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
               );
     double horiz_ticks = HORIZ_TICKS;
     if (this->width() <= 320){
-        horiz_ticks = 4;
+        horiz_ticks = 3;
     } else if (this->width() <= 480){
         horiz_ticks = 5;
     } else if (this->width() <= 800){
         horiz_ticks = 8;
-    } else {
-        horiz_ticks = 10;
     }
     double deltax = (sfinal - sinint) / horiz_ticks;
     for (int i = 0; i < (horiz_ticks + 1); i++)
@@ -1586,17 +1584,17 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                   actualTzero.addSecs(- actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
                   );
 
-        QDateTime Ti;
-        if (_layout_ == LANDSCAPE)
-        {
-            Ti = actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
-        }
-        else
-        {
-            Ti = actualTzero.addSecs( - actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
-        }
+//        QDateTime Ti;
+//        if (_layout_ == LANDSCAPE)
+//        {
+//            Ti = actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
+//        }
+//        else
+//        {
+//            Ti = actualTzero.addSecs( - actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
+//        }
 
-        if (loadFromFile(Ti) == false)
+        if (loadFromFile(actualTzero) == false)
         {
 //                errormsg = trUtf8("Cannot found any data from %1 to %2").arg(actualTzero.toString().toAscii().data()).arg(QDateTime::currentDateTime().toString().toAscii().data());
 //                showStatus(errormsg, true);
