@@ -399,10 +399,10 @@ void trend_option::on_pushButtonYmin_clicked()
 {
     numpad * dk;
     float value;
-    float min = MIN(DEFAULT_YMIN, pens[actualPen].yMax);
+    float min = MIN(DEFAULT_YMIN, pens[actualPen].yMin);
     float max = MIN(DEFAULT_YMAX, pens[actualPen].yMax);
     
-    dk = new numpad(&value, ui->pushButtonYmin->text().toFloat(), min, max,false);
+    dk = new numpad(&value, ui->pushButtonYmin->text().toFloat(), 3, min, max,false);
     dk->showFullScreen();
     
     if (dk->exec() == QDialog::Accepted)
@@ -428,9 +428,9 @@ void trend_option::on_pushButtonYmax_clicked()
     numpad * dk;
     float value;
     float min = MAX(DEFAULT_YMIN, pens[actualPen].yMin);
-    float max = MAX(DEFAULT_YMAX, pens[actualPen].yMin);
+    float max = MAX(DEFAULT_YMAX, pens[actualPen].yMax);
     
-    dk = new numpad(&value, ui->pushButtonYmax->text().toFloat(), min, max,false);
+    dk = new numpad(&value, ui->pushButtonYmax->text().toFloat(), 3, min, max,false);
     dk->showFullScreen();
     
     if (dk->exec() == QDialog::Accepted)
