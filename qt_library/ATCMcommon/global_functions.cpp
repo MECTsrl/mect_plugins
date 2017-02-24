@@ -298,7 +298,7 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     {
         return -1;
     }
-    if (pthread_mutex_lock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_recv_mutex);
     {
         for (int i = 0; i < table[step].count(); i++)
         {
@@ -319,7 +319,7 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
             }
         }
     }
-    if (pthread_mutex_unlock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_recv_mutex);
     return errors;
 }
 
@@ -342,7 +342,7 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     }
 #else
     beginWrite();
-    if (pthread_mutex_lock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_send_mutex);
     {
         uint16_t oper;
         uint16_t addr;
@@ -366,7 +366,7 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
             }
         }
     }
-    if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_send_mutex);
 
     if (busy)
     {
@@ -409,7 +409,7 @@ int checkRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         LOG_PRINT(error_e, "checkRecipe() wrong step %d\n", step);
         return 0;
     }
-    if (pthread_mutex_lock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_recv_mutex);
     {
         /* search for pending writes on the recipe variables */
         for (int i = 0; i < table[step].count(); ++i)
@@ -429,7 +429,7 @@ int checkRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
             }
         }
     }
-    if (pthread_mutex_unlock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_recv_mutex);
 
     return allOk;
 }

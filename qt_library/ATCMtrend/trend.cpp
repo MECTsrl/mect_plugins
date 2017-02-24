@@ -560,7 +560,7 @@ void trend::updateData()
                     {
                         increment = LogPeriodSec;
                     }
-                    actualTzero = now.addSecs(-increment);
+                    actualTzero = now.addSecs(-(actualVisibleWindowSec-increment));
                 }
             }
         }

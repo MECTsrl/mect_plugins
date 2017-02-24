@@ -754,12 +754,12 @@ char readFromDbQuick(int ctIndex, int * ivaluep)
     register int ivalue;
     register char status;
 
-    if (pthread_mutex_lock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_recv_mutex);
     {
         ivalue = p[ctIndex];
         status = pIODataStatusAreaI[ctIndex];
     }
-    if (pthread_mutex_unlock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_recv_mutex);
 
     *ivaluep = ivalue;
     return status;
@@ -768,11 +768,11 @@ char readFromDbQuick(int ctIndex, int * ivaluep)
 int readFromDbLock(int ctIndex, void * value)
 {
     register int retval = 0;
-    if (pthread_mutex_lock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_recv_mutex);
     {
         retval = readFromDb(ctIndex, value);
     }
-    if (pthread_mutex_unlock(&datasync_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_recv_mutex);
     return retval;
 }
 
@@ -1212,7 +1212,7 @@ void writeVarInQueueByCtIndex(int ctIndex, int value)
     case DONE:
         break;
     case BUSY:
-        if (pthread_mutex_lock(&write_queue_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+        pthread_mutex_lock(&write_queue_mutex);
         {
             write_queue_elem_t * queue_elem = (write_queue_elem_t *)calloc(1, sizeof(write_queue_elem_t));
             queue_elem->next = NULL;
@@ -1230,7 +1230,7 @@ void writeVarInQueueByCtIndex(int ctIndex, int value)
                 queue_tail = queue_elem;
             }
         }
-        if (pthread_mutex_unlock(&write_queue_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+        pthread_mutex_unlock(&write_queue_mutex);
         break;
     case ERROR:
     default:
@@ -1240,7 +1240,7 @@ void writeVarInQueueByCtIndex(int ctIndex, int value)
 
 void writeVarQueuedByCtIndex(void)
 {
-    if (pthread_mutex_lock(&write_queue_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&write_queue_mutex);
     {
         // get items from queue head
         write_queue_elem_t * queue_elem = queue_head;
@@ -1277,7 +1277,7 @@ void writeVarQueuedByCtIndex(void)
             }
         }
     }
-    if (pthread_mutex_unlock(&write_queue_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&write_queue_mutex);
 }
 
 /**
@@ -1290,7 +1290,7 @@ int writePendingInorder()
 #else
     unsigned int SynIndex;
     int do_signal = 0;
-    if (pthread_mutex_lock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_send_mutex);
     {
         for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
         {
@@ -1307,7 +1307,7 @@ int writePendingInorder()
             pthread_cond_signal(&theWritingCondvar);
         }
     }
-    if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_send_mutex);
     LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
     return 0;
 #endif
@@ -1330,7 +1330,7 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
     }
 
     LOG_PRINT(verbose_e, "Writing '%d'\n", ctIndex);
-    if (pthread_mutex_lock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_send_mutex);
     {
         uint16_t oper;
         uint16_t addr;
@@ -1344,9 +1344,9 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
             if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
             {
                 if (execwrite) {
-                    LOG_PRINT(error_e, "busy variable(W) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                    LOG_PRINT(warning_e, "busy variable(W) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
                 } else {
-                    LOG_PRINT(error_e, "busy variable(P) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                    LOG_PRINT(warning_e, "busy variable(P) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
                 }
                 retval = BUSY;
                 goto exit_function;
@@ -1378,7 +1378,7 @@ exit_function:
     {
         pthread_cond_signal(&theWritingCondvar);
     }
-    if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_send_mutex);
     return retval;
 }
 
@@ -1458,7 +1458,7 @@ int activateVar(const char * varname)
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
         return 1;
     }
-    if (pthread_mutex_lock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_send_mutex);
     {
         for (i = 0; i < SyncroAreaSize; i++)
         {
@@ -1475,7 +1475,7 @@ int activateVar(const char * varname)
             varNameArray[CtIndex].visible = 1;
         }
     }
-    if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_send_mutex);
     return 0;
 }
 
@@ -1503,7 +1503,7 @@ int deactivateVar(const char * varname)
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
         return retval;
     }
-    if (pthread_mutex_lock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&datasync_send_mutex);
     {
         for (i = 0; i < SyncroAreaSize; i++)
         {
@@ -1516,7 +1516,7 @@ int deactivateVar(const char * varname)
             }
         }
     }
-    if (pthread_mutex_unlock(&datasync_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&datasync_send_mutex);
     return retval;
 }
 

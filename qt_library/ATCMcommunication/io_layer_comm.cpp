@@ -29,7 +29,7 @@ static void *automation_thread(void *arg);
 
 void *automation_thread(void *arg)
 {
-    if (pthread_mutex_lock(&mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+    pthread_mutex_lock(&mutex);
     {
 #ifdef VERBOSE_DEBUG
         struct timespec now;
@@ -37,7 +37,7 @@ void *automation_thread(void *arg)
         long long actual_time_ms;
         long long elapsed_ms;
 #endif
-        if (pthread_cond_wait(&condvar, &mutex)) {LOG_PRINT(error_e, "cond wait\n");};
+        if (pthread_cond_wait(&condvar, &mutex))
 #ifdef VERBOSE_DEBUG
         clock_gettime(CLOCK_REALTIME, &now);
         last_time_ms = now.tv_sec * 1000LL + now.tv_nsec / 1000000LL;
@@ -45,7 +45,7 @@ void *automation_thread(void *arg)
         setup();
         do
         {
-            if (pthread_cond_wait(&condvar, &mutex)) {LOG_PRINT(error_e, "cond wait\n");};
+            if (pthread_cond_wait(&condvar, &mutex))
 #ifdef VERBOSE_DEBUG
             clock_gettime(CLOCK_REALTIME, &now);
             actual_time_ms = now.tv_sec * 1000LL + now.tv_nsec / 1000000LL;
@@ -59,7 +59,7 @@ void *automation_thread(void *arg)
         }
         while (1);
     }
-    if (pthread_mutex_unlock(&mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+    pthread_mutex_unlock(&mutex);
     return arg;
 }
 
@@ -125,7 +125,7 @@ void io_layer_comm::run()
         }
 
         // wait for either period 100ms or write occurrence
-        if (pthread_mutex_lock(the_send_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+        pthread_mutex_lock(the_send_mutex);
         {
             int rc = pthread_cond_timedwait(&theWritingCondvar, the_send_mutex, &abstime);
             if (rc == 0) {
@@ -139,7 +139,7 @@ void io_layer_comm::run()
                 LOG_PRINT(error_e, "pthread_cond_timedwait %d\n", rc);
             }
 
-            if (pthread_mutex_lock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex lock\n");};
+            pthread_mutex_lock(the_recv_mutex);
             {
                 // send
                 notifySetData();
@@ -155,9 +155,9 @@ void io_layer_comm::run()
                 // update local variables
                 update_all(); // readFromDb
             }
-            if (pthread_mutex_unlock(the_recv_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+            pthread_mutex_unlock(the_recv_mutex);
         }
-        if (pthread_mutex_unlock(the_send_mutex)) {LOG_PRINT(error_e, "mutex unlock\n");};
+        pthread_mutex_unlock(the_send_mutex);
 
         // another loop for the BUSY cases
         writeVarQueuedByCtIndex();
@@ -412,7 +412,8 @@ bool io_layer_comm::notifyGetData(void)
         }
 #endif
     } else {
-        LOG_PRINT(error_e, "select fail\n");
+        LOG_PRINT(warning_e, "select fail\n");
+        fprintf(stderr, ".");
     }
     return  (_getStatusIO == DONE);
 }
@@ -497,7 +498,8 @@ bool io_layer_comm::notifyGetSyncro(void)
         }
 #endif
     } else {
-        LOG_PRINT(error_e, "select fail\n");
+        LOG_PRINT(warning_e, "select fail\n");
+        fprintf(stderr, ".");
     }
     return  (_getStatusIO == DONE);
 }
