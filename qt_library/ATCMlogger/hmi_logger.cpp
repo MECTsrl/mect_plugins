@@ -640,8 +640,8 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         /* latched */
         if (event->persistence == 1)
         {
-            /* aknowloged */
-            if (event_msg->isack == 1)
+            /* aknowledged */
+            if (event_msg->isack)
             {
                 event_msg->styleindex = alrm_active_latched_ack_e;
                 LOG_PRINT(verbose_e, "STYLE: alrm_active_latched_ack_e: '%s' status %d persistance %d ACK %d\n", event_msg->tag, event_msg->status, event->persistence, event_msg->isack);
@@ -657,7 +657,7 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         else
         {
             /* aknowloged */
-            if (event_msg->isack == 1)
+            if (event_msg->isack)
             {
                 event_msg->styleindex = alrm_active_nonlatched_ack_e;
                 LOG_PRINT(verbose_e, "STYLE: alrm_active_nonlatched_ack_e: '%s' status %d persistance %d ACK %d\n", event_msg->tag, event_msg->status, event->persistence, event_msg->isack);
@@ -677,7 +677,7 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         if (event->persistence == 1)
         {
             /* aknowloged */
-            if (event_msg->isack == 1)
+            if (event_msg->isack)
             {
                 event_msg->styleindex = alrm_nonactive_latched_ack_e;
                 LOG_PRINT(verbose_e, "STYLE: alrm_nonactive_latched_ack_e: '%s' status %d persistance %d ACK %d\n", event_msg->tag, event_msg->status, event->persistence, event_msg->isack);
@@ -693,7 +693,7 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         else
         {
             /* aknowloged */
-            if (event_msg->isack == 1)
+            if (event_msg->isack)
             {
                 event_msg->styleindex = alrm_nonactive_nonlatched_ack_e;
                 LOG_PRINT(verbose_e, "STYLE: alrm_nonactive_nonlatched_ack_e: '%s' status %d persistance %d ACK %d\n", event_msg->tag, event_msg->status, event->persistence, event_msg->isack);
@@ -748,9 +748,9 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
         info_descr->description[0] = '\0';
         info_descr->styleindex = nb_of_alarm_status_e;
         info_descr->isack = false;
-        info_descr->begin = NULL;
-        info_descr->end = NULL;
-        info_descr->ack = NULL;
+        info_descr->begin = QDateTime();
+        info_descr->end = QDateTime();
+        info_descr->ack = QDateTime();
         info_descr->status = alarm_none_e;
         info_descr->type = item->type;
         to_append = true;
@@ -773,17 +773,12 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
             LOG_PRINT(verbose_e, "Rising event for %s\n", info_descr->tag);
             HornACK = false;
             todump = true;
-            if (info_descr->begin == NULL)
-            {
-                info_descr->begin = new QDateTime();
-            }
-            *(info_descr->begin) = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+            info_descr->begin = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
             info_descr->isack = false;
         }
-        else if (info_descr->begin == NULL)
+        else if (!info_descr->begin.isValid())
         {
-            info_descr->begin = new QDateTime();
-            *(info_descr->begin) = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+            info_descr->begin = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
         }
         info_descr->status = alarm_rise_e;
     }
@@ -794,17 +789,12 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
             LOG_PRINT(verbose_e, "Falling event for %s\n", info_descr->tag);
             toemit = true;
             todump = true;
-            if (info_descr->end == NULL)
-            {
-                info_descr->end = new QDateTime();
-            }
-            *(info_descr->end) = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+            info_descr->end = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
             //info_descr->isack = false;
         }
-        else if (info_descr->end == NULL)
+        else if (!info_descr->end.isValid())
         {
-            info_descr->end = new QDateTime();
-            *(info_descr->end) = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+            info_descr->end = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
         }
         info_descr->status = alarm_fall_e;
     }
@@ -942,6 +932,9 @@ bool Logger::dumpAck(event_msg_e * info_msg)
     {
         for (int i = 0; i < _active_alarms_events_.count(); i++)
         {
+            if (!_active_alarms_events_.at(i)->isack)
+                continue;
+
             LOG_PRINT(verbose_e, "ACK to : '%d/%d'\n", i, _active_alarms_events_.count());
             /* prepare the event item */
             QHash<QString, event_t *>::const_iterator item = EventHash.find(_active_alarms_events_.at(i)->tag);
@@ -976,7 +969,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
             sprintf(msg, "%s;%s;%s;%s\n",
                     _active_alarms_events_.at(i)->tag,
                     TAG_ACK,
-                    _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
+                    _active_alarms_events_.at(i)->ack.toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
                     event->description
                     );
 #endif
@@ -1053,7 +1046,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
         sprintf(msg, "%s;%s;%s;%s\n",
                 _active_alarms_events_.at(i)->tag,
                 TAG_ACK,
-                _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
+                _active_alarms_events_.at(i)->ack.toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
                 event->description
                 );
 #endif

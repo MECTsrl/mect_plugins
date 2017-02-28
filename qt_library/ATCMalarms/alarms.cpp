@@ -196,7 +196,7 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
     char * description = getDescription(msg->tag);
     sprintf(line, "%s [%s]",
             ((description == NULL) ? "-" : description),
-            (msg->begin == NULL) ? "-" : msg->begin->toString("yyyy/MM/dd-HH:mm:ss").toAscii().data()
+            (msg->begin.isValid()) ? msg->begin.toString("yyyy/MM/dd-HH:mm:ss").toAscii().data() : "-"
                                    );
 #else
     if (msg->ack == NULL)
@@ -448,16 +448,12 @@ void alarms::on_pushButtonACK_clicked()
         }
         LOG_PRINT(verbose_e, "selected row %d '%s'\n", current_index, _active_alarms_events_.at(current_index)->tag);
         _active_alarms_events_.at(current_index)->isack = true;
-        if (_active_alarms_events_.at(current_index)->ack == NULL)
-        {
-            _active_alarms_events_.at(current_index)->ack = new QDateTime();
-        }
-        *(_active_alarms_events_.at(current_index)->ack) = QDateTime::currentDateTime();
+        _active_alarms_events_.at(current_index)->ack = QDateTime::currentDateTime();
         
         event_msg_e info_msg;
         info_msg.event = alarm_ack_e;
         strcpy(info_msg.tag, _active_alarms_events_.at(current_index)->tag);
-        info_msg.time = *(_active_alarms_events_.at(current_index)->ack);
+        info_msg.time = _active_alarms_events_.at(current_index)->ack;
         
         emit new_ack(&info_msg);
         ui->listWidget->currentItem()->setSelected(false);
@@ -468,20 +464,24 @@ void alarms::on_pushButtonACK_clicked()
 void alarms::on_pushButtonACKall_clicked()
 {
     LOG_PRINT(verbose_e, "ACKALL\n");
+    bool found = false;
     for (int i = 0; i < _active_alarms_events_.count(); i++)
     {
-        if (_active_alarms_events_.at(i)->ack == NULL)
-        {
-            _active_alarms_events_.at(i)->ack = new QDateTime();
+        if (! _active_alarms_events_.at(i)->isack) {
+            found = true;
+            _active_alarms_events_.at(i)->ack = QDateTime::currentDateTime();
+            _active_alarms_events_.at(i)->isack = true;
         }
-        *(_active_alarms_events_.at(i)->ack) = QDateTime::currentDateTime();
-        _active_alarms_events_.at(i)->isack = true;
     }
-    emit new_ack(NULL);
+    if (found)
+    {
+        emit new_ack(NULL);
+    }
     if (ui->listWidget->currentItem() != NULL)
     {
         ui->listWidget->currentItem()->setSelected(false);
     }
+    QThread::yieldCurrentThread();
     refreshEvent();
 }
 

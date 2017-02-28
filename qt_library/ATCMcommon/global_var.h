@@ -91,9 +91,9 @@ typedef struct event_descr_e
     char tag[TAG_LEN];
     char description[DESCR_LEN];
     int styleindex;
-    QDateTime * begin;
-    QDateTime * end;
-    QDateTime * ack;
+    QDateTime begin;
+    QDateTime end;
+    QDateTime ack;
     enum alarm_event_e status;
     bool isack;
     char type;
