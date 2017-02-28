@@ -89,7 +89,7 @@ bool net_conf::saveETH0cfg()
         if (app_netconf_item_set("[DHCP]", "BOOTPROTO0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTO0"));
             return false;
         }
     }
@@ -98,42 +98,42 @@ bool net_conf::saveETH0cfg()
         if (app_netconf_item_set("[none]", "BOOTPROTO0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTO0"));
             return false;
         }
         /* IP */
         if (ui->pushButton_eth0_IP->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_IP->text().toAscii().data(), "IPADDR0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nIPADDR0"));
             return false;
         }
         /* GATEWAY */
         if (ui->pushButton_eth0_GW->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_GW->text().toAscii().data(), "GATEWAY0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAY0"));
             return false;
         }
         /* NETMASK */
         if (ui->pushButton_eth0_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_NM->text().toAscii().data(), "NETMASK0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNETMASK0"));
             return false;
         }
         /* DNS1 */
         if (ui->pushButton_eth0_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_DNS1->text().toAscii().data(), "NAMESERVER01"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER01"));
             return false;
         }
         /* DNS2 */
         if (ui->pushButton_eth0_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_DNS2->text().toAscii().data(), "NAMESERVER02"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER02"));
             return false;
         }
     }
@@ -159,7 +159,7 @@ bool net_conf::saveETH1cfg()
         if (app_netconf_item_set("[DHCP]", "BOOTPROTO1"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTO1"));
             return false;
         }
     }
@@ -168,42 +168,42 @@ bool net_conf::saveETH1cfg()
         if (app_netconf_item_set("[none]", "BOOTPROTO1"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTO1"));
             return false;
         }
         /* IP */
         if (ui->pushButton_eth1_IP->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_IP->text().toAscii().data(), "IPADDR1"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nIPADDR1"));
             return false;
         }
         /* GATEWAY */
         if (ui->pushButton_eth1_GW->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_GW->text().toAscii().data(), "GATEWAY1"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAY1"));
             return false;
         }
         /* NETMASK */
         if (ui->pushButton_eth1_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_NM->text().toAscii().data(), "NETMASK1"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNETMASK1"));
             return false;
         }
         /* DNS1 */
         if (ui->pushButton_eth1_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_DNS1->text().toAscii().data(), "NAMESERVER11"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER11"));
             return false;
         }
         /* DNS2 */
         if (ui->pushButton_eth1_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_DNS2->text().toAscii().data(), "NAMESERVER12"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER12"));
             return false;
         }
     }
@@ -223,14 +223,14 @@ bool net_conf::saveWLAN0cfg()
     if (wlan0_essid.compare(NONE) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_essid + QString("\"")).toAscii().data(), "ESSIDW0"))
     {
         /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nESSIDW0"));
         return false;
     }
     /* PASSWORD */
     if (wlan0_pwd.compare(NONE) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_pwd + QString("\"")).toAscii().data(), "PASSWORDW0"))
     {
         /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nPASSWORDW0"));
         return false;
     }
     /* DHCP */
@@ -239,51 +239,51 @@ bool net_conf::saveWLAN0cfg()
         if (app_netconf_item_set("[DHCP]", "BOOTPROTOW0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTOW0"));
             return false;
         }
     }
     else
     {
-        if (app_netconf_item_set("[none]", "BOOTPROTOW0") == 0)
+        if (app_netconf_item_set("[none]", "BOOTPROTOW0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTOW0"));
             return false;
         }
         /* IP */
         if (ui->pushButton_wlan0_IP->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_IP->text().toAscii().data(), "IPADDRW0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nIPADDRW0"));
             return false;
         }
         /* GATEWAY */
         if (ui->pushButton_wlan0_GW->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_GW->text().toAscii().data(), "GATEWAYW0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAYW0"));
             return false;
         }
         /* NETMASK */
         if (ui->pushButton_wlan0_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_NM->text().toAscii().data(), "NETMASKW0"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNETMASKW0"));
             return false;
         }
         /* DNS1 */
         if (ui->pushButton_wlan0_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_DNS1->text().toAscii().data(), "NAMESERVERW01"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERW01"));
             return false;
         }
         /* DNS2 */
         if (ui->pushButton_wlan0_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_DNS2->text().toAscii().data(), "NAMESERVERW02"))
         {
             /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERW02"));
             return false;
         }
     }
@@ -308,28 +308,28 @@ bool net_conf::saveWAN0cfg()
     if (ui->pushButton_wan0_dialnb->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_dialnb->text().toAscii().data(), "DIALNBP0"))
     {
         /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nDIALNBP0"));
         return false;
     }
     /* APN */
     if (ui->pushButton_wan0_apn->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_apn->text().toAscii().data(), "APNP0"))
     {
         /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nAPNP0"));
         return false;
     }
     /* DNS1 */
     if (ui->pushButton_wan0_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS1->text().toAscii().data(), "NAMESERVERP01"))
     {
         /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERP01"));
         return false;
     }
     /* DNS2 */
     if (ui->pushButton_wan0_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS2->text().toAscii().data(), "NAMESERVERP02"))
     {
         /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration"));
+        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERP02"));
         return false;
     }
     char command[256];
