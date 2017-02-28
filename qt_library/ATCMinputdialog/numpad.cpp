@@ -124,7 +124,7 @@ numpad::numpad(float* value, float def, int decimal, float min, float max, bool 
         _valuef = value;
         if (def != NO_DEFAULT)
         {
-            ui->lineEditVal->setText(QString("%1").setNum(def, 'f', decimal));
+            ui->lineEditVal->setText(QString("%1").number(def, 'f', decimal));
         }
     }
 

@@ -435,7 +435,7 @@ void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
     /* Edit the selected item */
     float value, min = 0, max = 0;
     numpad * dk;
-    dk = new numpad(&value, item->text().toFloat(), min, max);
+    dk = new numpad(&value, item->text().toFloat(), 3, min, max);
     dk->showFullScreen();
 
     if (dk->exec() == QDialog::Accepted)
