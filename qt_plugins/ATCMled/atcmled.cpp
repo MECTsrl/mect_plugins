@@ -236,7 +236,7 @@ void ATCMled::updateData()
         int ivalue;
         register char status = readFromDbQuick(m_CtIndex, &ivalue);
 
-        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
+        do_update = true; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
         if (do_update) {
             switch (status) {
             case DONE:

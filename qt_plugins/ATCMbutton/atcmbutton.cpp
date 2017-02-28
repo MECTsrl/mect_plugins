@@ -521,13 +521,13 @@ void ATCMbutton::updateData()
         default:
             ; // do nothing
         }
-    }
+    } // else m_passwordValue already set
 
     if (m_CtIndex > 0) {
         int ivalue;
         register char status = readFromDbQuick(m_CtIndex, &ivalue);
 
-        do_update = TRUE; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
+        do_update = true; // (m_status == UNK) || (ivalue != m_iprevious) || (status != m_sprevious)
         if (do_update) {
             switch (status) {
             case DONE:
@@ -709,7 +709,7 @@ bool ATCMbutton::checkPassword()
     bool retval = true;
 
 #ifdef TARGET_ARM
-    if (m_CtPasswordVarIndex > 0)
+    if (!m_passwordValue.isEmpty()) // not only (m_CtPasswordVarIndex > 0)
     {
         numpad * dk;
         int value = 0;
@@ -833,36 +833,45 @@ void ATCMbutton::toggleAction(bool status)
 
 bool ATCMbutton::setPasswordVar(QString password)
 {
-    if (password.trimmed().length() == 0)
+    QString tPassword = password.trimmed();
+
+    if (tPassword.isEmpty())
     {
-        m_passwordVar.clear();
+#ifdef TARGET_ARM
         m_CtPasswordVarIndex = 0;
+        m_passwordValue.clear();
+#endif
+        m_passwordVar.clear();
+        return true;
+    }
+#ifdef TARGET_ARM
+    int CtIndex;
+    if (Tag2CtIndex(tPassword.toAscii().data(), &CtIndex) == 0)
+    {
+        m_CtPasswordVarIndex = CtIndex;
+        m_passwordValue.clear();
+        m_passwordVar = tPassword;
+        return true;
+    }
+    bool ok;
+    tPassword.toInt(&ok);
+    if (ok)
+    {
+        m_CtPasswordVarIndex = 0;
+        m_passwordValue = tPassword;
+        m_passwordVar = tPassword;
         return true;
     }
     else
     {
-#ifdef TARGET_ARM
-        int CtIndex;
-        if (Tag2CtIndex(password.trimmed().toAscii().data(), &CtIndex) == 0)
-        {
-            LOG_PRINT(verbose_e,"password '%s', CtIndex %d\n", m_passwordVar.toAscii().data(), m_CtPasswordVarIndex);
-            m_CtPasswordVarIndex = CtIndex;
-#endif
-            m_passwordVar = password.trimmed();
-            if (m_refresh == 0)
-            {
-                setRefresh(DEFAULT_PLUGIN_REFRESH);
-            }
-            return true;
-#ifdef TARGET_ARM
-        }
-        else
-        {
-            m_passwordValue = password.trimmed();
-            m_passwordVar = password.trimmed();
-            LOG_PRINT(verbose_e,"password '%s', CtIndex %d\n", password.trimmed().toAscii().data(), CtIndex);
-            return false;
-        }
-#endif
+        LOG_PRINT(error_e, "wrong password value '%s'\n", tPassword.toAscii().data());
+        m_CtPasswordVarIndex = 0;
+        m_passwordValue.clear();
+        m_passwordVar.clear();
+        return false;
     }
+#else
+    m_passwordVar = tPassword;
+    return true;
+#endif
 }
