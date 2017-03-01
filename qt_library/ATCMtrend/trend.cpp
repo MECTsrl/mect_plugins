@@ -814,6 +814,7 @@ void trend::enableZoomMode(bool on)
         ui->labelvalue->setText("");
         ui->labelvalue->setStyleSheet("");
         ui->labelvalue->setVisible(false);
+        ui->pushButtonPen->setVisible(true);
     }
     ui->pushButtonZoom->setChecked(_zoom);
 }
@@ -1719,6 +1720,7 @@ void trend::moved(const QPoint &pos)
     
     ui->labelvalue->setText(datetime + "  " + y);
     ui->labelvalue->setStyleSheet(QString("border: 2px solid #%1;" "font: 14pt \"DejaVu Sans Mono\";").arg(pens[actualPen].color));
+    ui->pushButtonPen->setVisible(false);
     ui->labelvalue->setVisible(true);
 
 #ifdef MARKER
@@ -1823,6 +1825,7 @@ void trend::selected(const QPolygon &pol)
     ui->labelvalue->setText("");
     ui->labelvalue->setStyleSheet("");
     ui->labelvalue->setVisible(false);
+    ui->pushButtonPen->setVisible(true);
 }
 
 void InterruptedCurve::drawCurve( QPainter *painter, __attribute__((unused))int style, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect, int from, int to ) const
