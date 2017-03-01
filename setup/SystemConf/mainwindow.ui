@@ -552,7 +552,7 @@ QTabWidget::tab-bar {
              <enum>Qt::StrongFocus</enum>
             </property>
             <property name="text">
-             <string>Trace Window [s]</string>
+             <string>Trend Window [s]</string>
             </property>
            </widget>
           </item>
