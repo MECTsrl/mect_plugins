@@ -8,6 +8,7 @@
 #include <QSettings>
 
 #include <errno.h>
+#include <pthread.h>
 
 #include "utility.h"
 #include "app_logprint.h"
@@ -630,15 +631,24 @@ void page::setAlarmsBuzzer(int period_ms)
         return;
     }
     counter = 0;
-    
-    for (index = 0; index < _active_alarms_events_.count(); ++index)
+
+    bool do_beep = false;
+    pthread_mutex_lock(&alarmevents_list_mutex);
     {
-        if (_active_alarms_events_.at(index)->type == ALARM && _active_alarms_events_.at(index)->isack == false)
+        for (index = 0; index < _active_alarms_events_.count(); ++index)
         {
-            LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", period_ms / 2);
-            beep(period_ms / 2);
-            break;
+            if (_active_alarms_events_.at(index)->type == ALARM && _active_alarms_events_.at(index)->isack == false)
+            {
+                do_beep = true;
+                break;
+            }
         }
+    }
+    pthread_mutex_unlock(&alarmevents_list_mutex);
+    if (do_beep)
+    {
+        LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", period_ms / 2);
+        beep(period_ms / 2);
     }
 #endif
 }
@@ -660,30 +670,34 @@ void page::sequentialShowError(QLineEdit * line, int period_ms)
     }
     counter = 0;
     
-    for (; index < _active_alarms_events_.count(); index++)
+    pthread_mutex_lock(&alarmevents_list_mutex);
     {
-        /* skip the acknowloged error */
-        if (ISBANNER(_active_alarms_events_.at(index)->styleindex) == 0)
+        for (; index < _active_alarms_events_.count(); index++)
         {
-            continue;
+            /* skip the acknowloged error */
+            if (ISBANNER(_active_alarms_events_.at(index)->styleindex) == 0)
+            {
+                continue;
+            }
+        }
+
+        if (index >= _active_alarms_events_.count())
+        {
+            LOG_PRINT(verbose_e, "rewind\n");
+            index = 0;
+        }
+        if (_active_alarms_events_.at(index)->isack)
+        {
+            line->clear();
+            LOG_PRINT(verbose_e, "nothing to show\n");
+        }
+        else
+        {
+            line->setText((EventHash.find(_active_alarms_events_.at(index)->tag).value())->description);
+            LOG_PRINT(verbose_e, "show '%s'\n", line->text().toAscii().data());
         }
     }
-    
-    if (index >= _active_alarms_events_.count())
-    {
-        LOG_PRINT(verbose_e, "rewind\n");
-        index = 0;
-    }
-    if (_active_alarms_events_.at(index)->isack)
-    {
-        line->clear();
-        LOG_PRINT(verbose_e, "nothing to show\n");
-    }
-    else
-    {
-        line->setText((EventHash.find(_active_alarms_events_.at(index)->tag).value())->description);
-        LOG_PRINT(verbose_e, "show '%s'\n", line->text().toAscii().data());
-    }
+    pthread_mutex_unlock(&alarmevents_list_mutex);
 }
 
 void page::rotateShowErrorSlot()
@@ -699,41 +713,32 @@ bool page::rotateShowError(QLineEdit * line, int period_ms)
     static int counter = 0;
     QString bannerStr;
     static QString bannerStrOld;
-    static page * p = NULL;
     static QFontMetrics fm(line->font());
     
-    if (p == NULL)
-    {
-        p = this;
-        if (logger && logger->connectToPage(p))
-        {
-            LOG_PRINT(verbose_e, "'%s' connected to logger\n", this->windowTitle().toAscii().data());
-            
-        }
-        else
-        {
-            LOG_PRINT(error_e, "cannot connect '%s' to logger\n", this->windowTitle().toAscii().data());
-        }
-    }
     _line = line;
     _period_ms = period_ms;
     
     counter = 0;
     bannerStr.clear();
-    for (int index = 0; index < _active_alarms_events_.count(); index++)
+
+    pthread_mutex_lock(&alarmevents_list_mutex);
     {
-        /* skip the invisible error */
-        if (ISBANNER(_active_alarms_events_.at(index)->styleindex) == 0)
+        for (int index = 0; index < _active_alarms_events_.count(); index++)
         {
-            continue;
+            /* skip the invisible error */
+            if (ISBANNER(_active_alarms_events_.at(index)->styleindex) == 0)
+            {
+                continue;
+            }
+            if (bannerStr.length() > 0)
+            {
+                bannerStr.append( ERROR_SEPARATOR );
+            }
+            bannerStr.append((EventHash.find(_active_alarms_events_.at(index)->tag).value())->description);
         }
-        if (bannerStr.length() > 0)
-        {
-            bannerStr.append( ERROR_SEPARATOR );
-        }
-        bannerStr.append((EventHash.find(_active_alarms_events_.at(index)->tag).value())->description);
     }
-    
+    pthread_mutex_unlock(&alarmevents_list_mutex);
+
     if (bannerStrOld.compare(bannerStr) != 0)
     {
         LOG_PRINT(verbose_e, "new error\n");

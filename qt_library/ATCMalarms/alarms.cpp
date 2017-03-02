@@ -7,9 +7,11 @@
  *
  * @brief Alarm page
  */
+#include <pthread.h>
 #include "app_logprint.h"
 #include "alarms.h"
 #include "ui_alarms.h"
+
 
 /* this define set the window title */
 #define WINDOW_TITLE "ALARM"
@@ -78,6 +80,9 @@ alarms::alarms(QWidget *parent) :
      */
     connect(logger, SIGNAL(new_alarm(char *)), this, SLOT(receiveEvent(char *)));
     connect(logger, SIGNAL(new_event(char *)), this, SLOT(receiveEvent(char *)));
+
+    // connect signal new_ack to logger::dumpAck()
+    logger->connectToPage(this);
 }
 
 #undef WINDOW_TITLE
@@ -383,58 +388,63 @@ void alarms::refreshEvent()
     
     LOG_PRINT(verbose_e,"%d\n", _active_alarms_events_.count());
     
-    int found = 0;
-    /* remove the non active alarm */
-    for (int i = 0; i < ui->listWidget->count(); i++)
+    pthread_mutex_lock(&alarmevents_list_mutex);
     {
-        for (int j = 0; j < _active_alarms_events_.count(); j++)
+        int found = 0;
+
+        /* remove the non active alarm */
+        for (int i = 0; i < ui->listWidget->count(); i++)
         {
-            char * description = getDescription(_active_alarms_events_.at(j)->tag);
-            LOG_PRINT(verbose_e, "'%s' vs '%s'\n", ui->listWidget->item(i)->text().toAscii().data(), (description == NULL) ? "-" : description);
-            if (ui->listWidget->item(i)->text().startsWith((description == NULL) ? "-" : description) == true)
+            for (int j = 0; j < _active_alarms_events_.count(); j++)
             {
-                found = 1;
-                break;
+                char * description = getDescription(_active_alarms_events_.at(j)->tag);
+                LOG_PRINT(verbose_e, "'%s' vs '%s'\n", ui->listWidget->item(i)->text().toAscii().data(), (description == NULL) ? "-" : description);
+                if (ui->listWidget->item(i)->text().startsWith((description == NULL) ? "-" : description) == true)
+                {
+                    found = 1;
+                    break;
+                }
+            }
+            if (found == 0)
+            {
+                LOG_PRINT(verbose_e, "NOT FOUND %s\n", ui->listWidget->item(i)->text().toAscii().data());
+                QListWidgetItem * item = ui->listWidget->takeItem(i);
+                delete item;
+            }
+            else
+            {
+                LOG_PRINT(verbose_e, "FOUND %s\n", ui->listWidget->item(i)->text().toAscii().data());
+                found = 0;
             }
         }
-        if (found == 0)
+
+        /* update the active alarm if it is necessary */
+        for (int i = 0; i < _active_alarms_events_.count(); i++)
         {
-            LOG_PRINT(verbose_e, "NOT FOUND %s\n", ui->listWidget->item(i)->text().toAscii().data());
-            QListWidgetItem * item = ui->listWidget->takeItem(i);
-            delete item;
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "FOUND %s\n", ui->listWidget->item(i)->text().toAscii().data());
-            found = 0;
+            visibility = true;
+            LOG_PRINT(verbose_e,"%s\n", _active_alarms_events_.at(i)->tag);
+            event = EventHash.find(_active_alarms_events_.at(i)->tag).value();
+
+            /* loking into event db this event to get the level and the type if it is necessary */
+            if (event->type == ALARM && _alarm == false)
+            {
+                LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
+                visibility = false;
+            }
+            if (event->type == EVENT && _event == false)
+            {
+                LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
+                visibility = false;
+            }
+            if (_level != level_all_e && event->level > _level)
+            {
+                LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
+                visibility = false;
+            }
+            addEvent(_active_alarms_events_.at(i), visibility);
         }
     }
-    
-    /* update the active alarm if it is necessary */
-    for (int i = 0; i < _active_alarms_events_.count(); i++)
-    {
-        visibility = true;
-        LOG_PRINT(verbose_e,"%s\n", _active_alarms_events_.at(i)->tag);
-        event = EventHash.find(_active_alarms_events_.at(i)->tag).value();
-        
-        /* loking into event db this event to get the level and the type if it is necessary */
-        if (event->type == ALARM && _alarm == false)
-        {
-            LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
-            visibility = false;
-        }
-        if (event->type == EVENT && _event == false)
-        {
-            LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
-            visibility = false;
-        }
-        if (_level != level_all_e && event->level > _level)
-        {
-            LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);
-            visibility = false;
-        }
-        addEvent(_active_alarms_events_.at(i), visibility);
-    }
+    pthread_mutex_unlock(&alarmevents_list_mutex);
 }
 
 void alarms::on_pushButtonACK_clicked()
@@ -446,42 +456,41 @@ void alarms::on_pushButtonACK_clicked()
         {
             return;
         }
-        LOG_PRINT(verbose_e, "selected row %d '%s'\n", current_index, _active_alarms_events_.at(current_index)->tag);
-        _active_alarms_events_.at(current_index)->isack = true;
-        _active_alarms_events_.at(current_index)->ack = QDateTime::currentDateTime();
-        
-        event_msg_e info_msg;
-        info_msg.event = alarm_ack_e;
-        strcpy(info_msg.tag, _active_alarms_events_.at(current_index)->tag);
-        info_msg.time = _active_alarms_events_.at(current_index)->ack;
-        
-        emit new_ack(&info_msg);
-        ui->listWidget->currentItem()->setSelected(false);
+        pthread_mutex_lock(&alarmevents_list_mutex);
+        {
+            _active_alarms_events_.at(current_index)->isack = true;
+            _active_alarms_events_.at(current_index)->ack = QDateTime::currentDateTime();
+        }
+        pthread_mutex_unlock(&alarmevents_list_mutex);
+
+        emit new_ack(NULL);
+        if (ui->listWidget->currentItem())
+            ui->listWidget->currentItem()->setSelected(false);
         refreshEvent();
     }
 }
 
 void alarms::on_pushButtonACKall_clicked()
 {
-    LOG_PRINT(verbose_e, "ACKALL\n");
     bool found = false;
-    for (int i = 0; i < _active_alarms_events_.count(); i++)
+
+    pthread_mutex_lock(&alarmevents_list_mutex);
     {
-        if (! _active_alarms_events_.at(i)->isack) {
-            found = true;
-            _active_alarms_events_.at(i)->ack = QDateTime::currentDateTime();
-            _active_alarms_events_.at(i)->isack = true;
+        for (int i = 0; i < _active_alarms_events_.count(); i++)
+        {
+            if (! _active_alarms_events_.at(i)->isack) {
+                found = true;
+                _active_alarms_events_.at(i)->isack = true;
+                _active_alarms_events_.at(i)->ack = QDateTime::currentDateTime();
+            }
         }
     }
+    pthread_mutex_unlock(&alarmevents_list_mutex);
+
     if (found)
-    {
         emit new_ack(NULL);
-    }
-    if (ui->listWidget->currentItem() != NULL)
-    {
+    if (ui->listWidget->currentItem())
         ui->listWidget->currentItem()->setSelected(false);
-    }
-    QThread::yieldCurrentThread();
     refreshEvent();
 }
 

@@ -26,6 +26,8 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <ftw.h>
+#include <pthread.h>
+
 #include "hmi_logger.h"
 #include "app_logprint.h"
 #include "cross_table_utility.h"
@@ -34,6 +36,8 @@
 
 Logger * logger = NULL;
 sem_t theLoggingSem;
+
+pthread_mutex_t alarmevents_list_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #if 0
 /**
@@ -392,17 +396,6 @@ void Logger::run()
             {
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", i.key().toAscii().data());
             }
-            /* remove the expired element */
-            for (int i = 0; i < _active_alarms_events_.count(); i++)
-            {
-                int index = getElemAlarmStyleIndex(_active_alarms_events_.at(i));
-                if (ISBANNER(index) == 0 && ISSTATUS(index) == 0)
-                {
-                    LOG_PRINT(verbose_e, "REMOVE '%s'\n", _active_alarms_events_.at(i)->tag);
-                    _active_alarms_events_.removeAt(i);
-                    i--;
-                }
-            }
         }
 #endif
 #ifdef ENABLE_STORE
@@ -640,13 +633,13 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         /* latched */
         if (event->persistence == 1)
         {
-            /* aknowledged */
+            /* acknowledged */
             if (event_msg->isack)
             {
                 event_msg->styleindex = alrm_active_latched_ack_e;
                 LOG_PRINT(verbose_e, "STYLE: alrm_active_latched_ack_e: '%s' status %d persistance %d ACK %d\n", event_msg->tag, event_msg->status, event->persistence, event_msg->isack);
             }
-            /* not aknowloged */
+            /* not acknowledged */
             else
             {
                 event_msg->styleindex = alrm_active_latched_nonack_e;
@@ -656,13 +649,13 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         /* not latched */
         else
         {
-            /* aknowloged */
+            /* acknowledged */
             if (event_msg->isack)
             {
                 event_msg->styleindex = alrm_active_nonlatched_ack_e;
                 LOG_PRINT(verbose_e, "STYLE: alrm_active_nonlatched_ack_e: '%s' status %d persistance %d ACK %d\n", event_msg->tag, event_msg->status, event->persistence, event_msg->isack);
             }
-            /* not aknowloged */
+            /* not acknowledged */
             else
             {
                 event_msg->styleindex = alrm_active_nonlatched_nonack_e;
@@ -676,13 +669,13 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         /* latched */
         if (event->persistence == 1)
         {
-            /* aknowloged */
+            /* acknowledged */
             if (event_msg->isack)
             {
                 event_msg->styleindex = alrm_nonactive_latched_ack_e;
                 LOG_PRINT(verbose_e, "STYLE: alrm_nonactive_latched_ack_e: '%s' status %d persistance %d ACK %d\n", event_msg->tag, event_msg->status, event->persistence, event_msg->isack);
             }
-            /* not aknowloged */
+            /* not acknowledged */
             else
             {
                 event_msg->styleindex = alrm_nonactive_latched_nonack_e;
@@ -692,13 +685,13 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
         /* not latched */
         else
         {
-            /* aknowloged */
+            /* acknowledged */
             if (event_msg->isack)
             {
                 event_msg->styleindex = alrm_nonactive_nonlatched_ack_e;
                 LOG_PRINT(verbose_e, "STYLE: alrm_nonactive_nonlatched_ack_e: '%s' status %d persistance %d ACK %d\n", event_msg->tag, event_msg->status, event->persistence, event_msg->isack);
             }
-            /* not aknowloged */
+            /* not acknowledged */
             else
             {
                 event_msg->styleindex = alrm_nonactive_nonlatched_nonack_e;
@@ -710,8 +703,9 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
     return event_msg->styleindex;
 }
 
-bool Logger::dumpEvent(QString varname, event_t * item, int status)
+bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm_event)
 {
+    bool retval;
     bool todump = false;
     bool toemit = false;
     char msg[LINE_SIZE];
@@ -721,185 +715,250 @@ bool Logger::dumpEvent(QString varname, event_t * item, int status)
 
     strftime (buffer, FILENAME_MAX, "%Y/%m/%d,%H:%M:%S", timeinfo);
     
-    /* check if the alarm associated to the actual event is still into the _active_alarms_events_ */
-    for (int i = 0; i < _active_alarms_events_.count(); i++)
+    pthread_mutex_lock(&alarmevents_list_mutex);
     {
-        /* if found, update the alarm with the last event */
-        if (strcmp(_active_alarms_events_.at(i)->tag, varname.toAscii().data()) == 0)
+        // called from dumpAck()
+        if (varname.isEmpty() && item == NULL && alarm_event == alarm_ack_e)
         {
-            info_descr = _active_alarms_events_.at(i);
-            LOG_PRINT(verbose_e, "Update existing event for %s\n", info_descr->tag);
-            break;
-        }
-    }
-    
-    /* the alarm is not active and is not into the active list */
-    if (status == alarm_fall_e && info_descr == NULL)
-    {
-        LOG_PRINT(verbose_e, "Nothing interesting to dump...\n");
-        return true;
-    }
-    
-    /* the alarm is not into the active list */
-    if (info_descr == NULL)
-    {
-        info_descr = new event_descr_e;
-        strcpy(info_descr->tag, varname.toAscii().data());
-        info_descr->description[0] = '\0';
-        info_descr->styleindex = nb_of_alarm_status_e;
-        info_descr->isack = false;
-        info_descr->begin = QDateTime();
-        info_descr->end = QDateTime();
-        info_descr->ack = QDateTime();
-        info_descr->status = alarm_none_e;
-        info_descr->type = item->type;
-        to_append = true;
-        LOG_PRINT(verbose_e, "New event for %s\n", info_descr->tag);
-    }
-
-    if (status == info_descr->status)  {
-        /* avoid useless events */
-        return  true;
-    }
-    LOG_PRINT(verbose_e, "isack %d status %d status %d\n",
-              info_descr->isack,
-              info_descr->status,
-              status);
-    if (status == alarm_rise_e)
-    {
-        toemit = true;
-        if (info_descr->status == alarm_fall_e || info_descr->status == alarm_none_e)
-        {
-            LOG_PRINT(verbose_e, "Rising event for %s\n", info_descr->tag);
-            HornACK = false;
-            todump = true;
-            info_descr->begin = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
-            info_descr->isack = false;
-        }
-        else if (!info_descr->begin.isValid())
-        {
-            info_descr->begin = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
-        }
-        info_descr->status = alarm_rise_e;
-    }
-    else if (status == alarm_fall_e)
-    {
-        if (info_descr->status == alarm_rise_e)
-        {
-            LOG_PRINT(verbose_e, "Falling event for %s\n", info_descr->tag);
-            toemit = true;
-            todump = true;
-            info_descr->end = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
-            //info_descr->isack = false;
-        }
-        else if (!info_descr->end.isValid())
-        {
-            info_descr->end = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
-        }
-        info_descr->status = alarm_fall_e;
-    }
-    
-    if (toemit)
-    {
-        getElemAlarmStyleIndex(info_descr);
-        ForceResetAlarmBanner = true;
-        if (to_append)
-        {
-            _active_alarms_events_.append(info_descr);
-            LOG_PRINT(verbose_e, "ADD isack %d status %d\n", info_descr->isack, info_descr->status);
+            retval = true;
+            goto exit_function;
         }
 
-        /* emit a signal to the hmi with the new item to display */
-        if (item->type == EVENT)
+        /* check if the alarm associated to the actual event is still into the _active_alarms_events_ */
+        for (int i = 0; i < _active_alarms_events_.count(); i++)
         {
-            LOG_PRINT(verbose_e, "Emit New event for %s status %d\n", info_descr->tag, info_descr->status);
-            emit new_event(info_descr->tag);
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "Emit New alarm for %s status %d\n", info_descr->tag, info_descr->status);
-            emit new_alarm(info_descr->tag);
-        }
-    }
-    if (todump && item->dump == 1)
-    {
-        /* before dump a new event, check the available space */
-        if (checkSpace() == 1)
-        {
-            /* if necessary delete the oldest logfile */
-            if (removeOldest(AlarmsDir))
+            /* if found, update the alarm with the last event */
+            if (strcmp(_active_alarms_events_.at(i)->tag, varname.toAscii().data()) == 0)
             {
-                LOG_PRINT(error_e, "cannot remove the oldest log\n");
-                return false;
+                info_descr = _active_alarms_events_.at(i);
+                LOG_PRINT(verbose_e, "Update existing event for %s\n", info_descr->tag);
+                break;
             }
         }
-        
-        char event[TAG_LEN];
-        if (info_descr->status == alarm_rise_e)
-        {
-            strcpy(event, TAG_RISE);
-        }
-        else if (info_descr->status == alarm_fall_e)
-        {
-            strcpy(event, TAG_FALL);
-        }
-        else
-        {
-            /*the ack event is already dump by dumpACK*/
-            strcpy(event, TAG_UNK);
-            LOG_PRINT(warning_e, "Unknown event for variable '%s'\n", info_descr->tag);
-            return true;
-        }
-        
-        LOG_PRINT(verbose_e, "DUMP event: '%s' isack %d status %d\n", event, info_descr->isack, info_descr->status);
 
-        /* prepare the event item */
+        /* the alarm is not active and is not into the active list */
+        if (alarm_event == alarm_fall_e && info_descr == NULL)
+        {
+            LOG_PRINT(verbose_e, "Nothing interesting to dump...\n");
+            retval = true;
+            goto exit_function;
+        }
+
+        /* the alarm is not into the active list */
+        if (info_descr == NULL)
+        {
+            info_descr = new event_descr_e;
+            strcpy(info_descr->tag, varname.toAscii().data());
+            info_descr->description[0] = '\0';
+            info_descr->styleindex = nb_of_alarm_status_e;
+            info_descr->isack = false;
+            info_descr->begin = QDateTime();
+            info_descr->end = QDateTime();
+            info_descr->ack = QDateTime();
+            info_descr->status = alarm_none_e;
+            info_descr->type = item->type;
+            to_append = true;
+            LOG_PRINT(verbose_e, "New event for %s\n", info_descr->tag);
+        }
+
+        if (alarm_event == info_descr->status)  {
+            /* avoid useless events */
+            retval = true;
+            goto exit_function;
+        }
+
+        switch (alarm_event)
+        {
+        case alarm_rise_e:
+            toemit = true;
+            if (info_descr->status == alarm_fall_e || info_descr->status == alarm_none_e)
+            {
+                LOG_PRINT(verbose_e, "Rising event for %s\n", info_descr->tag);
+                HornACK = false;
+                todump = true;
+                info_descr->begin = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+                info_descr->isack = false;
+            }
+            else if (!info_descr->begin.isValid())
+            {
+                info_descr->begin = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+            }
+            info_descr->status = alarm_rise_e;
+            break;
+
+        case alarm_fall_e:
+            if (info_descr->status == alarm_rise_e)
+            {
+                LOG_PRINT(verbose_e, "Falling event for %s\n", info_descr->tag);
+                toemit = true;
+                todump = true;
+                info_descr->end = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+                //info_descr->isack = false;
+            }
+            else if (!info_descr->end.isValid())
+            {
+                info_descr->end = QDateTime().fromString(buffer,"yyyy/MM/dd,HH:mm:ss");
+            }
+            info_descr->status = alarm_fall_e;
+            break;
+
+        case alarm_ack_e:
+        default:
+            ;
+        }
+
+        if (toemit)
+        {
+            getElemAlarmStyleIndex(info_descr);
+            ForceResetAlarmBanner = true;
+            if (to_append)
+            {
+                _active_alarms_events_.append(info_descr);
+                LOG_PRINT(verbose_e, "ADD isack %d status %d\n", info_descr->isack, info_descr->status);
+            }
+
+            /* emit a signal to the hmi with the new item to display */
+            if (item->type == EVENT)
+            {
+                LOG_PRINT(verbose_e, "Emit New event for %s status %d\n", info_descr->tag, info_descr->status);
+                emit new_event(info_descr->tag);
+            }
+            else
+            {
+                LOG_PRINT(verbose_e, "Emit New alarm for %s status %d\n", info_descr->tag, info_descr->status);
+                emit new_alarm(info_descr->tag);
+            }
+        }
+
+        if (todump && item->dump == 1)
+        {
+            /* before dump a new event, check the available space */
+            if (checkSpace() == 1)
+            {
+                /* if necessary delete the oldest logfile */
+                if (removeOldest(AlarmsDir))
+                {
+                    LOG_PRINT(error_e, "cannot remove the oldest log\n");
+                    retval = false;
+                    goto exit_function;
+                }
+            }
+
+            char event[TAG_LEN];
+            if (info_descr->status == alarm_rise_e)
+            {
+                strcpy(event, TAG_RISE);
+            }
+            else if (info_descr->status == alarm_fall_e)
+            {
+                strcpy(event, TAG_FALL);
+            }
+            else
+            {
+                /*the ack event is already dump by dumpACK*/
+                strcpy(event, TAG_UNK);
+                LOG_PRINT(warning_e, "Unknown event for variable '%s'\n", info_descr->tag);
+                return true;
+            }
+
+            LOG_PRINT(verbose_e, "DUMP event: '%s' isack %d status %d\n", event, info_descr->isack, info_descr->status);
+
+            /* prepare the event item */
 #ifdef LEVEL_TYPE
-        /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
-        sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
-                item->type,
-                item->level,
-                varname.toAscii().data(),
-                event,
-                buffer,
-                item->description
-                );
+            /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
+            sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
+                    item->type,
+                    item->level,
+                    varname.toAscii().data(),
+                    event,
+                    buffer,
+                    item->description
+                    );
 #else
-        /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
-        sprintf(msg, "%s;%s;%s;%s\n",
-                varname.toAscii().data(),
-                event,
-                buffer,
-                item->description
-                );
+            /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
+            sprintf(msg, "%s;%s;%s;%s\n",
+                    varname.toAscii().data(),
+                    event,
+                    buffer,
+                    item->description
+                    );
 #endif
-        
-        /* dump the item into log file */
-        if (openAlarmsFile() == false)
-        {
-            LOG_PRINT(error_e, "cannot open the log\n");
-            return false;
+
+            /* dump the item into log file */
+            if (openAlarmsFile() && alarmsfp)
+            {
+                fputs(msg, alarmsfp);
+                fflush(alarmsfp);
+                sync();
+                doReloadAlarmsLog = true;
+            }
         }
-        if (alarmsfp != NULL)
+        retval = true;
+
+exit_function:
+
+        /* eventually dump the acknowledged and remove the expired */
+        for (int i = 0; i < _active_alarms_events_.count(); i++)
         {
-            fprintf(alarmsfp, "%s", msg);
-            fflush(alarmsfp);
-            sync();
-            doReloadAlarmsLog = true;
-            LOG_PRINT(verbose_e, "DUMP: '%s'\n", msg);
-            return true;
+            event_descr_t *event_msg = _active_alarms_events_.at(i);
+
+            // dump the just acknowledged alarms (no events)
+            if ( event_msg->isack && event_msg->type == ALARM
+              && (event_msg->styleindex == alrm_active_latched_nonack_e
+                || event_msg->styleindex == alrm_nonactive_latched_nonack_e))
+            {
+                QHash<QString, event_t *>::const_iterator item;
+
+                item = EventHash.find(event_msg->tag);
+                if (item != EventHash.end())
+                {
+                    event_t * event_data = item.value();
+#ifdef LEVEL_TYPE
+                    /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
+                    sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
+                            event_msg->type,
+                            event_msg->level,
+                            event_msg->tag,
+                            TAG_ACK,
+                            event_msg->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
+                            event_data->description
+                            );
+#else
+                    /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
+                    sprintf(msg, "%s;%s;%s;%s\n",
+                            event_msg->tag,
+                            TAG_ACK,
+                            _active_alarms_events_.at(i)->ack.toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
+                            event_data->description
+                            );
+#endif
+                    /* dump the event into log file */
+                    if (openAlarmsFile() && alarmsfp)
+                    {
+                        fputs(msg, alarmsfp);
+                        fflush(alarmsfp);
+                        sync();
+                        doReloadAlarmsLog = true;
+                    }
+                }
+            }
+
+            // then update the styleindex (i.e. the alarm/event status)
+            int index = getElemAlarmStyleIndex(_active_alarms_events_.at(i));
+
+            // remove the expired alarms and events
+            if (ISBANNER(index) == 0 && ISSTATUS(index) == 0)
+            {
+                LOG_PRINT(verbose_e, "REMOVE '%s'\n", _active_alarms_events_.at(i)->tag);
+                _active_alarms_events_.removeAt(i);
+                i--;
+            }
+
         }
-        else
-        {
-            LOG_PRINT(error_e, "the log file is not open\n");
-            return false;
-        }
+
     }
-    else
-    {
-        LOG_PRINT(verbose_e, "NOT DUMPING %d %d\n", todump, item->dump == 1);
-    }
-    return true;
+    pthread_mutex_unlock(&alarmevents_list_mutex);
+    return retval;
 }
 
 bool Logger::closeAlarmsFile()
@@ -914,8 +973,8 @@ bool Logger::closeAlarmsFile()
 
 bool Logger::dumpAck(event_msg_e * info_msg)
 {
-    char msg[LINE_SIZE];
-    
+    Q_UNUSED(info_msg);
+
     /* before dump a new event, check the available space */
     if (checkSpace() == 1)
     {
@@ -927,152 +986,9 @@ bool Logger::dumpAck(event_msg_e * info_msg)
         }
     }
     
-    /* ACK ALL */
-    if (info_msg == NULL)
-    {
-        for (int i = 0; i < _active_alarms_events_.count(); i++)
-        {
-            if (!_active_alarms_events_.at(i)->isack)
-                continue;
+    dumpEvent(QString(""), NULL, alarm_ack_e);
 
-            LOG_PRINT(verbose_e, "ACK to : '%d/%d'\n", i, _active_alarms_events_.count());
-            /* prepare the event item */
-            QHash<QString, event_t *>::const_iterator item = EventHash.find(_active_alarms_events_.at(i)->tag);
-            if (item == EventHash.end())
-            {
-                LOG_PRINT(error_e, "FATAL: cannot find '%s' into hash table\n", _active_alarms_events_.at(i)->tag);
-                return false;
-            }
-            
-            event_t * event = item.value();
-            
-            getElemAlarmStyleIndex(_active_alarms_events_.at(i));
-
-            if (_active_alarms_events_.at(i)->type == EVENT)
-            {
-                // no EVENT logs
-                continue;
-            }
-
-#ifdef LEVEL_TYPE
-            /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
-            sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
-                    event->type,
-                    event->level,
-                    _active_alarms_events_.at(i)->tag,
-                    TAG_ACK,
-                    _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
-                    event->description
-                    );
-#else
-            /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
-            sprintf(msg, "%s;%s;%s;%s\n",
-                    _active_alarms_events_.at(i)->tag,
-                    TAG_ACK,
-                    _active_alarms_events_.at(i)->ack.toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
-                    event->description
-                    );
-#endif
-            
-            /* dump the event into log file */
-            if (openAlarmsFile() == false)
-            {
-                LOG_PRINT(error_e, "cannot open the log\n");
-                return false;
-            }
-            if (alarmsfp != NULL)
-            {
-                fprintf(alarmsfp, "%s", msg);
-                fflush(alarmsfp);
-                sync();
-                doReloadAlarmsLog = true;
-                LOG_PRINT(verbose_e, "DUMP: '%s'\n", msg);
-                return true;
-            }
-            else
-            {
-                LOG_PRINT(error_e, "the log file is not open\n");
-                return false;
-            }
-        }
-        return true;
-    }
-    /* ACK SINGLE EVENT */
-    else
-    {
-        int i;
-        /* prepare the event item */
-        QHash<QString, event_t *>::const_iterator item = EventHash.find(info_msg->tag);
-        if (item == EventHash.end())
-        {
-            LOG_PRINT(error_e, "FATAL: cannot find '%s' into hash table\n", info_msg->tag);
-            return false;
-        }
-        
-        event_t * event = item.value();
-        
-        for (i = 0; i < _active_alarms_events_.count(); i++)
-        {
-            /* if found, update the alarm with the last event */
-            if (strcmp(_active_alarms_events_.at(i)->tag, info_msg->tag) == 0)
-            {
-                LOG_PRINT(verbose_e, "Update existing event for %s\n", info_msg->tag);
-                getElemAlarmStyleIndex(_active_alarms_events_.at(i));
-                if (_active_alarms_events_.at(i)->type == EVENT)
-                {
-                    // no EVENT logs
-                    return true;
-                }
-                break;
-            }
-        }
-        if (i == _active_alarms_events_.count()) {
-            LOG_PRINT(error_e, "tag not found\n");
-            return false;
-        }
-        
-#ifdef LEVEL_TYPE
-        /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
-        sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
-                event->type,
-                event->level,
-                _active_alarms_events_.at(i)->tag,
-                TAG_ACK,
-                _active_alarms_events_.at(i)->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
-                event->description
-                );
-#else
-        /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
-        sprintf(msg, "%s;%s;%s;%s\n",
-                _active_alarms_events_.at(i)->tag,
-                TAG_ACK,
-                _active_alarms_events_.at(i)->ack.toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
-                event->description
-                );
-#endif
-        
-        /* dump the event into log file */
-        if (openAlarmsFile() == false)
-        {
-            LOG_PRINT(error_e, "cannot open the log\n");
-            return false;
-        }
-        if (alarmsfp != NULL)
-        {
-            fprintf(alarmsfp, "%s", msg);
-            fflush(alarmsfp);
-            sync();
-            doReloadAlarmsLog = true;
-            LOG_PRINT(verbose_e, "DUMP: '%s'\n", msg);
-            return true;
-        }
-        else
-        {
-            LOG_PRINT(error_e, "the log file is not open\n");
-            return false;
-        }
-    }
-    return false;
+    return true;
 }
 #endif
 

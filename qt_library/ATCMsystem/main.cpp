@@ -125,9 +125,14 @@ int main(int argc, char *argv[])
 
     pthread_mutex_init(&datasync_send_mutex, NULL);
     pthread_mutex_init(&datasync_recv_mutex, NULL);
+
     pthread_mutex_init(&write_queue_mutex, NULL);
+
     pthread_cond_init(&theWritingCondvar, NULL);
     pthread_mutex_init(&theWritingMutex, NULL);
+
+    pthread_mutex_init(&alarmevents_list_mutex, NULL);
+
 
     /* instantiate the GUI application object */
 

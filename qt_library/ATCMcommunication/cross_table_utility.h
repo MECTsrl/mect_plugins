@@ -156,9 +156,13 @@ extern short int device_status[prot_none_e][MAX_DEVICE_NB];
 
 extern pthread_mutex_t datasync_recv_mutex;
 extern pthread_mutex_t datasync_send_mutex;
+
 extern pthread_mutex_t write_queue_mutex;
+
 extern pthread_cond_t theWritingCondvar;
 extern pthread_mutex_t theWritingMutex;
+
+extern pthread_mutex_t alarmevents_list_mutex;
 
 extern char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite);
 

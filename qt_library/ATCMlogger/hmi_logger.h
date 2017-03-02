@@ -129,7 +129,7 @@ private:
 #ifdef ENABLE_ALARMS
     int getElemAlarmStyleIndex(event_descr_t * event_msg);
     size_t loadAlarmsTable();
-    bool dumpEvent(QString varname, event_t * item, int status);
+    bool dumpEvent(QString varname, event_t * item, alarm_event_e alarm_event);
     bool openAlarmsFile();
     bool closeAlarmsFile();
 #endif
