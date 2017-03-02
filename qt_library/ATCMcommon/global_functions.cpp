@@ -488,34 +488,6 @@ bool CommStart()
     LOG_PRINT(verbose_e, "Logger Started\n");
 #endif
 
-    if (QFile::exists(KINDOFUPDATE_FILE))
-    {
-        FILE * fp = fopen(KINDOFUPDATE_FILE, "r");
-        char msg[STR_LEN];
-        QString fullmsg;
-        if (fp != NULL)
-        {
-            int i = 0;
-            while ((fgets(msg, STR_LEN, fp))!= NULL)
-            {
-                if (i < MAX_LEN_UPDATE_MSG)
-                {
-                    fullmsg.append(msg);
-                }
-                else
-                {
-                    fullmsg.append("...");
-                    break;
-                }
-                fullmsg.append("\n");
-                i++;
-            }
-            fclose(fp);
-            QMessageBox::information(0, "Update", fullmsg);
-        }
-        QFile::remove(KINDOFUPDATE_FILE);
-    }
-
     /* load the passwords */
     loadPasswords();
 #ifdef LOG_DISABLED

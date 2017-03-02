@@ -73,8 +73,6 @@ extern QHash<QString, QString> TagTable;
 #define LICENCE_FILE ".licence"
 #define SD_MOUNT_POINT "/local/sd_card"
 
-#define KINDOFUPDATE_FILE "/local/kindofupdate.lck"
-
 #define VERSION ( \
     (QDate::fromString(__DATE__, "MMM dd yyyy").toString("yyyyMMdd").length() != 0) \
     ? \
