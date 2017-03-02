@@ -35,6 +35,7 @@ ATCMslider::ATCMslider(QWidget *parent) :
 	m_icon = QIcon();
     m_visibilityvar = "";
 	m_viewstatus = false;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     m_bordercolor = BORDER_COLOR_DEF;
     m_borderwidth = BORDER_WIDTH_DEF;

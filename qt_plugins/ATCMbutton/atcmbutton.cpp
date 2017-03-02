@@ -54,6 +54,7 @@ ATCMbutton::ATCMbutton(QWidget * parent):
     m_justchanged = 0;
     m_forcedAction = false;
     m_statusactualval = m_statusreleaseval;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     m_bgcolor = BG_COLOR_SEL_DEF;
     m_bgcolor_press = BG_COLOR_SEL_DEF;

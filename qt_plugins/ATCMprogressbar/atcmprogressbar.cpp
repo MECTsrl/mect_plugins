@@ -33,6 +33,7 @@ ATCMprogressbar::ATCMprogressbar(QWidget *parent) :
 	m_barColor = QColor(255,127,80);
 	m_visibilityvar = "";
 	m_viewstatus = false;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     m_bgcolor = BG_COLOR_DEF;
     m_bordercolor = BORDER_COLOR_DEF;

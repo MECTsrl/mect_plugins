@@ -29,6 +29,7 @@ ATCManimation::ATCManimation(QWidget *parent) :
     m_CtVisibilityIndex = 0;
 	m_visibilityvar = "";
 	m_viewstatus = false;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     setFrameShape(QFrame::Box);
     //setMinimumSize(QSize(150,50));

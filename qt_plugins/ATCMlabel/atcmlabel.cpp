@@ -38,6 +38,7 @@ ATCMlabel::ATCMlabel(QWidget *parent) :
     m_objectstatus = false;
     m_visibilityvar = "";
     m_format = Dec;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     m_bgcolor = BG_COLOR_DEF;
     m_bgcolor_select = BG_COLOR_SEL_DEF;

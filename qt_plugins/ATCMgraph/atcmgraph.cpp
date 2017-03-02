@@ -51,6 +51,7 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     m_display1 = "";
     m_sample_nb1 = 0;
     m_current_sample1 = 0;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     m_x2Variable = "PLC_time";
     m_CtX2Index = 5390;

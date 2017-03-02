@@ -33,6 +33,7 @@ ATCMled::ATCMled(QWidget *parent) :
     m_objectstatus = false;
     m_visibilityvar = "";
     m_viewstatus = false;
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     //setMinimumSize(QSize(150,50));
     setFocusPolicy(Qt::NoFocus);

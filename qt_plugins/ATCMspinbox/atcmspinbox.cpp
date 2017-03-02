@@ -31,6 +31,7 @@ ATCMspinbox::ATCMspinbox(QWidget *parent) :
     m_labelcolor = QColor(230,230,230);
     m_objectstatus = false;
     m_visibilityvar = "";
+    m_refresh = DEFAULT_PLUGIN_REFRESH;
 
     m_bgcolor = BG_COLOR_DEF;
     m_fontcolor = FONT_COLOR_DEF;
