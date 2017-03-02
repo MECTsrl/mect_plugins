@@ -152,7 +152,7 @@ trend::trend(QWidget *parent) :
     _trend_data_reload_ = true;
     _load_window_busy = false;
     reloading = false;
-    overloadActualTzero = true;
+    overloadActualTzero = false;
 
     popup = new trend_other(this);
     popup_visible = false;
@@ -279,13 +279,13 @@ void trend::updateData()
         enableZoomMode(false);
 
         /* set the Tzero and TzeroLoaded */
-        TzeroLoaded = Tzero = QDateTime::currentDateTime();
+        Tzero = QDateTime::currentDateTime().addSecs(-LogPeriodSec);
         VisibleWindowSec = MaxWindowSec;
 
         /* at first time we are in online mode, so the window time start at the same of window loaded time */
         if (actualVisibleWindowSec == 0)
         {
-            actualTzero = TzeroLoaded;
+            actualTzero = Tzero;
             actualVisibleWindowSec = VisibleWindowSec;
             setOnline(true);
             LOG_PRINT(verbose_e, "initialize actualTzero '%s' and actualVisibleWindowSec %d\n", actualTzero.toString(DATE_TIME_FMT).toAscii().data(), actualVisibleWindowSec);
@@ -306,8 +306,8 @@ void trend::updateData()
         LogPeriodSec = ((LogPeriodSecF < LogPeriodSecS) ? LogPeriodSecF : LogPeriodSecS);
         TrendPeriodSec = (int)(LoadedWindowSec / MAX_SAMPLE_NB);
         TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
-        /* set TzeroLoaded in the future to force the data load */
-        TzeroLoaded = actualTzero.addSecs(TrendPeriodSec * 2);
+        /* set TzeroLoaded to force the data load */
+        TzeroLoaded = Tzero.addSecs(-1);
         LOG_PRINT(verbose_e, "actualVisibleWindowSec %d VisibleWindowSec %d actualTzero '%s' Tzero '%s' TzeroLoaded '%s' TrendPeriodSec %d LogPeriodSec %d\n",
                   actualVisibleWindowSec,
                   VisibleWindowSec,
@@ -511,16 +511,16 @@ void trend::updateData()
         
         /* update the actual window parameters */
         LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
-        if (overloadActualTzero == true)
+        if (overloadActualTzero)
         {
-            actualVisibleWindowSec = VisibleWindowSec;
-            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), Tzero.toString().toAscii().data());
+            overloadActualTzero = false;
             actualTzero = Tzero;
+            actualVisibleWindowSec = VisibleWindowSec;
         }
         
         loadOrientedWindow();
 
-        actualPen--;
+        actualPen = -1;
         on_pushButtonSelect_clicked();
 
         LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
@@ -560,7 +560,8 @@ void trend::updateData()
                     {
                         increment = LogPeriodSec;
                     }
-                    actualTzero = now.addSecs(-(actualVisibleWindowSec-increment));
+                    // actualTzero = now.addSecs(-(actualVisibleWindowSec - increment));
+                    actualTzero = now;
                 }
             }
         }
@@ -624,7 +625,7 @@ trend::~trend()
 
 void trend::refreshEvent(trend_msg_t item_trend)
 {   
-    if (reloading || _trend_data_reload_ || first_time || force_back) {
+    if (reloading || _trend_data_reload_ || first_time || force_back || _load_window_busy) {
         return;
     }
 
@@ -1181,36 +1182,26 @@ bool trend::loadFromFile(QDateTime Ti)
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
     
     TzeroLoaded = Ti;
-    
+
     LOG_PRINT(verbose_e, "TzeroLoaded %s\n", TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data());
     if (actualVisibleWindowSec > LoadedWindowSec)
     {
         LoadedWindowSec = actualVisibleWindowSec;
     }
-    
+
     /* calculate the TrendPeriodSec */
     /* if it is less than LogPeriodSec, set at LogPeriodSec */
     TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSec)) / MAX_SAMPLE_NB));
     TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
-    
+
     sample_to_skip =
             (int)(TrendPeriodSec/LogPeriodSec)
             +
             ((TrendPeriodSec%LogPeriodSec == 0)  ? 0 : 1)
             -
             1;
-    
-    /* the data loaded will be not under-sampled */
-    if (sample_to_skip > 0)
-    {
-        LOG_PRINT(verbose_e, "the data loaded will be under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
-    }
-    /* the data loaded will be under-sampled */
-    else
-    {
-        LOG_PRINT(verbose_e, "the data loaded will be not under-sampled sample_to_skip %d sample_to_load %d\n", sample_to_skip, (int)(LoadedWindowSec / TrendPeriodSec));
-    }
-    
+
+    // manage online status
     QDateTime Tfin;
     if(TzeroLoaded.addSecs(LoadedWindowSec) > QDateTime::currentDateTime())
     {
@@ -1311,7 +1302,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     } else if (this->width() <= 480){
         horiz_ticks = 5;
     } else if (this->width() <= 800){
-        horiz_ticks = 8;
+        horiz_ticks = 9;
     }
     double deltax = (sfinal - sinint) / horiz_ticks;
     for (int i = 0; i < (horiz_ticks + 1); i++)
@@ -1486,6 +1477,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     LOG_PRINT(verbose_e,"before replot\n");
     d_qwtplot->updateAxes();
     d_qwtplot->replot();
+    d_qwtplot->repaint();
     LOG_PRINT(verbose_e, "UPDATE AXES AND REPLOT!\n");
        
     return true;
@@ -1510,7 +1502,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     if (Tmax < Tmin)
     {
         //warning
-        LOG_PRINT(warning_e, "Tmin in the future! %s vs %s\n",Tmin.toString(DATE_TIME_FMT).toAscii().data(), Tmax.toString(DATE_TIME_FMT).toAscii().data());
+        LOG_PRINT(error_e, "Tmin in the future! %s vs %s\n",Tmin.toString(DATE_TIME_FMT).toAscii().data(), Tmax.toString(DATE_TIME_FMT).toAscii().data());
     }
 
     //verbose
@@ -1533,6 +1525,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             -
             1;
 
+    // need to reload data from file?
     if ( (  _layout_ == LANDSCAPE
          && (  actualTzero < TzeroLoaded
             || actualTzero.addSecs(actualVisibleWindowSec) > TzeroLoaded.addSecs(LoadedWindowSec)
@@ -1543,7 +1536,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
              || actualVisibleWindowSec > LoadedWindowSec
              )
           )
-       || sample_to_skip > skip
+       || sample_to_skip != skip
        )
     {
         LOG_PRINT(verbose_e, "The new Tzero (%s) is out of bounds (%s ... %s), reload the data from the files (VisibleWindowSec %d)\n",
@@ -1612,7 +1605,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                       TzeroLoaded.addSecs(LoadedWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
                       actualVisibleWindowSec
                       );
-            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.toString().toAscii().data());
+            LOG_PRINT(error_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.toString().toAscii().data());
             actualTzero = TzeroLoaded;
             d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
         }
