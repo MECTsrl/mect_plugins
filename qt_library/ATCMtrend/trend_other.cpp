@@ -155,7 +155,7 @@ void trend_other::mouseMoveEvent(QMouseEvent * e)
 {
     //this->setEnabled(false);
     LOG_PRINT(verbose_e, "################# x %d y %d\n", e->x(), e->y());
-    this->move(this->x() + e->x(), this->y() + e->y() - this->height()/3);
+    //this->move(this->x() + e->x(), this->y() + e->y() - this->height()/3);
     //this->move(e->x(), e->y());
 }
 
