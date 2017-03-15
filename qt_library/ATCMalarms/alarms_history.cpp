@@ -72,7 +72,7 @@ alarms_history::alarms_history(QWidget *parent) :
     _alarm = true;
     _event = true;
     _level = level_all_e;
-    _file_nb = 0;
+    _file_nb = 0; // unused
     
 #ifdef LEVEL_TYPE
     ui->comboBoxLevel->clear();
@@ -102,7 +102,8 @@ void alarms_history::reload()
     logFileList = logDir.entryList(QDir::Files|QDir::NoDotAndDotDot, QDir::Reversed);
     
     ui->comboBoxDate->clear();
-    
+    _current = -1;
+
     for (int i = 0; i < logFileList.count(); i++)
     {
         if (logFileList.at(i).endsWith(".log") == false)
@@ -118,17 +119,16 @@ void alarms_history::reload()
                 label = logFileList.at(i);
             }
             ui->comboBoxDate->addItem(label);
+            _current = 0;
         }
     }
     
-    _current = 0;
     _alarm = true;
     _event = true;
     _level = level_all_e;
     
     /* no logfile found */
-    _file_nb = logFileList.count();
-    if (_file_nb == 0)
+    if (_current == -1)
     {
         LOG_PRINT(warning_e, "No alarms log file to load.\n");
         return;
@@ -181,7 +181,7 @@ alarms_history::~alarms_history()
  */
 bool alarms_history::loadLogFile(int fileNb, bool alarm, bool event, int level)
 {
-    if (fileNb < 0 || fileNb > logFileList.count())
+    if (logFileList.count() == 0 || fileNb < 0 || fileNb > logFileList.count())
     {
         return false;
     }
@@ -319,12 +319,14 @@ void alarms_history::on_pushButtonBack_clicked()
 
 void alarms_history::on_pushButtonPrevious_clicked()
 {
-    if (_file_nb == 0) return;
-    
     LOG_PRINT(verbose_e, "_current %d\n", _current);
-    if (_current == 0)
+    if (_current < 0)
     {
-        _current = _file_nb - 1;
+        return;
+    }
+    else if (_current == 0)
+    {
+        _current = ui->comboBoxDate->count() - 1;
     }
     else
     {
@@ -335,9 +337,12 @@ void alarms_history::on_pushButtonPrevious_clicked()
 
 void alarms_history::on_pushButtonNext_clicked()
 {
-    if (_file_nb == 0) return;
     LOG_PRINT(verbose_e, "_current %d\n", _current);
-    if (_current == _file_nb - 1)
+    if (_current < 0)
+    {
+        return;
+    }
+    else if (_current >= (ui->comboBoxDate->count() - 1))
     {
         _current = 0;
     }
@@ -400,7 +405,7 @@ void alarms_history::on_comboBoxType_currentIndexChanged(int index)
 #endif
 void alarms_history::on_comboBoxDate_currentIndexChanged(int index)
 {
-    if (index < 0)
+    if (index < 0 || ui->comboBoxDate->count() < 1)
     {
         return;
     }
