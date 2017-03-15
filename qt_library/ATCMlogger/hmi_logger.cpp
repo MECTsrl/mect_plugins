@@ -712,6 +712,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
     char buffer [FILENAME_MAX] = "";
     event_descr_e * info_descr = NULL;
     bool to_append = false;
+    bool to_free = false;
 
     strftime (buffer, FILENAME_MAX, "%Y/%m/%d,%H:%M:%S", timeinfo);
     
@@ -758,6 +759,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
             info_descr->status = alarm_none_e;
             info_descr->type = item->type;
             to_append = true;
+            to_free = true;
             LOG_PRINT(verbose_e, "New event for %s\n", info_descr->tag);
         }
 
@@ -814,6 +816,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
             if (to_append)
             {
                 _active_alarms_events_.append(info_descr);
+                to_free = false;
                 LOG_PRINT(verbose_e, "ADD isack %d status %d\n", info_descr->isack, info_descr->status);
             }
 
@@ -950,10 +953,21 @@ exit_function:
             if (ISBANNER(index) == 0 && ISSTATUS(index) == 0)
             {
                 LOG_PRINT(verbose_e, "REMOVE '%s'\n", _active_alarms_events_.at(i)->tag);
+                event_descr_e * tmp = _active_alarms_events_.at(i);
+                if (tmp)
+                {
+                    free(tmp);
+                }
                 _active_alarms_events_.removeAt(i);
                 i--;
             }
 
+        }
+
+        if (to_free && info_descr != NULL)
+        {
+            // should not happen
+            free(info_descr);
         }
 
     }
