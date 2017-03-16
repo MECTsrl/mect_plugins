@@ -19,8 +19,8 @@ qrcode::qrcode(QString szFileQRC, QWidget *parent) :
         QRect parentSize = parent->geometry();
 
         // get Parent Screen Dimensions
-        int w = parentSize->width();
-        int h = parentSize->height();
+        int w = parentSize.width();
+        int h = parentSize.height();
 
         // Find minimal size for Label
         int minSize = MIN(w, h);
@@ -31,7 +31,7 @@ qrcode::qrcode(QString szFileQRC, QWidget *parent) :
         }
         // 2 Pixels space
         minSize -= 4;
-        ui->lblQrCode->setMinimumSize(minSize, -minSize);
+        ui->lblQrCode->setMinimumSize(minSize, minSize);
         ui->lblQrCode->updateGeometry();
         // Get final geometry of label
         w = ui->lblQrCode->width();
