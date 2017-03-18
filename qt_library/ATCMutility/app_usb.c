@@ -1155,32 +1155,28 @@ app_usb_status_read(void)
                 /* count the number of file into the directory /proc/scsi/usb-storage
                  * not use system or popen cause are based on fork wich use a lot of memory
                  */
-                struct dirent **filelist = {0};
+                struct dirent **filelist;
                 int i = 0;
                 int filesnb = -1;
 
                 filesnb = scandir(SCSI_DRIVER_PATH, &filelist, 0, alphasort);
 
-                if(filesnb < 0) {
+                if (filesnb <= 0) {
                     LOG_PRINT(error_e,"Cannot open '%s' [%s]\n", SCSI_DRIVER_PATH, strerror(errno));
                     return -1;
                 }
-                else
+                /* skip the files '.' and '..'*/
+                num = filesnb - 2;
+                for (i = 0; i < filesnb; ++i)
                 {
-                    /* skip the files '.' and '..'*/
-                    num = filesnb - 2;
-                    while (filesnb > 0)
-                    {
-                        filesnb--;
-                        free(filelist[filesnb]);
-                    }
-                    free(filelist);
+                    free(filelist[i]);
                 }
+                free(filelist);
 #if DBGPOLL			
                 LOG_PRINT(error_e,"Current number of attached devices: %d\n", num);
 #endif				
-                /*We loop untill we find the number of attached device "num"*/
-                while( count < num )
+                /*We loop until we find the number of attached device "num"*/
+                while ( count < num )
                 {
                     len = sprintf(scsi_id, "%d",scsi);
                     scsi_id[len +1] = '\0';

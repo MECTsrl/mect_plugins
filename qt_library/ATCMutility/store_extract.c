@@ -428,7 +428,7 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
             }
             else
             {
-                /* here the code to reopen the las log file and reload the news */
+                /* here the code to reopen the last log file and reload the news */
                 sprintf(fullpath,"%s/%s", logdir, filelist[actualfcount]->d_name);
                 LOG_PRINT(verbose_e, "check for some news in '%s'\n", fullpath);
                 struct stat file_stat;

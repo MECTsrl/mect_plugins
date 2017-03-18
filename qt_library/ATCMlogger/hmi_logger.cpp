@@ -1424,43 +1424,42 @@ unsigned long Logger::getCapacityDir(const char *dirname) {
 
 int Logger::removeOldest( const char * dir)
 {
-    struct dirent **filelist = {0};
-    int fcount = -1;
-    int i = 0;
+    struct dirent **filelist;
+    int fcount;
+    int i;
     char filename[FILENAME_MAX];
     int retval = 0;
     
     fcount = scandir(dir, &filelist, 0, alphasort);
     
-    if(fcount < 0) {
+    if (fcount <= 0)
+    {
         LOG_PRINT (error_e, "No file to remove\n");
         perror(dir);
         return 1;
     }
-    if(fcount == 1) {
-        LOG_PRINT (error_e, " Only the actual file is available to remove.\n");
-        perror(dir);
-        return 1;
-    }
-    for(i = 0; i < fcount; i++)
+
+    for (i = 0; i < fcount; i++)
     {
-        if (strcmp(filelist[i]->d_name, ".") != 0 && strcmp(filelist[i]->d_name, "..") != 0)
+        if (strcmp(filelist[i]->d_name, ".") == 0 || strcmp(filelist[i]->d_name, "..") == 0)
         {
-            sprintf(filename, "%s/%s", dir, filelist[i]->d_name);
-            LOG_PRINT (warning_e, "Removing oldest log file '%s'\n", filelist[i]->d_name);
-            if (remove(filename) != 0)
-            {
-                LOG_PRINT (error_e, "cannot remove oldest log file '%s'\n", filelist[i]->d_name);
-            }
-            else
-            {
-                retval++;
-            }
-            free(filelist[i]);
-            break;
+            // skip the current and parent directory
+            continue;
+        }
+        sprintf(filename, "%s/%s", dir, filelist[i]->d_name);
+        LOG_PRINT (warning_e, "Removing oldest log file '%s'\n", filelist[i]->d_name);
+        if (remove(filename) != 0)
+        {
+            LOG_PRINT (error_e, "cannot remove oldest log file '%s'\n", filelist[i]->d_name);
+            retval = 1;
         }
     }
     
+    for (i = 0; i < fcount; i++)
+    {
+        free(filelist[i]);
+    }
     free(filelist);
-    return (retval == 0);
+
+    return retval;
 }
