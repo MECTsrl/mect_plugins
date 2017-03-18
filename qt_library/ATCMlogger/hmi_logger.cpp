@@ -182,22 +182,21 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
             MaxLogUsageMb = capacity_mb;
         }
 
+        /* if necessary delete the oldest store and alarm logfiles */
         while (checkSpace() == 1)
         {
-            /* if necessary delete the oldest logfile */
             if (removeOldest(StorageDir))
             {
-                LOG_PRINT(error_e, "cannot remove the oldest log\n");
-                return;
+                LOG_PRINT(error_e, "cannot remove the oldest store log\n");
+                break;
             }
-            /* if necessary delete the oldest logfile */
-            if (checkSpace() == 1)
+        }
+        while (checkSpace() == 1)
+        {
+            if (removeOldest(AlarmsDir))
             {
-                if (removeOldest(AlarmsDir))
-                {
-                    LOG_PRINT(error_e, "cannot remove the oldest log\n");
-                    return;
-                }
+                LOG_PRINT(error_e, "cannot remove the oldest alarm log\n");
+                break;
             }
         }
     }
@@ -841,7 +840,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
                 /* if necessary delete the oldest logfile */
                 if (removeOldest(AlarmsDir))
                 {
-                    LOG_PRINT(error_e, "cannot remove the oldest log\n");
+                    LOG_PRINT(error_e, "cannot remove the oldest alarm log\n");
                     retval = false;
                     goto exit_function;
                 }
@@ -995,7 +994,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
         /* if necessary delete the oldest logfile */
         if (removeOldest(AlarmsDir))
         {
-            LOG_PRINT(error_e, "cannot remove the oldest log\n");
+            LOG_PRINT(error_e, "cannot remove the oldest alarm log\n");
             return false;
         }
     }
@@ -1147,7 +1146,7 @@ bool Logger::dumpStorage()
         /* if necessary delete the oldest logfile */
         if (removeOldest(StorageDir))
         {
-            LOG_PRINT(error_e, "cannot remove the oldest log\n");
+            LOG_PRINT(error_e, "cannot remove the oldest store log\n");
             return false;
         }
     }
@@ -1368,7 +1367,7 @@ int Logger::checkSpace( void )
     /* it must be available at least 1Mb */
     if (fiData.f_bfree * fiData.f_bsize < 1024)
     {
-        LOG_PRINT(warning_e,"the available space is almost finish: free %ld[bytes], minimum free %d[bytes].\n", fiData.f_bfree * fiData.f_bsize, 1024);
+        LOG_PRINT(warning_e,"the available space is almost finished: free %ld[bytes], minimum free %d[bytes].\n", fiData.f_bfree * fiData.f_bsize, 1024);
         return 1;
     }
     
@@ -1453,6 +1452,7 @@ int Logger::removeOldest( const char * dir)
             LOG_PRINT (error_e, "cannot remove oldest log file '%s'\n", filelist[i]->d_name);
             retval = 1;
         }
+        break;
     }
     
     for (i = 0; i < fcount; i++)
