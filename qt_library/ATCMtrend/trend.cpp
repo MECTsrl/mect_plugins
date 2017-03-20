@@ -70,6 +70,13 @@
     }
 
 static bool do_refresh_plot;
+static bool do_pan;
+static int incrementTimeDirection = 0;
+static int incrementValueDirection = 0;
+
+static QRect zoomRect;
+static bool do_zoom;
+
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
  */
@@ -158,7 +165,16 @@ trend::trend(QWidget *parent) :
     popup_visible = false;
     popup->hide();
     actualPen = 0;
+
     do_refresh_plot = false;
+    do_pan = false;
+    incrementTimeDirection = 0;
+    incrementValueDirection = 0;
+    do_zoom = false;
+    zoomRect.setX(0);
+    zoomRect.setY(0);
+    zoomRect.setHeight(0);
+    zoomRect.setWidth(0);
 }
 
 #undef WINDOW_TITLE
@@ -205,7 +221,7 @@ void trend::updateData()
         force_back = false;
 
         /* actualVisibleWindowSec is not null, skip the initialization */
-        if (_trend_data_reload_ == true)
+        if (_trend_data_reload_)
         {
             if (strlen(_actual_trend_) == 0)
             {
@@ -405,6 +421,8 @@ void trend::updateData()
         QStringList trendList;
         QDir trendDir(CUSTOM_TREND_DIR, "*.csv");
 
+        force_back = false;
+
         trendList = trendDir.entryList(QDir::Files|QDir::NoDotAndDotDot);
         if (trendList.count() > 0)
         {
@@ -453,17 +471,17 @@ void trend::updateData()
                         }
                         pens[z].sample = 0;
                     }
-                    reload();
+                    reloading = true;
                     refresh_timer->start(REFRESH_MS);
                     return;
                 }
             }
             else
             {
+                delete sel;
                 errormsg = trUtf8("No trend selected");
                 go_back();
             }
-            delete sel;
         }
         else
         {
@@ -510,6 +528,7 @@ void trend::updateData()
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
         
         /* update the actual window parameters */
+
         LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
         if (overloadActualTzero)
         {
@@ -518,10 +537,12 @@ void trend::updateData()
             actualVisibleWindowSec = VisibleWindowSec;
         }
         
-        loadOrientedWindow();
-
         actualPen = -1;
         on_pushButtonSelect_clicked();
+
+        do_refresh_plot = true;
+        incrementTimeDirection = 0;
+        incrementValueDirection = 0;
 
         LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
@@ -535,6 +556,147 @@ void trend::updateData()
         popup->reload();
         popup->show();
         popup->raise();
+    }
+
+    // from UP, DOWN, LEFT, RIGHT buttons
+    if (incrementTimeDirection != 0)
+    {
+        setOnline(false);
+
+        int increment = ((actualVisibleWindowSec / DELTA_TIME_FACTOR) < LogPeriodSec) ? LogPeriodSec : (actualVisibleWindowSec / DELTA_TIME_FACTOR);
+
+        /* update the actual window parameters */
+        actualTzero = actualTzero.addSecs(increment * incrementTimeDirection);
+        if (actualTzero > QDateTime::currentDateTime())
+        {
+            actualTzero = QDateTime::currentDateTime();
+        }
+
+        do_refresh_plot = true;
+        incrementTimeDirection = 0;
+    }
+    if (incrementValueDirection != 0)
+    {
+        for (int i = 0; i < PEN_NB; i++)
+        {
+            float delta = (pens[i].yMaxActual - pens[i].yMinActual) / DELTA_VALUE_FACTOR;
+            pens[i].yMinActual += (delta * incrementValueDirection);
+            pens[i].yMaxActual += (delta * incrementValueDirection);
+        }
+
+        do_refresh_plot = true;
+        incrementValueDirection = 0;
+    }
+
+    // zoomed
+    if (do_zoom)
+    {
+
+        int myXin, myXfin;
+
+        if (_layout_ == PORTRAIT)
+        {
+            myXin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), zoomRect.y()));
+            myXfin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), zoomRect.y() + zoomRect.height()));
+        }
+        else
+        {
+            myXin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), zoomRect.x()));
+            myXfin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), zoomRect.x() + zoomRect.width()));
+        }
+
+        /* if necessary swap the selection */
+        if (myXin > myXfin)
+        {
+            int tmp = myXfin;
+            myXfin = myXin;
+            myXin = tmp;
+        }
+
+        if ((myXfin - myXin) / TrendPeriodSec <= 2)
+        {
+            LOG_PRINT(warning_e, "zoom too big. number of sample %d\n", (myXfin - myXin) / TrendPeriodSec);
+            return;
+        }
+        else
+        {
+            LOG_PRINT(verbose_e, "ZOOOOOOOOM NUBER OF SAMPLE %d\n", (myXfin - myXin) / TrendPeriodSec);
+        }
+
+        for (int i = 0; i < PEN_NB; i++)
+        {
+            if (_layout_ == PORTRAIT)
+            {
+                pens[i].yMinActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), zoomRect.x());
+                pens[i].yMaxActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), zoomRect.x() + zoomRect.width());
+            }
+            else
+            {
+                pens[i].yMinActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), zoomRect.y());
+                pens[i].yMaxActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), zoomRect.y() + zoomRect.height());
+            }
+
+            /* if necessary swap the selection */
+            if (pens[i].yMinActual > pens[i].yMaxActual)
+            {
+                double tmp = pens[i].yMaxActual;
+                pens[i].yMaxActual = pens[i].yMinActual;
+                pens[i].yMinActual = tmp;
+            }
+        }
+        LOG_PRINT(verbose_e, "ZOOOOOOOOM Tmin %d - %s Tmax %d - %s Current %s\n",
+                  myXin, TzeroLoaded.addSecs(myXin).toString(DATE_TIME_FMT).toAscii().data(),
+                  myXfin, TzeroLoaded.addSecs(myXfin).toString(DATE_TIME_FMT).toAscii().data(),
+                  QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data()
+                  );
+
+        if (TzeroLoaded.addSecs(myXfin) < QDateTime::currentDateTime())
+        {
+            setOnline(false);
+        }
+
+        /* update the actual window parameters */
+        actualVisibleWindowSec = myXfin - myXin;
+        LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
+        if (_layout_ == PORTRAIT)
+        {
+            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.addSecs(myXfin).toString().toAscii().data());
+            actualTzero = TzeroLoaded.addSecs(myXfin);
+        }
+        else
+        {
+            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.addSecs(myXin).toString().toAscii().data());
+            actualTzero = TzeroLoaded.addSecs(myXin);
+        }
+
+        do_refresh_plot = true;
+        do_zoom = false;
+    }
+
+    // disable zoom mode
+    if (do_pan)
+    {
+        /* window pan ->  Tzero, VisibleWindowSec, pens[actualPen].yMin and pens[actualPen].yMax */
+        enableZoomMode(false);
+
+        for (int z = 0; z < PEN_NB; z++)
+        {
+            pens[z].yMinActual = pens[z].yMin;
+            pens[z].yMaxActual = pens[z].yMax;
+        }
+
+        /*actualTzero = TzeroLoaded = Tzero = QDateTime::currentDateTime()*/;
+        LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
+        actualVisibleWindowSec = VisibleWindowSec;
+
+        /* set TzeroLoaded in the future to force the data load */
+        TzeroLoaded = actualTzero.addSecs(TrendPeriodSec * 2);
+
+        // Calling setOnline
+        //setOnline(true);
+
+        do_refresh_plot = true;
+        do_pan = false;
     }
 
     if (do_refresh_plot)
@@ -780,26 +942,7 @@ void trend::on_pushButton_clicked()
 
 void trend::setPan()
 {
-    /* window pan ->  Tzero, VisibleWindowSec, pens[actualPen].yMin and pens[actualPen].yMax */
-    enableZoomMode(false);
-    
-    for (int z = 0; z < PEN_NB; z++)
-    {
-        pens[z].yMinActual = pens[z].yMin;
-        pens[z].yMaxActual = pens[z].yMax;
-    }
-    
-    /*actualTzero = TzeroLoaded = Tzero = QDateTime::currentDateTime()*/;
-    LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
-    actualVisibleWindowSec = VisibleWindowSec;
-    
-    /* set TzeroLoaded in the future to force the data load */
-    TzeroLoaded = actualTzero.addSecs(TrendPeriodSec * 2);
-    
-    loadOrientedWindow();
-    
-    // Calling setOnline
-    //setOnline(true);
+    do_pan = true;
 }
 
 void trend::enableZoomMode(bool on)
@@ -1137,43 +1280,12 @@ exit_function:
 
 void trend::incrementTime(int direction)
 {
-    setOnline(false);
-    
-    int increment = ((actualVisibleWindowSec / DELTA_TIME_FACTOR) < LogPeriodSec) ? LogPeriodSec : (actualVisibleWindowSec / DELTA_TIME_FACTOR);
-    LOG_PRINT(verbose_e, "actualTzero '%s', actualVisibleWindowSec %d -> %d -> actualTzero '%s', actualVisibleWindowSec %d\n",
-              actualTzero.toString("HH:mm:ss").toAscii().data(),
-              actualVisibleWindowSec,
-              increment,
-              actualTzero.addSecs(increment * direction).toString("HH:mm:ss").toAscii().data(),
-              actualVisibleWindowSec + (increment * direction)
-              );
-    
-    /* update the actual window parameters */
-    LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), actualTzero.addSecs(increment * direction).toString().toAscii().data());
-    actualTzero = actualTzero.addSecs(increment * direction);
-    if (actualTzero > QDateTime::currentDateTime())
-    {
-        actualTzero = QDateTime::currentDateTime();
-    }
-    
-    loadOrientedWindow();
+    incrementTimeDirection = direction;
 }
 
 void trend::incrementValue(int direction)
 {
-    for (int i = 0; i < PEN_NB; i++)
-    {
-        float delta = (pens[i].yMaxActual - pens[i].yMinActual) / DELTA_VALUE_FACTOR;
-        LOG_PRINT(verbose_e, "DOWN %f * %f = %f\n",
-                  pens[i].yMinActual,
-                  delta,
-                  pens[i].yMinActual - delta
-                  );
-        pens[i].yMinActual += (delta * direction);
-        pens[i].yMaxActual += (delta * direction);
-    }
-    
-    loadOrientedWindow();
+    incrementValueDirection = direction;
 }
 
 bool trend::loadFromFile(QDateTime Ti)
@@ -1724,88 +1836,10 @@ void trend::moved(const QPoint &pos)
 
 void trend::selected(const QPolygon &pol)
 {
-    int myXin, myXfin;
-    
-    LOG_PRINT(verbose_e, "x %d y %d h %d w %d\n", pol.boundingRect().x(), pol.boundingRect().y(), pol.boundingRect().height(), pol.boundingRect().width());
-    
     if (_zoom)
     {
-        if (_layout_ == PORTRAIT)
-        {
-            myXin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pol.boundingRect().y()));
-            myXfin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pol.boundingRect().y() + pol.boundingRect().height()));
-        }
-        else
-        {
-            myXin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pol.boundingRect().x()));
-            myXfin = (int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pol.boundingRect().x() + pol.boundingRect().width()));
-        }
-        
-        /* if necessary swap the selection */
-        if (myXin > myXfin)
-        {
-            int tmp = myXfin;
-            myXfin = myXin;
-            myXin = tmp;
-        }
-        
-        if ((myXfin - myXin) / TrendPeriodSec <= 2)
-        {
-            LOG_PRINT(warning_e, "zoom too big. number of sample %d\n", (myXfin - myXin) / TrendPeriodSec);
-            return;
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "ZOOOOOOOOM NUBER OF SAMPLE %d\n", (myXfin - myXin) / TrendPeriodSec);
-        }
-        
-        for (int i = 0; i < PEN_NB; i++)
-        {
-            if (_layout_ == PORTRAIT)
-            {
-                pens[i].yMinActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), pol.boundingRect().x());
-                pens[i].yMaxActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), pol.boundingRect().x() + pol.boundingRect().width());
-            }
-            else
-            {
-                pens[i].yMinActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), pol.boundingRect().y());
-                pens[i].yMaxActual = d_qwtplot->invTransform(QwtAxisId( valueAxisId, i ), pol.boundingRect().y() + pol.boundingRect().height());
-            }
-            
-            /* if necessary swap the selection */
-            if (pens[i].yMinActual > pens[i].yMaxActual)
-            {
-                double tmp = pens[i].yMaxActual;
-                pens[i].yMaxActual = pens[i].yMinActual;
-                pens[i].yMinActual = tmp;
-            }
-        }
-        LOG_PRINT(verbose_e, "ZOOOOOOOOM Tmin %d - %s Tmax %d - %s Current %s\n",
-                  myXin, TzeroLoaded.addSecs(myXin).toString(DATE_TIME_FMT).toAscii().data(),
-                  myXfin, TzeroLoaded.addSecs(myXfin).toString(DATE_TIME_FMT).toAscii().data(),
-                  QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data()
-                  );
-        
-        if (TzeroLoaded.addSecs(myXfin) < QDateTime::currentDateTime())
-        {
-            setOnline(false);
-        }
-        
-        /* update the actual window parameters */
-        actualVisibleWindowSec = myXfin - myXin;
-        LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
-        if (_layout_ == PORTRAIT)
-        {
-            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.addSecs(myXfin).toString().toAscii().data());
-            actualTzero = TzeroLoaded.addSecs(myXfin);
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.addSecs(myXin).toString().toAscii().data());
-            actualTzero = TzeroLoaded.addSecs(myXin);
-        }
-        
-        loadOrientedWindow();
+        zoomRect = pol.boundingRect();
+        do_zoom = true;
     }
     else
     {
