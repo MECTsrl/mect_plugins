@@ -93,8 +93,8 @@ trend::trend(QWidget *parent) :
     /* initialization */
     for (int i = 0; i < PEN_NB; i++)
     {
-        pens[i].x = NULL;
-        pens[i].y = NULL;
+        pens[i].x = new double [MAX_SAMPLE_NB + 1];
+        pens[i].y = new double [MAX_SAMPLE_NB + 1];
         pens[i].curve = NULL;
     }
     
@@ -228,7 +228,6 @@ void trend::updateData()
                 disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
                 force_back = true;
                 reloading = false;
-                LOG_PRINT(verbose_e, " RELOADED\n");
                 return;
             }
 
@@ -243,37 +242,31 @@ void trend::updateData()
             {
                 force_back = true;
                 reloading = false;
-                LOG_PRINT(verbose_e, " RELOADED\n");
                 return;
             }
-            else
-            {
-                for (int z = 0; z < PEN_NB; z++)
-                {
-    #ifdef STATIC_AXES
-                    if (valueScale[z] == NULL)
-                    {
-                        int decimal = 0;
-                        if (strlen(pens[z].tag))
-                        {
-                            decimal = getVarDecimalByName(pens[z].tag);
-                        }
-                        LOG_PRINT(verbose_e, " valueScale null pointer for z='%d'\n", z);
-                        valueScale[z] = new NormalScaleDraw(decimal);
-                    }
-    #endif
-                    pens[z].curve = new InterruptedCurve();
-                    //pens[rownb].curve = new QwtPlotCurve();
-                    pens[z].y = new double [MAX_SAMPLE_NB + 1];
-                    pens[z].x = new double [MAX_SAMPLE_NB + 1];
 
-                    for (int i = 0; i < MAX_SAMPLE_NB; i++)
+            for (int z = 0; z < PEN_NB; z++)
+            {
+#ifdef STATIC_AXES
+                if (valueScale[z] == NULL)
+                {
+                    int decimal = 0;
+                    if (strlen(pens[z].tag))
                     {
-                        pens[z].y[i] = /*pens[rownb].yMax*/NAN;
-                        pens[z].x[i] = /*pens[rownb].yMax*/NAN;
+                        decimal = getVarDecimalByName(pens[z].tag);
                     }
-                    pens[z].sample = 0;
+                    LOG_PRINT(verbose_e, " valueScale null pointer for z='%d'\n", z);
+                    valueScale[z] = new NormalScaleDraw(decimal);
                 }
+#endif
+                pens[z].curve = new InterruptedCurve();
+                //pens[rownb].curve = new QwtPlotCurve();
+                for (int i = 0; i < MAX_SAMPLE_NB; i++)
+                {
+                    pens[z].y[i] = /*pens[rownb].yMax*/NAN;
+                    pens[z].x[i] = /*pens[rownb].yMax*/NAN;
+                }
+                pens[z].sample = 0;
             }
     #ifdef MARKER
             if (d_marker != NULL)
@@ -324,15 +317,6 @@ void trend::updateData()
         TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
         /* set TzeroLoaded to force the data load */
         TzeroLoaded = Tzero.addSecs(-1);
-        LOG_PRINT(verbose_e, "actualVisibleWindowSec %d VisibleWindowSec %d actualTzero '%s' Tzero '%s' TzeroLoaded '%s' TrendPeriodSec %d LogPeriodSec %d\n",
-                  actualVisibleWindowSec,
-                  VisibleWindowSec,
-                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                  Tzero.toString(DATE_TIME_FMT).toAscii().data(),
-                  TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data(),
-                  TrendPeriodSec,
-                  LogPeriodSec
-                  );
         _trend_data_reload_ = false;
 
         if (_layout_ == PORTRAIT)
@@ -461,9 +445,6 @@ void trend::updateData()
 #endif
                         pens[z].curve = new InterruptedCurve();
                         //pens[rownb].curve = new QwtPlotCurve();
-                        pens[z].y = new double [MAX_SAMPLE_NB + 1];
-                        pens[z].x = new double [MAX_SAMPLE_NB + 1];
-
                         for (int i = 0; i < MAX_SAMPLE_NB; i++)
                         {
                             pens[z].y[i] = /*pens[rownb].yMax*/NAN;
@@ -714,17 +695,7 @@ void trend::updateData()
             }
             else if (_layout_ == LANDSCAPE)
             {
-                if (actualTzero.addSecs(actualVisibleWindowSec) < now)
-                {
-                    int increment;
-                    increment = actualVisibleWindowSec / SHIFT_FACTOR;
-                    if (increment < LogPeriodSec)
-                    {
-                        increment = LogPeriodSec;
-                    }
-                    // actualTzero = now.addSecs(-(actualVisibleWindowSec - increment));
-                    actualTzero = now;
-                }
+                actualTzero = now.addSecs(-actualVisibleWindowSec);
             }
         }
 
@@ -781,8 +752,17 @@ void trend::changeEvent(QEvent * event)
  */
 trend::~trend()
 {
-    LOG_PRINT(verbose_e, "MUOIO\n");
     delete ui;
+    for (int i = 0; i < PEN_NB; i++)
+    {
+        if (pens[i].x != NULL)
+            delete pens[i].x;
+        if (pens[i].y != NULL)
+            delete pens[i].y;
+        pens[i].x = NULL;
+        pens[i].y = NULL;
+        pens[i].curve = NULL;
+    }
 }
 
 void trend::refreshEvent(trend_msg_t item_trend)
@@ -1023,7 +1003,7 @@ bool trend::printGraph()
 
 bool trend::bringFront(int pen)
 {
-    if (_load_window_busy == true)
+    if (_load_window_busy)
     {
         return false;
     }
@@ -1638,7 +1618,8 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             1;
 
     // need to reload data from file?
-    if ( (  _layout_ == LANDSCAPE
+    if ( _trend_data_reload_
+       || (  _layout_ == LANDSCAPE
          && (  actualTzero < TzeroLoaded
             || actualTzero.addSecs(actualVisibleWindowSec) > TzeroLoaded.addSecs(LoadedWindowSec)
             )
@@ -1651,6 +1632,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
        || sample_to_skip != skip
        )
     {
+
         LOG_PRINT(verbose_e, "The new Tzero (%s) is out of bounds (%s ... %s), reload the data from the files (VisibleWindowSec %d)\n",
                   actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
                   TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data(),

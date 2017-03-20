@@ -916,18 +916,12 @@ bool LoadTrend(const char * trend_name, QString * ErrorMsg)
             //delete pens[rownb].curve;
             pens[rownb].curve = NULL;
         }
-        if (pens[rownb].y != NULL)
-        {
-            delete pens[rownb].y;
-            pens[rownb].y = NULL;
-        }
 
         pens[rownb].color[0] = '\0';
         pens[rownb].description[0] = '\0';
         pens[rownb].sample = 0;
         pens[rownb].tag[0] = '\0';
         pens[rownb].visible = 0;
-        pens[rownb].y = NULL;
         pens[rownb].yMax = 0;
         pens[rownb].yMin = 0;
         pens[rownb].yMaxActual = 0;
