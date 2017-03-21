@@ -259,13 +259,7 @@ void trend::updateData()
                     valueScale[z] = new NormalScaleDraw(decimal);
                 }
 #endif
-                pens[z].curve = new InterruptedCurve();
-                //pens[rownb].curve = new QwtPlotCurve();
-                for (int i = 0; i < MAX_SAMPLE_NB; i++)
-                {
-                    pens[z].y[i] = /*pens[rownb].yMax*/NAN;
-                    pens[z].x[i] = /*pens[rownb].yMax*/NAN;
-                }
+                pens[z].curve = new InterruptedCurve(); // QwtPlotCurve();
                 pens[z].sample = 0;
             }
     #ifdef MARKER
@@ -1074,6 +1068,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
         }
         if ( logFileBegin <= begin || logFileBegin <= end )
         {
+            // load from file
             if (Load(QString("%1/%2").arg(STORE_DIR).arg(logFileList.at(i)).toAscii().data(), &begin, &end, skip) == false)
             {
                 LOG_PRINT(warning_e, "Cannot load '%s'\n", logFileList.at(i).toAscii().data());
@@ -1091,13 +1086,13 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     bool retval = false;
     char line[LINE_SIZE] = "";
     char * p = NULL, * r = NULL;
-    int count = 0;
     time_t ti = begin->toTime_t();
     time_t tf = end->toTime_t();
     char buf[42];
-    int samples[PEN_NB] = {0, 0, 0, 0};
     QList<int> filter;
     FILE * fp = NULL;
+    time_t last_used = 0;
+    int samples[PEN_NB] = {0, 0, 0, 0};
 
     LOG_PRINT(verbose_e, "'%s', %s, %s, %d\n",
               filename,
@@ -1167,20 +1162,13 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     }
 
     /* extract data */
+    last_used = 0;
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
         struct tm tfile;
         time_t t;
 
         ++row;
-        // skip samples for large time intervals
-        if (count < skip)
-        {
-            LOG_PRINT(verbose_e, "Skip\n");
-            count++;
-            continue;
-        }
-        count = 0;
 
         /*date*/
         p = strtok_csv(line, SEPARATOR, &r);
@@ -1211,6 +1199,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             ui->labelDate->repaint();
         }
 
+        // skip past and future samples
         if ( t < ti )
         {
             /* too early */
@@ -1221,6 +1210,12 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             /* too late */
             break;
         }
+        // skip samples for large time intervals
+        if ((t - last_used) < skip)
+        {
+            continue;
+        }
+        last_used = t;
 
         for (int i = 0; i < filter.count() && (p = strtok_csv(NULL, SEPARATOR, &r)) != NULL; ++i)
         {
@@ -1229,22 +1224,37 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             {                
                 continue;
             }
+            // add the sample
             if (pens[j].sample < MAX_SAMPLE_NB) {
-                pens[j].y[pens[j].sample] = atof(p);
+                char *s = NULL;
+                double d;
+                d = strtod(p, &s);
+                if (s == p)
+                {
+                    pens[j].y[pens[j].sample] = NAN;
+                } else {
+                    pens[j].y[pens[j].sample] = d; //atof(p);
+                }
                 pens[j].x[pens[j].sample] = TzeroLoaded.secsTo(QDateTime::fromTime_t(t));
                 pens[j].sample++;
-
                 ++samples[j];
             }
         }
 
     }
+
     retval = true;
 
 exit_function:
     fclose(fp);
     for (int j = 0; j < PEN_NB; ++j) {
-        LOG_PRINT(verbose_e, "[%d] %d samples\n", j, samples[j]);
+        // for each curve, if there were samples, we add a NAN (i.e. force a discontinuity) at the end of each log
+        if (samples[j] > 0 && pens[j].sample < MAX_SAMPLE_NB)
+        {
+            pens[j].y[pens[j].sample] = NAN;
+            pens[j].x[pens[j].sample] = pens[j].x[pens[j].sample - 1]; // ok: samples[j] > 0
+            pens[j].sample++;
+        }
     }
     return retval;
 }
@@ -1264,26 +1274,6 @@ bool trend::loadFromFile(QDateTime Ti)
     LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
     disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
     
-    TzeroLoaded = Ti;
-
-    LOG_PRINT(verbose_e, "TzeroLoaded %s\n", TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data());
-    if (actualVisibleWindowSec > LoadedWindowSec)
-    {
-        LoadedWindowSec = actualVisibleWindowSec;
-    }
-
-    /* calculate the TrendPeriodSec */
-    /* if it is less than LogPeriodSec, set at LogPeriodSec */
-    TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSec)) / MAX_SAMPLE_NB));
-    TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
-
-    sample_to_skip =
-            (int)(TrendPeriodSec/LogPeriodSec)
-            +
-            ((TrendPeriodSec%LogPeriodSec == 0)  ? 0 : 1)
-            -
-            1;
-
     // manage online status
     QDateTime Tfin;
     if(TzeroLoaded.addSecs(LoadedWindowSec) > QDateTime::currentDateTime())
@@ -1296,7 +1286,7 @@ bool trend::loadFromFile(QDateTime Ti)
     }
     
     /* load data from Ti to Ti + MaxWindowsec */
-    if (Load(TzeroLoaded, Tfin, sample_to_skip) == false)
+    if (Load(TzeroLoaded, Tfin, TrendPeriodSec) == false)
     {
         LOG_PRINT(verbose_e, "Cannot load data\n");
         LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
@@ -1623,21 +1613,10 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
        || sample_to_skip != skip
        )
     {
-
-        LOG_PRINT(verbose_e, "The new Tzero (%s) is out of bounds (%s ... %s), reload the data from the files (VisibleWindowSec %d)\n",
-                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                  TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data(),
-                  TzeroLoaded.addSecs(LoadedWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
-                  actualVisibleWindowSec
-                  );
-        LOG_PRINT(verbose_e, "The new time window (%d) is too big (%d), reload the data for the new window -> new Tzero will be %s\n",
-                  actualVisibleWindowSec,
-                  LoadedWindowSec,
-                  actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
-                  );
-
+        showStatus(trUtf8("Loading..."), false);
         if ( ! _online_ )
         {
+            // clear plot area, but only if not online
             for (int i = 0; i < PEN_NB; i++)
             {
                 if (pens[i].curve != NULL)
@@ -1651,20 +1630,15 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         popup->enableButtonLeft(false);
         popup->enableButtonRight(false);
 
-        showStatus(trUtf8("Loading..."), false);
-
-        if (VisibleWindowSec != actualVisibleWindowSec)
+        // REBASE THE SAMPLES
+        TzeroLoaded = actualTzero;
+        for (int z = 0; z < PEN_NB; z++)
         {
-            VisibleWindowSec = actualVisibleWindowSec;
+            pens[z].sample = 0;
         }
+        VisibleWindowSec = actualVisibleWindowSec;
         LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
-
-        LOG_PRINT(verbose_e, "actualTzero '%s' LoadedWindowSec '%d' actualVisibleWindowSec '%d' -> loadedTzero %s\n",
-                  actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                  LoadedWindowSec,
-                  actualVisibleWindowSec,
-                  actualTzero.addSecs(- actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
-                  );
+        sample_to_skip = skip;
 
 //        QDateTime Ti;
 //        if (_layout_ == LANDSCAPE)
@@ -1676,7 +1650,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
 //            Ti = actualTzero.addSecs( - actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
 //        }
 
-        if (loadFromFile(actualTzero) == false)
+        if (loadFromFile(TzeroLoaded) == false)
         {
 //                errormsg = trUtf8("Cannot found any data from %1 to %2").arg(actualTzero.toString().toAscii().data()).arg(QDateTime::currentDateTime().toString().toAscii().data());
 //                showStatus(errormsg, true);
@@ -1833,37 +1807,26 @@ void trend::selected(const QPolygon &pol)
 
 void InterruptedCurve::drawCurve( QPainter *painter, __attribute__((unused))int style, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect, int from, int to ) const
 {
-    int preceding_from = from;
-    bool is_gap = true;
-    
-    // Scan all data to identify gaps
-    for (int i = from; i <= to; i++)
+    // marker of line
+    if (!isnan(data()->sample(from).x()) && !isnan(data()->sample(from).y()))
     {
-        const QPointF sample = data()->sample(i);
+        drawDots(painter, xMap, yMap, canvasRect, from, from);
+    }
 
-        LOG_PRINT(verbose_e, "sample.y() %f -> %d, sample.x() %f -> %d is_gap %s\n", sample.y(), isnormal(sample.y()), sample.x(), isnormal(sample.x()), is_gap ? "true" : "false");
-        
-        // In a gap normal floating point number
-        if(((isnormal(sample.y()) != 0 || sample.y() == 0) && (isnormal(sample.x()) != 0 || sample.x() == 0)) && is_gap)
+    // draw lines with gaps
+    for (int i = from + 1; i <= to; i++)
+    {        
+        if (!isnan(data()->sample(i).x()) && !isnan(data()->sample(i).y()))
         {
-            preceding_from = i;
-            LOG_PRINT(verbose_e, "SETTING GAP FALSE sample.y() %f, sample.x() %f is_gap %s\n", sample.y(), sample.x(), is_gap ? "true" : "false");
-            is_gap = false;
-        }
-        
-        // At the beginning of a gap (or the end of the serie) : draw the preceding interval
-        // the number is not a floating point valid value and we are not in a gap or if it's the last normal value and
-        // is a good value
-        if(
-                (((isnormal(sample.y()) == 0 && sample.y() != 0) || (isnormal(sample.x()) == 0 && sample.x() != 0)) && !is_gap)
-                ||
-                (i == to && ((isnormal(sample.y()) != 0 || sample.y() == 0) && (isnormal(sample.x()) != 0 || sample.x() == 0)))
-                )
-        {
-            // or drawSteps, drawLines, drawSticks, drawDots
-            drawLines(painter, xMap, yMap, canvasRect, preceding_from, ((i>from) ? (i-1) : i));
-            LOG_PRINT(verbose_e, "SETTING GAP TRUE sample.y() %f, sample.x() %f is_gap %s i %d to %d\n", sample.y(), sample.x(), is_gap ? "true" : "false", i, to);
-            is_gap = true;
+            if (!isnan(data()->sample(i - 1).x()) && !isnan(data()->sample(i - 1).y()))
+            {
+                drawLines(painter, xMap, yMap, canvasRect, (i - 1), i);
+            }
+            else
+            {
+                drawDots(painter, xMap, yMap, canvasRect, i, i);
+            }
+
         }
     }
 }
