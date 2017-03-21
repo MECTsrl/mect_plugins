@@ -1037,7 +1037,6 @@ void trend::disableUpdate()
 
 bool trend::Load(QDateTime begin, QDateTime end, int skip)
 {
-    QDateTime iterator;
     int logfound = 0;
     
     for (int rownb = 0; rownb < PEN_NB; rownb++)
@@ -1058,53 +1057,39 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     /* the store are in STORE_DIR and they have a name like yyyy_MM_dd_HH_mm_ss.log */
     /* get the list of the file and parse the file between time begin and time end */
     QDir logDir(STORE_DIR);
-    QStringList logFileList = logDir.entryList(QDir::Files|QDir::NoDotAndDotDot);
+    QStringList logFileList = logDir.entryList(QDir::Files | QDir::NoDotAndDotDot, QDir::Name);
     for (int i = 0; i < logFileList.count(); i++)
     {
-        // check if the log time is into the interval
-        if (  end >= QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(),"yyyy_MM_dd_HH_mm_ss")
-           &&
-             ( begin <= QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(),"yyyy_MM_dd_HH_mm_ss")
-             || (  i + 1 < logFileList.count()
-                && begin < QDateTime::fromString(QFileInfo(logFileList.at(i + 1)).baseName(),"yyyy_MM_dd_HH_mm_ss")
-                )
-             || (  i + 1 == logFileList.count()
-                && begin < QDateTime::currentDateTime()
-                )
-             )
-           )
+        if (  i + 1 < logFileList.count()
+           && QDateTime::fromString(QFileInfo(logFileList.at(i + 1)).baseName(), "yyyy_MM_dd_HH_mm_ss") <= begin)
         {
-            LOG_PRINT(verbose_e, "PARSING TREND FILE '%s'\n", logFileList.at(i).toAscii().data());
+            // too early
+            continue;
+        }
+        QDateTime logFileBegin = QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(), "yyyy_MM_dd_HH_mm_ss");
+        if (end < logFileBegin)
+        {
+            // too late
+            break;
+        }
+        if ( logFileBegin <= begin || logFileBegin <= end )
+        {
             if (Load(QString("%1/%2").arg(STORE_DIR).arg(logFileList.at(i)).toAscii().data(), &begin, &end, skip) == false)
             {
                 LOG_PRINT(warning_e, "Cannot load '%s'\n", logFileList.at(i).toAscii().data());
                 return false;
             }
-            LOG_PRINT(verbose_e, "PARSED TREND FILE '%s'\n", logFileList.at(i).toAscii().data());
             logfound++;
         }
     }
 
-    if (logfound == 0)
-    {
-        LOG_PRINT(verbose_e, "cannot find any sample from begin '%s' to '%s'\n",
-                  begin.toString("yyyy/MM/dd HH:mm:ss").toAscii().data(),
-                  end.toString("yyyy/MM/dd HH:mm:ss").toAscii().data()
-                  );
-        return false;
-    }
-    else
-    {
-        LOG_PRINT(verbose_e, "found '%d' logs\n", logfound);
-        return true;
-    }
+    return (logfound > 0);
 }
 
 bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int skip)
 {
     bool retval = false;
     char line[LINE_SIZE] = "";
-    int found = -1;
     char * p = NULL, * r = NULL;
     int count = 0;
     time_t ti = begin->toTime_t();
@@ -1136,6 +1121,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
      */
 
     /* extract header */
+    int row = 0;
     if (fgets(line, LINE_SIZE, fp) == NULL)
     {
         LOG_PRINT(error_e, "Cannot read the header from '%s'\n", filename);
@@ -1159,9 +1145,10 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     }
 
     // tags
+    filter.clear();
     while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL)
     {
-        found = -1;
+        bool found = false;
         for (int i = 0; i < PEN_NB; i++)
         {
             if (pens[i].curve == NULL)
@@ -1170,11 +1157,13 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             }
             if (strcmp(pens[i].tag, p) == 0)
             {
-                found = i;
+                filter.append(i);
+                found = true;
                 break;
             }
         }
-        filter.append(found);
+        if (! found)
+            filter.append(-1);
     }
 
     /* extract data */
@@ -1183,6 +1172,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         struct tm tfile;
         time_t t;
 
+        ++row;
+        // skip samples for large time intervals
         if (count < skip)
         {
             LOG_PRINT(verbose_e, "Skip\n");
@@ -1213,10 +1204,17 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         strptime(buf, "%Y/%m/%d_%H:%M:%S", &tfile);
         tfile.tm_isdst = 0;
         t = mktime(&tfile);
+
+        if (row % 1000 == 0) {
+            ui->labelDate->setText(QString("%1").arg(t, 5, 16));
+            ui->labelDate->setStyleSheet("color: rgb(0,0,255);");
+            ui->labelDate->repaint();
+        }
+
         if ( t < ti )
         {
             /* too early */
-            break;
+            continue;
         }
         if ( tf < t )
         {
@@ -1228,7 +1226,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         {
             int j = filter.at(i);
             if (j < 0 || (p[0] == '-' && p[1] == 0))
-            {
+            {                
                 continue;
             }
             if (pens[j].sample < MAX_SAMPLE_NB) {
@@ -1238,15 +1236,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
 
                 ++samples[j];
             }
-            if (pens[j].sample >= MAX_SAMPLE_NB)
-            {
-                break;
-            }
         }
 
-        ui->labelDate->setText(QString(" %1 ").arg(t, 8, 16));
-        ui->labelDate->setStyleSheet("color: rgb(0,0,255);");
-        ui->labelDate->repaint();
     }
     retval = true;
 
@@ -1461,7 +1452,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             case bytebit_e:
             case wordbit_e:
             case dwordbit_e:
-                decimal = 0;
+                decimal = 2; // scale (0, 1) --> labels(0.00 0.25 0.50 0.75 1.00)
                 break;
 
             default:
@@ -1645,11 +1636,14 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                   actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2)).toString(DATE_TIME_FMT).toAscii().data()
                   );
 
-        for (int i = 0; i < PEN_NB; i++)
+        if ( ! _online_ )
         {
-            if (pens[i].curve != NULL)
+            for (int i = 0; i < PEN_NB; i++)
             {
-                pens[i].curve->detach();
+                if (pens[i].curve != NULL)
+                {
+                    pens[i].curve->detach();
+                }
             }
         }
         popup->enableButtonUp(false);
