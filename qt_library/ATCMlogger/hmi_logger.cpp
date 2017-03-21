@@ -151,8 +151,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     LOG_PRINT(verbose_e, "Store dir: '%s'.\n", StorageDir);
     
     time(&Now);
-    memcpy(&CurrentTimeInfo, localtime(&Now), sizeof(CurrentTimeInfo));
-    LOG_PRINT(verbose_e, "Data changed \n");
+    memcpy(&CurrentTimeInfo, localtime(&Now),  sizeof(struct tm));
 
     for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
     {
@@ -211,6 +210,9 @@ FILE * Logger::openFile(bool daily, int * newfile, const char * basedir, const c
     /* create the log name in function of the current date */
     char logFileName[FILENAME_MAX];
     char CurrentDate[DESCR_LEN];
+
+    time(&Now);
+    memcpy(&CurrentTimeInfo, localtime(&Now),  sizeof(struct tm));
 
     if (daily)
     {
@@ -341,15 +343,11 @@ void Logger::run()
         /* get the actual time */
         time(&Now);
         timeinfo = localtime (&Now);
-        LOG_PRINT(verbose_e, "Now %ld\n", Now);
 
         /* check if the actual date is the same of the date described into the logfile name */
         /* if is different, close the actual log file then open a new one with the new date*/
         if (CurrentTimeInfo.tm_year < timeinfo->tm_year || CurrentTimeInfo.tm_yday < timeinfo->tm_yday)
         {
-            LOG_PRINT(verbose_e, "Data changed: '%d/%d' -> '%d/%d'\n",
-                      CurrentTimeInfo.tm_year, CurrentTimeInfo.tm_yday,
-                      timeinfo->tm_year, timeinfo->tm_yday);
             memcpy(&CurrentTimeInfo, timeinfo, sizeof(struct tm));
 #ifdef ENABLE_ALARMS
             closeAlarmsFile();
@@ -430,10 +428,10 @@ void Logger::run()
                 dumpStorage();
                 logger_shot = false;
             }
-            else
-            {
-                closeStorageFile();
-            }
+        }
+        else
+        {
+            closeStorageFile();
         }
 #endif
     }
