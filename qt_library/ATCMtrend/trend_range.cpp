@@ -84,7 +84,7 @@ void trend_range::reload()
     
     /* interval */
     QDateTime reference = QDateTime(QDate(0,0,0), QTime(0,0,0)).addSecs(actualVisibleWindowSec);
-    ui->spinBoxDays->setMaximum(30);
+    ui->spinBoxDays->setMaximum(90);
     ui->spinBoxHours->setMaximum(23);
     ui->spinBoxMinutes->setMaximum(59);
     ui->spinBoxSeconds->setMaximum(59);
