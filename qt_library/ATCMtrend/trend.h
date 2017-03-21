@@ -204,7 +204,7 @@ private:
     NormalScaleDraw * valueScale[PEN_NB];
 #endif
 #endif
-    int LogPeriodSec;
+    int LogPeriodSec; // unused
     int sample_to_skip;
     QString errormsg;
     bool popup_visible;

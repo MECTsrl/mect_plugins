@@ -38,9 +38,8 @@
 #define INCREMENT 1.0
 #define OVERLOAD_SECONDS(Visible) (Visible * 20 / 10) // 800 + 100% = 1600
 #define SHIFT_FACTOR 10
-#define AXIS_STEP_DIVISOR 2
-#define DELTA_TIME_FACTOR (AXIS_STEP_DIVISOR * 2)
-#define DELTA_VALUE_FACTOR 4
+#define DELTA_TIME_FACTOR  2
+#define DELTA_VALUE_FACTOR 2
 
 #define DATE_TIME_FMT "yyyy/MM/dd HH:mm:ss"
 
@@ -282,7 +281,7 @@ void trend::updateData()
         enableZoomMode(false);
 
         /* set the Tzero and TzeroLoaded */
-        Tzero = QDateTime::currentDateTime().addSecs(-LogPeriodSec);
+        Tzero = QDateTime::currentDateTime().addSecs(-LogPeriodSecF);
         VisibleWindowSec = MaxWindowSec;
 
         /* at first time we are in online mode, so the window time start at the same of window loaded time */
@@ -306,9 +305,10 @@ void trend::updateData()
 
         /* calculate the TrendPeriodSec */
         /* if it is less than LogPeriodSec, set at LogPeriodSec */
-        LogPeriodSec = ((LogPeriodSecF < LogPeriodSecS) ? LogPeriodSecF : LogPeriodSecS);
         TrendPeriodSec = (int)(LoadedWindowSec / MAX_SAMPLE_NB);
-        TrendPeriodSec = (TrendPeriodSec < LogPeriodSec) ? LogPeriodSec : TrendPeriodSec;
+        if (TrendPeriodSec < LogPeriodSecF)
+            TrendPeriodSec = LogPeriodSecF;
+
         /* set TzeroLoaded to force the data load */
         TzeroLoaded = Tzero.addSecs(-1);
         _trend_data_reload_ = false;
@@ -538,7 +538,9 @@ void trend::updateData()
     {
         setOnline(false);
 
-        int increment = ((actualVisibleWindowSec / DELTA_TIME_FACTOR) < LogPeriodSec) ? LogPeriodSec : (actualVisibleWindowSec / DELTA_TIME_FACTOR);
+        int increment = actualVisibleWindowSec / DELTA_TIME_FACTOR;
+        if (increment < LogPeriodSecF)
+            increment = LogPeriodSecF;
 
         /* update the actual window parameters */
         actualTzero = actualTzero.addSecs(increment * incrementTimeDirection);
@@ -593,10 +595,6 @@ void trend::updateData()
             LOG_PRINT(warning_e, "zoom too big. number of sample %d\n", (myXfin - myXin) / TrendPeriodSec);
             return;
         }
-        else
-        {
-            LOG_PRINT(verbose_e, "ZOOOOOOOOM NUBER OF SAMPLE %d\n", (myXfin - myXin) / TrendPeriodSec);
-        }
 
         for (int i = 0; i < PEN_NB; i++)
         {
@@ -632,15 +630,12 @@ void trend::updateData()
 
         /* update the actual window parameters */
         actualVisibleWindowSec = myXfin - myXin;
-        LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
         if (_layout_ == PORTRAIT)
         {
-            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.addSecs(myXfin).toString().toAscii().data());
             actualTzero = TzeroLoaded.addSecs(myXfin);
         }
         else
         {
-            LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.addSecs(myXin).toString().toAscii().data());
             actualTzero = TzeroLoaded.addSecs(myXin);
         }
 
@@ -660,15 +655,8 @@ void trend::updateData()
             pens[z].yMaxActual = pens[z].yMax;
         }
 
-        /*actualTzero = TzeroLoaded = Tzero = QDateTime::currentDateTime()*/;
-        LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
         actualVisibleWindowSec = VisibleWindowSec;
-
-        /* set TzeroLoaded in the future to force the data load */
-        TzeroLoaded = actualTzero.addSecs(TrendPeriodSec * 2);
-
-        // Calling setOnline
-        //setOnline(true);
+        actualTzero = TzeroLoaded;
 
         do_refresh_plot = true;
         do_pan = false;
@@ -1588,15 +1576,9 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
 
     /* calculate the TrendPeriodSec */
     /* if it is less than LogPeriodSec, set at LogPeriodSec */
-    TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSec)) / MAX_SAMPLE_NB));
-    if (TrendPeriodSec < LogPeriodSec)
-        TrendPeriodSec = LogPeriodSec;
-
-    int skip = (int)(TrendPeriodSec/LogPeriodSec)
-            +
-            ((TrendPeriodSec%LogPeriodSec == 0)  ? 0 : 1)
-            -
-            1;
+    TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSecF)) / MAX_SAMPLE_NB));
+    if (TrendPeriodSec < LogPeriodSecF)
+        TrendPeriodSec = LogPeriodSecF;
 
     // need to reload data from file?
     if ( _trend_data_reload_
@@ -1610,7 +1592,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
              || actualVisibleWindowSec > LoadedWindowSec
              )
           )
-       || sample_to_skip != skip
+       || sample_to_skip != TrendPeriodSec
        )
     {
         showStatus(trUtf8("Loading..."), false);
@@ -1638,7 +1620,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         }
         VisibleWindowSec = actualVisibleWindowSec;
         LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
-        sample_to_skip = skip;
+        sample_to_skip = TrendPeriodSec;
 
 //        QDateTime Ti;
 //        if (_layout_ == LANDSCAPE)
