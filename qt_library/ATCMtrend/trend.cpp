@@ -36,7 +36,8 @@
 #define VERT_TICKS  4
 
 #define INCREMENT 1.0
-#define OVERLOAD_SECONDS(Visible) (Visible * 20 / 10) // 800 + 100% = 1600
+#define OVERLOAD_FACTOR 2
+#define OVERLOAD_SECONDS(Visible) (Visible * 20 / 10) // 800 + 50% = 1200
 #define SHIFT_FACTOR 10
 #define DELTA_TIME_FACTOR  2
 #define DELTA_VALUE_FACTOR 2
@@ -68,6 +69,8 @@
     d_qwtplot->setStyleSheet(mystyle); \
     }
 
+// FIXME: if we can change interfaces then transform the following in class members
+
 static bool do_refresh_plot;
 static bool do_pan;
 static int incrementTimeDirection = 0;
@@ -75,6 +78,9 @@ static int incrementValueDirection = 0;
 
 static QRect zoomRect;
 static bool do_zoom;
+static QString lastLogFileName;
+static fpos_t lastLogFilePos;
+
 
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
@@ -159,6 +165,7 @@ trend::trend(QWidget *parent) :
     _load_window_busy = false;
     reloading = false;
     overloadActualTzero = false;
+    lastLogFileName.clear();
 
     popup = new trend_other(this);
     popup_visible = false;
@@ -203,9 +210,6 @@ void trend::updateData()
 
     if (reloading)
     {
-        LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
-        disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-
         d_qwtplot->hide();
 
         /* disable all button during loading */
@@ -224,7 +228,6 @@ void trend::updateData()
         {
             if (strlen(_actual_trend_) == 0)
             {
-                disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
                 force_back = true;
                 reloading = false;
                 return;
@@ -498,12 +501,8 @@ void trend::updateData()
         }
 #endif
         first_time = false;
-        /* connecting new_trend signal */
-        LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
-        disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
         
         /* update the actual window parameters */
-
         LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
         if (overloadActualTzero)
         {
@@ -519,9 +518,7 @@ void trend::updateData()
         incrementTimeDirection = 0;
         incrementValueDirection = 0;
 
-        LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
         disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-        LOG_PRINT(verbose_e, "CONNECT refreshEvent\n");
         connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
     }
     
@@ -662,48 +659,48 @@ void trend::updateData()
         do_pan = false;
     }
 
-    if (do_refresh_plot)
+    if (_online_ || do_refresh_plot)
     {
         /* update the graph only if the status is online or if the new sample are visible */
-        do_refresh_plot = false;
-
         if (_online_)
         {
-            /* online mode: if necessary center the actual data */
-            QDateTime now =  QDateTime::currentDateTime();
-            if (_layout_ == PORTRAIT)
+            static int counter = 0;
+            if (counter % 2 == 0)
             {
-                actualTzero = now;
+                /* online mode: if necessary center the actual data */
+                QDateTime now =  QDateTime::currentDateTime();
+                if (_layout_ == PORTRAIT)
+                {
+                    actualTzero = now;
+                }
+                else if (_layout_ == LANDSCAPE)
+                {
+                    actualTzero = now.addSecs(-actualVisibleWindowSec);
+                }
             }
-            else if (_layout_ == LANDSCAPE)
+            if (!do_refresh_plot)
             {
-                actualTzero = now.addSecs(-actualVisibleWindowSec);
+                if (counter % 4 == 0)
+                {
+                    ui->pushButtonOnline->setStyleSheet("QPushButton"
+                                                        "{"
+                                                        "border-image: url(:/libicons/img/Chess1.png);"
+                                                        "qproperty-focusPolicy: NoFocus;"
+                                                        "}");
+                }
+                else if (counter % 4 == 2)
+                {
+                    ui->pushButtonOnline->setStyleSheet("QPushButton"
+                                                        "{"
+                                                        "border-image: url(:/libicons/img/Chess2.png);"
+                                                        "qproperty-focusPolicy: NoFocus;"
+                                                        "}");
+                }
             }
+            ++counter;
         }
-
-        // refresh the plot
+        do_refresh_plot = false;
         loadOrientedWindow();
-    }
-
-    if (getOnline()){
-        static int counter = 0;
-        if (counter % 4 == 0)
-        {
-            ui->pushButtonOnline->setStyleSheet("QPushButton"
-                                                "{"
-                                                "border-image: url(:/libicons/img/Chess1.png);"
-                                                "qproperty-focusPolicy: NoFocus;"
-                                                "}");
-        }
-        else if (counter % 4 == 2)
-        {
-            ui->pushButtonOnline->setStyleSheet("QPushButton"
-                                                "{"
-                                                "border-image: url(:/libicons/img/Chess2.png);"
-                                                "qproperty-focusPolicy: NoFocus;"
-                                                "}");
-        }
-        ++counter;
     }
     else
     {
@@ -749,6 +746,26 @@ trend::~trend()
 
 void trend::refreshEvent(trend_msg_t item_trend)
 {   
+    for (int i = 0; i < PEN_NB; i++)
+    {
+        if (pens[i].curve == NULL || ! pens[i].visible)
+        {
+            continue;
+        }
+        if (pens[i].CtIndex == item_trend.CtIndex)
+        {
+            if ( _online_
+              || item_trend.timestamp < actualTzero.addSecs(actualVisibleWindowSec)
+              || pens[i].x[pens[i].sample] < actualVisibleWindowSec
+               )
+            {
+                do_refresh_plot = true;
+            }
+            break;
+        }
+    }
+    return;
+
     if (reloading || _trend_data_reload_ || first_time || force_back || _load_window_busy) {
         return;
     }
@@ -1021,19 +1038,6 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
 {
     int logfound = 0;
     
-    for (int rownb = 0; rownb < PEN_NB; rownb++)
-    {
-        if (pens[rownb].y != NULL)
-        {
-            for (int i = 0; i < MAX_SAMPLE_NB; i++)
-            {
-                pens[rownb].y[i] = /*pens[rownb].yMax*/NAN;
-                pens[rownb].x[i] = 0;
-            }
-        }
-        pens[rownb].sample = 0;
-    }
-    
     LOG_PRINT(verbose_e, "begin '%s' end '%s' skip '%d'\n", begin.toString(DATE_TIME_FMT).toAscii().data(), end.toString(DATE_TIME_FMT).toAscii().data(), skip);
     
     /* the store are in STORE_DIR and they have a name like yyyy_MM_dd_HH_mm_ss.log */
@@ -1056,11 +1060,21 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
         }
         if ( logFileBegin <= begin || logFileBegin <= end )
         {
-            // load from file
-            if (Load(QString("%1/%2").arg(STORE_DIR).arg(logFileList.at(i)).toAscii().data(), &begin, &end, skip) == false)
+            if (lastLogFileName == logFileList.at(i))
             {
-                LOG_PRINT(warning_e, "Cannot load '%s'\n", logFileList.at(i).toAscii().data());
-                return false;
+                // update from file
+                if (! Load(NULL, &begin, &end, skip))
+                {
+                    lastLogFileName.clear();
+                }
+            }
+            else
+            {
+                // load from file
+                if (Load(QString("%1/%2").arg(STORE_DIR).arg(logFileList.at(i)).toAscii().data(), &begin, &end, skip))
+                {
+                    lastLogFileName = logFileList.at(i);
+                }
             }
             logfound++;
         }
@@ -1081,22 +1095,27 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     FILE * fp = NULL;
     time_t last_used = 0;
     int samples[PEN_NB] = {0, 0, 0, 0};
+    bool updating = false;
+    char pathname[FILENAME_MAX];
 
-    LOG_PRINT(verbose_e, "'%s', %s, %s, %d\n",
-              filename,
-              begin->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
-              end->toString("yyyy-MM-ddTHH:mm:ss").toAscii().data(),
-              skip
-              );
+    if (filename == NULL)
+    {
+        updating = true;
+        strcpy(pathname, QString("%1/%2").arg(STORE_DIR).arg(lastLogFileName).toAscii().data());
+    }
+    else
+    {
+        strcpy(pathname, filename);
+    }
 
-    fp = fopen (filename, "r");
+    fp = fopen (pathname, "r");
     if (fp == NULL)
     {
-        LOG_PRINT(error_e, "no trend file '%s'\n", filename);
+        LOG_PRINT(error_e, "no trend file '%s'\n", pathname);
         return false;
     }
 
-    LOG_PRINT(verbose_e, "FOUND LOG FILE '%s'\n", filename);
+    LOG_PRINT(verbose_e, "FOUND LOG FILE '%s'\n", pathname);
     /*
      * File format:
      * date      ;     time;   tag1 ; ...;   tagN
@@ -1107,7 +1126,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     int row = 0;
     if (fgets(line, LINE_SIZE, fp) == NULL)
     {
-        LOG_PRINT(error_e, "Cannot read the header from '%s'\n", filename);
+        LOG_PRINT(error_e, "Cannot read the header from '%s'\n", pathname);
+        rewind(fp);
         goto exit_function;
     }
 
@@ -1116,6 +1136,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     if (p == NULL || p[0] == '\0' || strcmp(p, "date") != 0)
     {
         LOG_PRINT(error_e, "Invalid date field '%s' '%s'\n", line, p);
+        rewind(fp);
         goto exit_function;
     }
 
@@ -1124,6 +1145,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     if (p == NULL || p[0] == '\0' || strcmp(p, "time") != 0)
     {
         LOG_PRINT(error_e, "Invalid time field '%s' '%s'\n", line, p);
+        rewind(fp);
         goto exit_function;
     }
 
@@ -1147,6 +1169,15 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         }
         if (! found)
             filter.append(-1);
+    }
+
+    if (updating)
+    {
+        fsetpos(fp, &lastLogFilePos);
+    }
+    else
+    {
+        fgetpos(fp, &lastLogFilePos);
     }
 
     /* extract data */
@@ -1230,18 +1261,23 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         }
 
     }
-
     retval = true;
 
 exit_function:
+    fgetpos(fp, &lastLogFilePos);
     fclose(fp);
-    for (int j = 0; j < PEN_NB; ++j) {
-        // for each curve, if there were samples, we add a NAN (i.e. force a discontinuity) at the end of each log
-        if (samples[j] > 0 && pens[j].sample < MAX_SAMPLE_NB)
+
+    // for each curve, if there were samples, we add a NAN (i.e. force a discontinuity) at the end of each log
+    if (!updating)
+    {
+        for (int j = 0; j < PEN_NB; ++j)
         {
-            pens[j].y[pens[j].sample] = NAN;
-            pens[j].x[pens[j].sample] = pens[j].x[pens[j].sample - 1]; // ok: samples[j] > 0
-            pens[j].sample++;
+            if (samples[j] > 0 && pens[j].sample < MAX_SAMPLE_NB)
+            {
+                pens[j].y[pens[j].sample] = NAN;
+                pens[j].x[pens[j].sample] = pens[j].x[pens[j].sample - 1]; // ok: samples[j] > 0
+                pens[j].sample++;
+            }
         }
     }
     return retval;
@@ -1258,10 +1294,7 @@ void trend::incrementValue(int direction)
 }
 
 bool trend::loadFromFile(QDateTime Ti)
-{
-    LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
-    disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-    
+{   
     // manage online status
     QDateTime Tfin;
     if(TzeroLoaded.addSecs(LoadedWindowSec) > QDateTime::currentDateTime())
@@ -1274,64 +1307,7 @@ bool trend::loadFromFile(QDateTime Ti)
     }
     
     /* load data from Ti to Ti + MaxWindowsec */
-    if (Load(TzeroLoaded, Tfin, TrendPeriodSec) == false)
-    {
-        LOG_PRINT(verbose_e, "Cannot load data\n");
-        LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
-        disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-        LOG_PRINT(verbose_e, "CONNECT refreshEvent\n");
-        connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
-        return false;
-    }
-    LOG_PRINT(verbose_e, "PARSED2 TREND FILE\n");
-
-#ifdef STATIC_AXES
-    if (timeScale == NULL)
-    {
-        timeScale = new TimeScaleDraw(TzeroLoaded.time());
-        d_qwtplot->setAxisScaleDraw(QwtAxisId( timeAxisId, 0 ), timeScale);
-    }
-    else
-    {
-        timeScale->setBaseTime(TzeroLoaded.time());
-    }
-    d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
-    LOG_PRINT(verbose_e, "Setting time axis\n");
-#else
-    d_qwtplot->setAxisScaleDraw(timeAxisId, new DateTimeScaleDraw(TzeroLoaded));
-#endif
-#ifdef VALUE_TIME_SCALE
-    for (int i = 0; i < PEN_NB; i++)
-    {
-        int decimal = 0;
-        if (pens[i].visible)
-        {
-#ifdef STATIC_AXES
-#if 0 //moved into LoadTRend since if no data are available valueScale is null and you get SIG FAULT
-            decimal =  getVarDecimalByName(pens[i].tag);
-            if (valueScale[i] == NULL)
-            {
-                valueScale[i] = new NormalScaleDraw(decimal);
-            }
-#endif
-
-#else
-            decimal =  getVarDecimalByName(pens[i].tag);
-#endif
-        }
-#ifdef STATIC_AXES
-        d_qwtplot->setAxisScaleDraw(, valueScale[i]);
-#else
-        d_qwtplot->setAxisScaleDraw(QwtAxisId( valueAxisId, i ), new NormalScaleDraw(decimal));
-#endif
-        //LOG_PRINT(verbose_e, "decimals %d\n", decimal);
-    }
-#endif
-    LOG_PRINT(verbose_e, "DISCONNECT refreshEvent\n");
-    disconnect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)));
-    LOG_PRINT(verbose_e, "CONNECT refreshEvent\n");
-    connect(logger, SIGNAL(new_trend(trend_msg_t)), this, SLOT(refreshEvent(trend_msg_t)),Qt::QueuedConnection);
-    return true;
+    return Load(TzeroLoaded, Tfin, TrendPeriodSec);
 }
 
 #define ABS(a) (((a) > 0) ? (a) : -(a))
@@ -1551,180 +1527,156 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         LOG_PRINT(verbose_e, "BUSY\n");
         return false;
     }
+
     _load_window_busy = true;
-    LOG_PRINT(verbose_e, "Current '%s' Tmin '%s' Tmax '%s' ymin %f ymax %f pen %d\n",
-              QDateTime::currentDateTime().toString(DATE_TIME_FMT).toAscii().data(),
-              Tmin.toString(DATE_TIME_FMT).toAscii().data(),
-              Tmax.toString(DATE_TIME_FMT).toAscii().data(),
-              ymin,
-              ymax,
-              pen
-              );
-    if (Tmax < Tmin)
-    {
-        //warning
-        LOG_PRINT(error_e, "Tmin in the future! %s vs %s\n",Tmin.toString(DATE_TIME_FMT).toAscii().data(), Tmax.toString(DATE_TIME_FMT).toAscii().data());
-    }
 
-    //verbose
-    LOG_PRINT(verbose_e, "actualVisibleWindowSec %d VisibleWindowSec %d actualTzero %s Tzero %s TzeroLoaded %s\n",
-              actualVisibleWindowSec,
-              VisibleWindowSec,
-              actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-              Tzero.toString(DATE_TIME_FMT).toAscii().data(),
-              TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data());
-
-    /* calculate the TrendPeriodSec */
-    /* if it is less than LogPeriodSec, set at LogPeriodSec */
     TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSecF)) / MAX_SAMPLE_NB));
     if (TrendPeriodSec < LogPeriodSecF)
         TrendPeriodSec = LogPeriodSecF;
 
-    // need to reload data from file?
+    // (1/3) out of bounds, so we need to load all data from file?
     if ( _trend_data_reload_
-       || (  _layout_ == LANDSCAPE
-         && (  actualTzero < TzeroLoaded
-            || actualTzero.addSecs(actualVisibleWindowSec) > TzeroLoaded.addSecs(LoadedWindowSec)
-            )
-         )
-       || ( _layout_ == PORTRAIT
-          && (  actualTzero.addSecs(-actualVisibleWindowSec) < TzeroLoaded
-             || actualVisibleWindowSec > LoadedWindowSec
-             )
-          )
-       || sample_to_skip != TrendPeriodSec
-       )
+       || actualTzero < TzeroLoaded
+       || TzeroLoaded.addSecs(LoadedWindowSec) < actualTzero
+       || sample_to_skip != TrendPeriodSec )
     {
         showStatus(trUtf8("Loading..."), false);
-        if ( ! _online_ )
+        // clear whole plot area
+        for (int i = 0; i < PEN_NB; i++)
         {
-            // clear plot area, but only if not online
-            for (int i = 0; i < PEN_NB; i++)
+            pens[i].sample = 0;
+            if (pens[i].curve != NULL)
             {
-                if (pens[i].curve != NULL)
-                {
-                    pens[i].curve->detach();
-                }
+                pens[i].curve->detach();
             }
         }
-        popup->enableButtonUp(false);
-        popup->enableButtonDown(false);
-        popup->enableButtonLeft(false);
-        popup->enableButtonRight(false);
 
-        // REBASE THE SAMPLES
+        // new buffer limits
+#if 1
         TzeroLoaded = actualTzero;
-        for (int z = 0; z < PEN_NB; z++)
-        {
-            pens[z].sample = 0;
-        }
+#else
+        if (_layout_ == LANDSCAPE)
+            TzeroLoaded = actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
+        else
+            TzeroLoaded = actualTzero.addSecs( - actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
+#endif
         VisibleWindowSec = actualVisibleWindowSec;
         LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
         sample_to_skip = TrendPeriodSec;
 
-//        QDateTime Ti;
-//        if (_layout_ == LANDSCAPE)
-//        {
-//            Ti = actualTzero.addSecs(-(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
-//        }
-//        else
-//        {
-//            Ti = actualTzero.addSecs( - actualVisibleWindowSec -(int)((LoadedWindowSec - actualVisibleWindowSec) / 2));
-//        }
+        d_qwtplot->setAxisScaleDraw(timeAxisId, new DateTimeScaleDraw(TzeroLoaded));
+        for (int i = 0; i < PEN_NB; i++)
+        {
+            int decimal = 0;
+            if (pens[i].visible)
+            {
+                decimal =  getVarDecimalByName(pens[i].tag);
+            }
+            d_qwtplot->setAxisScaleDraw(QwtAxisId( valueAxisId, i ), new NormalScaleDraw(decimal));
+        }
 
-        if (loadFromFile(TzeroLoaded) == false)
-        {
-//                errormsg = trUtf8("Cannot found any data from %1 to %2").arg(actualTzero.toString().toAscii().data()).arg(QDateTime::currentDateTime().toString().toAscii().data());
-//                showStatus(errormsg, true);
-//                errormsg.clear();
-            LOG_PRINT(warning_e, "Cannot find any data from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
-            //LOG_PRINT(verbose_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), QDateTime::currentDateTime().toString().toAscii().data());
-            //actualTzero = QDateTime::currentDateTime();
-        }
-        else if (actualTzero < TzeroLoaded || actualVisibleWindowSec > LoadedWindowSec)
-        {
-            LOG_PRINT(warning_e, "The new Tzero (%s) is still out of bounds (%s ... %s - VisibleWindowSec %d). Force the TzeroLoaded into the bound\n",
-                      actualTzero.toString(DATE_TIME_FMT).toAscii().data(),
-                      TzeroLoaded.toString(DATE_TIME_FMT).toAscii().data(),
-                      TzeroLoaded.addSecs(LoadedWindowSec).toString(DATE_TIME_FMT).toAscii().data(),
-                      actualVisibleWindowSec
-                      );
-            LOG_PRINT(error_e, "UPDATE actualTzero from %s to %s\n", actualTzero.toString().toAscii().data(), TzeroLoaded.toString().toAscii().data());
-            actualTzero = TzeroLoaded;
-            d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
-        }
+        lastLogFileName.clear();
+        loadFromFile(TzeroLoaded);
     }
 
+    // (2/3) crossing bounds, so we need to shift and reload some new data from file?
+    else if (TzeroLoaded.addSecs(LoadedWindowSec) < actualTzero.addSecs(actualVisibleWindowSec))
+    {
+        showStatus(trUtf8("Reloading..."), false);
+        // VisibleWindowSec = actualVisibleWindowSec;
+
+        // shift samples
+        int deltaSec = actualVisibleWindowSec;
+        TzeroLoaded = TzeroLoaded.addSecs(deltaSec);
+
+        // clear some of the plot area, reuse as much as possible
+        for (int i = 0; i < PEN_NB; i++)
+        {
+            if (pens[i].curve == NULL)
+            {
+                pens[i].sample = 0;
+            }
+            else if (pens[i].sample > (MAX_SAMPLE_NB / OVERLOAD_FACTOR))
+            {
+                int j = 0;
+
+                // find the first sample in the new time range
+                while (j < pens[i].sample && pens[i].x[j] < deltaSec)
+                {
+                    ++j;
+                }
+                if (j < pens[i].sample)
+                {
+                    // shift left the samples (position and time)
+                    fprintf(stderr," shifting %d values over %d\n", j, pens[i].sample);
+                    for (int k = 0; k < j; ++k)
+                    {
+                        pens[i].x[k] = pens[i].x[k + j] - deltaSec;
+                        pens[i].y[k] = pens[i].y[k + j];
+                    }
+                    // reduce the size
+                    pens[i].sample = (pens[i].sample - j);
+                }
+                else
+                {
+                    // sorry, nothing to reuse
+                    pens[i].sample = 0;
+                }
+            }
+        }
+
+        loadFromFile(TzeroLoaded);
+    }
+
+    // (3/3) online, so just watch for new samples?
+    else if (_online_)
+    {
+        // showStatus(trUtf8("Updating..."), false);
+
+        loadFromFile(TzeroLoaded);
+    }
+
+    // anyhow redraw
     bool ret_val = showWindow(Tmin, Tmax, ymin, ymax, pen);
-    LOG_PRINT(verbose_e, "UUUUUUUUP pen %d Min %f Actual Min %f\n", actualPen, pens[actualPen].yMin, pens[actualPen].yMinActual);
-    /* enable or disable up and down arrow in according with the available upper or lower point */
+
+    /* enable up and down arrow in according with the available upper or lower point */
     if (pens[actualPen].yMax > pens[actualPen].yMaxActual)
     {
         if (_layout_ == LANDSCAPE)
-        {
             popup->enableButtonUp(true);
-        }
         else
-        {
             popup->enableButtonLeft(true);
-        }
-    }
-    else
-    {
+    } else {
         if (_layout_ == LANDSCAPE)
-        {
             popup->enableButtonUp(false);
-        }
         else
-        {
             popup->enableButtonLeft(false);
-        }
     }
-    LOG_PRINT(verbose_e, "DOWN pen %d Max %f Actual Max %f\n", actualPen, pens[actualPen].yMax, pens[actualPen].yMaxActual);
+
     if (pens[actualPen].yMin < pens[actualPen].yMinActual)
     {
         if (_layout_ == LANDSCAPE)
-        {
             popup->enableButtonDown(true);
-        }
         else
-        {
             popup->enableButtonRight(true);
-        }
-    }
-    else
-    {
+    } else {
         if (_layout_ == LANDSCAPE)
-        {
             popup->enableButtonDown(false);
-        }
         else
-        {
             popup->enableButtonRight(false);
-        }
     }
     
     if (QDateTime::currentDateTime() > Tmax.addSecs(TrendPeriodSec))
     {
         if (_layout_ == LANDSCAPE)
-        {
             popup->enableButtonRight(true);
-        }
         else
-        {
             popup->enableButtonUp(true);
-        }
-    }
-    else
-    {
+    } else {
         if (_layout_ == LANDSCAPE)
-        {
             popup->enableButtonRight(false);
-        }
         else
-        {
             popup->enableButtonUp(false);
-        }
     }
     
     if (_layout_ == LANDSCAPE)

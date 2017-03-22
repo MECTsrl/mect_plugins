@@ -405,7 +405,7 @@ int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** 
     if (*fpin == NULL || feof(*fpin))
     {
         char fullpath[FILENAME_MAX];
-        if (*fpin != NULL)
+        if (*fpin != NULL) // i.e. feof()
         {
             if (actualfcount + 1 < fcount)
             {
