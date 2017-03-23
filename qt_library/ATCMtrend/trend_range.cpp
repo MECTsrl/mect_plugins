@@ -168,7 +168,6 @@ void trend_range::on_pushButtonOk_clicked()
     if (actualVisibleWindowSec != tmpwindow)
     {
         actualVisibleWindowSec = tmpwindow;
-        _online_ = false;
     }
     
     QDateTime tmpTzero = QDateTime(

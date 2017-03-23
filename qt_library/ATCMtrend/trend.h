@@ -20,7 +20,6 @@
 #include <qwt_scale_draw.h>
 #include <qwt_plot_marker.h>
 
-#undef MARKER
 #define VALUE_TIME_SCALE
 
 namespace Ui {
@@ -168,9 +167,6 @@ private:
     QwtPlot * d_qwtplot;
     QwtPlotGrid *grid;
     QwtScaleDraw * timescaledraw;
-#ifdef MARKER
-    QwtPlotMarker *d_marker;
-#endif
     int timeAxisId;
     int valueAxisId;
     
@@ -199,11 +195,6 @@ private:
     
     bool _load_window_busy;
     TimeScaleDraw * timeScale;
-#ifdef STATIC_AXES
-#ifdef VALUE_TIME_SCALE
-    NormalScaleDraw * valueScale[PEN_NB];
-#endif
-#endif
     int LogPeriodSec; // unused
     int sample_to_skip;
     QString errormsg;

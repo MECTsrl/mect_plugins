@@ -30,8 +30,6 @@
 
 #include <time.h>
 
-#undef STATIC_AXES
-
 #define VERT_TICKS  4
 
 #define OVERLOAD_SECONDS(Visible) (Visible * 12 / 10) // 20%
@@ -83,6 +81,8 @@ static bool unzoom_enabled;
 static QDateTime unzoom_actualTzero;
 static int unzoom_actualVisibleWindowSec;
 
+static DateTimeScaleDraw * theDateTimeScaleDraw;
+
 
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
@@ -102,7 +102,7 @@ trend::trend(QWidget *parent) :
     {
         pens[i].x = new double [MAX_SAMPLE_NB + 1];
         pens[i].y = new double [MAX_SAMPLE_NB + 1];
-        pens[i].curve = new InterruptedCurve(); // QwtPlotCurve();
+        pens[i].curve = NULL; // new InterruptedCurve(); // QwtPlotCurve();
     }
     
     actualPen = 0;
@@ -110,18 +110,7 @@ trend::trend(QWidget *parent) :
     d_qwtplot = NULL;
     d_picker = NULL;
     valueAxisId = 0;
-#ifdef MARKER
-    d_marker = NULL;
-#endif
     timeScale  = NULL;
-#ifdef STATIC_AXES
-#ifdef VALUE_TIME_SCALE
-    for (int i = 0; i < PEN_NB; i++)
-    {
-        valueScale[i] = NULL;
-    }
-#endif
-#endif
 
     d_qwtplot = ui->qwtPlot;
     d_qwtplot->hide();
@@ -131,6 +120,7 @@ trend::trend(QWidget *parent) :
     d_qwtplot->setAxesCount( QwtPlot::xBottom, 1 );
     d_qwtplot->setAxesCount( QwtPlot::xTop, PEN_NB );
     d_qwtplot->setAxesCount( QwtPlot::yLeft, PEN_NB );
+    theDateTimeScaleDraw = NULL;
 
     /* set the trend stylesheet */
     SET_TREND();
@@ -166,8 +156,12 @@ trend::trend(QWidget *parent) :
     _trend_data_reload_ = true;
     _load_window_busy = false;
     reloading = false;
+    force_back = false;
+    first_time = false;
     overloadActualTzero = false;
     lastLogFileName.clear();
+
+    actualVisibleWindowSec = 0;
 
     popup = new trend_other(this);
     popup_visible = false;
@@ -194,7 +188,6 @@ trend::trend(QWidget *parent) :
  */
 void trend::reload()
 {
-    LOG_PRINT(verbose_e, " RELOADING\n");
     reloading = true;
 }
 
@@ -213,112 +206,69 @@ void trend::updateData()
 
     if (reloading)
     {
-        d_qwtplot->hide();
+        reloading = false;
+        showStatus(trUtf8("Loading..."), false);
 
-        /* disable all button during loading */
+        d_qwtplot->hide(); // setVisible(false);
+
+        /* disable all buttons during loading */
         ui->pushButtonPan->setEnabled(false);
         popup->enableButtonUp(false);
         popup->enableButtonDown(false);
         popup->enableButtonLeft(false);
         popup->enableButtonRight(false);
-        ui->pushButtonPen->setText("");
 
-        /* set the label as loading */
-        showStatus(trUtf8("Loading..."), false);
-
-        force_back = false;
-
-        /* actualVisibleWindowSec is not null, skip the initialization */
         if (_trend_data_reload_)
         {
-            if (strlen(_actual_trend_) == 0)
+            actualPen = 0;
+            for (int z = 0; z < PEN_NB; z++)
             {
-                force_back = true;
-                reloading = false;
-                return;
+                pens[z].sample = 0;
             }
-
-            LOG_PRINT(verbose_e, "_trend_data_reload_\n");
-
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotCurve);
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotScale);
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotUserItem);
 
-            /* load the actual trend info */
+            if (strlen(_actual_trend_) == 0)
+            {
+                force_back = true;
+                return;
+            }
             if (LoadTrend(_actual_trend_, &errormsg) == false)
             {
                 force_back = true;
-                reloading = false;
                 return;
             }
-
             for (int z = 0; z < PEN_NB; z++)
             {
-#ifdef STATIC_AXES
-                if (valueScale[z] == NULL)
-                {
-                    int decimal = 0;
-                    if (strlen(pens[z].tag))
-                    {
-                        decimal = getVarDecimalByName(pens[z].tag);
-                    }
-                    LOG_PRINT(verbose_e, " valueScale null pointer for z='%d'\n", z);
-                    valueScale[z] = new NormalScaleDraw(decimal);
-                }
-#endif
-                pens[z].sample = 0;
+                // must do this
+                pens[z].curve = new InterruptedCurve(); // QwtPlotCurve();
             }
-    #ifdef MARKER
-            if (d_marker != NULL)
-            {
-                delete d_marker;
-            }
-            d_marker = new QwtPlotMarker();
-            d_marker->setValue(0.0, 0.0);
-            d_marker->setLineStyle(QwtPlotMarker::VLine);
-            //d_marker->setLinePen(QPen(QColor(QString("#%1").arg(pens[actualPen].color)), 0, Qt::DashDotLine));
-            d_marker->setLinePen(QPen(Qt::green, 0, Qt::DashDotLine));
-            d_marker->attach(d_qwtplot);
-    #endif
+            _trend_data_reload_ = false;
         }
 
-        d_qwtplot->show();
-
-        LOG_PRINT(verbose_e, "Calling setOnline  _trend_data_reload_ %d\n",  _trend_data_reload_);
-        enableZoomMode(false);
-
-        /* set the Tzero and TzeroLoaded */
-        Tzero = QDateTime::currentDateTime().addSecs(-LogPeriodSecF);
-        VisibleWindowSec = MaxWindowSec;
-
-        /* at first time we are in online mode, so the window time start at the same of window loaded time */
+        // reset all        
+        d_qwtplot->show(); // setVisible(true);
         if (actualVisibleWindowSec == 0)
         {
+            Tzero = QDateTime::currentDateTime().addSecs(-LogPeriodSecF);
+            VisibleWindowSec = MaxWindowSec;
+
             actualTzero = Tzero;
             actualVisibleWindowSec = VisibleWindowSec;
+
+            enableZoomMode(false);
             setOnline(true);
-            LOG_PRINT(verbose_e, "initialize actualTzero '%s' and actualVisibleWindowSec %d\n", actualTzero.toString(DATE_TIME_FMT).toAscii().data(), actualVisibleWindowSec);
-            overloadActualTzero = true;
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "initialize actualTzero '%s' and actualVisibleWindowSec %d\n", actualTzero.toString(DATE_TIME_FMT).toAscii().data(), actualVisibleWindowSec);
-            VisibleWindowSec = actualVisibleWindowSec;
-            // setOnline(false); /* maintain the last status */
-            overloadActualTzero = false;
         }
 
+        VisibleWindowSec = actualVisibleWindowSec;
         LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
-
-        /* calculate the TrendPeriodSec */
-        /* if it is less than LogPeriodSec, set at LogPeriodSec */
         TrendPeriodSec = (int)(LoadedWindowSec / MAX_SAMPLE_NB);
         if (TrendPeriodSec < LogPeriodSecF)
             TrendPeriodSec = LogPeriodSecF;
 
         /* set TzeroLoaded to force the data load */
         TzeroLoaded = Tzero.addSecs(-1);
-        _trend_data_reload_ = false;
 
         if (_layout_ == PORTRAIT)
         {
@@ -373,45 +323,26 @@ void trend::updateData()
             d_qwtplot->setAxisScaleDraw(QwtPlot::yRight + i, NULL);
             d_qwtplot->setAxisMaxMajor(QwtPlot::yRight + i, 0);
             d_qwtplot->setAxisMaxMinor(QwtPlot::yRight + i, 0);
-
-            LOG_PRINT(verbose_e, "pen %d yMin %f yMax %f tmin %d tmax %d\n", i, pens[i].yMin, pens[i].yMax, 0, MaxWindowSec);
         }
-
-    #ifdef STATIC_AXES
-        if (timeScale == NULL)
-        {
-            timeScale = new TimeScaleDraw(TzeroLoaded.time());
-            d_qwtplot->setAxisScaleDraw(QwtAxisId( timeAxisId, 0 ), timeScale);
-        }
-        else
-        {
-            timeScale->setBaseTime(TzeroLoaded.time());
-        }
-        d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), false);
-        LOG_PRINT(verbose_e, "####### Setting time axis\n");
-    #else
-        d_qwtplot->setAxisScaleDraw(timeAxisId, new DateTimeScaleDraw(TzeroLoaded));
-    #endif
+        theDateTimeScaleDraw = new DateTimeScaleDraw(QDateTime::currentDateTime());
+        d_qwtplot->setAxisScaleDraw(timeAxisId, theDateTimeScaleDraw);
 
         first_time = true;
-        reloading = false;
-        LOG_PRINT(verbose_e, " RELOADED\n");
     }
 
     if (force_back)
     {
+        force_back = false;
+
         /* select a new trend from CUSTOM_TREND_DIR directory */
-        item_selector * sel;
-        QString value;
         QStringList trendList;
         QDir trendDir(CUSTOM_TREND_DIR, "*.csv");
-
-        force_back = false;
 
         trendList = trendDir.entryList(QDir::Files|QDir::NoDotAndDotDot);
         if (trendList.count() > 0)
         {
-            sel = new item_selector(trendList, &value, trUtf8("TREND SELECTOR"));
+            QString value;
+            item_selector * sel = new item_selector(trendList, &value, trUtf8("TREND SELECTOR"));
             sel->showFullScreen();
 
             if (sel->exec() == QDialog::Accepted)
@@ -419,94 +350,35 @@ void trend::updateData()
                 strcpy(_actual_trend_, QFileInfo(value).baseName().toAscii().data());
                 if (LoadTrend(_actual_trend_, &errormsg) == false)
                 {
+                    force_back = true;
                     errormsg = trUtf8("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg);
                     showStatus(errormsg, true);
                     errormsg.clear();
-                    force_back = true;
-                    delete sel;
-                    return;
-                }
-                else
-                {
-                    delete sel;
-                    for (int z = 0; z < PEN_NB; z++)
-                    {
-#ifdef STATIC_AXES
-                        if (valueScale[z] == NULL)
-                        {
-                            int decimal = 0;
-                            if (strlen(pens[z].tag))
-                            {
-                                decimal = getVarDecimalByName(pens[z].tag);
-                            }
-                            LOG_PRINT(verbose_e, " valueScale null pointer for z='%d'\n", z);
-                            valueScale[z] = new NormalScaleDraw(decimal);
-                        }
-#endif
-                        pens[z].sample = 0;
-                    }
+                } else {
                     reloading = true;
-                    return;
                 }
-            }
-            else
-            {
                 delete sel;
-                errormsg = trUtf8("No trend selected");
-                go_back();
+                return;
             }
+            delete sel;
+            errormsg = trUtf8("No trend selected");
+            go_back();
+            return;
         }
-        else
-        {
-            errormsg = trUtf8("No trend to show");
-        }
-
-        actualVisibleWindowSec = 0;
+        errormsg = trUtf8("No trend to show");
         showStatus(errormsg, true);
         errormsg.clear();
-        //go_back();
+
+        actualVisibleWindowSec = 0;
+        go_back();
         return;
     }
 
     if (first_time)
     {
-#if 0
-        d_qwtplot->setGeometry(ui->frame->rect());
-        if (_layout_ == PORTRAIT)
-        {
-            ui->pushButtonSelect->setGeometry(0,0,ui->frame->width(), 30);
-            LOG_PRINT(verbose_e, "GEOMETRY: 0,0,%d,30\n", ui->frame->width());
-            ui->labelvalue->setGeometry(
-                        ui->frame->width() - ui->labelvalue->width(),
-                        ui->frame->height() - ui->labelvalue->height(),
-                        ui->labelvalue->width(),
-                        ui->labelvalue->height()
-                        );
-        }
-        else
-        {
-            ui->pushButtonSelect->setGeometry(0,0,80, ui->frame->height());
-            LOG_PRINT(verbose_e, "GEOMETRY: 0,0,80,%d\n", ui->frame->height());
-            ui->labelvalue->setGeometry(
-                        ui->frame->width() - ui->labelvalue->width(),
-                        ui->frame->height() + ui->pushButtonSelect->height(),
-                        ui->labelvalue->width(),
-                        ui->labelvalue->height()
-                        );
-        }
-#endif
         first_time = false;
-        
-        /* update the actual window parameters */
-        LOG_PRINT(verbose_e, "UPDATE actualVisibleWindowSec\n");
-        if (overloadActualTzero)
-        {
-            overloadActualTzero = false;
-            actualTzero = Tzero;
-            actualVisibleWindowSec = VisibleWindowSec;
-        }
-        
-        actualPen = -1;
+                
+        actualPen = actualPen - 1;
         on_pushButtonSelect_clicked();
 
         do_refresh_plot = true;
@@ -528,7 +400,8 @@ void trend::updateData()
     // from UP, DOWN, LEFT, RIGHT buttons
     if (incrementTimeDirection != 0)
     {
-        setOnline(false);
+        if (incrementTimeDirection < 0)
+            setOnline(false);
 
         int increment = actualVisibleWindowSec / DELTA_TIME_FACTOR;
         if (increment < LogPeriodSecF)
@@ -560,7 +433,6 @@ void trend::updateData()
     // zoomed
     if (do_zoom)
     {
-
         int myXin, myXfin;
 
         if (_layout_ == PORTRAIT)
@@ -684,18 +556,8 @@ void trend::updateData()
                 do_refresh_plot = true;
                 /* online mode: if necessary center the actual data */
                 QDateTime now =  QDateTime::currentDateTime();
-#if 0
-                if (_layout_ == PORTRAIT)
-                {
-                    actualTzero = now;
-                }
-                else if (_layout_ == LANDSCAPE)
-                {
-                    actualTzero = now.addSecs(-actualVisibleWindowSec);
-                }
-#else
+
                 actualTzero = now.addSecs(-actualVisibleWindowSec);
-#endif
             }
 
             if (counter % 4 == 0)
@@ -903,7 +765,6 @@ bool trend::getOnline()
 
 bool trend::setRange()
 {
-    setOnline(false);
     disableUpdate();
     return goto_page("trend_range");
 }
@@ -953,9 +814,6 @@ bool trend::bringFront(int pen)
     {
         pens[pen].curve->detach();
         pens[pen].curve->attach(d_qwtplot);
-#ifdef MARKER
-        d_marker->setLinePen(QPen(QColor(QString("#%1").arg(pens[pen].color)), 0, Qt::DashDotLine));
-#endif
         _load_window_busy = false;
         return true;
     }
@@ -1377,14 +1235,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                 decimal = 0;
             }
             
-#ifdef STATIC_AXES
-            if (valueScale[pen_index]->getDecimalNb() != decimal)
-            {
-                valueScale[pen_index]->setDecimalNb(decimal);
-            }
-#else
             d_qwtplot->setAxisScaleDraw(QwtAxisId( valueAxisId, pen_index ), new NormalScaleDraw(decimal));
-#endif
             /* prepare the value axis tick */
             QList<double> arrayTicks;
             double deltay = (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS;
@@ -1450,15 +1301,17 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                     }
 
                     // set the new samples
-                    if (_layout_ == PORTRAIT)
-                    {
-                        pens[pen_index].curve->setRawSamples(&(pens[pen_index].y[XindexIn]), &(pens[pen_index].x[XindexIn]), XindexFin - XindexIn);
+                    if (pens[pen_index].curve != NULL) {
+                        if (_layout_ == PORTRAIT)
+                        {
+                            pens[pen_index].curve->setRawSamples(&(pens[pen_index].y[XindexIn]), &(pens[pen_index].x[XindexIn]), XindexFin - XindexIn);
+                        }
+                        else
+                        {
+                            pens[pen_index].curve->setRawSamples(&(pens[pen_index].x[XindexIn]), &(pens[pen_index].y[XindexIn]), XindexFin - XindexIn);
+                        }
+                        pens[pen_index].curve->attach(d_qwtplot);
                     }
-                    else
-                    {
-                        pens[pen_index].curve->setRawSamples(&(pens[pen_index].x[XindexIn]), &(pens[pen_index].y[XindexIn]), XindexFin - XindexIn);
-                    }
-                    pens[pen_index].curve->attach(d_qwtplot);
 
                     // update value (QLabel)
                     if (pen_index == pen && this->isVisible())
@@ -1537,7 +1390,8 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
         sample_to_skip = TrendPeriodSec;
 
-        d_qwtplot->setAxisScaleDraw(timeAxisId, new DateTimeScaleDraw(TzeroLoaded));
+        theDateTimeScaleDraw = new DateTimeScaleDraw(QDateTime::currentDateTime());
+        d_qwtplot->setAxisScaleDraw(timeAxisId, theDateTimeScaleDraw);
         for (int i = 0; i < PEN_NB; i++)
         {
             int decimal = 0;
@@ -1612,6 +1466,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     }
 
     // anyhow redraw
+    theDateTimeScaleDraw->setBaseDateTime(TzeroLoaded);
     bool ret_val = showWindow(Tmin, Tmax, ymin, ymax, pen);
 
     /* enable up and down arrow in according with the available upper or lower point */
@@ -1629,7 +1484,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         if (_layout_ == LANDSCAPE) popup->enableButtonDown(false);  else popup->enableButtonLeft(false);
     }
     
-    if (actualTzero < QDateTime::currentDateTime())
+    if (! _online_) // actualTzero < QDateTime::currentDateTime())
     {
         if (_layout_ == LANDSCAPE) popup->enableButtonRight(true);  else popup->enableButtonUp(true);
     } else {
@@ -1661,11 +1516,6 @@ void trend::moved(const QPoint &pos)
     ui->labelvalue->setStyleSheet(QString("border: 2px solid #%1;" "font: 14pt \"DejaVu Sans Mono\";").arg(pens[actualPen].color));
     ui->pushButtonPen->setVisible(false);
     ui->labelvalue->setVisible(true);
-
-#ifdef MARKER
-    d_marker->setValue(pos.x(), pos.y());
-    LOG_PRINT(verbose_e, "############ MARKER %d\n", pos.x());
-#endif
 }
 
 void trend::selected(const QPolygon &pol)
@@ -1674,14 +1524,6 @@ void trend::selected(const QPolygon &pol)
     {
         zoomRect = pol.boundingRect();
         do_zoom = true;
-    }
-    else
-    {
-#ifdef MARKER
-        d_marker->setValue(myYfin, 1.0);
-        LOG_PRINT(verbose_e, "############ MARKER %f\n", myYfin);
-        //d_qwtplot->replot();
-#endif
     }
     ui->labelvalue->setText("");
     ui->labelvalue->setStyleSheet("");
