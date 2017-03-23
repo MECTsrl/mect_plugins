@@ -145,7 +145,7 @@ void data_manager::on_pushButtonStore_clicked()
 
     if (storeList.count() != 0)
     {
-        sel = new item_selector(storeList, &value,trUtf8("VARIABLE SELECTOR"));
+        sel = new item_selector(storeList, &value,trUtf8("STORE FILTER SELECTOR"));
         sel->showFullScreen();
 
         if (sel->exec() == QDialog::Accepted)

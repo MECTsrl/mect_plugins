@@ -32,14 +32,11 @@
 
 #undef STATIC_AXES
 
-#define HORIZ_TICKS 5
 #define VERT_TICKS  4
 
-#define INCREMENT 1.0
-#define OVERLOAD_FACTOR 2
-#define OVERLOAD_SECONDS(Visible) (Visible * 20 / 10) // 800 + 50% = 1200
-#define SHIFT_FACTOR 10
-#define DELTA_TIME_FACTOR  2
+#define OVERLOAD_SECONDS(Visible) (Visible * 12 / 10) // 20%
+#define DELTA_TIME_FACTOR  5 // 20%
+
 #define DELTA_VALUE_FACTOR 2
 
 #define DATE_TIME_FMT "yyyy/MM/dd HH:mm:ss"
@@ -80,6 +77,11 @@ static QRect zoomRect;
 static bool do_zoom;
 static QString lastLogFileName;
 static fpos_t lastLogFilePos;
+static time_t lastLog_time;
+
+static bool unzoom_enabled;
+static QDateTime unzoom_actualTzero;
+static int unzoom_actualVisibleWindowSec;
 
 
 /**
@@ -100,7 +102,7 @@ trend::trend(QWidget *parent) :
     {
         pens[i].x = new double [MAX_SAMPLE_NB + 1];
         pens[i].y = new double [MAX_SAMPLE_NB + 1];
-        pens[i].curve = NULL;
+        pens[i].curve = new InterruptedCurve(); // QwtPlotCurve();
     }
     
     actualPen = 0;
@@ -174,6 +176,7 @@ trend::trend(QWidget *parent) :
 
     do_refresh_plot = false;
     do_pan = false;
+    unzoom_enabled = false;
     incrementTimeDirection = 0;
     incrementValueDirection = 0;
     do_zoom = false;
@@ -213,11 +216,13 @@ void trend::updateData()
         d_qwtplot->hide();
 
         /* disable all button during loading */
+        ui->pushButtonPan->setEnabled(false);
         popup->enableButtonUp(false);
         popup->enableButtonDown(false);
         popup->enableButtonLeft(false);
         popup->enableButtonRight(false);
         ui->pushButtonPen->setText("");
+
         /* set the label as loading */
         showStatus(trUtf8("Loading..."), false);
 
@@ -261,7 +266,6 @@ void trend::updateData()
                     valueScale[z] = new NormalScaleDraw(decimal);
                 }
 #endif
-                pens[z].curve = new InterruptedCurve(); // QwtPlotCurve();
                 pens[z].sample = 0;
             }
     #ifdef MARKER
@@ -415,7 +419,6 @@ void trend::updateData()
                 strcpy(_actual_trend_, QFileInfo(value).baseName().toAscii().data());
                 if (LoadTrend(_actual_trend_, &errormsg) == false)
                 {
-                    refresh_timer->stop();
                     errormsg = trUtf8("The trend description (%1) is not valid. %2").arg(_actual_trend_).arg(errormsg);
                     showStatus(errormsg, true);
                     errormsg.clear();
@@ -440,17 +443,9 @@ void trend::updateData()
                             valueScale[z] = new NormalScaleDraw(decimal);
                         }
 #endif
-                        pens[z].curve = new InterruptedCurve();
-                        //pens[rownb].curve = new QwtPlotCurve();
-                        for (int i = 0; i < MAX_SAMPLE_NB; i++)
-                        {
-                            pens[z].y[i] = /*pens[rownb].yMax*/NAN;
-                            pens[z].x[i] = /*pens[rownb].yMax*/NAN;
-                        }
                         pens[z].sample = 0;
                     }
                     reloading = true;
-                    refresh_timer->start(REFRESH_MS);
                     return;
                 }
             }
@@ -626,6 +621,14 @@ void trend::updateData()
         }
 
         /* update the actual window parameters */
+        if (! unzoom_enabled)
+        {
+            unzoom_enabled = true;
+            unzoom_actualTzero = actualTzero;
+            unzoom_actualVisibleWindowSec = actualVisibleWindowSec;
+        }
+        ui->pushButtonPan->setEnabled(true);
+
         actualVisibleWindowSec = myXfin - myXin;
         if (_layout_ == PORTRAIT)
         {
@@ -652,8 +655,18 @@ void trend::updateData()
             pens[z].yMaxActual = pens[z].yMax;
         }
 
-        actualVisibleWindowSec = VisibleWindowSec;
-        actualTzero = TzeroLoaded;
+        if (unzoom_enabled && unzoom_actualTzero.isValid())
+        {
+            actualTzero = unzoom_actualTzero;
+            actualVisibleWindowSec = unzoom_actualVisibleWindowSec;
+        }
+        else
+        {
+            actualTzero = TzeroLoaded;
+            actualVisibleWindowSec = VisibleWindowSec;
+        }
+        unzoom_enabled = false;
+        ui->pushButtonPan->setEnabled(false);
 
         do_refresh_plot = true;
         do_pan = false;
@@ -665,10 +678,13 @@ void trend::updateData()
         if (_online_)
         {
             static int counter = 0;
+
             if (counter % 2 == 0)
             {
+                do_refresh_plot = true;
                 /* online mode: if necessary center the actual data */
                 QDateTime now =  QDateTime::currentDateTime();
+#if 0
                 if (_layout_ == PORTRAIT)
                 {
                     actualTzero = now;
@@ -677,35 +693,36 @@ void trend::updateData()
                 {
                     actualTzero = now.addSecs(-actualVisibleWindowSec);
                 }
+#else
+                actualTzero = now.addSecs(-actualVisibleWindowSec);
+#endif
             }
-            if (!do_refresh_plot)
+
+            if (counter % 4 == 0)
             {
-                if (counter % 4 == 0)
-                {
-                    ui->pushButtonOnline->setStyleSheet("QPushButton"
-                                                        "{"
-                                                        "border-image: url(:/libicons/img/Chess1.png);"
-                                                        "qproperty-focusPolicy: NoFocus;"
-                                                        "}");
-                }
-                else if (counter % 4 == 2)
-                {
-                    ui->pushButtonOnline->setStyleSheet("QPushButton"
-                                                        "{"
-                                                        "border-image: url(:/libicons/img/Chess2.png);"
-                                                        "qproperty-focusPolicy: NoFocus;"
-                                                        "}");
-                }
+                ui->pushButtonOnline->setStyleSheet("QPushButton {"
+                                                    "border-image: url(:/libicons/img/Chess1.png);"
+                                                    "qproperty-focusPolicy: NoFocus;"
+                                                    "}");
+            }
+            else if (counter % 4 == 2)
+            {
+                ui->pushButtonOnline->setStyleSheet("QPushButton {"
+                                                    "border-image: url(:/libicons/img/Chess2.png);"
+                                                    "qproperty-focusPolicy: NoFocus;"
+                                                    "}");
             }
             ++counter;
         }
-        do_refresh_plot = false;
-        loadOrientedWindow();
+        if (do_refresh_plot)
+        {
+            do_refresh_plot = false;
+            loadOrientedWindow();
+        }
     }
     else
     {
-        ui->pushButtonOnline->setStyleSheet("QPushButton"
-                                            "{"
+        ui->pushButtonOnline->setStyleSheet("QPushButton {"
                                             "border-image: url(:/libicons/img/Chess.png);"
                                             "qproperty-focusPolicy: NoFocus;"
                                             "}");
@@ -738,6 +755,8 @@ trend::~trend()
             delete pens[i].x;
         if (pens[i].y != NULL)
             delete pens[i].y;
+        if (pens[i].curve != NULL)
+            delete pens[i].curve;
         pens[i].x = NULL;
         pens[i].y = NULL;
         pens[i].curve = NULL;
@@ -748,7 +767,7 @@ void trend::refreshEvent(trend_msg_t item_trend)
 {   
     for (int i = 0; i < PEN_NB; i++)
     {
-        if (pens[i].curve == NULL || ! pens[i].visible)
+        if (! pens[i].visible)
         {
             continue;
         }
@@ -765,84 +784,6 @@ void trend::refreshEvent(trend_msg_t item_trend)
         }
     }
     return;
-
-    if (reloading || _trend_data_reload_ || first_time || force_back || _load_window_busy) {
-        return;
-    }
-
-    if (item_trend.timestamp.isValid() == false)
-    {
-        LOG_PRINT(error_e,"invalid sample '%s'\n",  varNameArray[item_trend.CtIndex].tag);
-        return;
-    }
-    
-    LOG_PRINT(verbose_e,"NEW SAMPLE '%s' -> '%f' time: '%s'\n",  varNameArray[item_trend.CtIndex].tag, item_trend.value,  item_trend.timestamp.toString(DATE_TIME_FMT).toAscii().data());
-    /* set the new sample to the actual array */
-    for (int i = 0; i < PEN_NB; i++)
-    {
-        if (pens[i].curve == NULL)
-        {
-            /* skip empty pen */
-            continue;
-        }
-        if (! pens[i].visible)
-        {
-            /* skip invisible pen */
-            continue;
-        }
-        /* found actual pen */
-        if (pens[i].CtIndex == item_trend.CtIndex)
-        {            
-            /* update samples only if the status is online or if the new sample are visible */
-            if ( _online_
-              || item_trend.timestamp < actualTzero.addSecs(actualVisibleWindowSec)
-              || pens[actualPen].x[pens[actualPen].sample] < actualVisibleWindowSec
-               )
-            {
-                if (pens[i].sample >= MAX_SAMPLE_NB)
-                {
-                    if (_online_)
-                    {
-                        /* the buffer is full, shift all values of all pens, but each pen has a different period */
-                        double first_good = pens[i].x[MAX_SAMPLE_NB/SHIFT_FACTOR];
-
-                        /* maintain only the samples that are newer than the first good */
-                        for (int z = 0; z < PEN_NB; z++)
-                        {
-                            if (pens[z].curve != NULL)
-                            {
-                                int sample = 0;
-                                for (int j = 0; j < MAX_SAMPLE_NB; ++j)
-                                {
-                                    if (pens[z].x[j] >= first_good) {
-                                        pens[z].x[sample] = pens[z].x[j];
-                                        pens[z].y[sample] = pens[z].y[j];
-                                        ++sample;
-                                    }
-                                }
-                                pens[z].sample = sample;
-                            }
-                        }
-                    } else {
-                        /* not enough space, we accept to lose samples */
-                        LOG_PRINT(warning_e, "we are off line and the new data is out of range.");
-                        break;
-                    }
-                }
-                /* update the actual x and y arrays */
-                pens[i].y[pens[i].sample] = item_trend.value;
-                pens[i].x[pens[i].sample] = TzeroLoaded.secsTo(item_trend.timestamp);
-                pens[i].sample++;
-#ifdef SHOW_ACTUAL_VALUE
-                updatePenLabel();
-#endif
-                /* will refresh the plot at the next updateData() */
-                do_refresh_plot = true;
-
-            }
-            break;
-        }
-    }    
 }
 
 void trend::on_pushButtonPen_clicked()
@@ -859,7 +800,7 @@ void trend::on_pushButtonSelect_clicked()
     
     /* show the next trace */
     actualPen = ((actualPen + 1) % PEN_NB);
-    if (pens[actualPen].curve != NULL)
+    if (pens[actualPen].visible)
     {
         bringFront(actualPen);
     }
@@ -920,7 +861,7 @@ void trend::on_pushButton_clicked()
 }
 
 void trend::setPan()
-{
+{    
     do_pan = true;
 }
 
@@ -975,7 +916,7 @@ bool trend::printGraph()
     char value[DESCR_LEN] = "";
     alphanumpad * dk;
     
-    sprintf(fullfilename, "%s", QDate::fromString(ui->labelDate->text(), "yyyy/MM/dd").toString("yyyy_MM_dd").toAscii().data());
+    sprintf(fullfilename, "%s", actualTzero.toString("yyyy_MM_dd_HH_mm_ss").toAscii().data());
     
     dk = new alphanumpad(value, fullfilename);
     dk->showFullScreen();
@@ -1010,14 +951,11 @@ bool trend::bringFront(int pen)
     _load_window_busy = true;
     if (pens[pen].curve != NULL)
     {
-        LOG_PRINT(verbose_e, "detach %d\n", pen);
         pens[pen].curve->detach();
-        LOG_PRINT(verbose_e, "attach %d\n", pen);
         pens[pen].curve->attach(d_qwtplot);
 #ifdef MARKER
         d_marker->setLinePen(QPen(QColor(QString("#%1").arg(pens[pen].color)), 0, Qt::DashDotLine));
 #endif
-        LOG_PRINT(verbose_e, "done %d\n", pen);
         _load_window_busy = false;
         return true;
     }
@@ -1044,13 +982,20 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
     /* get the list of the file and parse the file between time begin and time end */
     QDir logDir(STORE_DIR);
     QStringList logFileList = logDir.entryList(QDir::Files | QDir::NoDotAndDotDot, QDir::Name);
+
     for (int i = 0; i < logFileList.count(); i++)
     {
-        if (  i + 1 < logFileList.count()
-           && QDateTime::fromString(QFileInfo(logFileList.at(i + 1)).baseName(), "yyyy_MM_dd_HH_mm_ss") <= begin)
+        QDateTime lastLogDateTime = QDateTime::fromTime_t(lastLog_time);
+
+        if (i + 1 < logFileList.count())
         {
-            // too early
-            continue;
+            QDateTime nextLogFileBegin = QDateTime::fromString(QFileInfo(logFileList.at(i + 1)).baseName(), "yyyy_MM_dd_HH_mm_ss");
+
+            if (nextLogFileBegin <= begin || (! lastLogFileName.isEmpty() && nextLogFileBegin <= lastLogDateTime) )
+            {
+                // too early
+                continue;
+            }
         }
         QDateTime logFileBegin = QDateTime::fromString(QFileInfo(logFileList.at(i)).baseName(), "yyyy_MM_dd_HH_mm_ss");
         if (end < logFileBegin)
@@ -1058,6 +1003,7 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
             // too late
             break;
         }
+
         if ( logFileBegin <= begin || logFileBegin <= end )
         {
             if (lastLogFileName == logFileList.at(i))
@@ -1071,7 +1017,12 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
             else
             {
                 // load from file
-                if (Load(QString("%1/%2").arg(STORE_DIR).arg(logFileList.at(i)).toAscii().data(), &begin, &end, skip))
+                lastLog_time = logFileBegin.toTime_t();
+                if (! Load(QString("%1/%2").arg(STORE_DIR).arg(logFileList.at(i)).toAscii().data(), &begin, &end, skip))
+                {
+                    lastLogFileName.clear();
+                }
+                else
                 {
                     lastLogFileName = logFileList.at(i);
                 }
@@ -1088,6 +1039,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     bool retval = false;
     char line[LINE_SIZE] = "";
     char * p = NULL, * r = NULL;
+    time_t t0 = TzeroLoaded.toTime_t();
     time_t ti = begin->toTime_t();
     time_t tf = end->toTime_t();
     char buf[42];
@@ -1156,7 +1108,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         bool found = false;
         for (int i = 0; i < PEN_NB; i++)
         {
-            if (pens[i].curve == NULL)
+            if (! pens[i].visible)
             {
                 continue;
             }
@@ -1174,6 +1126,15 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     if (updating)
     {
         fsetpos(fp, &lastLogFilePos);
+
+        // remove the nan
+        for (int j = 0; j < PEN_NB; ++j)
+        {
+            if (pens[j].sample > 0 && isnan(pens[j].y[pens[j].sample - 1]))
+            {
+                --pens[j].sample;
+            }
+        }
     }
     else
     {
@@ -1211,9 +1172,11 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         strptime(buf, "%Y/%m/%d_%H:%M:%S", &tfile);
         tfile.tm_isdst = 0;
         t = mktime(&tfile);
+        lastLog_time = t;
 
-        if (row % 1000 == 0) {
-            ui->labelDate->setText(QString("%1").arg(t, 5, 16));
+        if (row % 750 == 0)
+        {
+            ui->labelDate->setText(p); // HH:MM:SS
             ui->labelDate->setStyleSheet("color: rgb(0,0,255);");
             ui->labelDate->repaint();
         }
@@ -1254,8 +1217,9 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                 } else {
                     pens[j].y[pens[j].sample] = d; //atof(p);
                 }
-                pens[j].x[pens[j].sample] = TzeroLoaded.secsTo(QDateTime::fromTime_t(t));
+                pens[j].x[pens[j].sample] = (t - t0);
                 pens[j].sample++;
+
                 ++samples[j];
             }
         }
@@ -1268,16 +1232,13 @@ exit_function:
     fclose(fp);
 
     // for each curve, if there were samples, we add a NAN (i.e. force a discontinuity) at the end of each log
-    if (!updating)
+    for (int j = 0; j < PEN_NB; ++j)
     {
-        for (int j = 0; j < PEN_NB; ++j)
+        if (samples[j] > 0 && pens[j].sample < MAX_SAMPLE_NB)
         {
-            if (samples[j] > 0 && pens[j].sample < MAX_SAMPLE_NB)
-            {
-                pens[j].y[pens[j].sample] = NAN;
-                pens[j].x[pens[j].sample] = pens[j].x[pens[j].sample - 1]; // ok: samples[j] > 0
-                pens[j].sample++;
-            }
+            pens[j].y[pens[j].sample] = NAN;
+            pens[j].x[pens[j].sample] = pens[j].x[pens[j].sample - 1]; // ok: samples[j] > 0
+            pens[j].sample++;
         }
     }
     return retval;
@@ -1295,6 +1256,7 @@ void trend::incrementValue(int direction)
 
 bool trend::loadFromFile(QDateTime Ti)
 {   
+    Q_UNUSED(Ti);
     // manage online status
     QDateTime Tfin;
     if(TzeroLoaded.addSecs(LoadedWindowSec) > QDateTime::currentDateTime())
@@ -1333,12 +1295,14 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
               sfinal,
               TzeroLoaded.toString().toAscii().data()
               );
-    double horiz_ticks = HORIZ_TICKS;
+    double horiz_ticks;
     if (this->width() <= 320){
         horiz_ticks = 3;
     } else if (this->width() <= 480){
         horiz_ticks = 5;
     } else if (this->width() <= 800){
+        horiz_ticks = 9;
+    } else {
         horiz_ticks = 9;
     }
     double deltax = (sfinal - sinint) / horiz_ticks;
@@ -1354,7 +1318,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     /* prepare the values */
     for (int pen_index = 0; pen_index < PEN_NB; pen_index++)
     {
-        if (pens[pen_index].curve != NULL)
+        if (pens[pen_index].visible)
         {
             /* calculate the initial index and the final index visible into the current window */
             int XindexIn, XindexFin;
@@ -1424,7 +1388,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             /* prepare the value axis tick */
             QList<double> arrayTicks;
             double deltay = (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS;
-            for (int i = 0; i < (VERT_TICKS +1); i++)
+            for (int i = 0; i < (VERT_TICKS + 1); i++)
             {
                 arrayTicks.append(pens[pen_index].yMinActual + i * deltay);
             }
@@ -1499,7 +1463,16 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                     // update value (QLabel)
                     if (pen_index == pen && this->isVisible())
                     {
-                        ui->labelDate->setText(QString(" %1 ").arg(pens[pen].y[XindexFin - 1], 7, 'f', decimal));
+                        double v = NAN;
+                        for (int i = XindexFin - 1; i > 0; --i)
+                        {
+                            if (! isnan(pens[pen].y[i]))
+                            {
+                                v = pens[pen].y[i];
+                                break;
+                            }
+                        }
+                        ui->labelDate->setText(QString(" %1 ").arg(v, 7, 'f', decimal));
                         ui->labelDate->setStyleSheet("color: rgb(0,0,0);");
                         ui->labelDate->repaint();
                     }
@@ -1530,7 +1503,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
 
     _load_window_busy = true;
 
-    TrendPeriodSec = (int)ceil(((float)(LoadedWindowSec - (2 * LogPeriodSecF)) / MAX_SAMPLE_NB));
+    TrendPeriodSec = LoadedWindowSec / MAX_SAMPLE_NB;
     if (TrendPeriodSec < LogPeriodSecF)
         TrendPeriodSec = LogPeriodSecF;
 
@@ -1545,7 +1518,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         for (int i = 0; i < PEN_NB; i++)
         {
             pens[i].sample = 0;
-            if (pens[i].curve != NULL)
+            if (pens[i].visible && pens[i].curve != NULL)
             {
                 pens[i].curve->detach();
             }
@@ -1582,46 +1555,48 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     // (2/3) crossing bounds, so we need to shift and reload some new data from file?
     else if (TzeroLoaded.addSecs(LoadedWindowSec) < actualTzero.addSecs(actualVisibleWindowSec))
     {
-        showStatus(trUtf8("Reloading..."), false);
+        showStatus(trUtf8("Shift..."), false);
         // VisibleWindowSec = actualVisibleWindowSec;
 
         // shift samples
-        int deltaSec = actualVisibleWindowSec;
-        TzeroLoaded = TzeroLoaded.addSecs(deltaSec);
+        int deltaSec = TzeroLoaded.secsTo(actualTzero);
+        TzeroLoaded = actualTzero;
 
         // clear some of the plot area, reuse as much as possible
         for (int i = 0; i < PEN_NB; i++)
         {
-            if (pens[i].curve == NULL)
+            int j = 0;
+
+            if (! pens[i].visible)
             {
                 pens[i].sample = 0;
             }
-            else if (pens[i].sample > (MAX_SAMPLE_NB / OVERLOAD_FACTOR))
+            // find the first sample in the new time range
+            while (j < pens[i].sample && pens[i].x[j] < deltaSec)
             {
-                int j = 0;
+                ++j;
+            }
+            if (j < pens[i].sample)
+            {
+                // shift left the samples (position and time)
+                for (int k = 0; k < (pens[i].sample - j); ++k)
+                {
+                    pens[i].x[k] = pens[i].x[k + j];
+                    pens[i].y[k] = pens[i].y[k + j];
+                }
+                // and reduce the size
+                pens[i].sample = (pens[i].sample - j);
+            }
+            else
+            {
+                // sorry, nothing to reuse
+                pens[i].sample = 0;
+            }
 
-                // find the first sample in the new time range
-                while (j < pens[i].sample && pens[i].x[j] < deltaSec)
-                {
-                    ++j;
-                }
-                if (j < pens[i].sample)
-                {
-                    // shift left the samples (position and time)
-                    fprintf(stderr," shifting %d values over %d\n", j, pens[i].sample);
-                    for (int k = 0; k < j; ++k)
-                    {
-                        pens[i].x[k] = pens[i].x[k + j] - deltaSec;
-                        pens[i].y[k] = pens[i].y[k + j];
-                    }
-                    // reduce the size
-                    pens[i].sample = (pens[i].sample - j);
-                }
-                else
-                {
-                    // sorry, nothing to reuse
-                    pens[i].sample = 0;
-                }
+            // rebase all on new T0
+            for (int k = 0; k < pens[i].sample; ++k)
+            {
+                pens[i].x[k] = pens[i].x[k] - deltaSec;
             }
         }
 
@@ -1642,51 +1617,26 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
     /* enable up and down arrow in according with the available upper or lower point */
     if (pens[actualPen].yMax > pens[actualPen].yMaxActual)
     {
-        if (_layout_ == LANDSCAPE)
-            popup->enableButtonUp(true);
-        else
-            popup->enableButtonLeft(true);
+        if (_layout_ == LANDSCAPE) popup->enableButtonUp(true);     else popup->enableButtonRight(true);
     } else {
-        if (_layout_ == LANDSCAPE)
-            popup->enableButtonUp(false);
-        else
-            popup->enableButtonLeft(false);
+        if (_layout_ == LANDSCAPE) popup->enableButtonUp(false);    else popup->enableButtonRight(false);
     }
 
     if (pens[actualPen].yMin < pens[actualPen].yMinActual)
     {
-        if (_layout_ == LANDSCAPE)
-            popup->enableButtonDown(true);
-        else
-            popup->enableButtonRight(true);
+        if (_layout_ == LANDSCAPE) popup->enableButtonDown(true);   else popup->enableButtonLeft(true);
     } else {
-        if (_layout_ == LANDSCAPE)
-            popup->enableButtonDown(false);
-        else
-            popup->enableButtonRight(false);
+        if (_layout_ == LANDSCAPE) popup->enableButtonDown(false);  else popup->enableButtonLeft(false);
     }
     
-    if (QDateTime::currentDateTime() > Tmax.addSecs(TrendPeriodSec))
+    if (actualTzero < QDateTime::currentDateTime())
     {
-        if (_layout_ == LANDSCAPE)
-            popup->enableButtonRight(true);
-        else
-            popup->enableButtonUp(true);
+        if (_layout_ == LANDSCAPE) popup->enableButtonRight(true);  else popup->enableButtonUp(true);
     } else {
-        if (_layout_ == LANDSCAPE)
-            popup->enableButtonRight(false);
-        else
-            popup->enableButtonUp(false);
+        if (_layout_ == LANDSCAPE) popup->enableButtonRight(false); else popup->enableButtonUp(false);
     }
     
-    if (_layout_ == LANDSCAPE)
-    {
-        popup->enableButtonLeft(true);
-    }
-    else
-    {
-        popup->enableButtonDown(true);
-    }
+    if (_layout_ == LANDSCAPE) { popup->enableButtonLeft(true); }   else { popup->enableButtonDown(true); }
     
     _load_window_busy = false;
     return ret_val;
@@ -1767,6 +1717,7 @@ void InterruptedCurve::drawCurve( QPainter *painter, __attribute__((unused))int 
 
 void trend::loadOrientedWindow()
 {
+#if 0
     LOG_PRINT(verbose_e,"loadWindow\n");
     if (_layout_ == PORTRAIT)
     {
@@ -1794,6 +1745,12 @@ void trend::loadOrientedWindow()
                     actualTzero.addSecs(actualVisibleWindowSec)
                     );
     }
+#else
+    loadWindow(
+                actualTzero,
+                actualTzero.addSecs(actualVisibleWindowSec)
+                );
+#endif
 }
 
 

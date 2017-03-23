@@ -132,7 +132,7 @@ void trend_option::reload()
     
     ui->pushButtonChangeTrend->setText(_actual_trend_);
     ui->pushButtonChangePen->setText(pens[actualPen].tag);
-    ui->checkBoxVisible->setChecked(pens[actualPen].visible == 1);
+    ui->checkBoxVisible->setChecked(pens[actualPen].visible);
     
     if (strlen(pens[actualPen].description) == 0)
     {
@@ -361,7 +361,15 @@ void trend_option::on_pushButtonChangePen_clicked()
     {
         list.append(StoreArrayF[i].tag);
     }
-    
+    for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
+    {
+        list.append(StoreArrayV[i].tag);
+    }
+    for ( int i = 0; StoreArrayX[i].tag[0] != '\0'; i++)
+    {
+        list.append(StoreArrayX[i].tag);
+    }
+
     sel = new item_selector(list, &value,trUtf8("VARIABLE SELECTOR"));
     sel->showFullScreen();
     
@@ -456,7 +464,7 @@ void trend_option::on_pushButtonDescription_clicked()
     char value[DESCR_LEN];
     alphanumpad * dk;
     
-    dk = new alphanumpad(value);
+    dk = new alphanumpad(value, pens[actualPen].description);
     dk->showFullScreen();
     
     if (dk->exec() == QDialog::Accepted && strlen(value) != 0)

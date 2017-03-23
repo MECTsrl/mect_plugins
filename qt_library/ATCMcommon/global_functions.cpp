@@ -911,12 +911,6 @@ bool LoadTrend(const char * trend_name, QString * ErrorMsg)
         }
         LOG_PRINT(verbose_e, "line %s\n", line);
         pens[rownb].visible = 0;
-        if (pens[rownb].curve != NULL)
-        {
-            //delete pens[rownb].curve;
-            pens[rownb].curve = NULL;
-        }
-
         pens[rownb].color[0] = '\0';
         pens[rownb].description[0] = '\0';
         pens[rownb].sample = 0;
