@@ -524,7 +524,10 @@ void ATCMgraph::updateData()
             && readData(m_CtY1MinIndex, m_y1MinVariable, &m_y1MinValue)
             && readData(m_CtY1MaxIndex, m_y1MaxVariable, &m_y1MaxValue))
     {
-        pen1 = true;
+        if (addSample(m_x1ArrayValue, m_y1ArrayValue, x1, y1, m_x1MinValue, m_x1MaxValue))
+        {
+            pen1 = true;
+        }
     }
 
     double x2 = VAR_NAN, y2 = VAR_NAN;
@@ -536,30 +539,20 @@ void ATCMgraph::updateData()
             && readData(m_CtY2MinIndex, m_y2MinVariable, &m_y2MinValue)
             && readData(m_CtY2MaxIndex, m_y2MaxVariable, &m_y2MaxValue))
     {
-        pen2 = true;
+        if (addSample(m_x2ArrayValue, m_y2ArrayValue, x2, y2, m_x2MinValue, m_x2MaxValue))
+        {
+            pen2 = true;
+        }
     }
-
-    /* add sample */
-    if (pen1 == false || addSample(m_x1ArrayValue, m_y1ArrayValue, x1, y1, m_x1MinValue, m_x1MaxValue) == false)
-    {
-        pen1 = false;
-        LOG_PRINT(error_e, "Problem PEN 1\n");
-    }
-    else
 #endif
+
+    if (pen1)
     {
         curve1->setRawSamples(m_x1ArrayValue, m_y1ArrayValue, MAX_SAMPLES);
         PLOT->setAxisScale(QwtPlot::xBottom, m_x1MinValue, m_x1MaxValue, m_x1step);
         PLOT->setAxisScale(QwtPlot::yLeft, m_y1MinValue, m_y1MaxValue, m_y1step);
     }
-#ifdef  TARGET_ARM
-    if (pen2 == false || addSample(m_x2ArrayValue, m_y2ArrayValue, x2, y2, m_x2MinValue, m_x2MaxValue) == false)
-    {
-        pen2 = false;
-        LOG_PRINT(error_e, "Problem PEN 2\n");
-    }
-    else
-#endif
+    if (pen2)
     {
         curve2->setRawSamples(m_x2ArrayValue, m_y2ArrayValue, MAX_SAMPLES);
         PLOT->setAxisScale(QwtPlot::xTop, m_x2MinValue, m_x2MaxValue, m_x2step);
@@ -567,7 +560,7 @@ void ATCMgraph::updateData()
     }
 
     /* show data */
-    if (pen1 != false || pen2 != false )
+    if (pen1 || pen2 )
     {
         PLOT->updateAxes();
         PLOT->replot();
@@ -1004,17 +997,19 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
 char ATCMgraph::readVariable(int CtIndex, double * valuef)
 {
     int ivalue;
+    char status;
 
-    switch (readFromDbQuick(CtIndex, &ivalue)) {
+    status = readFromDbQuick(CtIndex, &ivalue);
+    switch (status) {
     case DONE:
-    case BUSY: {
+    case BUSY:
+    case ERROR: {
         register int decimal = getVarDecimalByCtIndex(CtIndex); // locks only if it's from another variable
         register float fvalue = float_fromValue(CtIndex, ivalue, decimal);
 
         *valuef = fvalue;
-        return DONE;
+        return status;
       } break;
-    case ERROR:
     default:
         *valuef = VAR_NAN;
         return ERROR;
@@ -1049,8 +1044,9 @@ bool ATCMgraph::readData(int CtIndex, QString variable, double * value)
 #endif
     }
 #ifdef TARGET_ARM
+    char status = readVariable(CtIndex, value);
     /* it is a variable value */
-    else if (readVariable(CtIndex, value) == DONE)
+    if (status == DONE || status == BUSY)
     {
         return true;
     }

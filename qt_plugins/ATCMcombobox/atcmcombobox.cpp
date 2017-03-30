@@ -399,18 +399,18 @@ void ATCMcombobox::updateData()
         if (do_update) {
             switch (status) {
             case DONE:
-            case BUSY: {
+            case BUSY:
+            case ERROR: {
                 char svalue[42] = "";
                 register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
 
                 sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
-                do_update = (m_status != DONE) || (m_value.compare(QString(svalue)) != 0);
-                m_status = DONE;
+                do_update = (m_status != status) || (m_value.compare(QString(svalue)) != 0);
                 if (do_update) {
+                    m_status = status;
                     m_value = svalue;
                 }
             }   break;
-            case ERROR:
             default:
                 do_update = (m_status != ERROR);
                 m_status = ERROR;

@@ -352,7 +352,8 @@ void ATCMspinbox::updateData()
         if (do_update) {
             switch (status) {
             case DONE:
-            case BUSY: {
+            case BUSY:
+            case ERROR: {
                 register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
                 float new_value = float_fromValue(m_CtIndex, ivalue, decimal);
 
@@ -361,11 +362,12 @@ void ATCMspinbox::updateData()
                 } else if (new_value < this->minimum()) {
                     new_value = this->minimum();
                 }
-                do_update = (m_status != DONE) || (m_value != new_value);
-                m_status = DONE;
-                m_value = new_value;
+                do_update = (m_status != status) || (m_value != new_value);
+                if (do_update) {
+                    m_status = status;
+                    m_value = new_value;
+                }
               } break;
-            case ERROR:
             default:
                 do_update = (m_status != ERROR);
                 m_status = ERROR;

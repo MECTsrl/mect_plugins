@@ -532,16 +532,17 @@ void ATCMbutton::updateData()
         if (do_update) {
             switch (status) {
             case DONE:
-            case BUSY: {
+            case BUSY:
+            case ERROR: {
                 char svalue[42] = "";
                 register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
                 sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
 
                 bool isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
-                do_update = (m_status != DONE) || (m_statusactualval.compare(QString(svalue)) != 0)
+                do_update = (m_status != status) || (m_statusactualval.compare(QString(svalue)) != 0)
                          || (isPressed && ! isDown()) || (! isPressed && isDown());
-                m_status = DONE;
                 if (do_update) {
+                    m_status = status;
                     m_statusactualval = svalue;
                     isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
                     if (isCheckable()) {
@@ -557,7 +558,6 @@ void ATCMbutton::updateData()
                     }
                 }
               } break;
-            case ERROR:
             default:
                 do_update = (m_status != ERROR);
                 m_status = ERROR;

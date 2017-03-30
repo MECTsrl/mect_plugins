@@ -241,16 +241,18 @@ void ATCMled::updateData()
         if (do_update) {
             switch (status) {
             case DONE:
-            case BUSY: {
+            case BUSY:
+            case ERROR: {
                 // no decimals check, only exact zero and non zero values
                 if (ivalue != 0) {
                     ivalue = 1;
                 }
-                do_update = (m_status != DONE) || (m_value != ivalue);
-                m_status = DONE;
-                m_value = ivalue;
+                do_update = (m_status != status) || (m_value != ivalue);
+                if (do_update) {
+                    m_status = status;
+                    m_value = ivalue;
+                }
               } break;
-            case ERROR:
             default:
                 do_update = (m_status != ERROR);
                 m_status = ERROR;
