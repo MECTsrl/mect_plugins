@@ -23,7 +23,7 @@
 ATCMled::ATCMled(QWidget *parent) :
     QLabel(parent)
 {
-    m_value = -1;
+    m_value = 0; // -1;
     m_variable = "";
     m_status = UNK;
     m_CtIndex = 0;
@@ -82,7 +82,7 @@ void ATCMled::paintEvent(QPaintEvent * e)
         state = QIcon::Off;
     }
 
-    if (m_viewstatus == true && m_status == ERROR)
+    if (m_viewstatus == true && m_status != DONE)
     {
         mode = QIcon::Disabled;
     }
@@ -110,21 +110,21 @@ bool ATCMled::setVariable(QString variable)
 #ifdef TARGET_ARM
     if (m_variable.isEmpty()) {
         m_status = ERROR;
-        m_value = -1;
+        m_value = 0; // -1;
         m_CtIndex = 0;
         LOG_PRINT(verbose_e, "empty variable\n");
     }
     else if (Tag2CtIndex(m_variable.toAscii().data(), &m_CtIndex) != 0)
     {
         m_status = ERROR;
-        m_value = -1;
+        m_value = 0; //-1;
         m_CtIndex = 0;
         LOG_PRINT(error_e, "unknown variable '%s'\n", variable.trimmed().toAscii().data());
     }
     else
     {
         m_status = UNK; // not read yet
-        m_value =  -1;
+        m_value =  0; // -1;
         LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
     }
     setToolTip("");
