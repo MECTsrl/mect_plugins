@@ -1,0 +1,64 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Funzionamento storici</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Funzionamento storici</h3>
+		<p class="western">Il pannello storicizza tutti i dati relativi a grandezze della <strong>Crosstable</strong> che abbiano nel campo &ldquo;<strong>Update</strong>&rdquo;
+	settato al valore:</p>
+	<ul>
+		<li/>
+<p class="western"><strong>S:</strong> la variabile viene sempre aggiornata e storicizzata lentamente con un tempo &ldquo;Slow Log Period&rdquo;
+		(parametro del System Editor);</p>
+		<li/>
+<p class="western"><strong>F:</strong> come &ldquo;S&rdquo; ma velocemente e	con un tempo &ldquo;Fast Log Period&rdquo; (parametro del System
+		Editor);</p>
+		<li/>
+<p class="western"><strong>V:</strong> la variabile &egrave; acquisita e	storicizzata solo alla variazione;</p>
+		<li/>
+<p class="western"><strong>X:</strong> la variabile &egrave; storicizzata quando viene richiamata dalla funzione logShot().</p>
+	</ul>
+	<p class="western">Lo storico generato &egrave; giornaliero ed &egrave; unico per tutte le grandezze abilitate a tale funzione.  E&rsquo;
+	tuttavia possibile definire una serie di &ldquo;storici parziali&rdquo;  per i quali &egrave; disponibile la visualizzazione su pannello. 
+	</p>
+	<p class="western">Per visualizzare la pagina degli storici	selezionare MENU &#8594; DATA &#8594; STORE, in alternativa &egrave;
+	possibile usare un <strong>ATCMbutton</strong> nel modo cambio pagina e inserire	nella Property &ldquo;<strong>pageName</strong>&rdquo; la parola &ldquo;<strong>nome del
+	file</strong>&rdquo; senza estensione. Dove &ldquo;nome del file&rdquo; sar&agrave;	un file .csv che dovr&agrave; iniziare con &ldquo;<strong>store</strong>&rdquo;.</p>
+	<p lang="it-IT" class="western"><img src="Funzionamento_storici_1.png" name="Immagine 30" align="bottom" width="322" height="182" border="0"/>
+</p>
+	<p class="western">Il caricamento del nuovo file sul dispositivo deve avvenire attraverso l&rsquo;interfaccia
+	web, vedi capitolo &ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web.html">Funzionamento interfaccia web</a></u></font>&rdquo;.
+	Opzionalmente &egrave; possibile specificare un sottoinsieme delle variabili storicizzate scrivendo un file di configurazione
+	(store1.csv) in questo modo:</p>
+	<p class="western"><strong>date</strong></p>
+	<p class="western"><strong>time</strong></p>
+	<p class="western"><strong><i>TPLC_IN_3</i></strong></p>
+	<p class="western"><strong><i>TPLC_IN_AN_2</i></strong></p>
+	
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Funzionamento_storici_2.png" name="Immagine212" align="bottom" width="360" height="203" border="0"/>
+</p>
+	
+	<p class="western">Il tasto 
+	<img src="Funzionamento_storici_3.png" name="Immagine213" align="bottom" width="24" height="26" border="0"/>
+
+	permette il filtraggio nel tempo degli storici mentre il bottone 
+	<img src="Funzionamento_storici_4.png" name="Immagine214" align="bottom" width="24" height="24" border="0"/>
+,
+	che si attiver&agrave; all&rsquo;inserzione di una penna USB, permetter&agrave; di scaricare i dati su penna USB. </p>
+	<p class="western"><strong>Nota:</strong> il meccanismo di log pu&ograve; essere avviato, fermato, e forzato a piacere usando le funzioni di
+	<strong>logStart()</strong>, <strong>logStop()</strong> e <strong>logShot()</strong>. 	</p>
+	<p class="western">La funzione <strong>logReset()</strong> elimina tutti i log presenti sul dispositivo. Queste funzioni saranno messe all&rsquo;interno
+	del codice desiderato come illustrato nel capitolo &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI.html">Realizzazione di un&rsquo;automazione</a></u></font>&rdquo;.</p>
+	<br/>
+	</body>
+</html>

@@ -1,0 +1,54 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Compilazione e download dell'applicazione</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Compilazione e download dell'applicazione</h3>
+		<p class="western" >Una volta completato il programma &egrave; necessario compilare il progetto per
+	verificare la mancanza di errori nel codice. Selezionare &ldquo;Build&rdquo; &#8594;	 &ldquo;Build All&rdquo; oppure premere F7.</p>
+	
+	<p class="western" ><img src="Compilazione_download_1.png" name="Immagine182" align="bottom" width="361" height="313" border="0"/></p>
+	
+	<p class="western" >Terminata la compilazione &egrave; necessario inviare il progetto al Pannello operatore.</p>
+
+	<p class="western" >Per trasferire il	progetto appena compilato al pannello procedere come segue:</p>
+	<ul>
+		<li/>
+<p class="western" >Selezionare il Tag <strong>Target</strong> e selezionare con il tasto destro del mouse la scritta
+		&ldquo;TPAC= Resource{localhost}&rdquo;. Nella finestra che appare,	selezionare <strong>Proprierties</strong>.</p>
+	</ul>
+	<p class="western"><img src="Compilazione_download_2.png" name="Immagine183" align="bottom" width="306" height="77" border="0"/></p>
+	
+	<ul>
+		<li/>
+<p class="western" >Impostare	l&rsquo;indirizzo IP del pannello nella casella <strong>Control Address</strong> del
+		<strong>Tag TCP/IP</strong>, quindi premere OK (di default &egrave;: 192.168.5.211 come quello dei pannelli quando escono dalla fabbrica)</p>
+		<li/>
+<p class="western" >Selezionare il Tag <strong>Instance</strong></p>
+		<li/>
+<p class="western" >Selezionare <strong>TPAC = Resource1 {localhost}</strong> e premere il tasto destro del mouse
+		selezionando <strong>Flash (and Download)</strong></p>
+	</ul>
+	<p class="western"><img src="Compilazione_download_3.png" name="Immagine 92" align="bottom" width="254" height="353" border="0"/></p>
+	<ul>
+		<li/>
+<p class="western" >Al termine del processo, nella parte bassa della finestra verr&agrave; mostrato il
+		messaggio: <span lang="en-US">&ldquo;Download Finished&rdquo;. </span>Nel caso in cui appaia una finestra di errore occorre riprovare a
+		selezionare &ldquo;<strong>Flash (and Download)</strong>&rdquo;.</p>
+		<li/>
+<p class="western">Se non si	desidera effettuare del debug &egrave; consigliabile disconnettersi	dal pannello, 
+		per far ci&ograve; selezionare <strong>TPAC = Resource1	{localhost}</strong> e premere, con il tasto destro del mouse, la voce <strong>Disconnect</strong></p>
+	</ul>
+	<br/>
+	</body>
+</html>

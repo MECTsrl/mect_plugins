@@ -1,0 +1,99 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Selezionare la lingua dal dispositivo</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Selezionare la lingua dal dispositivo</h3>
+		<p class="western">La selezione della lingua sul dispositivo pu&ograve;	avvenire in due modi differenti:</p>
+	<ol>
+		<li/>
+<p class="western"><strong>Attraverso le pagine di default:</strong></p>
+	</ol>
+	<p class="western">Dalla pagina di menu selezionare &ldquo;OPTIONS&rdquo; &#8594; &ldquo;LANGUAGE&rdquo;</p>
+	<p class="western"><img src="Selezione_lingua_1.png" name="Immagine231" align="bottom" width="296" height="166" border="0"/>
+ 
+	<img src="Selezione_lingua_2.png" name="Immagine232" align="bottom" width="297" height="166" border="0"/></p>
+	
+	<ol start="2">
+		<li/>
+<p class="western"><strong>Attraverso una pagina personalizzata:</strong></p>
+	</ol>
+	<p class="western" style="margin-bottom: 0cm">Selezionare un ATCMbutton e con il tasto destro del mouse, selezionare <strong>Go to slot</strong>&hellip;
+	nel menu che appare; quindi selezionare la riga <strong>pressed()</strong> e premere	<strong>OK</strong>.</p>
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Selezione_lingua_3.png" name="Immagine 2" align="bottom" width="664" height="334" border="0"/>
+</p>
+	<p class="western" >Potrebbe apparire la seguente finestra:</p>
+	
+	<p class="western" style="margin-bottom: 0cm"><img src="Selezione_lingua_4.png" name="Immagine233" align="bottom" width="384" height="134" border="0"/>
+</p>
+	<p class="western" >Se cos&igrave; fosse si devono eseguire i seguenti passaggi:</p>
+	<ul>
+		<li/>
+<p class="western" >Fare il Build	del progetto</p>
+		<li/>
+<p class="western" >Chiudere e riaprire il progetto </p>
+	</ul>
+	
+	<p class="western" >Successivamente apparir&agrave; una pagina con codice C++:	</p>
+	
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm">
+		<p lang="en-US" style="margin-bottom: 0cm; orphans: 2; widows: 2"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt"><font color="#808000">void</font><font color="#c0c0c0">
+		</font><font color="#800080">page100</font><font color="#000000">::on_atcmButton_3_pressed()</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">{</font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		   </font>
+		</p>
+		<p class="western" style="margin-bottom: 0cm"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">}</font></font></p>
+		
+	<br/>
+
+	</p>
+	
+	<p class="western">  Inserire il seguente codice all&rsquo;interno delle parentesi graffe della suddetta funzione:</p>
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm">
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		   </font><font color="#808000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">if</font></font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">(</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">translator</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">-&gt;</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">load</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">(</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">QString</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">(</font></font></font><font color="#008000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">&quot;:/translations/languages_it.qm&quot;</font></font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">)))</font></font></font><font color="#c0c0c0"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">
+		</font></font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">{</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		       </font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">QSettings</font></font><font color="#c0c0c0"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">
+		</font></font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">settings(</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">CONFIG_FILE</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">,</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">QSettings</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">::</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">IniFormat</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">);</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		       </font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">settings.</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">setValue</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">(&quot;SYSTEM/language&quot;,</font></font></font><font color="#008000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">&quot;it&quot;</font></font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">);</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		       </font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">settings.</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">sync</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">();</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		   </font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">}</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		   </font><font color="#808000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">else</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		   </font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">{</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		      
+		</font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">QMessageBox</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">::</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">information</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">(</font></font></font><font color="#808000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">this</font></font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">,</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">trUtf8</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">(&quot;errore&quot;),</font></font></font><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">trUtf8</font></font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">(&quot;Caricamento
+		lingua&quot;));</font></font></font></p>
+		<p class="western" style="margin-bottom: 0cm"><font color="#c0c0c0">
+		   </font><font color="#000000"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt">}</font></font></font></p>
+	<br/>
+
+	</p>
+	
+	<p class="western" >Ripetere queste operazioni per  tutte le selezioni e cambiare solo le parti scritte
+	in verde in modo opportuno.</p>
+	<p class="western" >Per  inglese sostituire: <font color="#808000">:/translations/languages_en.qm</font></p>
+	<p class="western" >Per  francese	sostituire: <font color="#808000">:/translations/languages_fr.qm</font></p>
+	
+	<p class="western" ><strong>ATTENZIONE:</strong> &egrave; necessario nella parte iniziale del file inserire la seguente riga:
+	<font color="#808000">#include</font> <font color="#808000">&lt;QSettings&gt;</font></p>
+	<br/>
+	</body>
+</html>

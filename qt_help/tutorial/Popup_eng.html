@@ -1,0 +1,35 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Add a popup window</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Add a popup window</h3>
+	<p class="western">It is possible to make appear a popup window when pressing an ATCMbutton. The window can be, for example, an &ldquo;information&rdquo; 
+	or &ldquo;warning&rdquo; icon or a &ldquo;critical&rdquo; message.</p>
+	<p class="western" >Please follow &ldquo;<font color="#0000ff"><u><a class="western" href="Funzione_implementata_utente_eng.html">User function</a></u></font>&rdquo; 
+	and add the following code:</p>
+	
+	<pre class="western" >QMessageBox::information(this,trUtf8(&ldquo;USB error&rdquo;), trUtf8(&ldquo;Cannot mount the usb key&rdquo;));</pre>
+	
+	<p class="western" >The following example is an &ldquo;information&rdquo; icon</p>
+	<p class="western" ><img src="Popup_1.png" name="Immagine236" align="bottom" width="269" height="143" border="0"/></p>
+	<p class="western" >USB <i>error</i> is the title and <i>Cannot	mount the usb key</i> &egrave; is the message.</p>
+	
+	<p class="western" >To show a &ldquo;warning&rdquo; icon please write:</p>
+	<pre class="western" >QMessageBox::warning(this,trUtf8(&ldquo;USB	error&rdquo;), trUtf8(&ldquo;Cannot mount the usb key&rdquo;));</pre>
+	
+	<p class="western">To show a &ldquo;critical&rdquo; message please write:</p>
+	<pre class="western" >QMessageBox::critical(this,trUtf8(&ldquo;USB	error&rdquo;), trUtf8(&ldquo;Cannot mount the usb key&rdquo;));</pre>
+	<br/>
+	</body>
+</html>

@@ -1,0 +1,142 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Funzionalità Crosstable Editor</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Funzionalit&agrave; Crosstable Editor</h3>
+		<ul>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong>Aggiorna Tabella:</strong> &egrave; il tasto principale della Crosstable: consente
+		l&rsquo;inserimento dei dati inseriti dall&rsquo;utente nella tabella della Crosstable.</p>
+	</ul>
+	<ul>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong> Controlla:</strong>  il tasto verifica la correttezza delle impostazioni inserite. Il led
+		presente sul tasto cambia colore in funzione dello stato:</p>
+		<ul>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm">Rosso: impostazioni da controllare e non corrette (malfunzionamento dell&rsquo;applicazione);</p>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm">Giallo: variazione delle impostazioni attuali rispetto al &ldquo;Controllo&rdquo;
+			precedente;</p>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm">Verde: controllo avvenuto con esito positivo.</p>
+		</ul>
+		<p class="western" style="margin-bottom: 0cm">Quando il controllo ha esito positivo viene generato in automatico il file &ldquo;Crosstable.gvl&rdquo;
+	(contenente le variabili per il plc) e occorre salvarlo all&rsquo;interno della cartella del progetto PLC inerente al progetto in uso.</p>
+	</ul>
+	
+	<ul>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong> Importa Crosstable:</strong>  permette il caricamento del file &ldquo;Crosstable.csv&rdquo;
+		presente all&rsquo;interno di un altro progetto. <u>Il file importato andr&agrave; a sovrascrivere l&rsquo;attuale file nel momento in
+		cui si effettuer&agrave; un salvataggio</u>.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong>Importa Can:</strong> importa le variabili CAN che sono state generate dal CANBuilder.	Scrivere il numero di riga della crosstable dove si vuole 
+		importare le variabili, premere &ldquo;Importa CAN&rdquo; e	selezionare il file &ldquo;ASCIIcmg.txt&rdquo; generato dal	CANBuilder.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong>Introdurre in una riga:</strong>  selezionando questo pulsante si inserisce in modo
+		semi-automatico la variabile che si vuole caricare nella Crosstable	(tabella). Quando &ldquo;Introdurre in una riga&rdquo; &egrave;
+		selezionato, apparir&agrave; una finestra (Riga numero) nella quale	occorre inserire il numero della riga della Crosstable nella quale
+		si vuole inserire la nuova variabile.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong> Blocco precedente:</strong>  se si desidera avere la nuova variabile da inserire
+		nella Crosstable con lo stesso numero di blocco della variabile	precedente &egrave; necessario selezionare il pulsante &ldquo;Blocco
+		precedente&rdquo;. Questa funzione permette di creare blocchi di variabili. Questo tasto non &egrave; sempre visibile e quindi
+		possibile da usare.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong> Annulla:</strong>  premendo questo tasto &egrave; possibile annullare l&rsquo;ultima
+		azione effettuata e tornare alla configurazione precedente.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong> Mostra:</strong>  premendo questo tasto &egrave; possibile visualizzare, nella
+		tabella, solamente le righe delle variabili utilizzate. Ad ogni	pressione del tasto, nella prima riga della Crosstable, verr&agrave;
+		visualizzata la variabile successiva.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong> Vai:</strong>  inserire	in &ldquo;Riga numero&rdquo; il numero della riga che si vuole
+		visualizzare e premere il tasto &ldquo;Vai&rdquo;. Automaticamente la tabella visualizzer&agrave; la riga desiderata.</p>
+		<li/>
+		<p class="western"><strong> Sposta in:</strong>  questo tasto serve per spostare una determinata riga in una posizione voluta. Occorre selezionare
+		dalla tabella la riga che si vuole spostare e inserire il numero della riga in &ldquo;Riga numero&rdquo;, relativo alla posizione di
+		destinazione. Possono doversi affrontare due situazioni differenti:</p>
+	<ol>
+		<li value="1"/>
+		<p class="western"><strong> SPOSTARE UNA RIGA ALL&rsquo;INTERNO DI UN BLOCCO GIA&rsquo; ESISTENTE</strong> </p>
+	</ol>
+	<ul>
+		<ul>
+		<li/>
+		<p class="western">Selezionare la riga da spostare (esempio: riga 7)</p>
+		<li/>
+		<p class="western">Inserire nel tasto &ldquo;Riga numero&rdquo;	la posizione in cui si vuole spostare la riga selezionata (esempio:
+		posizione 3)</p>
+		<li/>
+		<p class="western">La riga selezionata verr&agrave; spostata nella posizione desiderata (posizione 3) e verr&agrave; accorpata
+		al blocco della riga che la precede (nel nostro esempio nel blocco della riga 2)</p>
+		</ul>
+		</ul>
+		<ol>
+			<li value="2"/>
+			<p class="western"><strong>SPOSTARE UNA RIGA E CREARE UN NUOVO BLOCCO</strong></p>
+		</ol>
+		<ul>
+			<ul>
+			<li/>
+			<p class="western"> Selezionare la riga da spostare (esempio: riga 7) </p>
+			<li/>
+			<p class="western">Inserire nel tasto &ldquo;Riga numero&rdquo;	la posizione in cui si vuole spostare la riga selezionata.
+			<strong> ATTENZIONE:</strong>  per creare un nuovo blocco &egrave; obbligatorio che la riga alla posizione precedente di quella selezionata sia VUOTA</p>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm">La riga selezionata verr&agrave; spostata nella posizione desiderata e
+			creer&agrave; un nuovo blocco</p>
+		</ul>
+		</ul>
+	</ul>
+	
+	<ul>
+		<li/>
+		<p class="western"><strong> Salva:</strong>  salvataggio delle impostazioni attuali.</p>
+		<li/>
+			<p class="western"><strong> Salva In:</strong>  salvataggio delle impostazioni attuali in una locazione desiderata. 
+		</p>
+		<li/>
+			<p class="western"><strong> Esci:</strong>  chiusura del programma in uso e nel caso siano state variate delle impostazione rispetto l&rsquo;ultimo
+		salvataggio chiede se si desidera salvare l&rsquo;attuale configurazione.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong> Cancella Riga:</strong>  effettua la cancellazione della riga nella Crosstable. Tale riga &egrave;
+		stata selezionata con il tasto &ldquo;Select&rdquo; (presente nella	parte destra della tabella).</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong> Select:</strong>  Il tasto &ldquo;Select&rdquo; presente nella tabella, permette il
+		caricamento della riga selezionata nella parte superiore della schermata dove l&rsquo;utente pu&ograve; effettuare delle modifiche
+		o cancellare la riga stessa. 
+		</p>
+	</ul>
+<br/>
+	<p class="western"><strong> Variabile di ALLARME / EVENTO:</strong> </p>
+	<p class="western">Se vogliamo utilizzare una variabile come allarme/evento dobbiamo indicarlo nel campo &ldquo;Behavior&rdquo;
+	ma &egrave; possibile solamente se:</p>
+	<ul>
+		<li/>
+		<p class="western">Il campo &ldquo;Update&rdquo; &egrave; diverso da &ldquo;H&rdquo;;</p>
+		<li/>
+		<p class="western">Il campo &ldquo;Type&rdquo; &egrave; uguale a &ldquo;BIT&rdquo;;</p>
+	</ul>
+	<p class="western">Con queste impostazioni &egrave; possibile scegliere la condizione di allarme/evento.</p>
+	<p class="western"> 
+	<img src="Funzionalita_Crosstable_Editor_1.png" name="Immagine112" align="bottom" width="699" height="49" border="0"/>
+</p>
+	<p class="western">Le variabili presenti nel menu a tendina sono tutte quelle presenti nella Crosstable, comprese quelle di sistema,
+	ad esclusione delle variabili che hanno nel campo &ldquo;Update&rdquo; il valore &ldquo;H&rdquo; e quelle che hanno nel campo &ldquo;Priority&rdquo;
+	il valore &ldquo;0&rdquo;.</p>
+	<br/>
+	</body>
+</html>

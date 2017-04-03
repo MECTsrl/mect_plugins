@@ -1,0 +1,55 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>History functioning</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">History functioning</h3>
+		<p class="western">Panel stores all data of the <strong>Crosstable</strong> values with &ldquo;<strong>Update</strong>&rdquo; field at:</p>
+	<ul>
+		<li/>
+<p class="western"><strong>S:</strong> variable is always updated and stored slowly with time &ldquo;Slow Log Period&rdquo; (System Editor parameter);</p>
+		<li/>
+<p class="western"><strong>F:</strong> like &ldquo;S&rdquo; but fast with time &ldquo;Fast Log Period&rdquo; (System Editor parameter);</p>
+		<li/>
+<p class="western"><strong>V:</strong> variable is sampled and stored only on change value;</p>
+		<li/>
+<p class="western"><strong>X:</strong> variable is stored only when function logShot() is called.</p>
+	</ul>
+	<p class="western">History is daily and unique for all variables enabled for this function. It is possible to define partial history to display on panel. </p>
+	<p class="western">To show history page select MENU &#8594; DATA &#8594; STORE, or use an <strong>ATCMbutton</strong> in the change page mode and insert in
+	the Property &ldquo;<strong>pageName</strong>&rdquo; word &ldquo;<strong>file name</strong>&rdquo; without extension. Where &ldquo;file name&rdquo; is a .csv
+	file beginning with &ldquo;<strong>store</strong>&rdquo;.</p>
+	<p lang="it-IT" class="western"><img src="Funzionamento_storici_1.png" name="Immagine 30" align="bottom" width="322" height="182" border="0"/></p>
+	<p class="western">Upload the new file on the device via web interface, see &ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web_eng.html">Web interface functioning</a></u></font>&rdquo;.
+	Optionally it is possible to define a subset of the history variables writing a configuration file (store1.csv) in this way:</p>
+	<p class="western"><strong>date</strong></p>
+	<p class="western"><strong>time</strong></p>
+	<p class="western"><strong><i>TPLC_IN_3</i></strong></p>
+	<p class="western"><strong><i>TPLC_IN_AN_2</i></strong></p>
+	
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Funzionamento_storici_2.png" name="Immagine212" align="bottom" width="360" height="203" border="0"/>
+</p>
+	
+	<p class="western">Key 
+	<img src="Funzionamento_storici_3.png" name="Immagine213" align="bottom" width="24" height="26" border="0"/>
+
+	allows time filtering of history and 
+	<img src="Funzionamento_storici_4.png" name="Immagine214" align="bottom" width="24" height="24" border="0"/>
+	key, active when USB pen inserted, allows USB pen storage. </p>
+	<p class="western"><strong>NOTE:</strong> log function can be started, stopped and forced using the functions 
+	<strong>logStart()</strong>, <strong>logStop()</strong> e <strong>logShot()</strong>. 	</p>
+	<p class="western"><strong>logReset()</strong> function removes all the logs on the device. These functions are inserted in the code al explained in 
+	chapter &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI_eng.html">Setting up an automation</a></u></font>&rdquo;.</p>
+	<br/>
+	</body>
+</html>

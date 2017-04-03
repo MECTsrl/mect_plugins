@@ -1,0 +1,104 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Personalizzare lo sfondo di una pagina</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+	<h3 class="western">Personalizzare lo sfondo di una pagina</h3>
+	<p class="western">&Egrave; possibile personalizzare lo fondo di una pagina, cambiandone il colore, aggiungendo una immagine e  mettendo
+	un bordo.</p>
+	<p class="western">Per fare questo procedere come segue:</p>
+	<ul>
+		<li/>
+<p class="western">Premere il tasto destro del mouse su un punto libero della pagina,</p>
+		<li/>
+<p class="western">Scegliere la voce &ldquo;Change styleSheet&rdquo;</p>
+<img src="Personalizzare_sfondo_pagina_1.png" name="Immagine123" align="left" width="293" height="186">
+  <br clear="left"/>
+</img>
+		<li/>
+<p class="western">Nella nuova finestra visualizzata apparir&agrave; il seguente codice:</p>
+	<ul>
+		<li/>
+	<p class="western">QWidget#&lt;nome pagina&gt;</p>
+	<p class="western">{</p>
+	<p class="western">}</p>
+	<p class="western">dove al posto di &lt;nome_pagina&gt; c&rsquo;&egrave; il nome della pagina attuale.</p>
+	</ul>
+	</ul>
+	<ul>
+		<li/>
+<p class="western">Per dare un colore di sfondo mettere all&rsquo;interno delle graffe il codice:</p>
+	
+	<ul>
+		<li/>
+	<p class="western">background-color: rgb(RRR, GGG,	BBB);</p>
+	<p class="western">	</span>dove al posto di RRR, GGG, BBB mettere il colore desiderato in formato RGB</p>
+	</ul>
+	</ul>
+	<ul>
+		<li/>
+<p class="western">Per aggiungere un bordo mettere all&rsquo;interno delle graffe il codice:</p>
+	<ul>
+		<li/>
+	<p class="western">border: Wpx solid  rgb(RRR, GGG, BBB);</p>
+	<li/>
+	<p class="western">border-radius: Rpx;</p>
+	<p class="western">dove al posto di Wpx mettere lo spessore del	bordo in pixel (es.: 2px) e al posto di  RRR, GGG, 	BBB mettere il
+	colore desiderato in formato RGB e al posto di Rpx mettere il raggio di 	curvatura del bordo in pixel (es.: 8px).</p>
+	</ul>
+	</ul>
+	<ul>
+		<li/>
+<p class="western">Per visualizzare l&rsquo;immagine a grandezza naturale centrata mettere all&rsquo;interno delle graffe il codice:</p>
+		<ul>
+		<li/>
+	<p class="western">border-image: url(:/systemicons/img/Camera.png);</p>
+	<p class="western">dove al posto di &ldquo;:/systemicons/img/Camera.png&rdquo; mettere il percorso dell&rsquo;immagine 	desiderata presa dal file
+	di risorse.</p>
+	</ul>
+	</ul>	
+	<ul>
+		<li/>
+<p class="western">per adattare l&rsquo;immagine adattata alla finestra mettere all&rsquo;interno delle graffe il codice:</p>
+	<ul>
+		<li/>
+	<p class="western">image: url(:/systemicons/img/Camera.png);</p>
+	<p class="western">dove al posto di &ldquo;:/systemicons/img/Camera.png&rdquo; mettere il percorso dell&rsquo;immagine desiderata presa dal file di
+	risorse.</p>
+	</ul>
+	</ul>
+	<ul>
+		<li/>
+<p class="western">premere OK</p>
+	</ul>
+	<p class="western"><strong>ATTENZIONE:</strong> il programma &egrave; case sensitive, quindi le lettere maiuscole sono DIVERSE dalle lettere minuscole.</p>
+	<p class="western">Tutte queste operazioni possono essere fatte	senza scrivere codice, basta selezionare i menu a tendina: &ldquo;<strong>Add
+	Resource</strong>&rdquo; e &ldquo;<strong>Add Color</strong>&rdquo;.</p>
+	<p class="western"><strong>ATTENZIONE:</strong> non bisogna selezionare un colore con il gradiente perch&eacute; diminuiscono sensibilmente le prestazioni
+	e quindi il pannello potrebbe risultare molto lento.</p>
+	<br/>
+	<h3 class="western">Personalizzare la Splash screen</h3>
+	<p class="western" style="margin-bottom: 0cm">Per personalizzare la	splash screen baster&agrave; sovrascrivere il file &ldquo;<i>splash.png</i>&rdquo;
+	presente nella cartella &ldquo;<i>config</i>&rdquo; del progetto. L&rsquo;immagine della splash dovr&agrave; essere in formato png,
+	della stessa risoluzione dello schermo del prodotto utilizzato:</p>
+	<ul>
+		<li/>
+<p class="western" style="margin-bottom: 0cm">TPAC1006/TP1057 =&gt; 320x240;</p>
+		<li/>
+<p class="western" style="margin-bottom: 0cm">TPAC1007/TP1043 =&gt; 480x272;</p>
+		<li/>
+<p class="western" style="margin-bottom: 0cm">TPAC1008/TP1070 =&gt; 800x480.</p>
+	</ul>
+	<br/>
+	</body>
+</html>

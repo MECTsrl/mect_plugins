@@ -1,0 +1,41 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Lettura data/ora tramite funzione HMI</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Lettura data/ora tramite funzione HMI</h3>
+	<p class="western">E&rsquo; possibile utilizzare le informazioni di	data e ora tramite l&rsquo;utilizzo di alcune funzioni nell&rsquo;ambiente
+	HMI. Queste informazioni possono essere inglobate in variabili della Crosstable che poi possono essere utilizzate all&rsquo;interno del
+	progetto PLC. Ad esempio inseriamo nella Crosstable le variabili: &ldquo;giorno&rdquo; e &ldquo;minuti&rdquo;.</p>
+	<p class="western">Come prima cosa occorre includere nel file &ldquo;automation.cpp&rdquo;:</p>
+	
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm">
+		<p lang="en-US" style="margin-bottom: 0cm; orphans: 2; widows: 2"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt"><font color="#800080">#include</font><font color="#c0c0c0">
+		</font><font color="#808000">&lt;QDate&gt;</font></font></font></p>
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm">
+		<p lang="en-US" style="margin-bottom: 0cm; orphans: 2; widows: 2"><font face="Courier New, monospace"><font size="2" style="font-size: 10pt"><font color="#800080">#include</font><font color="#c0c0c0">
+		</font><font color="#808000">&lt;QTime&gt;</font></font></font></p>	
+	
+	<p class="western">All&rsquo;interno di:</p>
+	<p class="western"> <font color="#808000">void</font> loop (<font color="#808000">void</font>)</p>
+	<p class="western">inserire:</p>
+	<p class="western"><strong>doWrite_giorno(QDate::currentDate().day());</strong></p>
+	<p class="western"><strong>doWrite_minuti(QTime::currentTime().minute());</strong></p>
+	
+	<p class="western">Dentro le variabili &ldquo;giorno&rdquo; e &ldquo;minuti&rdquo; avremo i valori attuali relativi al giorno e ai
+	minuti che possiamo utilizzare direttamente nel PLC.</p>
+	<p class="western">Per chiamare la funzione  per mese, anno ecc &egrave; possibile fare riferimento a: <font color="#0000ff"><u><a href="http://doc.qt.io/qt-4.8/qdate.html">doc.qt.io/qt-4.8/qdate</a></u></font></p>
+	<p class="western">Per chiamare la funzione  per ore, minuti e secondi fare riferimento a: <font color="#0000ff"><u><a  href="http://doc.qt.io/qt-4.8/qtime.html">doc.qt.io/qt-4.8/qtime</a></u></font></p>
+	<br/>
+	</body>
+</html>

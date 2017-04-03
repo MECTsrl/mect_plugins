@@ -1,0 +1,527 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>System Editor</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">System Editor</h3>
+		<p class="western"><i>System Editor</i> changes some <strong>configuration</strong> for HMI and <strong>communication
+				parameters</strong> between panel and remote devices.</p>
+	<p class="western">To start the &ldquo;Crosstable Editor&rdquo; see following figure:</p>
+	<p class="western"><img src="System_Editor_1.png" name="Immagine113" align="bottom" width="565" height="261" border="0"/>
+</p>
+	<br/>
+	<p class="western">Here the &ldquo;System Editor&rdquo;:</p>
+	<p class="western"><img src="System_Editor_2.png" name="Immagine114" align="bottom" width="540" height="482" border="0"/>
+</p>
+	<p class="western">In the upper side of the editor there are some Tab: System, SERIAL PORT 0 etc&hellip;., and in the bottom side there is the &ldquo;SAVE&rdquo;
+		key (save setup). There are defaults parameters depending on product model.</p>
+	<p class="western">System Editor&rdquo; characteristics:</p>
+	<ul>
+		<li/>
+<p class="western"><strong>System:</strong> setup of all general features of the system:</p>
+		<ul>
+			<li/>
+<p class="western"><strong>Pwd Logout Page:</strong> page shown at the end of session. If empty the actual page is shown.</p>
+			<li/>
+<p class="western"><strong>Pwd Timeout [s]:</strong> timeout in seconds for the session. If &ldquo;0&rdquo; there is no timeout.</p>
+			<li/>
+<p class="western"><strong>Screen Saver [s]:</strong> timeout in seconds for &ldquo;Screen Saver&rdquo;. If &ldquo;0&rdquo; the
+			screen save is disabled.</p>
+			<li/>
+<p class="western"><strong>Slow Log Period [s]:</strong> interval time for storage of &ldquo;S&rdquo; type variables (defined in the field
+			&ldquo;Update&rdquo; of &ldquo;Crosstable Editor&rdquo;).</p>
+			<li/>
+<p class="western"><strong>Fast Log Period [s]:</strong> interval time for storage of &ldquo;F&rdquo; type variables (defined in 
+		the field &ldquo;Update&rdquo; of &ldquo;Crosstable Editor&rdquo;). Number must be less than  field &ldquo;Slow Log	Period&rdquo;.</p>
+			<li/>
+<p class="western"><span lang="en-US"><strong>Max Log Space [Mb]:</strong> </span>space to store the history variables.</p>
+			<li/>
+<p class="western"><span lang="en-US"><strong>Trend Window [s]:</strong> </span>time value in seconds for the trend window. Must be at least 3
+		times of field &ldquo;Fast Log Period&rdquo;.</p>
+			<li/>
+<p class="western"><strong>Retries:</strong> number of allowed errors for a device before slowing the query	time.</p>
+			<li/>
+<p class="western"><strong>Blacklist:</strong> reduced rate of interrogation in the case where it exceeds the &ldquo;Retries&rdquo;.</p>
+			<li/>
+<p class="western"><strong>Start Page:</strong> name of the	page to show first. In Qt Creator there must be a page like this.</p>
+			<li/>
+<p class="western"><strong>Home Page:</strong> page name for the home page. In Qt Creator there must be a page like this.</p>
+			<li/>
+<p class="western"><strong>Buzzer Touch:</strong> enable a buzzer for the touch screen touch.</p>
+			<li/>
+<p class="western"><strong>Buzzer Alarm:</strong> enable a buzzer on alarm rising.</p>
+			<li/>
+<p class="western"><strong>Read Period 1 [ms]:</strong> sets reading interval time for variables. Associated to &ldquo;1&rdquo;
+			element in the field  &ldquo;Priority&rdquo; of the Crosstable.</p>
+			<li/>
+<p class="western"><strong>Read Period 2 [ms]:</strong> sets reading interval time for variables. Associated to &ldquo;2&rdquo;
+			element in the field  &ldquo;Priority&rdquo; of the Crosstable.</p>
+			<li/>
+<p class="western"><strong>Read Period 3 [ms]:</strong> sets reading interval time for variables. Associated to &ldquo;3&rdquo;
+			element in the field  &ldquo;Priority&rdquo; of the Crosstable.</p>
+		</ul>
+		<li/>
+<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> setup of all serial communication parameter of the device.</p>
+	<p class="western"><strong>WARNING:</strong>	parameters of internal serial line must not be changed, otherwise panel doesn&rsquo;t work.</p>
+		<li/>
+<p class="western"><strong>TC IP PORT:</strong> setup of TCP IP communication parameters with a remote device: 
+		</p>
+		<ul>
+			<li/>
+<p class="western"><strong>Timeout [ms]:</strong> timeout for the master to wait for slave answer.</p>
+			<li/>
+<p class="western"><strong>Silence [ms]:</strong> frequency of consecutive request of a master to a slave.</p>
+		</ul>
+		<li/>
+<p class="western"><strong>CANOPEN 0 / 1:</strong> setup of	Baudrate of CANopen protocol.</p>
+<p class="western"><strong>WARNING:</strong> baudrate of internal protocol must not be changed, otherwise panel doesn&rsquo;t work.</p>
+	</ul>
+	
+<p class="western">In the following table the serial / CANopen for each device  INTERNAL and EXTERNAL:</p>
+	<center>
+		<table width="674" cellpadding="7" cellspacing="0">
+			<col width="127">
+			<col width="77">
+			<col width="58">
+			<col width="56">
+			<col width="77">
+			<col width="90">
+			<col width="90">
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western"><br/>
+
+					</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western">SERIAL PORT 0</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western">SERIAL PORT 1</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western">SERIAL PORT 2</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western">SERIAL PORT 3</p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western">CANOPEN 0</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm"align ="center">
+					<p class="western">CANOPEN 1</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TP1043_01_A</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TP1043_01_B</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+			</tr>
+			
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TP1057_01_A</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TP1057_01_B</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TP1070_01_A</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TP1070_01_B</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TP1070_01_C</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1006</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1007_03</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1007_04_AA</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1007_04_AB</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1007_04_AC</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1008_02_AA</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1008_02_AB</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1008_02_AD</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1008_02_AE</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm"align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+			<tr valign="top">
+				<td width="127" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">TPAC1008_02_AF</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="58" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="56" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm">
+					<p class="western">-</p>
+				</td>
+				<td width="77" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western"><strong>EXTERNAL</strong></p>
+				</td>
+				<td width="90" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western"><strong>INTERNAL</strong></p>
+				</td>
+				<td width="90" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">-</p>
+				</td>
+			</tr>
+		</table>
+	</center>
+	
+<br/>
+
+	<p class="western">On panel there is a page with the same setup of the &ldquo;System Editor&rdquo;. To access go to: <strong>MENU &#8594; OPTIONS &#8594; SYSTEM INI</strong>.</p>
+	<br/>
+	</body>
+</html>

@@ -1,0 +1,96 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Setting up an automation</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+	<h3 class="western">Setting up an automation</h3>
+	<p class="western">Fulfilment of an automation with graphic can be done in 2 ways:</p>
+	<ul>
+		<li/>
+<p class="western">Write C++ code in QT environment</p>
+		<li/>
+<p class="western">Write PLC languages code in  ATCM Control environment (5 languages)</p>
+	</ul>
+	<p class="western"><strong>In both cases dialog between graphics and automation is happened via Crosstable.</strong></p>
+	
+	<p class="western"><strong>Even though it is not necessary to write C++ code</strong>,&nbsp; it is possible to do, for instance: if you desire to change 
+	directly some PLC variables in the HMI application.</p> <p class="western"><strong>NOTE:</strong> usually this is done in the PLC application</strong>.</p>
+	<p class="western">Qt automation can be done for the entire project or for each single page.</p>
+	<p class="western">To write a variable in C++ call <strong>doWrite_</strong>VariableName(value), where VariableName is the name of the variable in the 
+	Crosstable and value the value to write. </p>
+	<p class="western">For example to configure as output the first digital I/O:</p>
+	<p class="western">	<strong>doWrite_PLC_DigDir_1(1); </strong>	</p>
+	<p class="western">To set the first analogue output to the value of the product of the first 2 inputs write:</p>
+	<p class="western"><strong>doWrite_PLC_AnOut_1(PLC_AnIn_1 * PLC_AnIn_2);</strong></p>
+	<br/>
+	<p class="western"><u><h3>WHOLE PROJECT</h3></u></p>
+	<p class="western">It is possible to write the application only using C++ code; to do so use the page <strong>automation.cpp</strong> presente in Edit
+	&#8594; Sources</p>
+	<p class="western"><img src="Realizzazione_automazione_HMI_1.png" name="Immagine 14" align="bottom" width="460" height="294" border="0"/></p>
+	
+	<p class="western">This page is splitted in 2 parts: setup() and loop()</p>
+	<p class="western"><strong>setup()</strong> function is run only at application startup and the <strong>loop()</strong> function runs every 100ms independently of the page shown.</p>
+	<br/>
+	<p class="western"><u><h3>SINGLE PAGE</h3></u></p>
+	<p class="western">To write an automation in QT for a single page follows these 3 steps:</p>
+	<ol>
+		<li/>
+<p class="western">Define the triggering action for the automation: time, threshold, a key on, etc...</p>
+		<li/>
+<p class="western">Link previous trigger to the function with automation code.</p>
+		<li/>
+<p class="western">Write automation code in the function.</p>
+	</ol>
+	<p class="western">Here an example to change 2 bits with a button on.</p>
+	<p class="western">First link button to the automation function (in Qt known as slot) to the button on (in Qt known as signal).</p>
+	<p class="western">To do this click right key on button and choose &ldquo;go to slot&rdquo; and select in the list signal &ldquo;clicked&rdquo;. 
+	A window with an empty automation function appears.</p>
+	
+	<p class="western"><img src="Realizzazione_automazione_HMI_2.png" name="Immagine156" align="left" width="148" height="159">
+  <br clear="left"/>
+</img>
+<img src="Realizzazione_automazione_HMI_3.png" name="Immagine155" align="left" width="332" height="140">
+  <br clear="left"/>
+</img></p>
+	
+	<p class="western">If you see the following window:</p>
+	<p class="western"><img src="Realizzazione_automazione_HMI_4.png" name="Immagine157" align="bottom" width="305" height="100" border="0"/></p>
+	
+	<p class="western">Make a &ldquo;Build All&rdquo;, close project with File &#8594; &ldquo;Close All Projects and Editors&rdquo;. 
+	When the project is opened again the error windows disappears.</p>
+	<pre class="western">/* this funcion will flip the actual value of DigOut01, DigOut02, DigOut03 and DigOut04 */</pre>
+	<pre class="western">void page01::on_atcmButton_5_clicked()</pre>
+	<pre class="western">{</pre>
+	<pre class="western">    <span lang="en-US">/***********</span></pre>
+	<pre class="western">    <span lang="en-US">* DigOut01 *</span></pre>
+	<pre class="western">    <span lang="en-US">************/</span></pre>
+	<pre class="western">    <span lang="en-US">/* flip the value */</span></pre>
+	<pre class="western">    <span lang="en-US">doWrite_DigOut01(!DigOut01);</span></pre>
+	<pre class="western">        <span lang="en-US">/***********</span></pre>
+	<pre class="western">    <span lang="en-US">* DigOut02 *</span></pre>
+	<pre class="western">    <span lang="en-US">************/</span></pre>
+	<pre class="western">    <span lang="en-US">/* flip the value */</span></pre>
+	<pre class="western">    <span lang="en-US">doWrite_DigOut02(!DigOut02);</span></pre>
+	<pre class="western">}</pre>
+	
+	<p class="western">Source code can be linked to each page in different ways:</p>
+	<ol>
+		<li/>
+<p class="western">in the <strong>reload()</strong>, method, called when page is shown on display;</p>
+		<li/>
+<p class="western">in the <strong>updateData()</strong>, method, called every 500 ms when the page is visible;</p>
+	</ol>
+<p class="western"><img src="Realizzazione_automazione_HMI_5.png" name="Immagine 10" align="bottom" width="569" height="306" border="0"/></p>
+<br/>
+	</body>
+</html>

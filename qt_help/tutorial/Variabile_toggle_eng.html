@@ -1,0 +1,35 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Toggle variable</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Toggle variable</h3>
+	
+	<p class="western">To change state of a toggle variable with a button do the following:</p>
+	<ol>
+		<li/>
+<p class="western">Drag the object on the page.</p>
+	<li/>
+<p class="western">Double click on button.</p>
+	<p class="western" style="margin-bottom: 0cm"><img src="Variabile_toggle_1.png" name="Immagine126" align="bottom" width="208" height="126" border="0"/></p>
+	<li/>
+<p class="western">Define the status variable <strong>StatusVar</strong> with name of the Crosstable used to change the value according to the button state. 
+	Press &ldquo;&hellip;&rdquo; key to select the desired	variable.</p>
+<p class="western"><strong>WARNING:</strong> if key changes state only as long as it is pressed, the <strong>checkable option must not be selected</strong>, 
+	otherwise if state must change until next key activation,&nbsp; the checkable option in the QAbstractButton section <strong>must be selected</strong>.</p>
+	</ol>
+<p class="western">	<strong>WARNING:</strong> if the reference variable is changed by PLC, button shows the status of the variable. 
+	Then if the variable is forced to 1 button is pressed and execute the linked procedure. If the variable is forced to 0 the button is released.</p>
+	<br/>
+	</body>
+</html>

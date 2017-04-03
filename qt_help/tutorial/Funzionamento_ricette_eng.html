@@ -1,0 +1,80 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Recipes functioning</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Recipes functioning</h3>
+		<p class="western">Recipes can only  descend from existing ones on target. New families of recipes can be built on PC and then loaded on target trough 
+		web interface described in the relevant paragraph.</p>
+	<p class="western">Recipes are text files in .csv format where in each row there is a variable and the value to link to.</p>
+	<p class="western">For example, to create a recipe that sets in the <strong>first</strong> step output  TPLC_OUT_1 to 0 and sets to 1 output TPLC_OUT_2 
+	and in step <b>two</b> the output TPLC_OUT_1 to 1 and to 0 the output TPLC_OUT_2 write:</p>
+	
+	<p class="western">TPLC_OUT_1; 0; 1</p>
+	<p class="western">TPLC_OUT_2; 1; 0</p>
+	
+	<p class="western">It is possible to add all steps (column) you want.</p>
+	
+	<p class="western"><strong>WARNING:</strong> use &ldquo;;&rdquo; as separator.</p>
+	
+	<p class="western">Zip the file/folder to upload a recipe or a family of recipes on the device and transfer via web interface. See 
+	&ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web_eng.html">Web interface functioning</a></u></font>&rdquo; chapter.</p>
+	
+	<p class="western">The recipes display/load/modify is in 2 steps:</p>
+	<ol>
+		<li/>
+<p class="western">Select recipe to show</p>
+	</ol>
+	<ol start="2">
+		<li/>
+<p class="western">Display/load/modify of the selected recipe</p>
+	</ol>
+	
+	<p class="western">To use recipe page to use an <strong>ATCMbutton</strong> in the change page mode and as &ldquo;<strong>pageName</strong>&rdquo;
+	use &ldquo;<strong>recipe_select</strong>&rdquo;.</font></p>
+	<p class="western">In this window it is possible to browse the existing recipe families and the belonging recipes.</p>
+	<p class="western">	<img src="Funzionamento_ricette_1.png" name="Immagine211" align="bottom" width="446" height="253" border="0"/></p>
+	
+	<p class="western">Once selected the desired recipe, press the key to save the recipe or the family of recipes on USB
+	(<span lang="it-IT"><img src="Funzionamento_ricette_2.gif" name="Immagine 71" align="bottom" width="24" height="24" border="0"/></span>)
+	or press the recipe to show the page of the recipe.</font></p>
+	
+	<p class="western">Recipes files are .csv format files with 2 columns:</p>
+	<ol>
+	<li/>
+	<p class="western">Variable name</p>
+	<li/>
+	<p class="western">Variable value</p>
+	</ol>
+	<p lang="it-IT" style="margin-top: 0.18cm; margin-bottom: 0.18cm; orphans: 2; widows: 2">
+	<img src="Funzionamento_ricette_3.png" name="Immagine 33" align="bottom" width="393" height="222" border="0"/></p>
+	
+	<p class="western">Once a recipe is shown, it is possible:</p>
+	<ul>
+		<li/>
+<p class="western">Modify the variable value: select the variable and press Edit key 
+	(<span lang="it-IT"><img src="Funzionamento_ricette_4.gif" name="Immagine 68" align="bottom" width="24" height="24" border="0"/></span>).</p>
+	</ul>
+	<ul>
+		<li/>
+<p class="western">Read actual values of variables of the recipe (on instruments connected) by pressing Read key
+ (<span lang="it-IT"><img src="Funzionamento_ricette_5.gif" name="Immagine 67" align="bottom" width="24" height="24" border="0"/></span>).</p>
+		<li/>
+<p class="western">Write on	devices the displayed values in the recipe by pressing Load key
+ (<span lang="it-IT"><img src="Funzionamento_ricette_7.gif" name="Immagine 66" align="bottom" width="24" height="24" border="0"/></span>).</p>
+	</ul>
+	<p class="western">Save actual recipe: press Save key (<span lang="it-IT"><img src="Funzionamento_ricette_6.gif" name="Immagine 65" align="bottom" width="24" height="24" border="0"/>
+</span>) and digit desired name.</p>
+<br/>
+	</body>
+</html>

@@ -1,0 +1,35 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>PWM output</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">PWM output</h3>
+		<p class="western">In many devices you can use the PWM analog outputs with a fixed frequency of 250Hz. The configuration can be done directly by plc 
+		or HMI.  </p>
+	<p class="western">Follow these steps to configure the analog output (use of the plc ST language), for example in TPAC1007_04_AC:</p>
+	<ol>
+		<li/>
+<p class="western">Set the analog output as voltage: <strong>PLC_AnOutConf_1 :=  2;</strong></p>
+		<li/>
+<p class="western">Set the amplitude, for example 6V: <strong>PLC_AnOut_1 :=  600;</strong></p>
+		<li/>
+<p class="western">Configure the analog output as PWM: <strong>PLC_AnOutConf_1 :=  3;</strong></p>
+		<li/>
+<p class="western">Set the duty cycle, for example 40%: <strong>PLC_AnOut_1 :=  40;</strong></p>
+	</ol>
+	<p class="western"><strong>The steps 3 and 4 must be in a second cycle of the plc time.</strong> Repeat step 4 for change the duty cycle value.</p>
+	<p class="western"><strong>WARNING:</strong> if this mechanism is done by HMI you must enter different values (representation of two decimal value in 
+	output). In step 2 it will put 6 and in step 4 the value 0.4.</p>
+	<br/>
+	</body>
+</html>

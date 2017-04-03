@@ -1,0 +1,93 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Aspetto e funzionalità</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Aspetto e funzionalità</h3>
+	<p class="western">Selezionando l&rsquo;elemento, le sue propriet&agrave; appaiono nella finestra in basso a destra della finestra di
+	Qtcreator nella sezione intitolata <strong>ATCMbutton</strong>. 
+	</p>
+	<p class="western"><img src="Aspetto_funzionalita_1.png" name="Immagine128" align="left" width="225" height="233">
+  <br clear="left"/>
+</img>
+<u>Modificando	una o pi&ugrave; di queste propriet&agrave; si pu&ograve; personalizzare l&rsquo;aspetto grafico ed alcune funzionalit&agrave;.
+	Per effettuare la modifica occorre selezionare la colonna destra della riga corrispondente</u>.</p>
+	<p class="western">In dettaglio per le funzionalit&agrave; saranno disponibili:</p>
+	<ul>
+		<li/>
+<p class="western"><strong>pageName:</strong> nel caso in cui si voglia legare il bottone ad un cambio pagina, si dovr&agrave; inserire il nome
+		della pagina di destinazione.</p>
+		<li/>
+<p class="western"><strong>remember:</strong> nel caso in cui si voglia tenere traccia della pagina di destinazione in modo da poter utilizzare la
+		parola chiave BACK (specificato in pageName).</p>
+		<li/>
+<p class="western"><strong>passwordVar:</strong> se si vuole proteggere	l&rsquo;azione del bottone con una password numerica, si deve
+		scrivere qui la variabile della Crosstable che contiene la password desiderata o direttamente una password numerica statica. 
+		</p>
+		<li/>
+<p class="western"><strong>statusVar:</strong> nel caso in cui si voglia	legare il bottone ad un cambio di stato di una variabile di tipo
+		toggle, si dovr&agrave; inserire il nome della variabile di	destinazione.</p>
+		<li/>
+<p class="western"><strong>statusReleasedValue:</strong> il valore che assumer&agrave; la <strong>statusVar</strong> al rilascio del bottone.</p>
+		<li/>
+<p class="western"><strong>statusPressedValue:</strong> il valore che assumer&agrave; la <strong>statusVar</strong> alla pressione del bottone.</p>
+		<li/>
+<p class="western"><strong>viewStatus:</strong> se vistato avr&agrave; un colore rispettivamente rosso o verde nel caso in cui il bottone &egrave;
+		usato in modalit&agrave; toggle, a seconda se il settaggio della variabile statusvar sia fallito o meno e se &egrave; visibile il bordo.</p>
+		<li/>
+<p class="western"><strong>refresh:</strong> tempo di rinfresco dell&rsquo;oggetto espresso in millisecondi.</p>
+		<li/>
+<p class="western"><strong>visibilityVar:</strong> se si vuole legare la	visibilit&agrave; o meno dell&rsquo;oggetto a seconda dello stato
+		di una variabile, si dovr&agrave; inserire il nome della variabile di destinazione. 
+		</p>
+	</ul>
+	<p class="western">In dettaglio per l&rsquo;aspetto grafico saranno	disponibili:</p>
+	<ul>
+		<li/>
+<p class="western"><strong>bgColor:</strong> determina il colore del	background dell&rsquo;oggetto.</p>
+		<li/>
+<p class="western"><strong>borderColor:</strong> determina il colore del bordo dell&rsquo;oggetto, solo se lo spessore del bordo &egrave; maggiore
+		di zero.</p>
+		<li/>
+<p class="western"><strong>fontColor:</strong> determina il colore del testo	dell&rsquo;oggetto.</p>
+		<li/>
+<p class="western"><strong>bgPressColor:</strong> &egrave; analogo a <strong>bgColor</strong>, quando il bottone &egrave; premuto.</p>
+		<li/>
+<p class="western"><strong>borderPressColor:</strong> &egrave; analogo a	<strong>borderColor</strong>, quando il bottone &egrave; premuto.</p>
+		<li/>
+<p class="western"><strong>fontPressColor:</strong> &egrave; analogo a <strong>fontColor</strong>, quando il bottone &egrave; premuto.</p>
+		<li/>
+<p class="western"><strong>text:</strong> &egrave; il testo che verr&agrave;	visualizzato sul bottone.</p>
+		<li/>
+<p class="western"><strong>pressText:</strong> &egrave; analogo a <strong>text</strong>, quando il bottone &egrave; premuto.</p>
+		<li/>
+<p class="western"><strong>icon:</strong> &egrave; l&rsquo;icona che verr&agrave; visualizzata sul bottone. Premendo il tasto &ldquo;&hellip;&rdquo;
+		&egrave; possibile inserire le icone di sistema. Apparir&agrave; la	seguente finestra, scegliere l&rsquo;icona e premere OK:</p>
+		<p class="western"><img src="Aspetto_funzionalita_2.png" name="Immagine129" align="bottom" width="363" height="204" border="0"/></p>
+	</ul>
+	<ul>
+		<li/>
+<p class="western"><strong>pressIcon:</strong> &egrave; analogo a <strong>icon</strong>, quando il bottone &egrave; premuto.</p>
+		<li/>
+<p class="western"><strong>borderWidth:</strong> &egrave; lo spessore in pixel del bordo dell&rsquo;oggetto.</p>
+		<li/>
+<p class="western"><strong>borderRadius:</strong> &egrave; il raggio di curvatura degli spigoli dell&rsquo;oggetto.</p>
+		<li/>
+<p class="western"><strong>apparence:</strong> &egrave; lo stile con cui si vuole mostrare l&rsquo;oggetto.</p>
+	</ul>
+	<p class="western"><strong>NOTA:</strong> in tutte le Property, <strong>escluso gli ATCMplugin</strong>, &egrave; possibile visualizzare il &ldquo;Context Help&rdquo;
+	di Qt per avere una descrizione sul funzionamento: selezionare la riga desiderata e premere il tasto &ldquo;F1&rdquo; della tastiera.</p>
+	<p class="western">Per utilizzare via codice le propriet&agrave; dell&rsquo;oggetto scrivere in Help&#8594;Index: QPushButton</p>
+	<br/>
+	</body>
+</html>

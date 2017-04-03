@@ -1,0 +1,62 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Create a function block</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Create a function block</h3>
+	<p class="western" style="margin-bottom: 0cm">Proceed in the following way to create a function block for the language <strong>Function Block Diagram (FBD)</strong>:</p>
+	<ul>
+		<li/>
+<p class="western" >Select &ldquo;Class&rdquo; tab</p>
+		<li/>
+<p class="western">Select in the tree <strong>Function Blocks</strong> and press right mouse key</p>
+		<li/>
+<p class="western">Select and press <strong>Insert Function Block</strong></p>
+		<li/>
+<p class="western">In the window select <strong>Function Block Diagram FB</strong></p>
+		<li/>
+<p class="western">Insert the desired name for the function block (for example: RegolazioneON_OFF)</p>
+		<li/>
+<p class="western" >Press <strong>OK</strong></p>
+	</ul>
+	<p class="western" ><img src="Creare_blocco_funzione_1.png" name="Immagine165" align="bottom" width="711" height="481" border="0"/></p>
+	
+	<p class="western">The function block is now created, if you expand the project tree <strong>Function Blocks</strong> you see the tree.</p>
+	<p class="western">To enter in the function block you must select it and double click on the name of the function block. The window that appears has two zone:</p>
+	<ul>
+		<li/>
+<p class="western">Zone 1 for variables definition</p>
+		<li/>
+<p class="western">Zone 2 for code</p>
+	</ul>
+	<p class="western"><img src="Creare_blocco_funzione_2.png" name="Immagine166" align="bottom" width="723" height="488" border="0"/></p>
+	
+	<p class="western">First of all the function block must see the Crosstable variables. To do this place the mouse in the zone1 (that changes background 
+	color) immediately after the name of the function block, and insert the sentence: <strong>#import &ldquo;Crosstable.gvl&rdquo;</strong> as shown in the figure.</p>
+	<p class="western"><img src="Creare_blocco_funzione_3.png" name="Immagine167" align="bottom" width="335" height="120" border="0"/>
+</p>
+	<p class="western">Input/output variables (if any add the instance &ldquo;VAR_OUTPUT&rdquo; and &ldquo;END_VAR&rdquo;) must be declared. For example, 
+	see the following figure:</p>
+	<p class="western"><img src="Creare_blocco_funzione_4.png" name="Immagine168" align="bottom" width="243" height="208" border="0"/>
+</p>
+	<p class="western">In this example, when the function block is dragged into the program, 2 inputs and 1 output are generated.</p>
+	<p class="western">Now insert program code in the zone 2.</p>
+	<p class="western">To insert operators select <strong>Insert Programming Unit</strong> icon where the windows with the library operators will appears. 
+	Select and drag the desired operator (for example ADD operator to sum 2 variables) in the zone 2.</p>
+	<p class="western">To connect the variables to the operator, connect them as in a electric schematic capture. To insert variables see paragraph
+	&ldquo;<font color="#0000ff"><u><a class="western" href="Inserire_variabili_PLC_eng.html">Insert variables in FBD &ndash; LD &ndash; SFC programs</a></u></font>&rdquo;.</p>
+	
+	<p class="western" style="margin-bottom: 0cm"><img src="Creare_blocco_funzione_5.png" name="Immagine169" align="bottom" width="710" height="495" border="0"/></p>
+	<br/>
+		</body>
+</html>

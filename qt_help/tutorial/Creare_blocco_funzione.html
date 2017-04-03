@@ -1,0 +1,74 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Creare un blocco funzione</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Creare un blocco funzione</h3>
+	<p class="western" style="margin-bottom: 0cm">Procedere nel seguente modo per creare un blocco funzione, ad esempio per il linguaggio di
+	tipo <strong>Function Block Diagram (FBD)</strong>:</p>
+	<ul>
+		<li/>
+<p class="western" >Selezionare Class</p>
+		<li/>
+<p class="western">Selezionare nell&rsquo;albero <strong>Function Blocks</strong> e premere il tasto destro del
+		mouse</p>
+		<li/>
+<p class="western">Selezionare e premere <strong>Insert Function Block</strong></p>
+		<li/>
+<p class="western">Nella finestra che appare selezionare <strong>Function Block Diagram FB</strong></p>
+		<li/>
+<p class="western">Inserire il nome che si vuol dare al blocco funzione (per esempio:
+		RegolazioneON_OFF)</p>
+		<li/>
+<p class="western" >Premere <strong>OK</strong></p>
+	</ul>
+	<p class="western" ><img src="Creare_blocco_funzione_1.png" name="Immagine165" align="bottom" width="711" height="481" border="0"/></p>
+	
+	<p class="western">Il blocco funzione &egrave; cos&igrave; stato creato, infatti espandendo il ramo <strong>Function Blocks</strong>
+	dell&rsquo;albero del progetto vediamo il ramo.</p>
+	<p class="western">Per entrare nel blocco funzione bisogna selezionare e fare doppio click sul nome del blocco
+	funzione. La finestra che appare  &egrave; composta da due zone:</p>
+	<ul>
+		<li/>
+<p class="western" >Zona 1 di	definizione delle variabili</p>
+		<li/>
+<p class="western">Zona 2 di	codice</p>
+	</ul>
+	<p class="western"><img src="Creare_blocco_funzione_2.png" name="Immagine166" align="bottom" width="723" height="488" border="0"/></p>
+	
+	<p class="western">Come primo passo fare in modo che il blocco funzione veda le variabili definite in
+	Crosstable. Per far ci&ograve; posizionarsi con il mouse nella zona1 (che cambia colore di sfondo), subito dopo il nome del blocco
+	funzione, ed inserire la scritta: <strong>#import &ldquo;Crosstable.gvl&rdquo;</strong> come  si pu&ograve; vedere in figura.</p>
+	<p class="western"><img src="Creare_blocco_funzione_3.png" name="Immagine167" align="bottom" width="335" height="120" border="0"/>
+</p>
+	<p class="western">Le variabili di ingresso e di uscita (qualora ce	ne fossero aggiungere la scritta &ldquo;VAR_OUTPUT&rdquo; e
+	&ldquo;END_VAR&rdquo;) devono essere dichiarate.  Ad esempio vedere	l&rsquo;immagine seguente:</p>
+	<p class="western"><img src="Creare_blocco_funzione_4.png" name="Immagine168" align="bottom" width="243" height="208" border="0"/>
+</p>
+	<p class="western">Con questo esempio, quando si trasciner&agrave; il blocco funzione all&rsquo;interno del programma si avranno 2
+	ingressi ed 1 uscita.</p>
+	<p class="western">A questo punto posizionarsi sulla zona 2 per	inserire il codice di programma.</p>
+	<p class="western">Per  inserire gli	operatori  selezionare l&rsquo;icona <strong>Insert Programming Unit</strong> dove
+	apparir&agrave; la finestra dalla quale &egrave; possibile scegliere gli operatori di libreria. Selezionando e trascinando l&rsquo;operatore
+	necessario (per esempio l&rsquo;operatore ADD che fa la somma tra due variabili), lo si porta nella zona 2. 
+	</p>
+	<p class="western">Per collegare le variabili all&rsquo;operatore selezionare l&rsquo;icona, a questo
+	punto &egrave; sufficiente effettuare i collegamenti come in un normale editor per schemi elettrici. Per l&rsquo;inserimento delle
+	variabili vedere il capitolo &ldquo;<font color="#0000ff"><u><a class="western" href="Inserire_variabili_PLC.html">Inserire
+	variabili nei programmi FBD &ndash; LD &ndash; SFC</a></u></font>&rdquo;.</p>
+	
+	<p class="western" style="margin-bottom: 0cm"><img src="Creare_blocco_funzione_5.png" name="Immagine169" align="bottom" width="710" height="495" border="0"/></p>
+	
+		<br/>
+	</body>
+</html>

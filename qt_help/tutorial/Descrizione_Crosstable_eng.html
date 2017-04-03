@@ -1,0 +1,184 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Description of Crosstable fields</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Description of Crosstable fields</h3>
+		<center>
+		<table width="675" cellpadding="7" cellspacing="0">
+			<col width="76">
+			<col width="568">
+			<tr>
+				<td width="76" height="4" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western"><strong>Field</strong></p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm" align ="center">
+					<p class="western"><strong>Description</strong></p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Priority</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Remote devices data exchange enable.</p>
+					<p class="western">- 0: Disabled;</p>
+					<p class="western">- 1: High priority enable;</p>
+					<p class="western">- 2: Medium priority enable;</p>
+					<p class="western">- 3: Low priority enable.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Update</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">It defines the type of data exchange enabled with the remote devices.</p>
+					<p class="western">-H: the variable is updated only if it appears in the current page; ***</p>
+					<p class="western">-P: the variable is always updated;</p>
+					<p class="western">-S: the variable is always updated and logged slowly	with time &ldquo;Slow Log Period&rdquo; (System Editor parameter);</p>
+					<p class="western">-F: like	&ldquo;S&rdquo; but quickly	with time &ldquo;Fast Log Period&rdquo; (System Editor parameter);</p>
+					<p class="western">-V: variable is stored only on change;</p>
+					<p class="western">-X: variabile is stored when logShot() function is called.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Name</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Name	of the variable (16 char max and different by &ldquo;Text&rdquo;).</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Type</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">The following types are defined:</p>
+					<p class="western">-BIT: boolean;</p>
+					<p class="western">-BYTE: byte;</p>
+					<p class="western">-BYTE_BIT: select a BIT of a byte;</p>
+					<p class="western">-WORD_BIT: select a BIT of a  word (16 bit);</p>
+					<p class="western">-DWORD_BIT: select a BIT of a  double word (32 bit);</p>
+					<p class="western">-UINT: unsigned	integer 16 bit;</p>
+					<p class="western">-UINTBA: unsigned integer 16 bit swapped byte;</p>
+					<p class="western">-INT: integer 16 bit;</p>
+					<p class="western">-INTBA: integer 16 bit swapped byte;</p>
+					<p class="western">-UDINT: unsigned	integer 32 bit;</p>
+					<p class="western">-UDINT....: unsigned	integer 32 bit swapped byte;</p>
+					<p class="western">-DINT: integer 32 bit;</p>
+					<p class="western">-DINT....: integer 32 bit swapped byte;</p>
+					<p class="western">-REAL: real;</p>
+					<p class="western">-REAL...: real swapped byte.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Decimal</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">For	integer or real variables is the number of decimal values of the variables. For variables  BYTE_BIT, WORD_BIT or 
+					DWORD_BIT is the bit position starting from 1.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Protocol</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Type	of protocol to be used with the remote device:</p>
+					<p class="western">-PLC: variable for exchange between PLC and HMI</p>
+					<p class="western">-RTU: variable on a remote device on Modbus RTU</p>
+					<p class="western">-TCP: variable on a remote device on Modbus TCP</p>
+					<p class="western">-TCPRTU: variable on a remote device on Modbus  TCPRTU</p>
+					<p class="western">-CANOPEN: variable on a remote device on CANopen</p>
+					<p class="western">-RTU_SRV: variable for a master Modbus RTU</p>
+					<p class="western">-TCP_SRV: variable for a master Modbus TCP</p>
+					<p class="western">-TCPRTU_SRV: variable for a master Modbus TCPRTU</p>
+					<p class="western">-MECT: variable on MECT protocol</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">IP Address</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">IP address for modbus TCP and TCPRTU, for example: 192.168.0.42</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Port</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">For NON PLC variables is the communication port to use: it depends on used device.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Node ID</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Address of the remote device node. In case of 0 address the writing is Broadcast.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Register</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Modbus register address.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Block</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Address of the first register of the block. For registers belonging to the same	block only one reading request is issued.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Comment</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Variable	comment field. Not used by system.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Behavior</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Defines if variable is &ldquo;Read&rdquo;, &ldquo;Read/Write&rdquo;,	&ldquo;Alarm&rdquo; or &ldquo;Event&rdquo;.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">N. Reg</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Number of registers available in the block. Max 64 registers.</p>
+				</td>
+			</tr>
+		</table>
+	</center>
+	<p class="western">*** To use properly the &ldquo;H&rdquo; variables you must write the following code in the reload() function of the pagexxx.cpp.</p>
+	<p class="western"><img src="Descrizione_Crosstable_1.png" name="Immagine113" align="bottom" width="573" height="130" border="0"/></p>
+	<p class="western">For example, replace the word &ldquo;VARIABILE1&rdquo; with the variable that you want to use. In the case of several variables 
+	of the same block, you can only write the first.</p>
+	<br/>
+	</body>
+</html>
