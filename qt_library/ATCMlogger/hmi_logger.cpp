@@ -38,6 +38,7 @@ Logger * logger = NULL;
 sem_t theLoggingSem;
 
 pthread_mutex_t alarmevents_list_mutex = PTHREAD_MUTEX_INITIALIZER;
+int removeTheOldestLog(const char * dir, FILE *current);
 
 #if 0
 /**
@@ -184,7 +185,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
         /* if necessary delete the oldest store and alarm logfiles */
         while (checkSpace() == 1)
         {
-            if (removeOldest(StorageDir))
+            if (removeTheOldestLog(StorageDir, NULL))
             {
                 LOG_PRINT(error_e, "cannot remove the oldest store log\n");
                 break;
@@ -192,7 +193,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
         }
         while (checkSpace() == 1)
         {
-            if (removeOldest(AlarmsDir))
+            if (removeTheOldestLog(AlarmsDir, NULL))
             {
                 LOG_PRINT(error_e, "cannot remove the oldest alarm log\n");
                 break;
@@ -836,8 +837,16 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
             if (checkSpace() == 1)
             {
                 /* if necessary delete the oldest logfile */
-                if (removeOldest(AlarmsDir))
+                switch (removeTheOldestLog(AlarmsDir, alarmsfp))
                 {
+                case -1:
+                    alarmsfp = NULL;
+                    openAlarmsFile();
+                    break;
+                case 0:
+                    break;
+                case 1:
+                default:
                     LOG_PRINT(error_e, "cannot remove the oldest alarm log\n");
                     retval = false;
                     goto exit_function;
@@ -990,8 +999,16 @@ bool Logger::dumpAck(event_msg_e * info_msg)
     if (checkSpace() == 1)
     {
         /* if necessary delete the oldest logfile */
-        if (removeOldest(AlarmsDir))
+        switch (removeTheOldestLog(AlarmsDir, alarmsfp))
         {
+        case -1:
+            alarmsfp = NULL;
+            openAlarmsFile();
+            break;
+        case 0:
+            break;
+        case 1:
+        default:
             LOG_PRINT(error_e, "cannot remove the oldest alarm log\n");
             return false;
         }
@@ -1132,23 +1149,31 @@ bool Logger::dumpStorage()
     trend_msg_t info_msg;
 #endif
     
-    if (storefp == NULL)
-    {
-        LOG_PRINT(error_e, "cannot dump: (storefp is null).\n");
-        return false;
-    }
-    
     /* before dump a new event, check the available space */
     if (checkSpace() == 1)
     {
-        /* if necessary delete the oldest logfile */
-        if (removeOldest(StorageDir))
+        /* if necessary delete the oldest logfile, considering that it may be unique */
+        switch (removeTheOldestLog(StorageDir, storefp))
         {
+        case -1:
+            storefp = NULL;
+            openStorageFile();
+            break;
+        case 0:
+            break;
+        case 1:
+        default:
             LOG_PRINT(error_e, "cannot remove the oldest store log\n");
             return false;
         }
     }
     
+    if (storefp == NULL)
+    {
+        LOG_PRINT(error_e, "cannot dump: (storefp is null).\n");
+        return false;
+    }
+
     /* prepare the event item */
     strftime (buffer, FILENAME_MAX, "%Y/%m/%d; %H:%M:%S", timeinfo);
     
@@ -1419,13 +1444,19 @@ unsigned long Logger::getCapacityDir(const char *dirname) {
     return capacity;
 }
 
-int Logger::removeOldest( const char * dir)
+int Logger::removeOldest(const char * dir)
+{
+    Q_UNUSED(dir);
+    return 1;
+}
+
+int removeTheOldestLog(const char * dir, FILE *current)
 {
     struct dirent **filelist;
     int fcount;
     int i;
     char filename[FILENAME_MAX];
-    int retval = 0;
+    int retval = 1;
     
     fcount = scandir(dir, &filelist, 0, alphasort);
     
@@ -1444,11 +1475,40 @@ int Logger::removeOldest( const char * dir)
             continue;
         }
         sprintf(filename, "%s/%s", dir, filelist[i]->d_name);
-        LOG_PRINT (warning_e, "Removing oldest log file '%s'\n", filelist[i]->d_name);
-        if (remove(filename) != 0)
+
+        // check if it is the current logfile
+        if (current != NULL)
+        {
+            struct stat a, b;
+            int inode_a, inode_b;
+            int fd = fileno(current);
+
+            if (stat(filename, &a))
+                continue;
+            inode_a = a.st_ino;
+
+            if (fstat(fd, &b))
+                continue;
+            inode_b = b.st_ino;
+
+            if (inode_a == inode_b)
+            {
+                LOG_PRINT (error_e, "removed current log file '%s'\n", filelist[i]->d_name);
+                fclose(current);
+                unlink(filename);
+                retval = -1;
+                break;
+            }
+        }
+        if (unlink(filename) != 0)
         {
             LOG_PRINT (error_e, "cannot remove oldest log file '%s'\n", filelist[i]->d_name);
             retval = 1;
+        }
+        else
+        {
+            LOG_PRINT (warning_e, "removed oldest log file '%s'\n", filelist[i]->d_name);
+            retval = 0;
         }
         break;
     }
