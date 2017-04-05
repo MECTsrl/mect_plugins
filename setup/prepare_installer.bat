@@ -1,6 +1,6 @@
 @echo off
 
-SET REV=2.0.12.1
+SET REV=2.0.13rc1
 SET REVISION="%REV%"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
@@ -49,22 +49,11 @@ rem ##############################################
 rem MECT SUITE HELP
 rem ##############################################
 if %MECT_HELP% == 1 (
-	echo Checking help file...
-	if EXIST %OUT_DIR%\help_%REV%.zip (
-		echo Extracting help file...
-		"c:\Program Files\7-Zip\7z.exe" x  "%OUT_DIR%\help_%REV%.zip" -o"%OUT_DIR%" >> %OUT_DIR%\error.log
-		IF ERRORLEVEL 1 (
-			echo error extracting help file help_%REV%.zip 
-			pause
-			cd %ORIGINAL%
-			exit		
-		)
-	) else (
-		echo help file help_%REVISION%.zip not found
-		pause
-		cd %ORIGINAL%
-		exit	
-	)
+
+	echo Generating help files...
+	mkdir %OUT_DIR%\Qt485\desktop\doc\qch  >> %OUT_DIR%\error.log
+	c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc.qch  >> %OUT_DIR%\error.log
+	c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_eng.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_eng.qch  >> %OUT_DIR%\error.log	
 )
 
 rem ##############################################
@@ -384,9 +373,10 @@ IF %INSTALL% == 1 (
 	copy "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf"
 
 	echo   Fonts files...
+	del /q "%OUT_DIR%\Fonts.7z"
 	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Fonts.7z" "%OUT_DIR%\Fonts" >> %OUT_DIR%\error.log
 	IF ERRORLEVEL 1 (
-	 	echo problem during creation 7z file
+	 	echo problem during creation of Fonts.7z file
 	 	pause
 		cd %ORIGINAL%
 	  	exit
