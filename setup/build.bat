@@ -16,6 +16,7 @@ SET INSTALL=1
 SET UPDATE=1
 SET MECT_HELP=1
 SET CTEBUILD=1
+SET CTCBUILD=1
 
 IF %UPDATE% == 1 (
 	SET PREPARE_UPDATE=1
@@ -129,6 +130,41 @@ IF %CTEBUILD% == 1 (
 	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" install >> %OUT_DIR%\error.log 2>&1
  	IF ERRORLEVEL 1 (
 		echo problem during installation cte dll libraries
+		pause
+		cd %ORIGINAL%
+		exit
+	)
+	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" distclean>nul 2>&1
+	time /t
+
+)
+
+IF %CTCBUILD% == 1 (
+	echo Building ctc.exe...
+	cd /D %IN_DIR%\ctc
+	time /t
+	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" distclean>nul 2>&1
+	"C:\Qt485\desktop\bin\qmake.exe" ctc.pro -r -spec win32-g++ "CONFIG+=release"  "DEFINES += ATCM_VERSION=\"%REVISION%\"" >> %OUT_DIR%\error.log 2>&1
+	IF ERRORLEVEL 1 (
+		echo problem during Building ctc.exe 
+		pause
+		cd %ORIGINAL%
+		exit
+	)
+
+	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" >> %OUT_DIR%\error.log 2>&1
+	IF ERRORLEVEL 1 (
+		echo problem during Building ctc.exe 
+		pause
+		cd %ORIGINAL%
+		exit
+	)
+
+	rem remove the old files
+ 	del /q C:\Qt485\desktop\bin\ctc.exe
+	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" install >> %OUT_DIR%\error.log 2>&1
+ 	IF ERRORLEVEL 1 (
+		echo problem during installation ctc.exe 
 		pause
 		cd %ORIGINAL%
 		exit
