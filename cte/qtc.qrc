@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>img/Logo_Mect.png</file>
+    </qresource>
+    <qresource prefix="/csv">
+        <file>others/lang_table.csv</file>
+    </qresource>
+</RCC>
