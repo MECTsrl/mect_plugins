@@ -1,4 +1,4 @@
-include(../../qtcreatorplugin.pri)
+include(C:/qt-creator-2.8.0-rc-src/src/qtcreatorplugin.pri)
 
 HEADERS += \
     cteplugin.h \
@@ -25,8 +25,13 @@ FORMS += \
     mectsettings.ui \
     trendeditor.ui
 
+#DESTDIR = C:/Qt485/desktop//lib/qtcreator/plugins/QtProject
+DESTDIR = destdir
+
 LIBS += \
-    -L../projectexplorer -lProjectExplorer
+    -LC:/Qt485/desktop/lib/qtcreator/plugins/QtProject \
+    -LC:/Qt485/desktop/bin \
+    -lProjectExplorer
 
 RESOURCES += \
     qtc.qrc
