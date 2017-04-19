@@ -1367,6 +1367,10 @@ cpp_gen(void)
 
         /* Generate variable declaration. */
         fprintf(cpp_file, "\n%s %s = 0;\n\n", type, crosstable.rows[i].name);
+    }
+
+    for (i = 0; i <= crosstable.index_last; i++) {
+        char *type = cpp_type_get(&(crosstable.rows[i]));
 
         /* Generate doWrite() method. */
         fprintf(cpp_file, "int\ndoWrite_%s(%s value)\n{\n\treturn doWrite(ID_%s, &value);\n}\n\n", crosstable.rows[i].name, type, crosstable.rows[i].name);
