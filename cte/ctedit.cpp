@@ -34,6 +34,9 @@
 #include <QVBoxLayout>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QEvent>
+#include <QKeyEvent>
+#include <QKeySequence>
 
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
@@ -61,6 +64,7 @@
 
 
 const QString szDEF_IP_PORT = QString::fromAscii("502");
+const QString szCT_FILE_NAME = QString::fromAscii("Crosstable.csv");
 const QString szEMPTY_IP = QString::fromAscii("0.0.0.0");
 const QString szTitle = QString::fromAscii("Mect Editor");
 const QString szCrossCompier = QString::fromAscii("ctc");
@@ -162,10 +166,10 @@ ctedit::ctedit(QWidget *parent) :
     for (nCol = 0; nCol < colTotals; nCol++)  {
         lstHeadCols.append(szEMPTY);
     }
-    lstHeadCols[colPriority] = trUtf8("Prior.");
-    lstHeadCols[colUpdate] = trUtf8("Update");
-    lstHeadCols[colName] = trUtf8("Name");
-    lstHeadCols[colType] = trUtf8("Type");
+    lstHeadCols[colPriority] = trUtf8("Pr.");
+    lstHeadCols[colUpdate] = trUtf8("Upd.");
+    lstHeadCols[colName] = trUtf8("Var.Name");
+    lstHeadCols[colType] = trUtf8("Var.Type");
     lstHeadCols[colDecimal] = trUtf8("Decimal");
     lstHeadCols[colProtocol] = trUtf8("Protocol");
     lstHeadCols[colIP] = trUtf8("IP Address");
@@ -203,11 +207,11 @@ ctedit::ctedit(QWidget *parent) :
             lstLogUpdates.append(nCol);
         }
     }
-    // Lista TIPI Variabili
+    // Lista TIPI Variabili (Esclude tipo UNKNOWN)
     lstTipi.clear();
     lstAllVarTypes.clear();
-    for (nCol = BIT; nCol < TYPE_TOTALS; nCol++)  {
-        lstTipi.append(QString::fromAscii(varTypeName[nCol]));
+    for (nCol = BIT; nCol < TYPE_TOTALS - 1; nCol++)  {
+        lstTipi.append(QString::fromAscii(varTypeNameExtended[nCol]));
         lstAllVarTypes.append(nCol);
     }
     // Lista Protocolli (tipi di Bus)
@@ -415,6 +419,7 @@ ctedit::ctedit(QWidget *parent) :
             SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabSelected(int)));
 
+    ui->tblCT->installEventFilter(this);
 }
 
 ctedit::~ctedit()
@@ -471,7 +476,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         szFile = szFileCT;
     }
     else {
-        szFile = QFileDialog::getOpenFileName(this, tr("Open Cross Table File"), szFileCT, tr("Cross Table File (*.csv)"));
+        szFile = QFileDialog::getOpenFileName(this, tr("Open Crosstable File"), szFileCT, tr("Crosstable File (%1)") .arg(szCT_FILE_NAME));
     }
     // Tries to Open CT File
     if (! szFile.isEmpty())   {
@@ -781,7 +786,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     lstVarTypes.clear();
     m_vtAlarmVarType = UNKNOWN;
     // Row #
-    szTemp = QLocale::system().toString(m_nGridRow + 1);
+    szTemp = QString::number(m_nGridRow + 1);
     ui->txtRow->setText(szTemp);
     // Priority
     szTemp = lstRecValues[colPriority].trimmed();
@@ -1067,7 +1072,7 @@ void ctedit::on_cmdSave_clicked()
     }
     fRes = saveCTFile();
     if (!fRes)  {
-        m_szMsg = tr("Error Saving Cross Table File: %1\n").arg(m_szCurrentCTFile);
+        m_szMsg = tr("Error Saving Crosstable File: %1\n").arg(m_szCurrentCTFile);
         warnUser(this, szTitle, m_szMsg);
     }
     else {
@@ -1568,7 +1573,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         ui->txtPort->setText(szZERO);
     }
     // Disabilitazione  tipo BIT per i vari tipi di SRV (TCP_SRV, RTU_SRV, TCP_RTU_SRV)
-    if (index == TCP_SRV || index == TCPRTU_SRV || index || RTU_SRV)  {
+    if (index == TCP_SRV || index == TCPRTU_SRV || index == RTU_SRV)  {
         disableComboItem(ui->cboType, BIT);
     }
     else {
@@ -1706,9 +1711,12 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Inserisci righe
     QAction *insRows = gridMenu.addAction(trUtf8("Insert Blank Rows"));
     insRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    insRows->setShortcut(Qt::Key_Insert);
+
     // Cancella righe
     QAction *emptyRows = gridMenu.addAction(trUtf8("Clear Rows"));
     emptyRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    emptyRows->setShortcut(Qt::Key_Delete);
     // Elimina righe
     QAction *remRows = gridMenu.addAction(trUtf8("Delete Rows"));
     remRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
@@ -1717,14 +1725,17 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Copia righe (Sempre permesso)
     QAction *copyRows = gridMenu.addAction(trUtf8("Copy rows"));
     copyRows->setEnabled(selection.count() > 0);
+    copyRows->setShortcut(Qt::Key_Copy);
     // Taglia righe
     QAction *cutRows = gridMenu.addAction(trUtf8("Cut Rows"));
     cutRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    cutRows->setShortcut(Qt::Key_Cut);
     // Sep 2
     gridMenu.addSeparator();
     // Paste Rows
     QAction *pasteRows = gridMenu.addAction(trUtf8("Paste Rows"));
     pasteRows->setEnabled(lstCopiedRecords.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    pasteRows->setShortcut(Qt::Key_Paste);
     // Abilitazione delle voci di Menu
     // Esecuzione del Menu
     QAction *actMenu = gridMenu.exec(ui->tblCT->viewport()->mapToGlobal(pos));
@@ -2125,7 +2136,7 @@ void ctedit::on_cmdImport_clicked()
     int     nRow = 0;
     bool    fRes = false;
 
-    szSourceFile = QFileDialog::getOpenFileName(this, tr("Import From Cross Table File"), m_szCurrentCTFile, tr("Cross Table File (*.csv)"));
+    szSourceFile = QFileDialog::getOpenFileName(this, tr("Import From Crosstable File"), m_szCurrentCTFile, tr("Crosstable File (%1)") .arg(szCT_FILE_NAME));
     if (! szSourceFile.isEmpty())  {
         szMsg = tr("Rows from %1 to %2 will be overwritten !!\nDo you want to continue?") .arg(MIN_RETENTIVE) .arg(MAX_NONRETENTIVE);
         if (queryUser(this, szTitle, szMsg))  {
@@ -2139,11 +2150,11 @@ void ctedit::on_cmdImport_clicked()
                 // Ricarica la lista dei dati CT in Grid
                 fRes = ctable2Grid();
                 if (fRes)  {
-                    szMsg = tr("Loaded Cross Table from file:\n%1") .arg(szSourceFile);
+                    szMsg = tr("Loaded Crosstable from file:\n%1") .arg(szSourceFile);
                     notifyUser(this, szTitle, szMsg);
                 }
                 else {
-                    szMsg = tr("Error Loading Cross Table from file:\n%1") .arg(szSourceFile);
+                    szMsg = tr("Error Loading Crosstable from file:\n%1") .arg(szSourceFile);
                     szMsg.append(tr("\nOriginal Content Reloaded"));
                     warnUser(this, szTitle, szMsg);
                     for (nRow = 0; nRow < lstSourceRecs.count(); nRow++)  {
@@ -2361,14 +2372,14 @@ void ctedit::on_cmdCompile_clicked()
     // qDebug() << szCommand << lstArguments;
     procCompile.start(szCommand, lstArguments);
     if (!procCompile.waitForStarted())  {
-        m_szMsg = tr("Error Starting Cross Table Compiler!\n");
+        m_szMsg = tr("Error Starting Crosstable Compiler!\n");
         m_szMsg.append(szCommand);
         warnUser(this, szTitle, m_szMsg);
         goto exit_compile;
     }
     // Attesa termine comando
     if (!procCompile.waitForFinished())  {
-        m_szMsg = tr("Error Running Cross Table Compiler!\n");
+        m_szMsg = tr("Error Running Crosstable Compiler!\n");
         m_szMsg.append(szCommand);
         warnUser(this, szTitle, m_szMsg);
         goto exit_compile;
@@ -2377,14 +2388,14 @@ void ctedit::on_cmdCompile_clicked()
     baCompErr = procCompile.readAllStandardError();
     nExitCode = procCompile.exitCode();
     if (nExitCode != 0)  {
-        m_szMsg = tr("Exit Code of Cross Table Compiler: %1\n") .arg(nExitCode);
+        m_szMsg = tr("Exit Code of Crosstable Compiler: %1\n") .arg(nExitCode);
         szCompErr = QString::fromAscii(baCompErr.data());
         m_szMsg.append(szCompErr);
         warnUser(this, szTitle, m_szMsg);
         // TODO: Analisi errore del Cross Compiler
     }
     else {
-        m_szMsg = tr("Cross Table Correctly Compiled");
+        m_szMsg = tr("Crosstable Correctly Compiled");
         notifyUser(this, szTitle, m_szMsg);
     }
 
@@ -3080,7 +3091,7 @@ void ctedit::on_cboVariable1_currentIndexChanged(int index)
             // Recupera il tipo della Variabile a SX dell'espressione Allarme/Evento
             m_vtAlarmVarType = lstCTRecords[nRow].VarType;
             // qDebug() << "Row First Variable in Alarm (Row - Name - nType - Type):" << nRow << szVarName << m_vtAlarmVarType << QString::fromAscii(varTypeName[m_vtAlarmVarType]);
-            QString szVar1Type = QString::fromAscii(varTypeName[m_vtAlarmVarType]);
+            QString szVar1Type = QString::fromAscii(varTypeNameExtended[m_vtAlarmVarType]);
             szVar1Type.prepend(QString::fromAscii("["));
             szVar1Type.append(QString::fromAscii("]"));
             ui->lblTypeVar1->setText(szVar1Type);
@@ -3234,38 +3245,39 @@ int  ctedit::fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes)
     return lstTypes.count();
 }
 
-
 void ctedit::on_cmdPLC_clicked()
+// Lancio della visualizzazione del PLC Editor
 {
-    QString     szPathPLCApplication;
     // QStringList lstEnv;
+    QString     szPlcPro2Show;
+
+    // First parameter: File plc.4cp
+    szPlcPro2Show = szSLASH;
+    szPlcPro2Show.append(szPLCFILE);
+    szPlcPro2Show.append(szPLCExt);
+    szPlcPro2Show.prepend(m_szCurrentPLCPath);
+    // qDebug() << "PLC File: " << szPlcPro2Show;
+    QFile plcPro(szPlcPro2Show);
+    if (! plcPro.exists())  {
+        m_szMsg = tr("PLC Project File Not Found:\n<%1>") .arg(szPlcPro2Show);
+        warnUser(this, szTitle, m_szMsg);
+        fprintf(stderr, "%s\n", m_szMsg.toAscii().data());
+        goto endStartPLC;
+    }
+    // Convert File Path to Opertatin System Native Style
+    szPlcPro2Show = QDir::toNativeSeparators(szPlcPro2Show);
+
+
+#ifdef __linux__
+    //linux code goes here
     QString     szCommand;
     QString     szPLCEngPath;
     QStringList lstArguments;
     QString     szTemp;
+    QString     szPathPLCApplication;
     QProcess    procPLC;
-    // qint64      pidPLC;
+    qint64      pidPLC;
 
-    // FIXME: Remove usage of PLC Env Variable
-    /*
-    // Lista delle variabili d'ambiente per controllo configurazione
-    lstEnv = QProcessEnvironment::systemEnvironment().toStringList();
-    QFile   fEnv(m_szCurrentProjectPath + szSLASH + szEnvFile);
-    fEnv.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
-    if (fEnv.isOpen())  {
-        QTextStream txtEnv(&fEnv);
-        // qDebug() << "Current Environment:";
-        int i = 0;
-        for (i=0; i<lstEnv.count(); i++)  {
-            szTemp = QString::number(i+1);
-            szTemp.append(QString::fromAscii(" - "));
-            szTemp.append(lstEnv[i]);
-            // qDebug() << szTemp;
-            txtEnv << szTemp << endl;
-        }
-        fEnv.close();
-    }
-    */
     // Ricerca della variabile specifica per il lancio del PLC
     szPathPLCApplication = QProcessEnvironment::systemEnvironment().value(szPLCEnvVar, szEMPTY);
     // Search Path of PLC Application
@@ -3291,52 +3303,18 @@ void ctedit::on_cmdPLC_clicked()
         // szCommand.append(szDOUBLEQUOTE);
         // szCommand.prepend(szDOUBLEQUOTE);
         // qDebug() << "PLC Command: " << szCommand;
-        // First parameter: File plc.4cp
-        szTemp = szSLASH;
-        szTemp.append(szPLCFILE);
-        szTemp.append(szPLCExt);
-        szTemp.prepend(m_szCurrentPLCPath);
-        // qDebug() << "PLC File: " << szTemp;
-        QFile plcPro(szTemp);
-        if (! plcPro.exists())  {
-            m_szMsg = tr("PLC Project File Not Found:\n<%1>") .arg(szTemp);
-            warnUser(this, szTitle, m_szMsg);
-            fprintf(stderr, "%s\n", m_szMsg.toAscii().data());
-            goto endStartPLC;
-        }
         // Verifica e Lancio Engineering
         if (plcExe.exists())  {
-            // Convert File Path to Opertatin System Native Style
-            szTemp = QDir::toNativeSeparators(szTemp);
             // Enclose parameter with double quote (MayBe done by QProcess)
             //szTemp.append(szDOUBLEQUOTE);
             //szTemp.prepend(szDOUBLEQUOTE);
-            lstArguments.append(szTemp);
+            lstArguments.append(szPlcPro2Show);
             // Imposta come Directory corrente di esecuzione la directory del File PLC
             procPLC.setWorkingDirectory(szPLCEngPath);
             // qDebug() << "Plc Path: " << szPLCEngPath;
             // Esecuzione Comando
             szCommand = QDir::toNativeSeparators(szCommand);
-            szCommand.append(szSpace(1));
-            szCommand.append(szTemp);
-            m_szMsg = tr("Url to Open: \n") + szTemp;
             qDebug() << m_szMsg;
-            // notifyUser(this, szTitle, m_szMsg);
-            // Tentativo 1: Open only File URL - Funziona !
-            bool fRes = false;
-            fRes = showFile(szTemp);
-            // Tentativo 2: Open URL of command & parameter
-            // fRes = QDesktopServices::openUrl(QUrl::fromLocalFile(szCommand));
-            if (!fRes)  {
-                m_szMsg = tr("Error Opening URL: %1\n") .arg(szTemp);
-                warnUser(this, szTitle, m_szMsg);
-                goto endStartPLC;
-            }
-            // Preparazione comando per System
-            // strcpy(commandLine, szCommand.toAscii().data());
-            // nErr = system(commandLine);
-            // qDebug() << tr("Result Code: %1") .arg(nErr);
-            /* Sostituito da System ??
             if (! procPLC.startDetached(szCommand, lstArguments, m_szCurrentPLCPath, &pidPLC))  {
                 QProcess::ProcessError errPlc = procPLC.error();
                 m_szMsg = tr("Error Starting PLC Engineering: %1\n") .arg(errPlc);
@@ -3344,7 +3322,6 @@ void ctedit::on_cmdPLC_clicked()
                 warnUser(this, szTitle, m_szMsg);
                 goto endStartPLC;
             }
-            */
         }
         else {
             m_szMsg = tr("Program PLC Engineering Not Found!\n%1") .arg(szPLCEnvVar);
@@ -3358,6 +3335,70 @@ void ctedit::on_cmdPLC_clicked()
         m_szMsg.append(szCommand);
         warnUser(this, szTitle, m_szMsg);
     }
+#elif _WIN32
+    // windows code goes here
+    // Open only File URL
+    if (! showFile(szPlcPro2Show))  {
+        m_szMsg = tr("Error Opening URL: %1\n") .arg(szPlcPro2Show);
+        warnUser(this, szTitle, m_szMsg);
+    }
+#endif
+
 endStartPLC:
     return;
+}
+
+bool ctedit::eventFilter(QObject *obj, QEvent *event)
+// Gestore Event Handler
+{
+    int         nField = 0;
+    int         nPosInFields = -1;
+    QString     szTemp(szEMPTY);
+
+    // Evento Key Press
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+        // Tasto ESC
+        if (keyEvent->key() == Qt::Key_Escape) {
+        }
+        // Tasto Insert
+        if (keyEvent->key() == Qt::Key_Insert) {
+            if (obj == ui->tblCT)  {
+                qDebug() << tr("Pressed Insert on Table");
+                return true;
+            }
+        }
+        // Sequenza Copy
+        if (keyEvent->matches(QKeySequence::Cut)) {
+            if (obj == ui->tblCT)  {
+                qDebug() << tr("Pressed Copy on Table");
+                return true;
+            }
+        }
+        // Tasto Paste
+        if (keyEvent->matches(QKeySequence::Paste)) {
+            if (obj == ui->tblCT)  {
+                qDebug() << tr("Pressed Paste on Table");
+                return true;
+            }
+        }
+        // Tasto Cut
+        if (keyEvent->matches(QKeySequence::Cut)) {
+            if (obj == ui->tblCT)  {
+                qDebug() << tr("Pressed Cut on Table");
+                return true;
+            }
+        }
+        // Tasto Delete
+        if (keyEvent->matches(QKeySequence::Delete)) {
+            if (obj == ui->tblCT)  {
+                qDebug() << tr("Pressed Del on Table");
+                return true;
+            }
+        }
+        qDebug() << tr("Pressed Key Sequence") << keyEvent->key();
+    }
+    // Pass event to standard Event Handler
+    return QObject::eventFilter(obj, event);
 }

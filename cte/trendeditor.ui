@@ -48,6 +48,8 @@
        <widget class="QLabel" name="lblTrendName">
         <property name="font">
          <font>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>9</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -79,7 +81,8 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>9</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -93,6 +96,8 @@
        <widget class="QLabel" name="lblOrient">
         <property name="font">
          <font>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>9</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -121,7 +126,8 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>9</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -148,12 +154,13 @@
         <property name="font">
          <font>
           <family>MS Shell Dlg 2</family>
+          <pointsize>8</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
         </property>
         <property name="toolTip">
-         <string>Import User Data from another Cross Table File</string>
+         <string>Import User Data from another Trends File</string>
         </property>
         <property name="text">
          <string>Load</string>
@@ -186,6 +193,7 @@
         <property name="font">
          <font>
           <family>MS Shell Dlg 2</family>
+          <pointsize>8</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -224,6 +232,7 @@
         <property name="font">
          <font>
           <family>MS Shell Dlg 2</family>
+          <pointsize>8</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -266,6 +275,8 @@
          <widget class="QLabel" name="lblTrk_1">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -280,6 +291,12 @@
         </item>
         <item>
          <widget class="QCheckBox" name="chkVisible_1">
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Visible</string>
           </property>
@@ -293,6 +310,8 @@
          <widget class="QLabel" name="lblVar_1">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -321,6 +340,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -347,6 +368,12 @@
             <width>150</width>
             <height>30</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>8</pointsize>
+           </font>
           </property>
           <property name="text">
            <string>Set Color</string>
@@ -385,6 +412,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -411,6 +440,8 @@
          <widget class="QLabel" name="lblMin_1">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -439,6 +470,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -456,6 +489,8 @@
          <widget class="QLabel" name="lblMax_1">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -484,6 +519,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -501,6 +538,8 @@
          <widget class="QLabel" name="lblDescr_1">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -523,7 +562,8 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>11</pointsize>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -559,6 +599,8 @@
          <widget class="QLabel" name="lblTrk_2">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -573,6 +615,12 @@
         </item>
         <item>
          <widget class="QCheckBox" name="chkVisible_2">
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Visible</string>
           </property>
@@ -586,6 +634,8 @@
          <widget class="QLabel" name="lblVar_2">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -614,6 +664,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -640,6 +692,12 @@
             <width>150</width>
             <height>30</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>8</pointsize>
+           </font>
           </property>
           <property name="text">
            <string>Set Color</string>
@@ -678,6 +736,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -704,6 +764,8 @@
          <widget class="QLabel" name="lblMin_2">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -732,6 +794,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -749,6 +813,8 @@
          <widget class="QLabel" name="lblMax_2">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -777,6 +843,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -794,6 +862,8 @@
          <widget class="QLabel" name="lblDescr_2">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -816,7 +886,8 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>11</pointsize>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -852,6 +923,8 @@
          <widget class="QLabel" name="lblTrk_3">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -866,6 +939,12 @@
         </item>
         <item>
          <widget class="QCheckBox" name="chkVisible_3">
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Visible</string>
           </property>
@@ -879,6 +958,8 @@
          <widget class="QLabel" name="lblVar_3">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -907,6 +988,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -933,6 +1016,12 @@
             <width>150</width>
             <height>30</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>8</pointsize>
+           </font>
           </property>
           <property name="text">
            <string>Set Color</string>
@@ -971,6 +1060,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -997,6 +1088,8 @@
          <widget class="QLabel" name="lblMin_3">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1025,6 +1118,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1042,6 +1137,8 @@
          <widget class="QLabel" name="lblMax_3">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1070,6 +1167,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1087,6 +1186,8 @@
          <widget class="QLabel" name="lblDescr_3">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1109,7 +1210,8 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>11</pointsize>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1145,6 +1247,8 @@
          <widget class="QLabel" name="lblTrk_4">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1159,6 +1263,12 @@
         </item>
         <item>
          <widget class="QCheckBox" name="chkVisible_4">
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Visible</string>
           </property>
@@ -1172,6 +1282,8 @@
          <widget class="QLabel" name="lblVar_4">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1200,6 +1312,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1226,6 +1340,12 @@
             <width>150</width>
             <height>30</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>8</pointsize>
+           </font>
           </property>
           <property name="text">
            <string>Set Color</string>
@@ -1264,6 +1384,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1290,6 +1412,8 @@
          <widget class="QLabel" name="lblMin_4">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1318,6 +1442,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1335,6 +1461,8 @@
          <widget class="QLabel" name="lblMax_4">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1363,6 +1491,8 @@
           </property>
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1380,6 +1510,8 @@
          <widget class="QLabel" name="lblDescr_4">
           <property name="font">
            <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
@@ -1402,7 +1534,8 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>11</pointsize>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>9</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>

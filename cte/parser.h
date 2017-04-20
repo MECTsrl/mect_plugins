@@ -198,7 +198,7 @@ uint32_t str2ipaddr(char *str);
  ***************************** VARIABLES SECTION *****************************
  ******************************************************************************/
 extern const char *fieldbusName[];
-extern const char *varTypeName[];
+extern const char *varTypeNameExtended[];
 extern const char *updateTypeName[];
 extern const char *product_name[];
 extern const char *logic_operators[];

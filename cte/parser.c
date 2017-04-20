@@ -33,6 +33,29 @@ const char *fieldbusName[] = {"PLC",
                               "TCP_SRV",
                               "TCPRTU_SRV" };
 
+const char *varTypeNameExtended[] = {	"BIT",
+                                "BYTE_BIT",
+                                "WORD_BIT",
+                                "DWORD_BIT",
+                                "BYTE",
+                                "UINT",
+                                "UINT_BA",
+                                "INT",
+                                "INT_BA",
+                                "REAL",
+                                "REAL_DCBA",
+                                "REAL_CDAB",
+                                "REAL_BADC",
+                                "UDINT",
+                                "UDINT_DCBA",
+                                "UDINT_CDAB",
+                                "UDINT_BADC",
+                                "DINT",
+                                "DINT_DCBA",
+                                "DINT_CDAB",
+                                "DINT_BADC",
+                                "UNKNOWN" 	};
+
 const char *varTypeName[] = {	"BIT",
                                 "BYTE_BIT",
                                 "WORD_BIT",
@@ -55,6 +78,7 @@ const char *varTypeName[] = {	"BIT",
                                 "DINTCDAB",
                                 "DINTBADC",
                                 "UNKNOWN" 	};
+
 
 const char *updateTypeName[] = {"H",
                                 "P",

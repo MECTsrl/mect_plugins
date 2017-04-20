@@ -7,6 +7,7 @@
 #include "mectsettings.h"
 #include "trendeditor.h"
 
+#include <QObject>
 #include <QTableView>
 #include <QModelIndex>
 #include <QModelIndexList>
@@ -31,6 +32,8 @@ public:
     bool    selectCTFile(QString szFileCT);
     bool    saveCTFile();
 
+protected:
+     bool eventFilter(QObject *obj, QEvent *event);        // Gestore Event Handler
 
 signals:
 
