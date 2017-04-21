@@ -548,109 +548,124 @@ void MectSettings::save_all()
         settings.sync();
     }
     /* SERIAL 0 */
-    if (groups.indexOf(QString::fromAscii("SERIAL_PORT_0")) >= 0)
-    {
-        if (ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)
+    if (m_tabEnabled[tabSerial0])  {
+        if (groups.indexOf(QString::fromAscii("SERIAL_PORT_0")) >= 0)
         {
-            settings.setValue(QString::fromAscii("SERIAL_PORT_0/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_0->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_0/databits"), ui->comboBox_Databits_SERIAL_PORT_0->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_0/parity"), ui->comboBox_Parity_SERIAL_PORT_0->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_0/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_0->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_0/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_0->text());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_0/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_0->text());
+            if (ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)
+            {
+                settings.setValue(QString::fromAscii("SERIAL_PORT_0/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_0->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_0/databits"), ui->comboBox_Databits_SERIAL_PORT_0->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_0/parity"), ui->comboBox_Parity_SERIAL_PORT_0->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_0/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_0->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_0/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_0->text());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_0/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_0->text());
+            }
+            else
+            {
+                settings.remove(QString::fromAscii("SERIAL_PORT_0"));
+            }
+            settings.sync();
         }
-        else
-        {
-            settings.remove(QString::fromAscii("SERIAL_PORT_0"));
-        }
-        settings.sync();
     }
     /* SERIAL 1 */
-    if (groups.indexOf(QString::fromAscii("SERIAL_PORT_1")) >= 0)
-    {
-        if (ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)
+    if (m_tabEnabled[tabSerial1])  {
+        if (groups.indexOf(QString::fromAscii("SERIAL_PORT_1")) >= 0)
         {
-            settings.setValue(QString::fromAscii("SERIAL_PORT_1/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_1->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_1/databits"), ui->comboBox_Databits_SERIAL_PORT_1->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_1/parity"), ui->comboBox_Parity_SERIAL_PORT_1->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_1/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_1->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_1/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_1->text());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_1/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_1->text());
+            if (ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)
+            {
+                settings.setValue(QString::fromAscii("SERIAL_PORT_1/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_1->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_1/databits"), ui->comboBox_Databits_SERIAL_PORT_1->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_1/parity"), ui->comboBox_Parity_SERIAL_PORT_1->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_1/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_1->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_1/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_1->text());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_1/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_1->text());
+            }
+            else
+            {
+                settings.remove(QString::fromAscii("SERIAL_PORT_1"));
+            }
+            settings.sync();
         }
-        else
-        {
-            settings.remove(QString::fromAscii("SERIAL_PORT_1"));
-        }
-        settings.sync();
     }
     /* SERIAL 2 */
-    if (groups.indexOf(QString::fromAscii("SERIAL_PORT_2")) >= 0)
-    {
-        if (ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)
+    if (m_tabEnabled[tabSerial2])  {
+        if (groups.indexOf(QString::fromAscii("SERIAL_PORT_2")) >= 0)
         {
-            settings.setValue(QString::fromAscii("SERIAL_PORT_2/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_2->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_2/databits"), ui->comboBox_Databits_SERIAL_PORT_2->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_2/parity"), ui->comboBox_Parity_SERIAL_PORT_2->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_2/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_2->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_2/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_2->text());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_2/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_2->text());
+            if (ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)
+            {
+                settings.setValue(QString::fromAscii("SERIAL_PORT_2/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_2->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_2/databits"), ui->comboBox_Databits_SERIAL_PORT_2->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_2/parity"), ui->comboBox_Parity_SERIAL_PORT_2->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_2/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_2->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_2/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_2->text());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_2/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_2->text());
+            }
+            else
+            {
+                settings.remove(QString::fromAscii("SERIAL_PORT_2"));
+            }
+            settings.sync();
         }
-        else
-        {
-            settings.remove(QString::fromAscii("SERIAL_PORT_2"));
-        }
-        settings.sync();
     }
     /* SERIAL 3 */
-    if (groups.indexOf(QString::fromAscii("SERIAL_PORT_3")) >= 0)
-    {
-        if (ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)
+    if (m_tabEnabled[tabSerial3])  {
+        if (groups.indexOf(QString::fromAscii("SERIAL_PORT_3")) >= 0)
         {
-            settings.setValue(QString::fromAscii("SERIAL_PORT_3/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_3->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_3/databits"), ui->comboBox_Databits_SERIAL_PORT_3->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_3/parity"), ui->comboBox_Parity_SERIAL_PORT_3->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_3/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_3->currentText());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_3/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_3->text());
-            settings.setValue(QString::fromAscii("SERIAL_PORT_3/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_3->text());
+            if (ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)
+            {
+                settings.setValue(QString::fromAscii("SERIAL_PORT_3/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_3->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_3/databits"), ui->comboBox_Databits_SERIAL_PORT_3->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_3/parity"), ui->comboBox_Parity_SERIAL_PORT_3->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_3/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_3->currentText());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_3/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_3->text());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_3/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_3->text());
+            }
+            else
+            {
+                settings.remove(QString::fromAscii("SERIAL_PORT_3"));
+            }
+            settings.sync();
         }
-        else
-        {
-            settings.remove(QString::fromAscii("SERIAL_PORT_3"));
-        }
-        settings.sync();
     }
     /* TCP_IP */
-    if (groups.indexOf(QString::fromAscii("TCP_IP_PORT")) >= 0)
-    {
-        settings.setValue(QString::fromAscii("TCP_IP_PORT/silence_ms"), ui->lineEdit_Silence_TCP_IP_PORT->text());
-        settings.setValue(QString::fromAscii("TCP_IP_PORT/timeout_ms"), ui->lineEdit_Timeout_TCP_IP_PORT->text());
-        settings.sync();
+    if (m_tabEnabled[tabTCP])  {
+        if (groups.indexOf(QString::fromAscii("TCP_IP_PORT")) >= 0)
+        {
+            settings.setValue(QString::fromAscii("TCP_IP_PORT/silence_ms"), ui->lineEdit_Silence_TCP_IP_PORT->text());
+            settings.setValue(QString::fromAscii("TCP_IP_PORT/timeout_ms"), ui->lineEdit_Timeout_TCP_IP_PORT->text());
+            settings.sync();
+        }
     }
     /* CANOPEN 0 */
-    if (groups.indexOf(QString::fromAscii("CANOPEN_0")) >= 0)
-    {
-        if (ui->comboBox_Baudrate_CANOPEN_0->currentIndex() > 0)
+    if (m_tabEnabled[tabCan0])  {
+        if (groups.indexOf(QString::fromAscii("CANOPEN_0")) >= 0)
         {
-            settings.setValue(QString::fromAscii("CANOPEN_0/baudrate"), ui->comboBox_Baudrate_CANOPEN_0->currentText());
+            if (ui->comboBox_Baudrate_CANOPEN_0->currentIndex() > 0)
+            {
+                settings.setValue(QString::fromAscii("CANOPEN_0/baudrate"), ui->comboBox_Baudrate_CANOPEN_0->currentText());
+            }
+            else
+            {
+                settings.remove(QString::fromAscii("CANOPEN_0"));
+            }
+            settings.sync();
         }
-        else
-        {
-            settings.remove(QString::fromAscii("CANOPEN_0"));
-        }
-        settings.sync();
     }
     /* CANOPEN 1 */
-    if (groups.indexOf(QString::fromAscii("CANOPEN_1")) >= 0)
-    {
-        if (ui->comboBox_Baudrate_CANOPEN_1->currentIndex() > 0)
+    if (m_tabEnabled[tabCan1])  {
+        if (groups.indexOf(QString::fromAscii("CANOPEN_1")) >= 0)
         {
-            settings.setValue(QString::fromAscii("CANOPEN_1/baudrate"), ui->comboBox_Baudrate_CANOPEN_1->currentText());
-        }
-        else
-        {
-            settings.remove(QString::fromAscii("CANOPEN_1"));
+            if (ui->comboBox_Baudrate_CANOPEN_1->currentIndex() > 0)
+            {
+                settings.setValue(QString::fromAscii("CANOPEN_1/baudrate"), ui->comboBox_Baudrate_CANOPEN_1->currentText());
+            }
+            else
+            {
+                settings.remove(QString::fromAscii("CANOPEN_1"));
+            }
         }
     }
+    // Global Sync
     settings.sync();
 
     QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
@@ -826,130 +841,138 @@ bool MectSettings::checkFields()
     //------------------------
     /* SERIAL 0 */
     //------------------------
-    if (ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be greater than or egual 0."));
-        goto exitCheck;
-    }
+    if (m_tabEnabled[tabSerial0])  {
+        if (ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be greater than or egual 0."));
+            goto exitCheck;
+        }
 
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be a number."));
-        goto exitCheck;
-    }
+        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be a number."));
+            goto exitCheck;
+        }
 
-    if (ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 0."));
-        goto exitCheck;
-    }
+        if (ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 0."));
+            goto exitCheck;
+        }
 
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be a number."));
-        goto exitCheck;
-    }
+        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be a number."));
+            goto exitCheck;
+        }
 
-    if (ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt())
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
-        goto exitCheck;
+        if (ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt())
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+            goto exitCheck;
+        }
     }
     //------------------------
     /* SERIAL 1 */
     //------------------------
-    if (ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&OK) < 0 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be greater than or egual 0."));
-        goto exitCheck;
-    }
+    if (m_tabEnabled[tabSerial1])  {
+        if (ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&OK) < 0 && OK == true)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be greater than or egual 0."));
+            goto exitCheck;
+        }
 
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be a number."));
-        goto exitCheck;
-    }
+        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be a number."));
+            goto exitCheck;
+        }
 
-    if (ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt(&OK) < 1 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 0."));
-        goto exitCheck;
-    }
+        if (ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt(&OK) < 1 && OK == true)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 0."));
+            goto exitCheck;
+        }
 
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be a number."));
-        goto exitCheck;
-    }
+        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be a number."));
+            goto exitCheck;
+        }
 
-    if (ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt())
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
-        goto exitCheck;
+        if (ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt())
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+            goto exitCheck;
+        }
     }
     //------------------------
     /* SERIAL 2 */
     //------------------------
-    if (ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&OK) < 0 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be greater than or egual 0."));
-        goto exitCheck;
-    }
+    if (m_tabEnabled[tabSerial2])  {
+        if (ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&OK) < 0 && OK == true)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be greater than or egual 0."));
+            goto exitCheck;
+        }
 
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be a number."));
-        goto exitCheck;
-    }
+        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be a number."));
+            goto exitCheck;
+        }
 
-    if (ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt(&OK) < 1 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 0."));
-        goto exitCheck;
-    }
+        if (ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt(&OK) < 1 && OK == true)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 0."));
+            goto exitCheck;
+        }
 
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be a number."));
-        goto exitCheck;
-    }
+        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be a number."));
+            goto exitCheck;
+        }
 
-    if (ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt())
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
-        goto exitCheck;
+        if (ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt())
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+            goto exitCheck;
+        }
     }
     //------------------------
     /* TCP_IP */
     //------------------------
-    if (ui->lineEdit_Silence_TCP_IP_PORT->text().toInt(&OK) < 0 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be greater than or egual 0."));
-        goto exitCheck;
-    }
+    if (m_tabEnabled[tabTCP])  {
+        if (ui->lineEdit_Silence_TCP_IP_PORT->text().toInt(&OK) < 0 && OK == true)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be greater than or egual 0."));
+            goto exitCheck;
+        }
 
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be a number."));
-        goto exitCheck;
-    }
+        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be a number."));
+            goto exitCheck;
+        }
 
-    if (ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt(&OK) < 1 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 0."));
-        goto exitCheck;
-    }
+        if (ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt(&OK) < 1 && OK == true)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 0."));
+            goto exitCheck;
+        }
 
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be a number."));
-        goto exitCheck;
-    }
+        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be a number."));
+            goto exitCheck;
+        }
 
-    if (ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt() <= ui->lineEdit_Silence_TCP_IP_PORT->text().toInt())
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
-        goto exitCheck;
+        if (ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt() <= ui->lineEdit_Silence_TCP_IP_PORT->text().toInt())
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+            goto exitCheck;
+        }
     }
     //------------------------
     // All check are Ok, return true

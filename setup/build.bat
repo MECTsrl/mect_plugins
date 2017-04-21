@@ -127,13 +127,17 @@ IF %CTEBUILD% == 1 (
 
 	rem remove the old files
  	del /q C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\cte.dll
-	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" install >> %OUT_DIR%\error.log 2>&1
+	del /q C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.pluginspec
+	rem copy new files from build directory to Qt Creator Plugin directory
+	copy %IN_DIR%\cte\destdir\CTE.dll C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.dll /Y >> %OUT_DIR%\error.log
+	copy %IN_DIR%\cte\CTE.pluginspec  C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.pluginspec /Y >> %OUT_DIR%\error.log
  	IF ERRORLEVEL 1 (
 		echo problem during installation cte dll libraries
 		pause
 		cd %ORIGINAL%
 		exit
 	)
+	rem Cleaning builded files	
 	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" distclean>nul 2>&1
 	time /t
 
@@ -162,7 +166,8 @@ IF %CTCBUILD% == 1 (
 
 	rem remove the old files
  	del /q C:\Qt485\desktop\bin\ctc.exe
-	"C:\Qt485\desktop\mingw32\bin\mingw32-make.exe" install >> %OUT_DIR%\error.log 2>&1
+	rem copy new files	
+	copy %IN_DIR%\ctc\release\ctc.exe C:\Qt485\desktop\bin\ctc.exe /Y >> %OUT_DIR%\error.log
  	IF ERRORLEVEL 1 (
 		echo problem during installation ctc.exe 
 		pause

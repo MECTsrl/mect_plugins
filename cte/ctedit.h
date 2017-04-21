@@ -17,6 +17,7 @@
 #include <QComboBox>
 #include <QPoint>
 #include <QColor>
+#include <QTimer>
 
 namespace Ui {
 class ctedit;
@@ -75,6 +76,8 @@ private slots:
     void on_cmdHideShow_toggled(bool checked);
 
     void on_cmdPLC_clicked();
+
+    void on_cboPriority_currentIndexChanged(int index);
 
 private:
     //---------------------------------------------------------------------
@@ -146,6 +149,7 @@ private:
     QString     m_szFormatDate;                     // Format Masks per Date e tempo
     QString     m_szFormatTime;
     QString     m_szMsg;                            // Variabile di servizio per Messaggi
+    QTimer      *tmrMessage;                        // Timer per la gestione Messaggi
     // Colori per sfondi grid
     QColor      colorRetentive[2];
     QColor      colorNonRetentive[2];

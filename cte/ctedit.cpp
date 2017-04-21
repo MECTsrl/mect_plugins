@@ -22,7 +22,6 @@
 #include <QLocale>
 #include <QDate>
 #include <QTime>
-#include <QTimer>
 #include <QMenu>
 #include <QAction>
 #include <QVariant>
@@ -41,7 +40,10 @@
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
 #define _FALSE 0
+
+#define STD_DISPLAY_TIME 5
 #define MAX_DISPLAY_TIME 15
+
 #define MAXBLOCKSIZE 64
 #define MIN_RETENTIVE 1
 #define MAX_RETENTIVE 192
@@ -78,7 +80,7 @@ const QString szPLCExt = QString::fromAscii(".4cp");
 const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 // Version Number
-const QString szVERSION = QString::fromAscii("Ver. 1.0.0 @ 2017-04-14");
+const QString szVERSION = QString::fromAscii("Ver. 1.0.2 @ 2017-04-21");
 
 enum colonne_e
 {
@@ -418,7 +420,12 @@ ctedit::ctedit(QWidget *parent) :
     connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
             SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabSelected(int)));
-
+    // Timer per messaggi
+    tmrMessage = new QTimer(this);
+    tmrMessage->setInterval(0);
+    tmrMessage->setSingleShot(true);
+    connect(tmrMessage, SIGNAL(timeout()), this, SLOT(clearStatusMessage()));
+    // Event Filter
     ui->tblCT->installEventFilter(this);
 }
 
@@ -1503,12 +1510,11 @@ void ctedit::on_cboType_currentIndexChanged(int index)
     else  {
         ui->txtDecimal->setEnabled(true);
         // Default 1 decimale se non specificato o presente valore
-        if (ui->txtDecimal->text().isEmpty())
+        if (ui->txtDecimal->text().trimmed().isEmpty())
             ui->txtDecimal->setText(QString::fromAscii("1"));
         // Disabilita possibilità di rendere la variabile un allarme/evento
         disableComboItem(ui->cboBehavior, behavior_alarm);
         disableComboItem(ui->cboBehavior, behavior_event);
-
     }
 }
 void ctedit::on_cboProtocol_currentIndexChanged(int index)
@@ -1596,9 +1602,15 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
     // Il cambio riga corrente è dovuto a operazioni di tipo cut-paste.
     // Per evitare duplicazioni accidentali di righe ripulisce il buffer di editing ed esce
     if (m_fCutOrPaste || selection.count() > 1)  {
+        if (selection.count() > 1)  {
+            m_szMsg = tr("Selected Rows: %1") .arg(selection.count());
+            displayStatusMessage(m_szMsg, STD_DISPLAY_TIME);
+        }
         clearEntryForm();
+        ui->fraEdit->setEnabled(false);
         return;
     }
+    ui->fraEdit->setEnabled(true);
     // Si sta uscendo dalla selezione di una riga sola
     if (! deselected.isEmpty() &&  deselected.count() == 1)  {
         // Considera sempre la prima riga della lista
@@ -2450,13 +2462,22 @@ QString ctedit::getModelName()
 void ctedit::displayStatusMessage(QString szMessage, int nSeconds)
 // Show message in ui->lblMessage
 {
-    // Time Out in display time
-    if (nSeconds == 0)
-        nSeconds = MAX_DISPLAY_TIME;
-    ui->lblMessage->setText(szMessage);
-    // Timer per Clear Text
-    if (nSeconds > 0)  {
-        QTimer::singleShot(nSeconds * 1000, this, SLOT(clearStatusMessage()));
+
+    if (! szMessage.isEmpty())  {
+        // Time Out in display time
+        if (nSeconds == 0)
+            nSeconds = MAX_DISPLAY_TIME;
+        ui->lblMessage->setText(szMessage);
+        ui->lblMessage->update();
+        // Timer per Clear Text
+        if (nSeconds > 0)  {
+            tmrMessage->setInterval(nSeconds * 1000);
+            tmrMessage->start();
+        }
+        else
+            tmrMessage->stop();
+        // Force call to Application Loop
+        doEvents();
     }
 }
 void ctedit::clearStatusMessage()
@@ -3401,4 +3422,12 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
     }
     // Pass event to standard Event Handler
     return QObject::eventFilter(obj, event);
+}
+// Trucco per impostare il valore del #Blocco
+void ctedit::on_cboPriority_currentIndexChanged(int index)
+{
+    if (ui->txtBlock->text().trimmed().isEmpty())  {
+        ui->txtBlock->setText(QString::number(m_nGridRow + 1));
+        ui->txtBlockSize->setText(QString::number(1));
+    }
 }
