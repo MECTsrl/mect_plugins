@@ -91,26 +91,26 @@ char LevelColorTable[nb_of_level_e][DESCR_LEN] =
  */
 char StatusColorTable[nb_of_alarm_status_e][DESCR_LEN] =
 {
-    "rgb(255,  0,  0);", /* active alarm latched not acknowloged */
-    "rgb(255,  0,  0);", /* active alarm not latched not acknowloged */
-    "rgb(  0,  0,255);", /* active alarm latched acknowloged */
-    "rgb(  0,  0,255);", /* active alarm not latched acknowloged */
-    "rgb(122,122,122);", /* not active alarm latched not acknowloged */
-    INVISIBLE,         /* not active alarm not latched not acknowloged */
-    INVISIBLE,         /* not active alarm latched acknowloged */
-    INVISIBLE,         /* not active alarm not latched acknowloged */
+    "rgb(255,  0,  0);", /* active alarm latched not acknowledged */
+    "rgb(255,  0,  0);", /* active alarm not latched not acknowledged */
+    "rgb(  0,  0,255);", /* active alarm latched acknowledged */
+    "rgb(  0,  0,255);", /* active alarm not latched acknowledged */
+    "rgb(122,122,122);", /* not active alarm latched not acknowledged */
+    INVISIBLE,         /* not active alarm not latched not acknowledged */
+    INVISIBLE,         /* not active alarm latched acknowledged */
+    INVISIBLE,         /* not active alarm not latched acknowledged */
 };
 
 char StatusBannerColorTable[nb_of_alarm_status_e][DESCR_LEN] =
 {
-    "rgb(255,  0,  0);", /* active alarm latched not acknowloged */
-    "rgb(255,  0,  0);", /* active alarm not latched not acknowloged */
-    "rgb(  0,  0,255);", /* active alarm latched acknowloged */
-    INVISIBLE,         /* active alarm not latched acknowloged */
-    "rgb(122,122,122);", /* not active alarm latched not acknowloged */
-    INVISIBLE,         /* not active alarm not latched not acknowloged */
-    INVISIBLE,         /* not active alarm latched acknowloged */
-    INVISIBLE,         /* not active alarm not latched acknowloged */
+    "rgb(255,  0,  0);", /* active alarm latched not acknowledged */
+    "rgb(255,  0,  0);", /* active alarm not latched not acknowledged */
+    "rgb(  0,  0,255);", /* active alarm latched acknowledged */
+    INVISIBLE,         /* active alarm not latched acknowledged */
+    "rgb(122,122,122);", /* not active alarm latched not acknowledged */
+    INVISIBLE,         /* not active alarm not latched not acknowledged */
+    INVISIBLE,         /* not active alarm latched acknowledged */
+    INVISIBLE,         /* not active alarm not latched acknowledged */
 };
 
 #ifdef ENABLE_ALARMS
@@ -303,7 +303,6 @@ bool Logger::connectToPage(QWidget * p)
 void Logger::run()
 {
 #ifdef ENABLE_ALARMS
-    BYTE var;
     QHash<QString, event_t *>::const_iterator i;
 #endif
     int recompute_abstime = true;
@@ -367,6 +366,7 @@ void Logger::run()
                 continue;
             }
             /* if is active, dump if it is necessary and emit the signal */
+            u_int32_t var;
             LOG_PRINT(verbose_e, "Reading '%s' - %d\n", i.key().toAscii().data(), i.value()->CtIndex);
             if (readFromDbLock(i.value()->CtIndex, &var) == 0)
             {
@@ -862,12 +862,15 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
             {
                 strcpy(event, TAG_FALL);
             }
+            else if (info_descr->status == alarm_ack_e)
+            {
+                strcpy(event, TAG_ACK);
+                LOG_PRINT(warning_e, "Wrong ACK event for variable '%s'\n", info_descr->tag);
+            }
             else
             {
-                /*the ack event is already dump by dumpACK*/
                 strcpy(event, TAG_UNK);
                 LOG_PRINT(warning_e, "Unknown event for variable '%s'\n", info_descr->tag);
-                return true;
             }
 
             LOG_PRINT(verbose_e, "DUMP event: '%s' isack %d status %d\n", event, info_descr->isack, info_descr->status);
@@ -956,7 +959,7 @@ exit_function:
             int index = getElemAlarmStyleIndex(_active_alarms_events_.at(i));
 
             // remove the expired alarms and events
-            if (ISBANNER(index) == 0 && ISSTATUS(index) == 0)
+            if (index >= alrm_nonactive_nonlatched_nonack_e)
             {
                 LOG_PRINT(verbose_e, "REMOVE '%s'\n", _active_alarms_events_.at(i)->tag);
                 event_descr_e * tmp = _active_alarms_events_.at(i);

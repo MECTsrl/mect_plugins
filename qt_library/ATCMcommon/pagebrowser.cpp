@@ -674,7 +674,7 @@ void page::sequentialShowError(QLineEdit * line, int period_ms)
     {
         for (; index < _active_alarms_events_.count(); index++)
         {
-            /* skip the acknowloged error */
+            /* skip the acknowledged error */
             if (ISBANNER(_active_alarms_events_.at(index)->styleindex) == 0)
             {
                 continue;
