@@ -60,9 +60,7 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="config/trend1.csv" target="config/trend1.csv" openproject="false" binary="false"/>
 	   <file source="config/network0.cmg" target="config/network0.cmg" openproject="false" binary="true"/>
 	   <file source="config/iomap0.cmg" target="config/iomap0.cmg" openproject="false" binary="true"/>
-   <!-- 
-	   <file source="../ATCM-template-project/project.pro.user" target="%ProjectName%.pro.shared" openproject="false"/>
-	   -->
+	   <file source="../ATCM-template-project/project.pro.shared" target="%ProjectName%.pro.shared" openproject="false"/>
 	   <file source="../ATCM-template-project/project.pro" target="%ProjectName%.pro" openproject="true"/>
 	   <file source="template.pri" target="template.pri" openproject="false"/>
 	   <file source="../ATCM-template-project/common.pri" target="common.pri" openproject="false"/>
