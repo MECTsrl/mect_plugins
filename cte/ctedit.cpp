@@ -1327,11 +1327,17 @@ bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
         // Block
         nPos = lstRecValues[colBlock].toInt(&fOk);
         nPos = fOk ? nPos : 0;
-        lstCTRecords[nRow].Block = nPos;
-        // N.Registro
-        nPos = lstRecValues[colBlockSize].toInt(&fOk);
-        nPos = fOk ? nPos : 0;
-        lstCTRecords[nRow].BlockSize = nPos;
+        if (nPos == 0)  {
+            lstCTRecords[nRow].Block = nRow + 1;
+            lstCTRecords[nRow].BlockSize = 1;
+        }
+        else {
+            lstCTRecords[nRow].Block = nPos;
+            // N.Registro
+            nPos = lstRecValues[colBlockSize].toInt(&fOk);
+            nPos = fOk ? nPos : 1;
+            lstCTRecords[nRow].BlockSize = nPos;
+        }
         // Commento
         strcpy(lstCTRecords[nRow].Comment, lstRecValues[colComment].trimmed().toAscii().data());
         // Clear all Variable - Event fields

@@ -1101,6 +1101,11 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
                 strcat(row, token);
             }
             // Block
+            // Force Block as Row number if empty
+            if (CrossTable[addr].Block == 0)  {
+                CrossTable[addr].Block = addr;
+                CrossTable[addr].BlockSize = 1;
+            }
             sprintf(token, "%-4d;", CrossTable[addr].Block);
             strcat(row, token);
             // Reg.Num
