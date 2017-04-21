@@ -174,12 +174,12 @@ private:
     QStringList             lstUniqueVarNames;      // Lista per controllo univocità identificatori
     QStringList             lstErrorMessages;       // Lista dei messaggi di errore
     // Variabili di stato ad uso globale
-    int         m_nCurTab;                          // Tab corrente in interfaccia
-    bool        m_isCtModified;
-    bool        m_fShowAllRows;                     // Vero se sono visualizzate tutte le righe
-    bool        m_fCutOrPaste;                      // Vero se è in corso un Cut or Paste
-    bool        m_fEmptyForm;                       // Vero se il Form di Data Entry risulta vuoto
-    varTypes    m_vtAlarmVarType;                    // Tipo della variabile SX in un espressione Allarme/Evento
+    int                     m_nCurTab;              // Tab corrente in interfaccia
+    bool                    m_isCtModified;         // Flag dati modificato
+    bool                    m_fShowAllRows;         // Vero se sono visualizzate tutte le righe
+    bool                    m_fCutOrPaste;          // Vero se è in corso un Cut or Paste
+    bool                    m_fEmptyForm;           // Vero se il Form di Data Entry risulta vuoto
+    varTypes                m_vtAlarmVarType;       // Tipo della variabile SX in un espressione Allarme/Evento
 };
 
 #endif // CTEDIT_H

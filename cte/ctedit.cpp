@@ -3271,6 +3271,14 @@ int  ctedit::fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes)
     }
     return lstTypes.count();
 }
+// Trucco per impostare il valore del #Blocco
+void ctedit::on_cboPriority_currentIndexChanged(int index)
+{
+    if (ui->txtBlock->text().trimmed().isEmpty())  {
+        ui->txtBlock->setText(QString::number(m_nGridRow + 1));
+        ui->txtBlockSize->setText(QString::number(1));
+    }
+}
 
 void ctedit::on_cmdPLC_clicked()
 // Lancio della visualizzazione del PLC Editor
@@ -3386,54 +3394,57 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 
-        // Tasto ESC
+        // Tasto ESC (Intercettato per le Combo Box)
         if (keyEvent->key() == Qt::Key_Escape) {
         }
-        // Tasto Insert
-        if (keyEvent->key() == Qt::Key_Insert) {
-            if (obj == ui->tblCT)  {
+        // Sequenze valide per tutto il form
+        // Save
+        if (keyEvent->matches(QKeySequence::Save)) {
+            if (m_isCtModified)
+                on_cmdSave_clicked();
+            return true;
+        }
+        // Find
+        if (keyEvent->matches(QKeySequence::Find)) {
+            on_cmdSearch_clicked();
+            return true;
+        }
+        // Undo
+        if (keyEvent->matches(QKeySequence::Undo)) {
+            if (! lstUndo.isEmpty())
+                on_cmdUndo_clicked();
+            return true;
+        }
+        // Sequenze significative solo sul Grid
+        if (obj == ui->tblCT)  {
+            // Tasto Insert
+            if (keyEvent->key() == Qt::Key_Insert) {
                 qDebug() << tr("Pressed Insert on Table");
                 return true;
             }
-        }
-        // Sequenza Copy
-        if (keyEvent->matches(QKeySequence::Cut)) {
-            if (obj == ui->tblCT)  {
+            // Sequenza Copy
+            if (keyEvent->matches(QKeySequence::Copy)) {
                 qDebug() << tr("Pressed Copy on Table");
                 return true;
             }
-        }
-        // Tasto Paste
-        if (keyEvent->matches(QKeySequence::Paste)) {
-            if (obj == ui->tblCT)  {
+            // Tasto Paste
+            if (keyEvent->matches(QKeySequence::Paste)) {
                 qDebug() << tr("Pressed Paste on Table");
                 return true;
             }
-        }
-        // Tasto Cut
-        if (keyEvent->matches(QKeySequence::Cut)) {
-            if (obj == ui->tblCT)  {
+            // Tasto Cut
+            if (keyEvent->matches(QKeySequence::Cut)) {
                 qDebug() << tr("Pressed Cut on Table");
                 return true;
             }
-        }
-        // Tasto Delete
-        if (keyEvent->matches(QKeySequence::Delete)) {
-            if (obj == ui->tblCT)  {
+            // Tasto Delete
+            if (keyEvent->matches(QKeySequence::Delete)) {
                 qDebug() << tr("Pressed Del on Table");
                 return true;
             }
         }
-        qDebug() << tr("Pressed Key Sequence") << keyEvent->key();
+        qDebug() << tr("Pressed Key Value") << keyEvent->key();
     }
     // Pass event to standard Event Handler
     return QObject::eventFilter(obj, event);
-}
-// Trucco per impostare il valore del #Blocco
-void ctedit::on_cboPriority_currentIndexChanged(int index)
-{
-    if (ui->txtBlock->text().trimmed().isEmpty())  {
-        ui->txtBlock->setText(QString::number(m_nGridRow + 1));
-        ui->txtBlockSize->setText(QString::number(1));
-    }
 }
