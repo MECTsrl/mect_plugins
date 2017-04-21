@@ -234,7 +234,7 @@ void alarms::addEvent(event_descr_e * msg, bool visibility)
 
 void alarms::addEvent(char * line, bool visibility, char * id, char * style)
 {
-    QString text = line;
+    QString text = QString(line);
 #if 0
     if (ui->listWidget->findItems(text,Qt::MatchCaseSensitive).count() != 0)
     {
@@ -254,18 +254,19 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
                 break;
             }
         }
+
         if (item != NULL)
         {
             if (strcasecmp(style, INVISIBLE) != 0)
             {
-                if (item->text().compare(text) != 0)
+                if (item->text() != text)
                 {
                     item->setText(text);
                     LOG_PRINT(verbose_e, "Adding updating item '%s'\n", item->text().toAscii().data());
                 }
                 else
                 {
-                    LOG_PRINT(verbose_e, "Already existing item item '%s'\n", item->text().toAscii().data());
+                    LOG_PRINT(verbose_e, "Already existing item '%s'\n", item->text().toAscii().data());
                 }
             }
             else
@@ -279,7 +280,7 @@ void alarms::addEvent(char * line, bool visibility, char * id, char * style)
         else if (strcasecmp(style, INVISIBLE) != 0)
         {
             item = new QListWidgetItem();
-            item->setText(QString(line).trimmed());
+            item->setText(text.trimmed());
 #ifdef ALARM_FIRST_TO_LAST
             ui->listWidget->addItem(item);
 #else
@@ -425,7 +426,7 @@ void alarms::refreshEvent()
             LOG_PRINT(verbose_e,"%s\n", _active_alarms_events_.at(i)->tag);
             event = EventHash.find(_active_alarms_events_.at(i)->tag).value();
 
-            /* loking into event db this event to get the level and the type if it is necessary */
+            /* looking into event db this event to get the level and the type if it is necessary */
             if (event->type == ALARM && _alarm == false)
             {
                 LOG_PRINT(verbose_e, "Hide event '%s'\n", event->description);

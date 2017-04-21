@@ -87,7 +87,7 @@ extern char LevelColorTable[nb_of_level_e][DESCR_LEN];
 
 enum alarm_status_e
 {
-    alrm_active_latched_nonack_e,
+    alrm_active_latched_nonack_e = 0,
     alrm_active_nonlatched_nonack_e,
     alrm_active_latched_ack_e,
     alrm_active_nonlatched_ack_e,
