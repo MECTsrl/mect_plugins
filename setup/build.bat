@@ -42,7 +42,9 @@ echo Creating the installer version %REVISION% > %OUT_DIR%\error.log
 
 SET ORIGINAL=%CD%
 
+rem ############################################## 
 rem Removing Qt485 Directory
+rem ############################################## 
 IF EXIST %OUT_DIR%\Qt485 RD /S /Q %OUT_DIR%\Qt485
 
 rem ############################################## 
@@ -315,6 +317,12 @@ IF %PREPARE_UPDATE% == 1 (
 		)
 	)
 	
+	echo Copying Cross Table Editor and Compiler
+	mkdir %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\QtProject
+	mkdir %OUT_DIR%\Qt485\desktop\bin
+	copy C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.dll %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\QtProject\ /Y >> %OUT_DIR%\error.log
+	copy C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.pluginspec %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\QtProject\ /Y >> %OUT_DIR%\error.log
+	copy C:\Qt485\desktop\bin\ctc.exe %OUT_DIR%\Qt485\desktop\bin\ /Y >> %OUT_DIR%\error.log
 
 	echo Copying rootfs...
 	mkdir %OUT_DIR%\Qt485\imx28
@@ -392,7 +400,7 @@ IF %INSTALL% == 1 (
 	echo   PC files...
 	copy "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf" "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect"
 	copy "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf.ori" "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf"
-	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\desktop"  -xr!atcm*.dll -xr!ATCM-template-* >> %OUT_DIR%\error.log
+	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\desktop"  -xr!atcm*.dll -xr!ATCM-template-* -xr!CTE.dll -xr!CTE.pluginspec -xr!ctc.exe >> %OUT_DIR%\error.log
 	IF ERRORLEVEL 1 (
 		copy "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf"
 		echo problem during creation 7z file
