@@ -32,6 +32,7 @@ public:
     ~ctedit();
     bool    selectCTFile(QString szFileCT);
     bool    saveCTFile();
+    void    displayStatusMessage(QString szMessage, int nSeconds = 0);// Show message in ui->lblMessage
 
 protected:
      bool eventFilter(QObject *obj, QEvent *event);        // Gestore Event Handler
@@ -48,8 +49,6 @@ private slots:
     void copySelected(bool fClearSelection);                            // Copia delle righe selezionate in Buffer di Copiatura
     void pasteSelected();                           // Incolla righe da Buffer di copiatura a Riga corrente
     void cutSelected();                             // Taglia righe in Buffer di copiatura
-    void on_cmdBlocchi_clicked();                   // Riordino Blocchi
-    void on_cmdSave_clicked();                      // Salvataggio file
     void displayUserMenu(const QPoint &pos);        // Menu contestuale Grid
     void on_cboProtocol_currentIndexChanged(int index);
     void tableItemChanged(const QItemSelection & selected, const QItemSelection & deselected);
@@ -57,26 +56,20 @@ private slots:
     void clearStatusMessage();                      // Clear message in ui->lblMessage
     void tabSelected(int nTab);                     // Change current Tab
     void on_cboType_currentIndexChanged(int index);
+    void on_cmdBlocchi_clicked();                   // Riordino Blocchi
+    void on_cmdSave_clicked();                      // Salvataggio file
     void on_cmdImport_clicked();                    // Import Rows from Another CT File
     void on_cmdGotoRow_clicked();                   // Goto Row n
     void on_cmdSearch_clicked();                    // Search Variable by Name
     void on_cmdCompile_clicked();                   // Generate Compiled Files
     void on_cmdUndo_clicked();                      // Retrieve a CT Block from Undo List
-
-    void on_cboBehavior_currentIndexChanged(int index);
-
-    void on_cboVariable1_currentIndexChanged(int index);
-
-    void on_cboCondition_currentIndexChanged(int index);
-
-    void on_optFixedVal_toggled(bool checked);
-
-    void on_optVariableVal_toggled(bool checked);
-
     void on_cmdHideShow_toggled(bool checked);
-
     void on_cmdPLC_clicked();
-
+    void on_cboBehavior_currentIndexChanged(int index);
+    void on_cboVariable1_currentIndexChanged(int index);
+    void on_cboCondition_currentIndexChanged(int index);
+    void on_optFixedVal_toggled(bool checked);
+    void on_optVariableVal_toggled(bool checked);
     void on_cboPriority_currentIndexChanged(int index);
 
 private:
@@ -101,8 +94,7 @@ private:
     bool    riassegnaBlocchi();                     // Riassegnazione blocchi variabili
     void    showAllRows(bool fShowAll);             // Visualizza o nascondi tutte le righe
     void    setRowColor(int nRow, int nAlternate);  // Imposta il colore di sfondo di una riga
-    void    jumpToGridRow(int nRow);                // Salto alla riga nRow del Grid
-    void    displayStatusMessage(QString szMessage, int nSeconds = 0);// Show message in ui->lblMessage
+    void    jumpToGridRow(int nRow, bool fCenter = false);                // Salto alla riga nRow del Grid
     void    enableInterface();                      // Abilita l'interfaccia in funzione dello stato del sistema
     int     fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates); // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
     int     fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<int> &lstUpdates);   // Caricamento ComboBox con Nomi Variabili filtrate in funzione del Tipo and Update Type in lstUpdates
@@ -119,6 +111,10 @@ private:
     // Calcolo valori in funzione del Modello e del Protocollo
     QStringList getPortsFromModel(const QString &szModel, QString szProtocol);      // Calocolo Porte in funzione di Modello e protocollo
     void    enableProtocolsFromModel(const QString &szModel);  // Abilita i Protocolli in funzione del Modello corrente
+    int     varSizeInBlock(int nVarType);
+    int     maxBlockSize(enum FieldbusType nProtocol, int nPort);    // max block size from Protocol && Port
+    bool    isModbus(enum FieldbusType nProtocol);
+    bool    isSameBitField(int nRow);
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
@@ -163,6 +159,8 @@ private:
     QList<CrossTableRecord> lstCTRecords;           // Lista completa di record per tabella
     QList<QList<CrossTableRecord> > lstUndo;        // Lista degli Undo di elementi di Cross Table Editor
     CrossTableRecord        CrossTable[1 + DimCrossTable];	 // campi sono riempiti a partire dall'indice 1
+    // System Configuration
+    TP_Config               TargetConfig;           // Configurazione corrente del Target letta da Form mectSettings
     // Controllo e Gestione  Errori
     QList<int>              lstAllUpdates;          // Lista contenente tutti i tipi di Update (per filtro su Nomi variabili)
     QList<int>              lstNoHUpdates;          // Lista contenente tutti i tipi di Update tranne H (per Allarmi)

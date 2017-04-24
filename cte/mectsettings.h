@@ -19,6 +19,7 @@ public:
     explicit MectSettings(QWidget *parent = 0);
     ~MectSettings();
     bool loadProjectFiles(const QString &szFileSettings, const QString szFilePro, const QString &szProjectPath, const int nModel);
+    bool getTargetConfig(TP_Config &targetConfig);              // Retrieves current target configuration
 
 signals:
 

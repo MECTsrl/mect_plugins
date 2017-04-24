@@ -80,7 +80,7 @@ const QString szPLCExt = QString::fromAscii(".4cp");
 const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 // Version Number
-const QString szVERSION = QString::fromAscii("Ver. 1.0.2 @ 2017-04-21");
+const QString szVERSION = QString::fromAscii("Ver. 1.0.2 @ 2017-04-24");
 
 enum colonne_e
 {
@@ -117,6 +117,7 @@ ctedit::ctedit(QWidget *parent) :
     int     nCol = 0;
     int     nValMin = 0;
     int     nValMax = 9999;
+    int     nValMaxRegister = 49999;
     int     nValMaxInt16 = 65535;
     QString szToolTip;
 
@@ -305,7 +306,10 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtNode->setToolTip(szToolTip);
     // Register
     szToolTip.clear();
-    szToolTip.append(tr("Modbus address of the Register to be used"));
+    szToolTip.append(tr("Modbus address of the Register to be used\n"));
+    szToolTip.append(tr("ADR=[0..29999] -> Coil / Holding Register (ADR)"));
+    szToolTip.append(tr("ADR=[30000..39999] -> Input  Register (ADR-30001)\n"));
+    szToolTip.append(tr("ADR=[40000..49999] -> Holding Register (ADR-40001)"));
     ui->txtRegister->setToolTip(szToolTip);
     // Block
     szToolTip.clear();
@@ -354,7 +358,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
     ui->txtPort->setValidator(new QIntValidator(nValMin, nValMaxInt16, this));
     ui->txtNode->setValidator(new QIntValidator(nValMin, nValMax, this));
-    ui->txtRegister->setValidator(new QIntValidator(nValMin, nValMax, this));
+    ui->txtRegister->setValidator(new QIntValidator(nValMin, nValMaxRegister, this));
     ui->txtNode->setValidator(new QIntValidator(nValMin, MAXBLOCKSIZE -1, this));
     ui->txtBlock->setValidator(new QIntValidator(nValMin, nValMax, this));
     ui->txtBlockSize->setValidator(new QIntValidator(nValMin, nValMax, this));
@@ -524,6 +528,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         m_fCutOrPaste = false;
         // Se tutto Ok, carica anche le impostazioni del file INI
         mectSet->loadProjectFiles(m_szCurrentCTPath + szINIFILE, m_szCurrentProjectPath + szSLASH + m_szCurrentProjectName, m_szCurrentProjectPath + szSLASH, nModel);
+        mectSet->getTargetConfig(TargetConfig);
         // Se tutto Ok, carica anche il primo trend utile
         QString szFileTemplate;
         szFileTemplate = m_szCurrentProjectPath;
@@ -1096,14 +1101,17 @@ bool    ctedit::riassegnaBlocchi()
     int             nPrevRow = -2;
     int             nBlockStart = -1;
     int             j = 0;
+    int             nNextRegPos = 0;
     FieldbusType    prevProtocol = (FieldbusType) 0;
     uint32_t        prevIpAdr = 0;
     uint16_t        prevPort = 0;
     int16_t         prevPriority = 0;
-    varTypes        prevType = (varTypes) 0;
+    varTypes        curType = (varTypes) 0;
     uint8_t         prevNodeId = 0;
     uint16_t        curBlock = 0;
     int16_t         curBSize = (int16_t) 0;
+    int16_t         maxBSize = MAXBLOCKSIZE;
+    int             nItemsInBlock = 0;
 
     ui->cmdBlocchi->setEnabled(false);
     this->setCursor(Qt::WaitCursor);
@@ -1114,13 +1122,18 @@ bool    ctedit::riassegnaBlocchi()
         if (lstCTRecords[nRow].Enable > 0)  {
             // Salto riga o condizione di inizio nuovo blocco
             // Inizio nuovo blocco
-            if (nPrevRow != nRow - 1 || prevPriority != lstCTRecords[nRow].Enable || prevType != lstCTRecords[nRow].VarType || prevProtocol !=  lstCTRecords[nRow].Protocol
+            if (nPrevRow != nRow - 1 || prevPriority != lstCTRecords[nRow].Enable || prevProtocol !=  lstCTRecords[nRow].Protocol
                     || prevIpAdr != lstCTRecords[nRow].IPAddress || prevPort != lstCTRecords[nRow].Port || prevNodeId != lstCTRecords[nRow].NodeId
-                    || curBSize >= MAXBLOCKSIZE)  {
+                    || curBSize >= maxBSize || nItemsInBlock >= MAXBLOCKSIZE
+                    // Per Modbus devono essere o tutti BIT o tutti != BIT
+                    || (isModbus(lstCTRecords[nRow].Protocol) && ((prevProtocol == BIT && lstCTRecords[nRow].Protocol != BIT) || (prevProtocol != BIT && lstCTRecords[nRow].Protocol == BIT)))
+                    // Per Modbus Contiguità di Registro
+                    || (isModbus(lstCTRecords[nRow].Protocol) && (lstCTRecords[nRow].Offset != nNextRegPos && !isSameBitField(nRow)))
+                    )  {
                 // Rinumera block start del Blocco precedente se esiste
                 if ((nBlockStart > 0) && (nRow - nBlockStart > 1))  {
                     for (j = nBlockStart; j < nRow; j++)  {
-                        lstCTRecords[j].BlockSize = curBSize;
+                        lstCTRecords[j].BlockSize = nItemsInBlock;
                     }
                 }
                 // Imposta i valori di confronto correnti
@@ -1129,18 +1142,22 @@ bool    ctedit::riassegnaBlocchi()
                 prevProtocol =  lstCTRecords[nRow].Protocol;
                 prevIpAdr = lstCTRecords[nRow].IPAddress;
                 prevPort = lstCTRecords[nRow].Port;
-                prevType = lstCTRecords[nRow].VarType;
+                maxBSize = maxBlockSize(prevProtocol, prevPort);
+                curType = lstCTRecords[nRow].VarType;
                 prevNodeId = lstCTRecords[nRow].NodeId;
-                curBlock = (int16_t) nBlockStart + 1;
-                curBSize = 1;
+                curBlock = (int16_t) nRow + 1;
+                curBSize = varSizeInBlock(lstCTRecords[nRow].VarType);
+                nItemsInBlock = 1;
             }
             // Prosecuzione Blocco corrente
             else  {
-                ++curBSize;
+                curBSize += varSizeInBlock(lstCTRecords[nRow].VarType);
+                nItemsInBlock++;
             }
             // Aggiornamento Blocco e Size
             lstCTRecords[nRow].Block = curBlock;
-            lstCTRecords[nRow].BlockSize = curBSize;
+            lstCTRecords[nRow].BlockSize = nItemsInBlock;
+            nNextRegPos = lstCTRecords[nRow].Offset + varSizeInBlock(lstCTRecords[nRow].VarType);
             // Incremento ultima riga significativa
             nPrevRow = nRow;
         }
@@ -1729,12 +1746,12 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Inserisci righe
     QAction *insRows = gridMenu.addAction(trUtf8("Insert Blank Rows"));
     insRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
-    insRows->setShortcut(Qt::Key_Insert);
+    // insRows->setShortcut(Qt::Key_Insert);
 
     // Cancella righe
     QAction *emptyRows = gridMenu.addAction(trUtf8("Clear Rows"));
     emptyRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
-    emptyRows->setShortcut(Qt::Key_Delete);
+    // emptyRows->setShortcut(Qt::Key_Delete);
     // Elimina righe
     QAction *remRows = gridMenu.addAction(trUtf8("Delete Rows"));
     remRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
@@ -1743,17 +1760,17 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Copia righe (Sempre permesso)
     QAction *copyRows = gridMenu.addAction(trUtf8("Copy rows"));
     copyRows->setEnabled(selection.count() > 0);
-    copyRows->setShortcut(Qt::Key_Copy);
+    // copyRows->setShortcut(Qt::Key_Copy);
     // Taglia righe
     QAction *cutRows = gridMenu.addAction(trUtf8("Cut Rows"));
     cutRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
-    cutRows->setShortcut(Qt::Key_Cut);
+    // cutRows->setShortcut(Qt::Key_Cut);
     // Sep 2
     gridMenu.addSeparator();
     // Paste Rows
     QAction *pasteRows = gridMenu.addAction(trUtf8("Paste Rows"));
     pasteRows->setEnabled(lstCopiedRecords.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
-    pasteRows->setShortcut(Qt::Key_Paste);
+    // pasteRows->setShortcut(Qt::Key_Paste);
     // Abilitazione delle voci di Menu
     // Esecuzione del Menu
     QAction *actMenu = gridMenu.exec(ui->tblCT->viewport()->mapToGlobal(pos));
@@ -1817,7 +1834,7 @@ void ctedit::copySelected(bool fClearSelection)
     if (fClearSelection)  {
         selection.clear();
         if (nFirstRow >= 0)  {
-            jumpToGridRow(nFirstRow);
+            jumpToGridRow(nFirstRow, true);
             recCT2List(lstFields, nFirstRow);
             values2Iface(lstFields);
         }
@@ -2297,7 +2314,7 @@ void ctedit::on_cmdGotoRow_clicked()
                 ui->cmdHideShow->setChecked(true);
             }
         }
-        jumpToGridRow(nRow);
+        jumpToGridRow(nRow, true);
     }
 }
 void ctedit::on_cmdSearch_clicked()
@@ -2327,16 +2344,17 @@ void ctedit::on_cmdSearch_clicked()
         }
         // Item Found
         if (nRow < lstCTRecords.count()) {
-            jumpToGridRow(nRow);
+            jumpToGridRow(nRow, true);
         }
     }
 }
-void ctedit::jumpToGridRow(int nRow)
+void ctedit::jumpToGridRow(int nRow, bool fCenter)
 // Salto alla riga nRow del Grid
 {
     // Controlla se la riga selezionata è abilitata. In caso contrario deve abilitare visualizzazione di tutte le righe
     ui->tblCT->selectRow(nRow);
-    // ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtCenter);
+    if (fCenter)
+        ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtCenter);
     ui->tblCT->setFocus();
     m_nGridRow = nRow;
 }
@@ -2506,9 +2524,13 @@ void ctedit::on_cmdUndo_clicked()
 void ctedit::tabSelected(int nTab)
 // Change current Tab
 {
-    // Aggiornamento della lista di variabili e ripopolamento
+    // Aggiornamento della lista di variabili e ripopolamento liste per Trends
     if (nTab == TAB_TREND) {
         trendEdit->updateVarLists(lstLoggedVars);
+    }
+    // Ritorno a CT da altro Tab
+    if (nTab == TAB_CT)  {
+        mectSet->getTargetConfig(TargetConfig);
     }
     // Set Current Tab
     m_nCurTab = nTab;
@@ -2741,7 +2763,7 @@ int ctedit::globalChecks()
         if (errWindow->exec() == QDialog::Accepted)  {
             nRow = errWindow->currentRow();
             if (nRow >= 0 && nRow < DimCrossTable)
-                jumpToGridRow(nRow);
+                jumpToGridRow(nRow, true);
         }
         delete errWindow;
     }
@@ -3396,6 +3418,12 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
 
         // Tasto ESC (Intercettato per le Combo Box)
         if (keyEvent->key() == Qt::Key_Escape) {
+            // Clear item for Combos
+            if (obj->metaObject()->className() == "QComboBox")  {
+                QComboBox *cb = qobject_cast<QComboBox*>(obj);
+                cb->setCurrentIndex(-1);
+                return true;
+            }
         }
         // Sequenze valide per tutto il form
         // Save
@@ -3419,27 +3447,27 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         if (obj == ui->tblCT)  {
             // Tasto Insert
             if (keyEvent->key() == Qt::Key_Insert) {
-                qDebug() << tr("Pressed Insert on Table");
+                insertRows();
                 return true;
             }
             // Sequenza Copy
             if (keyEvent->matches(QKeySequence::Copy)) {
-                qDebug() << tr("Pressed Copy on Table");
+                copySelected(true);
                 return true;
             }
             // Tasto Paste
             if (keyEvent->matches(QKeySequence::Paste)) {
-                qDebug() << tr("Pressed Paste on Table");
+                pasteSelected();
                 return true;
             }
             // Tasto Cut
             if (keyEvent->matches(QKeySequence::Cut)) {
-                qDebug() << tr("Pressed Cut on Table");
+                cutSelected();
                 return true;
             }
             // Tasto Delete
             if (keyEvent->matches(QKeySequence::Delete)) {
-                qDebug() << tr("Pressed Del on Table");
+                emptySelected();
                 return true;
             }
         }
@@ -3447,4 +3475,102 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
     }
     // Pass event to standard Event Handler
     return QObject::eventFilter(obj, event);
+}
+int ctedit::varSizeInBlock(int nVarType)
+{
+    int nSize = 1;
+
+    switch (nVarType) {
+        // Doppio Byte
+        case DWORD_BIT:
+        case REAL:
+        case REALDCBA:
+        case REALCDAB:
+        case REALBADC:
+        case UDINT:
+        case UDINTDCBA:
+        case UDINTCDAB:
+        case UDINTBADC:
+        case DINT:
+        case DINTDCBA:
+        case DINTCDAB:
+        case DINTBADC:
+            nSize = 2;
+            break;
+        default:
+            nSize = 1;
+    }
+    return nSize;
+}
+int ctedit::maxBlockSize(FieldbusType nProtocol, int nPort)
+// max block size from Protocol && Port
+{
+    int nBlockSize = 0;
+
+    // Protocollo PLC dimesione pari a MAXBLOCKSIZE
+    switch (nProtocol) {
+        case PLC:
+            nBlockSize = MAXBLOCKSIZE;
+            break;
+        case TCP:
+        case TCPRTU:
+        case TCP_SRV:
+        case TCPRTU_SRV:
+            nBlockSize = TargetConfig.tcp_BlockSize;
+            break;
+        case CANOPEN:
+            if (nPort == 0)
+                nBlockSize = TargetConfig.can0_BlockSize;
+            else
+                nBlockSize = TargetConfig.can1_BlockSize;
+            break;
+
+        default:
+            // All Serial Protocols
+            if (nPort == 0)
+                nBlockSize = TargetConfig.ser0_BlockSize;
+            else if (nPort == 1)
+                nBlockSize = TargetConfig.ser1_BlockSize;
+            else if (nPort == 2)
+                nBlockSize = TargetConfig.ser2_BlockSize;
+            else if (nPort == 3)
+                nBlockSize = TargetConfig.ser3_BlockSize;
+            break;
+    }
+    // return
+    return nBlockSize;
+}
+bool ctedit::isModbus(enum FieldbusType nProtocol)
+{
+    bool fModbus = false;
+
+    // Protocollo PLC dimesione pari a MAXBLOCKSIZE
+    switch (nProtocol) {
+        case RTU:
+        case TCP:
+        case TCPRTU:
+        case RTU_SRV:
+        case TCP_SRV:
+        case TCPRTU_SRV:
+            fModbus = true;
+            break;
+
+        default:
+            fModbus = false;
+            break;
+    }
+    // return
+    return fModbus;
+
+}
+bool ctedit::isSameBitField(int nRow)
+{
+    bool    fRes = false;
+    if (nRow>0)  {
+        if (lstCTRecords[nRow].VarType == lstCTRecords[nRow - 1].VarType)
+            if (lstCTRecords[nRow].VarType == BYTE_BIT || lstCTRecords[nRow].VarType == WORD_BIT || lstCTRecords[nRow].VarType == DWORD_BIT)
+                if (lstCTRecords[nRow].Offset == lstCTRecords[nRow - 1].Offset)
+                    fRes = true;
+    }
+    return fRes;
 }

@@ -15,6 +15,7 @@
 
 #define MAX_SPACE_AVAILABLE_MAX 128
 #define LINE_SIZE 1024
+#define MAXBLOCKSIZE 64
 
 
 const QString szPAGE = QString::fromAscii("page");
@@ -45,15 +46,23 @@ MectSettings::MectSettings(QWidget *parent) :
     /* SERIAL 0 */
     ui->lineEdit_Silence_SERIAL_PORT_0->setValidator(new QIntValidator(0, nValMaxInt16, this));
     ui->lineEdit_Timeout_SERIAL_PORT_0->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* SERIAL 1 */
     ui->lineEdit_Silence_SERIAL_PORT_1->setValidator(new QIntValidator(0, nValMaxInt16, this));
     ui->lineEdit_Timeout_SERIAL_PORT_1->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* SERIAL 2 */
     ui->lineEdit_Silence_SERIAL_PORT_2->setValidator(new QIntValidator(0, nValMaxInt16, this));
     ui->lineEdit_Timeout_SERIAL_PORT_2->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* TCP_IP */
     ui->lineEdit_Silence_TCP_IP_PORT->setValidator(new QIntValidator(0, nValMaxInt16, this));
     ui->lineEdit_Timeout_TCP_IP_PORT->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_MaxBlockSize_TCP_IP_PORT->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
+    /* CAN 0*/
+    ui->lineEdit_MaxBlockSize_CANOPEN_0->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
+    /* CAN 1*/
+    ui->lineEdit_MaxBlockSize_CANOPEN_1->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     // Clear Model Info
     m_nModel = -1;
     m_szModel.clear();
@@ -94,6 +103,8 @@ void    MectSettings::setModel(const int nModel)
 }
 bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QString szFilePro, const QString &szProjectPath, const int nModel)
 {
+    QVariant defBlockSize = QString::number(MAXBLOCKSIZE);
+
     // Copy of Setting File, Project File, Project Path
     m_szFileSettings = szFileSettings;
     m_szFilePro = szFilePro;
@@ -301,6 +312,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
 
     ui->lineEdit_Silence_SERIAL_PORT_0->setText(settings.value(QString::fromAscii("SERIAL_PORT_0/silence_ms")).toString());
     ui->lineEdit_Timeout_SERIAL_PORT_0->setText(settings.value(QString::fromAscii("SERIAL_PORT_0/timeout_ms")).toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->setText(settings.value(QString::fromAscii("SERIAL_PORT_0/max_block_size"), defBlockSize).toString());
 
     value = settings.value(QString::fromAscii("SERIAL_PORT_1/baudrate")).toString();
     if (value.length() > 0)
@@ -356,6 +368,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
 
     ui->lineEdit_Silence_SERIAL_PORT_1->setText(settings.value(QString::fromAscii("SERIAL_PORT_1/silence_ms")).toString());
     ui->lineEdit_Timeout_SERIAL_PORT_1->setText(settings.value(QString::fromAscii("SERIAL_PORT_1/timeout_ms")).toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->setText(settings.value(QString::fromAscii("SERIAL_PORT_1/max_block_size"), defBlockSize).toString());
 
     value = settings.value(QString::fromAscii("SERIAL_PORT_2/baudrate")).toString();
     if (value.length() > 0)
@@ -411,6 +424,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
 
     ui->lineEdit_Silence_SERIAL_PORT_2->setText(settings.value(QString::fromAscii("SERIAL_PORT_2/silence_ms")).toString());
     ui->lineEdit_Timeout_SERIAL_PORT_2->setText(settings.value(QString::fromAscii("SERIAL_PORT_2/timeout_ms")).toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->setText(settings.value(QString::fromAscii("SERIAL_PORT_2/max_block_size"), defBlockSize).toString());
 
     value = settings.value(QString::fromAscii("SERIAL_PORT_3/baudrate")).toString();
     if (value.length() > 0)
@@ -466,9 +480,11 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
 
     ui->lineEdit_Silence_SERIAL_PORT_3->setText(settings.value(QString::fromAscii("SERIAL_PORT_3/silence_ms")).toString());
     ui->lineEdit_Timeout_SERIAL_PORT_3->setText(settings.value(QString::fromAscii("SERIAL_PORT_3/timeout_ms")).toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->setText(settings.value(QString::fromAscii("SERIAL_PORT_3/max_block_size"), defBlockSize).toString());
 
     ui->lineEdit_Silence_TCP_IP_PORT->setText(settings.value(QString::fromAscii("TCP_IP_PORT/silence_ms")).toString());
     ui->lineEdit_Timeout_TCP_IP_PORT->setText(settings.value(QString::fromAscii("TCP_IP_PORT/timeout_ms")).toString());
+    ui->lineEdit_MaxBlockSize_TCP_IP_PORT->setText(settings.value(QString::fromAscii("TCP_IP_PORT/max_block_size"), defBlockSize).toString());
 
     value = settings.value(QString::fromAscii("CANOPEN_0/baudrate")).toString();
     if (value.length() > 0)
@@ -480,6 +496,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for CANOPEN_0 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_CANOPEN_0->itemText(index)));
         }
         ui->comboBox_Baudrate_CANOPEN_0->setCurrentIndex(index);
+        ui->lineEdit_MaxBlockSize_CANOPEN_0->setText(settings.value(QString::fromAscii("CANOPEN_0/max_block_size"), defBlockSize).toString());
     }
     else  {
         // Disable all Tab
@@ -496,6 +513,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for CANOPEN_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_CANOPEN_1->itemText(index)));
         }
         ui->comboBox_Baudrate_CANOPEN_1->setCurrentIndex(index);
+        ui->lineEdit_MaxBlockSize_CANOPEN_1->setText(settings.value(QString::fromAscii("CANOPEN_1/max_block_size"), defBlockSize).toString());
     }
     else  {
         // Disable all Tab
@@ -559,6 +577,7 @@ void MectSettings::save_all()
                 settings.setValue(QString::fromAscii("SERIAL_PORT_0/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_0->currentText());
                 settings.setValue(QString::fromAscii("SERIAL_PORT_0/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_0->text());
                 settings.setValue(QString::fromAscii("SERIAL_PORT_0/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_0->text());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_0/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text());
             }
             else
             {
@@ -579,6 +598,7 @@ void MectSettings::save_all()
                 settings.setValue(QString::fromAscii("SERIAL_PORT_1/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_1->currentText());
                 settings.setValue(QString::fromAscii("SERIAL_PORT_1/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_1->text());
                 settings.setValue(QString::fromAscii("SERIAL_PORT_1/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_1->text());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_1/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text());
             }
             else
             {
@@ -599,6 +619,7 @@ void MectSettings::save_all()
                 settings.setValue(QString::fromAscii("SERIAL_PORT_2/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_2->currentText());
                 settings.setValue(QString::fromAscii("SERIAL_PORT_2/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_2->text());
                 settings.setValue(QString::fromAscii("SERIAL_PORT_2/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_2->text());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_2/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text());
             }
             else
             {
@@ -619,6 +640,7 @@ void MectSettings::save_all()
                 settings.setValue(QString::fromAscii("SERIAL_PORT_3/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_3->currentText());
                 settings.setValue(QString::fromAscii("SERIAL_PORT_3/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_3->text());
                 settings.setValue(QString::fromAscii("SERIAL_PORT_3/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_3->text());
+                settings.setValue(QString::fromAscii("SERIAL_PORT_3/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->text());
             }
             else
             {
@@ -633,6 +655,7 @@ void MectSettings::save_all()
         {
             settings.setValue(QString::fromAscii("TCP_IP_PORT/silence_ms"), ui->lineEdit_Silence_TCP_IP_PORT->text());
             settings.setValue(QString::fromAscii("TCP_IP_PORT/timeout_ms"), ui->lineEdit_Timeout_TCP_IP_PORT->text());
+            settings.setValue(QString::fromAscii("TCP_IP_PORT/max_block_size"), ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text());
             settings.sync();
         }
     }
@@ -643,6 +666,7 @@ void MectSettings::save_all()
             if (ui->comboBox_Baudrate_CANOPEN_0->currentIndex() > 0)
             {
                 settings.setValue(QString::fromAscii("CANOPEN_0/baudrate"), ui->comboBox_Baudrate_CANOPEN_0->currentText());
+                settings.setValue(QString::fromAscii("CANOPEN_0/max_block_size"), ui->lineEdit_MaxBlockSize_CANOPEN_0->text());
             }
             else
             {
@@ -658,6 +682,7 @@ void MectSettings::save_all()
             if (ui->comboBox_Baudrate_CANOPEN_1->currentIndex() > 0)
             {
                 settings.setValue(QString::fromAscii("CANOPEN_1/baudrate"), ui->comboBox_Baudrate_CANOPEN_1->currentText());
+                settings.setValue(QString::fromAscii("CANOPEN_1/max_block_size"), ui->lineEdit_MaxBlockSize_CANOPEN_1->text());
             }
             else
             {
@@ -673,8 +698,9 @@ void MectSettings::save_all()
 bool MectSettings::checkFields()
 // Controllo del contenuto dei campi
 {
-    bool fRes = false;
-    bool OK = false;
+    bool    fRes = false;
+    bool    OK = false;
+    int     nVal = 0;
 
 
     //------------------------
@@ -841,7 +867,7 @@ bool MectSettings::checkFields()
     //------------------------
     /* SERIAL 0 */
     //------------------------
-    if (m_tabEnabled[tabSerial0])  {
+    if (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)  {
         if (ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be greater than or egual 0."));
@@ -871,11 +897,23 @@ bool MectSettings::checkFields()
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
             goto exitCheck;
         }
+        // Max Block Size
+        nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text().toInt(&OK);
+        if (OK == true && nVal < 1)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
+            goto exitCheck;
+        }
+        if (OK == true && nVal > MAXBLOCKSIZE)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+            goto exitCheck;
+        }
     }
     //------------------------
     /* SERIAL 1 */
     //------------------------
-    if (m_tabEnabled[tabSerial1])  {
+    if (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)  {
         if (ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&OK) < 0 && OK == true)
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be greater than or egual 0."));
@@ -905,11 +943,23 @@ bool MectSettings::checkFields()
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
             goto exitCheck;
         }
+        // Max Block Size
+        nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text().toInt(&OK);
+        if (OK == true && nVal < 1)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
+            goto exitCheck;
+        }
+        if (OK == true && nVal > MAXBLOCKSIZE)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+            goto exitCheck;
+        }
     }
     //------------------------
     /* SERIAL 2 */
     //------------------------
-    if (m_tabEnabled[tabSerial2])  {
+    if (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)  {
         if (ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&OK) < 0 && OK == true)
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be greater than or egual 0."));
@@ -937,6 +987,18 @@ bool MectSettings::checkFields()
         if (ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt())
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+            goto exitCheck;
+        }
+        // Max Block Size
+        nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text().toInt(&OK);
+        if (OK == true && nVal < 1)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
+            goto exitCheck;
+        }
+        if (OK == true && nVal > MAXBLOCKSIZE)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
             goto exitCheck;
         }
     }
@@ -971,6 +1033,52 @@ bool MectSettings::checkFields()
         if (ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt() <= ui->lineEdit_Silence_TCP_IP_PORT->text().toInt())
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+            goto exitCheck;
+        }
+        // Max Block Size
+        nVal = ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text().toInt(&OK);
+        if (OK == true && nVal < 1)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
+            goto exitCheck;
+        }
+        if (OK == true && nVal > MAXBLOCKSIZE)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+            goto exitCheck;
+        }
+    }
+    //------------------------
+    /* CAN_0 */
+    //------------------------
+    if (m_tabEnabled[tabCan0])  {
+        // Max Block Size
+        nVal = ui->lineEdit_MaxBlockSize_CANOPEN_0->text().toInt(&OK);
+        if (OK == true && nVal < 1)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
+            goto exitCheck;
+        }
+        if (OK == true && nVal > MAXBLOCKSIZE)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+            goto exitCheck;
+        }
+    }
+    //------------------------
+    /* CAN_1 */
+    //------------------------
+    if (m_tabEnabled[tabCan1])  {
+        // Max Block Size
+        nVal = ui->lineEdit_MaxBlockSize_CANOPEN_1->text().toInt(&OK);
+        if (OK == true && nVal < 1)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
+            goto exitCheck;
+        }
+        if (OK == true && nVal > MAXBLOCKSIZE)
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
             goto exitCheck;
         }
     }
@@ -1055,4 +1163,67 @@ void MectSettings::enablePortsFromModel(int nModel)
     else  {
         m_tabEnabled[tabCan1] = false;
     }
+}
+bool MectSettings::getTargetConfig(TP_Config &targetConfig)
+// Retrieves current target configuration
+{
+    bool fRes = true;
+    bool fOk = false;
+    int  nVal = 0;
+
+    // ReadPeriod1
+    nVal = ui->lineEdit_ReadPeriod1->text().toInt(&fOk);
+    targetConfig.readPeriod1 = fOk ? nVal : 0;
+    // ReadPeriod2
+    nVal = ui->lineEdit_ReadPeriod2->text().toInt(&fOk);
+    targetConfig.readPeriod2 = fOk ? nVal : 0;
+    // ReadPeriod3
+    nVal = ui->lineEdit_ReadPeriod3->text().toInt(&fOk);
+    targetConfig.readPeriod3 = fOk ? nVal : 0;
+    //  Serial 0
+    targetConfig.ser0_Enabled = (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex()) > 0 ? 1 : 0;
+    nVal = ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&fOk);
+    targetConfig.ser0_TimeOut = fOk ? nVal : 0;
+    nVal = ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&fOk);
+    targetConfig.ser0_Silence = fOk ? nVal : 0;
+    nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text().toInt(&fOk);
+    targetConfig.ser0_BlockSize = fOk ? nVal : 0;
+    //  Serial 1
+    targetConfig.ser1_Enabled = (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex()) > 0 ? 1 : 0;
+    nVal = ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt(&fOk);
+    targetConfig.ser1_TimeOut = fOk ? nVal : 0;
+    nVal = ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&fOk);
+    targetConfig.ser1_Silence = fOk ? nVal : 0;
+    nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text().toInt(&fOk);
+    targetConfig.ser1_BlockSize = fOk ? nVal : 0;
+    //  Serial 2
+    targetConfig.ser2_Enabled = (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex()) > 0 ? 1 : 0;
+    nVal = ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt(&fOk);
+    targetConfig.ser2_TimeOut = fOk ? nVal : 0;
+    nVal = ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&fOk);
+    targetConfig.ser2_Silence = fOk ? nVal : 0;
+    nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text().toInt(&fOk);
+    targetConfig.ser2_BlockSize = fOk ? nVal : 0;
+    //  Serial 3
+    targetConfig.ser3_Enabled = (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex()) > 0 ? 1 : 0;
+    nVal = ui->lineEdit_Timeout_SERIAL_PORT_3->text().toInt(&fOk);
+    targetConfig.ser3_TimeOut = fOk ? nVal : 0;
+    nVal = ui->lineEdit_Silence_SERIAL_PORT_3->text().toInt(&fOk);
+    targetConfig.ser3_Silence = fOk ? nVal : 0;
+    nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->text().toInt(&fOk);
+    targetConfig.ser3_BlockSize = fOk ? nVal : 0;
+    // TCP
+    nVal = ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text().toInt(&fOk);
+    targetConfig.tcp_BlockSize = fOk ? nVal : 0;
+    // CAN_0
+    targetConfig.can0_Enabled = (m_tabEnabled[tabCan0] && ui->comboBox_Baudrate_CANOPEN_0->currentIndex()) > 0 ? 1 : 0;
+    nVal = ui->lineEdit_MaxBlockSize_CANOPEN_0->text().toInt(&fOk);
+    targetConfig.can0_BlockSize = fOk ? nVal : 0;
+    // CAN_1
+    targetConfig.can1_Enabled = (m_tabEnabled[tabCan1] && ui->comboBox_Baudrate_CANOPEN_1->currentIndex()) > 0 ? 1 : 0;
+    nVal = ui->lineEdit_MaxBlockSize_CANOPEN_1->text().toInt(&fOk);
+    targetConfig.can1_BlockSize = fOk ? nVal : 0;
+    qDebug() << tr("Updated Configuration");
+    // Return value
+    return fRes;
 }
