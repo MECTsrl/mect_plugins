@@ -253,7 +253,18 @@
                <string>Show or Hide unused rows</string>
               </property>
               <property name="text">
-               <string>Show</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/lock_48.png</normaloff>
+                <normalon>:/icons/img/lock_open_48.png</normalon>:/icons/img/lock_48.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>true</bool>
@@ -291,7 +302,17 @@
                <string>Jump to line #</string>
               </property>
               <property name="text">
-               <string>Goto Row</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/Go to.png</normaloff>:/icons/img/Go to.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -326,7 +347,17 @@
                <string>Search Variable by Name</string>
               </property>
               <property name="text">
-               <string>Search</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/Search.ico</normaloff>:/icons/img/Search.ico</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -361,7 +392,17 @@
                <string>Import User Data from another Crosstable File</string>
               </property>
               <property name="text">
-               <string>Import</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/Import.png</normaloff>:/icons/img/Import.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -396,7 +437,17 @@
                <string>Undo Changes</string>
               </property>
               <property name="text">
-               <string>Undo</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/Undo.ico</normaloff>:/icons/img/Undo.ico</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -431,7 +482,17 @@
                <string>Reorder Blocks Assignment</string>
               </property>
               <property name="text">
-               <string>Blocks</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/Blocks.png</normaloff>:/icons/img/Blocks.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -466,7 +527,17 @@
                <string>Start Crosstable complier</string>
               </property>
               <property name="text">
-               <string>Compile</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/Compile.ico</normaloff>:/icons/img/Compile.ico</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -504,7 +575,17 @@
                <string>Save changes</string>
               </property>
               <property name="text">
-               <string>Save</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/Save.png</normaloff>:/icons/img/Save.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -545,7 +626,17 @@
                <string/>
               </property>
               <property name="text">
-               <string>PLC</string>
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/icons/img/PLC.ico</normaloff>:/icons/img/PLC.ico</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -1739,7 +1830,9 @@
   <tabstop>cboBehavior</tabstop>
   <tabstop>tblCT</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="qtc.qrc"/>
+ </resources>
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroupSelect"/>

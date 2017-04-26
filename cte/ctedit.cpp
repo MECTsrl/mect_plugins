@@ -79,6 +79,7 @@ const QString szPLCFILE = QString::fromAscii("plc");
 const QString szPLCExt = QString::fromAscii(".4cp");
 const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
+const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
 // Version Number
 const QString szVERSION = QString::fromAscii("Ver. 1.0.2 @ 2017-04-24");
 
@@ -431,6 +432,14 @@ ctedit::ctedit(QWidget *parent) :
     connect(tmrMessage, SIGNAL(timeout()), this, SLOT(clearStatusMessage()));
     // Event Filter
     ui->tblCT->installEventFilter(this);
+    // Style Sheet
+    QFile fileQSS(szFileQSS);
+    if (fileQSS.exists())  {
+        fileQSS.open(QFile::ReadOnly);
+        QString styleSheet = QLatin1String(fileQSS.readAll());
+        fileQSS.close();
+        this->setStyleSheet(styleSheet);
+    }
 }
 
 ctedit::~ctedit()
@@ -778,11 +787,11 @@ void ctedit::on_cmdHideShow_toggled(bool checked)
     // Titolo del Bottone
     if (checked)  {
         m_fShowAllRows = true;
-        ui->cmdHideShow->setText(tr("Hide"));
+        // ui->cmdHideShow->setText(tr("Hide"));
     }
     else  {
         m_fShowAllRows = false;
-        ui->cmdHideShow->setText(tr("Show"));
+        // ui->cmdHideShow->setText(tr("Show"));
     }
     // Show-Hide Rows
     showAllRows(m_fShowAllRows);
