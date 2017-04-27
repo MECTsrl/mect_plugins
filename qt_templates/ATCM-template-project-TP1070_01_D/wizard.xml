@@ -64,9 +64,28 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="../ATCM-template-project/common.pri" target="common.pri" openproject="false"/>
 	   <file source="../ATCM-template-project/languages.pri" target="languages.pri" openproject="false"/>
 	   <file source="../ATCM-template-project/systemicons.qrc" target="systemicons.qrc" openproject="false"/>
+	   <!-- Create PLC Application Project Files  -->
+	   <file source="../ATCM-template-project/plc/Alarms.st" target="plc/Alarms.st" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/CEPrjSettings.4cs" target="plc/CEPrjSettings.4cs" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Configuration1.con" target="plc/Configuration1.con" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Crosstable.gvl" target="plc/Crosstable.gvl" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Events.st" target="plc/Events.st" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Fast.st" target="plc/Fast.st" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/files.txt" target="plc/files.txt" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/fileview.xml" target="plc/fileview.xml" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Init.st" target="plc/Init.st" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Normal.st" target="plc/Normal.st" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/plc.4clc" target="plc/plc.4clc" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/plc.4cp" target="plc/plc.4cp" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Project.4gh" target="plc/Project.4gh" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Resource1.cst" target="plc/Resource1.cst" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Resource1.gvl" target="plc/Resource1.gvl" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Resource1.res" target="plc/Resource1.res" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/Slow.st" target="plc/Slow.st" openeditor="false"/>
+ 	   <file source="../ATCM-template-project/plc/TPAC.ATHW119" target="plc/TPAC.ATHW119" openeditor="false"/>	   
 	   </files>
 	    <!-- Create a 2nd wizard page with parameters -->
-	    <fieldpagetitle>Add extra funtionality</fieldpagetitle>
+	    <fieldpagetitle>Add extra functionality</fieldpagetitle>
 		<fields>
 			<field name="Model">
 				<fieldcontrol class="QComboBox" defaultindex="2">
