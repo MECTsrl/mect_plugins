@@ -1111,15 +1111,8 @@ bool    ctedit::riassegnaBlocchi()
     int             nBlockStart = -1;
     int             j = 0;
     int             nNextRegPos = 0;
-    FieldbusType    prevProtocol = (FieldbusType) 0;
-    uint32_t        prevIpAdr = 0;
-    uint16_t        prevPort = 0;
-    int16_t         prevPriority = 0;
-    varTypes        curType = (varTypes) 0;
-    uint8_t         prevNodeId = 0;
     uint16_t        curBlock = 0;
     int16_t         curBSize = (int16_t) 0;
-    int16_t         maxBSize = MAXBLOCKSIZE;
     int             nItemsInBlock = 0;
 
     ui->cmdBlocchi->setEnabled(false);
@@ -1131,36 +1124,42 @@ bool    ctedit::riassegnaBlocchi()
         if (lstCTRecords[nRow].Enable > 0)  {
             // Salto riga o condizione di inizio nuovo blocco
             // Inizio nuovo blocco
-            if (nPrevRow != nRow - 1 || prevPriority != lstCTRecords[nRow].Enable || prevProtocol !=  lstCTRecords[nRow].Protocol
-                    || prevIpAdr != lstCTRecords[nRow].IPAddress || prevPort != lstCTRecords[nRow].Port || prevNodeId != lstCTRecords[nRow].NodeId
-                    || curBSize >= maxBSize || nItemsInBlock >= MAXBLOCKSIZE
+            if (nPrevRow != nRow - 1
+                    || lstCTRecords[nRow - 1].Enable != lstCTRecords[nRow].Enable
+                    || lstCTRecords[nRow - 1].Protocol !=  lstCTRecords[nRow].Protocol
+                    || lstCTRecords[nRow - 1].IPAddress != lstCTRecords[nRow].IPAddress
+                    || lstCTRecords[nRow - 1].Port != lstCTRecords[nRow].Port
+                    || lstCTRecords[nRow - 1].NodeId != lstCTRecords[nRow].NodeId
+                    || isTooBigForBlock(nRow, nItemsInBlock, curBSize)
                     // Per Modbus devono essere o tutti BIT o tutti != BIT
-                    || (isModbus(lstCTRecords[nRow].Protocol) && ((prevProtocol == BIT && lstCTRecords[nRow].Protocol != BIT) || (prevProtocol != BIT && lstCTRecords[nRow].Protocol == BIT)))
+                    || (isModbus(lstCTRecords[nRow].Protocol) && ((lstCTRecords[nRow - 1].VarType == BIT && lstCTRecords[nRow].VarType != BIT) || (lstCTRecords[nRow - 1].VarType != BIT && lstCTRecords[nRow].VarType == BIT)))
                     // Per Modbus Contiguità di Registro
                     || (isModbus(lstCTRecords[nRow].Protocol) && (lstCTRecords[nRow].Offset != nNextRegPos && !isSameBitField(nRow)))
                     )  {
                 // Rinumera block start del Blocco precedente se esiste
-                if ((nBlockStart > 0) && (nRow - nBlockStart > 1))  {
+                if ((nBlockStart >= 0) && (nRow - nBlockStart > 1))  {
                     for (j = nBlockStart; j < nRow; j++)  {
                         lstCTRecords[j].BlockSize = nItemsInBlock;
                     }
                 }
                 // Imposta i valori di confronto correnti
                 nBlockStart = nRow;
-                prevPriority = lstCTRecords[nRow].Enable;
-                prevProtocol =  lstCTRecords[nRow].Protocol;
-                prevIpAdr = lstCTRecords[nRow].IPAddress;
-                prevPort = lstCTRecords[nRow].Port;
-                maxBSize = maxBlockSize(prevProtocol, prevPort);
-                curType = lstCTRecords[nRow].VarType;
-                prevNodeId = lstCTRecords[nRow].NodeId;
                 curBlock = (int16_t) nRow + 1;
-                curBSize = varSizeInBlock(lstCTRecords[nRow].VarType);
+                if (lstCTRecords[nRow].Protocol ==  PLC)
+                    curBSize = 1;
+                else
+                    curBSize = varSizeInBlock(lstCTRecords[nRow].VarType);
+
                 nItemsInBlock = 1;
             }
             // Prosecuzione Blocco corrente
             else  {
-                curBSize += varSizeInBlock(lstCTRecords[nRow].VarType);
+                if (lstCTRecords[nRow].Protocol ==  PLC)
+                    curBSize++;
+                else  {
+                    if (! isSameBitField(nRow))
+                        curBSize += varSizeInBlock(lstCTRecords[nRow].VarType);
+                }
                 nItemsInBlock++;
             }
             // Aggiornamento Blocco e Size
@@ -1178,7 +1177,7 @@ bool    ctedit::riassegnaBlocchi()
         for (j = nBlockStart; j < MIN_SYSTEM - 1; j++)  {
             if (lstCTRecords[j].UsedEntry == 0)
                 break;
-            lstCTRecords[j].BlockSize = curBSize;
+            lstCTRecords[j].BlockSize = nItemsInBlock;
         }
     }
     // Return value as reload CT
@@ -3572,14 +3571,61 @@ bool ctedit::isModbus(enum FieldbusType nProtocol)
     return fModbus;
 
 }
+
 bool ctedit::isSameBitField(int nRow)
 {
     bool    fRes = false;
-    if (nRow>0)  {
-        if (lstCTRecords[nRow].VarType == lstCTRecords[nRow - 1].VarType)
-            if (lstCTRecords[nRow].VarType == BYTE_BIT || lstCTRecords[nRow].VarType == WORD_BIT || lstCTRecords[nRow].VarType == DWORD_BIT)
-                if (lstCTRecords[nRow].Offset == lstCTRecords[nRow - 1].Offset)
-                    fRes = true;
+    if (nRow > 0)  {
+        if (isBitField(lstCTRecords[nRow].VarType) &&
+            lstCTRecords[nRow].VarType == lstCTRecords[nRow - 1].VarType &&
+            lstCTRecords[nRow].Protocol == lstCTRecords[nRow - 1].Protocol &&
+            lstCTRecords[nRow].IPAddress == lstCTRecords[nRow -1].IPAddress &&
+            lstCTRecords[nRow].Port == lstCTRecords[nRow - 1].Port &&
+            lstCTRecords[nRow].NodeId == lstCTRecords[nRow - 1].NodeId &&
+            lstCTRecords[nRow].Offset == lstCTRecords[nRow - 1].Offset)  {
+                fRes = true;
+            }
+    }
+    return fRes;
+}
+
+bool ctedit::isBitField(enum varTypes nVarType)
+{
+    bool fRes = false;
+
+    switch (nVarType) {
+        //
+        case BYTE_BIT:
+        case WORD_BIT:
+        case DWORD_BIT:
+            fRes = true;
+            break;
+        default:
+            fRes = false;
+    }
+    return fRes;
+}
+
+bool ctedit::isTooBigForBlock(int nRow, int nItemsInBlock, int nCurBlockSize)
+{
+    bool    fRes = false;
+    int     nVarSize;
+    int     maxBSize;
+    int     nCur;
+
+    nVarSize = varSizeInBlock(lstCTRecords[nRow].VarType);
+    maxBSize = maxBlockSize(lstCTRecords[nRow].Protocol, lstCTRecords[nRow].Port);
+    fRes = ((nCurBlockSize + nVarSize) > maxBSize || (nItemsInBlock + 1) > MAXBLOCKSIZE);
+
+    if (! fRes && isBitField(lstCTRecords[nRow].VarType)) {
+        int nBitFieldLen = 1;
+        for (nCur = nRow + 1; nCur < DimCrossTable; nCur++)  {
+            if (isSameBitField(nCur))
+                nBitFieldLen++;
+            else
+                break;
+        }
+        fRes = (nItemsInBlock + nBitFieldLen) > MAXBLOCKSIZE;
     }
     return fRes;
 }

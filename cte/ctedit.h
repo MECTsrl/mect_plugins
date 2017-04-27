@@ -115,6 +115,8 @@ private:
     int     maxBlockSize(enum FieldbusType nProtocol, int nPort);    // max block size from Protocol && Port
     bool    isModbus(enum FieldbusType nProtocol);
     bool    isSameBitField(int nRow);
+    bool    isBitField(enum varTypes nVarType);
+    bool    isTooBigForBlock(int nRow, int nItemsInBlock, int nCurBlockSize);
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
