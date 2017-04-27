@@ -28,7 +28,7 @@ FORMS += \
 #DESTDIR = C:/Qt485/desktop//lib/qtcreator/plugins/QtProject
 DESTDIR = destdir
 
-testcreator.files = $$DESTDIR/CTE.dll CTE.pluginspec
+testcreator.files = $$DESTDIR/CTE.dll CTE.pluginspec CTE.qss
 testcreator.path = C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/
 
 INSTALLS += testcreator

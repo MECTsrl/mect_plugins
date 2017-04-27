@@ -1,6 +1,17 @@
 <RCC>
     <qresource prefix="/icons">
         <file>img/Logo_Mect.png</file>
+        <file>img/Blocks.png</file>
+        <file>img/Compile.ico</file>
+        <file>img/Go to.png</file>
+        <file>img/Import.png</file>
+        <file>img/lock_48.png</file>
+        <file>img/lock_open_48.png</file>
+        <file>img/PLC.ico</file>
+        <file>img/Save.png</file>
+        <file>img/Save_as.png</file>
+        <file>img/Search.ico</file>
+        <file>img/Undo.ico</file>
     </qresource>
     <qresource prefix="/csv">
         <file>others/lang_table.csv</file>
