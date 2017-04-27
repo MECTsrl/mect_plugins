@@ -163,7 +163,7 @@
          <string>Import User Data from another Trends File</string>
         </property>
         <property name="text">
-         <string>Load</string>
+         <string/>
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
@@ -212,7 +212,7 @@
          <string>Save changes</string>
         </property>
         <property name="text">
-         <string>Save</string>
+         <string/>
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
@@ -261,7 +261,7 @@
          <string>Save changes</string>
         </property>
         <property name="text">
-         <string>Save As</string>
+         <string/>
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">

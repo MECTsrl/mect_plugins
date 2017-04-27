@@ -2,11 +2,10 @@ QPushButton {
   border: 2px solid teal;
   border-radius: 10px;
   color: teal;
-  background: darkGray;
+  background: lightGray;
   background-repeat: no-repeat;
   background-position: center center;
   image-position: top center;
-  text-align: bottom center;
   min-width: 72px;
   min-height: 48px;
   max-width: 72px;
