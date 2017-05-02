@@ -1430,6 +1430,7 @@ cpp_h_gen(void)
     fprintf(cpp_h_file, "\n");
 
     fprintf(cpp_h_file, "#include <sys/types.h>\n");
+    fprintf(cpp_h_file, "#include \"cross_table_utility.h\"\n");
 
     fprintf(cpp_h_file, "\n");
 
