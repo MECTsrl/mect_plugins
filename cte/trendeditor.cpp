@@ -5,6 +5,7 @@
 #include <QColor>
 #include <QColorDialog>
 #include <QPalette>
+#include <QIcon>
 #include <QDebug>
 #include <QCheckBox>
 #include <QLineEdit>
@@ -53,12 +54,17 @@ TrendEditor::TrendEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TrendEditor)
 {
+    QIcon cIco;
+
     ui->setupUi(this);
     // Filling Fixed Combos
     // Combo Orientation
     mapOrientation.insert(szPORTRAIT, trUtf8("Portrait"));
     mapOrientation.insert(szLANDSCAPE, trUtf8("Landscape"));
-    ui->cboOrientation->addItems(mapOrientation.values());
+    cIco = QIcon(QString::fromAscii(":/icons/img/Portrait.png"));
+    ui->cboOrientation->addItem(cIco, mapOrientation.value(szPORTRAIT), szPORTRAIT);
+    cIco = QIcon(QString::fromAscii(":/icons/img/Landscape.png"));
+    ui->cboOrientation->addItem(cIco, mapOrientation.value(szLANDSCAPE), szLANDSCAPE);
     ui->cboOrientation->setCurrentIndex(-1);
     // Validators
     ui->txtMin_1->setValidator(new QDoubleValidator(this));

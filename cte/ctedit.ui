@@ -229,6 +229,56 @@
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QLabel" name="lblJumpTo">
+                <property name="minimumSize">
+                 <size>
+                  <width>60</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Goto Section</string>
+                </property>
+                <property name="buddy">
+                 <cstring>cboSections</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cboSections">
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>200</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <widget class="QPushButton" name="cmdHideShow">
               <property name="minimumSize">
                <size>
@@ -271,51 +321,6 @@
               </property>
               <property name="checked">
                <bool>true</bool>
-              </property>
-              <property name="autoDefault">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cmdGotoRow">
-              <property name="minimumSize">
-               <size>
-                <width>72</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>72</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>MS Shell Dlg 2</family>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>Jump to line #</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/Go to.png</normaloff>:/icons/img/Go to.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
               </property>
               <property name="autoDefault">
                <bool>false</bool>
@@ -805,7 +810,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>Block Size</string>
+                   <string>Blk Size</string>
                   </property>
                   <property name="buddy">
                    <cstring>txtBlockSize</cstring>
@@ -828,7 +833,7 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>Name</string>
+                   <string>Var.Name</string>
                   </property>
                   <property name="buddy">
                    <cstring>txtName</cstring>
@@ -1804,7 +1809,6 @@
  <tabstops>
   <tabstop>tabWidget</tabstop>
   <tabstop>cmdHideShow</tabstop>
-  <tabstop>cmdGotoRow</tabstop>
   <tabstop>cmdSearch</tabstop>
   <tabstop>cmdImport</tabstop>
   <tabstop>cmdUndo</tabstop>

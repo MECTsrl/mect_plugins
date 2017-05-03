@@ -36,6 +36,8 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QKeySequence>
+#include <QIcon>
+#include <QMetaObject>
 
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
@@ -105,6 +107,15 @@ enum colonne_e
     colTotals
 };
 
+enum regions_e
+{
+    regRetentive = 0,
+    regNonRetentive,
+    regDiagnostic,
+    regLocalIO,
+    regSystem,
+    regTotals
+};
 
 //extern int LoadXTable(char *crossTableFile);
 //extern int SaveXTable(char *crossTableFile);
@@ -121,6 +132,7 @@ ctedit::ctedit(QWidget *parent) :
     int     nValMaxRegister = 49999;
     int     nValMaxInt16 = 65535;
     QString szToolTip;
+    bool    oldState = false;
 
     ui->setupUi(this);
     // Version Number
@@ -170,10 +182,10 @@ ctedit::ctedit(QWidget *parent) :
     for (nCol = 0; nCol < colTotals; nCol++)  {
         lstHeadCols.append(szEMPTY);
     }
-    lstHeadCols[colPriority] = trUtf8("Pr.");
-    lstHeadCols[colUpdate] = trUtf8("Upd.");
+    lstHeadCols[colPriority] = trUtf8("Priority");
+    lstHeadCols[colUpdate] = trUtf8("Update");
     lstHeadCols[colName] = trUtf8("Var.Name");
-    lstHeadCols[colType] = trUtf8("Var.Type");
+    lstHeadCols[colType] = trUtf8("Type");
     lstHeadCols[colDecimal] = trUtf8("Decimal");
     lstHeadCols[colProtocol] = trUtf8("Protocol");
     lstHeadCols[colIP] = trUtf8("IP Address");
@@ -183,10 +195,20 @@ ctedit::ctedit(QWidget *parent) :
     lstHeadCols[colBlock] = trUtf8("Block");
     lstHeadCols[colBlockSize] = trUtf8("Blk Size");
     lstHeadCols[colComment] = trUtf8("Comment");
-    lstHeadCols[colBehavior] = trUtf8("Behav.");
+    lstHeadCols[colBehavior] = trUtf8("Behavior");
     lstHeadCols[colSourceVar] = trUtf8("Source");
     lstHeadCols[colCondition] = trUtf8("Condition");
     lstHeadCols[colCompare] = trUtf8("Compare");
+    // Regioni CT
+    lstRegions.clear();
+    for (nCol = 0; nCol < regTotals; nCol++)  {
+        lstRegions.append(szEMPTY);
+    }
+    lstRegions[regRetentive]    = trUtf8("   1 -  192 Retentive");
+    lstRegions[regNonRetentive] = trUtf8(" 193 - 4999 Non Retentive");
+    lstRegions[regDiagnostic]   = trUtf8("5000 - 5299 Diagnostic");
+    lstRegions[regLocalIO]      = trUtf8("5300 - 5389 Local I/O");
+    lstRegions[regSystem]       = trUtf8("5390 - 5472 System");
     // Lista Priorità
     lstPriority.clear();
     lstPriority
@@ -214,7 +236,7 @@ ctedit::ctedit(QWidget *parent) :
     // Lista TIPI Variabili (Esclude tipo UNKNOWN)
     lstTipi.clear();
     lstAllVarTypes.clear();
-    for (nCol = BIT; nCol < TYPE_TOTALS - 1; nCol++)  {
+    for (nCol = BIT; nCol < TYPE_TOTALS; nCol++)  {
         lstTipi.append(QString::fromAscii(varTypeNameExtended[nCol]));
         lstAllVarTypes.append(nCol);
     }
@@ -233,10 +255,10 @@ ctedit::ctedit(QWidget *parent) :
     // Lista Significati (da mantenere allineata con enum behaviors in parser.h)
     lstBehavior.clear();
     lstBehavior
-            << QString::fromAscii("R/O")
-            << QString::fromAscii("R/W")
-            << QString::fromAscii("AL")
-            << QString::fromAscii("EV")
+            << QString::fromAscii("Read/Only")
+            << QString::fromAscii("Read/Write")
+            << QString::fromAscii("Alarm")
+            << QString::fromAscii("Event")
         ;
     // Lista condizioni di Allarme / Eventi
     lstCondition.clear();
@@ -244,6 +266,13 @@ ctedit::ctedit(QWidget *parent) :
         lstCondition.append(QString::fromAscii(logic_operators[nCol]));
     }
     // Caricamento delle varie Combos
+    // Combo Sections (bloccata per evitare Side Effects al currentIndex)
+    oldState = ui->cboSections->blockSignals(true);
+    for (nCol = 0; nCol < regTotals; nCol++)  {
+        ui->cboSections->addItem(lstRegions[nCol]);
+    }
+    ui->cboSections->setCurrentIndex(-1);
+    ui->cboSections->blockSignals(oldState);
     // Combo Priority
     szToolTip.clear();
     szToolTip.append(tr("Enabling the exchange of data with remote devices:\n"));
@@ -399,7 +428,7 @@ ctedit::ctedit(QWidget *parent) :
     szColorSystem[1] = QString::fromAscii("color: #FFF0E9");
     // Variabili di stato globale dell'editor
     m_isCtModified = false;
-    m_fShowAllRows = false;
+    m_fShowAllRows = true;
     m_fCutOrPaste = false;
     m_nCurTab = 0;
     m_vtAlarmVarType = UNKNOWN;
@@ -440,6 +469,11 @@ ctedit::ctedit(QWidget *parent) :
         fileQSS.close();
         this->setStyleSheet(styleSheet);
     }
+    // Spegne Block e BlockSize
+    ui->lblBlock->setVisible(false);
+    ui->txtBlock->setVisible(false);
+    ui->lblBlockSize->setVisible(false);
+    ui->txtBlockSize->setVisible(false);
 }
 
 ctedit::~ctedit()
@@ -562,6 +596,9 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     // Clear Data
     lstCtRecs.clear();
     this->setCursor(Qt::WaitCursor);
+    // Reset Show Flag && Current Row Index
+    m_fShowAllRows = true;
+    m_nGridRow = -1;
     // Opening File
     nRes = LoadXTable(szFileCT.toAscii().data(), &CrossTable[0]);
     // Return value is the result of Parsing C structure to C++ Objects.
@@ -659,15 +696,16 @@ bool    ctedit::ctable2Grid()
     ui->tblCT->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui->tblCT->setHorizontalHeaderLabels(lstHeadCols);
     // Larghezza fissa per alcune colonne
-    ui->tblCT->horizontalHeader()->setResizeMode(colPriority, QHeaderView::Stretch);
-    ui->tblCT->horizontalHeader()->setResizeMode(colUpdate, QHeaderView::Stretch);
-    ui->tblCT->horizontalHeader()->setResizeMode(colBehavior, QHeaderView::Stretch);
+    //ui->tblCT->horizontalHeader()->setResizeMode(colPriority, QHeaderView::Stretch);
+    //ui->tblCT->horizontalHeader()->setResizeMode(colUpdate, QHeaderView::Stretch);
+    //ui->tblCT->horizontalHeader()->setResizeMode(colBehavior, QHeaderView::Stretch);
     ui->tblCT->setEnabled(true);
     // Show All Elements
     if (fRes)  {
         m_isCtModified = false;
         m_fCutOrPaste = false;
         ui->cmdHideShow->setChecked(m_fShowAllRows);
+        // ui->cmdHideShow->setChecked(true);
         ui->cmdSave->setEnabled(true);
         // ui->cmdSave->setEnabled(m_isCtModified);
         showAllRows(m_fShowAllRows);
@@ -1535,14 +1573,20 @@ void ctedit::on_cboType_currentIndexChanged(int index)
         ui->txtDecimal->setText(szZERO);
         ui->txtDecimal->setEnabled(false);
         // Abilita possibilità di rendere la variabile un allarme/evento
-        enableComboItem(ui->cboBehavior, behavior_alarm);
-        enableComboItem(ui->cboBehavior, behavior_event);
+        if (ui->cboPriority->currentIndex() > 0 && ui->cboUpdate->currentIndex() > Htype)  {
+            enableComboItem(ui->cboBehavior, behavior_alarm);
+            enableComboItem(ui->cboBehavior, behavior_event);
+        }
+        else {
+            disableComboItem(ui->cboBehavior, behavior_alarm);
+            disableComboItem(ui->cboBehavior, behavior_event);
+        }
     }
     else  {
         ui->txtDecimal->setEnabled(true);
         // Default 1 decimale se non specificato o presente valore
         if (ui->txtDecimal->text().trimmed().isEmpty())
-            ui->txtDecimal->setText(QString::fromAscii("1"));
+            ui->txtDecimal->setText(szZERO);
         // Disabilita possibilità di rendere la variabile un allarme/evento
         disableComboItem(ui->cboBehavior, behavior_alarm);
         disableComboItem(ui->cboBehavior, behavior_event);
@@ -1743,6 +1787,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
 {
     int             nRow = ui->tblCT->rowAt(pos.y());
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
+    QIcon cIco;
 
     // Aggiornamento numero riga
     if (nRow >= 0)  {
@@ -1752,31 +1797,37 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QMenu gridMenu(this);
     // Items del Menu contestuale
     // Inserisci righe
-    QAction *insRows = gridMenu.addAction(trUtf8("Insert Blank Rows"));
+    cIco = QIcon(QString::fromAscii(":/icons/img/List-add.png"));
+    QAction *insRows = gridMenu.addAction(cIco, trUtf8("Insert Blank Rows\t\t(Ins)"));
     insRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
     // insRows->setShortcut(Qt::Key_Insert);
 
     // Cancella righe
-    QAction *emptyRows = gridMenu.addAction(trUtf8("Clear Rows"));
+    cIco = QIcon(QString::fromAscii(":/icons/img/Edit-clear.png"));
+    QAction *emptyRows = gridMenu.addAction(cIco, trUtf8("Clear Rows\t\t(Del)"));
     emptyRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
     // emptyRows->setShortcut(Qt::Key_Delete);
     // Elimina righe
-    QAction *remRows = gridMenu.addAction(trUtf8("Delete Rows"));
+    cIco = QIcon(QString::fromAscii(":/icons/img/Edit-trash.png"));
+    QAction *remRows = gridMenu.addAction(cIco, trUtf8("Delete Rows"));
     remRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
     // Sep1
     gridMenu.addSeparator();
     // Copia righe (Sempre permesso)
-    QAction *copyRows = gridMenu.addAction(trUtf8("Copy rows"));
+    cIco = QIcon(QString::fromAscii(":/icons/img/Copy.png"));
+    QAction *copyRows = gridMenu.addAction(cIco, trUtf8("Copy Rows\t\t(Ctrl+C)"));
     copyRows->setEnabled(selection.count() > 0);
     // copyRows->setShortcut(Qt::Key_Copy);
     // Taglia righe
-    QAction *cutRows = gridMenu.addAction(trUtf8("Cut Rows"));
+    cIco = QIcon(QString::fromAscii(":/icons/img/Cut.png"));
+    QAction *cutRows = gridMenu.addAction(cIco, trUtf8("Cut Rows\t\t(Ctrl+X)"));
     cutRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
     // cutRows->setShortcut(Qt::Key_Cut);
     // Sep 2
     gridMenu.addSeparator();
     // Paste Rows
-    QAction *pasteRows = gridMenu.addAction(trUtf8("Paste Rows"));
+    cIco = QIcon(QString::fromAscii(":/icons/img/edit-paste.png"));
+    QAction *pasteRows = gridMenu.addAction(cIco, trUtf8("Paste Rows\t\t(Ctrl+V)"));
     pasteRows->setEnabled(lstCopiedRecords.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
     // pasteRows->setShortcut(Qt::Key_Paste);
     // Abilitazione delle voci di Menu
@@ -2256,7 +2307,8 @@ void ctedit::showAllRows(bool fShowAll)
     int         nRow = 0;
     int16_t     nPrevBlock = -1;
 
-    // Items del Grid
+    qDebug() << tr("showAllRows: showAll = %1 Current Row = %2") .arg(fShowAll) .arg(m_nGridRow);
+    // Items del Grid    
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Determina se il blocco corrente è cambiato dal precedente
         if (lstCTRecords[nRow].UsedEntry)  {
@@ -2268,6 +2320,11 @@ void ctedit::showAllRows(bool fShowAll)
             nPrevBlock = -1;
         // Impostazione colore riga
         setRowColor(nRow, nAlternate);
+        // Mostra o nascondi le righe se sono abilitate
+        // Ricerca il primo Item visibile
+        if (lstCTRecords[nRow].UsedEntry && nFirstVisible < 0)  {
+            nFirstVisible = nRow ;
+        }
         // Mostra tutti
         if (fShowAll)  {
             ui->tblCT->showRow(nRow);
@@ -2277,9 +2334,6 @@ void ctedit::showAllRows(bool fShowAll)
             // Mostra o nascondi le righe se sono abilitate
             if (lstCTRecords[nRow].UsedEntry)  {
                 ui->tblCT->showRow(nRow);
-                // Ricerca il primo Item visibile
-                if (nFirstVisible < 0)
-                    nFirstVisible = nRow ;
             }
             else  {
                 ui->tblCT->hideRow(nRow);
@@ -2299,8 +2353,8 @@ void ctedit::showAllRows(bool fShowAll)
     ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtCenter);
     ui->tblCT->setFocus();
 }
-void ctedit::on_cmdGotoRow_clicked()
-// Goto Row n
+void ctedit::gotoRow()
+// Show Dialog Goto Row n
 {
     // QStringList lstFields;
     bool fOk;
@@ -3416,9 +3470,8 @@ endStartPLC:
 bool ctedit::eventFilter(QObject *obj, QEvent *event)
 // Gestore Event Handler
 {
-    int         nField = 0;
-    int         nPosInFields = -1;
-    QString     szTemp(szEMPTY);
+    static      int nPrevKey = 0;
+
 
     // Evento Key Press
     if (event->type() == QEvent::KeyPress) {
@@ -3451,6 +3504,10 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 on_cmdUndo_clicked();
             return true;
         }
+        // Goto Line
+        if (keyEvent->key() == Qt::Key_L && nPrevKey == Qt::Key_Control)  {
+            gotoRow();
+        }
         // Sequenze significative solo sul Grid
         if (obj == ui->tblCT)  {
             // Tasto Insert
@@ -3480,6 +3537,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
             }
         }
         qDebug() << tr("Pressed Key Value") << keyEvent->key();
+        nPrevKey = keyEvent->key();
     }
     // Pass event to standard Event Handler
     return QObject::eventFilter(obj, event);

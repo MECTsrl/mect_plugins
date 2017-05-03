@@ -55,11 +55,11 @@ private slots:
     void clearEntryForm();                          // Svutamento elementi Form Data Entry
     void clearStatusMessage();                      // Clear message in ui->lblMessage
     void tabSelected(int nTab);                     // Change current Tab
+    void gotoRow();                                 // Show Dialog Goto Row n
     void on_cboType_currentIndexChanged(int index);
     void on_cmdBlocchi_clicked();                   // Riordino Blocchi
     void on_cmdSave_clicked();                      // Salvataggio file
     void on_cmdImport_clicked();                    // Import Rows from Another CT File
-    void on_cmdGotoRow_clicked();                   // Goto Row n
     void on_cmdSearch_clicked();                    // Search Variable by Name
     void on_cmdCompile_clicked();                   // Generate Compiled Files
     void on_cmdUndo_clicked();                      // Retrieve a CT Block from Undo List
@@ -143,6 +143,8 @@ private:
     QStringList lstBehavior;
     QStringList lstCondition;
     QStringList lstProductNames;
+    QStringList lstRegions;
+
     // Variabili di servizio
     QString     m_szFormatDate;                     // Format Masks per Date e tempo
     QString     m_szFormatTime;

@@ -12,6 +12,16 @@
         <file>img/Save_as.png</file>
         <file>img/Search.ico</file>
         <file>img/Undo.ico</file>
+        <file>img/Edit-clear.png</file>
+        <file>img/Copy.png</file>
+        <file>img/Cut.png</file>
+        <file>img/edit-paste.png</file>
+        <file>img/Goto.png</file>
+        <file>img/Landscape.png</file>
+        <file>img/Log Out.png</file>
+        <file>img/Portrait.png</file>
+        <file>img/List-add.png</file>
+        <file>img/Edit-trash.png</file>
     </qresource>
     <qresource prefix="/csv">
         <file>others/lang_table.csv</file>

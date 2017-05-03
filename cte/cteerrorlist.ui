@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Crosstable Errors</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="qtc.qrc">
+    <normaloff>:/icons/img/Logo_Mect.png</normaloff>:/icons/img/Logo_Mect.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -42,8 +46,64 @@
           <family>MS Shell Dlg 2</family>
          </font>
         </property>
+        <property name="toolTip">
+         <string>Go to Line</string>
+        </property>
         <property name="text">
-         <string>Goto Line</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="qtc.qrc">
+          <normaloff>:/icons/img/Goto.png</normaloff>:/icons/img/Goto.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="cmdClear">
+        <property name="minimumSize">
+         <size>
+          <width>72</width>
+          <height>48</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>72</width>
+          <height>48</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>MS Shell Dlg 2</family>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Clear Wrong Line</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="qtc.qrc">
+          <normaloff>:/icons/img/Edit-clear.png</normaloff>:/icons/img/Edit-clear.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
         </property>
         <property name="checkable">
          <bool>false</bool>
@@ -72,8 +132,21 @@
           <family>MS Shell Dlg 2</family>
          </font>
         </property>
-        <property name="text">
+        <property name="toolTip">
          <string>Exit</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="qtc.qrc">
+          <normaloff>:/icons/img/Log Out.png</normaloff>:/icons/img/Log Out.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
         </property>
         <property name="checkable">
          <bool>false</bool>
@@ -98,6 +171,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="qtc.qrc"/>
+ </resources>
  <connections/>
 </ui>
