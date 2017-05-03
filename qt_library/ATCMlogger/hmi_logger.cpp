@@ -366,7 +366,7 @@ void Logger::run()
                 continue;
             }
             /* if is active, dump if it is necessary and emit the signal */
-            u_int32_t var;
+            u_int32_t var = 0;
             LOG_PRINT(verbose_e, "Reading '%s' - %d\n", i.key().toAscii().data(), i.value()->CtIndex);
             if (readFromDbLock(i.value()->CtIndex, &var) == 0)
             {
@@ -383,7 +383,7 @@ void Logger::run()
                 {
                     i.value()->begin = 0;
                     LOG_PRINT(verbose_e, "%s [%d] = %d - dumpEvent\n", i.key().toAscii().data(), i.value()->CtIndex, var);
-                    dumpEvent(i.key(), i.value(), (var == 1) ? alarm_rise_e : alarm_fall_e);
+                    dumpEvent(i.key(), i.value(), (var != 0) ? alarm_rise_e : alarm_fall_e);
                 }
                 else
                 {
