@@ -92,11 +92,11 @@ void    MectSettings::setModel(const int nModel)
         m_szModel.clear();
     }
     // Refresh Port Tabs config
-    qDebug() << tr("Model: %1") .arg(nModel);
+    // qDebug() << tr("Model: %1") .arg(nModel);
     for (i = 0; i < tabTotals; i++)  {
         // ui->tabWidget->setTabEnabled(i, m_tabEnabled[i]);
         ui->tabWidget->widget(i)->setEnabled(m_tabEnabled[i]);
-        qDebug() << tr("Tab %1: %2") .arg(i) .arg(m_tabEnabled[i]);
+        // qDebug() << tr("Tab %1: %2") .arg(i) .arg(m_tabEnabled[i]);
     }
     // Set Tab System as current Tab
     ui->tabWidget->setCurrentIndex(tabSystem);

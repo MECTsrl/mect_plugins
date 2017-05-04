@@ -72,6 +72,8 @@ private slots:
     void on_optVariableVal_toggled(bool checked);
     void on_cboPriority_currentIndexChanged(int index);
 
+    void on_cboSections_currentIndexChanged(int index);
+
 private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
@@ -96,6 +98,7 @@ private:
     void    setRowColor(int nRow, int nAlternate);  // Imposta il colore di sfondo di una riga
     void    jumpToGridRow(int nRow, bool fCenter = false);                // Salto alla riga nRow del Grid
     void    enableInterface();                      // Abilita l'interfaccia in funzione dello stato del sistema
+    void    setSectionArea(int nRow);               // Set Current item in combo cboSection from current Row
     int     fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates); // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
     int     fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<int> &lstUpdates);   // Caricamento ComboBox con Nomi Variabili filtrate in funzione del Tipo and Update Type in lstUpdates
     int     fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes);           // Riempie la lista dei tipi compatibili tra loro
@@ -135,6 +138,7 @@ private:
     QString     m_szCurrentModel;                   // Modello TPAC del progetto
     // Liste varie per prompt colonne e valori Combo Box (per traduzioni)
     QStringList lstHeadCols;
+    QList<int>  lstHeadSizes;
     QStringList lstPriority;
     QStringList lstUpdateNames;
     QStringList lstTipi;

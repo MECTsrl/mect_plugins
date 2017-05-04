@@ -38,6 +38,8 @@
 #include <QKeySequence>
 #include <QIcon>
 #include <QMetaObject>
+#include <QFont>
+#include <QFontMetrics>
 
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
@@ -51,12 +53,13 @@
 #define MAX_RETENTIVE 192
 #define MIN_NONRETENTIVE 193
 #define MAX_NONRETENTIVE 4999
-#define MIN_SYSTEM 5000
+#define MIN_DIAG 5000
 #define MAX_DIAG 5171
 #define MIN_NODE 5172
 #define MAX_NODE 5299
 #define MIN_LOCALIO 5300
 #define MAX_LOCALIO 5389
+#define MIN_SYSTEM  5390
 #define COMMANDLINE 2048
 
 // Tabs in TabWidget
@@ -179,26 +182,45 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTIncompatibleVar] = trUtf8("Incompatible Var in Alarm/Event Condition");
     // Titoli colonne
     lstHeadCols.clear();
+    lstHeadSizes.clear();
     for (nCol = 0; nCol < colTotals; nCol++)  {
         lstHeadCols.append(szEMPTY);
+        lstHeadSizes.append(10);
     }
     lstHeadCols[colPriority] = trUtf8("Priority");
+    lstHeadSizes[colPriority] = 8;
     lstHeadCols[colUpdate] = trUtf8("Update");
+    lstHeadSizes[colUpdate] = 8;
     lstHeadCols[colName] = trUtf8("Var.Name");
+    lstHeadSizes[colName] = 20;
     lstHeadCols[colType] = trUtf8("Type");
+    lstHeadSizes[colType] = 10;
     lstHeadCols[colDecimal] = trUtf8("Decimal");
+    lstHeadSizes[colDecimal] = 8;
     lstHeadCols[colProtocol] = trUtf8("Protocol");
+    lstHeadSizes[colProtocol] = 10;
     lstHeadCols[colIP] = trUtf8("IP Address");
+    lstHeadSizes[colIP] = 18;
     lstHeadCols[colPort] = trUtf8("Port");
+    lstHeadSizes[colPort] = 8;
     lstHeadCols[colNodeID] = trUtf8("Node ID");
+    lstHeadSizes[colNodeID] = 8;
     lstHeadCols[colRegister] = trUtf8("Register");
+    lstHeadSizes[colRegister] = 8;
     lstHeadCols[colBlock] = trUtf8("Block");
+    lstHeadSizes[colBlock] = 8;
     lstHeadCols[colBlockSize] = trUtf8("Blk Size");
+    lstHeadSizes[colBlockSize] = 8;
     lstHeadCols[colComment] = trUtf8("Comment");
+    lstHeadSizes[colComment] = 20;
     lstHeadCols[colBehavior] = trUtf8("Behavior");
+    lstHeadSizes[colBehavior] = 16;
     lstHeadCols[colSourceVar] = trUtf8("Source");
+    lstHeadSizes[colSourceVar] = 20;
     lstHeadCols[colCondition] = trUtf8("Condition");
+    lstHeadSizes[colCondition] = 10;
     lstHeadCols[colCompare] = trUtf8("Compare");
+    lstHeadSizes[colCompare] = 20;
     // Regioni CT
     lstRegions.clear();
     for (nCol = 0; nCol < regTotals; nCol++)  {
@@ -255,8 +277,8 @@ ctedit::ctedit(QWidget *parent) :
     // Lista Significati (da mantenere allineata con enum behaviors in parser.h)
     lstBehavior.clear();
     lstBehavior
-            << QString::fromAscii("Read/Only")
-            << QString::fromAscii("Read/Write")
+            << QString::fromAscii("Read/Only  (%I)")
+            << QString::fromAscii("Read/Write (%Q)")
             << QString::fromAscii("Alarm")
             << QString::fromAscii("Event")
         ;
@@ -459,7 +481,7 @@ ctedit::ctedit(QWidget *parent) :
     tmrMessage->setInterval(0);
     tmrMessage->setSingleShot(true);
     connect(tmrMessage, SIGNAL(timeout()), this, SLOT(clearStatusMessage()));
-    // Event Filter
+    // Event Filter    
     ui->tblCT->installEventFilter(this);
     // Style Sheet
     QFile fileQSS(szFileQSS);
@@ -668,6 +690,7 @@ bool    ctedit::ctable2Grid()
 {
     bool        fRes = true;
     int         nCur = 0;
+    int         nColWidth = 0;
     QStringList lstFields;
 
     lstFields.clear();
@@ -696,6 +719,16 @@ bool    ctedit::ctable2Grid()
     ui->tblCT->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui->tblCT->setHorizontalHeaderLabels(lstHeadCols);
     // Larghezza fissa per alcune colonne
+    QFontMetrics fm(ui->tblCT->font());
+    QString szTemp;
+    for (nCur = 0; nCur < lstHeadCols.count(); nCur++)  {
+        szTemp.fill(chX, lstHeadSizes[nCur]);
+        nColWidth = fm.width(szTemp) * 1.2;
+        ui->tblCT->setColumnWidth(nCur, nColWidth);
+    }
+    // ui->tblCT;
+    //dWidth = fm.width(g_szLocalDateTimeFormat) * 1.10;
+    //txtDate->setMaximumWidth(qRound(dWidth));
     //ui->tblCT->horizontalHeader()->setResizeMode(colPriority, QHeaderView::Stretch);
     //ui->tblCT->horizontalHeader()->setResizeMode(colUpdate, QHeaderView::Stretch);
     //ui->tblCT->horizontalHeader()->setResizeMode(colBehavior, QHeaderView::Stretch);
@@ -1157,7 +1190,7 @@ bool    ctedit::riassegnaBlocchi()
     this->setCursor(Qt::WaitCursor);
     // Copia l'attuale CT nella lista Undo
     lstUndo.append(lstCTRecords);
-    for (nRow = 0; nRow < MIN_SYSTEM - 1; nRow++)  {
+    for (nRow = 0; nRow < MIN_DIAG - 1; nRow++)  {
         // Ignora le righe con Priority == 0
         if (lstCTRecords[nRow].Enable > 0)  {
             // Salto riga o condizione di inizio nuovo blocco
@@ -1212,7 +1245,7 @@ bool    ctedit::riassegnaBlocchi()
     }
     // Rinumera ultimo blocco trattato (se esiste)
     if (nBlockStart > 0)  {
-        for (j = nBlockStart; j < MIN_SYSTEM - 1; j++)  {
+        for (j = nBlockStart; j < MIN_DIAG - 1; j++)  {
             if (lstCTRecords[j].UsedEntry == 0)
                 break;
             lstCTRecords[j].BlockSize = nItemsInBlock;
@@ -1481,7 +1514,7 @@ void ctedit::enableFields()
     ui->txtComment->setEnabled(false);
     ui->cboBehavior->setEnabled(false);
     // Variabili di Sistema, abilitate in modifica solo il nome, priorità, update. No Insert in campi vuoti
-    if (m_nGridRow >= MIN_SYSTEM -1)  {
+    if (m_nGridRow >= MIN_DIAG -1)  {
         if (ui->cboProtocol->currentIndex() != -1)  {
             ui->cboPriority->setEnabled(true);
             ui->cboUpdate->setEnabled(true);
@@ -1558,7 +1591,7 @@ void ctedit::showGroupVars(int nRow)
         ui->optSystem->setChecked(false);
     }
     // Variabile System
-    else if (nRow >= MIN_SYSTEM -1 && nRow < DimCrossTable)  {
+    else if (nRow >= MIN_DIAG -1 && nRow < DimCrossTable)  {
         ui->optRetentive->setChecked(false);
         ui->optNonRetentive->setChecked(false);
         ui->optSystem->setChecked(true);
@@ -1683,6 +1716,7 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
         }
         clearEntryForm();
         ui->fraEdit->setEnabled(false);
+        ui->cboSections->setCurrentIndex(-1);
         return;
     }
     ui->fraEdit->setEnabled(true);
@@ -1721,13 +1755,15 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
     // Cambio riga Ko
     if (nErrors > 0 || ! fRes)    {
         // Disconnette segnale per evitare ricorsione
-        disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-                SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
+        disableAndBlockSignals(ui->tblCT);
+//        disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+//                SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
         // Cambia Selezione (ritorna a riga precedente)
         ui->tblCT->selectRow(nRow);
         // Riconnette slot gestione
-        connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-                SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
+        enableAndUnlockSignals(ui->tblCT);
+//        connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+//                SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
         return;
     }
     // Marca CT come modificata
@@ -1743,6 +1779,8 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
         if (nRow >= 0)  {
             // Cambia riga corrente
             m_nGridRow = nRow;
+            // Imposta Sezione in cboSections
+            setSectionArea(nRow);
             // Covert CT Record 2 User Values
             fRes = recCT2List(lstFields, nRow);
             if (fRes)
@@ -1799,18 +1837,18 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Inserisci righe
     cIco = QIcon(QString::fromAscii(":/icons/img/List-add.png"));
     QAction *insRows = gridMenu.addAction(cIco, trUtf8("Insert Blank Rows\t\t(Ins)"));
-    insRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    insRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // insRows->setShortcut(Qt::Key_Insert);
 
     // Cancella righe
     cIco = QIcon(QString::fromAscii(":/icons/img/Edit-clear.png"));
     QAction *emptyRows = gridMenu.addAction(cIco, trUtf8("Clear Rows\t\t(Del)"));
-    emptyRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    emptyRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // emptyRows->setShortcut(Qt::Key_Delete);
     // Elimina righe
     cIco = QIcon(QString::fromAscii(":/icons/img/Edit-trash.png"));
     QAction *remRows = gridMenu.addAction(cIco, trUtf8("Delete Rows"));
-    remRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    remRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // Sep1
     gridMenu.addSeparator();
     // Copia righe (Sempre permesso)
@@ -1821,14 +1859,14 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Taglia righe
     cIco = QIcon(QString::fromAscii(":/icons/img/Cut.png"));
     QAction *cutRows = gridMenu.addAction(cIco, trUtf8("Cut Rows\t\t(Ctrl+X)"));
-    cutRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    cutRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // cutRows->setShortcut(Qt::Key_Cut);
     // Sep 2
     gridMenu.addSeparator();
     // Paste Rows
     cIco = QIcon(QString::fromAscii(":/icons/img/edit-paste.png"));
     QAction *pasteRows = gridMenu.addAction(cIco, trUtf8("Paste Rows\t\t(Ctrl+V)"));
-    pasteRows->setEnabled(lstCopiedRecords.count() > 0 && m_nGridRow < MIN_SYSTEM - 1);
+    pasteRows->setEnabled(lstCopiedRecords.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // pasteRows->setShortcut(Qt::Key_Paste);
     // Abilitazione delle voci di Menu
     // Esecuzione del Menu
@@ -2021,6 +2059,8 @@ void ctedit::insertRows()
     }
     m_szMsg = tr("Rows Inserted: %1") .arg(selection.count());
     displayStatusMessage(m_szMsg);
+    if (m_nGridRow >= 0)
+        jumpToGridRow(m_nGridRow, true);
     enableInterface();
 }
 void ctedit::emptySelected()
@@ -2035,7 +2075,7 @@ void ctedit::emptySelected()
     int             nFirstRow = -1;
 
     // Check Modif. and append data to Undo List
-    if (selection.isEmpty() || m_nGridRow >= MIN_SYSTEM - 1)  {
+    if (selection.isEmpty() || m_nGridRow >= MIN_DIAG - 1)  {
         m_szMsg = tr("Can't remove rows in System Area");
         displayStatusMessage(m_szMsg);
         selection.clear();
@@ -2066,7 +2106,7 @@ void ctedit::emptySelected()
     }
     // Riposiziona alla riga corrente
     if (nRemoved > 0 && nFirstRow >= 0)  {
-        jumpToGridRow(nFirstRow);
+        jumpToGridRow(nFirstRow, true);
     }
     m_szMsg = tr("Rows Removed: %1") .arg(nRemoved);
     displayStatusMessage(m_szMsg);
@@ -2088,7 +2128,7 @@ void ctedit::removeSelected()
     CrossTableRecord emptyRecord;
 
     // Check Modif. and append data to Undo List
-    if (selection.isEmpty() || m_nGridRow >= MIN_SYSTEM - 1)  {
+    if (selection.isEmpty() || m_nGridRow >= MIN_DIAG - 1)  {
         m_szMsg = tr("Can't remove rows in System Area");
         displayStatusMessage(m_szMsg);
         selection.clear();
@@ -2139,7 +2179,7 @@ void ctedit::cutSelected()
     // Recupera righe selezionate
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
 
-    if (m_nGridRow >= MIN_SYSTEM - 1)  {
+    if (m_nGridRow >= MIN_DIAG - 1)  {
         m_szMsg = tr("Can't remove rows in System Area");
         selection.clear();
         displayStatusMessage(m_szMsg);
@@ -2274,15 +2314,15 @@ void ctedit::setRowColor(int nRow, int nAlternate)
         cSfondo = colorNonRetentive[nAlternate];
         // qDebug() << tr("Row: %1 Alt: %2 - NON Retentive Row") .arg(nRow) .arg(nAlternate);
     }
-    else if (nRow >= MIN_SYSTEM - 1)  {
+    else if (nRow >= MIN_DIAG - 1)  {
         // qDebug() << tr("Row: %1 Alt: %2 - SYSTEM Row") .arg(nRow) .arg(nAlternate);
-        if (nRow < MAX_DIAG-1)  {
+        if (nRow <= MAX_DIAG - 1)  {
             cSfondo = colorSystem[0];
         }
-        else if (nRow >= MIN_NODE - 1 && nRow < MAX_NODE - 1)  {
+        else if (nRow >= MIN_NODE - 1 && nRow <= MAX_NODE - 1)  {
             cSfondo = colorSystem[1];
         }
-        else if (nRow >= MIN_LOCALIO - 1  && nRow < MAX_LOCALIO - 1)  {
+        else if (nRow >= MIN_LOCALIO - 1  && nRow <= MAX_LOCALIO - 1)  {
             cSfondo = colorSystem[0];
         }
         else  {
@@ -2349,9 +2389,12 @@ void ctedit::showAllRows(bool fShowAll)
         if (lstCTRecords[m_nGridRow].UsedEntry == 0)
             m_nGridRow = nFirstVisible;
     }
-    ui->tblCT->selectRow(m_nGridRow);
-    ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtCenter);
-    ui->tblCT->setFocus();
+    // Trucco per centrare la riga...
+    nRow = m_nGridRow;
+    jumpToGridRow(0, true);
+    if (nRow >= 0 && nRow < DimCrossTable)
+        jumpToGridRow(nRow, true);
+    // ui->tblCT->setFocus();
 }
 void ctedit::gotoRow()
 // Show Dialog Goto Row n
@@ -3489,17 +3532,20 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         // Sequenze valide per tutto il form
         // Save
         if (keyEvent->matches(QKeySequence::Save)) {
+            qDebug() << tr("Save");
             if (m_isCtModified)
                 on_cmdSave_clicked();
             return true;
         }
         // Find
         if (keyEvent->matches(QKeySequence::Find)) {
+            qDebug() << tr("Find");
             on_cmdSearch_clicked();
             return true;
         }
         // Undo
         if (keyEvent->matches(QKeySequence::Undo)) {
+            qDebug() << tr("Undo");
             if (! lstUndo.isEmpty())
                 on_cmdUndo_clicked();
             return true;
@@ -3510,6 +3556,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         }
         // Sequenze significative solo sul Grid
         if (obj == ui->tblCT)  {
+            qDebug() << tr("Insert");
             // Tasto Insert
             if (keyEvent->key() == Qt::Key_Insert) {
                 insertRows();
@@ -3686,4 +3733,45 @@ bool ctedit::isTooBigForBlock(int nRow, int nItemsInBlock, int nCurBlockSize)
         fRes = (nItemsInBlock + nBitFieldLen) > MAXBLOCKSIZE;
     }
     return fRes;
+}
+void ctedit::setSectionArea(int nRow)
+// Set Current item in combo cboSection from current Row
+{
+    int nIndex = -1;
+
+    // Blocca la propagazione dei segnali della cboSection
+    disableAndBlockSignals(ui->cboSections);
+    // Range Retentive
+    if (nRow >= (MIN_RETENTIVE - 1) && nRow <= (MAX_RETENTIVE - 1))
+        nIndex = regRetentive;
+    else if (nRow >= (MIN_NONRETENTIVE - 1) && nRow <= (MAX_NONRETENTIVE - 1))
+        nIndex = regNonRetentive;
+    else if (nRow >= (MIN_DIAG - 1) && nRow <= (MAX_NODE - 1))
+        nIndex = regDiagnostic;
+    else if (nRow >= (MIN_LOCALIO - 1) && nRow <= (MAX_LOCALIO - 1))
+        nIndex = regLocalIO;
+    else if (nRow >= (MIN_SYSTEM - 1) && nRow <= (DimCrossTable - 1))
+        nIndex = regSystem;
+    // Set Item in Combo
+    if (nIndex >= -1 && nIndex < lstRegions.count())
+        ui->cboSections->setCurrentIndex(nIndex);
+    // Sblocca la propagazione dei segnali della cboSection
+    enableAndUnlockSignals(ui->cboSections);
+
+}
+
+void ctedit::on_cboSections_currentIndexChanged(int index)
+{
+    if (index == -1)
+        return;
+    else if (index == regRetentive)
+        jumpToGridRow(MIN_RETENTIVE - 1, true);
+    else if (index == regNonRetentive)
+        jumpToGridRow(MIN_NONRETENTIVE - 1, true);
+    else if (index == regDiagnostic)
+        jumpToGridRow(MIN_DIAG - 1, true);
+    else if (index == regLocalIO)
+        jumpToGridRow(MIN_LOCALIO - 1, true);
+    else if (index == regSystem)
+        jumpToGridRow(MIN_SYSTEM - 1, true);
 }
