@@ -194,13 +194,6 @@ ATCMgraph::ATCMgraph(QWidget *parent) :
     PLOT->replot();
 #endif
 
-#ifdef TARGET_ARM
-    QObject *ancestor = getPage((QObject *)this);
-
-    if (ancestor != NULL) {
-        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
-#endif
 }
 
 QSize ATCMgraph::sizeHint() const
@@ -274,6 +267,13 @@ bool ATCMgraph::setX1Variable(QString variable)
         {
             setX1Label(variable);
         }
+#ifdef TARGET_ARM
+        QObject *ancestor = getPage((QObject *)this);
+
+        if (ancestor != NULL) {
+            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+        }
+#endif
     }
     return (m_x1status != ERROR);
 }

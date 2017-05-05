@@ -38,11 +38,6 @@ ATCManimation::ATCManimation(QWidget *parent) :
 	setMinimumSize(15,15);
 
 #ifdef TARGET_ARM
-    QObject *ancestor = getPage((QObject *)this);
-
-    if (ancestor != NULL) {
-        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
 #endif
 }
 
@@ -163,6 +158,11 @@ bool ATCManimation::setVariable(QString variable)
     }
     else
     {
+        QObject *ancestor = getPage((QObject *)this);
+
+        if (ancestor != NULL) {
+            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+        }
         m_status = UNK; // not read yet
         m_value =  "";
         LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());

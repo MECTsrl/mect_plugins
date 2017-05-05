@@ -118,11 +118,6 @@ ATCMtime::ATCMtime(QWidget *parent) :
                 );
 
 #ifdef TARGET_ARM
-    QObject *ancestor = getPage((QObject *)this);
-
-    if (ancestor != NULL) {
-        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
 #else
     refresh_timer = new QTimer(this);
     connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
@@ -293,6 +288,11 @@ void ATCMtime::setFormat(const enum ATCMTimeFormat format)
         m_format = TIME_24;
     }
 #ifdef TARGET_ARM
+    QObject *ancestor = getPage((QObject *)this);
+
+    if (ancestor != NULL) {
+        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+    }
     setToolTip("");
 #endif
     update();

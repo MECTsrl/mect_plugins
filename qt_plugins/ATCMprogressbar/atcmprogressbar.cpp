@@ -83,11 +83,6 @@ ATCMprogressbar::ATCMprogressbar(QWidget *parent) :
 			);
 
 #ifdef TARGET_ARM
-    QObject *ancestor = getPage((QObject *)this);
-
-    if (ancestor != NULL) {
-        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
 #endif
 
 }
@@ -215,6 +210,11 @@ bool ATCMprogressbar::setVariable(QString variable)
     }
     else
     {
+        QObject *ancestor = getPage((QObject *)this);
+
+        if (ancestor != NULL) {
+            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+        }
         m_status = UNK; // not read yet
         m_value = minimum();
         LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());

@@ -80,11 +80,6 @@ ATCMslider::ATCMslider(QWidget *parent) :
 #endif
 			);
 #ifdef TARGET_ARM
-    QObject *ancestor = getPage((QObject *)this);
-
-    if (ancestor != NULL) {
-        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
     connect(this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ));
 #endif
 }
@@ -239,6 +234,11 @@ bool ATCMslider::setVariable(QString variable)
     }
     else
     {
+        QObject *ancestor = getPage((QObject *)this);
+
+        if (ancestor != NULL) {
+            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+        }
         m_status = UNK; // not read yet
         m_value = minimum();
         LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());

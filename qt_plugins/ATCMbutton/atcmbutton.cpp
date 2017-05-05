@@ -171,11 +171,6 @@ ATCMbutton::ATCMbutton(QWidget * parent):
 
     m_fBusy = false;
 #ifdef TARGET_ARM
-    QObject *ancestor = getPage((QObject *)this);
-
-    if (ancestor != NULL) {
-        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
     // at this time "checkable" is not yet determined
 #endif
 }
@@ -375,6 +370,11 @@ bool ATCMbutton::setStatusvar(QString variable)
     }
     else
     {
+        QObject *ancestor = getPage((QObject *)this);
+
+        if (ancestor != NULL) {
+            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+        }
         m_status = UNK; // not read yet
         m_text =  "";
         LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_statusvar.toAscii().data());
