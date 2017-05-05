@@ -1,9 +1,12 @@
 #include "cteerrorlist.h"
 #include "ui_cteerrorlist.h"
+#include "utils.h"
 
 #include <QDebug>
+#include <QFont>
+#include <QFontMetrics>
 
-cteErrorList::cteErrorList(QWidget *parent) :
+cteErrorList::cteErrorList(QWidget *parent, bool fSingleLine) :
     QDialog(parent),
     ui(new Ui::cteErrorList)
 {
@@ -11,25 +14,38 @@ cteErrorList::cteErrorList(QWidget *parent) :
 
     ui->setupUi(this);
     lstCols.clear();
+    lstSizes.clear();
     for (nCol = colErrSeverity ; nCol < colErrTotals; nCol++)  {
         lstCols.append(QString::fromAscii(""));
+        lstSizes.append(10);
     }
     // Riempimento liste
     // Titoli colonne  colSeverity
     lstCols[colErrSeverity] = trUtf8("Level");
+    lstSizes[colErrSeverity] = 8;
     lstCols[colErrRow] = trUtf8("Row");
+    lstSizes[colErrRow] = 8;
     lstCols[colErrColumn] = trUtf8("Column");
+    lstSizes[colErrColumn] = 8;
     lstCols[colErrVarName] = trUtf8("Variable Name");
+    lstSizes[colErrVarName] = 20;
     lstCols[colErrValue] = trUtf8("Value");
+    lstSizes[colErrValue] = 20;
     lstCols[colErrCodeErr] = trUtf8("Error Code");
+    lstSizes[colErrCodeErr] = 10;
     lstCols[colErrMsgErr] = trUtf8("Error Message");
+    lstSizes[colErrMsgErr] = 35;
     // Impostazione parametri TableView
     ui->tblErrors->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tblErrors->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tblErrors->setHorizontalHeaderLabels(lstCols);
     ui->tblErrors->setEnabled(true);
+    // Visualizzazione Bottoni
+    ui->cmdLine->setVisible(! fSingleLine);
+    ui->cmdClear->setVisible(fSingleLine);
     // Riga corrente
     m_nGridRow = -1;
+    m_fSingleLine = fSingleLine;
     // Segnali - Slots
     connect(ui->tblErrors->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
             SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
@@ -45,6 +61,10 @@ void cteErrorList::on_cmdExit_clicked()
 }
 
 void cteErrorList::on_cmdLine_clicked()
+{
+    this->accept();
+}
+void cteErrorList::on_cmdClear_clicked()
 {
     this->accept();
 }
@@ -74,6 +94,7 @@ int cteErrorList::lstErrors2Grid(const QList<Err_CT>  &lstErrors)
     int     nRow = 0;
     int     nCol = 0;
     bool    fAdd = false;
+    int     nColWidth = 0;
     QString szTemp;
     QTableWidgetItem    *tItem;
 
@@ -128,10 +149,15 @@ int cteErrorList::lstErrors2Grid(const QList<Err_CT>  &lstErrors)
     ui->tblErrors->setHorizontalHeaderLabels(lstCols);
     ui->tblErrors->horizontalHeader()->setSortIndicator(colErrRow, Qt::AscendingOrder);
     ui->tblErrors->setSortingEnabled(true);
-    ui->tblErrors->horizontalHeader()->setResizeMode(colErrVarName, QHeaderView::Stretch);
-    ui->tblErrors->horizontalHeader()->setResizeMode(colErrMsgErr, QHeaderView::Stretch);
     ui->tblErrors->setAlternatingRowColors(true);
     ui->tblErrors->setEnabled(true);
+    // Resize colonne
+    QFontMetrics fm(ui->tblErrors->font());
+    for (nCol = 0; nCol < lstCols.count(); nCol++)  {
+        szTemp.fill(chX, lstSizes[nCol]);
+        nColWidth = fm.width(szTemp) * 1.2;
+        ui->tblErrors->setColumnWidth(nCol, nColWidth);
+    }
     this->setCursor(Qt::ArrowCursor);
     // Return Value
     return nRow;
@@ -164,3 +190,4 @@ QString cteErrorList::list2CellValue(int nCol, const Err_CT &recErr)
     // Return Value
     return  szTemp;
 }
+

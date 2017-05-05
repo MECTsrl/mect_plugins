@@ -90,7 +90,6 @@ private:
     void    freeCTrec(int nRow);                    // Marca il Record della CT come inutilizzato
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
     // Gestione interfaccia
-    void    showGroupVars(int nRow);                // Imposta in interfaccia il gruppo di appartenenza di una variabile (Ritentivo, NR, System)
     void    enableFields();                         // Abilitazione dei campi form in funzione di Protocollo
     bool    isLineModified(int nRow);               // Check se linea corrente Grid è diversa da Form in Editing
     bool    riassegnaBlocchi();                     // Riassegnazione blocchi variabili
@@ -186,6 +185,7 @@ private:
     bool                    m_fCutOrPaste;          // Vero se è in corso un Cut or Paste
     bool                    m_fEmptyForm;           // Vero se il Form di Data Entry risulta vuoto
     varTypes                m_vtAlarmVarType;       // Tipo della variabile SX in un espressione Allarme/Evento
+    bool                    m_fSkipLine;            // Se vero non devono essere fatti controlli sulla riga in uscita
 };
 
 #endif // CTEDIT_H

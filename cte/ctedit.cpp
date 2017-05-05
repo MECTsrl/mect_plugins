@@ -86,7 +86,7 @@ const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
 // Version Number
-const QString szVERSION = QString::fromAscii("Ver. 1.0.2 @ 2017-04-24");
+const QString szVERSION = QString::fromAscii("Ver. 3.0.0rc3 @ 2017-05-05");
 
 enum colonne_e
 {
@@ -424,10 +424,12 @@ ctedit::ctedit(QWidget *parent) :
     QString szNameExp = QString::fromAscii("\\w+");
     QRegExp regExprName(szNameExp);
     ui->txtName->setValidator(new QRegExpValidator(regExprName, this));
+    // Validator per commenti
+    QString szCommentExp = QString::fromAscii("\\w+");
+    QRegExp regExprComment(szCommentExp);
     ui->txtComment->setValidator(new QRegExpValidator(regExprName, this));
     // Campi sempre locked
     ui->txtRow->setEnabled(false);
-    ui->fraOptions->setEnabled(false);
     ui->txtBlock->setEnabled(false);
     ui->txtBlockSize->setEnabled(false);
     // Model Name
@@ -536,9 +538,9 @@ void    ctedit::setProjectPath(QString szProjectPath)
         m_szCurrentProjectName.clear();
         m_szCurrentPLCPath.clear();
     }
-    qDebug() << "Project Path:" << m_szCurrentProjectPath;
+    //qDebug() << "Project Path:" << m_szCurrentProjectPath;
     qDebug() << "Project Name:" << m_szCurrentProjectName;
-    qDebug() << "PLC Path:" << m_szCurrentPLCPath;
+    // qDebug() << "PLC Path:" << m_szCurrentPLCPath;
 }
 
 bool    ctedit::selectCTFile(QString szFileCT)
@@ -1156,11 +1158,17 @@ void ctedit::on_cmdSave_clicked()
     bool    fRes = false;
     int     nErr = 0;
 
+    // Controllo errori
     nErr = globalChecks();
     if (nErr)  {
+        // Ci sono errori, salvo comunque ?
         m_szMsg = tr("There are errors in Data. Save anyway?");
         if (! queryUser(this, szTitle, m_szMsg, false))
             return;
+    }
+    else  {
+        // Non ci sono errori, eseguo d'ufficio la rinumerazione blocchi
+        fRes = riassegnaBlocchi();
     }
     fRes = saveCTFile();
     if (!fRes)  {
@@ -1498,8 +1506,6 @@ bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
 void ctedit::enableFields()
 // Abilitazione dei campi form in funzione del Protocollo
 {
-    // Frame tipo Vars
-    showGroupVars(m_nGridRow);
     // Disabilita tutti i campi
     ui->cboPriority->setEnabled(false);
     ui->cboUpdate->setEnabled(false);
@@ -1573,28 +1579,6 @@ void ctedit::enableFields()
             ui->txtNode->setEnabled(true);
             ui->txtRegister->setEnabled(true);
         }
-    }
-}
-void ctedit::showGroupVars(int nRow)
-// Imposta il gruppo di appartenenza di una variabile (Ritentivo, NR, System)
-{
-    // Variabile Ritentiva
-    if (nRow >= 0 && nRow < MAX_RETENTIVE)  {
-        ui->optRetentive->setChecked(true);
-        ui->optNonRetentive->setChecked(false);
-        ui->optSystem->setChecked(false);
-    }
-    // Variabile NON Ritentiva
-    else if (nRow >= MIN_NONRETENTIVE - 1 && nRow < MAX_NONRETENTIVE)  {
-        ui->optRetentive->setChecked(false);
-        ui->optNonRetentive->setChecked(true);
-        ui->optSystem->setChecked(false);
-    }
-    // Variabile System
-    else if (nRow >= MIN_DIAG -1 && nRow < DimCrossTable)  {
-        ui->optRetentive->setChecked(false);
-        ui->optNonRetentive->setChecked(false);
-        ui->optSystem->setChecked(true);
     }
 }
 void ctedit::on_cboType_currentIndexChanged(int index)
@@ -1755,15 +1739,13 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
     // Cambio riga Ko
     if (nErrors > 0 || ! fRes)    {
         // Disconnette segnale per evitare ricorsione
-        disableAndBlockSignals(ui->tblCT);
-//        disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-//                SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
+        disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+                    SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
         // Cambia Selezione (ritorna a riga precedente)
         ui->tblCT->selectRow(nRow);
         // Riconnette slot gestione
-        enableAndUnlockSignals(ui->tblCT);
-//        connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-//                SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
+        connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+                    SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
         return;
     }
     // Marca CT come modificata
@@ -2812,7 +2794,17 @@ void ctedit::on_cboBehavior_currentIndexChanged(int index)
     // Abilitazione o meno del frame condizioni allarmi/eventi
     if (index > behavior_readwrite) {
         ui->fraCondition->setVisible(true);
-    } else
+        if (ui->cboVariable1->count() <= 0)  {
+            fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates);
+        }
+        if (ui->cboVariable1->count() <= 0)  {
+            fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates);
+        }
+        // Imposta almeno uno dei due optionButtons
+        if (! ui->optFixedVal->isChecked() && ! ui->optVariableVal->isChecked())
+            ui->optFixedVal->setChecked(true);
+    }
+    else
         ui->fraCondition->setVisible(false);
 }
 void ctedit::fillErrorMessage(int nRow, int nCol, int nErrCode, QString szVarName, QString szValue, QChar severity, Err_CT *errCt)
@@ -2845,7 +2837,7 @@ int ctedit::globalChecks()
         if (lstCTRecords[nRow].Enable)  {
             // Controllo univocità di nome
             szTemp = QString::fromAscii(lstCTRecords[nRow].Tag).trimmed();
-            if (lstUniqueVarNames.indexOf(szTemp) > 0)  {
+            if (lstUniqueVarNames.contains(szTemp, Qt::CaseInsensitive))  {
                 fillErrorMessage(nRow, colName, errCTDuplicateName, szTemp, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
@@ -2860,11 +2852,12 @@ int ctedit::globalChecks()
         }
     }
     // Display finestra errore
-    if(nErrors)  {
+    if (nErrors)  {
         qDebug() << "Found Errors:" << nErrors;
-        errWindow = new cteErrorList(this);
+        errWindow = new cteErrorList(this, false);
         errWindow->setModal(true);
         errWindow->lstErrors2Grid(lstCTErrors);
+        // Accepted == gotoRow
         if (errWindow->exec() == QDialog::Accepted)  {
             nRow = errWindow->currentRow();
             if (nRow >= 0 && nRow < DimCrossTable)
@@ -2970,7 +2963,6 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
 // Controlli formali sulla riga a termine editing o ciclicamente durante controllo globale valori
 {
     int         nErrors = 0;
-    int         nJumpRow = 0;
     int         nPos = -1;
     int         nPriority = -1;
     int         nType = -1;
@@ -3211,13 +3203,18 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     // qDebug() << "Found Errors:" << nErrors;
     // Form visualizzazione errori se richiesto
     if (fSingleLine && nErrors)  {
-        errWindow = new cteErrorList(this);
+        errWindow = new cteErrorList(this, true);
         errWindow->setModal(true);
         errWindow->lstErrors2Grid(lstCTErrors);
+        // Accepted == clear
         if (errWindow->exec() == QDialog::Accepted)  {
-            nJumpRow = errWindow->currentRow();
-            if (nJumpRow >= 0 && nJumpRow < DimCrossTable)
-                jumpToGridRow(nJumpRow);
+            // Pulizia Form Editing
+            clearEntryForm();
+            // Pulizia Record sottostante
+            freeCTrec(nRow);
+            // Ricarica Record vuoto a griglia
+            fOk = recCT2List(lstValues, nRow);
+            fOk = list2GridRow(lstValues, nRow);
         }
         delete errWindow;
     }
@@ -3398,12 +3395,46 @@ int  ctedit::fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes)
     }
     return lstTypes.count();
 }
-// Trucco per impostare il valore del #Blocco
+// Trucco per impostare il valore del #Blocco e altri valori nel caso di nuova riga
 void ctedit::on_cboPriority_currentIndexChanged(int index)
 {
-    if (ui->txtBlock->text().trimmed().isEmpty())  {
-        ui->txtBlock->setText(QString::number(m_nGridRow + 1));
-        ui->txtBlockSize->setText(QString::number(1));
+
+    if (index < 0)
+        return;
+    // Applicazione dei valori di default nel caso di una riga vuota
+    if (! lstCTRecords[m_nGridRow].UsedEntry && index >= 0 && m_nGridRow < MAX_NONRETENTIVE -1)  {
+        qDebug() << tr("Adding Row: %1") .arg(m_nGridRow);
+        if (m_nGridRow > 0 && lstCTRecords[m_nGridRow - 1].UsedEntry)  {
+            // Copia da precedente se definita
+            // Update
+            ui->cboUpdate->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Update);
+            // Type
+            ui->cboType->setCurrentIndex(lstCTRecords[m_nGridRow - 1].VarType);
+            // Decimals
+            ui->txtDecimal->setText(QString::number(lstCTRecords[m_nGridRow - 1].Decimal));
+            // Protocol
+            ui->cboProtocol->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Protocol);
+            // Behavior
+            ui->cboBehavior->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Behavior);
+        }
+        else  {
+            // Valori di default se non definita
+            // Update
+            ui->cboUpdate->setCurrentIndex(Ptype);
+            // Type
+            ui->cboType->setCurrentIndex(BIT);
+            // Decimals
+            ui->txtDecimal->setText(szZERO);
+            // Protocol
+            ui->cboProtocol->setCurrentIndex(PLC);
+            // Behavior
+            ui->cboBehavior->setCurrentIndex(behavior_readonly);
+        }
+        // Block && Block Size (invisibili....)
+        if (ui->txtBlock->text().trimmed().isEmpty())  {
+            ui->txtBlock->setText(QString::number(m_nGridRow + 1));
+            ui->txtBlockSize->setText(QString::number(1));
+        }
     }
 }
 
@@ -3532,33 +3563,42 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         // Sequenze valide per tutto il form
         // Save
         if (keyEvent->matches(QKeySequence::Save)) {
-            qDebug() << tr("Save");
-            if (m_isCtModified)
-                on_cmdSave_clicked();
-            return true;
+            if (m_nCurTab == TAB_CT)  {
+                // qDebug() << tr("Save");
+                if (m_isCtModified)
+                    on_cmdSave_clicked();
+                return true;
+            }
         }
         // Find
         if (keyEvent->matches(QKeySequence::Find)) {
-            qDebug() << tr("Find");
-            on_cmdSearch_clicked();
-            return true;
+            if (m_nCurTab == TAB_CT)  {
+                // qDebug() << tr("Find");
+                on_cmdSearch_clicked();
+                return true;
+            }
         }
         // Undo
         if (keyEvent->matches(QKeySequence::Undo)) {
-            qDebug() << tr("Undo");
-            if (! lstUndo.isEmpty())
-                on_cmdUndo_clicked();
-            return true;
+            if (m_nCurTab == TAB_CT)  {
+                // qDebug() << tr("Undo");
+                if (! lstUndo.isEmpty())
+                    on_cmdUndo_clicked();
+                return true;
+            }
         }
         // Goto Line
         if (keyEvent->key() == Qt::Key_L && nPrevKey == Qt::Key_Control)  {
-            gotoRow();
+            qDebug() << tr("CTRL-L");
+            if (m_nCurTab == TAB_CT)  {
+                gotoRow();
+            }
         }
         // Sequenze significative solo sul Grid
         if (obj == ui->tblCT)  {
-            qDebug() << tr("Insert");
             // Tasto Insert
             if (keyEvent->key() == Qt::Key_Insert) {
+                qDebug() << tr("Insert");
                 insertRows();
                 return true;
             }
