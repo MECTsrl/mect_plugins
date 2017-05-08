@@ -40,6 +40,7 @@
 #include <QMetaObject>
 #include <QFont>
 #include <QFontMetrics>
+#include <QTextStream>
 
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
@@ -226,11 +227,11 @@ ctedit::ctedit(QWidget *parent) :
     for (nCol = 0; nCol < regTotals; nCol++)  {
         lstRegions.append(szEMPTY);
     }
-    lstRegions[regRetentive]    = trUtf8("   1 -  192 Retentive");
-    lstRegions[regNonRetentive] = trUtf8(" 193 - 4999 Non Retentive");
-    lstRegions[regDiagnostic]   = trUtf8("5000 - 5299 Diagnostic");
-    lstRegions[regLocalIO]      = trUtf8("5300 - 5389 Local I/O");
-    lstRegions[regSystem]       = trUtf8("5390 - 5472 System");
+    lstRegions[regRetentive]    = trUtf8("Retentive\t[1 -  192]");
+    lstRegions[regNonRetentive] = trUtf8("Non Retentive\t[193 - 4999]");
+    lstRegions[regDiagnostic]   = trUtf8("Diagnostic\t[5000 - 5299]");
+    lstRegions[regLocalIO]      = trUtf8("Local I/O\t[5300 - 5389]");
+    lstRegions[regSystem]       = trUtf8("System\t[5390 - 5472]");
     // Lista Priorità
     lstPriority.clear();
     lstPriority
@@ -255,10 +256,10 @@ ctedit::ctedit(QWidget *parent) :
             lstLogUpdates.append(nCol);
         }
     }
-    // Lista TIPI Variabili (Esclude tipo UNKNOWN)
+    // Lista TIPI Variabili (Esclude tipo UNKNOWN con TYPE_TOTALS - 1)
     lstTipi.clear();
     lstAllVarTypes.clear();
-    for (nCol = BIT; nCol < TYPE_TOTALS; nCol++)  {
+    for (nCol = 0; nCol < TYPE_TOTALS - 1; nCol++)  {
         lstTipi.append(QString::fromAscii(varTypeNameExtended[nCol]));
         lstAllVarTypes.append(nCol);
     }
@@ -425,8 +426,8 @@ ctedit::ctedit(QWidget *parent) :
     QRegExp regExprName(szNameExp);
     ui->txtName->setValidator(new QRegExpValidator(regExprName, this));
     // Validator per commenti
-    QString szCommentExp = QString::fromAscii("\\w+");
-    QRegExp regExprComment(szCommentExp);
+    // QString szCommentExp = QString::fromAscii("\\w+");
+    // QRegExp regExprComment(szCommentExp);
     ui->txtComment->setValidator(new QRegExpValidator(regExprName, this));
     // Campi sempre locked
     ui->txtRow->setEnabled(false);
@@ -498,6 +499,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtBlock->setVisible(false);
     ui->lblBlockSize->setVisible(false);
     ui->txtBlockSize->setVisible(false);
+    ui->cmdBlocchi->setVisible(false);
 }
 
 ctedit::~ctedit()
@@ -912,12 +914,6 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     // Decimal
     szTemp = lstRecValues[colDecimal].trimmed();
     ui->txtDecimal->setText(szTemp);
-    /*ui->cboDecimal->setCurrentIndex(-1);
-    if (! szTemp.isEmpty())  {
-        nPos = searchCombo(ui->cboDecimal, szTemp);
-        if (nPos >= 0 && nPos < ui->cboDecimal->count())
-            ui->cboDecimal->setCurrentIndex(nPos);
-    } */
     // Protocol
     szTemp = lstRecValues[colProtocol].trimmed();
     ui->cboProtocol->setCurrentIndex(-1);
@@ -1539,6 +1535,10 @@ void ctedit::enableFields()
         ui->txtComment->setEnabled(true);
         ui->cboBehavior->setEnabled(true);
         // Abilitazione dei campi in funzione del Tipo
+        // Tipo BIT -> Blocca decimali
+        if (ui->cboType->currentIndex()  == BIT)  {
+            ui->txtDecimal->setEnabled(false);
+        }
         // Protocollo non definito, es per Riga vuota
         if (ui->cboProtocol->currentIndex() == -1)  {
             ui->txtIP->setEnabled(true);
@@ -1589,19 +1589,18 @@ void ctedit::on_cboType_currentIndexChanged(int index)
     if (index == BIT)  {
         ui->txtDecimal->setText(szZERO);
         ui->txtDecimal->setEnabled(false);
-        // Abilita possibilità di rendere la variabile un allarme/evento
+        // Abilita possibilità di rendere la variabile un allarme/evento solo se Priority > H
         if (ui->cboPriority->currentIndex() > 0 && ui->cboUpdate->currentIndex() > Htype)  {
             enableComboItem(ui->cboBehavior, behavior_alarm);
             enableComboItem(ui->cboBehavior, behavior_event);
         }
-        else {
-            disableComboItem(ui->cboBehavior, behavior_alarm);
-            disableComboItem(ui->cboBehavior, behavior_event);
-        }
     }
     else  {
+        // Se la variabile era allarme ripulisce la selezione
+        if (ui->cboBehavior->currentIndex() >= behavior_alarm)
+            ui->cboBehavior->setCurrentIndex(-1);
         ui->txtDecimal->setEnabled(true);
-        // Default 1 decimale se non specificato o presente valore
+        // Default 0 decimale se non specificato o presente valore
         if (ui->txtDecimal->text().trimmed().isEmpty())
             ui->txtDecimal->setText(szZERO);
         // Disabilita possibilità di rendere la variabile un allarme/evento
@@ -1816,6 +1815,16 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Oggetto menu contestuale
     QMenu gridMenu(this);
     // Items del Menu contestuale
+    // Renum Blocks
+    cIco = QIcon(QString::fromAscii(":/icons/img/Blocks.png"));
+    QAction *menuBlocks = gridMenu.addAction(cIco, trUtf8("Renum Blocks"));
+    menuBlocks->setEnabled(true);
+    // Goto Line
+    cIco = QIcon(QString::fromAscii(":/icons/img/Goto.png"));
+    QAction *menuRow = gridMenu.addAction(cIco, trUtf8("Goto Line\t\t(Ctrl+L)"));
+    menuRow->setEnabled(true);
+    // Sep0
+    gridMenu.addSeparator();
     // Inserisci righe
     cIco = QIcon(QString::fromAscii(":/icons/img/List-add.png"));
     QAction *insRows = gridMenu.addAction(cIco, trUtf8("Insert Blank Rows\t\t(Ins)"));
@@ -1879,6 +1888,13 @@ void ctedit::displayUserMenu(const QPoint &pos)
     else if (actMenu == pasteRows)  {
         pasteSelected();
     }
+    // Goto Line
+    else if (actMenu == menuRow)  {
+        gotoRow();
+    }
+    else if (actMenu == menuBlocks)  {
+        on_cmdBlocchi_clicked();
+    }
     this->setCursor(Qt::ArrowCursor);
 
 }
@@ -1890,7 +1906,7 @@ void ctedit::copySelected(bool fClearSelection)
     int             nRow = 0;
     int             nCur = 0;
     int             nFirstRow = -1;
-    QStringList     lstFields;
+    // QStringList     lstFields;
 
     // Check Selection
     if (selection.count() <= 0)
@@ -1911,13 +1927,14 @@ void ctedit::copySelected(bool fClearSelection)
     }
     // If only Copy, Set Current index Row to first of Selection
     if (fClearSelection)  {
-        selection.clear();
+        ui->tblCT->selectionModel()->clearSelection();
         if (nFirstRow >= 0)  {
             jumpToGridRow(nFirstRow, true);
-            recCT2List(lstFields, nFirstRow);
-            values2Iface(lstFields);
+            // recCT2List(lstFields, nFirstRow);
+            // values2Iface(lstFields);
         }
     }
+    selection.clear();
     m_szMsg = tr("Rows Copied: %1") .arg(lstCopiedRecords.count());
     displayStatusMessage(m_szMsg);
     enableInterface();
@@ -1959,14 +1976,21 @@ void ctedit::pasteSelected()
             if (! fUsed)  {
                 // Append to Undo List
                 lstUndo.append(lstCTRecords);
+                // Mark first destination row
+                nCur = nRow;
                 // Compile Selected Row List
                 for (nPasted = 0; nPasted < lstCopiedRecords.count(); nPasted ++)  {
                     // Paste element
                     lstCTRecords[nRow++] = lstCopiedRecords[nPasted];
                 }
-                // Restore Grid
+                // Restore Grid Position to First Destination Row && select first row
+                selection.clear();
+                ui->tblCT->selectionModel()->clearSelection();
+                m_nGridRow = nCur;
                 ctable2Grid();
                 m_isCtModified = true;
+                jumpToGridRow(nCur + 1, true);
+                jumpToGridRow(nCur, true);
             }
         }
         else  {
@@ -2254,31 +2278,37 @@ void ctedit::on_cmdImport_clicked()
 
     szSourceFile = QFileDialog::getOpenFileName(this, tr("Import From Crosstable File"), m_szCurrentCTFile, tr("Crosstable File (%1)") .arg(szCT_FILE_NAME));
     if (! szSourceFile.isEmpty())  {
-        szMsg = tr("Rows from %1 to %2 will be overwritten !!\nDo you want to continue?") .arg(MIN_RETENTIVE) .arg(MAX_NONRETENTIVE);
-        if (queryUser(this, szTitle, szMsg))  {
-            lstNewRecs.clear();
-            lstSourceRecs.clear();
-            if (loadCTFile(szSourceFile, lstNewRecs, false))  {
-                for (nRow = 0; nRow < MAX_NONRETENTIVE; nRow++)  {
-                    lstSourceRecs.append(lstCTRecords[nRow]);
-                    lstCTRecords[nRow] = lstNewRecs[nRow];
-                }
-                // Ricarica la lista dei dati CT in Grid
-                fRes = ctable2Grid();
-                if (fRes)  {
-                    szMsg = tr("Loaded Crosstable from file:\n%1") .arg(szSourceFile);
-                    notifyUser(this, szTitle, szMsg);
-                }
-                else {
-                    szMsg = tr("Error Loading Crosstable from file:\n%1") .arg(szSourceFile);
-                    szMsg.append(tr("\nOriginal Content Reloaded"));
-                    warnUser(this, szTitle, szMsg);
-                    for (nRow = 0; nRow < lstSourceRecs.count(); nRow++)  {
-                        lstCTRecords[nRow] = lstSourceRecs[nRow];
+        if (checkCTFile(szSourceFile))  {
+            szMsg = tr("Rows from %1 to %2 will be overwritten !!\nDo you want to continue?") .arg(MIN_RETENTIVE) .arg(MAX_NONRETENTIVE);
+            if (queryUser(this, szTitle, szMsg))  {
+                lstNewRecs.clear();
+                lstSourceRecs.clear();
+                if (loadCTFile(szSourceFile, lstNewRecs, false))  {
+                    for (nRow = 0; nRow < MAX_NONRETENTIVE; nRow++)  {
+                        lstSourceRecs.append(lstCTRecords[nRow]);
+                        lstCTRecords[nRow] = lstNewRecs[nRow];
                     }
+                    // Ricarica la lista dei dati CT in Grid
                     fRes = ctable2Grid();
+                    if (fRes)  {
+                        szMsg = tr("Loaded Crosstable from file:\n%1") .arg(szSourceFile);
+                        notifyUser(this, szTitle, szMsg);
+                    }
+                    else {
+                        szMsg = tr("Error Loading Crosstable from file:\n%1") .arg(szSourceFile);
+                        szMsg.append(tr("\nOriginal Content Reloaded"));
+                        warnUser(this, szTitle, szMsg);
+                        for (nRow = 0; nRow < lstSourceRecs.count(); nRow++)  {
+                            lstCTRecords[nRow] = lstSourceRecs[nRow];
+                        }
+                        fRes = ctable2Grid();
+                    }
                 }
             }
+        }
+        else  {
+            szMsg = tr("The Selected file is not a Crosstable file:\n%1") .arg(szSourceFile);
+            warnUser(this, szTitle, szMsg);
         }
     }
 }
@@ -2346,6 +2376,7 @@ void ctedit::showAllRows(bool fShowAll)
         // Ricerca il primo Item visibile
         if (lstCTRecords[nRow].UsedEntry && nFirstVisible < 0)  {
             nFirstVisible = nRow ;
+            qDebug() << tr("First Visible Row:%1") .arg(nFirstVisible);
         }
         // Mostra tutti
         if (fShowAll)  {
@@ -2364,6 +2395,16 @@ void ctedit::showAllRows(bool fShowAll)
     }
     // Riga corrente non definita
     if (m_nGridRow < 0 || m_nGridRow >= ui->tblCT->rowCount())  {
+        // Se non ci sono variabili utente definite, prova a saltare a Prima di Local I/O
+        if (nFirstVisible == MIN_DIAG - 1)  {
+            nFirstVisible = MIN_LOCALIO -1;
+            if (! lstCTRecords[MIN_LOCALIO -1].UsedEntry)  {
+                nFirstVisible = MIN_SYSTEM - 1;
+                if (! lstCTRecords[MIN_SYSTEM -1].UsedEntry)  {
+                    nFirstVisible = MIN_DIAG - 1;
+                }
+            }
+        }
         m_nGridRow = nFirstVisible >= 0 ? nFirstVisible : 0;
     }
     else  {
@@ -2438,8 +2479,9 @@ void ctedit::on_cmdSearch_clicked()
 void ctedit::jumpToGridRow(int nRow, bool fCenter)
 // Salto alla riga nRow del Grid
 {
-    // Controlla se la riga selezionata è abilitata. In caso contrario deve abilitare visualizzazione di tutte le righe
+    // Seleziona la riga nRow
     ui->tblCT->selectRow(nRow);
+    // Se vero il flag fCenter, centra la riga selezionata rispetto alla finestra di scroll
     if (fCenter)
         ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtCenter);
     ui->tblCT->setFocus();
@@ -2606,6 +2648,9 @@ void ctedit::on_cmdUndo_clicked()
         lstUndo.removeLast();
         // Refresh List
         ctable2Grid();
+        // Force Marker to Updated
+        m_isCtModified = true;
+        enableInterface();
     }
 }
 void ctedit::tabSelected(int nTab)
@@ -2628,9 +2673,9 @@ void ctedit::enableInterface()
     // Abilitazioni elementi di interfaccia ancora da decidere
     ui->cmdUndo->setEnabled(lstUndo.count() > 0);
     ui->cmdBlocchi->setEnabled(true);
-    ui->cmdCompile->setEnabled(! m_isCtModified);
-    ui->cmdSave->setEnabled(m_isCtModified);
-    ui->cmdPLC->setEnabled(! m_isCtModified);
+    ui->cmdCompile->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
+    ui->cmdSave->setEnabled(m_isCtModified && ! m_szCurrentModel.isEmpty());
+    ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
     ui->fraCondition->setEnabled(true);
     ui->tblCT->setEnabled(true);
     m_fCutOrPaste = false;
@@ -2791,6 +2836,9 @@ void    ctedit::enableProtocolsFromModel(const QString &szModel)
 }
 void ctedit::on_cboBehavior_currentIndexChanged(int index)
 {
+    // Condizione di sicurezza per file CT non aperto
+    if (lstCTRecords.count() <= 0)
+        return;
     // Abilitazione o meno del frame condizioni allarmi/eventi
     if (index > behavior_readwrite) {
         ui->fraCondition->setVisible(true);
@@ -2829,6 +2877,10 @@ int ctedit::globalChecks()
     // Form per Display Errori
     cteErrorList    *errWindow;
 
+    // Condizione di sicurezza per file CT non aperto
+    if (lstCTRecords.count() <= 0)
+        return 0;
+    // Ripulitura lista errori
     lstCTErrors.clear();
     lstUniqueVarNames.clear();
     // Ciclo Globale su tutti gli Items di CT
@@ -3284,6 +3336,10 @@ void ctedit::on_cboVariable1_currentIndexChanged(int index)
 
 void ctedit::on_cboCondition_currentIndexChanged(int index)
 {
+    // Condizione di sicurezza per file CT non aperto
+    if (lstCTRecords.count() <= 0 || index < 0)
+        return;
+    // In caso di Rising o Falling non esiste comparazione con elementi DX
     if (index >= oper_rising)  {
         ui->cboVariable2->setCurrentIndex(-1);
         ui->txtFixedValue->setText(szEMPTY);
@@ -3399,7 +3455,7 @@ int  ctedit::fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes)
 void ctedit::on_cboPriority_currentIndexChanged(int index)
 {
 
-    if (index < 0)
+    if (lstCTRecords.count() <= 0 ||  index < 0 || m_nGridRow < 0)
         return;
     // Applicazione dei valori di default nel caso di una riga vuota
     if (! lstCTRecords[m_nGridRow].UsedEntry && index >= 0 && m_nGridRow < MAX_NONRETENTIVE -1)  {
@@ -3436,6 +3492,30 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
             ui->txtBlockSize->setText(QString::number(1));
         }
     }
+}
+void ctedit::on_cboUpdate_currentIndexChanged(int index)
+{
+
+    if (lstCTRecords.count() <= 0 ||  index < 0)
+        return;
+    // Per variabili di tipo H spegne la possibilità di essere un allarme
+    if (index == Htype)  {
+        qDebug() << tr("Clear Alarm");
+        // Se la variabile era allarme ripulisce la selezione
+        if (ui->cboBehavior->currentIndex() >= behavior_alarm)
+            ui->cboBehavior->setCurrentIndex(-1);
+        disableComboItem(ui->cboBehavior, behavior_alarm);
+        disableComboItem(ui->cboBehavior, behavior_event);
+    }
+    else  {
+        // Abilitazione scelta Allarme/Evento per tipi BIT
+        if (ui->cboType->currentIndex() == BIT)  {
+            enableComboItem(ui->cboBehavior, behavior_alarm);
+            enableComboItem(ui->cboBehavior, behavior_event);
+
+        }
+    }
+
 }
 
 void ctedit::on_cmdPLC_clicked()
@@ -3551,15 +3631,15 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 
-        // Tasto ESC (Intercettato per le Combo Box)
-        if (keyEvent->key() == Qt::Key_Escape) {
-            // Clear item for Combos
-            if (obj->metaObject()->className() == "QComboBox")  {
-                QComboBox *cb = qobject_cast<QComboBox*>(obj);
-                cb->setCurrentIndex(-1);
-                return true;
-            }
-        }
+//        // Tasto ESC (Intercettato per le Combo Box)
+//        if (keyEvent->key() == Qt::Key_Escape) {
+//            // Clear item for Combos
+//            if (obj->metaObject()->className() == "QComboBox")  {
+//                QComboBox *cb = qobject_cast<QComboBox*>(obj);
+//                cb->setCurrentIndex(-1);
+//                return true;
+//            }
+//        }
         // Sequenze valide per tutto il form
         // Save
         if (keyEvent->matches(QKeySequence::Save)) {
@@ -3779,6 +3859,8 @@ void ctedit::setSectionArea(int nRow)
 {
     int nIndex = -1;
 
+    if (nRow < 0)
+        return;
     // Blocca la propagazione dei segnali della cboSection
     disableAndBlockSignals(ui->cboSections);
     // Range Retentive
@@ -3802,16 +3884,55 @@ void ctedit::setSectionArea(int nRow)
 
 void ctedit::on_cboSections_currentIndexChanged(int index)
 {
-    if (index == -1)
+    int     nRow = 0;
+
+    if (index < 0)
         return;
-    else if (index == regRetentive)
-        jumpToGridRow(MIN_RETENTIVE - 1, true);
+    if (index == regRetentive)
+        nRow = MIN_RETENTIVE - 1;
     else if (index == regNonRetentive)
-        jumpToGridRow(MIN_NONRETENTIVE - 1, true);
+        nRow = MIN_NONRETENTIVE - 1;
     else if (index == regDiagnostic)
-        jumpToGridRow(MIN_DIAG - 1, true);
+        nRow = MIN_DIAG - 1;
     else if (index == regLocalIO)
-        jumpToGridRow(MIN_LOCALIO - 1, true);
+        nRow = MIN_LOCALIO - 1;
     else if (index == regSystem)
-        jumpToGridRow(MIN_SYSTEM - 1, true);
+        nRow = MIN_SYSTEM - 1;
+    // Controllo se la riga è abilitata
+    if (! m_fShowAllRows && ! lstCTRecords[nRow].Enable)  {
+        m_fShowAllRows = true;
+        ui->cmdHideShow->setChecked(m_fShowAllRows);
+    }
+    // Jump to Row
+    jumpToGridRow(nRow, true);
+}
+
+bool ctedit::checkCTFile(QString szSourceFile)
+// Controllo validità file CT per Import
+{
+    bool fRes = false;
+
+    QFileInfo   fileCT(szSourceFile);
+    // Controllo esistenza file
+    if (fileCT.exists())  {
+        // Controllo nome del file
+        if (fileCT.fileName() == szCT_FILE_NAME)  {
+            QStringList stringList;
+            QFile textFile(szSourceFile);
+            textFile.open(QIODevice::ReadOnly);
+            QTextStream textStream(&textFile);
+            while (! textStream.atEnd())
+            {
+                QString line = textStream.readLine();
+                if (line.isNull())
+                    break;
+                else
+                    stringList.append(line);
+            }
+            textFile.close();
+            fRes = (stringList.count() == DimCrossTable);
+        }
+    }
+    // return value
+    return  fRes;
 }

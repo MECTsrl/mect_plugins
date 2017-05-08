@@ -1154,10 +1154,14 @@ void MectSettings::enablePortsFromModel(int nModel)
     // Can 0
     m_tabEnabled[tabCan0] = false;
     // Can1
-    if (nModel == TP1057_01_A ||
-
-        nModel == TPLC100 ||
-        nModel == TPLC150 )   {
+    if (nModel == TP1043_01_B ||
+        nModel == TP1057_01_B ||
+        nModel == TP1070_01_B ||
+        nModel == TPAC1006    ||
+        nModel == TPAC1008_01 ||
+        nModel == TPAC1008_02_AA ||
+         nModel == TPLC100 ||
+         nModel == TPLC150 )   {
         m_tabEnabled[tabCan1] = true;
     }
     else  {

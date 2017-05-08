@@ -71,8 +71,8 @@ private slots:
     void on_optFixedVal_toggled(bool checked);
     void on_optVariableVal_toggled(bool checked);
     void on_cboPriority_currentIndexChanged(int index);
-
     void on_cboSections_currentIndexChanged(int index);
+    void on_cboUpdate_currentIndexChanged(int index);
 
 private:
     //---------------------------------------------------------------------
@@ -103,6 +103,7 @@ private:
     int     fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes);           // Riempie la lista dei tipi compatibili tra loro
     int     varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs);        // Search in Cross Table Record List the index of szVarName
     // Gestione Controlli
+    bool    checkCTFile(QString szSourceFile);      // Controllo validità file CT per Import
     int     checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine = true);   // Controlli formali sulla riga a termine editing
     int     globalChecks();                         // Controlli complessivi su tutta la CT
     bool    isFormEmpty();                          // Controllo Form Editing vuoto

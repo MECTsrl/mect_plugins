@@ -271,13 +271,21 @@ bool TrendEditor::tokens2Iface(const QStringList &lstTokens, int nRow)
     setObjectColor(lblColor, cColTrend);
     // MinValue
     dblVal = lstTokens[nTrendMin].toDouble(&fOK);
+    // Controllo che si tratti davvero di un numero
     dblVal = fOK ? dblVal : 0.0;
-    szTemp = QString::number(dblVal, 'f', 3);
+    if (fOK)
+        szTemp = lstTokens[nTrendMin];
+    else
+        szTemp = QString::number(dblVal, 'f', 3);
     txtMin->setText(szTemp);
     // MaxValue
     dblVal = lstTokens[nTrendMax].toDouble(&fOK);
     dblVal = fOK ? dblVal : 0.0;
-    szTemp = QString::number(dblVal, 'f', 3);
+    // Controllo che si tratti davvero di un numero
+    if (fOK)
+        szTemp = lstTokens[nTrendMax];
+    else
+        szTemp = QString::number(dblVal, 'f', 3);
     txtMax->setText(szTemp);
     // Comment
     txtComment->setText(lstTokens[nTrendDescr]);
@@ -480,11 +488,12 @@ void TrendEditor::on_cmdSave_clicked()
 
     QFile fTrend(szDestFile);
     if (fTrend.exists())  {
-        m_szMsg = tr("File %1 Exists. Overwrite?") .arg(m_szTrendFile);
-        fOverWrite = queryUser(this, szTitle, m_szMsg, false);
-        // Create Backup
-        if (fOverWrite)
-            fileBackUp(szDestFile);
+        fileBackUp(szDestFile);
+//        fOverWrite = true;
+//        m_szMsg = tr("File %1 Exists. Overwrite?") .arg(m_szTrendFile);
+//        fOverWrite = queryUser(this, szTitle, m_szMsg, false);
+//        // Create Backup
+//        if (fOverWrite)
     }
     // Write File
     if (fOverWrite)  {

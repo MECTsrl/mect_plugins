@@ -178,7 +178,10 @@
      </property>
      <property name="font">
       <font>
+       <family>MS Shell Dlg 2</family>
+       <pointsize>10</pointsize>
        <weight>50</weight>
+       <italic>false</italic>
        <bold>false</bold>
       </font>
      </property>
@@ -191,6 +194,13 @@
      <widget class="QWidget" name="tabCT">
       <property name="enabled">
        <bool>true</bool>
+      </property>
+      <property name="font">
+       <font>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
       </property>
       <attribute name="title">
        <string>Crosstable</string>
@@ -269,7 +279,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>8</pointsize>
+                  <pointsize>10</pointsize>
                   <weight>50</weight>
                   <bold>false</bold>
                  </font>
@@ -939,7 +949,7 @@
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>8</pointsize>
+                    <pointsize>10</pointsize>
                     <weight>50</weight>
                     <bold>false</bold>
                    </font>
@@ -979,7 +989,7 @@
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>8</pointsize>
+                    <pointsize>10</pointsize>
                     <weight>50</weight>
                     <bold>false</bold>
                    </font>
@@ -1151,7 +1161,7 @@
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>8</pointsize>
+                    <pointsize>10</pointsize>
                     <weight>50</weight>
                     <bold>false</bold>
                    </font>
@@ -1214,7 +1224,7 @@
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>8</pointsize>
+                    <pointsize>10</pointsize>
                     <weight>50</weight>
                     <bold>false</bold>
                    </font>
@@ -1378,7 +1388,7 @@
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>8</pointsize>
+                  <pointsize>10</pointsize>
                   <weight>50</weight>
                   <bold>false</bold>
                  </font>
@@ -1509,6 +1519,7 @@
                       </property>
                       <property name="font">
                        <font>
+                        <pointsize>10</pointsize>
                         <weight>50</weight>
                         <bold>false</bold>
                        </font>
@@ -1606,6 +1617,7 @@
                       </property>
                       <property name="font">
                        <font>
+                        <pointsize>10</pointsize>
                         <weight>50</weight>
                         <bold>false</bold>
                        </font>
@@ -1747,6 +1759,7 @@
                     </property>
                     <property name="font">
                      <font>
+                      <pointsize>10</pointsize>
                       <weight>50</weight>
                       <bold>false</bold>
                      </font>
