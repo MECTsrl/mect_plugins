@@ -71,7 +71,6 @@ Custom project wizard configuration example file. Note that by convention,
  	   <file source="../ATCM-template-project/plc/Crosstable.gvl" target="plc/Crosstable.gvl" openeditor="false"/>
  	   <file source="../ATCM-template-project/plc/Events.st" target="plc/Events.st" openeditor="false"/>
  	   <file source="../ATCM-template-project/plc/Fast.st" target="plc/Fast.st" openeditor="false"/>
- 	   <file source="../ATCM-template-project/plc/files.txt" target="plc/files.txt" openeditor="false"/>
  	   <file source="../ATCM-template-project/plc/fileview.xml" target="plc/fileview.xml" openeditor="false"/>
  	   <file source="../ATCM-template-project/plc/Init.st" target="plc/Init.st" openeditor="false"/>
  	   <file source="../ATCM-template-project/plc/Normal.st" target="plc/Normal.st" openeditor="false"/>
