@@ -20,7 +20,7 @@
  <data>
   <variable>ToolChain.1</variable>
   <valuemap type="QVariantMap">
-   <value type="QString" key="ProjectExplorer.CustomToolChain.CompilerPath">C:/Program Files/CodeSourcery/Sourcery G++ Lite/bin/arm-none-linux-gnueabi-g++.exe</value>
+   <value type="QString" key="ProjectExplorer.CustomToolChain.CompilerPath">C:/Qt485/sourcery-g++-lite/bin/arm-none-linux-gnueabi-g++.exe</value>
    <valuelist type="QVariantList" key="ProjectExplorer.CustomToolChain.Cxx11Flags">
     <value type="QString"></value>
    </valuelist>

@@ -9,7 +9,7 @@
    <valuemap type="QVariantMap" key="PE.Profile.Data">
     <value type="QString" key="Android.GdbServer.Information"></value>
     <valuemap type="QVariantMap" key="Debugger.Information">
-     <value type="QString" key="Binary">C:\Program Files\CodeSourcery\Sourcery G++ Lite\bin\arm-none-linux-gnueabi-gdb.exe</value>
+     <value type="QString" key="Binary">C:/Qt485/sourcery-g++-lite/bin/arm-none-linux-gnueabi-gdb.exe</value>
      <value type="int" key="EngineType">1</value>
     </valuemap>
     <value type="QString" key="PE.Profile.Device">{9dc6589e-e4fc-4939-ae8d-ef45f11784cb}</value>
