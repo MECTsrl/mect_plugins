@@ -64,7 +64,9 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="../ATCM-template-project/common.pri" target="common.pri" openproject="false"/>
 	   <file source="../ATCM-template-project/languages.pri" target="languages.pri" openproject="false"/>
 	   <file source="../ATCM-template-project/systemicons.qrc" target="systemicons.qrc" openproject="false"/>
-	   <!-- Create PLC Application Project Files  -->
+           <file source="../ATCM-template-project/fonts/put.your.fonts.here" target="fonts/put.your.fonts.here" openproject="false"/>
+           <file source="../ATCM-template-project/icons/put.your.icons.here" target="icons/put.your.icons.here" openproject="false"/>
+           <!-- Create PLC Application Project Files  -->
 	   <file source="../ATCM-template-project/plc/Alarms.st" target="plc/Alarms.st" openeditor="false"/>
  	   <file source="../ATCM-template-project/plc/CEPrjSettings.4cs" target="plc/CEPrjSettings.4cs" openeditor="false"/>
  	   <file source="../ATCM-template-project/plc/Configuration1.con" target="plc/Configuration1.con" openeditor="false"/>
