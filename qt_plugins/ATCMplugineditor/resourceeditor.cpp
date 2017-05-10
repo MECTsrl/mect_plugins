@@ -10,100 +10,58 @@ ResourceEditor::ResourceEditor(QWidget *parent, QString * selection)
 	list = new QListWidget(this);
     list->setIconSize(QSize(30,30));
     m_selection = selection;
+
     QDirIterator it(":", QDirIterator::Subdirectories);
-    bool start = false;
+
     while (it.hasNext()) {
         QString item = it.next();
-        if (item.compare(":/marker.png") == 0)
-        {
-            start = true;
-        }
-
-
 #if 1
+        if (!item.endsWith(".png"))
+#else
         if (
-                start == false
-                ||
-                !item.endsWith(".png")
-                ||
-                item.startsWith(":/trolltech/")
-                ||
-                item.startsWith(":/core/")
-                ||
-                item.startsWith(":/skins/")
-                ||
-                item.startsWith(":/debugger/")
-                ||
-                item.startsWith(":/glsleditor/")
-                ||
-                item.startsWith(":/webkit/")
-                ||
-                item.startsWith(":/help/")
-                ||
-                item.startsWith(":/qmldesigner/")
-                ||
-                item.startsWith(":/qmlprofiler/")
-                ||
-                item.startsWith(":/qmlproject/")
-                ||
-                item.startsWith(":/qml/")
-                ||
-                item.startsWith(":/itemlibrary/")
-                ||
-                item.startsWith(":/wellcome/")
-                ||
-                item.startsWith(":/projectexplorer/")
-                ||
-                item.startsWith(":/extensionsystem/")
-                ||
-                item.startsWith(":/utils/")
-                ||
-                item.startsWith(":/fancyactionbar/")
-                ||
-                item.startsWith(":/locator/")
-                ||
-                item.startsWith(":/find/")
-                ||
-                item.startsWith(":/texteditor/")
-                ||
-                item.startsWith(":/codemodel/")
-                ||
-                item.startsWith(":/qmljs/")
-                ||
-                item.startsWith(":/proparser/")
-                ||
-                item.startsWith(":/formeditor/")
-                ||
-                item.startsWith(":/welcome/")
-                ||
-                item.startsWith(":/navigator/")
-                ||
-                item.startsWith(":/qt-maemo/")
-                ||
-                item.startsWith(":/pixmaps/qwt")
-                ||
-                item.startsWith(":/icon/layout/")
-                ||
-                item.startsWith(":/icon/tool/")
-                ||
-                item.startsWith(":/resourceeditor/")
-                ||
-                item.startsWith(":/marker.png")
-                ||
-                item.startsWith(":/atcmslider.png")
-                ||
-                item.startsWith(":/left.png")
-                ||
-                item.startsWith(":/right.png")
-                ||
-                item.startsWith(":/atcmspinbox.png")
-                ||
-                item.startsWith(":/atcmtime.png")
+            ! item.endsWith(".png")
+            || item.startsWith(":/trolltech/")
+            || item.startsWith(":/core/")
+            || item.startsWith(":/skins/")
+            || item.startsWith(":/debugger/")
+            || item.startsWith(":/glsleditor/")
+            || item.startsWith(":/webkit/")
+            || item.startsWith(":/help/")
+            || item.startsWith(":/qmldesigner/")
+            || item.startsWith(":/qmlprofiler/")
+            || item.startsWith(":/qmlproject/")
+            || item.startsWith(":/qml/")
+            || item.startsWith(":/itemlibrary/")
+            || item.startsWith(":/wellcome/")
+            || item.startsWith(":/projectexplorer/")
+            || item.startsWith(":/extensionsystem/")
+            || item.startsWith(":/utils/")
+            || item.startsWith(":/fancyactionbar/")
+            || item.startsWith(":/locator/")
+            || item.startsWith(":/find/")
+            || item.startsWith(":/texteditor/")
+            || item.startsWith(":/codemodel/")
+            || item.startsWith(":/qmljs/")
+            || item.startsWith(":/proparser/")
+            || item.startsWith(":/formeditor/")
+            || item.startsWith(":/welcome/")
+            || item.startsWith(":/navigator/")
+            || item.startsWith(":/qt-maemo/")
+            || item.startsWith(":/pixmaps/qwt")
+            || item.startsWith(":/icon/layout/")
+            || item.startsWith(":/icon/tool/")
+            || item.startsWith(":/resourceeditor/")
+            || item.startsWith(":/marker.png")
+            || item.startsWith(":/atcmslider.png")
+            || item.startsWith(":/left.png")
+            || item.startsWith(":/right.png")
+            || item.startsWith(":/atcmspinbox.png")
+            || item.startsWith(":/atcmtime.png")
            )
+#endif
         {
             continue;
         }
-#endif
         QListWidgetItem * m_item = new QListWidgetItem(QIcon(item), item);
         list->addItem(m_item);
     }
