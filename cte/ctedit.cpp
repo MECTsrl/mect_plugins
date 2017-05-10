@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "cteerrorlist.h"
 #include "stdlib.h"
+#include "ctecommon.h"
 
 #include <QFile>
 #include <QFileDialog>
@@ -149,6 +150,10 @@ ctedit::ctedit(QWidget *parent) :
     //------------------------
     // Riempimento liste
     //------------------------
+    // Lista Modelli
+    lstTargets.clear();
+    initTargetList();
+    TargetConfig = lstTargets[AnyTPAC];
     // Lista Messaggi di Errore
     lstErrorMessages.clear();
     for (nCol = 0; nCol < errCTTotals; nCol++)  {
@@ -587,24 +592,27 @@ bool    ctedit::selectCTFile(QString szFileCT)
         ui->lblModel->setText(m_szCurrentModel);
         // Abilitazione dei protocolli in funzione del Modello
         if (! m_szCurrentModel.isEmpty())  {
-            enableProtocolsFromModel(m_szCurrentModel);
-            nModel = lstProductNames.indexOf(m_szCurrentModel);
-            if (nModel < 0 || nModel >= MODEL_TOTALS)
-                nModel = AnyTPAC;
-            // qDebug() << tr("Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
+            // nModel = lstProductNames.indexOf(m_szCurrentModel);
+            qDebug() << tr("Model in List: %1") .arg(nModel);
+            nModel = searchModelInList(m_szCurrentModel);
+            qDebug() << tr("Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
         }
+        // Se il modello non è stato trovato in template.pri vale comunque AnyTPAC ma il salvataggio è disabilitato
         m_isCtModified = false;
         m_fCutOrPaste = false;
         // Se tutto Ok, carica anche le impostazioni del file INI
-        mectSet->loadProjectFiles(m_szCurrentCTPath + szINIFILE, m_szCurrentProjectPath + szSLASH + m_szCurrentProjectName, m_szCurrentProjectPath + szSLASH, nModel);
+        mectSet->loadProjectFiles(m_szCurrentCTPath + szINIFILE, m_szCurrentProjectPath + szSLASH + m_szCurrentProjectName, m_szCurrentProjectPath + szSLASH, TargetConfig);
+        // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
         mectSet->getTargetConfig(TargetConfig);
+        // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
+        enableProtocolsFromModel();
         // Se tutto Ok, carica anche il primo trend utile
         QString szFileTemplate;
         szFileTemplate = m_szCurrentProjectPath;
         szFileTemplate.append(szSLASH);
         szFileTemplate.append(szTemplateFile);
         trendEdit->updateVarLists(lstLoggedVars);
-        trendEdit->setTrendsFiles(m_szCurrentCTPath, szEMPTY, szFileTemplate);
+        trendEdit->setTrendsParameters(m_szCurrentModel, m_szCurrentCTPath, szEMPTY, szFileTemplate);
         // Abilita interfaccia
         enableInterface();
     }
@@ -1274,18 +1282,6 @@ bool ctedit::saveCTFile()
         if (nCur < DimCrossTable)
             CrossTable[nCur + 1] = lstCTRecords[nCur];
     }
-    /*
-    QString szCtFile;
-    // Trigo per ora per preparare un File name differente per non perdere l'originale
-    // Al momento riscrive (forse) una fotocopia della stuttura C di partenza
-    szCtFile = QString(QDate::currentDate().toString(m_szFormatDate));
-    szCtFile.prepend(QString::fromAscii("_"));
-    szCtFile.append(QString::fromAscii("_"));
-    szCtFile.append(QString(QTime::currentTime().toString(m_szFormatTime)));
-    szCtFile.prepend(m_szCurrentCTFile);
-    */
-    // Saving File to Juornaled Copy
-    // nRes = SaveXTable(szCtFile.toAscii().data(), CrossTable);
     // Saving Source Array to file
     nRes = SaveXTable(m_szCurrentCTFile.toAscii().data(), CrossTable);
     // Return Value
@@ -1369,7 +1365,6 @@ bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
     bool        fOk = false;
     int         nPos = 0;
     char        ip[MAX_IPADDR_LEN];
-    QList<int>  lstTypes;
 
     // Abilitazione riga (Nome Vuoto => Riga disabilitata)
     if (lstRecValues[colName].isEmpty())  {
@@ -1517,12 +1512,24 @@ void ctedit::enableFields()
     ui->cboBehavior->setEnabled(false);
     // Variabili di Sistema, abilitate in modifica solo il nome, priorità, update. No Insert in campi vuoti
     if (m_nGridRow >= MIN_DIAG -1)  {
+        bool fDecimal = false;
         if (ui->cboProtocol->currentIndex() != -1)  {
             ui->cboPriority->setEnabled(true);
             ui->cboUpdate->setEnabled(true);
             ui->txtName->setEnabled(true);
             ui->txtComment->setEnabled(true);
         }
+        // Abilitazione dei Decimal per Input Analogiche se abilitati
+        if (TargetConfig.analogIN > 0 && TargetConfig.analogINrowCT > 0)  {
+            if (m_nGridRow >= TargetConfig.analogINrowCT -1 && m_nGridRow <= TargetConfig.analogINrowCT + TargetConfig.analogIN -1)
+                fDecimal = true;
+        }
+        // Abilitazione dei Decimal per Output Analogiche se abilitati
+        if (TargetConfig.analogOUT > 0 && TargetConfig.analogOUTrowCT > 0)  {
+            if (m_nGridRow >= TargetConfig.analogOUTrowCT -1 && m_nGridRow <= TargetConfig.analogOUTrowCT + TargetConfig.analogOUT -1)
+                fDecimal = true;
+        }
+        ui->txtDecimal->setEnabled(fDecimal);
     }
     else  {
         // Campi comuni
@@ -1609,9 +1616,10 @@ void ctedit::on_cboType_currentIndexChanged(int index)
     }
 }
 void ctedit::on_cboProtocol_currentIndexChanged(int index)
-// Cambio di Protocollo della Variabile
+// Cambio di Protocollo della Variabile. Abilita i campi specifici del protocollo e imposta eventuali valori di default se necessari
 {
     QString     szTemp;
+    int         nPort = -1;
 
     szTemp.clear();
     // No Index
@@ -1621,8 +1629,10 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         ui->txtNode->setText(szEMPTY);
         ui->txtRegister->setText(szEMPTY);
     }
+    // Calcola la porta di default in funzione del protocollo (if any available)
+    nPort = getFirstPortFromProtocol(index);
     // PLC
-    else if (index == PLC)  {
+    if (index == PLC)  {
         // All Data Entry Cleared
         ui->txtIP->setText(szEMPTY);
         ui->txtPort->setText(szEMPTY);
@@ -1633,48 +1643,40 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     else if (index == RTU)  {
         // Ip Vuoto
         ui->txtIP->setText(szEMPTY);
-        // Port in funzione del modello e non editabile
-        szTemp = ui->txtPort->text();
-        if (szTemp.isEmpty())  {
-            szTemp = QString::fromAscii("1");
-            ui->txtPort->setText(szTemp);
-        }
-
     }
     // TCP, TCPRTU,
     else if (index == TCP || index == TCPRTU)  {
-        szTemp = szDEF_IP_PORT;
-        ui->txtPort->setText(szTemp);
     }
     // TCP_SRV, TCPRTU_SRV
     else if (index == TCP_SRV || index == TCPRTU_SRV)  {
-        szTemp = szDEF_IP_PORT;
-        ui->txtPort->setText(szTemp);
         szTemp = szEMPTY_IP;
         ui->txtIP->setText(szTemp);
     }
     // CANOPEN
     else if (index == CANOPEN)  {
         ui->txtIP->setText(szEMPTY);
-        szTemp = QString::fromAscii("1");
-        ui->txtPort->setText(szTemp);
     }
     // MECT
     else if (index == MECT_PTC)  {
         ui->txtIP->setText(szEMPTY);
-        ui->txtPort->setText(szZERO);
     }
     // RTU_SRV
     else if (index == RTU_SRV)  {
         ui->txtIP->setText(szEMPTY);
-        ui->txtPort->setText(szZERO);
     }
     // Disabilitazione  tipo BIT per i vari tipi di SRV (TCP_SRV, RTU_SRV, TCP_RTU_SRV)
+    // Non è ammesso BIT per i protocolli SERVER (TCP/RTU)
     if (index == TCP_SRV || index == TCPRTU_SRV || index == RTU_SRV)  {
         disableComboItem(ui->cboType, BIT);
     }
     else {
         enableComboItem(ui->cboType, BIT);
+    }
+    // Imposta la Porta di default se la porta è vuota ed è definita in base al protocollo
+    szTemp = ui->txtPort->text().trimmed();
+    if (szTemp.isEmpty() && nPort >= 0)  {
+        szTemp = QString::number(nPort);
+        ui->txtPort->setText(szTemp);
     }
     // Abilitazione del campi di data entry in funzione del Protocollo
     enableFields();
@@ -2461,7 +2463,7 @@ void ctedit::on_cmdSearch_clicked()
 
     szText.clear();
     szText = QInputDialog::getItem(this, tr("Variable Name"),
-                                            tr("Enter Variable Name:"), lstUsedVarNames, 0, true, &fOk);
+                                            tr("Enter Variable Name:"), lstUsedVarNames, 0, true, &fOk, Qt::Dialog);
     if (fOk)  {
         // Ricerca sequenziale della stringa
         for (nRow = 0; nRow < lstCTRecords.count(); nRow++)    {
@@ -2660,9 +2662,12 @@ void ctedit::tabSelected(int nTab)
     if (nTab == TAB_TREND) {
         trendEdit->updateVarLists(lstLoggedVars);
     }
-    // Ritorno a CT da altro Tab
+    // Ritorno a CT da altro Tab, prudenzialmente aggiorna le info di configurazione
     if (nTab == TAB_CT)  {
+        // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
         mectSet->getTargetConfig(TargetConfig);
+        // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
+        enableProtocolsFromModel();
     }
     // Set Current Tab
     m_nCurTab = nTab;
@@ -2674,86 +2679,23 @@ void ctedit::enableInterface()
     ui->cmdUndo->setEnabled(lstUndo.count() > 0);
     ui->cmdBlocchi->setEnabled(true);
     ui->cmdCompile->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
-    ui->cmdSave->setEnabled(m_isCtModified && ! m_szCurrentModel.isEmpty());
+    // Salva sempre abilitato, bordo green se non ci sono salvataggi pendenti
+    ui->cmdSave->setEnabled(! m_szCurrentModel.isEmpty());
+    if (m_isCtModified)  {
+        ui->cmdSave->setStyleSheet(QString::fromAscii("border: 2px solid red;"));
+    }
+    else  {
+        ui->cmdSave->setStyleSheet(QString::fromAscii("border: 2px solid green;"));
+    }
     ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
     ui->fraCondition->setEnabled(true);
     ui->tblCT->setEnabled(true);
     m_fCutOrPaste = false;
 }
-QStringList ctedit::getPortsFromModel(const QString &szModel, QString szProtocol)
-// Calocolo Porte abilitate in funzione di Modello e protocollo
-{
-
-    QStringList lstValues;
-    int nModel = lstProductNames.indexOf(szModel);
-    int nProtocol = lstProtocol.indexOf(szProtocol);
-
-    lstValues.clear();
-    // Valori generici in funzione del Protocollo con modello non specificato
-    if (szModel.isEmpty() || nModel == -1)  {
-        lstValues.append(QString::fromAscii("0"));
-        lstValues.append(QString::fromAscii("1"));
-        lstValues.append(QString::fromAscii("2"));
-        lstValues.append(QString::fromAscii("3"));
-    }
-    // Generic IP Port
-    else if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV)  {
-        lstValues.append(QString::fromAscii("502"));
-    }
-    // Specific Ports by Model and Protocol
-    else {
-        // Combinazioni possibili tra Modello e Protocollo
-        if (nModel == TP1043_01_A && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("1"));
-        else if (nModel == TP1043_01_B && (nProtocol == CANOPEN))
-            lstValues.append(QString::fromAscii("1"));
-        else if (nModel == TP1057_01_A && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("3"));
-        else if (nModel == TP1057_01_B && (nProtocol == CANOPEN))
-            lstValues.append(QString::fromAscii("1"));
-        else if (nModel == TP1070_01_A && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("3"));
-        else if (nModel == TP1070_01_B && (nProtocol == CANOPEN))
-            lstValues.append(QString::fromAscii("1"));
-        else if (nModel == TP1070_01_B && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("3"));
-        else if (nModel == TP1070_01_C && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))  {
-            lstValues.append(QString::fromAscii("0"));
-            lstValues.append(QString::fromAscii("3"));
-        }
-        else if (nModel == TPAC1006)  {
-            lstValues.append(QString::fromAscii("1"));
-            lstValues.append(QString::fromAscii("3"));
-        }
-        else if (nModel == TPAC1007_03 && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("0"));
-        else if (nModel == TPAC1007_04_AA && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("0"));
-        else if (nModel == TPAC1007_04_AC && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("0"));
-        else if (nModel == TPAC1008_02_AA && (nProtocol == CANOPEN))
-            lstValues.append(QString::fromAscii("1"));
-        else if (nModel == TPAC1008_02_AA && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("3"));
-        else if (nModel == TPAC1008_02_AB && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))  {
-            lstValues.append(QString::fromAscii("0"));
-            lstValues.append(QString::fromAscii("3"));
-        }
-        else if (nModel == TPAC1008_02_AD && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("3"));
-        else if (nModel == TPAC1008_02_AE && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("3"));
-        else if (nModel == TPAC1008_02_AF && (nProtocol == RTU || nProtocol == RTU_SRV || nProtocol == MECT_PTC))
-            lstValues.append(QString::fromAscii("3"));
-    }
-    // Return value
-    return lstValues;
-}
-void    ctedit::enableProtocolsFromModel(const QString &szModel)
-// Abilita i Protocolli in funzione del Modello corrente
+void    ctedit::enableProtocolsFromModel()
+// Abilita i Protocolli in funzione della configurazione del Modello corrente (da TargetConfig)
 {
     int nCur = 0;
-    int nModel = lstProductNames.indexOf(szModel);
 
 
     // qDebug() << tr("Model Searched: %1 - Found: %2") .arg(szModel) .arg(nModel);
@@ -2761,70 +2703,25 @@ void    ctedit::enableProtocolsFromModel(const QString &szModel)
     lstBusEnabler.clear();
     // Abilita di default tutti i Protocolli
     for (nCur = 0; nCur < lstProtocol.count(); nCur++)  {
-        lstBusEnabler.append(true);
+        lstBusEnabler.append(false);
     }
-    // Abilitazione dei protocolli in funzione del modello
-    if (nModel == TP1043_01_A)  {
-        lstBusEnabler[CANOPEN] = false;
+    // PLC abilitato per tutti i modelli
+    lstBusEnabler[PLC] = true;
+    // TCP e derivati abilitati per tutti i modelli (Perchè ethPorts è almeno 1)
+    if (TargetConfig.ethPorts > 0)  {
+        lstBusEnabler[TCP] = true;
+        lstBusEnabler[TCPRTU] = true;
+        lstBusEnabler[TCP_SRV] = true;
+        lstBusEnabler[TCPRTU_SRV] = true;
     }
-    else if (nModel == TP1043_01_B)  {
-        lstBusEnabler[RTU] = false;
-        lstBusEnabler[RTU_SRV] = false;
-        lstBusEnabler[MECT_PTC] = false;
+    // Protocollo CAN abilitato solo per Modelli con Can
+    if (TargetConfig.can0_Enabled || TargetConfig.can1_Enabled)  {
+        lstBusEnabler[CANOPEN] = true;
     }
-    else if (nModel == TP1057_01_A)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TP1057_01_B)  {
-        lstBusEnabler[RTU] = false;
-        lstBusEnabler[RTU_SRV] = false;
-        lstBusEnabler[MECT_PTC] = false;
-
-    }
-    else if (nModel == TP1070_01_A)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TP1070_01_B)  {
-        // Tutti i protocolli sono abilitiati
-    }
-    else if (nModel == TP1070_01_C)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1006)  {
-        // Tutti i protocolli sono abilitiati
-    }
-    else if (nModel == TPAC1007_03)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1007_04_AA)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1007_04_AB)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1007_04_AC)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1007_LV)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1008_01)  {
-        // Tutti i protocolli sono abilitiati
-    }
-    else if (nModel == TPAC1008_02_AA)  {
-        //  Tutti i protocolli sono abilitiati
-    }
-    else if (nModel == TPAC1008_02_AB)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1008_02_AD)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1008_02_AE)  {
-        lstBusEnabler[CANOPEN] = false;
-    }
-    else if (nModel == TPAC1008_02_AF)  {
-        lstBusEnabler[CANOPEN] = false;
+    if (TargetConfig.ser0_Enabled || TargetConfig.ser1_Enabled || TargetConfig.ser2_Enabled || TargetConfig.ser3_Enabled)  {
+        lstBusEnabler[RTU] = true;
+        lstBusEnabler[MECT_PTC] = true;
+        lstBusEnabler[RTU_SRV] = true;
     }
     // Spegne sulla Combo dei protocolli le voci non abilitate
     for (nCur = 0; nCur < lstProtocol.count(); nCur++)  {
@@ -3935,4 +3832,566 @@ bool ctedit::checkCTFile(QString szSourceFile)
     }
     // return value
     return  fRes;
+}
+void ctedit::initTargetList()
+// Init della lista dei Target definiti
+{
+    TP_Config   tpRec;
+    int         nModel;
+
+    // Valori di default comuni a tutti i modelli
+    // General Params
+    tpRec.modelName.clear();    
+    tpRec.displayWidth = 480;
+    tpRec.displayHeight = 272;
+    tpRec.usbPorts = 1;
+    tpRec.ethPorts = 1;
+    tpRec.sdCards = 0;
+    tpRec.nEncoders = 0;
+    tpRec.digitalIN = 0;
+    tpRec.digitalOUT = 0;
+    tpRec.analogIN = 0;
+    tpRec.analogINrowCT = -1;
+    tpRec.analogOUT = 0;
+    tpRec.analogOUTrowCT = -1;
+    tpRec.tAmbient = false;
+    tpRec.rpmPorts = 0;
+    tpRec.retries = 1;
+    tpRec.blacklist = 2;
+    tpRec.readPeriod1 = 10;
+    tpRec.readPeriod2 = 50;
+    tpRec.readPeriod3 = 200;
+    tpRec.fastLogPeriod = 1;
+    tpRec.slowLogPeriod = 10;
+    // Serial 0
+    tpRec.ser0_Enabled = false;
+    tpRec.ser0_BaudRate = 38400;
+    tpRec.ser0_TimeOut = 50;
+    tpRec.ser0_Silence = 2;
+    tpRec.ser0_BlockSize = 64;
+    // Serial 1
+    tpRec.ser1_Enabled = false;
+    tpRec.ser1_BaudRate = 38400;
+    tpRec.ser1_TimeOut = 50;
+    tpRec.ser1_Silence = 2;
+    tpRec.ser1_BlockSize = 64;
+    // Serial 2
+    tpRec.ser2_Enabled = false;
+    tpRec.ser2_BaudRate = 38400;
+    tpRec.ser2_TimeOut = 50;
+    tpRec.ser2_Silence = 2;
+    tpRec.ser2_BlockSize = 64;
+    // Serial 3
+    tpRec.ser3_Enabled = true;
+    tpRec.ser3_BaudRate = 38400;
+    tpRec.ser3_TimeOut = 50;
+    tpRec.ser3_Silence = 2;
+    tpRec.ser3_BlockSize = 64;
+    // TCP
+    tpRec.tcp_TimeOut = 200;
+    tpRec.tcp_Silence = 10;
+    tpRec.tcp_BlockSize = 64;
+    // Can0
+    tpRec.can0_Enabled = false;
+    tpRec.can0_BaudRate = 125000;
+    tpRec.can0_BlockSize = 64;
+    // Can1
+    tpRec.can1_Enabled = false;
+    tpRec.can1_BaudRate = 125000;
+    tpRec.can1_BlockSize = 64;
+    // Creazione Lista modelli
+    lstTargets.clear();
+    for (nModel = 0; nModel < MODEL_TOTALS; nModel++)  {
+        tpRec.nModel = nModel;
+        lstTargets.append(tpRec);
+    }
+    // Customizzazione dei modelli
+    //00 AnyTPAC = 0
+    lstTargets[AnyTPAC].modelName =  QString::fromAscii(product_name[AnyTPAC]);
+    //01 TP1043_01_A
+    lstTargets[TP1043_01_A].modelName =  QString::fromAscii(product_name[TP1043_01_A]);
+    lstTargets[TP1043_01_A].displayWidth =  480;
+    lstTargets[TP1043_01_A].displayHeight = 272;
+    lstTargets[TP1043_01_A].sdCards = 1;
+    lstTargets[TP1043_01_A].digitalIN = 0;
+    lstTargets[TP1043_01_A].digitalOUT = 0;
+    lstTargets[TP1043_01_A].nEncoders = 0;
+    lstTargets[TP1043_01_A].analogIN = 0;
+    lstTargets[TP1043_01_A].analogINrowCT = -1;
+    lstTargets[TP1043_01_A].analogOUT = 0;
+    lstTargets[TP1043_01_A].analogOUTrowCT = -1;
+    lstTargets[TP1043_01_A].tAmbient = false;
+    lstTargets[TP1043_01_A].rpmPorts = 0;
+    lstTargets[TP1043_01_A].ser0_Enabled = true;
+    lstTargets[TP1043_01_A].ser1_Enabled = false;
+    lstTargets[TP1043_01_A].ser2_Enabled = false;
+    lstTargets[TP1043_01_A].ser3_Enabled = false;
+    lstTargets[TP1043_01_A].can1_Enabled = false;
+    // 02 TP1043_01_B
+    lstTargets[TP1043_01_B].modelName =  QString::fromAscii(product_name[TP1043_01_B]);
+    lstTargets[TP1043_01_B].displayWidth =  480;
+    lstTargets[TP1043_01_B].displayHeight = 272;
+    lstTargets[TP1043_01_B].sdCards = 1;
+    lstTargets[TP1043_01_B].digitalIN = 0;
+    lstTargets[TP1043_01_B].digitalOUT = 0;
+    lstTargets[TP1043_01_B].nEncoders = 0;
+    lstTargets[TP1043_01_B].analogIN = 0;
+    lstTargets[TP1043_01_B].analogINrowCT = -1;
+    lstTargets[TP1043_01_B].analogOUT = 0;
+    lstTargets[TP1043_01_B].analogOUTrowCT = -1;
+    lstTargets[TP1043_01_B].tAmbient = false;
+    lstTargets[TP1043_01_B].rpmPorts = 0;
+    lstTargets[TP1043_01_B].ser0_Enabled = false;
+    lstTargets[TP1043_01_B].ser1_Enabled = false;
+    lstTargets[TP1043_01_B].ser2_Enabled = false;
+    lstTargets[TP1043_01_B].ser3_Enabled = false;
+    lstTargets[TP1043_01_B].can1_Enabled = true;
+    // 03 TP1057_01_A
+    lstTargets[TP1057_01_A].modelName =  QString::fromAscii(product_name[TP1057_01_A]);
+    lstTargets[TP1057_01_A].displayWidth =  320;
+    lstTargets[TP1057_01_A].displayHeight = 240;
+    lstTargets[TP1057_01_A].sdCards = 0;
+    lstTargets[TP1057_01_A].digitalIN = 0;
+    lstTargets[TP1057_01_A].digitalOUT = 0;
+    lstTargets[TP1057_01_A].nEncoders = 0;
+    lstTargets[TP1057_01_A].analogIN = 0;
+    lstTargets[TP1057_01_A].analogINrowCT = -1;
+    lstTargets[TP1057_01_A].analogOUT = 0;
+    lstTargets[TP1057_01_A].analogOUTrowCT = -1;
+    lstTargets[TP1057_01_A].tAmbient = false;
+    lstTargets[TP1057_01_A].rpmPorts = 0;
+    lstTargets[TP1057_01_A].ser0_Enabled = false;
+    lstTargets[TP1057_01_A].ser1_Enabled = false;
+    lstTargets[TP1057_01_A].ser2_Enabled = false;
+    lstTargets[TP1057_01_A].ser3_Enabled = true;
+    lstTargets[TP1057_01_A].can1_Enabled = false;
+    // 04 TP1057_01_B
+    lstTargets[TP1057_01_B].modelName =  QString::fromAscii(product_name[TP1057_01_B]);
+    lstTargets[TP1057_01_B].displayWidth =  320;
+    lstTargets[TP1057_01_B].displayHeight = 240;
+    lstTargets[TP1057_01_B].sdCards = 0;
+    lstTargets[TP1057_01_B].digitalIN = 0;
+    lstTargets[TP1057_01_B].digitalOUT = 0;
+    lstTargets[TP1057_01_B].nEncoders = 0;
+    lstTargets[TP1057_01_B].analogIN = 0;
+    lstTargets[TP1057_01_B].analogINrowCT = -1;
+    lstTargets[TP1057_01_B].analogOUT = 0;
+    lstTargets[TP1057_01_B].analogOUTrowCT = -1;
+    lstTargets[TP1057_01_B].tAmbient = false;
+    lstTargets[TP1057_01_B].rpmPorts = 0;
+    lstTargets[TP1057_01_B].ser0_Enabled = false;
+    lstTargets[TP1057_01_B].ser1_Enabled = false;
+    lstTargets[TP1057_01_B].ser2_Enabled = false;
+    lstTargets[TP1057_01_B].ser3_Enabled = true;
+    lstTargets[TP1057_01_B].can1_Enabled = true;
+    // 05 TP1070_01_A
+    lstTargets[TP1070_01_A].modelName =  QString::fromAscii(product_name[TP1070_01_A]);
+    lstTargets[TP1070_01_A].displayWidth =  800;
+    lstTargets[TP1070_01_A].displayHeight = 480;
+    lstTargets[TP1070_01_A].sdCards = 0;
+    lstTargets[TP1070_01_A].digitalIN = 0;
+    lstTargets[TP1070_01_A].digitalOUT = 0;
+    lstTargets[TP1070_01_A].nEncoders = 0;
+    lstTargets[TP1070_01_A].analogIN = 0;
+    lstTargets[TP1070_01_A].analogINrowCT = -1;
+    lstTargets[TP1070_01_A].analogOUT = 0;
+    lstTargets[TP1070_01_A].analogOUTrowCT = -1;
+    lstTargets[TP1070_01_A].tAmbient = false;
+    lstTargets[TP1070_01_A].rpmPorts = 0;
+    lstTargets[TP1070_01_A].ser0_Enabled = false;
+    lstTargets[TP1070_01_A].ser1_Enabled = false;
+    lstTargets[TP1070_01_A].ser2_Enabled = false;
+    lstTargets[TP1070_01_A].ser3_Enabled = true;
+    lstTargets[TP1070_01_A].can1_Enabled = false;
+    // 06 TP1070_01_B
+    lstTargets[TP1070_01_B].modelName =  QString::fromAscii(product_name[TP1070_01_B]);
+    lstTargets[TP1070_01_B].displayWidth =  800;
+    lstTargets[TP1070_01_B].displayHeight = 480;
+    lstTargets[TP1070_01_B].sdCards = 0;
+    lstTargets[TP1070_01_B].digitalIN = 0;
+    lstTargets[TP1070_01_B].digitalOUT = 0;
+    lstTargets[TP1070_01_B].nEncoders = 0;
+    lstTargets[TP1070_01_B].analogIN = 0;
+    lstTargets[TP1070_01_B].analogINrowCT = -1;
+    lstTargets[TP1070_01_B].analogOUT = 0;
+    lstTargets[TP1070_01_B].analogOUTrowCT = -1;
+    lstTargets[TP1070_01_B].tAmbient = false;
+    lstTargets[TP1070_01_B].rpmPorts = 0;
+    lstTargets[TP1070_01_B].ser0_Enabled = false;
+    lstTargets[TP1070_01_B].ser1_Enabled = false;
+    lstTargets[TP1070_01_B].ser2_Enabled = false;
+    lstTargets[TP1070_01_B].ser3_Enabled = true;
+    lstTargets[TP1070_01_B].can1_Enabled = true;
+    // 07 TP1070_01_C
+    lstTargets[TP1070_01_C].modelName =  QString::fromAscii(product_name[TP1070_01_C]);
+    lstTargets[TP1070_01_C].displayWidth =  800;
+    lstTargets[TP1070_01_C].displayHeight = 480;
+    lstTargets[TP1070_01_C].sdCards = 0;
+    lstTargets[TP1070_01_C].digitalIN = 0;
+    lstTargets[TP1070_01_C].digitalOUT = 0;
+    lstTargets[TP1070_01_C].nEncoders = 0;
+    lstTargets[TP1070_01_C].analogIN = 0;
+    lstTargets[TP1070_01_C].analogINrowCT = -1;
+    lstTargets[TP1070_01_C].analogOUT = 0;
+    lstTargets[TP1070_01_C].analogOUTrowCT = -1;
+    lstTargets[TP1070_01_C].tAmbient = false;
+    lstTargets[TP1070_01_C].rpmPorts = 0;
+    lstTargets[TP1070_01_C].ser0_Enabled = true;
+    lstTargets[TP1070_01_C].ser1_Enabled = false;
+    lstTargets[TP1070_01_C].ser2_Enabled = false;
+    lstTargets[TP1070_01_C].ser3_Enabled = true;
+    lstTargets[TP1070_01_C].can1_Enabled = false;
+    // 08 TPAC1006
+    lstTargets[TPAC1006].modelName =  QString::fromAscii(product_name[TPAC1006]);
+    lstTargets[TPAC1006].displayWidth =  320;
+    lstTargets[TPAC1006].displayHeight = 240;
+    lstTargets[TPAC1006].sdCards = 0;
+    lstTargets[TPAC1006].digitalIN = 8;
+    lstTargets[TPAC1006].digitalOUT = 12;
+    lstTargets[TPAC1006].nEncoders = 1;
+    lstTargets[TPAC1006].analogIN = 4;
+    lstTargets[TPAC1006].analogINrowCT = 5323;
+    lstTargets[TPAC1006].analogOUT = 2;
+    lstTargets[TPAC1006].analogOUTrowCT = 5332;
+    lstTargets[TPAC1006].tAmbient = true;
+    lstTargets[TPAC1006].rpmPorts = 1;
+    lstTargets[TPAC1006].ser0_Enabled = false;
+    lstTargets[TPAC1006].ser1_Enabled = false;
+    lstTargets[TPAC1006].ser2_Enabled = false;
+    lstTargets[TPAC1006].ser3_Enabled = true;
+    lstTargets[TPAC1006].can1_Enabled = true;
+    //09 TPAC1007_03
+    lstTargets[TPAC1007_03].modelName =  QString::fromAscii(product_name[TPAC1007_03]);
+    lstTargets[TPAC1007_03].displayWidth =  480;
+    lstTargets[TPAC1007_03].displayHeight = 272;
+    lstTargets[TPAC1007_03].sdCards = 1;
+    lstTargets[TPAC1007_03].digitalIN = 12;
+    lstTargets[TPAC1007_03].digitalOUT = 8;
+    lstTargets[TPAC1007_03].nEncoders = 1;
+    lstTargets[TPAC1007_03].analogIN = 2;
+    lstTargets[TPAC1007_03].analogINrowCT = 5325;
+    lstTargets[TPAC1007_03].analogOUT = 1;
+    lstTargets[TPAC1007_03].analogOUTrowCT = 5337;
+    lstTargets[TPAC1007_03].tAmbient = true;
+    lstTargets[TPAC1007_03].rpmPorts = 0;
+    lstTargets[TPAC1007_03].ser0_Enabled = true;
+    lstTargets[TPAC1007_03].ser1_Enabled = false;
+    lstTargets[TPAC1007_03].ser2_Enabled = false;
+    lstTargets[TPAC1007_03].ser3_Enabled = false;
+    lstTargets[TPAC1007_03].can1_Enabled = false;
+    //10 TPAC1007_04_AA
+    lstTargets[TPAC1007_04_AA].modelName =  QString::fromAscii(product_name[TPAC1007_04_AA]);
+    lstTargets[TPAC1007_04_AA].displayWidth =  480;
+    lstTargets[TPAC1007_04_AA].displayHeight = 272;
+    lstTargets[TPAC1007_04_AA].sdCards = 1;
+    lstTargets[TPAC1007_04_AA].digitalIN = 12;
+    lstTargets[TPAC1007_04_AA].digitalOUT = 8;
+    lstTargets[TPAC1007_04_AA].nEncoders = 1;
+    lstTargets[TPAC1007_04_AA].analogIN = 2;
+    lstTargets[TPAC1007_04_AA].analogINrowCT = 5328;
+    lstTargets[TPAC1007_04_AA].analogOUT = 4;
+    lstTargets[TPAC1007_04_AA].analogOUTrowCT = 5344;
+    lstTargets[TPAC1007_04_AA].tAmbient = true;
+    lstTargets[TPAC1007_04_AA].rpmPorts = 0;
+    lstTargets[TPAC1007_04_AA].ser0_Enabled = true;
+    lstTargets[TPAC1007_04_AA].ser1_Enabled = false;
+    lstTargets[TPAC1007_04_AA].ser2_Enabled = false;
+    lstTargets[TPAC1007_04_AA].ser3_Enabled = false;
+    lstTargets[TPAC1007_04_AA].can1_Enabled = false;
+    //11 TPAC1007_04_AB
+    lstTargets[TPAC1007_04_AB].modelName =  QString::fromAscii(product_name[TPAC1007_04_AB]);
+    lstTargets[TPAC1007_04_AB].displayWidth =  480;
+    lstTargets[TPAC1007_04_AB].displayHeight = 272;
+    lstTargets[TPAC1007_04_AB].sdCards = 1;
+    lstTargets[TPAC1007_04_AB].digitalIN = 9;
+    lstTargets[TPAC1007_04_AB].digitalOUT = 8;
+    lstTargets[TPAC1007_04_AB].nEncoders = 1;
+    lstTargets[TPAC1007_04_AB].analogIN = 5;
+    lstTargets[TPAC1007_04_AB].analogINrowCT = 5328;
+    lstTargets[TPAC1007_04_AB].analogOUT = 4;
+    lstTargets[TPAC1007_04_AB].analogOUTrowCT = 5344;
+    lstTargets[TPAC1007_04_AB].tAmbient = true;
+    lstTargets[TPAC1007_04_AB].rpmPorts = 0;
+    lstTargets[TPAC1007_04_AB].ser0_Enabled = true;
+    lstTargets[TPAC1007_04_AB].ser1_Enabled = false;
+    lstTargets[TPAC1007_04_AB].ser2_Enabled = false;
+    lstTargets[TPAC1007_04_AB].ser3_Enabled = false;
+    lstTargets[TPAC1007_04_AB].can1_Enabled = false;
+    //12 TPAC1007_04_AC
+    lstTargets[TPAC1007_04_AC].modelName =  QString::fromAscii(product_name[TPAC1007_04_AC]);
+    lstTargets[TPAC1007_04_AC].displayWidth =  480;
+    lstTargets[TPAC1007_04_AC].displayHeight = 272;
+    lstTargets[TPAC1007_04_AC].sdCards = 1;
+    lstTargets[TPAC1007_04_AC].digitalIN = 12;
+    lstTargets[TPAC1007_04_AC].digitalOUT = 8;
+    lstTargets[TPAC1007_04_AC].nEncoders = 1;
+    lstTargets[TPAC1007_04_AC].analogIN = 2;
+    lstTargets[TPAC1007_04_AC].analogINrowCT = 5328;
+    lstTargets[TPAC1007_04_AC].analogOUT = 1;
+    lstTargets[TPAC1007_04_AC].analogOUTrowCT = 5344;
+    lstTargets[TPAC1007_04_AC].tAmbient = true;
+    lstTargets[TPAC1007_04_AC].rpmPorts = 0;
+    lstTargets[TPAC1007_04_AC].ser0_Enabled = true;
+    lstTargets[TPAC1007_04_AC].ser1_Enabled = false;
+    lstTargets[TPAC1007_04_AC].ser2_Enabled = false;
+    lstTargets[TPAC1007_04_AC].ser3_Enabled = false;
+    lstTargets[TPAC1007_04_AC].can1_Enabled = false;
+    // 13 TPAC1007_LV
+    lstTargets[TPAC1007_LV].modelName =  QString::fromAscii(product_name[TPAC1007_LV]);
+    lstTargets[TPAC1007_LV].displayWidth =  480;
+    lstTargets[TPAC1007_LV].displayHeight = 272;
+    lstTargets[TPAC1007_LV].sdCards = 0;
+    lstTargets[TPAC1007_LV].digitalIN = 8;
+    lstTargets[TPAC1007_LV].digitalOUT = 8;
+    lstTargets[TPAC1007_LV].nEncoders = 1;
+    lstTargets[TPAC1007_LV].analogIN = 0;
+    lstTargets[TPAC1007_LV].analogINrowCT = -1;
+    lstTargets[TPAC1007_LV].analogOUT = 0;
+    lstTargets[TPAC1007_LV].analogOUTrowCT = -1;
+    lstTargets[TPAC1007_LV].tAmbient = true;
+    lstTargets[TPAC1007_LV].rpmPorts = 0;
+    lstTargets[TPAC1007_LV].ser0_Enabled = true;
+    lstTargets[TPAC1007_LV].ser1_Enabled = false;
+    lstTargets[TPAC1007_LV].ser2_Enabled = false;
+    lstTargets[TPAC1007_LV].ser3_Enabled = false;
+    lstTargets[TPAC1007_LV].can1_Enabled = false;
+    // 14 TPAC1008_01
+    lstTargets[TPAC1008_01].modelName =  QString::fromAscii(product_name[TPAC1008_01]);
+    lstTargets[TPAC1008_01].displayWidth =  800;
+    lstTargets[TPAC1008_01].displayHeight = 480;
+    lstTargets[TPAC1008_01].sdCards = 0;
+    lstTargets[TPAC1008_01].digitalIN = 8;
+    lstTargets[TPAC1008_01].digitalOUT = 12;
+    lstTargets[TPAC1008_01].nEncoders = 1;
+    lstTargets[TPAC1008_01].analogIN = 4;
+    lstTargets[TPAC1008_01].analogINrowCT = 5323;
+    lstTargets[TPAC1008_01].analogOUT = 2;
+    lstTargets[TPAC1008_01].analogOUTrowCT = 5332;
+    lstTargets[TPAC1008_01].tAmbient = true;
+    lstTargets[TPAC1008_01].rpmPorts = 1;
+    lstTargets[TPAC1008_01].ser0_Enabled = false;
+    lstTargets[TPAC1008_01].ser1_Enabled = false;
+    lstTargets[TPAC1008_01].ser2_Enabled = false;
+    lstTargets[TPAC1008_01].ser3_Enabled = true;
+    lstTargets[TPAC1008_01].can1_Enabled = true;
+    // 15 TPAC1008_02_AA
+    lstTargets[TPAC1008_02_AA].modelName =  QString::fromAscii(product_name[TPAC1008_02_AA]);
+    lstTargets[TPAC1008_02_AA].displayWidth =  800;
+    lstTargets[TPAC1008_02_AA].displayHeight = 480;
+    lstTargets[TPAC1008_02_AA].sdCards = 0;
+    lstTargets[TPAC1008_02_AA].digitalIN = 8;
+    lstTargets[TPAC1008_02_AA].digitalOUT = 12;
+    lstTargets[TPAC1008_02_AA].nEncoders = 1;
+    lstTargets[TPAC1008_02_AA].analogIN = 4;
+    lstTargets[TPAC1008_02_AA].analogINrowCT = 5325;
+    lstTargets[TPAC1008_02_AA].analogOUT = 2;
+    lstTargets[TPAC1008_02_AA].analogOUTrowCT = 5347;
+    lstTargets[TPAC1008_02_AA].tAmbient = true;
+    lstTargets[TPAC1008_02_AA].rpmPorts = 1;
+    lstTargets[TPAC1008_02_AA].ser0_Enabled = false;
+    lstTargets[TPAC1008_02_AA].ser1_Enabled = false;
+    lstTargets[TPAC1008_02_AA].ser2_Enabled = false;
+    lstTargets[TPAC1008_02_AA].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AA].can1_Enabled = true;
+    // 16 TPAC1008_02_AB
+    lstTargets[TPAC1008_02_AB].modelName =  QString::fromAscii(product_name[TPAC1008_02_AB]);
+    lstTargets[TPAC1008_02_AB].displayWidth =  800;
+    lstTargets[TPAC1008_02_AB].displayHeight = 480;
+    lstTargets[TPAC1008_02_AB].sdCards = 0;
+    lstTargets[TPAC1008_02_AB].digitalIN = 8;
+    lstTargets[TPAC1008_02_AB].digitalOUT = 12;
+    lstTargets[TPAC1008_02_AB].nEncoders = 1;
+    lstTargets[TPAC1008_02_AB].analogIN = 4;
+    lstTargets[TPAC1008_02_AB].analogINrowCT = 5325;
+    lstTargets[TPAC1008_02_AB].analogOUT = 2;
+    lstTargets[TPAC1008_02_AB].analogOUTrowCT = 5347;
+    lstTargets[TPAC1008_02_AB].tAmbient = true;
+    lstTargets[TPAC1008_02_AB].rpmPorts = 1;
+    lstTargets[TPAC1008_02_AB].ser0_Enabled = true;
+    lstTargets[TPAC1008_02_AB].ser1_Enabled = false;
+    lstTargets[TPAC1008_02_AB].ser2_Enabled = false;
+    lstTargets[TPAC1008_02_AB].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AB].can1_Enabled = false;
+    // 17 TPAC1008_02_AD
+    lstTargets[TPAC1008_02_AD].modelName =  QString::fromAscii(product_name[TPAC1008_02_AD]);
+    lstTargets[TPAC1008_02_AD].displayWidth =  800;
+    lstTargets[TPAC1008_02_AD].displayHeight = 480;
+    lstTargets[TPAC1008_02_AD].sdCards = 0;
+    lstTargets[TPAC1008_02_AD].digitalIN = 8;
+    lstTargets[TPAC1008_02_AD].digitalOUT = 12;
+    lstTargets[TPAC1008_02_AD].nEncoders = 1;
+    lstTargets[TPAC1008_02_AD].analogIN = 4;
+    lstTargets[TPAC1008_02_AD].analogINrowCT = 5325;
+    lstTargets[TPAC1008_02_AD].analogOUT = 4;
+    lstTargets[TPAC1008_02_AD].analogOUTrowCT = 5347;
+    lstTargets[TPAC1008_02_AD].tAmbient = true;
+    lstTargets[TPAC1008_02_AD].rpmPorts = 1;
+    lstTargets[TPAC1008_02_AD].ser0_Enabled = false;
+    lstTargets[TPAC1008_02_AD].ser1_Enabled = false;
+    lstTargets[TPAC1008_02_AD].ser2_Enabled = false;
+    lstTargets[TPAC1008_02_AD].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AD].can1_Enabled = false;
+    // 18 TPAC1008_02_AE
+    lstTargets[TPAC1008_02_AE].modelName =  QString::fromAscii(product_name[TPAC1008_02_AE]);
+    lstTargets[TPAC1008_02_AE].displayWidth =  800;
+    lstTargets[TPAC1008_02_AE].displayHeight = 480;
+    lstTargets[TPAC1008_02_AE].sdCards = 0;
+    lstTargets[TPAC1008_02_AE].digitalIN = 8;
+    lstTargets[TPAC1008_02_AE].digitalOUT = 12;
+    lstTargets[TPAC1008_02_AE].nEncoders = 1;
+    lstTargets[TPAC1008_02_AE].analogIN = 4;
+    lstTargets[TPAC1008_02_AE].analogINrowCT = 5325;
+    lstTargets[TPAC1008_02_AE].analogOUT = 4;
+    lstTargets[TPAC1008_02_AE].analogOUTrowCT = 5347;
+    lstTargets[TPAC1008_02_AE].tAmbient = true;
+    lstTargets[TPAC1008_02_AE].rpmPorts = 1;
+    lstTargets[TPAC1008_02_AE].ser0_Enabled = false;
+    lstTargets[TPAC1008_02_AE].ser1_Enabled = false;
+    lstTargets[TPAC1008_02_AE].ser2_Enabled = false;
+    lstTargets[TPAC1008_02_AE].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AE].can1_Enabled = false;
+    // 19 TPAC1008_02_AF
+    lstTargets[TPAC1008_02_AF].modelName =  QString::fromAscii(product_name[TPAC1008_02_AF]);
+    lstTargets[TPAC1008_02_AF].displayWidth =  800;
+    lstTargets[TPAC1008_02_AF].displayHeight = 480;
+    lstTargets[TPAC1008_02_AF].sdCards = 0;
+    lstTargets[TPAC1008_02_AF].digitalIN = 8;
+    lstTargets[TPAC1008_02_AF].digitalOUT = 12;
+    lstTargets[TPAC1008_02_AF].nEncoders = 1;
+    lstTargets[TPAC1008_02_AF].analogIN = 4;
+    lstTargets[TPAC1008_02_AF].analogINrowCT = 5325;
+    lstTargets[TPAC1008_02_AF].analogOUT = 4;
+    lstTargets[TPAC1008_02_AF].analogOUTrowCT = 5347;
+    lstTargets[TPAC1008_02_AF].tAmbient = true;
+    lstTargets[TPAC1008_02_AF].rpmPorts = 1;
+    lstTargets[TPAC1008_02_AF].ser0_Enabled = false;
+    lstTargets[TPAC1008_02_AF].ser1_Enabled = false;
+    lstTargets[TPAC1008_02_AF].ser2_Enabled = false;
+    lstTargets[TPAC1008_02_AF].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AF].can1_Enabled = false;
+    // 20 TPLC100_01_AA
+    lstTargets[TPLC100_01_AA].modelName =  QString::fromAscii(product_name[TPLC100_01_AA]);
+    lstTargets[TPLC100_01_AA].displayWidth =  -1;
+    lstTargets[TPLC100_01_AA].displayHeight = -1;
+    lstTargets[TPLC100_01_AA].usbPorts = 2;
+    lstTargets[TPLC100_01_AA].sdCards = 0;
+    lstTargets[TPLC100_01_AA].digitalIN = 4;
+    lstTargets[TPLC100_01_AA].digitalOUT = 8;
+    lstTargets[TPLC100_01_AA].nEncoders = 1;
+    lstTargets[TPLC100_01_AA].analogIN = 12;
+    lstTargets[TPLC100_01_AA].analogINrowCT = -1;
+    lstTargets[TPLC100_01_AA].analogOUT = 2;
+    lstTargets[TPLC100_01_AA].analogOUTrowCT = -1;
+    lstTargets[TPLC100_01_AA].tAmbient = true;
+    lstTargets[TPLC100_01_AA].rpmPorts = 0;
+    lstTargets[TPLC100_01_AA].ser0_Enabled = true;
+    lstTargets[TPLC100_01_AA].ser1_Enabled = true;
+    lstTargets[TPLC100_01_AA].ser2_Enabled = true;
+    lstTargets[TPLC100_01_AA].ser3_Enabled = true;
+    lstTargets[TPLC100_01_AA].can1_Enabled = true;
+    // 21 TPLC100_01_AB
+    lstTargets[TPLC100_01_AB].modelName =  QString::fromAscii(product_name[TPLC100_01_AB]);
+    lstTargets[TPLC100_01_AB].displayWidth =  -1;
+    lstTargets[TPLC100_01_AB].displayHeight = -1;
+    lstTargets[TPLC100_01_AB].usbPorts = 2;
+    lstTargets[TPLC100_01_AB].sdCards = 0;
+    lstTargets[TPLC100_01_AB].digitalIN = 4;
+    lstTargets[TPLC100_01_AB].digitalOUT = 8;
+    lstTargets[TPLC100_01_AB].nEncoders = 1;
+    lstTargets[TPLC100_01_AB].analogIN = 12;
+    lstTargets[TPLC100_01_AB].analogINrowCT = -1;
+    lstTargets[TPLC100_01_AB].analogOUT = 2;
+    lstTargets[TPLC100_01_AB].analogOUTrowCT = -1;
+    lstTargets[TPLC100_01_AB].tAmbient = true;
+    lstTargets[TPLC100_01_AB].rpmPorts = 0;
+    lstTargets[TPLC100_01_AB].ser0_Enabled = true;
+    lstTargets[TPLC100_01_AB].ser1_Enabled = true;
+    lstTargets[TPLC100_01_AB].ser2_Enabled = true;
+    lstTargets[TPLC100_01_AB].ser3_Enabled = true;
+    lstTargets[TPLC100_01_AB].can1_Enabled = true;
+    // 22 TPLC150
+    lstTargets[TPLC150].modelName =  QString::fromAscii(product_name[TPLC150]);
+    lstTargets[TPLC150].displayWidth =  -1;
+    lstTargets[TPLC150].displayHeight = -1;
+    lstTargets[TPLC150].usbPorts = 2;
+    lstTargets[TPLC150].ethPorts = 2;
+    lstTargets[TPLC150].sdCards = 0;
+    lstTargets[TPLC150].digitalIN = 12;
+    lstTargets[TPLC150].digitalOUT = 10;
+    lstTargets[TPLC150].nEncoders = 1;
+    lstTargets[TPLC150].analogIN = 12;
+    lstTargets[TPLC150].analogINrowCT = -1;
+    lstTargets[TPLC150].analogOUT = 4;
+    lstTargets[TPLC150].analogOUTrowCT = -1;
+    lstTargets[TPLC150].tAmbient = true;
+    lstTargets[TPLC150].rpmPorts = 1;
+    lstTargets[TPLC150].ser0_Enabled = true;
+    lstTargets[TPLC150].ser1_Enabled = true;
+    lstTargets[TPLC150].ser2_Enabled = true;
+    lstTargets[TPLC150].ser3_Enabled = true;
+    lstTargets[TPLC150].can1_Enabled = true;
+}
+int ctedit::searchModelInList(QString szModel)
+// Ricerca il modello corrente nella Lista modelli attuale.
+// Ritorna un # Modello e riempie il record globale TargetConfig
+// E' garantito tornare sempre un # Modello valido (se non trovato vale 0 AnyTPAC)
+{
+    int nCur = 0;
+    int nModel = -1;
+    for (nCur = 0; nCur < lstTargets.count(); nCur++)  {
+        if (lstTargets[nCur].modelName == szModel)  {
+            nModel = nCur;
+            break;
+        }
+    }
+    // Valori di Default se la ricerca non ha trovato nulla
+    if (nCur <= AnyTPAC && nCur >= lstTargets.count())
+        nModel = AnyTPAC;
+    // Imposta configurazione corrente
+    TargetConfig = lstTargets[nModel];
+    // Return value
+    return nModel;
+}
+int ctedit::getFirstPortFromProtocol(int nProtocol)
+// Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
+// Ritorna -1 se il protocollo non è disponibile sul modello o tutte le porte sono disabilitate
+{
+    int nPort = -1;
+
+    // Protocollo PLC dimesione pari a MAXBLOCKSIZE
+    switch (nProtocol) {
+        // Protocolli Seriali
+        case RTU:
+        case RTU_SRV:
+        case MECT_PTC:
+            if (TargetConfig.ser0_Enabled)
+                nPort = 0;
+            else if (TargetConfig.ser1_Enabled)
+                nPort = 1;
+            else if (TargetConfig.ser2_Enabled)
+                nPort = 2;
+            else if (TargetConfig.ser3_Enabled)
+                nPort = 3;
+            break;
+        // Protocolli TCP
+        case TCP:
+        case TCPRTU:
+        case TCP_SRV:
+        case TCPRTU_SRV:
+            if (TargetConfig.ethPorts > 0)
+                nPort = szDEF_IP_PORT.toInt(0);
+            break;
+        // Protocollo CAN
+        case CANOPEN:
+            if (TargetConfig.can0_Enabled)
+                nPort = 0;
+            else if (TargetConfig.can1_Enabled)
+                nPort = 1;
+            break;
+        default:
+            nPort = -1;
+            break;
+    }
+    // Return value
+    return nPort;
 }

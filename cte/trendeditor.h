@@ -2,6 +2,7 @@
 #define TRENDEDITOR_H
 
 #include "parser.h"
+#include "ctecommon.h"
 
 #include <QWidget>
 #include <QLabel>
@@ -21,7 +22,7 @@ class TrendEditor : public QWidget
 public:
     explicit TrendEditor(QWidget *parent = 0);
     ~TrendEditor();
-    void setTrendsFiles(const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile);
+    void setTrendsParameters(const QString szModel, const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile);
 signals:
 
 public slots:
@@ -55,6 +56,7 @@ private:
     Ui::TrendEditor *ui;
     // Liste varie di supporto all'interfaccia
     QHash<QString, QString> mapOrientation;
+    QString         m_szCurrentModel;
     QString         m_szTrendFile;
     QString         m_szTrendPath;
     QString         m_szTemplateFile;

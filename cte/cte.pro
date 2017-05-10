@@ -8,7 +8,8 @@ HEADERS += \
     cteerrdef.h \
     cteerrorlist.h \
     mectsettings.h \
-    trendeditor.h
+    trendeditor.h \
+    ctecommon.h
 
 SOURCES += \
     cteplugin.cpp \

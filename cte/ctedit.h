@@ -35,7 +35,7 @@ public:
     void    displayStatusMessage(QString szMessage, int nSeconds = 0);// Show message in ui->lblMessage
 
 protected:
-     bool eventFilter(QObject *obj, QEvent *event);        // Gestore Event Handler
+     bool   eventFilter(QObject *obj, QEvent *event);        // Gestore Event Handler
 
 signals:
 
@@ -89,6 +89,7 @@ private:
     bool    iface2values(QStringList &lstRecValues);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
     void    freeCTrec(int nRow);                    // Marca il Record della CT come inutilizzato
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
+    void    initTargetList();                       // Init della lista dei Target definiti
     // Gestione interfaccia
     void    enableFields();                         // Abilitazione dei campi form in funzione di Protocollo
     bool    isLineModified(int nRow);               // Check se linea corrente Grid è diversa da Form in Editing
@@ -108,12 +109,13 @@ private:
     int     globalChecks();                         // Controlli complessivi su tutta la CT
     bool    isFormEmpty();                          // Controllo Form Editing vuoto
     bool    isValidVarName(QString szName);         // Controllo del Nome Variabile
+    int     getFirstPortFromProtocol(int nProtocol);// Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
     void    fillErrorMessage(int nRow, int nCol, int nErrCode, QString szVarName, QString szValue, QChar severity, Err_CT *errCt);
     // Gestione Configurazione Progetto
     QString getModelName();                         // Lettura del file template.pri per determinare il modello di TPAC
+    int     searchModelInList(QString szModel);     // Ricerca il modello corrente nella Lista modelli attuale
     // Calcolo valori in funzione del Modello e del Protocollo
-    QStringList getPortsFromModel(const QString &szModel, QString szProtocol);      // Calocolo Porte in funzione di Modello e protocollo
-    void    enableProtocolsFromModel(const QString &szModel);  // Abilita i Protocolli in funzione del Modello corrente
+    void    enableProtocolsFromModel();             // Abilita i Protocolli in funzione del Modello corrente (da TargetConfig)
     int     varSizeInBlock(int nVarType);
     int     maxBlockSize(enum FieldbusType nProtocol, int nPort);    // max block size from Protocol && Port
     bool    isModbus(enum FieldbusType nProtocol);
@@ -169,6 +171,7 @@ private:
     CrossTableRecord        CrossTable[1 + DimCrossTable];	 // campi sono riempiti a partire dall'indice 1
     // System Configuration
     TP_Config               TargetConfig;           // Configurazione corrente del Target letta da Form mectSettings
+    QList<TP_Config>        lstTargets;             // Lista di tutti i Target definiti
     // Controllo e Gestione  Errori
     QList<int>              lstAllUpdates;          // Lista contenente tutti i tipi di Update (per filtro su Nomi variabili)
     QList<int>              lstNoHUpdates;          // Lista contenente tutti i tipi di Update tranne H (per Allarmi)

@@ -58,6 +58,12 @@
       <number>1</number>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
       <item>
        <widget class="QLabel" name="lblModelP">
         <property name="maximumSize">
@@ -94,6 +100,7 @@
         </property>
         <property name="font">
          <font>
+          <pointsize>10</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
@@ -150,9 +157,48 @@
         </property>
         <property name="font">
          <font>
+          <pointsize>10</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="lineWidth">
+         <number>1</number>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblLogo">
+        <property name="minimumSize">
+         <size>
+          <width>126</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>126</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border-image: url(&quot;:/icons/img/Mect_small.png&quot;)</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::Box</enum>

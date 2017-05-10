@@ -79,6 +79,9 @@ TrendEditor::TrendEditor(QWidget *parent) :
     m_szTrendFile.clear();
     m_szTrendPath.clear();
     m_szTemplateFile.clear();
+    m_szCurrentModel.clear();
+    ui->cmdSave->setEnabled(false);
+    ui->cmdSaveAs->setEnabled(false);
 }
 
 TrendEditor::~TrendEditor()
@@ -528,9 +531,14 @@ void TrendEditor::on_cmdSaveAs_clicked()
         }
     }
 }
-void TrendEditor::setTrendsFiles(const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile)
+void TrendEditor::setTrendsParameters(const QString szModel, const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile)
 {
     QString         szNewTrendFile;
+
+    // Force Model to new received model and enable Save - Save As
+    m_szCurrentModel = szModel.trimmed();
+    ui->cmdSave->setEnabled(! m_szCurrentModel.isEmpty());
+    ui->cmdSaveAs->setEnabled(! m_szCurrentModel.isEmpty());
 
     // Force Trends Path to new received path
     m_szTrendPath = szTrendsPath;

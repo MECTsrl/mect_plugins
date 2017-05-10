@@ -97,8 +97,9 @@ enum productId {
         /*17*/ TPAC1008_02_AD,
         /*18*/ TPAC1008_02_AE,
         /*19*/ TPAC1008_02_AF,
-        /*20*/ TPLC100,
-        /*21*/ TPLC150,
+        /*20*/ TPLC100_01_AA,
+        /*21*/ TPLC100_01_AB,
+        /*22*/ TPLC150,
                MODEL_TOTALS
 };
 
@@ -186,40 +187,6 @@ struct  Alarms {
     int comparison;
 };
 
-struct  TP_Config {
-    // General Params
-    int readPeriod1;
-    int readPeriod2;
-    int readPeriod3;
-    // Serial 0
-    int ser0_Enabled;
-    int ser0_TimeOut;
-    int ser0_Silence;
-    int ser0_BlockSize;
-    // Serial 1
-    int ser1_Enabled;
-    int ser1_TimeOut;
-    int ser1_Silence;
-    int ser1_BlockSize;
-    // Serial 2
-    int ser2_Enabled;
-    int ser2_TimeOut;
-    int ser2_Silence;
-    int ser2_BlockSize;
-    // Serial 3
-    int ser3_Enabled;
-    int ser3_TimeOut;
-    int ser3_Silence;
-    int ser3_BlockSize;
-    // TCP
-    int tcp_BlockSize;
-    // Can0
-    int can0_Enabled;
-    int can0_BlockSize;
-    // Can1
-    int can1_Enabled;
-    int can1_BlockSize;
-};
 
 /******************************************************************************
  ***************************** PROTOTYPES SECTION *****************************

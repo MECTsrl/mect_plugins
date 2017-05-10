@@ -77,20 +77,15 @@ MectSettings::~MectSettings()
     delete ui;
 }
 
-void    MectSettings::setModel(const int nModel)
+void    MectSettings::setModel(TP_Config &tpConfig)
 {
     int i = 0;
 
-    if (nModel >= 0 && MODEL_TOTALS)  {
-        m_nModel = nModel;
-        m_szModel = QString::fromAscii(product_name[nModel]);        
-        // Get Port Config from Model Number
-        enablePortsFromModel(nModel);
-    }
-    else  {
-        m_nModel = AnyTPAC;
-        m_szModel.clear();
-    }
+    // Recupera Modello e descrizione
+    m_nModel = tpConfig.nModel;
+    m_szModel = tpConfig.modelName;
+    TargetConfig = tpConfig;
+    enablePortsFromModel(TargetConfig);
     // Refresh Port Tabs config
     // qDebug() << tr("Model: %1") .arg(nModel);
     for (i = 0; i < tabTotals; i++)  {
@@ -101,7 +96,7 @@ void    MectSettings::setModel(const int nModel)
     // Set Tab System as current Tab
     ui->tabWidget->setCurrentIndex(tabSystem);
 }
-bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QString szFilePro, const QString &szProjectPath, const int nModel)
+bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QString szFilePro, const QString &szProjectPath, TP_Config &targetConfig)
 {
     QVariant defBlockSize = QString::number(MAXBLOCKSIZE);
 
@@ -520,7 +515,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
         m_tabEnabled[tabCan1] = false;
     }
     // Set Model Info for current Model
-    setModel(nModel);
+    setModel(targetConfig);
     // All Ok, return true
     return true;
 }
@@ -1090,83 +1085,27 @@ bool MectSettings::checkFields()
 exitCheck:
     return fRes;
 }
-void MectSettings::enablePortsFromModel(int nModel)
+void MectSettings::enablePortsFromModel(TP_Config &targetConfig)
 {
     // tab System and TCP are always ON
     m_tabEnabled[tabSystem] = true;
     m_tabEnabled[tabTCP] = true;
     // Check if model is in range
-    if (nModel == AnyTPAC || nModel >= MODEL_TOTALS)  {
+    if (targetConfig.nModel == AnyTPAC || targetConfig.nModel >= MODEL_TOTALS)  {
         return;
     }
     // Seriale 0
-    if (nModel == TP1043_01_A ||
-        nModel == TP1070_01_C ||
-        nModel == TPAC1007_03 ||
-        nModel == TPAC1007_04_AA ||
-        nModel == TPAC1007_04_AB ||
-        nModel == TPAC1007_04_AC ||
-        nModel == TPAC1007_LV ||
-        nModel == TPAC1008_02_AB ||
-        nModel == TPLC100 ||
-        nModel == TPLC150 )   {
-        m_tabEnabled[tabSerial0] = true;
-    }
-    else  {
-        m_tabEnabled[tabSerial0] = false;
-    }
+    m_tabEnabled[tabSerial0] = targetConfig.ser0_Enabled;
     // Seriale 1
-    if (nModel == TPLC100 ||
-        nModel == TPLC150 )   {
-        m_tabEnabled[tabSerial1] = true;
-    }
-    else  {
-        m_tabEnabled[tabSerial1] = false;
-    }
+    m_tabEnabled[tabSerial1] = targetConfig.ser1_Enabled;
     // Seriale 2
-    if (nModel == TPLC100 ||
-        nModel == TPLC150 )   {
-        m_tabEnabled[tabSerial2] = true;
-    }
-    else  {
-        m_tabEnabled[tabSerial2] = false;
-    }
+    m_tabEnabled[tabSerial2] = targetConfig.ser2_Enabled;
     // Seriale 3
-    if (nModel == TP1057_01_A ||
-        nModel == TP1057_01_B ||
-        nModel == TP1070_01_A ||
-        nModel == TP1070_01_B ||
-        nModel == TP1070_01_C ||
-        nModel == TPAC1006    ||
-        nModel == TPAC1008_01 ||
-        nModel == TPAC1008_02_AA ||
-        nModel == TPAC1008_02_AB ||
-        nModel == TPAC1008_02_AD ||
-        nModel == TPAC1008_02_AE ||
-        nModel == TPAC1008_02_AF ||
-        nModel == TPLC100 ||
-        nModel == TPLC150 )   {
-        m_tabEnabled[tabSerial3] = true;
-    }
-    else  {
-        m_tabEnabled[tabSerial3] = false;
-    }
+    m_tabEnabled[tabSerial3] = targetConfig.ser3_Enabled;
     // Can 0
-    m_tabEnabled[tabCan0] = false;
+    m_tabEnabled[tabCan0] = targetConfig.can0_Enabled;
     // Can1
-    if (nModel == TP1043_01_B ||
-        nModel == TP1057_01_B ||
-        nModel == TP1070_01_B ||
-        nModel == TPAC1006    ||
-        nModel == TPAC1008_01 ||
-        nModel == TPAC1008_02_AA ||
-         nModel == TPLC100 ||
-         nModel == TPLC150 )   {
-        m_tabEnabled[tabCan1] = true;
-    }
-    else  {
-        m_tabEnabled[tabCan1] = false;
-    }
+    m_tabEnabled[tabCan1] = targetConfig.can1_Enabled;;
 }
 bool MectSettings::getTargetConfig(TP_Config &targetConfig)
 // Retrieves current target configuration
@@ -1175,59 +1114,90 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     bool fOk = false;
     int  nVal = 0;
 
+    // Update Local && Global TPAC config
+    // Retries
+    nVal = ui->lineEdit_Retries->text().toInt(&fOk);
+    TargetConfig.retries = fOk ? nVal : 0;
+    // Black List
+    nVal = ui->lineEdit_Blacklist->text().toInt(&fOk);
+    TargetConfig.blacklist = fOk ? nVal : 0;
     // ReadPeriod1
     nVal = ui->lineEdit_ReadPeriod1->text().toInt(&fOk);
-    targetConfig.readPeriod1 = fOk ? nVal : 0;
+    TargetConfig.readPeriod1 = fOk ? nVal : 0;
     // ReadPeriod2
     nVal = ui->lineEdit_ReadPeriod2->text().toInt(&fOk);
-    targetConfig.readPeriod2 = fOk ? nVal : 0;
+    TargetConfig.readPeriod2 = fOk ? nVal : 0;
     // ReadPeriod3
     nVal = ui->lineEdit_ReadPeriod3->text().toInt(&fOk);
-    targetConfig.readPeriod3 = fOk ? nVal : 0;
+    TargetConfig.readPeriod3 = fOk ? nVal : 0;
+    // fastLogPeriod
+    nVal = ui->lineEdit_FastLogPeriod->text().toInt(&fOk);
+    TargetConfig.fastLogPeriod = fOk ? nVal : 0;
+    // slowLogPeriod
+    nVal = ui->lineEdit_SlowLogPeriod->text().toInt(&fOk);
+    TargetConfig.slowLogPeriod = fOk ? nVal : 0;
     //  Serial 0
-    targetConfig.ser0_Enabled = (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex()) > 0 ? 1 : 0;
+    TargetConfig.ser0_Enabled = (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex()) > 0;
+    nVal = ui->comboBox_Baudrate_SERIAL_PORT_0->currentText().toInt(&fOk);
+    TargetConfig.ser0_BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&fOk);
-    targetConfig.ser0_TimeOut = fOk ? nVal : 0;
+    TargetConfig.ser0_TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&fOk);
-    targetConfig.ser0_Silence = fOk ? nVal : 0;
+    TargetConfig.ser0_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text().toInt(&fOk);
-    targetConfig.ser0_BlockSize = fOk ? nVal : 0;
+    TargetConfig.ser0_BlockSize = fOk ? nVal : 0;
     //  Serial 1
-    targetConfig.ser1_Enabled = (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex()) > 0 ? 1 : 0;
+    TargetConfig.ser1_Enabled = (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex()) > 0;
+    nVal = ui->comboBox_Baudrate_SERIAL_PORT_1->currentText().toInt(&fOk);
+    TargetConfig.ser1_BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt(&fOk);
-    targetConfig.ser1_TimeOut = fOk ? nVal : 0;
+    TargetConfig.ser1_TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&fOk);
-    targetConfig.ser1_Silence = fOk ? nVal : 0;
+    TargetConfig.ser1_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text().toInt(&fOk);
-    targetConfig.ser1_BlockSize = fOk ? nVal : 0;
+    TargetConfig.ser1_BlockSize = fOk ? nVal : 0;
     //  Serial 2
-    targetConfig.ser2_Enabled = (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex()) > 0 ? 1 : 0;
+    TargetConfig.ser2_Enabled = (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex()) > 0;
+    nVal = ui->comboBox_Baudrate_SERIAL_PORT_2->currentText().toInt(&fOk);
+    TargetConfig.ser2_BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt(&fOk);
-    targetConfig.ser2_TimeOut = fOk ? nVal : 0;
+    TargetConfig.ser2_TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&fOk);
-    targetConfig.ser2_Silence = fOk ? nVal : 0;
+    TargetConfig.ser2_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text().toInt(&fOk);
-    targetConfig.ser2_BlockSize = fOk ? nVal : 0;
+    TargetConfig.ser2_BlockSize = fOk ? nVal : 0;
     //  Serial 3
-    targetConfig.ser3_Enabled = (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex()) > 0 ? 1 : 0;
+    TargetConfig.ser3_Enabled = (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex()) > 0;
+    nVal = ui->comboBox_Baudrate_SERIAL_PORT_3->currentText().toInt(&fOk);
+    TargetConfig.ser3_BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_3->text().toInt(&fOk);
-    targetConfig.ser3_TimeOut = fOk ? nVal : 0;
+    TargetConfig.ser3_TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_3->text().toInt(&fOk);
-    targetConfig.ser3_Silence = fOk ? nVal : 0;
+    TargetConfig.ser3_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->text().toInt(&fOk);
-    targetConfig.ser3_BlockSize = fOk ? nVal : 0;
+    TargetConfig.ser3_BlockSize = fOk ? nVal : 0;
     // TCP
+    nVal = ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt(&fOk);
+    TargetConfig.tcp_TimeOut = fOk ? nVal : 0;
+    nVal = ui->lineEdit_Silence_TCP_IP_PORT->text().toInt(&fOk);
+    TargetConfig.tcp_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text().toInt(&fOk);
-    targetConfig.tcp_BlockSize = fOk ? nVal : 0;
+    TargetConfig.tcp_BlockSize = fOk ? nVal : 0;
     // CAN_0
-    targetConfig.can0_Enabled = (m_tabEnabled[tabCan0] && ui->comboBox_Baudrate_CANOPEN_0->currentIndex()) > 0 ? 1 : 0;
+    TargetConfig.can0_Enabled = (m_tabEnabled[tabCan0] && ui->comboBox_Baudrate_CANOPEN_0->currentIndex()) > 0;
+    nVal = ui->comboBox_Baudrate_CANOPEN_0->currentText().toInt(&fOk);
+    TargetConfig.can0_BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_CANOPEN_0->text().toInt(&fOk);
-    targetConfig.can0_BlockSize = fOk ? nVal : 0;
+    TargetConfig.can0_BlockSize = fOk ? nVal : 0;
     // CAN_1
-    targetConfig.can1_Enabled = (m_tabEnabled[tabCan1] && ui->comboBox_Baudrate_CANOPEN_1->currentIndex()) > 0 ? 1 : 0;
+    TargetConfig.can1_Enabled = (m_tabEnabled[tabCan1] && ui->comboBox_Baudrate_CANOPEN_1->currentIndex()) > 0;
+    nVal = ui->comboBox_Baudrate_CANOPEN_1->currentText().toInt(&fOk);
+    TargetConfig.can1_BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_CANOPEN_1->text().toInt(&fOk);
-    targetConfig.can1_BlockSize = fOk ? nVal : 0;
+    TargetConfig.can1_BlockSize = fOk ? nVal : 0;
     qDebug() << tr("Updated Configuration");
+    // Global settings
+    targetConfig = TargetConfig;
     // Return value
     return fRes;
 }
