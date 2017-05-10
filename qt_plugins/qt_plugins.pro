@@ -76,7 +76,11 @@ HEADERS += \
     ATCMspinbox/variableandvisibilitydialog.h \
     ATCMspinbox/atcmspinboxtaskmenu.h \
     ATCMspinbox/atcmspinboxplugin.h \
-    ATCMtime/atcmtimeplugin.h
+    ATCMtime/atcmtimeplugin.h \
+    ATCMplugineditor/resourceeditor.h \
+    ATCMplugineditor/crosstablemanager.h \
+    ATCMplugineditor/crosstableeditor.h \
+    ATCMplugineditor/crosstableeditfactory.h
 
 SOURCES += \
 		   ./ATCMlabel/atcmlabel.cpp \
@@ -122,7 +126,11 @@ SOURCES += \
     ATCMspinbox/variableandvisibilitydialog.cpp \
     ATCMspinbox/atcmspinboxtaskmenu.cpp \
     ATCMspinbox/atcmspinboxplugin.cpp \
-    ATCMtime/atcmtimeplugin.cpp
+    ATCMtime/atcmtimeplugin.cpp \
+    ATCMplugineditor/resourceeditor.cpp \
+    ATCMplugineditor/crosstablemanager.cpp \
+    ATCMplugineditor/crosstableeditor.cpp \
+    ATCMplugineditor/crosstableeditfactory.cpp
 
 RESOURCES += atcmicons.qrc \ 
     ATCManimation/icons.qrc \
@@ -187,4 +195,5 @@ OTHER_FILES += \
     ATCMspinbox/atcmspinbox.png \
     ATCMtime/ATCMtime.pro \
     ATCMtime/atcmtime.pri \
-    ATCMtime/atcmtime.png
+    ATCMtime/atcmtime.png \
+    ATCMplugineditor/ATCMplugineditor.pro
