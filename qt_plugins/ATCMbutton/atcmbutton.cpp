@@ -715,7 +715,6 @@ bool ATCMbutton::checkPassword()
         numpad * dk;
         int value = 0;
 
-        m_fBusy = true;
         dk = new numpad(&value, NO_DEFAULT, 0, 0, input_dec, true, 0);
 
         dk->showFullScreen();
@@ -738,7 +737,6 @@ bool ATCMbutton::checkPassword()
             retval = false;
         }
         delete dk;
-        m_fBusy = false;
     }
 #endif
     return retval;
@@ -777,21 +775,27 @@ void ATCMbutton::pressFunction()
 void ATCMbutton::releaseFunction()
 {
 #ifdef TARGET_ARM
-    if (!isCheckable() || checkPassword())
+    if (isCheckable())
     {
-        if (m_CtIndex > 0)
+        if (checkPassword())
         {
-            setFormattedVarByCtIndex(m_CtIndex, m_statusreleaseval.toAscii().data());
+            if (m_CtIndex > 0)
+            {
+                setFormattedVarByCtIndex(m_CtIndex, m_statusreleaseval.toAscii().data());
+            }
         }
-    }
-    else
-    {
-        // Password Failed
-        if (isCheckable())
+        else
         {
             disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
             setChecked(true);
             connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+        }
+    }
+    else
+    {
+        if (m_CtIndex > 0)
+        {
+            setFormattedVarByCtIndex(m_CtIndex, m_statusreleaseval.toAscii().data());
         }
     }
 
