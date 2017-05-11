@@ -15,55 +15,12 @@ ResourceEditor::ResourceEditor(QWidget *parent, QString * selection)
 
     while (it.hasNext()) {
         QString item = it.next();
-#if 1
-        if (!item.endsWith(".png"))
-#else
-        if (
-            ! item.endsWith(".png")
-            || item.startsWith(":/trolltech/")
-            || item.startsWith(":/core/")
-            || item.startsWith(":/skins/")
-            || item.startsWith(":/debugger/")
-            || item.startsWith(":/glsleditor/")
-            || item.startsWith(":/webkit/")
-            || item.startsWith(":/help/")
-            || item.startsWith(":/qmldesigner/")
-            || item.startsWith(":/qmlprofiler/")
-            || item.startsWith(":/qmlproject/")
-            || item.startsWith(":/qml/")
-            || item.startsWith(":/itemlibrary/")
-            || item.startsWith(":/wellcome/")
-            || item.startsWith(":/projectexplorer/")
-            || item.startsWith(":/extensionsystem/")
-            || item.startsWith(":/utils/")
-            || item.startsWith(":/fancyactionbar/")
-            || item.startsWith(":/locator/")
-            || item.startsWith(":/find/")
-            || item.startsWith(":/texteditor/")
-            || item.startsWith(":/codemodel/")
-            || item.startsWith(":/qmljs/")
-            || item.startsWith(":/proparser/")
-            || item.startsWith(":/formeditor/")
-            || item.startsWith(":/welcome/")
-            || item.startsWith(":/navigator/")
-            || item.startsWith(":/qt-maemo/")
-            || item.startsWith(":/pixmaps/qwt")
-            || item.startsWith(":/icon/layout/")
-            || item.startsWith(":/icon/tool/")
-            || item.startsWith(":/resourceeditor/")
-            || item.startsWith(":/marker.png")
-            || item.startsWith(":/atcmslider.png")
-            || item.startsWith(":/left.png")
-            || item.startsWith(":/right.png")
-            || item.startsWith(":/atcmspinbox.png")
-            || item.startsWith(":/atcmtime.png")
-           )
-#endif
+
+        if (item.endsWith(".png") && (item.startsWith(":/icons/") || item.startsWith(":/systemicons/")))
         {
-            continue;
+             QListWidgetItem * m_item = new QListWidgetItem(QIcon(item), item);
+             list->addItem(m_item);
         }
-        QListWidgetItem * m_item = new QListWidgetItem(QIcon(item), item);
-        list->addItem(m_item);
     }
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
