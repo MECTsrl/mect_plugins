@@ -54,7 +54,7 @@ public:
         setWidget(ctEditor);
         setContext(Core::Context("CTE.MainView"));
         setDisplayName(tr("MectSuite"));
-        setIcon(QIcon(QString::fromAscii(":/icons/img/Go to.png")));
+        setIcon(QIcon(QString::fromAscii(":/cteicons/img/Go to.png")));
         setPriority(0);
         setId("CTE.CTEMode");
         setContextHelpId(QString());
@@ -102,21 +102,21 @@ CTEPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     connect(CTEAction, SIGNAL(triggered()), SLOT(enableIfCT()));
 
     // Register the action with the action manager
-    Core::Command *command = Core::ActionManager::registerAction(CTEAction, "CTE.CTEAction", context);
+    //Core::Command *command = Core::ActionManager::registerAction(CTEAction, "CTE.CTEAction", context);
 
 
     // Create our own menu to place in the Tools menu
-    Core::ActionContainer *CTEMenu = Core::ActionManager::createMenu("CTE.CTEMenu");
-    QMenu *menu = CTEMenu->menu();
-    menu->setTitle(tr("&MECT Editor"));
-    menu->setEnabled(true);
+    //Core::ActionContainer *CTEMenu = Core::ActionManager::createMenu("CTE.CTEMenu");
+    //QMenu *menu = CTEMenu->menu();
+    //menu->setTitle(tr("&MECT Editor"));
+    //menu->setEnabled(true);
 
     // Add the Cross Table Editor action command to the menu
-    CTEMenu->addAction(command);
+    //CTEMenu->addAction(command);
 
     // Request the Tools menu and add the Cross Table Editor menu to it
-    Core::ActionContainer *toolsMenu = Core::ActionManager::actionContainer(Core::Constants::M_TOOLS);
-    toolsMenu->addMenu(CTEMenu);
+    //Core::ActionContainer *toolsMenu = Core::ActionManager::actionContainer(Core::Constants::M_TOOLS);
+    //toolsMenu->addMenu(CTEMenu);
 
 
     // Add a mode with a push button based on BaseMode. Like the BaseView,

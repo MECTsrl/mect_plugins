@@ -76,7 +76,7 @@
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
-          <normaloff>:/icons/img/Save.png</normaloff>:/icons/img/Save.png</iconset>
+          <normaloff>:/cteicons/img/Save.png</normaloff>:/cteicons/img/Save.png</iconset>
         </property>
         <property name="iconSize">
          <size>

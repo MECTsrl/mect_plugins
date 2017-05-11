@@ -20,7 +20,7 @@
 
 const QString szPAGE = QString::fromAscii("page");
 const QString szDEFLANG  = QString::fromAscii("it");
-const QString szLANGMAPFILE = QString::fromAscii(":/csv/others/lang_table.csv");
+const QString szLANGMAPFILE = QString::fromAscii(":/ctecsv/others/lang_table.csv");
 
 
 MectSettings::MectSettings(QWidget *parent) :

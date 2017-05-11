@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="qtc.qrc">
-    <normaloff>:/icons/img/Logo_Mect.png</normaloff>:/icons/img/Logo_Mect.png</iconset>
+    <normaloff>:/cteicons/img/Logo_Mect.png</normaloff>:/cteicons/img/Logo_Mect.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -54,7 +54,7 @@
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
-          <normaloff>:/icons/img/Goto.png</normaloff>:/icons/img/Goto.png</iconset>
+          <normaloff>:/cteicons/img/Goto.png</normaloff>:/cteicons/img/Goto.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -97,7 +97,7 @@
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
-          <normaloff>:/icons/img/Edit-clear.png</normaloff>:/icons/img/Edit-clear.png</iconset>
+          <normaloff>:/cteicons/img/Edit-clear.png</normaloff>:/cteicons/img/Edit-clear.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -140,7 +140,7 @@
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
-          <normaloff>:/icons/img/Log Out.png</normaloff>:/icons/img/Log Out.png</iconset>
+          <normaloff>:/cteicons/img/Log Out.png</normaloff>:/cteicons/img/Log Out.png</iconset>
         </property>
         <property name="iconSize">
          <size>

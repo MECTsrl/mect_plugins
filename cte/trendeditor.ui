@@ -167,7 +167,7 @@
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
-          <normaloff>:/icons/img/Import.png</normaloff>:/icons/img/Import.png</iconset>
+          <normaloff>:/cteicons/img/Import.png</normaloff>:/cteicons/img/Import.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -216,7 +216,7 @@
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
-          <normaloff>:/icons/img/Save.png</normaloff>:/icons/img/Save.png</iconset>
+          <normaloff>:/cteicons/img/Save.png</normaloff>:/cteicons/img/Save.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -265,7 +265,7 @@
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
-          <normaloff>:/icons/img/Save_as.png</normaloff>:/icons/img/Save_as.png</iconset>
+          <normaloff>:/cteicons/img/Save_as.png</normaloff>:/cteicons/img/Save_as.png</iconset>
         </property>
         <property name="iconSize">
          <size>

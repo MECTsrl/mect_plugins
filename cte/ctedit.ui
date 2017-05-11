@@ -313,7 +313,7 @@
                <widget class="QComboBox" name="cboSections">
                 <property name="minimumSize">
                  <size>
-                  <width>120</width>
+                  <width>140</width>
                   <height>0</height>
                  </size>
                 </property>
@@ -363,8 +363,8 @@
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/lock_48.png</normaloff>
-                <normalon>:/icons/img/lock_open_48.png</normalon>:/icons/img/lock_48.png</iconset>
+                <normaloff>:/cteicons/img/lock_open_48.png</normaloff>
+                <normalon>:/cteicons/img/lock_48.png</normalon>:/cteicons/img/lock_open_48.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -412,7 +412,7 @@
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/Search.ico</normaloff>:/icons/img/Search.ico</iconset>
+                <normaloff>:/cteicons/img/Search.ico</normaloff>:/cteicons/img/Search.ico</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -470,7 +470,7 @@
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/Import.png</normaloff>:/icons/img/Import.png</iconset>
+                <normaloff>:/cteicons/img/Import.png</normaloff>:/cteicons/img/Import.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -528,7 +528,7 @@
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/Undo.ico</normaloff>:/icons/img/Undo.ico</iconset>
+                <normaloff>:/cteicons/img/Undo.ico</normaloff>:/cteicons/img/Undo.ico</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -586,7 +586,7 @@
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/Blocks.png</normaloff>:/icons/img/Blocks.png</iconset>
+                <normaloff>:/cteicons/img/Blocks.png</normaloff>:/cteicons/img/Blocks.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -605,7 +605,7 @@
             <item>
              <widget class="QPushButton" name="cmdSave">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="minimumSize">
                <size>
@@ -634,7 +634,7 @@
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/Save.png</normaloff>:/icons/img/Save.png</iconset>
+                <normaloff>:/cteicons/img/Save.png</normaloff>:/cteicons/img/Save.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -679,7 +679,7 @@
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/Compile.ico</normaloff>:/icons/img/Compile.ico</iconset>
+                <normaloff>:/cteicons/img/Compile.ico</normaloff>:/cteicons/img/Compile.ico</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -743,7 +743,7 @@
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
-                <normaloff>:/icons/img/PLC.ico</normaloff>:/icons/img/PLC.ico</iconset>
+                <normaloff>:/cteicons/img/PLC.ico</normaloff>:/cteicons/img/PLC.ico</iconset>
               </property>
               <property name="iconSize">
                <size>

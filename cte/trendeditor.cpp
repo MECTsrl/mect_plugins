@@ -61,9 +61,9 @@ TrendEditor::TrendEditor(QWidget *parent) :
     // Combo Orientation
     mapOrientation.insert(szPORTRAIT, trUtf8("Portrait"));
     mapOrientation.insert(szLANDSCAPE, trUtf8("Landscape"));
-    cIco = QIcon(QString::fromAscii(":/icons/img/Portrait.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/Portrait.png"));
     ui->cboOrientation->addItem(cIco, mapOrientation.value(szPORTRAIT), szPORTRAIT);
-    cIco = QIcon(QString::fromAscii(":/icons/img/Landscape.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/Landscape.png"));
     ui->cboOrientation->addItem(cIco, mapOrientation.value(szLANDSCAPE), szLANDSCAPE);
     ui->cboOrientation->setCurrentIndex(-1);
     // Validators

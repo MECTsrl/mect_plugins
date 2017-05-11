@@ -88,7 +88,7 @@ const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
 // Version Number
-const QString szVERSION = QString::fromAscii("Ver. 3.0.0rc3 @ 2017-05-05");
+const QString szVERSION = QString::fromAscii("Ver. 3.0.0rc5 @ 2017-05-11");
 
 enum colonne_e
 {
@@ -141,7 +141,7 @@ ctedit::ctedit(QWidget *parent) :
 
     ui->setupUi(this);
     // Version Number
-    ui->lblModel->setToolTip(szVERSION);
+    ui->lblLogo->setToolTip(szVERSION);
     // Liste di servizio
     lstUsedVarNames.clear();
     lstLoggedVars.clear();
@@ -431,9 +431,9 @@ ctedit::ctedit(QWidget *parent) :
     QRegExp regExprName(szNameExp);
     ui->txtName->setValidator(new QRegExpValidator(regExprName, this));
     // Validator per commenti
-    // QString szCommentExp = QString::fromAscii("\\w+");
-    // QRegExp regExprComment(szCommentExp);
-    ui->txtComment->setValidator(new QRegExpValidator(regExprName, this));
+    QString szCommentExp = QString::fromAscii("^[^\\\\/:;,?\"'<>|]*$");
+    QRegExp regExprComment(szCommentExp);
+    ui->txtComment->setValidator(new QRegExpValidator(regExprComment, this));
     // Campi sempre locked
     ui->txtRow->setEnabled(false);
     ui->txtBlock->setEnabled(false);
@@ -491,6 +491,7 @@ ctedit::ctedit(QWidget *parent) :
     connect(tmrMessage, SIGNAL(timeout()), this, SLOT(clearStatusMessage()));
     // Event Filter    
     ui->tblCT->installEventFilter(this);
+    ui->fraEdit->installEventFilter(this);
     // Style Sheet
     QFile fileQSS(szFileQSS);
     if (fileQSS.exists())  {
@@ -638,7 +639,7 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     // Return value is the result of Parsing C structure to C++ Objects.
     // Data in Array starts from element #1, in list from 0...
     if (nRes == 0)  {
-        for (nCur = 1; nCur <= DimCrossTable; ++nCur)  {
+        for (nCur = 1; nCur <= DimCrossTable; nCur++)  {
             lstCtRecs.append(CrossTable[nCur]);
         }
         if (fLoadGrid)  {
@@ -716,7 +717,7 @@ bool    ctedit::ctable2Grid()
     ui->tblCT->clear();
     ui->tblCT->setColumnCount(colTotals);
     // Caricamento elementi
-    for (nCur = 0; nCur < lstCTRecords.count(); ++nCur)  {
+    for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Covert CT Record 2 User Values
         fRes = recCT2List(lstFields, nCur);
         // If Ok add row to Table View
@@ -1278,7 +1279,7 @@ bool ctedit::saveCTFile()
     // Back-Up Copy of CT File
     fileBackUp(m_szCurrentCTFile);
     // Copy CT Record List to C Array
-    for (nCur = 0; nCur < lstCTRecords.count(); ++nCur)  {
+    for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         if (nCur < DimCrossTable)
             CrossTable[nCur + 1] = lstCTRecords[nCur];
     }
@@ -1298,7 +1299,7 @@ bool ctedit::grid2CTable()
     QStringList lstFields;
 
     // Ciclo sugli elementi di Grid
-    for (nCur = 1; nCur <= ui->tblCT->rowCount(); ++nCur)  {
+    for (nCur = 1; nCur <= ui->tblCT->rowCount(); nCur++)  {
         lstFields.clear();
         // Insert Items at Row, Col
         for (nCol = 1; nCol < colTotals; nCol++)  {
@@ -1497,6 +1498,8 @@ bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
 void ctedit::enableFields()
 // Abilitazione dei campi form in funzione del Protocollo
 {
+    int     nDefPort = -1;
+    int     nTotalPorts = 0;
     // Disabilita tutti i campi
     ui->cboPriority->setEnabled(false);
     ui->cboUpdate->setEnabled(false);
@@ -1521,12 +1524,12 @@ void ctedit::enableFields()
         }
         // Abilitazione dei Decimal per Input Analogiche se abilitati
         if (TargetConfig.analogIN > 0 && TargetConfig.analogINrowCT > 0)  {
-            if (m_nGridRow >= TargetConfig.analogINrowCT -1 && m_nGridRow <= TargetConfig.analogINrowCT + TargetConfig.analogIN -1)
+            if (m_nGridRow >= TargetConfig.analogINrowCT -1 && m_nGridRow < TargetConfig.analogINrowCT + TargetConfig.analogIN -1)
                 fDecimal = true;
         }
         // Abilitazione dei Decimal per Output Analogiche se abilitati
         if (TargetConfig.analogOUT > 0 && TargetConfig.analogOUTrowCT > 0)  {
-            if (m_nGridRow >= TargetConfig.analogOUTrowCT -1 && m_nGridRow <= TargetConfig.analogOUTrowCT + TargetConfig.analogOUT -1)
+            if (m_nGridRow >= TargetConfig.analogOUTrowCT -1 && m_nGridRow < TargetConfig.analogOUTrowCT + TargetConfig.analogOUT -1)
                 fDecimal = true;
         }
         ui->txtDecimal->setEnabled(fDecimal);
@@ -1553,13 +1556,15 @@ void ctedit::enableFields()
             ui->txtNode->setEnabled(true);
             ui->txtRegister->setEnabled(true);
         }
+        // Calcola la porta di default in funzione del protocollo (if any available)
+        getFirstPortFromProtocol(ui->cboProtocol->currentIndex(), nDefPort, nTotalPorts);
         // PLC
-        else if (ui->cboProtocol->currentIndex() == PLC)  {
+        if (ui->cboProtocol->currentIndex() == PLC)  {
             // All Data Entry Locked
         }
         // RTU
         else if (ui->cboProtocol->currentIndex() == RTU)  {
-            ui->txtPort->setEnabled(true);
+            ui->txtPort->setEnabled(nTotalPorts > 1);
             ui->txtNode->setEnabled(true);
             ui->txtRegister->setEnabled(true);
         }
@@ -1578,11 +1583,13 @@ void ctedit::enableFields()
         }
         // MECT
         else if (ui->cboProtocol->currentIndex() == MECT_PTC)  {
+            ui->txtPort->setEnabled(nTotalPorts > 1);
             ui->txtNode->setEnabled(true);
             ui->txtRegister->setEnabled(true);
         }
         // RTU_SRV
         else if (ui->cboProtocol->currentIndex() == RTU_SRV)  {
+            ui->txtPort->setEnabled(nTotalPorts > 1);
             ui->txtNode->setEnabled(true);
             ui->txtRegister->setEnabled(true);
         }
@@ -1620,6 +1627,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
 {
     QString     szTemp;
     int         nPort = -1;
+    int         nTotalFree = 0;
 
     szTemp.clear();
     // No Index
@@ -1630,7 +1638,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         ui->txtRegister->setText(szEMPTY);
     }
     // Calcola la porta di default in funzione del protocollo (if any available)
-    nPort = getFirstPortFromProtocol(index);
+    getFirstPortFromProtocol(index, nPort, nTotalFree);
     // PLC
     if (index == PLC)  {
         // All Data Entry Cleared
@@ -1684,11 +1692,10 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
 void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelection & deselected)
 // Slot attivato ad ogni cambio di riga in
 {
-    int     nRow = -1;
-    int     nErrors = 0;
+    int         nRow = -1;
     QStringList lstFields;
-    bool    fIsModif = false;
-    bool    fRes = true;
+    bool        fIsModif = false;
+    bool        fRes = true;
     // Recupera righe selezionate
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
 
@@ -1714,31 +1721,10 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
     // Se la riga corrente è stata modificata, salva il contenuto
     if (nRow >= 0 && nRow < lstCTRecords.count())  {
         // Il contenuto viene aggiornato solo se la linea risulta modificata e il form non è vuoto
-        if (! isFormEmpty() && isLineModified(nRow))  {
-            // Valori da interfaccia a Lista Stringhe
-            fRes = iface2values(lstFields);
-            // Primo controllo di coerenza sulla riga corrente
-            nErrors = checkFormFields(nRow, lstFields, true);
-            if (nErrors == 0)  {
-                // Copia l'attuale CT nella lista Undo
-                lstUndo.append(lstCTRecords);
-                if (fRes)  {
-                    // Salva Record
-                    fIsModif = list2CTrec(lstFields, nRow);
-                    // Aggiorna Grid Utente per riga corrente
-                    if (fIsModif)  {
-                        fRes = list2GridRow(lstFields, nRow);
-
-                    }
-                    qDebug() << "Row changed:" << nRow;
-                }
-            }
-            else
-                fRes = false;
-        }
+        fRes = updateRow(nRow);
     }
     // Cambio riga Ko
-    if (nErrors > 0 || ! fRes)    {
+    if (! fRes)    {
         // Disconnette segnale per evitare ricorsione
         disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
                     SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
@@ -1748,10 +1734,6 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
         connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
                     SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
         return;
-    }
-    // Marca CT come modificata
-    if (! m_isCtModified && fIsModif)  {
-        m_isCtModified = true;
     }
     // Si può cambiare riga, legge contenuto
     if (! selected.isEmpty() && selected.count() == 1)  {
@@ -1818,46 +1800,46 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QMenu gridMenu(this);
     // Items del Menu contestuale
     // Renum Blocks
-    cIco = QIcon(QString::fromAscii(":/icons/img/Blocks.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/Blocks.png"));
     QAction *menuBlocks = gridMenu.addAction(cIco, trUtf8("Renum Blocks"));
     menuBlocks->setEnabled(true);
     // Goto Line
-    cIco = QIcon(QString::fromAscii(":/icons/img/Goto.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/Goto.png"));
     QAction *menuRow = gridMenu.addAction(cIco, trUtf8("Goto Line\t\t(Ctrl+L)"));
     menuRow->setEnabled(true);
     // Sep0
     gridMenu.addSeparator();
     // Inserisci righe
-    cIco = QIcon(QString::fromAscii(":/icons/img/List-add.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/List-add.png"));
     QAction *insRows = gridMenu.addAction(cIco, trUtf8("Insert Blank Rows\t\t(Ins)"));
     insRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // insRows->setShortcut(Qt::Key_Insert);
 
     // Cancella righe
-    cIco = QIcon(QString::fromAscii(":/icons/img/Edit-clear.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/Edit-clear.png"));
     QAction *emptyRows = gridMenu.addAction(cIco, trUtf8("Clear Rows\t\t(Del)"));
     emptyRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // emptyRows->setShortcut(Qt::Key_Delete);
     // Elimina righe
-    cIco = QIcon(QString::fromAscii(":/icons/img/Edit-trash.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/Edit-trash.png"));
     QAction *remRows = gridMenu.addAction(cIco, trUtf8("Delete Rows"));
     remRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // Sep1
     gridMenu.addSeparator();
     // Copia righe (Sempre permesso)
-    cIco = QIcon(QString::fromAscii(":/icons/img/Copy.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/Copy.png"));
     QAction *copyRows = gridMenu.addAction(cIco, trUtf8("Copy Rows\t\t(Ctrl+C)"));
     copyRows->setEnabled(selection.count() > 0);
     // copyRows->setShortcut(Qt::Key_Copy);
     // Taglia righe
-    cIco = QIcon(QString::fromAscii(":/icons/img/Cut.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/Cut.png"));
     QAction *cutRows = gridMenu.addAction(cIco, trUtf8("Cut Rows\t\t(Ctrl+X)"));
     cutRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // cutRows->setShortcut(Qt::Key_Cut);
     // Sep 2
     gridMenu.addSeparator();
     // Paste Rows
-    cIco = QIcon(QString::fromAscii(":/icons/img/edit-paste.png"));
+    cIco = QIcon(QString::fromAscii(":/cteicons/img/edit-paste.png"));
     QAction *pasteRows = gridMenu.addAction(cIco, trUtf8("Paste Rows\t\t(Ctrl+V)"));
     pasteRows->setEnabled(lstCopiedRecords.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // pasteRows->setShortcut(Qt::Key_Paste);
@@ -3569,6 +3551,28 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
             qDebug() << tr("CTRL-L");
             if (m_nCurTab == TAB_CT)  {
                 gotoRow();
+                return true;
+            }
+        }
+        // Return / Enter Button
+        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)  {
+            if (m_nCurTab == TAB_CT)  {
+                // Enter su Tab
+                if (obj == ui->fraEdit)  {
+                    qDebug() << tr("Enter in Form");
+                    if (! isFormEmpty() && isLineModified(m_nGridRow)) {
+                        updateRow(m_nGridRow);
+                    }
+                    // QKeyEvent newEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier, szEMPTY);
+                    ui->tblCT->setFocus();
+                    return true;
+                }
+                else if (obj == ui->tblCT)  {
+                    qDebug() << tr("Enter in Grid");
+                    // Salto a riga successiva
+                    jumpToGridRow(findNextVisibleRow(m_nGridRow), false);
+                    return true;
+                }
             }
         }
         // Sequenze significative solo sul Grid
@@ -4352,46 +4356,124 @@ int ctedit::searchModelInList(QString szModel)
     // Return value
     return nModel;
 }
-int ctedit::getFirstPortFromProtocol(int nProtocol)
+void ctedit::getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
 // Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
 // Ritorna -1 se il protocollo non è disponibile sul modello o tutte le porte sono disabilitate
 {
-    int nPort = -1;
 
+    nPort = -1;
+    nTotal = 0;
     // Protocollo PLC dimesione pari a MAXBLOCKSIZE
     switch (nProtocol) {
         // Protocolli Seriali
         case RTU:
         case RTU_SRV:
         case MECT_PTC:
-            if (TargetConfig.ser0_Enabled)
+            if (TargetConfig.ser0_Enabled)  {
                 nPort = 0;
-            else if (TargetConfig.ser1_Enabled)
-                nPort = 1;
-            else if (TargetConfig.ser2_Enabled)
-                nPort = 2;
-            else if (TargetConfig.ser3_Enabled)
-                nPort = 3;
+                nTotal++;
+            }
+            if (TargetConfig.ser1_Enabled)  {
+                if (nPort < 0)
+                    nPort = 1;
+                nTotal++;
+            }
+            if (TargetConfig.ser2_Enabled)  {
+                if (nPort < 0)
+                    nPort = 2;
+                nTotal++;
+            }
+            if (TargetConfig.ser3_Enabled)  {
+                if (nPort < 0)
+                    nPort = 3;
+                nTotal++;
+            }
             break;
         // Protocolli TCP
         case TCP:
         case TCPRTU:
         case TCP_SRV:
         case TCPRTU_SRV:
-            if (TargetConfig.ethPorts > 0)
+            if (TargetConfig.ethPorts > 0)  {
                 nPort = szDEF_IP_PORT.toInt(0);
+                nTotal++;
+            }
             break;
         // Protocollo CAN
         case CANOPEN:
-            if (TargetConfig.can0_Enabled)
+            if (TargetConfig.can0_Enabled)  {
                 nPort = 0;
-            else if (TargetConfig.can1_Enabled)
-                nPort = 1;
+                nTotal++;
+            }
+            if (TargetConfig.can1_Enabled)  {
+                if (nPort < 0)
+                    nPort = 1;
+                nTotal++;
+            }
             break;
         default:
             nPort = -1;
+            nTotal = 0;
             break;
     }
-    // Return value
-    return nPort;
+}
+bool ctedit::updateRow(int nRow)
+// Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
+{
+    bool        fRes = true;
+    QStringList lstFields;
+    int         nErrors = 0;
+    bool        fIsSaved = false;
+
+    if (! isFormEmpty() && isLineModified(nRow))  {
+        // Valori da interfaccia a Lista Stringhe
+        fRes = iface2values(lstFields);
+        // Primo controllo di coerenza sulla riga corrente
+        nErrors = checkFormFields(nRow, lstFields, true);
+        if (nErrors == 0)  {
+            // Copia l'attuale CT nella lista Undo
+            lstUndo.append(lstCTRecords);
+            if (fRes)  {
+                // Salva Record
+                fIsSaved = list2CTrec(lstFields, nRow);
+                // Aggiorna Grid Utente per riga corrente
+                if (fIsSaved)  {
+                    fRes = list2GridRow(lstFields, nRow);
+                    m_isCtModified = true;
+                    ui->tblCT->currentRow();
+                }
+                qDebug() << "Row saved:" << nRow;
+            }
+        }
+        else
+            fRes = false;
+    }
+    // Return Value
+    return fRes;
+}
+int ctedit::findNextVisibleRow(int nRow)
+// Cerca la prossima riga visibile cui saltare
+{
+    int nJumpRow = 0;
+
+    // Comincia la ricerca da 0 oppure dalla riga corrente + 1
+    if (nRow < 0 || nRow >= DimCrossTable -1)
+        nJumpRow = 0;
+    else
+        nJumpRow = nRow + 1;
+    if (! m_fShowAllRows)  {
+        while(nJumpRow < DimCrossTable - 1)  {
+            if (lstCTRecords[nJumpRow].UsedEntry)  {
+                break;
+            }
+            nJumpRow++;
+        }
+    }
+    // Controllo del boundary sulla griglia
+    if (nJumpRow >= DimCrossTable)
+        nJumpRow = 0;
+    // Return Value
+    return nJumpRow;
+
+
 }

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/icons">
+    <qresource prefix="/cteicons">
         <file>img/Logo_Mect.png</file>
         <file>img/Blocks.png</file>
         <file>img/Compile.ico</file>
@@ -24,7 +24,7 @@
         <file>img/Edit-trash.png</file>
         <file>img/Mect_small.png</file>
     </qresource>
-    <qresource prefix="/csv">
+    <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>
     </qresource>
 </RCC>
