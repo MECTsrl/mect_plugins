@@ -2,6 +2,40 @@
 #define CTECOMMON_H
 #include <QString>
 
+// Int Constants
+const int nMax_Int16 = 65535;
+const int nMaxNodeID = 63;
+const int nMaxRegister = 49999;
+// Serial Ports
+const int nMaxSerialPorts = 3;
+// CanOpen Ports
+const int nMaxCanPorts = 1;
+// TCP Ports
+const int nPortFTPControl = 21;
+const int nPortSFTP = 22;
+const int nPortTELNET = 23;
+const int nPortHTTP = 80;
+const int nPortVNC = 5900;
+
+
+// QChar Constants
+const QChar   chDOUBLEQUOTE = QChar::fromAscii(34);
+const QChar   chSpace = QChar::fromAscii(20);
+const QChar   chBACKSLASH = QChar::fromAscii(92);
+const QChar   chX = QChar::fromLatin1(88);
+
+// String Costants
+const QString szEMPTY = QString::fromAscii("");
+const QString szDOUBLEQUOTE = QString(1, chDOUBLEQUOTE);
+const QString szZERO = QString::fromAscii("0");
+const QString szSEMICOL = QString::fromAscii(";");
+const QString szSLASH = QString::fromAscii("/");
+const QString szBACKSLASH = QString::fromAscii("\\");
+const QString szNEWLINE = QString::fromAscii("\n");
+const QString szSHARP = QString::fromAscii("#");
+const QString szTRUE = QString::fromAscii("1");
+const QString szFALSE = QString::fromAscii("0");
+
 struct  TP_Config {
     // General Params
     QString modelName;

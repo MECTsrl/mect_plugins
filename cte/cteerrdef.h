@@ -25,6 +25,8 @@ enum errorMessages_e
     errCTNoIP,
     errCTBadIP,
     errCTNoPort,
+    errCTNoDevicePort,
+    errCTWrongTCPPort,
     errCTNoNode,
     errCTNoRegister,
     errCTNoBehavior,

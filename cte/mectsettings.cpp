@@ -27,37 +27,36 @@ MectSettings::MectSettings(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MectSettings)
 {
-    int     nValMaxInt16 = 65535;
     int     i = 0;
 
     ui->setupUi(this);
     // Impostazione degli opportuni Validator per i campi integers
-    ui->lineEdit_Retries->setValidator(new QIntValidator(0, nValMaxInt16, this));
-    ui->lineEdit_Blacklist->setValidator(new QIntValidator(0, nValMaxInt16, this));
-    ui->lineEdit_ReadPeriod1->setValidator(new QIntValidator(1, nValMaxInt16, this));
-    ui->lineEdit_ReadPeriod2->setValidator(new QIntValidator(1, nValMaxInt16, this));
-    ui->lineEdit_ReadPeriod3->setValidator(new QIntValidator(1, nValMaxInt16, this));
-    ui->lineEdit_PwdTimeout->setValidator(new QIntValidator(0, nValMaxInt16, this));
-    ui->lineEdit_ScreenSaver->setValidator(new QIntValidator(0, nValMaxInt16, this));
-    ui->lineEdit_SlowLogPeriod->setValidator(new QIntValidator(2, nValMaxInt16, this));
-    ui->lineEdit_FastLogPeriod->setValidator(new QIntValidator(1, nValMaxInt16, this));
+    ui->lineEdit_Retries->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Blacklist->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_ReadPeriod1->setValidator(new QIntValidator(1, nMax_Int16, this));
+    ui->lineEdit_ReadPeriod2->setValidator(new QIntValidator(1, nMax_Int16, this));
+    ui->lineEdit_ReadPeriod3->setValidator(new QIntValidator(1, nMax_Int16, this));
+    ui->lineEdit_PwdTimeout->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_ScreenSaver->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_SlowLogPeriod->setValidator(new QIntValidator(2, nMax_Int16, this));
+    ui->lineEdit_FastLogPeriod->setValidator(new QIntValidator(1, nMax_Int16, this));
     ui->lineEdit_MaxLogSpace->setValidator(new QIntValidator(1, MAX_SPACE_AVAILABLE_MAX, this));
-    ui->lineEdit_TraceWindow->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_TraceWindow->setValidator(new QIntValidator(0, nMax_Int16, this));
     /* SERIAL 0 */
-    ui->lineEdit_Silence_SERIAL_PORT_0->setValidator(new QIntValidator(0, nValMaxInt16, this));
-    ui->lineEdit_Timeout_SERIAL_PORT_0->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_Silence_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Timeout_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* SERIAL 1 */
-    ui->lineEdit_Silence_SERIAL_PORT_1->setValidator(new QIntValidator(0, nValMaxInt16, this));
-    ui->lineEdit_Timeout_SERIAL_PORT_1->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_Silence_SERIAL_PORT_1->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Timeout_SERIAL_PORT_1->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* SERIAL 2 */
-    ui->lineEdit_Silence_SERIAL_PORT_2->setValidator(new QIntValidator(0, nValMaxInt16, this));
-    ui->lineEdit_Timeout_SERIAL_PORT_2->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_Silence_SERIAL_PORT_2->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Timeout_SERIAL_PORT_2->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* TCP_IP */
-    ui->lineEdit_Silence_TCP_IP_PORT->setValidator(new QIntValidator(0, nValMaxInt16, this));
-    ui->lineEdit_Timeout_TCP_IP_PORT->setValidator(new QIntValidator(0, nValMaxInt16, this));
+    ui->lineEdit_Silence_TCP_IP_PORT->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Timeout_TCP_IP_PORT->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_MaxBlockSize_TCP_IP_PORT->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* CAN 0*/
     ui->lineEdit_MaxBlockSize_CANOPEN_0->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));

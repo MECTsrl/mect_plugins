@@ -134,8 +134,6 @@ ctedit::ctedit(QWidget *parent) :
     int     nCol = 0;
     int     nValMin = 0;
     int     nValMax = 9999;
-    int     nValMaxRegister = 49999;
-    int     nValMaxInt16 = 65535;
     QString szToolTip;
     bool    oldState = false;
 
@@ -174,6 +172,8 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNoIP] = trUtf8("No IP Address");
     lstErrorMessages[errCTBadIP] = trUtf8("Invalid IP Address");
     lstErrorMessages[errCTNoPort] = trUtf8("Empty or Invalid Port Value");
+    lstErrorMessages[errCTNoDevicePort] = trUtf8("Port Not Present or Not Enabled on Device");
+    lstErrorMessages[errCTWrongTCPPort] = trUtf8("TCP Port Not Allowed");
     lstErrorMessages[errCTNoNode] = trUtf8("Empty or Invalid Node Address");
     lstErrorMessages[errCTNoRegister] = trUtf8("Empty or Invalid Register Value");
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
@@ -414,9 +414,9 @@ ctedit::ctedit(QWidget *parent) :
     lstCTRecords.clear();
     // Validator per Interi
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
-    ui->txtPort->setValidator(new QIntValidator(nValMin, nValMaxInt16, this));
-    ui->txtNode->setValidator(new QIntValidator(nValMin, nValMax, this));
-    ui->txtRegister->setValidator(new QIntValidator(nValMin, nValMaxRegister, this));
+    ui->txtPort->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
+    ui->txtNode->setValidator(new QIntValidator(nValMin, nMaxNodeID, this));
+    ui->txtRegister->setValidator(new QIntValidator(nValMin, nMaxRegister, this));
     ui->txtNode->setValidator(new QIntValidator(nValMin, MAXBLOCKSIZE -1, this));
     ui->txtBlock->setValidator(new QIntValidator(nValMin, nValMax, this));
     ui->txtBlockSize->setValidator(new QIntValidator(nValMin, nValMax, this));
@@ -2900,6 +2900,9 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     int         nUpdate = -1;
     int         nVal = 0;
     int         nProtocol = -1;
+    int         nPort = -1;
+    int         nNodeID = -1;
+    int         nRegister = -1;
     varTypes    nTypeVar1 = UNKNOWN;
     bool        fOk = false;
     Err_CT      errCt;
@@ -2914,9 +2917,11 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     // Clear Error List if single line show
     if (fSingleLine)
         lstCTErrors.clear();
-    // Controllo Variable Name
+    // Recupero Variable Name (Per finestra errore)
     szVarName = lstValues[colName];
+    //---------------------------------------
     // Controllo cboPriority
+    //---------------------------------------
     szTemp = lstValues[colPriority];
     nPriority = szTemp.isEmpty() ? -1 : lstPriority.indexOf(szTemp);
     if (nPriority < 0)  {
@@ -2924,7 +2929,9 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         lstCTErrors.append(errCt);
         nErrors++;
     }
+    //---------------------------------------
     // Controllo Update
+    //---------------------------------------
     szTemp = lstValues[colUpdate];
     nUpdate = szTemp.isEmpty() ? -1 : lstUpdateNames.indexOf(szTemp);
     if (nUpdate < 0)  {
@@ -2932,21 +2939,27 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         lstCTErrors.append(errCt);
         nErrors++;
     }
-    // Controllo Variable Name    
+    //---------------------------------------
+    // Controllo Variable Name
+    //---------------------------------------
     if (! isValidVarName(szVarName))  {
         fillErrorMessage(nRow, colName, errCTNoName, szVarName, szVarName, chSeverityError, &errCt);
         lstCTErrors.append(errCt);
         nErrors++;
     }
+    //---------------------------------------
     // Controllo Type
+    //---------------------------------------
     szTemp = lstValues[colType];
     nType = szTemp.isEmpty() ? -1 : lstTipi.indexOf(szTemp);
     if (nType < 0)  {
-        fillErrorMessage(nRow, colUpdate, errCTNoType, szVarName, szTemp, chSeverityError, &errCt);
+        fillErrorMessage(nRow, colType, errCTNoType, szVarName, szTemp, chSeverityError, &errCt);
         lstCTErrors.append(errCt);
         nErrors++;
     }
+    //---------------------------------------
     // Controllo Decimal
+    //---------------------------------------
     szTemp = lstValues[colDecimal];
     if (szTemp.isEmpty())  {
         fillErrorMessage(nRow, colDecimal, errCTNoDecimals, szVarName, szTemp, chSeverityError, &errCt);
@@ -2987,17 +3000,19 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         // Numero Decimali > 4 ===> Variable (per tipi differenti da Bit in tutte le versioni possibili)
         else if (nVal >= 4 && nType != BYTE_BIT && nType == WORD_BIT && nType == DWORD_BIT)  {
             // Controlla che il numero indicato punti ad una variabile del tipo necessario a contenere il numero di decimali
-            if (nVal > DimCrossTable || ! lstCTRecords[nVal].Enable ||
-                    (lstCTRecords[nVal].VarType != UINT8 &&  lstCTRecords[nVal].VarType != UINT16 && lstCTRecords[nVal].VarType != UINT16BA &&
-                     lstCTRecords[nVal].VarType != UDINT &&  lstCTRecords[nVal].VarType != UDINTDCBA && lstCTRecords[nVal].VarType != UDINTCDAB &&
-                     lstCTRecords[nVal].VarType != UDINTBADC ) )   {
+            if (nVal > DimCrossTable || ! lstCTRecords[nVal - 1].Enable ||
+                    (lstCTRecords[nVal - 1].VarType != UINT8 &&  lstCTRecords[nVal - 1].VarType != UINT16 && lstCTRecords[nVal - 1].VarType != UINT16BA &&
+                     lstCTRecords[nVal - 1].VarType != UDINT &&  lstCTRecords[nVal - 1].VarType != UDINTDCBA && lstCTRecords[nVal - 1].VarType != UDINTCDAB &&
+                     lstCTRecords[nVal - 1].VarType != UDINTBADC ) )   {
                 fillErrorMessage(nRow, colDecimal, errCTNoVarDecimals, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
         }
     }
+    //---------------------------------------
     // Controllo Protocol
+    //---------------------------------------
     szTemp = lstValues[colProtocol];
     nProtocol = szTemp.isEmpty() ? -1 : lstProtocol.indexOf(szTemp);
     if (nProtocol < 0)  {
@@ -3005,23 +3020,108 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         lstCTErrors.append(errCt);
         nErrors++;
     }
-    // Tipo BIT non permesso per alcuni protocolli
+    // Tipo BIT non permesso per protocolli Server
     if (nType == BIT &&
             (nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV || nProtocol == RTU_SRV))  {
         fillErrorMessage(nRow, colProtocol, errCTNoProtocol, szVarName, szTemp, chSeverityError, &errCt);
         lstCTErrors.append(errCt);
         nErrors++;
     }
+    //---------------------------------------
     // Controllo Ip Address
+    //---------------------------------------
     szIP = lstValues[colIP].trimmed();
     if (szIP.isEmpty() &&
             (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV))  {
-
         fillErrorMessage(nRow, colIP, errCTNoIP, szVarName, szIP, chSeverityError, &errCt);
         lstCTErrors.append(errCt);
         nErrors++;
     }
-    // Controlli per gestione Allarmi/Eventi
+    //---------------------------------------
+    // Controllo per Port Value in funzione del Protocollo
+    //---------------------------------------
+    szTemp = lstValues[colPort];
+    nPort = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
+    nPort = fOk && nPort != -1 ? nPort : -1;
+    // Protocolli Seriali errCTNoDevicePort
+    if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
+        // # Porta fuori Range
+        if (nPort < 0 || nPort > nMaxSerialPorts) {
+            fillErrorMessage(nRow, colPort, errCTNoPort, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+        // Numero Porta non abilitata (o non presente)
+        if ( (nPort == 0 && ! TargetConfig.ser0_Enabled) ||
+             (nPort == 1 && ! TargetConfig.ser1_Enabled) ||
+             (nPort == 2 && ! TargetConfig.ser2_Enabled) ||
+             (nPort == 3 && ! TargetConfig.ser3_Enabled) )  {
+            fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+
+        }
+    }
+    // Protocolli TCP
+    else if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
+        // # Porta fuori Range
+        if (nPort < 0 || nPort > nMax_Int16)  {
+            fillErrorMessage(nRow, colPort, errCTNoPort, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+        // Porta non permessa
+        if (nPort == nPortFTPControl || nPort == nPortSFTP || nPort == nPortTELNET || nPort == nPortHTTP || nPort == nPortVNC) {
+            fillErrorMessage(nRow, colPort, errCTWrongTCPPort, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+    }
+    // Protocollo CAN
+    else if (nProtocol == CANOPEN)  {
+        // # Porta fuori Range
+        if (nPort < 0 || nPort > nMaxCanPorts) {
+            fillErrorMessage(nRow, colPort, errCTNoPort, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+        // Numero Porta non abilitata (o non presente)
+        if ( (nPort == 0 && ! TargetConfig.can0_Enabled) ||
+             (nPort == 1 && ! TargetConfig.can1_Enabled))  {
+            fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+    }
+    //---------------------------------------
+    // Controllo per Node ID
+    //---------------------------------------
+    szTemp = lstValues[colNodeID];
+    nNodeID = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
+    nNodeID = fOk && nNodeID != -1 ? nNodeID : -1;
+    if (nProtocol != PLC)  {
+        if (nNodeID < 0 || nNodeID > nMaxNodeID)  {
+            fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+    }
+    //---------------------------------------
+    // Controllo per Register
+    //---------------------------------------
+    szTemp = lstValues[colRegister];
+    nRegister = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
+    nRegister = fOk && nRegister != -1 ? nRegister : -1;
+    if (nProtocol != PLC)  {
+        if (nRegister < 0 || nRegister > nMaxRegister)  {
+            fillErrorMessage(nRow, colRegister, errCTNoRegister, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+    }
+    //---------------------------------------
+    // Controllo Behavior
+    //---------------------------------------
     szTemp = lstValues[colBehavior];
     nPos = szTemp.isEmpty() ? -1 : lstBehavior.indexOf(szTemp);
     if (nPos < 0 || nPos >= lstBehavior.count())  {
@@ -3029,7 +3129,9 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         lstCTErrors.append(errCt);
         nErrors++;
     }
+    //---------------------------------------
     // Controlli specifici per Allarmi/Eventi
+    //---------------------------------------
     if (nPos >= behavior_alarm && nPos <= behavior_event)  {
         // Controllo che la variabile Alarm/Event sia di tipo BIT
         if (nType != BIT)  {
@@ -3039,7 +3141,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         }
         // Controllo che la variabile impostata come Alarm/Event abbia priority > 0 e non sia Update=H
         if (nPriority <= 0 || nUpdate <= Htype)  {
-            fillErrorMessage(nRow, colType, errCTBadPriorityUpdate, szVarName, szVarName, chSeverityError, &errCt);
+            fillErrorMessage(nRow, colPriority, errCTBadPriorityUpdate, szVarName, szVarName, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }

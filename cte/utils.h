@@ -8,25 +8,7 @@
 #include <QColor>
 
 
-// QChar Constants
-const QChar   chDOUBLEQUOTE = QChar::fromAscii(34);
-const QChar   chSpace = QChar::fromAscii(20);
-const QChar   chBACKSLASH = QChar::fromAscii(92);
-const QChar   chX = QChar::fromLatin1(88);
-
-// String Costants
-const QString szEMPTY = QString::fromAscii("");
-const QString szZERO = QString::fromAscii("0");
-const QString szSEMICOL = QString::fromAscii(";");
-const QString szSLASH = QString::fromAscii("/");
-const QString szBACKSLASH = QString::fromAscii("\\");
-const QString szNEWLINE = QString::fromAscii("\n");
-const QString szDOUBLEQUOTE = QString(1, chDOUBLEQUOTE);
-const QString szSHARP = QString::fromAscii("#");
-const QString szTRUE = QString::fromAscii("1");
-const QString szFALSE = QString::fromAscii("0");
-
-
+// char constants
 const  char     cDoubleQuote = 34;      // Carattere "
 const  char     cSingleQuote = 39;      // '
 const  char     cSpace = 32;            // Blank

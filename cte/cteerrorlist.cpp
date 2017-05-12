@@ -1,6 +1,7 @@
 #include "cteerrorlist.h"
 #include "ui_cteerrorlist.h"
 #include "utils.h"
+#include "ctecommon.h"
 
 #include <QDebug>
 #include <QFont>
