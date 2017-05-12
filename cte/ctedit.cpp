@@ -42,6 +42,7 @@
 #include <QFont>
 #include <QFontMetrics>
 #include <QTextStream>
+#include <QHostAddress>
 
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
@@ -88,7 +89,7 @@ const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
 // Version Number
-const QString szVERSION = QString::fromAscii("Ver. 3.0.0rc5 @ 2017-05-11");
+const QString szVERSION = QString::fromAscii("Ver. 3.0.0rc6 @ 2017-05-12");
 
 enum colonne_e
 {
@@ -139,7 +140,7 @@ ctedit::ctedit(QWidget *parent) :
 
     ui->setupUi(this);
     // Version Number
-    ui->lblLogo->setToolTip(szVERSION);
+    ui->lblModel->setToolTip(szVERSION);
     // Liste di servizio
     lstUsedVarNames.clear();
     lstLoggedVars.clear();
@@ -1694,7 +1695,6 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
 {
     int         nRow = -1;
     QStringList lstFields;
-    bool        fIsModif = false;
     bool        fRes = true;
     // Recupera righe selezionate
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
@@ -1800,9 +1800,9 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QMenu gridMenu(this);
     // Items del Menu contestuale
     // Renum Blocks
-    cIco = QIcon(QString::fromAscii(":/cteicons/img/Blocks.png"));
-    QAction *menuBlocks = gridMenu.addAction(cIco, trUtf8("Renum Blocks"));
-    menuBlocks->setEnabled(true);
+    //cIco = QIcon(QString::fromAscii(":/cteicons/img/Blocks.png"));
+    //QAction *menuBlocks = gridMenu.addAction(cIco, trUtf8("Renum Blocks"));
+    //menuBlocks->setEnabled(true);
     // Goto Line
     cIco = QIcon(QString::fromAscii(":/cteicons/img/Goto.png"));
     QAction *menuRow = gridMenu.addAction(cIco, trUtf8("Goto Line\t\t(Ctrl+L)"));
@@ -1876,9 +1876,9 @@ void ctedit::displayUserMenu(const QPoint &pos)
     else if (actMenu == menuRow)  {
         gotoRow();
     }
-    else if (actMenu == menuBlocks)  {
-        on_cmdBlocchi_clicked();
-    }
+    //else if (actMenu == menuBlocks)  {
+    //    on_cmdBlocchi_clicked();
+    //}
     this->setCursor(Qt::ArrowCursor);
 
 }
@@ -3031,11 +3031,20 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     // Controllo Ip Address
     //---------------------------------------
     szIP = lstValues[colIP].trimmed();
-    if (szIP.isEmpty() &&
-            (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV))  {
-        fillErrorMessage(nRow, colIP, errCTNoIP, szVarName, szIP, chSeverityError, &errCt);
-        lstCTErrors.append(errCt);
-        nErrors++;
+    if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
+        if (szIP.isEmpty())  {
+            fillErrorMessage(nRow, colIP, errCTNoIP, szVarName, szIP, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+        // IP Valido e diverso da 0 se non server
+        uint32_t ipNum = str2ipaddr(szIP.toAscii().data());
+        QHostAddress ipAddr;
+        if ((ipNum == 0 && (nProtocol != TCP_SRV && nProtocol != TCPRTU_SRV)) || ! ipAddr.setAddress(szIP))  {
+            fillErrorMessage(nRow, colIP, errCTBadIP, szVarName, szIP, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
     }
     //---------------------------------------
     // Controllo per Port Value in funzione del Protocollo
@@ -3051,11 +3060,12 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             lstCTErrors.append(errCt);
             nErrors++;
         }
-        // Numero Porta non abilitata (o non presente)
-        if ( (nPort == 0 && ! TargetConfig.ser0_Enabled) ||
-             (nPort == 1 && ! TargetConfig.ser1_Enabled) ||
-             (nPort == 2 && ! TargetConfig.ser2_Enabled) ||
-             (nPort == 3 && ! TargetConfig.ser3_Enabled) )  {
+        // Numero Porta non abilitata (o non presente) [check solo per parte utente della CT...]
+        if ( (nRow < MAX_NONRETENTIVE) &&
+             ((nPort == 0 && ! TargetConfig.ser0_Enabled) ||
+              (nPort == 1 && ! TargetConfig.ser1_Enabled) ||
+              (nPort == 2 && ! TargetConfig.ser2_Enabled) ||
+              (nPort == 3 && ! TargetConfig.ser3_Enabled) ))  {
             fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
@@ -3085,9 +3095,10 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             lstCTErrors.append(errCt);
             nErrors++;
         }
-        // Numero Porta non abilitata (o non presente)
-        if ( (nPort == 0 && ! TargetConfig.can0_Enabled) ||
-             (nPort == 1 && ! TargetConfig.can1_Enabled))  {
+        // Numero Porta non abilitata (o non presente) [check solo per parte utente della CT...]
+        if ( (nRow < MAX_NONRETENTIVE) &&
+             ((nPort == 0 && ! TargetConfig.can0_Enabled) ||
+              (nPort == 1 && ! TargetConfig.can1_Enabled)))  {
             fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;

@@ -198,7 +198,7 @@
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">border-image: url(&quot;:/icons/img/Mect_small.png&quot;)</string>
+         <string notr="true">border-image: url(&quot;:/cteicons/img/Mect_small.png&quot;)</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::Box</enum>
@@ -651,6 +651,19 @@
              </widget>
             </item>
             <item>
+             <spacer name="horizontalSpacer_10">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
              <widget class="QPushButton" name="cmdCompile">
               <property name="minimumSize">
                <size>
@@ -694,19 +707,6 @@
                <bool>false</bool>
               </property>
              </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_10">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
             <item>
              <widget class="QPushButton" name="cmdPLC">
