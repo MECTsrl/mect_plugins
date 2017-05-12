@@ -35,6 +35,9 @@ const QString szNEWLINE = QString::fromAscii("\n");
 const QString szSHARP = QString::fromAscii("#");
 const QString szTRUE = QString::fromAscii("1");
 const QString szFALSE = QString::fromAscii("0");
+const QString szMectTitle = QString::fromAscii("Mect Editor");
+
+
 
 struct  TP_Config {
     // General Params

@@ -76,7 +76,6 @@
 const QString szDEF_IP_PORT = QString::fromAscii("502");
 const QString szCT_FILE_NAME = QString::fromAscii("Crosstable.csv");
 const QString szEMPTY_IP = QString::fromAscii("0.0.0.0");
-const QString szTitle = QString::fromAscii("Mect Editor");
 const QString szCrossCompier = QString::fromAscii("ctc");
 const QString szTemplateFile = QString::fromAscii("template.pri");
 const QString szEnvFile = QString::fromAscii("EnvVars.txt");
@@ -295,6 +294,11 @@ ctedit::ctedit(QWidget *parent) :
         lstCondition.append(QString::fromAscii(logic_operators[nCol]));
     }
     // Caricamento delle varie Combos
+    // Combo delle Porte Seriali
+    ui->cboPort->clear();
+    for (nCol = 0; nCol <= nMaxSerialPorts; nCol++)  {
+        ui->cboPort->addItem(QString::number(nCol));
+    }
     // Combo Sections (bloccata per evitare Side Effects al currentIndex)
     oldState = ui->cboSections->blockSignals(true);
     for (nCol = 0; nCol < regTotals; nCol++)  {
@@ -357,8 +361,12 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtIP->setToolTip(szToolTip);
     // Porta di comunicazione
     szToolTip.clear();
-    szToolTip.append(tr("Communication Port, e.g. 502"));
+    szToolTip.append(tr("TCP Communication Port, e.g. 502"));
     ui->txtPort->setToolTip(szToolTip);
+    // Combo Porta seriale
+    szToolTip.clear();
+    szToolTip.append(tr("Serial Communication Port, from 0 to %1") .arg(nMaxSerialPorts));
+    ui->cboPort->setToolTip(szToolTip);
     // Indirizzo nodo remoto
     szToolTip.clear();
     szToolTip.append(tr("Remode Node Address, 0 for broadcast"));
@@ -395,6 +403,7 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.append(trUtf8("EQUAL\n"));
     szToolTip.append(trUtf8("RISING EDGE\n"));
     szToolTip.append(trUtf8("FALLING EDGE"));
+    // Trick per rendere la Combo Centrata
     ui->cboCondition->setEditable(true);
     // ui->cboCondition->lineEdit()->setReadOnly(true);
     ui->cboCondition->lineEdit()->setAlignment(Qt::AlignCenter);
@@ -507,6 +516,11 @@ ctedit::ctedit(QWidget *parent) :
     ui->lblBlockSize->setVisible(false);
     ui->txtBlockSize->setVisible(false);
     ui->cmdBlocchi->setVisible(false);
+    ui->cboPort->setVisible(false);
+    ui->txtPort->setVisible(true);
+    ui->lblPort_RTU->setVisible(false);
+    ui->lblPort->setVisible(true);
+
 }
 
 ctedit::~ctedit()
@@ -651,7 +665,7 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     }
     else  {
         m_szMsg = tr("Error Loading CrossTable file: %1") .arg(szFileCT);
-        warnUser(this, szTitle, m_szMsg);
+        warnUser(this, szMectTitle, m_szMsg);
     }
     this->setCursor(Qt::ArrowCursor);
     return fRes;
@@ -887,6 +901,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
 {
     QString szTemp;
     int     nPos = 0;
+    int     nProtocol = -1;
     QList<int> lstVarTypes;
 
     lstVarTypes.clear();
@@ -929,14 +944,25 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     ui->cboProtocol->setCurrentIndex(-1);
     if (! szTemp.isEmpty())  {
         nPos = ui->cboProtocol->findText(szTemp, Qt::MatchFixedString);
-        if (nPos >= 0 && nPos < ui->cboProtocol->count())
+        if (nPos >= 0 && nPos < ui->cboProtocol->count())  {
             ui->cboProtocol->setCurrentIndex(nPos);
+            nProtocol = nPos;
+        }
     }
     // IP
     szTemp = lstRecValues[colIP].trimmed();
     ui->txtIP->setText(szTemp);
     // Port
     szTemp = lstRecValues[colPort].trimmed();
+    // Porta in ComboBox
+    if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
+        ui->cboPort->setCurrentIndex(-1);
+        nPos = ui->cboPort->findText(szTemp);
+        if (nPos >= 0 && nPos < ui->cboPort->count())  {
+            ui->cboPort->setCurrentIndex(nPos);
+        }
+    }
+    // Port Comunque in Text
     ui->txtPort->setText(szTemp);
     // Node ID
     szTemp = lstRecValues[colNodeID].trimmed();
@@ -1030,6 +1056,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     QString szTemp;
     int     nPos = 0;
     int     nUpdate = -1;
+    int     nProtocol = -1;
 
     // Pulizia Buffers
     szTemp.clear();
@@ -1075,9 +1102,9 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     szTemp = ui->txtDecimal->text();
     lstRecValues[colDecimal] = szTemp.trimmed();
     // Protocol lstBusType
-    nPos = ui->cboProtocol->currentIndex();
-    if (nPos >= 0 && nPos < lstProtocol.count())
-        szTemp = ui->cboProtocol->itemData(nPos).toString();
+    nProtocol = ui->cboProtocol->currentIndex();
+    if (nProtocol >= 0 && nProtocol < lstProtocol.count())
+        szTemp = ui->cboProtocol->itemData(nProtocol).toString();
     else
         szTemp = szEMPTY;
     lstRecValues[colProtocol] = szTemp.trimmed();
@@ -1085,7 +1112,13 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     szTemp = ui->txtIP->text();
     lstRecValues[colIP] = szTemp.trimmed();
     // Port
-    szTemp = ui->txtPort->text();
+    // Protocolli Seriali
+    if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)
+        szTemp = ui->cboPort->currentText();
+    else
+        szTemp = ui->txtPort->text();
+    qDebug() << tr("Port: ") << szTemp;
+
     lstRecValues[colPort] = szTemp.trimmed();
     // Node ID
     szTemp = ui->txtNode->text();
@@ -1161,31 +1194,52 @@ void ctedit::on_cmdBlocchi_clicked()
 
 void ctedit::on_cmdSave_clicked()
 {
-    bool    fRes = false;
+    saveCTFile();
+}
+void ctedit::saveCTFile()
+{
+    int     nRes = 0;
+    int     nCur = 0;
     int     nErr = 0;
+    int     nCurRow = m_nGridRow;
 
     // Controllo errori
     nErr = globalChecks();
     if (nErr)  {
         // Ci sono errori, salvo comunque ?
         m_szMsg = tr("There are errors in Data. Save anyway?");
-        if (! queryUser(this, szTitle, m_szMsg, false))
+        if (! queryUser(this, szMectTitle, m_szMsg, false))
             return;
     }
     else  {
         // Non ci sono errori, eseguo d'ufficio la rinumerazione blocchi
-        fRes = riassegnaBlocchi();
+        if (! riassegnaBlocchi())  {
+            m_szMsg = tr("Found Errors in Reassigning Blocks");
+            warnUser(this, szMectTitle, m_szMsg);
+        }
     }
-    fRes = saveCTFile();
-    if (!fRes)  {
+    // Back-Up Copy of CT File
+    fileBackUp(m_szCurrentCTFile);
+    // Copy CT Record List to C Array
+    for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
+        if (nCur < DimCrossTable)
+            CrossTable[nCur + 1] = lstCTRecords[nCur];
+    }
+    // Saving Source Array to file
+    nRes = SaveXTable(m_szCurrentCTFile.toAscii().data(), CrossTable);
+    // Return Value
+    if (nRes != 0) {
         m_szMsg = tr("Error Saving Crosstable File: %1\n").arg(m_szCurrentCTFile);
-        warnUser(this, szTitle, m_szMsg);
+        warnUser(this, szMectTitle, m_szMsg);
     }
     else {
         m_isCtModified = false;
     }
+    // Return to Row
+    jumpToGridRow(nCurRow, false);
     // Refresh abilitazioni interfaccia
     enableInterface();
+
 }
 // Riassegnazione blocchi variabili
 bool    ctedit::riassegnaBlocchi()
@@ -1271,23 +1325,6 @@ bool    ctedit::riassegnaBlocchi()
     ui->cmdBlocchi->setEnabled(true);
     this->setCursor(Qt::ArrowCursor);
     return fRes;
-}
-bool ctedit::saveCTFile()
-{
-    int nRes = 0;
-    int nCur = 0;
-
-    // Back-Up Copy of CT File
-    fileBackUp(m_szCurrentCTFile);
-    // Copy CT Record List to C Array
-    for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
-        if (nCur < DimCrossTable)
-            CrossTable[nCur + 1] = lstCTRecords[nCur];
-    }
-    // Saving Source Array to file
-    nRes = SaveXTable(m_szCurrentCTFile.toAscii().data(), CrossTable);
-    // Return Value
-    return nRes == 0;
 }
 bool ctedit::grid2CTable()
 // Dump di tutto il Grid in lista di CT Records
@@ -1501,6 +1538,8 @@ void ctedit::enableFields()
 {
     int     nDefPort = -1;
     int     nTotalPorts = 0;
+    int     nProtocol = ui->cboProtocol->currentIndex();
+
     // Disabilita tutti i campi
     ui->cboPriority->setEnabled(false);
     ui->cboUpdate->setEnabled(false);
@@ -1510,6 +1549,7 @@ void ctedit::enableFields()
     ui->cboProtocol->setEnabled(false);
     ui->txtIP->setEnabled(false);
     ui->txtPort->setEnabled(false);
+    ui->cboPort->setEnabled(false);
     ui->txtNode->setEnabled(false);
     ui->txtRegister->setEnabled(false);
     ui->txtComment->setEnabled(false);
@@ -1517,7 +1557,7 @@ void ctedit::enableFields()
     // Variabili di Sistema, abilitate in modifica solo il nome, priorità, update. No Insert in campi vuoti
     if (m_nGridRow >= MIN_DIAG -1)  {
         bool fDecimal = false;
-        if (ui->cboProtocol->currentIndex() != -1)  {
+        if (nProtocol != -1)  {
             ui->cboPriority->setEnabled(true);
             ui->cboUpdate->setEnabled(true);
             ui->txtName->setEnabled(true);
@@ -1551,48 +1591,39 @@ void ctedit::enableFields()
             ui->txtDecimal->setEnabled(false);
         }
         // Protocollo non definito, es per Riga vuota
-        if (ui->cboProtocol->currentIndex() == -1)  {
+        if (nProtocol == -1)  {
             ui->txtIP->setEnabled(true);
             ui->txtPort->setEnabled(true);
             ui->txtNode->setEnabled(true);
             ui->txtRegister->setEnabled(true);
         }
         // Calcola la porta di default in funzione del protocollo (if any available)
-        getFirstPortFromProtocol(ui->cboProtocol->currentIndex(), nDefPort, nTotalPorts);
-        // PLC
-        if (ui->cboProtocol->currentIndex() == PLC)  {
-            // All Data Entry Locked
-        }
-        // RTU
-        else if (ui->cboProtocol->currentIndex() == RTU)  {
-            ui->txtPort->setEnabled(nTotalPorts > 1);
+        getFirstPortFromProtocol(nProtocol, nDefPort, nTotalPorts);
+        // Abilitazione dei campi se non PLC
+        if (nProtocol != PLC)  {
             ui->txtNode->setEnabled(true);
             ui->txtRegister->setEnabled(true);
+            // TCP, TCPRTU, TCP_SRV, TCPRTU_SRV
+            if (nProtocol == TCP || nProtocol == TCPRTU  ||
+                     nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
+                ui->txtIP->setEnabled(true);
+                ui->txtPort->setEnabled(true);
+            }
         }
-        // TCP, TCPRTU, TCP_SRV, TCPRTU_SRV
-        else if (ui->cboProtocol->currentIndex() == TCP || ui->cboProtocol->currentIndex() == TCPRTU  ||
-                 ui->cboProtocol->currentIndex() == TCP_SRV || ui->cboProtocol->currentIndex() == TCPRTU_SRV)  {
-            ui->txtIP->setEnabled(true);
-            ui->txtPort->setEnabled(true);
-            ui->txtNode->setEnabled(true);
-            ui->txtRegister->setEnabled(true);
+        // Visibilità Combo Port per Protocolli Seriali di ogni tipo
+        if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
+            ui->lblPort_RTU->setVisible(true);
+            ui->lblPort->setVisible(false);
+            ui->cboPort->setEnabled(nTotalPorts > 1);
+            ui->cboPort->setVisible(true);
+            ui->txtPort->setVisible(false);
         }
-        // CANOPEN
-        else if (ui->cboProtocol->currentIndex() == CANOPEN)  {
-            ui->txtNode->setEnabled(true);
-            ui->txtRegister->setEnabled(true);
-        }
-        // MECT
-        else if (ui->cboProtocol->currentIndex() == MECT_PTC)  {
-            ui->txtPort->setEnabled(nTotalPorts > 1);
-            ui->txtNode->setEnabled(true);
-            ui->txtRegister->setEnabled(true);
-        }
-        // RTU_SRV
-        else if (ui->cboProtocol->currentIndex() == RTU_SRV)  {
-            ui->txtPort->setEnabled(nTotalPorts > 1);
-            ui->txtNode->setEnabled(true);
-            ui->txtRegister->setEnabled(true);
+        else  {
+            ui->lblPort_RTU->setVisible(false);
+            ui->lblPort->setVisible(true);
+            ui->cboPort->setEnabled(false);
+            ui->cboPort->setVisible(false);
+            ui->txtPort->setVisible(true);
         }
     }
 }
@@ -1627,8 +1658,11 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
 // Cambio di Protocollo della Variabile. Abilita i campi specifici del protocollo e imposta eventuali valori di default se necessari
 {
     QString     szTemp;
-    int         nPort = -1;
+    int         nDefaultPort = -1;
+    int         nCurrentPort = -1;
+    QString     szCurPort;
     int         nTotalFree = 0;
+    bool        fPortOk = false;
 
     szTemp.clear();
     // No Index
@@ -1639,18 +1673,31 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         ui->txtRegister->setText(szEMPTY);
     }
     // Calcola la porta di default in funzione del protocollo (if any available)
-    getFirstPortFromProtocol(index, nPort, nTotalFree);
+    getFirstPortFromProtocol(index, nDefaultPort, nTotalFree);
+    // Recupera il numero di porta corrente
+    szCurPort.clear();
+    if (index == RTU || index == MECT_PTC || index == RTU_SRV)  {
+        szCurPort = ui->cboPort->currentText();
+        nCurrentPort = ui->cboPort->currentIndex();
+    }
+    else  {
+        szCurPort = ui->txtPort->text().trimmed();
+        nCurrentPort = ! szCurPort.isEmpty() ? szCurPort.toInt(&fPortOk) : -1;
+        nCurrentPort = fPortOk ? nCurrentPort : -1;
+    }
+    fPortOk = isValidPort(nCurrentPort, index);
     // PLC
     if (index == PLC)  {
         // All Data Entry Cleared
         ui->txtIP->setText(szEMPTY);
         ui->txtPort->setText(szEMPTY);
         ui->txtNode->setText(szEMPTY);
-        ui->txtRegister->setText(szEMPTY);
+        ui->cboPort->setCurrentIndex(-1);
+        ui->txtRegister->setText(szEMPTY);       
     }
-    // RTU
-    else if (index == RTU)  {
-        // Ip Vuoto
+    // RTU vari - MECT - CANOPEN
+    else if (index == RTU || index == RTU_SRV || index == MECT_PTC || index == CANOPEN)  {
+        // Forza Ip Vuoto
         ui->txtIP->setText(szEMPTY);
     }
     // TCP, TCPRTU,
@@ -1658,20 +1705,10 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     }
     // TCP_SRV, TCPRTU_SRV
     else if (index == TCP_SRV || index == TCPRTU_SRV)  {
-        szTemp = szEMPTY_IP;
-        ui->txtIP->setText(szTemp);
-    }
-    // CANOPEN
-    else if (index == CANOPEN)  {
-        ui->txtIP->setText(szEMPTY);
-    }
-    // MECT
-    else if (index == MECT_PTC)  {
-        ui->txtIP->setText(szEMPTY);
-    }
-    // RTU_SRV
-    else if (index == RTU_SRV)  {
-        ui->txtIP->setText(szEMPTY);
+        // Default IP to Empty for Servers
+        szTemp = ui->txtIP->text().trimmed();
+        if (szTemp.isEmpty())
+            ui->txtIP->setText(szEMPTY_IP);
     }
     // Disabilitazione  tipo BIT per i vari tipi di SRV (TCP_SRV, RTU_SRV, TCP_RTU_SRV)
     // Non è ammesso BIT per i protocolli SERVER (TCP/RTU)
@@ -1681,11 +1718,14 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     else {
         enableComboItem(ui->cboType, BIT);
     }
-    // Imposta la Porta di default se la porta è vuota ed è definita in base al protocollo
-    szTemp = ui->txtPort->text().trimmed();
-    if (szTemp.isEmpty() && nPort >= 0)  {
-        szTemp = QString::number(nPort);
-        ui->txtPort->setText(szTemp);
+    // Imposta la Porta di default se la porta è vuota oppure quella presente non è valida
+    if (szCurPort.isEmpty() || (nDefaultPort >= 0 && ! fPortOk))  {
+        szCurPort = QString::number(nDefaultPort);
+        // Reimposta default
+        if (index == RTU || index == MECT_PTC || index == RTU_SRV)
+            ui->cboPort->setCurrentIndex(nDefaultPort);
+        else
+            ui->txtPort->setText(szCurPort);
     }
     // Abilitazione del campi di data entry in funzione del Protocollo
     enableFields();
@@ -1746,7 +1786,7 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
             m_nGridRow = nRow;
             // Imposta Sezione in cboSections
             setSectionArea(nRow);
-            // Covert CT Record 2 User Values
+            // Convert CT Record 2 User Values
             fRes = recCT2List(lstFields, nRow);
             if (fRes)
                 fRes = values2Iface(lstFields);
@@ -1954,7 +1994,7 @@ void ctedit::pasteSelected()
             // Query confirm of used if any row is used
             if (fUsed)  {
                 m_szMsg = tr("Some of destination rows may be used. Paste anyway ?");
-                fUsed = ! queryUser(this, szTitle, m_szMsg);
+                fUsed = ! queryUser(this, szMectTitle, m_szMsg);
             }
             // No row used or overwrite confirmed
             if (! fUsed)  {
@@ -1979,7 +2019,7 @@ void ctedit::pasteSelected()
         }
         else  {
             m_szMsg = tr("The Copy Buffer Excedes System Variables Limit. Rows not copied");
-            warnUser(this, szTitle, m_szMsg);
+            warnUser(this, szMectTitle, m_szMsg);
         }
     }
     m_szMsg = tr("Rows Pasted: %1") .arg(nPasted);
@@ -1999,12 +2039,14 @@ void ctedit::insertRows()
     int             nRow = 0;
     int             nCur = 0;
     int             nStart = 0;
+    int             nCurPos = 0;
 
     if (selection.count() <= 0 )  {
         return;
     }
     // Controllo di restare nei Bounding delle variabili utente
-    if (m_nGridRow + selection.count() < MAX_NONRETENTIVE - 1)  {
+    nCurPos = m_nGridRow;
+    if (nCurPos + selection.count() < MAX_NONRETENTIVE - 1)  {
         // Append to Undo List
         lstUndo.append(lstCTRecords);
         // Enter in Paste Mode
@@ -2049,8 +2091,8 @@ void ctedit::insertRows()
     }
     m_szMsg = tr("Rows Inserted: %1") .arg(selection.count());
     displayStatusMessage(m_szMsg);
-    if (m_nGridRow >= 0)
-        jumpToGridRow(m_nGridRow, true);
+    if (nCurPos >= 0)
+        jumpToGridRow(nCurPos, true);
     enableInterface();
 }
 void ctedit::emptySelected()
@@ -2220,6 +2262,7 @@ bool ctedit::isLineModified(int nRow)
 // Check se linea corrente Grid è diversa da Form in Editing
 {
     int     nModif = 0;
+    int     nProtocol = ui->cboProtocol->currentIndex();
 
     // Confronto tra Form Editing e riga Grid
     if(nRow >= 0 && nRow < lstCTRecords.count())  {
@@ -2230,7 +2273,10 @@ bool ctedit::isLineModified(int nRow)
         nModif += (ui->txtDecimal->text().trimmed() != ui->tblCT->item(nRow, colDecimal)->text().trimmed());
         nModif += (ui->cboProtocol->currentText().trimmed() != ui->tblCT->item(nRow, colProtocol)->text().trimmed());
         nModif += (ui->txtIP->text().trimmed() != ui->tblCT->item(nRow, colIP)->text().trimmed());
-        nModif += (ui->txtPort->text().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed());
+        if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)
+            nModif += ui->cboPort->currentText().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed();
+        else
+            nModif += (ui->txtPort->text().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed());
         nModif += (ui->txtNode->text().trimmed() != ui->tblCT->item(nRow, colNodeID)->text().trimmed());
         nModif += (ui->txtRegister->text().trimmed() != ui->tblCT->item(nRow, colRegister)->text().trimmed());
         // nModif += (ui->txtBlock->text().trimmed() != ui->tblCT->item(nRow, colBlock)->text().trimmed());
@@ -2264,7 +2310,7 @@ void ctedit::on_cmdImport_clicked()
     if (! szSourceFile.isEmpty())  {
         if (checkCTFile(szSourceFile))  {
             szMsg = tr("Rows from %1 to %2 will be overwritten !!\nDo you want to continue?") .arg(MIN_RETENTIVE) .arg(MAX_NONRETENTIVE);
-            if (queryUser(this, szTitle, szMsg))  {
+            if (queryUser(this, szMectTitle, szMsg))  {
                 lstNewRecs.clear();
                 lstSourceRecs.clear();
                 if (loadCTFile(szSourceFile, lstNewRecs, false))  {
@@ -2276,12 +2322,12 @@ void ctedit::on_cmdImport_clicked()
                     fRes = ctable2Grid();
                     if (fRes)  {
                         szMsg = tr("Loaded Crosstable from file:\n%1") .arg(szSourceFile);
-                        notifyUser(this, szTitle, szMsg);
+                        notifyUser(this, szMectTitle, szMsg);
                     }
                     else {
                         szMsg = tr("Error Loading Crosstable from file:\n%1") .arg(szSourceFile);
                         szMsg.append(tr("\nOriginal Content Reloaded"));
-                        warnUser(this, szTitle, szMsg);
+                        warnUser(this, szMectTitle, szMsg);
                         for (nRow = 0; nRow < lstSourceRecs.count(); nRow++)  {
                             lstCTRecords[nRow] = lstSourceRecs[nRow];
                         }
@@ -2292,7 +2338,7 @@ void ctedit::on_cmdImport_clicked()
         }
         else  {
             szMsg = tr("The Selected file is not a Crosstable file:\n%1") .arg(szSourceFile);
-            warnUser(this, szTitle, szMsg);
+            warnUser(this, szMectTitle, szMsg);
         }
     }
 }
@@ -2422,7 +2468,7 @@ void ctedit::gotoRow()
         // Se la riga non è visibile chiede conferma se fare ShowAll
         if (lstCTRecords[nRow].UsedEntry == 0 && ! m_fShowAllRows)  {
             m_szMsg = trUtf8("The requested row is not visible. Show all rows?");
-            if (queryUser(this, szTitle, m_szMsg, false))  {
+            if (queryUser(this, szMectTitle, m_szMsg, false))  {
                 ui->cmdHideShow->setChecked(true);
             }
         }
@@ -2523,14 +2569,14 @@ void ctedit::on_cmdCompile_clicked()
     if (!procCompile.waitForStarted())  {
         m_szMsg = tr("Error Starting Crosstable Compiler!\n");
         m_szMsg.append(szCommand);
-        warnUser(this, szTitle, m_szMsg);
+        warnUser(this, szMectTitle, m_szMsg);
         goto exit_compile;
     }
     // Attesa termine comando
     if (!procCompile.waitForFinished())  {
         m_szMsg = tr("Error Running Crosstable Compiler!\n");
         m_szMsg.append(szCommand);
-        warnUser(this, szTitle, m_szMsg);
+        warnUser(this, szMectTitle, m_szMsg);
         goto exit_compile;
     }
     // Esito comando
@@ -2540,12 +2586,12 @@ void ctedit::on_cmdCompile_clicked()
         m_szMsg = tr("Exit Code of Crosstable Compiler: %1\n") .arg(nExitCode);
         szCompErr = QString::fromAscii(baCompErr.data());
         m_szMsg.append(szCompErr);
-        warnUser(this, szTitle, m_szMsg);
+        warnUser(this, szMectTitle, m_szMsg);
         // TODO: Analisi errore del Cross Compiler
     }
     else {
         m_szMsg = tr("Crosstable Correctly Compiled");
-        notifyUser(this, szTitle, m_szMsg);
+        notifyUser(this, szMectTitle, m_szMsg);
     }
 
 exit_compile:
@@ -2678,6 +2724,7 @@ void    ctedit::enableProtocolsFromModel()
 // Abilita i Protocolli in funzione della configurazione del Modello corrente (da TargetConfig)
 {
     int nCur = 0;
+    QString szPort;
 
 
     // qDebug() << tr("Model Searched: %1 - Found: %2") .arg(szModel) .arg(nModel);
@@ -2700,10 +2747,32 @@ void    ctedit::enableProtocolsFromModel()
     if (TargetConfig.can0_Enabled || TargetConfig.can1_Enabled)  {
         lstBusEnabler[CANOPEN] = true;
     }
+    // Protocolli Seriali
     if (TargetConfig.ser0_Enabled || TargetConfig.ser1_Enabled || TargetConfig.ser2_Enabled || TargetConfig.ser3_Enabled)  {
         lstBusEnabler[RTU] = true;
         lstBusEnabler[MECT_PTC] = true;
         lstBusEnabler[RTU_SRV] = true;
+        // Abilitazione delle entry nella Combo delle Porte
+        // Port 0
+        if (TargetConfig.ser0_Enabled)
+            enableComboItem(ui->cboPort, 0);
+        else
+            disableComboItem(ui->cboPort, 0);
+        // Port 1
+        if (TargetConfig.ser1_Enabled)
+            enableComboItem(ui->cboPort, 1);
+        else
+            disableComboItem(ui->cboPort, 1);
+        // Port 2
+        if (TargetConfig.ser2_Enabled)
+            enableComboItem(ui->cboPort, 2);
+        else
+            disableComboItem(ui->cboPort, 2);
+        // Port 3
+        if (TargetConfig.ser3_Enabled)
+            enableComboItem(ui->cboPort, 3);
+        else
+            disableComboItem(ui->cboPort, 3);
     }
     // Spegne sulla Combo dei protocolli le voci non abilitate
     for (nCur = 0; nCur < lstProtocol.count(); nCur++)  {
@@ -3023,7 +3092,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     // Tipo BIT non permesso per protocolli Server
     if (nType == BIT &&
             (nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV || nProtocol == RTU_SRV))  {
-        fillErrorMessage(nRow, colProtocol, errCTNoProtocol, szVarName, szTemp, chSeverityError, &errCt);
+        fillErrorMessage(nRow, colProtocol, errCTNoBITAllowed, szVarName, szTemp, chSeverityError, &errCt);
         lstCTErrors.append(errCt);
         nErrors++;
     }
@@ -3061,15 +3130,10 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             nErrors++;
         }
         // Numero Porta non abilitata (o non presente) [check solo per parte utente della CT...]
-        if ( (nRow < MAX_NONRETENTIVE) &&
-             ((nPort == 0 && ! TargetConfig.ser0_Enabled) ||
-              (nPort == 1 && ! TargetConfig.ser1_Enabled) ||
-              (nPort == 2 && ! TargetConfig.ser2_Enabled) ||
-              (nPort == 3 && ! TargetConfig.ser3_Enabled) ))  {
+        if ( (nRow < MAX_NONRETENTIVE) && (! isValidPort(nPort, nProtocol)))  {
             fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
-
         }
     }
     // Protocolli TCP
@@ -3081,7 +3145,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             nErrors++;
         }
         // Porta non permessa
-        if (nPort == nPortFTPControl || nPort == nPortSFTP || nPort == nPortTELNET || nPort == nPortHTTP || nPort == nPortVNC) {
+        if (! isValidPort(nPort, nProtocol)) {
             fillErrorMessage(nRow, colPort, errCTWrongTCPPort, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
@@ -3096,9 +3160,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             nErrors++;
         }
         // Numero Porta non abilitata (o non presente) [check solo per parte utente della CT...]
-        if ( (nRow < MAX_NONRETENTIVE) &&
-             ((nPort == 0 && ! TargetConfig.can0_Enabled) ||
-              (nPort == 1 && ! TargetConfig.can1_Enabled)))  {
+        if ( (nRow < MAX_NONRETENTIVE) && (!isValidPort(nPort, nProtocol))) {
             fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
@@ -3462,6 +3524,12 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
             ui->txtDecimal->setText(QString::number(lstCTRecords[m_nGridRow - 1].Decimal));
             // Protocol
             ui->cboProtocol->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Protocol);
+            // Port
+            ui->txtPort->setText(QString::number(lstCTRecords[m_nGridRow - 1].Port));
+            // Node id
+            ui->txtNode->setText(QString::number(lstCTRecords[m_nGridRow - 1].NodeId));
+            // Register
+            ui->txtRegister->setText(QString::number(lstCTRecords[m_nGridRow - 1].Offset));
             // Behavior
             ui->cboBehavior->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Behavior);
         }
@@ -3525,7 +3593,7 @@ void ctedit::on_cmdPLC_clicked()
     QFile plcPro(szPlcPro2Show);
     if (! plcPro.exists())  {
         m_szMsg = tr("PLC Project File Not Found:\n<%1>") .arg(szPlcPro2Show);
-        warnUser(this, szTitle, m_szMsg);
+        warnUser(this, szMectTitle, m_szMsg);
         fprintf(stderr, "%s\n", m_szMsg.toAscii().data());
         goto endStartPLC;
     }
@@ -3605,7 +3673,7 @@ void ctedit::on_cmdPLC_clicked()
     // Open only File URL
     if (! showFile(szPlcPro2Show))  {
         m_szMsg = tr("Error Opening URL: %1\n") .arg(szPlcPro2Show);
-        warnUser(this, szTitle, m_szMsg);
+        warnUser(this, szMectTitle, m_szMsg);
     }
 #endif
 
@@ -3670,17 +3738,19 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         // Return / Enter Button
         if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)  {
             if (m_nCurTab == TAB_CT)  {
-                // Enter su Tab
                 if (obj == ui->fraEdit)  {
+                    // Enter su Editing Form
                     qDebug() << tr("Enter in Form");
                     if (! isFormEmpty() && isLineModified(m_nGridRow)) {
                         updateRow(m_nGridRow);
+                        enableInterface();
                     }
                     // QKeyEvent newEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier, szEMPTY);
                     ui->tblCT->setFocus();
                     return true;
                 }
                 else if (obj == ui->tblCT)  {
+                    // Enter su Grid
                     qDebug() << tr("Enter in Grid");
                     // Salto a riga successiva
                     jumpToGridRow(findNextVisibleRow(m_nGridRow), false);
@@ -4476,7 +4546,7 @@ void ctedit::getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
 
     nPort = -1;
     nTotal = 0;
-    // Protocollo PLC dimesione pari a MAXBLOCKSIZE
+
     switch (nProtocol) {
         // Protocolli Seriali
         case RTU:
@@ -4525,8 +4595,8 @@ void ctedit::getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
             }
             break;
         default:
-            nPort = -1;
-            nTotal = 0;
+            nPort = 0;
+            nTotal = 1;
             break;
     }
 }
@@ -4589,4 +4659,55 @@ int ctedit::findNextVisibleRow(int nRow)
     return nJumpRow;
 
 
+}
+bool ctedit::isValidPort(int nPort, int nProtocol)
+// Controllo di validità di un numero porta in funzione di Modello (da TargetConfig) e del Protocollo
+{
+    bool    fRes = false;
+
+    // Protocollo PLC dimesione pari a MAXBLOCKSIZE
+    switch (nProtocol) {
+        case PLC:
+            fRes = nPort == -1;
+            break;
+
+        case TCP:
+        case TCPRTU:
+        case TCP_SRV:
+        case TCPRTU_SRV:
+        if ((nPort >= 0 && nPort <= nMax_Int16) && (TargetConfig.ethPorts > 0)) {
+                if (nPort != nPortFTPControl && nPort != nPortSFTP && nPort != nPortTELNET && nPort != nPortHTTP && nPort != nPortVNC)  {
+                    fRes = true;
+                }
+            }
+            break;
+
+        case CANOPEN:
+            if (nPort >= 0 && nPort <= nMaxCanPorts)  {
+                if (nPort == 0)
+                    fRes = TargetConfig.can0_Enabled;
+                else if (nPort == 1)
+                    fRes = TargetConfig.can1_Enabled;
+            }
+            break;
+
+        case RTU:
+        case MECT_PTC:
+        case RTU_SRV:
+            if (nPort >= 0 && nPort <= nMaxSerialPorts)  {
+                if ((nPort == 0 && TargetConfig.ser0_Enabled) ||
+                    (nPort == 1 && TargetConfig.ser1_Enabled) ||
+                    (nPort == 2 && TargetConfig.ser2_Enabled) ||
+                    (nPort == 3 && TargetConfig.ser3_Enabled) )  {
+                    fRes = true;
+                }
+            }
+            break;
+
+        default:
+            fRes = false;
+            break;
+    }
+    // Return Value
+    return fRes;
 }

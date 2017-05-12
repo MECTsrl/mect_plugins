@@ -31,7 +31,7 @@ public:
     explicit ctedit(QWidget *parent = 0);
     ~ctedit();
     bool    selectCTFile(QString szFileCT);
-    bool    saveCTFile();
+    void    saveCTFile();
     void    displayStatusMessage(QString szMessage, int nSeconds = 0);// Show message in ui->lblMessage
 
 protected:
@@ -50,13 +50,11 @@ private slots:
     void pasteSelected();                           // Incolla righe da Buffer di copiatura a Riga corrente
     void cutSelected();                             // Taglia righe in Buffer di copiatura
     void displayUserMenu(const QPoint &pos);        // Menu contestuale Grid
-    void on_cboProtocol_currentIndexChanged(int index);
     void tableItemChanged(const QItemSelection & selected, const QItemSelection & deselected);
     void clearEntryForm();                          // Svutamento elementi Form Data Entry
     void clearStatusMessage();                      // Clear message in ui->lblMessage
     void tabSelected(int nTab);                     // Change current Tab
     void gotoRow();                                 // Show Dialog Goto Row n
-    void on_cboType_currentIndexChanged(int index);
     void on_cmdBlocchi_clicked();                   // Riordino Blocchi
     void on_cmdSave_clicked();                      // Salvataggio file
     void on_cmdImport_clicked();                    // Import Rows from Another CT File
@@ -65,14 +63,16 @@ private slots:
     void on_cmdUndo_clicked();                      // Retrieve a CT Block from Undo List
     void on_cmdHideShow_toggled(bool checked);
     void on_cmdPLC_clicked();
+    void on_cboPriority_currentIndexChanged(int index);
+    void on_cboUpdate_currentIndexChanged(int index);
+    void on_cboType_currentIndexChanged(int index);
+    void on_cboProtocol_currentIndexChanged(int index);
     void on_cboBehavior_currentIndexChanged(int index);
     void on_cboVariable1_currentIndexChanged(int index);
     void on_cboCondition_currentIndexChanged(int index);
     void on_optFixedVal_toggled(bool checked);
     void on_optVariableVal_toggled(bool checked);
-    void on_cboPriority_currentIndexChanged(int index);
     void on_cboSections_currentIndexChanged(int index);
-    void on_cboUpdate_currentIndexChanged(int index);
 
 private:
     //---------------------------------------------------------------------
@@ -111,6 +111,7 @@ private:
     int     globalChecks();                         // Controlli complessivi su tutta la CT
     bool    isFormEmpty();                          // Controllo Form Editing vuoto
     bool    isValidVarName(QString szName);         // Controllo del Nome Variabile
+    bool    isValidPort(int nPort, int nProtocol);  // Controllo di validità di un numero porta in funzione di Modello (da TargetConfig) e del Protocollo
     void    getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal);// Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
     void    fillErrorMessage(int nRow, int nCol, int nErrCode, QString szVarName, QString szValue, QChar severity, Err_CT *errCt);
     // Gestione Configurazione Progetto

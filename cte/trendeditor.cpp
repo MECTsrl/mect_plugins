@@ -34,7 +34,6 @@ const QString szTRENDMASK =  QString::fromAscii("trend*.csv");
 const QString szDEFCOLOR = QString::fromAscii("palegreen");
 const QString szPORTRAIT = QString::fromAscii("P");
 const QString szLANDSCAPE = QString::fromAscii("L");
-const QString szTitle = QString::fromAscii("Mect Editor");
 const QString szTrendRelPath = QString::fromAscii("config/");
 const QString szTrendSection = QString::fromAscii("customtrend.files");
 const QString szTrendExt = QString::fromAscii(".csv");
@@ -120,7 +119,8 @@ void TrendEditor::updateVarLists(const QStringList &lstTrendVars)
         // Fetch previous value
         nPos = -1;
         if (!szCurVar.isEmpty())  {
-            nPos = lstTrendVars.indexOf(szCurVar);
+            nPos = cboVar->findText(szCurVar);
+            // nPos = lstTrendVars.indexOf(szCurVar);
         }
         cboVar->setCurrentIndex(nPos);
     }
@@ -487,26 +487,20 @@ void TrendEditor::on_cmdLoad_clicked()
 void TrendEditor::on_cmdSave_clicked()
 {
     QString         szDestFile = m_szTrendPath + m_szTrendFile;
-    bool            fOverWrite = true;
 
     QFile fTrend(szDestFile);
     if (fTrend.exists())  {
         fileBackUp(szDestFile);
-//        fOverWrite = true;
-//        m_szMsg = tr("File %1 Exists. Overwrite?") .arg(m_szTrendFile);
-//        fOverWrite = queryUser(this, szTitle, m_szMsg, false);
-//        // Create Backup
-//        if (fOverWrite)
     }
     // Write File
-    if (fOverWrite)  {
-        // Scrittura nuovi valori
-        if (! iface2TrendFile(szDestFile))  {
-            m_szMsg = tr("Error Saving Trend File: %1") .arg(m_szTrendFile);
-            notifyUser(this, szTitle, m_szMsg);
-        }
+    if (! iface2TrendFile(szDestFile))  {
+        m_szMsg = tr("Error Saving Trend File:\n%1") .arg(m_szTrendFile);
+        warnUser(this, szMectTitle, m_szMsg);
     }
-
+    else  {
+        m_szMsg = tr("Trend file has been successfully saved:\n%1") .arg(m_szTrendFile);
+        notifyUser(this, szMectTitle, m_szMsg);
+    }
 }
 
 void TrendEditor::on_cmdSaveAs_clicked()
