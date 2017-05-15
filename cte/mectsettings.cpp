@@ -65,6 +65,7 @@ MectSettings::MectSettings(QWidget *parent) :
     // Clear Model Info
     m_nModel = -1;
     m_szModel.clear();
+    m_isIniModified = false;
     // Tab Enabler
     for (i = 0; i < tabTotals; i++)
         m_tabEnabled[i] = true;
@@ -515,6 +516,8 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
     }
     // Set Model Info for current Model
     setModel(targetConfig);
+    m_isIniModified = false;
+    ui->cmdSave->setStyleSheet(QString::fromAscii("border: 2px solid green;"));
     // All Ok, return true
     return true;
 }
@@ -526,15 +529,15 @@ void MectSettings::on_cmdSave_clicked()
     if (! checkFields())
         return;
     if (fileBackUp(m_szFileSettings))
-        save_all();
+        save_all(m_szFileSettings, true);
     else
         QMessageBox::critical(0,trUtf8("Error"),trUtf8("Error creating back up copy of file: %1") .arg(m_szFileSettings));
 
 }
-void MectSettings::save_all()
+void MectSettings::save_all(QString szFileName, bool notifyUser)
 {
 
-    QSettings settings(m_szFileSettings, QSettings::IniFormat);
+    QSettings settings(szFileName, QSettings::IniFormat);
     QStringList groups = settings.childGroups();
 
     /* SYSTEM */
@@ -557,7 +560,6 @@ void MectSettings::save_all()
         settings.setValue(QString::fromAscii("SYSTEM/fast_log_period_s"), ui->lineEdit_FastLogPeriod->text());
         settings.setValue(QString::fromAscii("SYSTEM/max_log_space_MB"), ui->lineEdit_MaxLogSpace->text());
         settings.setValue(QString::fromAscii("SYSTEM/trace_window_s"), ui->lineEdit_TraceWindow->text());
-        settings.sync();
     }
     /* SERIAL 0 */
     if (m_tabEnabled[tabSerial0])  {
@@ -577,7 +579,6 @@ void MectSettings::save_all()
             {
                 settings.remove(QString::fromAscii("SERIAL_PORT_0"));
             }
-            settings.sync();
         }
     }
     /* SERIAL 1 */
@@ -598,7 +599,6 @@ void MectSettings::save_all()
             {
                 settings.remove(QString::fromAscii("SERIAL_PORT_1"));
             }
-            settings.sync();
         }
     }
     /* SERIAL 2 */
@@ -619,7 +619,6 @@ void MectSettings::save_all()
             {
                 settings.remove(QString::fromAscii("SERIAL_PORT_2"));
             }
-            settings.sync();
         }
     }
     /* SERIAL 3 */
@@ -640,7 +639,6 @@ void MectSettings::save_all()
             {
                 settings.remove(QString::fromAscii("SERIAL_PORT_3"));
             }
-            settings.sync();
         }
     }
     /* TCP_IP */
@@ -650,7 +648,6 @@ void MectSettings::save_all()
             settings.setValue(QString::fromAscii("TCP_IP_PORT/silence_ms"), ui->lineEdit_Silence_TCP_IP_PORT->text());
             settings.setValue(QString::fromAscii("TCP_IP_PORT/timeout_ms"), ui->lineEdit_Timeout_TCP_IP_PORT->text());
             settings.setValue(QString::fromAscii("TCP_IP_PORT/max_block_size"), ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text());
-            settings.sync();
         }
     }
     /* CANOPEN 0 */
@@ -666,7 +663,6 @@ void MectSettings::save_all()
             {
                 settings.remove(QString::fromAscii("CANOPEN_0"));
             }
-            settings.sync();
         }
     }
     /* CANOPEN 1 */
@@ -686,8 +682,9 @@ void MectSettings::save_all()
     }
     // Global Sync
     settings.sync();
-
-    QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
+    // Notify User
+    if (notifyUser)
+        QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
 }
 bool MectSettings::checkFields()
 // Controllo del contenuto dei campi
@@ -1199,4 +1196,46 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     targetConfig = TargetConfig;
     // Return value
     return fRes;
+}
+bool MectSettings::isModified()
+{
+    bool fEqual = true;
+    // Create a Copy of interface data and compare with original data
+    if (!m_szFileSettings.isEmpty())  {
+        QString szFileTmp = m_szFileSettings + QString::fromAscii(".tmp");
+        save_all(szFileTmp, false);
+        QFile sourceFile(m_szFileSettings);
+        QFile tempFile(szFileTmp);
+        sourceFile.open(QIODevice::ReadOnly);
+        tempFile.open(QIODevice::ReadOnly);
+        QTextStream src(&sourceFile);
+        QTextStream tmp(&tempFile);
+        // Cerca nel file .pro le righe relative agli oggetti ui
+        while(! src.atEnd() && fEqual) {
+            QString line = src.readLine().trimmed();
+            if(tmp.atEnd())
+                fEqual = false;
+            else  {
+                QString tmpLine = tmp.readLine().trimmed();
+                fEqual = tmpLine == line;
+            }
+        }
+        // check remainder
+        if (fEqual && ! tmp.atEnd())
+            fEqual = false;
+        // Close files
+        sourceFile.close();
+        tempFile.close();
+    }
+    qDebug() << tr("Config Modified: %1") .arg(fEqual);
+    m_isIniModified = fEqual;
+    return (fEqual);
+}
+void MectSettings::saveMectSettings()
+{
+
+    if (! m_szFileSettings.isEmpty())  {
+        save_all(m_szFileSettings, false);
+        m_isIniModified = false;
+    }
 }

@@ -25,6 +25,7 @@
 #include <coreplugin/modemanager.h>
 #include <projectexplorer/project.h>
 #include <projectexplorer/projectexplorer.h>
+#include <projectexplorer/session.h>
 
 #include <QAction>
 #include <QFileInfo>
@@ -98,8 +99,8 @@ CTEPlugin::initialize(const QStringList &arguments, QString *errorMessage)
 
 
     // Create an action to be triggered by a menu entry
-    QAction *CTEAction = new QAction(tr("&MECT Editor"), this);
-    connect(CTEAction, SIGNAL(triggered()), SLOT(enableIfCT()));
+    // QAction *CTEAction = new QAction(tr("&MECT Editor"), this);
+    // connect(CTEAction, SIGNAL(triggered()), SLOT(enableIfCT()));
 
     // Register the action with the action manager
     //Core::Command *command = Core::ActionManager::registerAction(CTEAction, "CTE.CTEAction", context);
@@ -124,19 +125,27 @@ CTEPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     m_cteMode = new CTEMode;
     addAutoReleasedObject(m_cteMode);
 
+    m_CT_Opened = false;
+    m_CT_File.clear();
+    m_currentProject = 0;
 
-    // Current project has changed.
+    // Current project has changed (or Closing).
     connect(
         ProjectExplorer::ProjectExplorerPlugin::instance(),
         SIGNAL(currentProjectChanged(ProjectExplorer::Project*)),
-        SLOT(enableIfCT())
+        SLOT(enableIfCT(ProjectExplorer::Project*))
     );
-    // Project files have changed.
     connect(
-        ProjectExplorer::ProjectExplorerPlugin::instance(),
-        SIGNAL(fileListChanged()),
-        SLOT(enableIfCT())
+        ProjectExplorer::ProjectExplorerPlugin::instance()->session(),
+        SIGNAL(aboutToSaveSession()),
+        SLOT(checkSave2())
     );
+    // Project files have changed. (Removed as TrendEditor add files to Current project....)
+    // connect(
+    //    ProjectExplorer::ProjectExplorerPlugin::instance(),
+    //    SIGNAL(fileListChanged()),
+    //    SLOT(enableIfCT())
+    // );
 
     return true;
 }
@@ -161,16 +170,23 @@ CTEPlugin::extensionsInitialized()
     project and if it has a cross table file (Crosstable.csv).
  */
 void
-CTEPlugin::enableIfCT()
+CTEPlugin::enableIfCT(ProjectExplorer::Project* p)
 {
     bool    fFileExists = false;
     QString szFileCT;
 
+    // Ask to Replace current file
+    qDebug() << tr("Loading New File....");
+    if (m_currentProject != p)
+        checkSave();
     // Clear Project Path for Editor
     szFileCT.clear();
+    m_CT_Opened = false;
+    m_CT_File.clear();
     ctEditor->setProjectPath(szFileCT);
+
     // Retrieve current project if any
-    ProjectExplorer::Project *p = ProjectExplorer::ProjectExplorerPlugin::currentProject();
+    // ProjectExplorer::Project *p = ProjectExplorer::ProjectExplorerPlugin::currentProject();
     // No project
     if (p == NULL) {
         m_cteMode->setEnabled(false);
@@ -198,8 +214,35 @@ CTEPlugin::enableIfCT()
     }
     else
         qDebug()  << "File Not Found: " << szFileCT;
-    // Enabling CTEditor
+    // Enabling CTEditor and saving current file
     m_cteMode->setEnabled(fFileExists);
+    m_CT_Opened = fFileExists;
+    m_currentProject = p;
+    if (fFileExists)
+        m_CT_File = szFileCT;
+    else
+        m_CT_File.clear();
+
+}
+void
+CTEPlugin::checkSave2()
+{
+    // Used to Ask Saving only when leaving Crosstable Editor
+    qDebug() << tr("Check To Save2");
+    if (ctEditor->isVisible())  {
+        checkSave();
+    }
+}
+void
+CTEPlugin::checkSave()
+{
+    // To be used always on Project Change and leaving Crosstable Editor
+    qDebug() << tr("Check To Save");
+    if (m_CT_Opened && ! m_CT_File.isEmpty())  {
+        if (ctEditor->needSave())  {
+            ctEditor->querySave();
+        }
+    }
 }
 
 } // namespace Internal

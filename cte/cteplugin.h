@@ -18,6 +18,8 @@
 
 #include <coreplugin/imode.h>
 #include <extensionsystem/iplugin.h>
+#include <projectexplorer/project.h>
+#include <projectexplorer/projectexplorer.h>
 #include "ctedit.h"
 
 namespace CTE {
@@ -36,11 +38,16 @@ public:
 
     void extensionsInitialized();
 
+private slots:
+    void enableIfCT(ProjectExplorer::Project *p);
+    void checkSave();
+    void checkSave2();
+
 private:
     Core::IMode *m_cteMode;
-
-private slots:
-    void enableIfCT();
+    bool        m_CT_Opened;
+    QString     m_CT_File;
+    ProjectExplorer::Project* m_currentProject;
 };
 
 } // namespace Internal

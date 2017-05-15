@@ -45,7 +45,7 @@ enum trendFields
     nTrendMin,
     nTrendMax,
     nTrendDescr,
-    nTrendTotal
+    nTrendFieldsTotal
 };
 
 
@@ -81,6 +81,7 @@ TrendEditor::TrendEditor(QWidget *parent) :
     m_szCurrentModel.clear();
     ui->cmdSave->setEnabled(false);
     ui->cmdSaveAs->setEnabled(false);
+    lstSourceRows.clear();
 }
 
 TrendEditor::~TrendEditor()
@@ -344,7 +345,7 @@ bool TrendEditor::iface2Tokens(QStringList &lstTokens, int nRow)
     // Salvataggio dei valori su Lista Tokens
     lstTokens.clear();
     int nCol = 0;
-    for (nCol = 0; nCol < nTrendTotal; nCol++)  {
+    for (nCol = 0; nCol < nTrendFieldsTotal; nCol++)  {
         lstTokens.append(szEMPTY);
     }
     // Check Box Visible
@@ -377,10 +378,12 @@ bool TrendEditor::trendFile2Iface(const QString &szFileTrend)
     if (fSource.exists())  {
         fSource.open(QIODevice::ReadOnly | QIODevice::Text);
         if (fSource.isOpen())  {
+            lstSourceRows.clear();
             QTextStream txtTrend(&fSource);
             // Legge la prima riga per l'orientamento del Trend
-            if (!txtTrend.atEnd())  {
+            if (!txtTrend.atEnd())  {                
                 szLine = txtTrend.readLine().trimmed();
+                lstSourceRows.append(szLine);
                 if (! szLine.isEmpty())  {
                     if (mapOrientation.contains(szLine))  {
                         szLine = mapOrientation.value(szLine);
@@ -395,9 +398,10 @@ bool TrendEditor::trendFile2Iface(const QString &szFileTrend)
             // Cerca nel file le altre 4 righe 1 per ogni trend
             while(! txtTrend.atEnd() && nRow <= nTrk4) {
                 szLine = txtTrend.readLine().trimmed();
+                lstSourceRows.append(szLine);
                 // Divide la riga letta in Tokens
                 lstTokens = szLine.split(szSEMICOL);
-                if (lstTokens.count() >= nTrendTotal)  {
+                if (lstTokens.count() >= nTrendFieldsTotal)  {
                     // Trim dei Tokens
                     for (nPos = 0; nPos < lstTokens.count(); nPos++)
                         lstTokens[nPos] = lstTokens[nPos].trimmed();
@@ -431,6 +435,7 @@ bool TrendEditor::iface2TrendFile(const QString &szFileTrend)
     // Apertura del File in modalità scrittura troncata
     fDest.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
     if (fDest.isOpen())  {
+        lstSourceRows.clear();
         infoDest.setFile(fDest);
         QTextStream txtTrend(&fDest);
         // Trend Orientation
@@ -438,12 +443,14 @@ bool TrendEditor::iface2TrendFile(const QString &szFileTrend)
         if (szLine.isEmpty())
             szLine = szLANDSCAPE;
         txtTrend << szLine << endl;
+        lstSourceRows.append(szLine);
         // Trend Fields
         for (nRow = nTrk1; nRow <= nTrk4; nRow++)  {
             fOk = iface2Tokens(lstTokens, nRow);
             if (fOk)  {
                 szLine = lstTokens.join(szSEMICOL);
                 txtTrend << szLine << endl;
+                lstSourceRows.append(szLine);
             }
             else
                 break;
@@ -709,4 +716,52 @@ bool TrendEditor::updateTemplateFile(const QString &szTrendFile)
     }
     // Return value
     return fRes;
+}
+QString TrendEditor::currentTrendFile()
+{
+    return (m_szTrendPath + m_szTrendFile);
+}
+bool TrendEditor::isModified()
+{
+    QStringList     lstIfaceRows;
+    int             nRow = 0;
+    bool            fEqual = true;
+
+
+    // Prepare Interface Fields
+    iface2MemList(lstIfaceRows);
+    for (nRow = 0; nRow < lstIfaceRows.count(); nRow ++)  {
+        if (nRow >= lstSourceRows.count() || lstIfaceRows[nRow] != lstSourceRows[nRow]) {
+            qDebug() << tr("Source: %1 Interface: %2") .arg(lstSourceRows[nRow]) .arg(lstIfaceRows[nRow]);
+            fEqual = false;
+            break;
+        }
+    }
+    qDebug() << tr("Trends Modified (Rows %2):  %1") .arg(!fEqual) .arg(nRow);
+    return ! fEqual;
+}
+void    TrendEditor::iface2MemList(QStringList &lstMemVars)
+// Copy Interface Objects to Memory Var List
+{
+    QString         szLine;
+    QStringList     lstTokens;
+    int             nRow = 0;
+    bool            fOk = false;
+
+    lstMemVars.clear();
+    // Trend Orientation
+    szLine = mapOrientation.key(ui->cboOrientation->currentText());
+    if (szLine.isEmpty())
+        szLine = szLANDSCAPE;
+    lstMemVars.append(szLine);
+    // Trend Fields
+    for (nRow = nTrk1; nRow <= nTrk4; nRow++)  {
+        fOk = iface2Tokens(lstTokens, nRow);
+        if (fOk)  {
+            szLine = lstTokens.join(szSEMICOL);
+            lstMemVars.append(szLine);
+        }
+        else
+            break;
+    }
 }

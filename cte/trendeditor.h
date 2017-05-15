@@ -22,7 +22,10 @@ class TrendEditor : public QWidget
 public:
     explicit TrendEditor(QWidget *parent = 0);
     ~TrendEditor();
-    void setTrendsParameters(const QString szModel, const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile);
+    void    setTrendsParameters(const QString szModel, const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile);
+    bool    isModified();
+    QString currentTrendFile();
+
 signals:
 
 public slots:
@@ -47,6 +50,7 @@ private:
     bool    tokens2Iface(const QStringList &lstTokens, int nRow);   // Da CSV Tokens ad interfaccia
     bool    iface2Tokens(QStringList &lstTokens, int nRow);         // Da Interfaccia a List per scrittura CSV
     bool    iface2TrendFile(const QString &szFileTrend);    // Write Interface Fields to a trends file
+    void    iface2MemList(QStringList &lstMemVars);         // Copy Interface Objects to Memory Var List
     void    setObjectColor(QLabel *destObject, QColor newColor);
     bool    checkFields();                                  // Controllo del contenuto dei campi
     bool    updateTemplateFile(const QString &szTrendFile); // Aggiorna la sezione Trend del file template.pri
@@ -61,6 +65,7 @@ private:
     QString         m_szTrendPath;
     QString         m_szTemplateFile;
     QString         m_szMsg;                            // Variabile di servizio per Messaggi
+    QStringList     lstSourceRows;
 
 };
 

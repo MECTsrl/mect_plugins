@@ -122,10 +122,6 @@ enum regions_e
     regTotals
 };
 
-//extern int LoadXTable(char *crossTableFile);
-//extern int SaveXTable(char *crossTableFile);
-//extern char *ipaddr2str(uint32_t ipaddr, char *buffer);
-//extern uint32_t str2ipaddr(char *str);
 
 ctedit::ctedit(QWidget *parent) :
     QDialog(parent),
@@ -468,6 +464,8 @@ ctedit::ctedit(QWidget *parent) :
     szColorSystem[1] = QString::fromAscii("color: #FFF0E9");
     // Variabili di stato globale dell'editor
     m_isCtModified = false;
+    m_isConfModified = false;
+    m_isTrendModified = false;
     m_fShowAllRows = true;
     m_fCutOrPaste = false;
     m_nCurTab = 0;
@@ -4709,5 +4707,50 @@ bool ctedit::isValidPort(int nPort, int nProtocol)
             break;
     }
     // Return Value
+    return fRes;
+}
+bool ctedit::needSave()
+// Return true if there are changes to be saved
+{
+    // Refresh Modif Flags for Config && Trends
+    m_isConfModified = mectSet->isModified();
+    m_isTrendModified = trendEdit->isModified();
+    // Return value valid only if file is specified
+    return ((m_isCtModified || m_isConfModified || m_isTrendModified) && ! m_szCurrentCTFile.isEmpty());
+}
+bool ctedit::querySave()
+// Return true if pending changes are saved
+{
+    bool fRes = false;
+
+    if (! m_szCurrentCTFile.isEmpty()) {
+        // Crosstable file
+        if (m_isCtModified)  {
+            m_szMsg = tr("Crosstable File has unsaved changes: Save?\n%1") .arg(m_szCurrentCTFile);
+            if (queryUser(this, szMectTitle, m_szMsg, true))  {
+                saveCTFile();
+                fRes = true;
+            }
+        }
+        // Configuration file
+        if (m_isConfModified)  {
+            m_szMsg = tr("Configuration File has unsaved changes: Save?\n%1") .arg(m_szCurrentCTPath + szINIFILE);
+            if (queryUser(this, szMectTitle, m_szMsg, true))  {
+                mectSet->saveMectSettings();
+                fRes = true;
+            }
+        }
+        // Trend File
+        if (m_isTrendModified)  {
+            m_szMsg = tr("Trend File has unsaved changes: Save?\n%1") .arg(trendEdit->currentTrendFile());
+            if (queryUser(this, szMectTitle, m_szMsg, true))  {
+                mectSet->saveMectSettings();
+                fRes = true;
+            }
+        }
+    }
+    else
+        fRes = true;
+    // Return value
     return fRes;
 }

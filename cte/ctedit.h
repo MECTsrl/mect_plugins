@@ -33,6 +33,8 @@ public:
     bool    selectCTFile(QString szFileCT);
     void    saveCTFile();
     void    displayStatusMessage(QString szMessage, int nSeconds = 0);// Show message in ui->lblMessage
+    bool    needSave();
+    bool    querySave();
 
 protected:
      bool   eventFilter(QObject *obj, QEvent *event);        // Gestore Event Handler
@@ -188,6 +190,8 @@ private:
     // Variabili di stato ad uso globale
     int                     m_nCurTab;              // Tab corrente in interfaccia
     bool                    m_isCtModified;         // Flag dati modificato
+    bool                    m_isConfModified;       // Flag Configurazione modificata
+    bool                    m_isTrendModified;      // Flag Trend Modificato
     bool                    m_fShowAllRows;         // Vero se sono visualizzate tutte le righe
     bool                    m_fCutOrPaste;          // Vero se è in corso un Cut or Paste
     bool                    m_fEmptyForm;           // Vero se il Form di Data Entry risulta vuoto

@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QHash>
 #include <QString>
+#include <QEvent>
 
 namespace Ui {
 class MectSettings;
@@ -21,11 +22,13 @@ public:
     ~MectSettings();
     bool loadProjectFiles(const QString &szFileSettings, const QString szFilePro, const QString &szProjectPath, TP_Config &targetConfig);
     bool getTargetConfig(TP_Config &targetConfig);              // Retrieves current target configuration
+    bool isModified();
 
 signals:
 
 public slots:
     void    setModel(TP_Config &tpConfig);
+    void    saveMectSettings();
 
 private slots:
 
@@ -35,7 +38,7 @@ private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
     //---------------------------------------------------------------------
-    void save_all();
+    void save_all(QString szFileName, bool notifyUser = false);
     bool checkFields();
     void enablePortsFromModel(TP_Config &targetConfig);
     //---------------------------------------------------------------------
@@ -50,6 +53,7 @@ private:
     TP_Config   TargetConfig;
     int         m_nModel;
     bool        m_tabEnabled[tabTotals];
+    bool        m_isIniModified;
 };
 
 #endif // MECTSETTINGS_H
