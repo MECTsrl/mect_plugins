@@ -88,7 +88,10 @@ const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
 // Version Number
-const QString szVERSION = QString::fromAscii("Ver. 3.0.0rc6 @ 2017-05-12");
+#ifndef ATCM_VERSION
+#define ATCM_VERSION "DevelopmentVersion"
+#endif
+const QString szVERSION = QString::fromAscii(ATCM_VERSION);
 
 enum colonne_e
 {
