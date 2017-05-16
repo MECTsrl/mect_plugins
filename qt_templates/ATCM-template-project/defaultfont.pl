@@ -93,3 +93,18 @@ foreach $file (glob( 'page*.ui' ))
 	close TMP;
 
 }
+
+# launch Crosstable Compiler (here for working with mect_suite_2.0 projects too)
+print "Crosstable compiler ...\n";
+my @cmds = ("C:/Qt485/desktop/bin/ctc.exe",
+            "-c", "config/Crosstable.csv",
+            "-g", "plc/Crosstable.gvl",
+            "-i", "config/Crosstable.h",
+            "-s", "config/Crosstable.cpp");
+system { $cmds[0] } @cmds ;
+if ($? != 0) {
+  print "... Crosstable compiler error\n";
+} else {
+  print "... Crosstable compiler OK\n";
+}
+
