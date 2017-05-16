@@ -25,6 +25,7 @@ public:
     void    setTrendsParameters(const QString szModel, const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile);
     bool    isModified();
     QString currentTrendFile();
+    void    saveTrend(bool notifUser = false);
 
 signals:
 

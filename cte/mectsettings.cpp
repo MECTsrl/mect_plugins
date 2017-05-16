@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QFileInfo>
-#include <QSettings>
 #include <QTextStream>
 #include <QValidator>
 #include <QIntValidator>
@@ -199,19 +198,21 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
     QDirIterator lang_it(szProjectPath, QDirIterator::Subdirectories);
     QString lang = settings.value(QString::fromAscii("SYSTEM/language"), szDEFLANG).toString();
     QString szLangTempl = QString::fromAscii("languages_");
-    int i = -1;
-    int indexlang = 0;
+    int indexlang = -1;
     while (lang_it.hasNext()) {
         QString item = lang_it.next();
         // Cerca tutti i files con estensione .qm
         if (item.endsWith (QString::fromAscii(".qm")) == true)
         {
-            // Determina il codice della Lingua dal nome file (es: languages_it ==> it)
-            QString tmplang = item.mid(item.indexOf(szLangTempl) + szLangTempl.length(), 2);
-            if (lang == tmplang)
-            {
-                indexlang = i;
+            int nPos = item.indexOf(szLangTempl);
+            QString tmplang;
+            if (nPos >= 0)  {
+                tmplang = item.mid(nPos + szLangTempl.length(), 2);
+                if (tmplang.isEmpty())
+                    continue;
             }
+            else
+                continue;
             if (LanguageMap.count() > 0 && LanguageMap.contains(tmplang))
             {
                 // La lingua esiste come chiave, inserisce in combo il valore associato
@@ -222,7 +223,11 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
                 // La lingua Non esiste come chiave, inserisce in combo solo la chiave
                 ui->comboBoxLanguage->addItem(tmplang);
             }
-            i++;
+            if (lang == tmplang)
+            {
+                indexlang = ui->comboBoxLanguage->count() - 1;
+            }
+
         }
     }
     QString szValue;
@@ -529,162 +534,165 @@ void MectSettings::on_cmdSave_clicked()
     if (! checkFields())
         return;
     if (fileBackUp(m_szFileSettings))
-        save_all(m_szFileSettings, true);
+        saveOrCheckAll(m_szFileSettings, false);
     else
         QMessageBox::critical(0,trUtf8("Error"),trUtf8("Error creating back up copy of file: %1") .arg(m_szFileSettings));
 
 }
-void MectSettings::save_all(QString szFileName, bool notifyUser)
+bool MectSettings::checkOrSet(QSettings &settings, QString szKey, QString szValue, bool checkOnly, bool isChanged)
 {
+    QString szTemp;
+    if (checkOnly)  {
+        // Controllo di variazione tra Interfaccia e File di dati
+        // recupero valore corrente e confronto
+        szTemp = settings.value(szKey).toString();
+        if (QString::compare(szTemp, szValue, Qt::CaseSensitive) != 0)  {
+            isChanged = true;
+        }
+    }
+    else  {
+        // Scrittura del valore su file Settings
+        settings.setValue(szKey, szValue);
+    }
+    return isChanged;
+}
 
-    QSettings settings(szFileName, QSettings::IniFormat);
-    QStringList groups = settings.childGroups();
+bool MectSettings::saveOrCheckAll(QString szFileName, bool checkOnly)
+{
+    bool        changed = false;
+    QSettings   settings(szFileName, QSettings::IniFormat, this);
+    qDebug() << tr("File Settings: %1") .arg(szFileName);
 
     /* SYSTEM */
-    if (groups.indexOf(QString::fromAscii("SYSTEM")) >= 0)
-    {
-        settings.setValue(QString::fromAscii("SYSTEM/language"), LanguageMap.key(ui->comboBoxLanguage->currentText(),szDEFLANG));
-        settings.setValue(QString::fromAscii("SYSTEM/retries"), ui->lineEdit_Retries->text());
-        settings.setValue(QString::fromAscii("SYSTEM/blacklist"), ui->lineEdit_Blacklist->text());
-        settings.setValue(QString::fromAscii("SYSTEM/read_period_ms_1"), ui->lineEdit_ReadPeriod1->text());
-        settings.setValue(QString::fromAscii("SYSTEM/read_period_ms_2"), ui->lineEdit_ReadPeriod2->text());
-        settings.setValue(QString::fromAscii("SYSTEM/read_period_ms_3"), ui->lineEdit_ReadPeriod3->text());
-        settings.setValue(QString::fromAscii("SYSTEM/home_page"), ui->comboBox_HomePage->currentText());
-        settings.setValue(QString::fromAscii("SYSTEM/start_page"), ui->comboBox_StartPage->currentText());
-        settings.setValue(QString::fromAscii("SYSTEM/buzzer_touch"), (ui->checkBox_BuzzerTouch->isChecked() == true)?1:0);
-        settings.setValue(QString::fromAscii("SYSTEM/buzzer_alarm"), (ui->checkBox_BuzzerAlarm->isChecked() == true)?1:0);
-        settings.setValue(QString::fromAscii("SYSTEM/pwd_timeout_s"), ui->lineEdit_PwdTimeout->text());
-        settings.setValue(QString::fromAscii("SYSTEM/pwd_logout_page"), ui->comboBox_PwdLogoutPage->currentText());
-        settings.setValue(QString::fromAscii("SYSTEM/screen_saver_s"), ui->lineEdit_ScreenSaver->text());
-        settings.setValue(QString::fromAscii("SYSTEM/slow_log_period_s"), ui->lineEdit_SlowLogPeriod->text());
-        settings.setValue(QString::fromAscii("SYSTEM/fast_log_period_s"), ui->lineEdit_FastLogPeriod->text());
-        settings.setValue(QString::fromAscii("SYSTEM/max_log_space_MB"), ui->lineEdit_MaxLogSpace->text());
-        settings.setValue(QString::fromAscii("SYSTEM/trace_window_s"), ui->lineEdit_TraceWindow->text());
-    }
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/language"), LanguageMap.key(ui->comboBoxLanguage->currentText(),szDEFLANG), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/retries"), ui->lineEdit_Retries->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/blacklist"), ui->lineEdit_Blacklist->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/read_period_ms_1"), ui->lineEdit_ReadPeriod1->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/read_period_ms_2"), ui->lineEdit_ReadPeriod2->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/read_period_ms_3"), ui->lineEdit_ReadPeriod3->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/home_page"), ui->comboBox_HomePage->currentText(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/start_page"), ui->comboBox_StartPage->currentText(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/buzzer_touch"), (ui->checkBox_BuzzerTouch->isChecked() == true) ? QString::fromAscii("1") : QString::fromAscii("0"), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/buzzer_alarm"), (ui->checkBox_BuzzerAlarm->isChecked() == true) ? QString::fromAscii("1") : QString::fromAscii("0"), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/pwd_timeout_s"), ui->lineEdit_PwdTimeout->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/pwd_logout_page"), ui->comboBox_PwdLogoutPage->currentText(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/screen_saver_s"), ui->lineEdit_ScreenSaver->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/slow_log_period_s"), ui->lineEdit_SlowLogPeriod->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/fast_log_period_s"), ui->lineEdit_FastLogPeriod->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/max_log_space_MB"), ui->lineEdit_MaxLogSpace->text(), checkOnly, changed);
+    changed = checkOrSet(settings, QString::fromAscii("SYSTEM/trace_window_s"), ui->lineEdit_TraceWindow->text(), checkOnly, changed);
+
     /* SERIAL 0 */
     if (m_tabEnabled[tabSerial0])  {
-        if (groups.indexOf(QString::fromAscii("SERIAL_PORT_0")) >= 0)
+        if (ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)
         {
-            if (ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)
-            {
-                settings.setValue(QString::fromAscii("SERIAL_PORT_0/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_0->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_0/databits"), ui->comboBox_Databits_SERIAL_PORT_0->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_0/parity"), ui->comboBox_Parity_SERIAL_PORT_0->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_0/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_0->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_0/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_0->text());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_0/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_0->text());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_0/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text());
-            }
-            else
-            {
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_0/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_0->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_0/databits"), ui->comboBox_Databits_SERIAL_PORT_0->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_0/parity"), ui->comboBox_Parity_SERIAL_PORT_0->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_0/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_0->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_0/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_0->text(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_0/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_0->text(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_0/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text(), checkOnly, changed);
+        }
+        else
+        {
+            if (!checkOnly)
                 settings.remove(QString::fromAscii("SERIAL_PORT_0"));
-            }
         }
     }
     /* SERIAL 1 */
     if (m_tabEnabled[tabSerial1])  {
-        if (groups.indexOf(QString::fromAscii("SERIAL_PORT_1")) >= 0)
+        if (ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)
         {
-            if (ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)
-            {
-                settings.setValue(QString::fromAscii("SERIAL_PORT_1/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_1->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_1/databits"), ui->comboBox_Databits_SERIAL_PORT_1->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_1/parity"), ui->comboBox_Parity_SERIAL_PORT_1->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_1/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_1->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_1/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_1->text());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_1/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_1->text());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_1/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text());
-            }
-            else
-            {
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_1/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_1->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_1/databits"), ui->comboBox_Databits_SERIAL_PORT_1->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_1/parity"), ui->comboBox_Parity_SERIAL_PORT_1->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_1/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_1->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_1/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_1->text(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_1/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_1->text(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_1/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text(), checkOnly, changed);
+        }
+        else
+        {
+            if (!checkOnly)
                 settings.remove(QString::fromAscii("SERIAL_PORT_1"));
-            }
         }
     }
     /* SERIAL 2 */
     if (m_tabEnabled[tabSerial2])  {
-        if (groups.indexOf(QString::fromAscii("SERIAL_PORT_2")) >= 0)
+        if (ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)
         {
-            if (ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)
-            {
-                settings.setValue(QString::fromAscii("SERIAL_PORT_2/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_2->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_2/databits"), ui->comboBox_Databits_SERIAL_PORT_2->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_2/parity"), ui->comboBox_Parity_SERIAL_PORT_2->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_2/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_2->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_2/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_2->text());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_2/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_2->text());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_2/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text());
-            }
-            else
-            {
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_2/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_2->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_2/databits"), ui->comboBox_Databits_SERIAL_PORT_2->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_2/parity"), ui->comboBox_Parity_SERIAL_PORT_2->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_2/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_2->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_2/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_2->text(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_2/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_2->text(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_2/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text(), checkOnly, changed);
+        }
+        else
+        {
+            if (!checkOnly)
                 settings.remove(QString::fromAscii("SERIAL_PORT_2"));
-            }
         }
     }
     /* SERIAL 3 */
     if (m_tabEnabled[tabSerial3])  {
-        if (groups.indexOf(QString::fromAscii("SERIAL_PORT_3")) >= 0)
+        if (ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)
         {
-            if (ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)
-            {
-                settings.setValue(QString::fromAscii("SERIAL_PORT_3/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_3->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_3/databits"), ui->comboBox_Databits_SERIAL_PORT_3->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_3/parity"), ui->comboBox_Parity_SERIAL_PORT_3->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_3/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_3->currentText());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_3/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_3->text());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_3/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_3->text());
-                settings.setValue(QString::fromAscii("SERIAL_PORT_3/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->text());
-            }
-            else
-            {
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_3/baudrate"), ui->comboBox_Baudrate_SERIAL_PORT_3->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_3/databits"), ui->comboBox_Databits_SERIAL_PORT_3->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_3/parity"), ui->comboBox_Parity_SERIAL_PORT_3->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_3/stopbits"), ui->comboBox_Stopbits_SERIAL_PORT_3->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_3/silence_ms"), ui->lineEdit_Silence_SERIAL_PORT_3->text(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_3/timeout_ms"), ui->lineEdit_Timeout_SERIAL_PORT_3->text(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("SERIAL_PORT_3/max_block_size"), ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->text(), checkOnly, changed);
+        }
+        else
+        {
+            if (!checkOnly)
                 settings.remove(QString::fromAscii("SERIAL_PORT_3"));
-            }
         }
     }
     /* TCP_IP */
     if (m_tabEnabled[tabTCP])  {
-        if (groups.indexOf(QString::fromAscii("TCP_IP_PORT")) >= 0)
-        {
-            settings.setValue(QString::fromAscii("TCP_IP_PORT/silence_ms"), ui->lineEdit_Silence_TCP_IP_PORT->text());
-            settings.setValue(QString::fromAscii("TCP_IP_PORT/timeout_ms"), ui->lineEdit_Timeout_TCP_IP_PORT->text());
-            settings.setValue(QString::fromAscii("TCP_IP_PORT/max_block_size"), ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text());
-        }
+        changed = checkOrSet(settings, QString::fromAscii("TCP_IP_PORT/silence_ms"), ui->lineEdit_Silence_TCP_IP_PORT->text(), checkOnly, changed);
+        changed = checkOrSet(settings, QString::fromAscii("TCP_IP_PORT/timeout_ms"), ui->lineEdit_Timeout_TCP_IP_PORT->text(), checkOnly, changed);
+        changed = checkOrSet(settings, QString::fromAscii("TCP_IP_PORT/max_block_size"), ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text(), checkOnly, changed);
     }
     /* CANOPEN 0 */
     if (m_tabEnabled[tabCan0])  {
-        if (groups.indexOf(QString::fromAscii("CANOPEN_0")) >= 0)
+        if (ui->comboBox_Baudrate_CANOPEN_0->currentIndex() > 0)
         {
-            if (ui->comboBox_Baudrate_CANOPEN_0->currentIndex() > 0)
-            {
-                settings.setValue(QString::fromAscii("CANOPEN_0/baudrate"), ui->comboBox_Baudrate_CANOPEN_0->currentText());
-                settings.setValue(QString::fromAscii("CANOPEN_0/max_block_size"), ui->lineEdit_MaxBlockSize_CANOPEN_0->text());
-            }
-            else
-            {
+            changed = checkOrSet(settings, QString::fromAscii("CANOPEN_0/baudrate"), ui->comboBox_Baudrate_CANOPEN_0->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("CANOPEN_0/max_block_size"), ui->lineEdit_MaxBlockSize_CANOPEN_0->text(), checkOnly, changed);
+        }
+        else
+        {
+            if (!checkOnly)
                 settings.remove(QString::fromAscii("CANOPEN_0"));
-            }
         }
     }
     /* CANOPEN 1 */
     if (m_tabEnabled[tabCan1])  {
-        if (groups.indexOf(QString::fromAscii("CANOPEN_1")) >= 0)
+        if (ui->comboBox_Baudrate_CANOPEN_1->currentIndex() > 0)
         {
-            if (ui->comboBox_Baudrate_CANOPEN_1->currentIndex() > 0)
-            {
-                settings.setValue(QString::fromAscii("CANOPEN_1/baudrate"), ui->comboBox_Baudrate_CANOPEN_1->currentText());
-                settings.setValue(QString::fromAscii("CANOPEN_1/max_block_size"), ui->lineEdit_MaxBlockSize_CANOPEN_1->text());
-            }
-            else
-            {
+            changed = checkOrSet(settings, QString::fromAscii("CANOPEN_1/baudrate"), ui->comboBox_Baudrate_CANOPEN_1->currentText(), checkOnly, changed);
+            changed = checkOrSet(settings, QString::fromAscii("CANOPEN_1/max_block_size"), ui->lineEdit_MaxBlockSize_CANOPEN_1->text(), checkOnly, changed);
+        }
+        else
+        {
+            if (!checkOnly)
                 settings.remove(QString::fromAscii("CANOPEN_1"));
-            }
         }
     }
+    // Return value
+    if (checkOnly)
+        return changed;
     // Global Sync
     settings.sync();
-    // Notify User
-    if (notifyUser)
-        QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
+    QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
+    return true;
 }
 bool MectSettings::checkFields()
 // Controllo del contenuto dei campi
@@ -1199,43 +1207,21 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
 }
 bool MectSettings::isModified()
 {
-    bool fEqual = true;
-    // Create a Copy of interface data and compare with original data
-    if (!m_szFileSettings.isEmpty())  {
-        QString szFileTmp = m_szFileSettings + QString::fromAscii(".tmp");
-        save_all(szFileTmp, false);
-        QFile sourceFile(m_szFileSettings);
-        QFile tempFile(szFileTmp);
-        sourceFile.open(QIODevice::ReadOnly);
-        tempFile.open(QIODevice::ReadOnly);
-        QTextStream src(&sourceFile);
-        QTextStream tmp(&tempFile);
-        // Cerca nel file .pro le righe relative agli oggetti ui
-        while(! src.atEnd() && fEqual) {
-            QString line = src.readLine().trimmed();
-            if(tmp.atEnd())
-                fEqual = false;
-            else  {
-                QString tmpLine = tmp.readLine().trimmed();
-                fEqual = tmpLine == line;
-            }
-        }
-        // check remainder
-        if (fEqual && ! tmp.atEnd())
-            fEqual = false;
-        // Close files
-        sourceFile.close();
-        tempFile.close();
+    bool fChanged = false;
+
+    // Check if a Setting file is opened
+    m_isIniModified = false;
+    if ( ! m_szFileSettings.isEmpty())  {
+        fChanged = saveOrCheckAll(m_szFileSettings, true);
+        m_isIniModified = fChanged;
     }
-    qDebug() << tr("Config Modified: %1") .arg(fEqual);
-    m_isIniModified = fEqual;
-    return (fEqual);
+    return (fChanged);
 }
 void MectSettings::saveMectSettings()
 {
 
     if (! m_szFileSettings.isEmpty())  {
-        save_all(m_szFileSettings, false);
+        saveOrCheckAll(m_szFileSettings, false);
         m_isIniModified = false;
     }
 }

@@ -493,21 +493,7 @@ void TrendEditor::on_cmdLoad_clicked()
 }
 void TrendEditor::on_cmdSave_clicked()
 {
-    QString         szDestFile = m_szTrendPath + m_szTrendFile;
-
-    QFile fTrend(szDestFile);
-    if (fTrend.exists())  {
-        fileBackUp(szDestFile);
-    }
-    // Write File
-    if (! iface2TrendFile(szDestFile))  {
-        m_szMsg = tr("Error Saving Trend File:\n%1") .arg(m_szTrendFile);
-        warnUser(this, szMectTitle, m_szMsg);
-    }
-    else  {
-        m_szMsg = tr("Trend file has been successfully saved:\n%1") .arg(m_szTrendFile);
-        notifyUser(this, szMectTitle, m_szMsg);
-    }
+    saveTrend(false);
 }
 
 void TrendEditor::on_cmdSaveAs_clicked()
@@ -763,5 +749,25 @@ void    TrendEditor::iface2MemList(QStringList &lstMemVars)
         }
         else
             break;
+    }
+}
+void TrendEditor::saveTrend(bool notifUser)
+{
+    QString         szDestFile = m_szTrendPath + m_szTrendFile;
+
+    QFile fTrend(szDestFile);
+    if (fTrend.exists())  {
+        fileBackUp(szDestFile);
+    }
+    // Write File
+    if (! iface2TrendFile(szDestFile))  {
+        m_szMsg = tr("Error Saving Trend File:\n%1") .arg(m_szTrendFile);
+        warnUser(this, szMectTitle, m_szMsg);
+    }
+    else  {
+        if (notifUser)  {
+            m_szMsg = tr("Trend file has been successfully saved:\n%1") .arg(m_szTrendFile);
+            notifyUser(this, szMectTitle, m_szMsg);
+        }
     }
 }

@@ -8,6 +8,7 @@
 #include <QHash>
 #include <QString>
 #include <QEvent>
+#include <QSettings>
 
 namespace Ui {
 class MectSettings;
@@ -38,7 +39,8 @@ private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
     //---------------------------------------------------------------------
-    void save_all(QString szFileName, bool notifyUser = false);
+    bool saveOrCheckAll(QString szFileName, bool checkOnly = false);
+    bool checkOrSet(QSettings &settings, QString szKey, QString szValue, bool checkOnly, bool isChanged);
     bool checkFields();
     void enablePortsFromModel(TP_Config &targetConfig);
     //---------------------------------------------------------------------

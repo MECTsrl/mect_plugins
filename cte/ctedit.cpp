@@ -4732,6 +4732,7 @@ bool ctedit::querySave()
                 fRes = true;
             }
         }
+        m_isCtModified = false;
         // Configuration file
         if (m_isConfModified)  {
             m_szMsg = tr("Configuration File has unsaved changes: Save?\n%1") .arg(m_szCurrentCTPath + szINIFILE);
@@ -4740,14 +4741,16 @@ bool ctedit::querySave()
                 fRes = true;
             }
         }
+        m_isConfModified = false;
         // Trend File
         if (m_isTrendModified)  {
             m_szMsg = tr("Trend File has unsaved changes: Save?\n%1") .arg(trendEdit->currentTrendFile());
             if (queryUser(this, szMectTitle, m_szMsg, true))  {
-                mectSet->saveMectSettings();
+                trendEdit->saveTrend(false);
                 fRes = true;
             }
         }
+        m_isTrendModified = false;
     }
     else
         fRes = true;
