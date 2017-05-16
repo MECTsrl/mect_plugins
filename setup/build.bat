@@ -113,7 +113,7 @@ IF ERRORLEVEL 1 (
 	exit
 )
 del /q C:\Qt485\desktop\bin\ctc.exe
-copy %IN_DIR%\ctc\release\ctc.exe C:\Qt485\desktop\bin\ctc.exe /Y >> %ErrorLog%
+copy %IN_DIR%\ctc\release\ctc.exe C:\Qt485\desktop\bin\ctc.exe /Y >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -194,7 +194,7 @@ time /t
 del /q "%OUT_DIR%\QtProject.7z"
 rem "c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%APPDATA%\QtProject\qtcreator\devices.xml" "%APPDATA%\QtProject\qtcreator\profiles.xml" "%APPDATA%\QtProject\qtcreator\qtversion.xml" "%APPDATA%\QtProject\qtcreator\toolchains.xml" "%APPDATA%\QtProject\qtcreator\externaltools\lupdate.xml" >> %ErrorLog%
 rem "c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%APPDATA%\QtProject" -x!QtCreator.db -x!QtCreator.ini -xr!"qtcreator\generic-highlighter" -xr!"qtcreator\json" -xr!qtcreator\macros -x!qtcreator\default.qws -x!qtcreator\helpcollection.qhc >> %ErrorLog%
-"c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%OUT_DIR%\QtProject" >> %ErrorLog%
+"c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%OUT_DIR%\QtProject" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -203,9 +203,10 @@ IF ERRORLEVEL 1 (
 )
 
 rem -----------------------------------------------------------------------------
-echo Qt485_upd_rev%REVISION%.7z (del + copy {*.dll, wizards, cte, ctc, rootfs, qmake.conf}, zip, clean "Qt485")
+echo Qt485_upd_rev%REV%.7z (del + copy {*.dll, wizards, cte, ctc, rootfs, qmake.conf}, zip, clean "Qt485")
 time /t
-IF EXIST Qt485_upd_rev%REVISION%.7z del /q Qt485_upd_rev%REVISION%.7z
+IF EXIST Qt485_upd_rev%REV%.7z del /q Qt485_upd_rev%REV%.7z
+
 mkdir %OUT_DIR%\Qt485\desktop\plugins\designer
 xcopy C:\Qt485\desktop\plugins\designer\ATCM-*.dll %OUT_DIR%\Qt485\desktop\plugins\designer /Q /Y >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
@@ -264,7 +265,14 @@ IF ERRORLEVEL 1 (
 cd /D %OUT_DIR%\Qt485
 for /d /r . %%d in (*.bak) do @if exist "%%d" rd /s/q "%%d"
 cd ..
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt485_upd_rev%REVISION%.7z %OUT_DIR%\Qt485\ >> %ErrorLog% 2>&1
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt485_upd_rev%REV%.7z %OUT_DIR%\Qt485\desktop >> %ErrorLog% 2>&1
+IF ERRORLEVEL 1 (
+	echo ERROR
+	pause
+	cd %ORIGINAL%
+	exit
+)
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt485_upd_rev%REV%.7z %OUT_DIR%\Qt485\imx28 >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -277,7 +285,7 @@ time /t
 rem -----------------------------------------------------------------------------
 echo   Fonts.7z
 del /q "%OUT_DIR%\Fonts.7z"
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Fonts.7z" "%OUT_DIR%\Fonts" >> %ErrorLog%
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Fonts.7z" "%OUT_DIR%\Fonts" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
