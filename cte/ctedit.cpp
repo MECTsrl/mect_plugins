@@ -91,7 +91,9 @@ const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plu
 #ifndef ATCM_VERSION
 #define ATCM_VERSION "DevelopmentVersion"
 #endif
-const QString szVERSION = QString::fromAscii(ATCM_VERSION);
+#define _STR(x) #x
+#define STR(x) _STR(x)
+const QString szVERSION = QString::fromAscii(STR(ATCM_VERSION));
 
 enum colonne_e
 {
