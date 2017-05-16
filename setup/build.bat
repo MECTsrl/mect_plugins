@@ -207,7 +207,7 @@ echo Qt485_upd_rev%REVISION%.7z (del + copy {*.dll, wizards, cte, ctc, rootfs, q
 time /t
 IF EXIST Qt485_upd_rev%REVISION%.7z del /q Qt485_upd_rev%REVISION%.7z
 mkdir %OUT_DIR%\Qt485\desktop\plugins\designer
-xcopy C:\Qt485\desktop\plugins\designer\*.dll %OUT_DIR%\Qt485\desktop\plugins\designer /Q /Y >> %ErrorLog% 2>&1
+xcopy C:\Qt485\desktop\plugins\designer\ATCM-*.dll %OUT_DIR%\Qt485\desktop\plugins\designer /Q /Y >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -264,14 +264,7 @@ IF ERRORLEVEL 1 (
 cd /D %OUT_DIR%\Qt485
 for /d /r . %%d in (*.bak) do @if exist "%%d" rd /s/q "%%d"
 cd ..
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt485_upd_rev%REVISION%.7z %OUT_DIR%\Qt485\imx28 >> %ErrorLog% 2>&1
-IF ERRORLEVEL 1 (
-	echo ERROR
-	pause
-	cd %ORIGINAL%
-	exit
-)
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt485_upd_rev%REVISION%.7z %OUT_DIR%\Qt485\desktop >> %ErrorLog% 2>&1
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt485_upd_rev%REVISION%.7z %OUT_DIR%\Qt485\ >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -280,26 +273,6 @@ IF ERRORLEVEL 1 (
 )
 RD /S /Q Qt485
 time /t
-
-rem -----------------------------------------------------------------------------
-echo Qt485.7z (imx28 + desktop)
-time /t
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\imx28" -xr!rootfs -x!qt-everywhere-opensource-src-4.8.5\mkspecs\common\mect.conf -x!qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf  >> %ErrorLog%
-IF ERRORLEVEL 1 (
-	echo ERROR
-	pause
-	cd %ORIGINAL%
-	exit
-)
-copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.ori" "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf"
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Qt485.7z" "C:\Qt485\desktop"  -xr!atcm*.dll -xr!ATCM-template-* -xr!CTE.dll -xr!CTE.pluginspec -xr!ctc.exe >> %ErrorLog%
-copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "C:\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf"
-IF ERRORLEVEL 1 (
-	echo ERROR
-	pause
-	cd %ORIGINAL%
-	exit
-)
 
 rem -----------------------------------------------------------------------------
 echo   Fonts.7z
