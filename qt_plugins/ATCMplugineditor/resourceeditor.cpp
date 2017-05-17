@@ -22,6 +22,7 @@ ResourceEditor::ResourceEditor(QWidget *parent, QString * selection)
              list->addItem(m_item);
         }
     }
+    list->sortItems();
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
             | QDialogButtonBox::Cancel);
