@@ -1083,8 +1083,9 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
                 strcpy(token, "");
             sprintf(token, "%-15s;", token);
             strcat(row, token);
-            // Port - NodeId - Register tutti a 0
-            if (CrossTable[addr].Port == 0 && CrossTable[addr].NodeId == 0 && CrossTable[addr].Offset == 0)  {
+            // (Protocollo PLC) or (Port - NodeId - Register tutti a 0) -> Forza vuoto
+            // Escluso range LOCAL_IO
+            if (CrossTable[addr].Protocol == PLC || ((addr < MIN_LOCALIO || addr > MAX_LOCALIO) && (CrossTable[addr].Port == 0 && CrossTable[addr].NodeId == 0 && CrossTable[addr].Offset == 0)))  {
                 sprintf(token, "%-4s;", "");
                 strcat(row, token);
                 strcat(row, token);

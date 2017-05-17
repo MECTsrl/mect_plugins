@@ -60,8 +60,6 @@
 #define MAX_DIAG 5171
 #define MIN_NODE 5172
 #define MAX_NODE 5299
-#define MIN_LOCALIO 5300
-#define MAX_LOCALIO 5389
 #define MIN_SYSTEM  5390
 #define COMMANDLINE 2048
 
@@ -615,6 +613,13 @@ bool    ctedit::selectCTFile(QString szFileCT)
             qDebug() << tr("Model in List: %1") .arg(nModel);
             nModel = searchModelInList(m_szCurrentModel);
             qDebug() << tr("Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
+            ui->lblModel->setStyleSheet(QString::fromAscii("background-color: LightCyan"));
+        }
+        else  {
+            TargetConfig = lstTargets[AnyTPAC];
+            ui->lblModel->setStyleSheet(QString::fromAscii("background-color: Red"));
+            m_szMsg = tr("No Model Found in file: %1") .arg(szTemplateFile);
+            warnUser(this, szMectTitle, m_szMsg);
         }
         // Se il modello non è stato trovato in template.pri vale comunque AnyTPAC ma il salvataggio è disabilitato
         m_isCtModified = false;
@@ -1181,6 +1186,20 @@ bool ctedit::iface2values(QStringList &lstRecValues)
         }
         lstRecValues[colCompare] = szTemp;
     }
+    // Finalizzazione controlli su protocolli
+    // Protocollo PLC tutto abblencato
+    if (nProtocol == PLC)  {
+        lstRecValues[colIP] = szEMPTY;
+        lstRecValues[colPort] = szEMPTY;
+        lstRecValues[colNodeID] = szEMPTY;
+        lstRecValues[colRegister] = szEMPTY;
+    }
+    // Protocolli Seriali e CAN Porta a 0 se vuota
+    if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV || nProtocol == CANOPEN)  {
+        szTemp = lstRecValues[colPort].trimmed();
+        if (szTemp.isEmpty())
+            lstRecValues[colPort] = szZERO;
+    }
     // qDebug() << "Alarm Source Variable: " << lstRecValues[colSourceVar];
     // Return value
     return true;
@@ -1204,6 +1223,7 @@ void ctedit::saveCTFile()
     int     nRes = 0;
     int     nCur = 0;
     int     nErr = 0;
+    int     nProtocol = 0;
     int     nCurRow = m_nGridRow;
 
     // Controllo errori
@@ -1225,8 +1245,21 @@ void ctedit::saveCTFile()
     fileBackUp(m_szCurrentCTFile);
     // Copy CT Record List to C Array
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
-        if (nCur < DimCrossTable)
+        if (nCur < DimCrossTable)  {
+            // Forzature legate al protocollo
+            nProtocol = lstCTRecords[nCur].Protocol;
+            // Per PLC scaraventa tutto a Blank
+            if (nProtocol == PLC)  {
+                lstCTRecords[nCur].IPAddress = 0;
+                lstCTRecords[nCur].Port = 0;
+                lstCTRecords[nCur].NodeId = 0;
+                lstCTRecords[nCur].Offset = 0;
+            }
+            if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV || nProtocol == CANOPEN)  {
+
+            }
             CrossTable[nCur + 1] = lstCTRecords[nCur];
+        }
     }
     // Saving Source Array to file
     nRes = SaveXTable(m_szCurrentCTFile.toAscii().data(), CrossTable);

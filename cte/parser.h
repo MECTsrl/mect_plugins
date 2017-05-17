@@ -23,6 +23,10 @@ extern "C" {
 #define MAX_DEVICE_LEN      13 // /dev/ttyUSB0.
 #define MAX_COMMENT_NAME    30
 
+#define MIN_LOCALIO 5300
+#define MAX_LOCALIO 5389
+
+
 #define COMP_UNSIGNED   77
 #define COMP_SIGNED     78
 #define COMP_FLOATING      79

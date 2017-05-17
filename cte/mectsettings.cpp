@@ -523,6 +523,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
     setModel(targetConfig);
     m_isIniModified = false;
     ui->cmdSave->setStyleSheet(QString::fromAscii("border: 2px solid green;"));
+    ui->cmdSave->setEnabled(TargetConfig.nModel != AnyTPAC);
     // All Ok, return true
     return true;
 }
@@ -691,7 +692,7 @@ bool MectSettings::saveOrCheckAll(QString szFileName, bool checkOnly)
         return changed;
     // Global Sync
     settings.sync();
-    QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
+    // QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
     return true;
 }
 bool MectSettings::checkFields()
