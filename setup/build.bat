@@ -208,7 +208,7 @@ time /t
 IF EXIST Qt485_upd_rev%REV%.7z del /q Qt485_upd_rev%REV%.7z
 
 mkdir %OUT_DIR%\Qt485\desktop\plugins\designer
-xcopy C:\Qt485\desktop\plugins\designer\ATCM-*.dll %OUT_DIR%\Qt485\desktop\plugins\designer /Q /Y >> %ErrorLog% 2>&1
+xcopy C:\Qt485\desktop\plugins\designer\atcm*.dll %OUT_DIR%\Qt485\desktop\plugins\designer /Q /Y >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
