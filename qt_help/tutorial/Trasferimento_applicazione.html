@@ -16,30 +16,15 @@
 		<h3 class="western">Trasferimento dell'applicazione sul dispositivo</h3>
 	<p class="western">Per poter trasferire la propria applicazione dal pc al pannello	operatore occorre collegare via cavo di rete il pannello operatore
 	al PC oppure verificare che i due siano connessi tra loro.</p>
-	<p class="western">La prima volta che si vuole mandare sul pannello l&rsquo;eseguibile (<i>Deploy</i>) occorre selezionare &ldquo;Projects&rdquo;
-	&#8594; &ldquo;Run&rdquo; e impostare i seguenti parametri:</p>
-	<ul>
-		<li/>
-<p class="western"><strong>Disabilitare</strong>, sotto la voce &ldquo;Upload files via SFTP&rdquo;, il flag &ldquo;<strong>Incremental deployment</strong>&rdquo;;</p>
-	</ul>
-	<p class="western"><img src="Trasferimento_applicazione_1.png" name="Immagine 62" align="bottom" width="699" height="329" border="0"/></p>
-	<ul>
-		<li/>
-<p class="western"><span lang="en-US">Cliccare su &ldquo;Add Deploy Step&rdquo; e selezionare &ldquo;<strong>Run custom remote command</strong>&rdquo;</span></p>
-	</ul>
-<p class="western"><img src="Trasferimento_applicazione_2.png" name="Immagine 69" align="bottom" width="685" height="417" border="0"/></p>
-	<ul>
-		<li/>
-<p class="western">Scrivere &ldquo;<strong>stop</strong>&rdquo; (tutto minuscolo) e spostare il blocco &ldquo;Run custom remote command&rdquo;	di una posizione verso l&rsquo;alto, tramite la freccia evidenziata
-		in giallo (premere Details).</p>
-	</ul>
-<p class="western"><img src="Trasferimento_applicazione_3.png" name="Immagine 107" align="bottom" width="699" height="63" border="0"/></p>
-<p class="western">Il risultato finale dovr&agrave; essere il seguente:</p>
-<p class="western"><img src="Trasferimento_applicazione_4.png" name="Immagine 108" align="bottom" width="700" height="361" border="0"/></p>
+	<p class="western"><strong>La prima volta</strong> che si vuole mandare sul pannello l&rsquo;eseguibile (<i>Deploy</i>) occorre selezionare &ldquo;Projects&rdquo;
+	&#8594; &ldquo;Run&rdquo; e scrivere &ldquo;<strong>stop</strong>&rdquo; (tutto minuscolo) in &ldquo;Run custom remote command&rdquo; :</p>
 	
+	<p class="western"><img src="Trasferimento_applicazione_1.png" align="bottom" width="972" height="708" border="0"/></p>
+	<p class="western">E&rsquo; consigliabile lavorare in modalit&agrave; &ldquo;<strong>Release</strong>&rdquo; in quanto l&rsquo;applicazione risulta essere meno &ldquo;pesante&rdquo; per il target.</p>	
+	<p class="western"><img src="Trasferimento_applicazione_2.png" align="bottom" width="280" height="599" border="0"/></p>	
 	<p class="western">Se necessario, si pu&ograve; specificare per il target un diverso indirizzo IP oppure la password nella dialog da
 	&ldquo;<i>Tools</i> &#8594; <i>Options</i> &#8594;  <i>Devices</i>&rdquo;.</p>
-	<p class="western"><img src="Trasferimento_applicazione_5.png" name="Immagine 109" align="bottom" width="625" height="322" border="0"/></p>
+	<p class="western"><img src="Trasferimento_applicazione_5.png" align="bottom" width="1020" height="599" border="0"/></p>
 	
 	<p class="western">E&rsquo; consigliabile effettuare un test per verificare che ci sia la connessione tra il PC e il pannello
 	operatore; per far ci&ograve; occorre premere il pulsante &ldquo;Test&rdquo; presente nella parte destra della figura mostrata precedentemente.</p>
