@@ -52,7 +52,7 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="../ATCM-template-project/automation.h" target="automation.h" openeditor="false"/>
 	   <file source="../ATCM-template-project/resources.qrc" target="resources.qrc" openproject="false"/>
 	   <file source="../ATCM-template-project/languages.qrc" target="languages.qrc" openproject="false"/>
-	   <file source="../ATCM-template-project/config/splash.png" target="config/splash.png" openproject="false" binary="true"/>
+	   <file source="config/splash.png" target="config/splash.png" openproject="false" binary="true"/>
 	   <file source="config/Crosstable.csv" target="config/Crosstable.csv" openproject="false" binary="false"/>
 	   <file source="config/crosstable.cpp" target="config/crosstable.cpp" openproject="false" binary="false"/>
 	   <file source="config/crosstable.h" target="config/crosstable.h" openproject="false" binary="false"/>
