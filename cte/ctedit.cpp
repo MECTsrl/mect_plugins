@@ -618,7 +618,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         else  {
             TargetConfig = lstTargets[AnyTPAC];
             ui->lblModel->setStyleSheet(QString::fromAscii("background-color: Red"));
-            m_szMsg = tr("No Model Found in file: %1") .arg(szTemplateFile);
+            m_szMsg = tr("No Model Type Found in file: %1") .arg(szTemplateFile);
             warnUser(this, szMectTitle, m_szMsg);
         }
         // Se il modello non è stato trovato in template.pri vale comunque AnyTPAC ma il salvataggio è disabilitato
@@ -840,6 +840,12 @@ bool ctedit::recCT2List(QStringList &lstRecValues, int nRow)
         lstRecValues[colBlock] = QString::number(lstCTRecords[nRow].Block);
         // N.Registro
         lstRecValues[colBlockSize] = QString::number(lstCTRecords[nRow].BlockSize);
+        // PLC forza tutto a Blank
+        if (lstCTRecords[nRow].Protocol == PLC)  {
+            lstRecValues[colPort] = szEMPTY;
+            lstRecValues[colNodeID] = szEMPTY;
+            lstRecValues[colRegister] = szEMPTY;
+        }
         // Commento
         lstRecValues[colComment] = QString::fromAscii(lstCTRecords[nRow].Comment).trimmed();
         // Behavior
