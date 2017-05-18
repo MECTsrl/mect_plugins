@@ -44,7 +44,7 @@
 				</td>
 				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
 					<p class="western">It defines the type of data exchange enabled with the remote devices.</p>
-					<p class="western">-H: the variable is updated only if it appears in the current page; </p>
+					<p class="western">-H: the variable is updated only if it appears in the current page; ***</p>
 					<p class="western">-P: the variable is always updated;</p>
 					<p class="western">-S: the variable is always updated and logged slowly	with time &ldquo;Slow Log Period&rdquo; (System Editor parameter);</p>
 					<p class="western">-F: like	&ldquo;S&rdquo; but quickly	with time &ldquo;Fast Log Period&rdquo; (System Editor parameter);</p>
@@ -54,7 +54,7 @@
 			</tr>
 			<tr>
 				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Var.Name</p>
+					<p class="western">Name</p>
 				</td>
 				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
 					<p class="western">Name	of the variable (16 char max and different by &ldquo;Text&rdquo;).</p>
@@ -167,7 +167,7 @@
 			</tr>
 			<tr>
 				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Blk Size</p>
+					<p class="western">N. Reg</p>
 				</td>
 				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
 					<p class="western">Number of registers available in the block. Max 64 registers.</p>
@@ -175,7 +175,10 @@
 			</tr>
 		</table>
 	</center>
-	
+	<p class="western">*** To use properly the &ldquo;H&rdquo; variables you must write the following code in the reload() function of the pagexxx.cpp.</p>
+	<p class="western"><img src="Descrizione_Crosstable_1.png" name="Immagine113" align="bottom" width="573" height="130" border="0"/></p>
+	<p class="western">For example, replace the word &ldquo;VARIABILE1&rdquo; with the variable that you want to use. In the case of several variables 
+	of the same block, you can only write the first.</p>
 	<br/>
 	</body>
 </html>

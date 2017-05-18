@@ -14,14 +14,10 @@
 				<section title="Introduzione" ref="Introduzione.html"/>
 				<section title="Installazione" ref="Installazione.html"/>
 				<section title="Aggiornamenti" ref="Aggiornamenti.html"/>
-				<section title="Convertire un progetto 2.0.13 in 3.x" ref="Convertire_progetto_2x.html"/>
 				<section title="Operazioni preliminari" ref="Operazioni_preliminari.html"/>
 				<section title="HMI" ref="HMI.html">
 					<section title="Crosstable Editor" ref="Crosstable_Editor.html">
-						<section title="Descrizione della Crosstable" ref="Descrizione_Crosstable.html">
-							<section title="Update di tipo H" ref="Variabili_H.html"/>
-							<section title="Update di tipo S / F / V / X" ref="Variabili_S.html"/>
-							</section>
+						<section title="Descrizione della Crosstable" ref="Descrizione_Crosstable.html"/>
 						<section title="Funzionalità Crosstable Editor" ref="Funzionalita_Crosstable_Editor.html"/>
 						</section>
 					<section title="System Editor" ref="System_Editor.html"/>
@@ -104,7 +100,6 @@
 					<section title="Variabili di sistema" ref="Variabili_sistema.html">	
 						<section title="Configurazione delle variabili di sistema" ref="Config_variabili_sistema.html"/>
 						</section>
-					<section title="Variabili di diagnostica" ref="Variabili_diagnostica.html"/>	
 					<section title="Fonts" ref="Fonts.html"/>
 					<section title="Traduzione delle lingue" ref="Traduzione_lingue.html">	
 						<section title="Aggiungere un nuovo file di lingue" ref="Add_file_lingue.html"/>
@@ -122,7 +117,7 @@
 						</section>
 				</section>	
 				<section title="PLC" ref="PLC.html">
-					<section title="Aprire il software PLC" ref="Aprire_software_PLC.html"/>	
+					<section title="Creazione del progetto" ref="Creazione_progetto_PLC.html"/>	
 					<section title="Modificare/aggiungere un Task" ref="Modificare_Task.html"/>
 					<section title="Utilizzare un programma" ref="Utilizzare_un_programma.html">
 						<section title="Aggiungere un programma" ref="Aggiungere_un_programma.html"/>						
@@ -141,13 +136,10 @@
 						</section>
 					<section title="Debug PLC" ref="Debug_PLC.html"/>
 					<section title="Aggiungere librerie nel progetto" ref="Aggiungere_librerie.html"/>
-					<section title="Path di progetto" ref="Path_progetto.html"/>
-					</section>					
+					</section>
 				<section title="Inserimento della micro SD card" ref="SD_card.html"/>
 				<section title="Attivazione della VNC" ref="VNC.html"/>	
-				<section title="Connessione da remoto" ref="Connetivita.html">
-					<section title="Installazione OpenVPN" ref="Installazione_OpenVPN.html"/>
-					</section>
+				<section title="Connettività" ref="Connetivita.html"/>
 				<section title="Configurazione CAN" ref="Can.html"/>		
             </section>
         </toc>
@@ -158,26 +150,6 @@
         </keywords>
         <files>
 			<file>PWM.html</file>
-			<file>convertire_progetto_2x_1.png</file>
-			<file>Installazione_OpenVPN.html</file>
-			<file>Installazione_OpenVPN_1.png</file>
-			<file>Convertire_progetto_2x.html</file>
-			<file>Path_progetto.html</file>
-			<file>Path_progetto_1.png</file>
-			<file>Funzionalita_Trends_1.png</file>
-			<file>Funzionalita_Trends_2.png</file>
-			<file>Funzionalita_Trends_3.png</file>
-			<file>Variabili_diagnostica.html</file>
-			<file>Funzionalita_Crosstable_Editor_2.png</file>
-			<file>Funzionalita_Crosstable_Editor_3.png</file>
-			<file>Funzionalita_Crosstable_Editor_4.png</file>
-			<file>Funzionalita_Crosstable_Editor_5.png</file>
-			<file>Funzionalita_Crosstable_Editor_6.png</file>
-			<file>Funzionalita_Crosstable_Editor_7.png</file>
-			<file>Funzionalita_Crosstable_Editor_8.png</file>
-			<file>Funzionalita_Crosstable_Editor_9.png</file>
-			<file>Variabili_S.html</file>
-			<file>Variabili_H.html</file>
 			<file>Popup.html</file>
 			<file>Popup_1.png</file>
 			<file>Database.html</file>
@@ -287,15 +259,12 @@
 			<file>Usare_blocco_funzione_4.png</file>
 			<file>Sintassi_ST.html</file>
 			<file>Sintassi_ST_1.png</file>
-			<file>Sintassi_ST_2.png</file>
 			<file>Inserire_variabili_PLC_ST.html</file>
 			<file>Inserire_variabili_PLC_ST_1.png</file>
 			<file>Inserire_variabili_PLC_ST_2.png</file>
-			<file>Inserire_variabili_PLC_ST_3.png</file>
 			<file>Inserire_variabili_PLC.html</file>
 			<file>Inserire_variabili_PLC_1.png</file>
 			<file>Inserire_variabili_PLC_2.png</file>
-			<file>Inserire_variabili_PLC_3.png</file>
 			<file>Help_ATCMcontrol.html</file>
 			<file>Help_ATCMcontrol_1.png</file>
 			<file>Help_ATCMcontrol_2.png</file>
@@ -312,11 +281,11 @@
 			<file>Utilizzare_un_programma.html</file>
 			<file>Utilizzare_un_programma_1.png</file>
 			<file>Modificare_Task.html</file>
-			<file>Aprire_software_PLC.html</file>
-			<file>Aprire_software_PLC_1.png</file>
-			<file>Aprire_software_PLC_2.png</file>
-			<file>Aprire_software_PLC_3.png</file>
-			<file>Aprire_software_PLC_4.png</file>
+			<file>Creazione_progetto_PLC.html</file>
+			<file>Creazione_progetto_PLC_1.png</file>
+			<file>Creazione_progetto_PLC_2.png</file>
+			<file>Creazione_progetto_PLC_3.png</file>
+			<file>Creazione_progetto_PLC_4.png</file>
 			<file>PLC.html</file>
 			<file>Realizzazione_automazione_HMI.html</file>
 			<file>Realizzazione_automazione_HMI_1.png</file>
@@ -329,6 +298,8 @@
 			<file>Trasferimento_applicazione.html</file>
 			<file>Trasferimento_applicazione_1.png</file>
 			<file>Trasferimento_applicazione_2.png</file>
+			<file>Trasferimento_applicazione_3.png</file>
+			<file>Trasferimento_applicazione_4.png</file>
 			<file>Trasferimento_applicazione_5.png</file>
 			<file>Trasferimento_applicazione_6.png</file>
 			<file>Errori_compilazione.html</file>
