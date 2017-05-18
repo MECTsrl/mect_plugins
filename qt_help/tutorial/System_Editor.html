@@ -17,16 +17,12 @@
 		<p class="western">Con il <i>System Editor</i> &egrave; possibile modificare alcune <strong>configurazioni</strong> per l&rsquo;interfaccia grafica e i
 	<strong>parametri di comunicazione</strong> tra il pannello e i nodi remoti.</p>
 	</p>
-	<p class="western">Per avviare il &ldquo;Crosstable Editor&rdquo; vedere la figura seguente:</p>
-	<p class="western"><img src="System_Editor_1.png" name="Immagine113" align="bottom" width="565" height="261" border="0"/>
-</p>
+	<p class="western">Per aprire il &ldquo;System Editor&rdquo; selezionare l’icona MectSuite:</p>
+	<p class="western"><img src="System_Editor_1.png" align="bottom" width="850" height="440" border="0"/></p>
 	<br/>
 	<p class="western">Ecco come si presenta il &ldquo;System Editor&rdquo;:</p>
-	<p class="western"><img src="System_Editor_2.png" name="Immagine114" align="bottom" width="540" height="482" border="0"/>
-</p>
-	<p class="western">Nella parte alta dell&rsquo;editor sono presenti	alcuni Tab: System, SERIAL PORT 0 etc&hellip;., mentre nella parte
-	inferiore &egrave; presente il tasto &ldquo;SAVE&rdquo; (salvataggio delle impostazioni). In funzione del prodotto che si utilizza si
-	hanno dei parametri di default.</p>
+	<p class="western"><img src="System_Editor_2.png" align="bottom" width="980" height="489" border="0"/></p>
+	<p class="western">Nella parte alta del tab &ldquo;System&rdquo; &egrave; presente il tasto per il salvataggio delle impostazioni. Subito sotto sono presenti alcuni Tab: System, SERIAL PORT 0 etc&hellip;. che possono essere editabili o meno in funzione delle porte disponibili sul prodotto.</p>
 	<p class="western">Ecco le caratteristiche del &ldquo;System Editor&rdquo;:</p>
 	<ul>
 		<li/>
@@ -81,16 +77,18 @@
 			nel campo &ldquo;Priority&rdquo; della Crosstable.</p>
 		</ul>
 		<li/>
-<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> si impostano tutti i parametri di comunicazione delle seriali del dispositivo.</p>
-		<p class="western"><strong>ATTENZIONE:</strong> i parametri delle seriali interne non devono essere modificati, pena il malfunzionamento del dispositivo.</p>
+		<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> si impostano tutti i parametri di comunicazione delle seriali del dispositivo.</p>
+		<p class="western">Nel campo &ldquo;<strong>Max Block Size</strong>&rdquo; &egrave; possibile definire il numero massimo di variabili all&rsquo;interno di un blocco. </p>		
+		<p class="western"><strong>ATTENZIONE:</strong> il riordino dei blocchi avviene <strong>dopo aver salvato la Crosstable</strong>. I parametri delle seriali interne non devono essere modificati, pena il malfunzionamento del dispositivo.</p>
 		<li/>
-<p class="western"><strong>TC IP PORT:</strong> si impostano i parametri per la comunicazione TCP IP con un dispositivo remoto: 
-		</p>
+		<p class="western"><strong>TCP IP PORT:</strong> si impostano i parametri per la comunicazione TCP IP con un dispositivo remoto: </p>
 		<ul>
 			<li/>
-<p class="western"><strong>Timeout [ms]:</strong> tempo massimo di attesa che il Master attende per ricevere la risposta dallo Slave.</p>
+			<p class="western"><strong>Timeout [ms]:</strong> tempo massimo di attesa che il Master attende per ricevere la risposta dallo Slave.</p>
 			<li/>
-<p class="western"><strong>Silence [ms]:</strong> frequenza di richieste consecutive da un Master verso uno Slave.</p>
+			<p class="western"><strong>Silence [ms]:</strong> frequenza di richieste consecutive da un Master verso uno Slave.</p>
+			<li/>
+			<p class="western"><strong>Max Block Size [1&hellip;64]:</strong> numero massimo di variabili all&rsquo;interno di un blocco. <strong>ATTENZIONE:  </strong>il riordino dei blocchi avviene <strong>dopo aver salvato la Crosstable</strong>.</p>
 		</ul>
 		<li/>
 <p class="western"><strong>CANOPEN 0 / 1:</strong> impostazioni del baudrate del protocollo CANopen.</p>

@@ -1,0 +1,137 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Variabili di diagnostica</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Variabili di diagnostica</h3>
+	<p class="western">Dalla riga 5000 della Crosstable ci sono le variabili di diagnostica.</p>
+	<p class="western">I bus di campo sono: <strong>RTU0</strong>, <strong>RTU1</strong>, <strong>RTU3</strong>, <strong>CAN0</strong>, <strong>CAN1</strong>, <strong>TCPS</strong> (TCP_SRV), <strong>TCP0...TCP9</strong> (i primi 10 TCP). Per ogni bus di campo ci sono 10 variabili: </p>
+	<ul>
+		<li>
+		<p class="western"><strong>*_TYPE_PORT:</strong></p>
+			<ul>
+				<li>
+				<p class="western">Lo : numero della porta</p>
+				<li>
+				<p class="western">Hi : tipo di porta:</p>
+					<ul>
+					<li>
+					<p class="western">0 = PLC;</p>
+					<li>
+					<p class="western">1 = RTU;</p>
+					<li>
+					<p class="western">2 = TCP;</p>
+					<li>
+					<p class="western">3 = TCPRTU;</p>
+					<li>
+					<p class="western">4 = CANOPEN;</p>
+					<li>
+					<p class="western">5 = MECT;</p>
+					<li>
+					<p class="western">6 = RTU_SRV;</p>
+					<li>
+					<p class="western">7 = TCP_SRV;</p>
+					<li>
+					<p class="western">8 = TCPRTU_SRV.</p>
+					</ul>
+			</ul>
+		<li>
+		<p class="western"><strong>*_BAUDRATE:</strong> indica il <u>baudrate</u> per i protocolli RTU e CANopen.  Indica <u>IP Address</u> per i TCP.</p>
+		<li>
+		<p class="western"><strong>*_STATUS:</strong></p>
+			<ul>
+				<li>
+				<p class="western"><strong>Client:</strong></p>
+					<ul>
+						<li>
+						<p class="western">0 = Non inizializzato;</p>
+						<li>
+						<p class="western">1 = Non connesso;</p>
+						<li>
+						<p class="western">2 = Connesso;</p>
+						<li>
+						<p class="western">3 = Connesso con errori;</p>
+						<li>
+						<p class="western">4 = Dispositivo in blacklist;</p>
+						<li>
+						<p class="western">5 = Errore nella creazione del socket.</p>
+					</ul>
+				<li>
+				<p class="western"><strong>Server:</strong></p>
+					<ul>
+						<li>
+						<p class="western">0 = Inizializzazione;</p>
+						<li>
+						<p class="western">1 = Connesso;</p>
+						<li>
+						<p class="western">2 = Non inizializzato;</p>
+						<li>
+						<p class="western">3 = In attesa;</p>
+						<li>
+						<p class="western">4 = In esecuzione (sta processando).</p>
+					</ul>	
+			</ul>
+		<li>
+		<p class="western"><strong>*_READS:</strong>; numero di letture dal bus di campo.</p>
+		<li>
+		<p class="western"><strong>*_WRITES:</strong> numero di scritture dal bus di campo.</p>
+		<li>
+		<p class="western"><strong>*_TIMEOUT:</strong> numero di errori di timeout (nessuna risposta).</p>
+		<li>
+		<p class="western"><strong>*_COMM_ERRORS:</strong> numero di errori di comunicazione (checksum).</p>
+		<li>
+		<p class="western"><strong>*_LAST_ERROR:</strong> indica il tipo dell&rsquo;ultimo errore:</p>
+			<ul>
+				<li>
+				<p class="western">0 = Nessun errore;</p>
+				<li>
+				<p class="western">1 = Errore di comunicazione;</p>
+				<li>
+				<p class="western">2 = Errore di timeout;</p>
+				<li>
+				<p class="western">3 = Errore di reset della connessione.</p>
+			</ul>
+		<li>
+		<p class="western"><strong>*_WRITE_QUEUE:</strong> numero di scritture in coda nel bus di campo.</p>
+		<li>
+		<p class="western"><strong>*_READ_QUEUE:</strong> numero di letture in coda nel bus di campo.</p>
+	</ul>
+	<br/>
+	<p class="western">Dalla riga 5172 ci sono le variabili di diagnostica relative ai <strong>nodi</strong>. Per ogni nodo ci sono 2 variabili:</p>
+	<ul>
+		<li>
+		<p class="western"><strong>NODE_*_DEV_NODE:</strong></p>
+			<ul>
+				<li>
+				<p class="western">Lo : indica il numero del nodo (Node ID) all&rsquo;interno della Crosstable (parte da 1);</p>
+				<li>
+				<p class="western">Hi : indica il numero del device (Protocol + IP Address + Port + Node ID) all&rsquo;interno della Crosstable (parte da 0).</p>
+			<ul/>
+		<li>
+		<p class="western"><strong>NODE_*_STATUS:</strong></p>
+		<ul>
+				<li>
+				<p class="western">0 = Nessun nodo;</p>
+				<li>
+				<p class="western">1 = Nodo OK;</p>
+				<li>
+				<p class="western">2 = Timeout;</p>
+				<li>
+				<p class="western">3 = Blacklist;</p>
+				<li>
+				<p class="western">4 = Non connesso.</p>
+			</ul>
+	</ul>	
+	<br/>
+	</body>
+</html>

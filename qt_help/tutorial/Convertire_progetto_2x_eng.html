@@ -1,0 +1,88 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Convert a 2.0.13 project into 3.x version</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Convert a 2.0.13 project into 3.x version</h3>
+		<p class="western">The following table shows possible versions configurations for PC and device.</p>
+		
+	<table width="420" cellpadding="4" cellspacing="0">
+		<col width="140">
+		<col width="140">
+		<col width="140">
+		<thead>
+			<tr valign="top">
+				<th width="140" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western"><strong></strong></p>
+				</th>
+				<th width="140" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western"><strong>PC Software 2.0.13</strong></p>
+				</th>
+				<th width="140" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western"><strong>PC Software 3.x</strong></p>
+			</tr>
+		</thead>
+		<tbody>
+			<tr valign="top">
+				<td width="140" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>Device 2.0.13 </strong>	</p>
+				</td>
+				<td width="140" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm"  align="center">
+					<p class="western">OK</p>
+				</td>
+				<td width="140"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western"><strong>NO</strong></p>
+			</tr>
+			<tr valign="top">
+				<td width="140" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>Device 3.x </strong>	</p>
+				</td>
+				<td width="140" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm"  align="center">
+					<p class="western">OK</p>
+				</td>
+				<td width="140"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">OK</p>
+			</tr>
+			</tbody>
+			</table>
+	<br/>
+	<p class="western"><strong>Follows these steps to convert a project 2.0.13 into 3.x version:</strong></p>
+	<ul>
+	<li/>
+	<p class="western">Open PLC application in ATCMControl Engineering and select &ldquo;<strong>File Save Project As..</strong>&rdquo;</p>
+	<li/>
+	<p class="western">In &ldquo;New project name&rdquo; insert <strong>plc</strong> (lowercase)</p>
+	<li/>
+	<p class="western">In &ldquo;Location&rdquo; select the <strong>HMI project path</strong>. In the example &ldquo;Termoregolazione&rdquo; is the project name created by QtCreator</p>
+	</ul>
+	<p class="western"><img src="convertire_progetto_2x_1.png" align="bottom" width="285" height="152" border="0"/></p>
+	<ul>
+	<li/>
+	<p class="western">Open HMI project by MectSuite icon and press Build &#8594; Run qmake</p>
+	<p class="western"><img src="Errori_compilazione_3.png"  align="bottom" width="391" height="240" border="0"/></p>
+	<p class="western">Wait until the bar turns green.</p>
+	<p class="western"><img src="Errori_compilazione_4.png" name="Immagine153" align="bottom" width="719" height="61" border="0"/></p>
+	<li/>
+	<p class="western">Then press Build &#8594; Clean All 
+	<p class="western"><img src="Errori_compilazione_1.png" align="bottom" width="390" height="241" border="0"/></p>
+	<p class="western">Wait until the bar turns green.</p>
+	<p class="western"><img src="Errori_compilazione_2.png" name="Immagine151" align="bottom" width="736" height="64" border="0"/></p>
+	<li/>
+	<p class="western">Press Build &#8594; Build All.</p></p>
+	</ul>
+	<p class="western">Project is now converted into 3.x version.</p>
+	<p class="western"><strong>WARNING:</strong> it is necessary to update the device also. See &ldquo;<font color="#0000ff"><u><a class="western" href="Aggiornamenti_eng.html">Update</a></u></font>&rdquo; chapter.</p></table>
+	
+	<br/>
+	</body>
+</html>

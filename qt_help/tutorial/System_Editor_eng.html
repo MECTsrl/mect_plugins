@@ -17,14 +17,11 @@
 		<p class="western"><i>System Editor</i> changes some <strong>configuration</strong> for HMI and <strong>communication
 				parameters</strong> between panel and remote devices.</p>
 	<p class="western">To start the &ldquo;Crosstable Editor&rdquo; see following figure:</p>
-	<p class="western"><img src="System_Editor_1.png" name="Immagine113" align="bottom" width="565" height="261" border="0"/>
-</p>
+	<p class="western"><img src="System_Editor_1.png" align="bottom" width="850" height="440" border="0"/></p>
 	<br/>
 	<p class="western">Here the &ldquo;System Editor&rdquo;:</p>
-	<p class="western"><img src="System_Editor_2.png" name="Immagine114" align="bottom" width="540" height="482" border="0"/>
-</p>
-	<p class="western">In the upper side of the editor there are some Tab: System, SERIAL PORT 0 etc&hellip;., and in the bottom side there is the &ldquo;SAVE&rdquo;
-		key (save setup). There are defaults parameters depending on product model.</p>
+	<p class="western"><img src="System_Editor_2.png" align="bottom" width="980" height="489" border="0"/></p>
+	<p class="western">On top of the &ldquo;System&rdquo; tab there is the key to save the setup. Under this there are some tabs: System, SERIAL PORT 0hellip; that can be changed or not depending on ports available on the product.</p>
 	<p class="western">System Editor&rdquo; characteristics:</p>
 	<ul>
 		<li/>
@@ -71,16 +68,19 @@
 			element in the field  &ldquo;Priority&rdquo; of the Crosstable.</p>
 		</ul>
 		<li/>
-<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> setup of all serial communication parameter of the device.</p>
-	<p class="western"><strong>WARNING:</strong>	parameters of internal serial line must not be changed, otherwise panel doesn&rsquo;t work.</p>
+	<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> setup of all serial communication parameter of the device.</p>
+	<p class="western">In the &ldquo;<strong>Max Block Size</strong>&rdquo; field the maximum number of variables inside a block is defined. </p>	
+	<p class="western"><strong>WARNING:</strong> blocks reorder takes place <strong>after Crosstable save</strong>. Parameters of internal serial line must not be changed, otherwise panel doesn&rsquo;t work.</p>
 		<li/>
-<p class="western"><strong>TC IP PORT:</strong> setup of TCP IP communication parameters with a remote device: 
+		<p class="western"><strong>TCP IP PORT:</strong> setup of TCP IP communication parameters with a remote device: 
 		</p>
 		<ul>
 			<li/>
-<p class="western"><strong>Timeout [ms]:</strong> timeout for the master to wait for slave answer.</p>
+			<p class="western"><strong>Timeout [ms]:</strong> timeout for the master to wait for slave answer.</p>
 			<li/>
-<p class="western"><strong>Silence [ms]:</strong> frequency of consecutive request of a master to a slave.</p>
+			<p class="western"><strong>Silence [ms]:</strong> frequency of consecutive request of a master to a slave.</p>
+			<li/>
+			<p class="western"><strong>Max Block Size [1&hellip;64]:</strong> define the maximum number of variables inside a block. <strong>WARNING:</strong> blocks reorder takes place <strong>after Crosstable save</strong>.</p>
 		</ul>
 		<li/>
 <p class="western"><strong>CANOPEN 0 / 1:</strong> setup of	Baudrate of CANopen protocol.</p>
