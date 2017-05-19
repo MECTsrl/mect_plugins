@@ -41,9 +41,6 @@ ATCMdate::ATCMdate(QWidget *parent) :
 
     setFlat(true);
     setStyle(new ATCMStyle);
-#ifdef TARGET_ARM
-    setToolTip("");
-#endif
 
     /*
      * put there a default stylesheet
@@ -119,6 +116,7 @@ ATCMdate::ATCMdate(QWidget *parent) :
                 );
 
 #ifdef TARGET_ARM
+    setToolTip("");
 #else
     refresh_timer = new QTimer(this);
     connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
@@ -146,6 +144,16 @@ void ATCMdate::paintEvent(QPaintEvent * e)
 
     QStyleOptionButton opt;
     opt.init(this);
+
+#ifdef TARGET_ARM
+    if (this->receivers(SIGNAL(varRefresh())) == 0) {
+        QObject *ancestor = getPage((QObject *)this);
+
+        if (ancestor != NULL) {
+            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+        }
+    }
+#endif
 
     /* text */
     opt.text = text();
@@ -288,13 +296,5 @@ void ATCMdate::setFormat(const enum ATCMDateFormat format)
     {
         m_format = ENGLISH_DATE;
     }
-#ifdef TARGET_ARM
-    QObject *ancestor = getPage((QObject *)this);
-
-    if (ancestor != NULL) {
-        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
-    setToolTip("");
-#endif
     update();
 }

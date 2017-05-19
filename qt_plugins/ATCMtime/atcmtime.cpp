@@ -40,9 +40,6 @@ ATCMtime::ATCMtime(QWidget *parent) :
 
     setFlat(true);
     setStyle(new ATCMStyle);
-#ifdef TARGET_ARM
-    setToolTip("");
-#endif
 
     /*
      * put there a default stylesheet
@@ -118,6 +115,7 @@ ATCMtime::ATCMtime(QWidget *parent) :
                 );
 
 #ifdef TARGET_ARM
+    setToolTip("");
 #else
     refresh_timer = new QTimer(this);
     connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
@@ -145,6 +143,16 @@ void ATCMtime::paintEvent(QPaintEvent * e)
 
     QStyleOptionButton opt;
     opt.init(this);
+
+#ifdef TARGET_ARM
+    if (this->receivers(SIGNAL(varRefresh())) == 0) {
+        QObject *ancestor = getPage((QObject *)this);
+
+        if (ancestor != NULL) {
+            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
+        }
+    }
+#endif
 
     /* text */
     opt.text = text();
@@ -287,13 +295,5 @@ void ATCMtime::setFormat(const enum ATCMTimeFormat format)
     {
         m_format = TIME_24;
     }
-#ifdef TARGET_ARM
-    QObject *ancestor = getPage((QObject *)this);
-
-    if (ancestor != NULL) {
-        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-    }
-    setToolTip("");
-#endif
     update();
 }
