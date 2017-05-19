@@ -252,9 +252,9 @@ IF ERRORLEVEL 1 (
 	cd %ORIGINAL%
 	exit
 )
-mkdir %OUT_DIR%\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++
+mkdir "%OUT_DIR%\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++"
 mkdir %OUT_DIR%\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\common
-copy %ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect %OUT_DIR%\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf	/Y >> %ErrorLog% 2>&1
+copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y >> %ErrorLog% 2>&1
 copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%\Qt485\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\common	/Y >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
