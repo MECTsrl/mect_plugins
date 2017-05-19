@@ -118,22 +118,22 @@ ATCMdate::ATCMdate(QWidget *parent) :
 #ifdef TARGET_ARM
     setToolTip("");
 #else
+#endif
     refresh_timer = new QTimer(this);
     connect(refresh_timer, SIGNAL(timeout()), this, SLOT(updateData()));
     refresh_timer->start(1000);
-#endif
 }
 
 ATCMdate::~ATCMdate()
 {
 #ifdef TARGET_ARM
 #else
+#endif
     if (refresh_timer != NULL)
     {
         refresh_timer->stop();
         delete refresh_timer;
     }
-#endif
 }
 
 void ATCMdate::paintEvent(QPaintEvent * e)
@@ -144,16 +144,6 @@ void ATCMdate::paintEvent(QPaintEvent * e)
 
     QStyleOptionButton opt;
     opt.init(this);
-
-#ifdef TARGET_ARM
-    if (this->receivers(SIGNAL(varRefresh())) == 0) {
-        QObject *ancestor = getPage((QObject *)this);
-
-        if (ancestor != NULL) {
-            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-        }
-    }
-#endif
 
     /* text */
     opt.text = text();
@@ -238,7 +228,7 @@ void ATCMdate::setBorderRadius(int radius)
 /* read variable */
 void ATCMdate::updateData()
 {
-    if (this->isVisible() == false)
+    if (! this->isVisible())
     {
         return;
     }
