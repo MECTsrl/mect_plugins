@@ -1,6 +1,6 @@
-<plugin name=\"CTE\" version=\"0.0.1\" compatVersion=\"$$QTCREATOR_VERSION\">
+<plugin name=\"CTE\" version=\"$$ATCM_VERSION\" compatVersion=\"$$QTCREATOR_VERSION\">
     <vendor>MECT srl</vendor>
-    <copyright>(C) 2016 MECT srl</copyright>
+    <copyright>(C) 2017 MECT srl</copyright>
     <license>
 Commercial Usage
 

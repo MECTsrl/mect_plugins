@@ -323,7 +323,7 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.append(tr("P - Permanent\n"));
     szToolTip.append(tr("S - Permanent Slow Logging\n"));
     szToolTip.append(tr("F - Permanent Fast Logging\n"));
-    szToolTip.append(tr("V - Permanent Logging if Changed"));
+    szToolTip.append(tr("V - Permanent Logging if Changed\n"));
     szToolTip.append(tr("X - Permanent Logging on Shot"));
     for  (nCol=0; nCol<lstUpdateNames.count(); nCol++)   {
         ui->cboUpdate->addItem(lstUpdateNames[nCol], lstUpdateNames[nCol]);
@@ -1173,7 +1173,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
         // Operator
         nPos = ui->cboCondition->currentIndex();
         if (nPos >= 0 && nPos < ui->cboCondition->count())
-            szTemp = ui->cboCondition->itemText(nPos);
+            szTemp = lstCondition[nPos];
         else
             szTemp = szEMPTY;
         lstRecValues[colCondition] = szTemp;
@@ -3279,12 +3279,13 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         }
         // Controllo sull'operatore di comparazione
         szTemp = lstValues[colCondition];
-        if (nPos < 0)  {
+        if (szTemp.isEmpty())  {
             fillErrorMessage(nRow, colCondition, errCTNoCondition, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }
         // Controllo sulla parte DX espressione
+        nPos = lstCondition.indexOf(szTemp);
         // Operatore Rising/Falling
         if (nPos >= oper_rising && nPos <= oper_falling)  {
             lstValues[colCompare].clear();
