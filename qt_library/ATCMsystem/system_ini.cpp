@@ -17,10 +17,15 @@
 #include <QMessageBox>
 #include <QDirIterator>
 
+#define MAXBLOCKSIZE 64
+
+
 /**
  * @brief this macro is used to set the system_ini style.
  * the syntax is html stylesheet-like
  */
+
+
 #define SET_system_ini_STYLE() { \
     QString mystyle; \
     mystyle.append(this->styleSheet()); \
@@ -55,6 +60,7 @@ system_ini::system_ini(QWidget *parent) :
 void system_ini::reload()
 {
     QSettings settings(SYSTEM_INI, QSettings::IniFormat);
+    QVariant defBlockSize = QString::number(MAXBLOCKSIZE);
 
     LanguageMap.clear();
     ui->comboBoxLanguage->clear();
@@ -177,6 +183,8 @@ void system_ini::reload()
 
     ui->pushButton_Silence_SERIAL_PORT_0->setText(settings.value("SERIAL_PORT_0/silence_ms").toString());
     ui->pushButton_Timeout_SERIAL_PORT_0->setText(settings.value("SERIAL_PORT_0/timeout_ms").toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->setText(settings.value(QString::fromAscii("SERIAL_PORT_0/max_block_size"), defBlockSize).toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->setEnabled(false);
 
     value = settings.value("SERIAL_PORT_1/baudrate").toString();
     if (value.length() > 0)
@@ -232,6 +240,8 @@ void system_ini::reload()
 
     ui->pushButton_Silence_SERIAL_PORT_1->setText(settings.value("SERIAL_PORT_1/silence_ms").toString());
     ui->pushButton_Timeout_SERIAL_PORT_1->setText(settings.value("SERIAL_PORT_1/timeout_ms").toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->setText(settings.value(QString::fromAscii("SERIAL_PORT_1/max_block_size"), defBlockSize).toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->setEnabled(false);
 
     value = settings.value("SERIAL_PORT_2/baudrate").toString();
     if (value.length() > 0)
@@ -287,6 +297,8 @@ void system_ini::reload()
 
     ui->pushButton_Silence_SERIAL_PORT_2->setText(settings.value("SERIAL_PORT_2/silence_ms").toString());
     ui->pushButton_Timeout_SERIAL_PORT_2->setText(settings.value("SERIAL_PORT_2/timeout_ms").toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->setText(settings.value(QString::fromAscii("SERIAL_PORT_2/max_block_size"), defBlockSize).toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->setEnabled(false);
 
     value = settings.value("SERIAL_PORT_3/baudrate").toString();
     if (value.length() > 0)
@@ -346,9 +358,13 @@ void system_ini::reload()
 
     ui->pushButton_Silence_SERIAL_PORT_3->setText(settings.value("SERIAL_PORT_3/silence_ms").toString());
     ui->pushButton_Timeout_SERIAL_PORT_3->setText(settings.value("SERIAL_PORT_3/timeout_ms").toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->setText(settings.value(QString::fromAscii("SERIAL_PORT_3/max_block_size"), defBlockSize).toString());
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->setEnabled(false);
 
     ui->pushButton_Silence_TCP_IP_PORT->setText(settings.value("TCP_IP_PORT/silence_ms").toString());
     ui->pushButton_Timeout_TCP_IP_PORT->setText(settings.value("TCP_IP_PORT/timeout_ms").toString());
+    ui->lineEdit_MaxBlockSize_TCP_IP_PORT->setText(settings.value(QString::fromAscii("TCP_IP_PORT/max_block_size"), defBlockSize).toString());
+    ui->lineEdit_MaxBlockSize_TCP_IP_PORT->setEnabled(false);
 
     value = settings.value("CANOPEN_0/baudrate").toString();
     if (value.length() > 0)
@@ -360,6 +376,8 @@ void system_ini::reload()
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for CANOPEN_0 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_CANOPEN_0->itemText(index)));
         }
         ui->comboBox_Baudrate_CANOPEN_0->setCurrentIndex(index);
+        ui->lineEdit_MaxBlockSize_CANOPEN_0->setText(settings.value(QString::fromAscii("CANOPEN_0/max_block_size"), defBlockSize).toString());
+        ui->lineEdit_MaxBlockSize_CANOPEN_0->setEnabled(false);
     }
     else  {
         // Disable all Tab
@@ -376,6 +394,8 @@ void system_ini::reload()
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'stopbits' parameter for CANOPEN_1 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Baudrate_CANOPEN_1->itemText(index)));
         }
         ui->comboBox_Baudrate_CANOPEN_1->setCurrentIndex(index);
+        ui->lineEdit_MaxBlockSize_CANOPEN_1->setText(settings.value(QString::fromAscii("CANOPEN_1/max_block_size"), defBlockSize).toString());
+        ui->lineEdit_MaxBlockSize_CANOPEN_1->setEnabled(false);
     }
     else  {
         // Disable all Tab
