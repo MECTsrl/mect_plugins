@@ -43,6 +43,11 @@
 #include <QFontMetrics>
 #include <QTextStream>
 #include <QHostAddress>
+#include <QClipboard>
+#include <QMimeData>
+#include <QXmlStreamWriter>
+#include <QXmlStreamReader>
+#include <QXmlStreamAttributes>
 
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
@@ -85,6 +90,11 @@ const QString szPLCExt = QString::fromAscii(".4cp");
 const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
+
+const QString szXMLCTENAME = QString::fromAscii("Mect_CTE");
+const QString szXMLCTEVERSION = QString::fromAscii("Version");
+const QString szXMLCTNUMROWS = QString::fromAscii("CT_Rows");
+const QString szXMLCTROW = QString::fromAscii("Crosstable_Row");
 // Version Number
 #ifndef ATCM_VERSION
 #define ATCM_VERSION "DevelopmentVersion"
@@ -188,43 +198,63 @@ ctedit::ctedit(QWidget *parent) :
     // Titoli colonne
     lstHeadCols.clear();
     lstHeadSizes.clear();
+    lstHeadNames.clear();
     for (nCol = 0; nCol < colTotals; nCol++)  {
         lstHeadCols.append(szEMPTY);
+        lstHeadNames.append(szEMPTY);
         lstHeadSizes.append(10);
     }
+
     lstHeadCols[colPriority] = trUtf8("Priority");
+    lstHeadNames[colPriority] = trUtf8("Priority");
     lstHeadSizes[colPriority] = 8;
     lstHeadCols[colUpdate] = trUtf8("Update");
+    lstHeadNames[colUpdate] = trUtf8("Update");
     lstHeadSizes[colUpdate] = 8;
     lstHeadCols[colName] = trUtf8("Var.Name");
+    lstHeadNames[colName] = trUtf8("Var_Name");
     lstHeadSizes[colName] = 20;
     lstHeadCols[colType] = trUtf8("Type");
+    lstHeadNames[colType] = trUtf8("Type");
     lstHeadSizes[colType] = 10;
     lstHeadCols[colDecimal] = trUtf8("Decimal");
+    lstHeadNames[colDecimal] = trUtf8("Decimal");
     lstHeadSizes[colDecimal] = 8;
     lstHeadCols[colProtocol] = trUtf8("Protocol");
+    lstHeadNames[colProtocol] = trUtf8("Protocol");
     lstHeadSizes[colProtocol] = 10;
     lstHeadCols[colIP] = trUtf8("IP Address");
+    lstHeadNames[colIP] = trUtf8("IP_Address");
     lstHeadSizes[colIP] = 18;
     lstHeadCols[colPort] = trUtf8("Port");
+    lstHeadNames[colPort] = trUtf8("Port");
     lstHeadSizes[colPort] = 8;
     lstHeadCols[colNodeID] = trUtf8("Node ID");
+    lstHeadNames[colNodeID] = trUtf8("Node_ID");
     lstHeadSizes[colNodeID] = 8;
     lstHeadCols[colRegister] = trUtf8("Register");
+    lstHeadNames[colRegister] = trUtf8("Register");
     lstHeadSizes[colRegister] = 8;
     lstHeadCols[colBlock] = trUtf8("Block");
+    lstHeadNames[colBlock] = trUtf8("Block");
     lstHeadSizes[colBlock] = 8;
     lstHeadCols[colBlockSize] = trUtf8("Blk Size");
+    lstHeadNames[colBlockSize] = trUtf8("Blk_Size");
     lstHeadSizes[colBlockSize] = 8;
     lstHeadCols[colComment] = trUtf8("Comment");
+    lstHeadNames[colComment] = trUtf8("Comment");
     lstHeadSizes[colComment] = 20;
     lstHeadCols[colBehavior] = trUtf8("Behavior");
+    lstHeadNames[colBehavior] = trUtf8("Behavior");
     lstHeadSizes[colBehavior] = 16;
     lstHeadCols[colSourceVar] = trUtf8("Source");
+    lstHeadNames[colSourceVar] = trUtf8("Source");
     lstHeadSizes[colSourceVar] = 20;
     lstHeadCols[colCondition] = trUtf8("Condition");
+    lstHeadNames[colCondition] = trUtf8("Condition");
     lstHeadSizes[colCondition] = 10;
     lstHeadCols[colCompare] = trUtf8("Compare");
+    lstHeadNames[colCompare] = trUtf8("Compare");
     lstHeadSizes[colCompare] = 20;
     // Regioni CT
     lstRegions.clear();
@@ -439,10 +469,12 @@ ctedit::ctedit(QWidget *parent) :
     QString szNameExp = QString::fromAscii("\\w+");
     QRegExp regExprName(szNameExp);
     ui->txtName->setValidator(new QRegExpValidator(regExprName, this));
+    ui->txtName->setMaxLength(MAX_IDNAME_LEN - 1);
     // Validator per commenti
     QString szCommentExp = QString::fromAscii("^[^\\\\/:;,?\"'<>|]*$");
     QRegExp regExprComment(szCommentExp);
     ui->txtComment->setValidator(new QRegExpValidator(regExprComment, this));
+    ui->txtComment->setMaxLength(MAX_COMMENT_LEN - 1);
     // Campi sempre locked
     ui->txtRow->setEnabled(false);
     ui->txtBlock->setEnabled(false);
@@ -847,7 +879,7 @@ bool ctedit::recCT2List(QStringList &lstRecValues, int nRow)
             lstRecValues[colRegister] = szEMPTY;
         }
         // Commento
-        lstRecValues[colComment] = QString::fromAscii(lstCTRecords[nRow].Comment).trimmed();
+        lstRecValues[colComment] = QString::fromAscii(lstCTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
         // Behavior
         // Allarme o Evento
         if (lstCTRecords[nRow].usedInAlarmsEvents && lstCTRecords[nRow].Behavior >= behavior_alarm)  {
@@ -991,7 +1023,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     szTemp = lstRecValues[colBlockSize].trimmed();
     ui->txtBlockSize->setText(szTemp);
     // Comment
-    szTemp = lstRecValues[colComment].trimmed();
+    szTemp = lstRecValues[colComment].trimmed().left(MAX_COMMENT_LEN - 1);
     ui->txtComment->setText(szTemp);
     // Behavior
     szTemp = lstRecValues[colBehavior].trimmed();
@@ -1148,7 +1180,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     lstRecValues[colBlockSize] = szTemp.trimmed();
     // Comment
     szTemp = ui->txtComment->text();
-    lstRecValues[colComment] = szTemp.trimmed();
+    lstRecValues[colComment] = szTemp.trimmed().left(MAX_COMMENT_LEN - 1);
     // Clear all values for Alarms/Events
     lstRecValues[colSourceVar] = szEMPTY;
     lstRecValues[colCondition] = szEMPTY;
@@ -1354,7 +1386,7 @@ bool    ctedit::riassegnaBlocchi()
             lstCTRecords[nRow].Block = 0;
     }
     // Rinumera ultimo blocco trattato (se esiste)
-    if (nBlockStart > 0)  {
+    if (nBlockStart >= 0)  {
         for (j = nBlockStart; j < MIN_DIAG - 1; j++)  {
             if (lstCTRecords[j].UsedEntry == 0)
                 break;
@@ -1515,7 +1547,7 @@ bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
             lstCTRecords[nRow].BlockSize = nPos;
         }
         // Commento
-        strcpy(lstCTRecords[nRow].Comment, lstRecValues[colComment].trimmed().toAscii().data());
+        strncpy(lstCTRecords[nRow].Comment, lstRecValues[colComment].trimmed().toAscii().data(), MAX_COMMENT_LEN - 1);
         // Clear all Variable - Event fields
         lstCTRecords[nRow].usedInAlarmsEvents = FALSE;
         lstCTRecords[nRow].ALType = -1;
@@ -1971,7 +2003,12 @@ void ctedit::copySelected(bool fClearSelection)
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
     int             nRow = 0;
     int             nCur = 0;
+    int             nCol = 0;
     int             nFirstRow = -1;
+    QString         szClipBuffer;
+    QStringList     lstRecordFields;
+    QClipboard      *clipboard = QApplication::clipboard();
+    QXmlStreamWriter xmlBuffer(&szClipBuffer);
     // QStringList     lstFields;
 
     // Check Selection
@@ -1981,6 +2018,11 @@ void ctedit::copySelected(bool fClearSelection)
     lstCopiedRecords.clear();
     m_fCutOrPaste = true;
     // Compile Selected Row List
+    xmlBuffer.setAutoFormatting(true);
+    xmlBuffer.writeStartDocument();
+    xmlBuffer.writeStartElement(szXMLCTENAME);
+    xmlBuffer.writeTextElement(szXMLCTEVERSION, szVERSION);
+    xmlBuffer.writeTextElement(szXMLCTNUMROWS, QString::number(selection.count()));
     for (nCur = 0; nCur < selection.count(); nCur++)  {
         // Reperisce l'Item Row Number dall'elenco degli elementi selezionati
         QModelIndex index = selection.at(nCur);
@@ -1990,7 +2032,18 @@ void ctedit::copySelected(bool fClearSelection)
             nFirstRow = nRow;
         // Add Row to buffer
         lstCopiedRecords.append(lstCTRecords[nRow]);
+        // Convert Record to Strings List
+        recCT2List(lstRecordFields, nRow);
+        // Add Element to XML
+        xmlBuffer.writeStartElement(szXMLCTROW);
+        for (nCol = 0; nCol < lstRecordFields.count(); nCol++)  {
+            xmlBuffer.writeTextElement(lstHeadNames[nCol], lstRecordFields[nCol]);
+        }
+        xmlBuffer.writeEndElement();
     }
+    xmlBuffer.writeEndElement();
+    xmlBuffer.writeEndDocument();
+    clipboard->setText(szClipBuffer);
     // If only Copy, Set Current index Row to first of Selection
     if (fClearSelection)  {
         ui->tblCT->selectionModel()->clearSelection();
@@ -2008,16 +2061,60 @@ void ctedit::copySelected(bool fClearSelection)
 void ctedit::pasteSelected()
 // Incolla righe da Buffer di copiatura a Riga corrente
 {
-    int     nRow = ui->tblCT->currentRow();
-    int     nCur = 0;
-    int     nPasted = 0;
-    bool    fUsed = false;
+    int             nRow = ui->tblCT->currentRow();
+    int             nCur = 0;
+    int             nPasted = 0;
+    bool            fUsed = false;
     // Recupera righe selezionate
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
+    // Gestione della ClipBoard
+    int             nBufferRows = 0;
+    QString         szClipBuffer;
+    QStringList     lstRecordFields;
+    QClipboard      *clipboard = QApplication::clipboard();
+    const QMimeData       *mimeData = clipboard->mimeData();
+    QXmlStreamReader xmlBuffer;
+    QXmlStreamAttributes xmlAttrib;
+    QString         xmlName;
+    QString         xmlText;
+    QString         xmlValue;
 
+    // Retrieve Clipboard object
+    szClipBuffer.clear();
+    if (mimeData->hasText())  {
+        szClipBuffer = clipboard->text();
+    }
+    if (! szClipBuffer.isEmpty()) {
+        xmlBuffer.addData(szClipBuffer.toUtf8());
+        // Se la clipboard contiene una definizione XML valida
+        xmlBuffer.readNextStartElement();
+        while (! xmlBuffer.atEnd())  {
+            xmlName = xmlBuffer.name().toString();
+            xmlText = xmlBuffer.text().toString();
+            if (xmlBuffer.isStartElement())  {
+                xmlAttrib = xmlBuffer.attributes();
+                qDebug() << tr("Entry Name:  %1") .arg(xmlName);
+                qDebug() << tr("Entry Text: %1") .arg(xmlText);
+            }
+            else  {
+                qDebug() << tr("\tValue Name:  %1") .arg(xmlName);
+                qDebug() << tr("\tValue Text: %1") .arg(xmlText);
+            }
+            xmlBuffer.readNext();
+        }
+    }
     // No Records copied
-    if (lstCopiedRecords.count() == 0 || m_nGridRow >= MAX_NONRETENTIVE - 1)  {
+    if (lstCopiedRecords.count() && nBufferRows == 0)  {
+        m_szMsg = tr("Can't Copy as Copy Buffer is Empty");
+        fUsed = true;
+    }
+    // Paste in System Area
+    if (m_nGridRow >= MAX_NONRETENTIVE - 1)  {
         m_szMsg = tr("Can't paste rows in System Area");
+        fUsed = true;
+    }
+    // Error detected
+    if (fUsed)  {
         displayStatusMessage(m_szMsg);
         selection.clear();
         return;
@@ -2066,7 +2163,8 @@ void ctedit::pasteSelected()
     }
     m_szMsg = tr("Rows Pasted: %1") .arg(nPasted);
     displayStatusMessage(m_szMsg);
-    lstCopiedRecords.clear();
+    // No Copy buffer clear...
+    // lstCopiedRecords.clear();
     enableInterface();
 }
 
@@ -4768,7 +4866,7 @@ bool ctedit::querySave()
 {
     bool fRes = false;
 
-    if (! m_szCurrentCTFile.isEmpty()) {
+    if (! m_szCurrentCTFile.isEmpty() && ! m_szCurrentModel.isEmpty()) {
         // Crosstable file
         if (m_isCtModified)  {
             m_szMsg = tr("Crosstable File has unsaved changes: Save?\n%1") .arg(m_szCurrentCTFile);

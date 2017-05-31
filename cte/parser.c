@@ -652,7 +652,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
             cPosComment = strchr(p, ']');
             if (cPosComment != NULL)  {
                 if (strlen(cPosComment + sizeof(char)) > 0)  {
-                    strncpy(CrossTable[addr].Comment, cPosComment + sizeof(char), MAX_COMMENT_NAME);
+                    strncpy(CrossTable[addr].Comment, cPosComment + sizeof(char), MAX_COMMENT_LEN - 1);
                     // Rimuove il Cr-Lf
                     cPosComment = strstr(CrossTable[addr].Comment, "\n");
                     if (cPosComment  != NULL)

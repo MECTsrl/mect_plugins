@@ -1,6 +1,6 @@
 <plugin name="CTE" version="3.0.0" compatVersion="2.7.84">
     <vendor>MECT srl</vendor>
-    <copyright>(C) 2016 MECT srl</copyright>
+    <copyright>(C) 2017 MECT srl</copyright>
     <license>
 Commercial Usage
 

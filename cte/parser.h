@@ -21,7 +21,7 @@ extern "C" {
 #define MAX_VARTYPE_LEN      9 // UDINTABCD.
 #define MAX_PROTOCOL_LEN     9 // TCPRTUSRV.
 #define MAX_DEVICE_LEN      13 // /dev/ttyUSB0.
-#define MAX_COMMENT_NAME    30
+#define MAX_COMMENT_LEN    129
 
 #define MIN_LOCALIO 5300
 #define MAX_LOCALIO 5389
@@ -173,7 +173,7 @@ struct  CrossTableRecord {
     //
     uint16_t device;
     uint16_t node;
-    char Comment[MAX_COMMENT_NAME];
+    char Comment[MAX_COMMENT_LEN];
 };
 
 struct  Alarms {

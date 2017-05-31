@@ -145,6 +145,7 @@ private:
     QString     m_szCurrentModel;                   // Modello TPAC del progetto
     // Liste varie per prompt colonne e valori Combo Box (per traduzioni)
     QStringList lstHeadCols;
+    QStringList lstHeadNames;
     QList<int>  lstHeadSizes;
     QStringList lstPriority;
     QStringList lstUpdateNames;
