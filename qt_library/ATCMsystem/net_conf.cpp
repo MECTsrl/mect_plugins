@@ -17,7 +17,7 @@
 
 #define NONE     "-"
 #define NONE_LEN 1
-
+#define ZEROIP "0.0.0.0"
 /**
  * @brief this macro is used to set the net_conf style.
  * the syntax is html stylesheet-like
@@ -109,11 +109,17 @@ bool net_conf::saveETH0cfg()
             return false;
         }
         /* GATEWAY */
-        if (ui->pushButton_eth0_GW->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_GW->text().toAscii().data(), "GATEWAY0"))
+        if (ui->pushButton_eth0_GW->text().compare(NONE) != 0)
         {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAY0"));
-            return false;
+            QString     szGW = ui->pushButton_eth0_GW->text();
+            if (szGW == ZEROIP)
+                szGW = "";
+            if (app_netconf_item_set(szGW.toAscii().data(), "GATEWAY0"))
+            {
+                /* error */
+                QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAY0"));
+                return false;
+            }
         }
         /* NETMASK */
         if (ui->pushButton_eth0_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_NM->text().toAscii().data(), "NETMASK0"))
@@ -179,11 +185,18 @@ bool net_conf::saveETH1cfg()
             return false;
         }
         /* GATEWAY */
-        if (ui->pushButton_eth1_GW->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_GW->text().toAscii().data(), "GATEWAY1"))
+        if (ui->pushButton_eth1_GW->text().compare(NONE) != 0)
         {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAY1"));
-            return false;
+            QString     szGW = ui->pushButton_eth1_GW->text();
+            if (szGW == ZEROIP)
+                szGW = "";
+
+            if (app_netconf_item_set(szGW.toAscii().data(), "GATEWAY1"))
+            {
+                /* error */
+                QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAY1"));
+                return false;
+            }
         }
         /* NETMASK */
         if (ui->pushButton_eth1_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_NM->text().toAscii().data(), "NETMASK1"))
@@ -259,11 +272,17 @@ bool net_conf::saveWLAN0cfg()
             return false;
         }
         /* GATEWAY */
-        if (ui->pushButton_wlan0_GW->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_GW->text().toAscii().data(), "GATEWAYW0"))
+        if (ui->pushButton_wlan0_GW->text().compare(NONE) != 0)
         {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAYW0"));
-            return false;
+            QString     szGW = ui->pushButton_wlan0_GW->text();
+            if (szGW == ZEROIP)
+                szGW = "";
+            if(app_netconf_item_set(szGW.toAscii().data(), "GATEWAYW0"))
+            {
+                /* error */
+                QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAYW0"));
+                return false;
+            }
         }
         /* NETMASK */
         if (ui->pushButton_wlan0_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_NM->text().toAscii().data(), "NETMASKW0"))
