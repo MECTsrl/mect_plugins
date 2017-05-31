@@ -558,6 +558,7 @@ void ATCMlabel::writeAction()
         case udint_badc_e:
         case udint_cdab_e:
         case udint_dcba_e:
+        case byte_e:
         {
             if (decimal == 0)
             {
@@ -622,7 +623,7 @@ void ATCMlabel::writeAction()
             LOG_PRINT(verbose_e,"decimale %s = %f\n", m_variable.toAscii().data(), value);
         }
             break;
-        default:
+        default:        // All Bit types
         {
             int value  = 0, min = 0, max = 1;
             dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
