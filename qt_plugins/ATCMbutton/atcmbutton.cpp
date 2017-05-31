@@ -188,7 +188,34 @@ void ATCMbutton::paintEvent(QPaintEvent * e)
     QStyleOptionButton opt;
     opt.init(this);
 
-    if (isDown() == false && isChecked() == false)
+    if (isDown() || isChecked())
+    {
+        /* button color */
+        palette.setColor(QPalette::Button, m_bgcolor_press);
+        /* font color */
+        palette.setColor(QPalette::ButtonText, m_fontcolor_press);
+        /* border color */
+        palette.setColor(QPalette::Foreground, m_bordercolor_press);
+        /* icon */
+        opt.icon = m_icon_press;
+        opt.iconSize = iconSize();
+        /* text */
+        opt.text = m_text_press;
+
+        if (m_apparence == QFrame::Raised)
+        {
+            opt.state = QStyle::State_On | QStyle::State_Sunken;
+        }
+        else if (m_apparence == QFrame::Sunken)
+        {
+            opt.state = QStyle::State_On | QStyle::State_Raised;
+        }
+        else
+        {
+            opt.state = QStyle::State_On;
+        }
+    }
+    else
     {
         /* button color */
         palette.setColor(QPalette::Button, m_bgcolor);
@@ -209,33 +236,6 @@ void ATCMbutton::paintEvent(QPaintEvent * e)
         else if (m_apparence == QFrame::Sunken)
         {
             opt.state = QStyle::State_Off | QStyle::State_Sunken;
-        }
-        else
-        {
-            opt.state = QStyle::State_Off;
-        }
-    }
-    else
-    {
-        /* button color */
-        palette.setColor(QPalette::Button, m_bgcolor_press);
-        /* font color */
-        palette.setColor(QPalette::ButtonText, m_fontcolor_press);
-        /* border color */
-        palette.setColor(QPalette::Foreground, m_bordercolor_press);
-        /* icon */
-        opt.icon = m_icon_press;
-        opt.iconSize = iconSize();
-        /* text */
-        opt.text = m_text_press;
-
-        if (m_apparence == QFrame::Raised)
-        {
-            opt.state = QStyle::State_Off | QStyle::State_Sunken;
-        }
-        else if (m_apparence == QFrame::Sunken)
-        {
-            opt.state = QStyle::State_Off | QStyle::State_Raised;
         }
         else
         {
