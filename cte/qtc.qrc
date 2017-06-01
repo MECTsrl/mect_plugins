@@ -27,4 +27,7 @@
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>
     </qresource>
+    <qresource prefix="/ctexml">
+        <file>models/MPNC005.xml</file>
+    </qresource>
 </RCC>

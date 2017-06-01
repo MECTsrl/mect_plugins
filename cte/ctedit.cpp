@@ -90,11 +90,15 @@ const QString szPLCExt = QString::fromAscii(".4cp");
 const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
-
+// Constanti per gestione XML di transito tra variabili
 const QString szXMLCTENAME = QString::fromAscii("Mect_CTE");
 const QString szXMLCTEVERSION = QString::fromAscii("Version");
 const QString szXMLCTNUMROWS = QString::fromAscii("CT_Rows");
 const QString szXMLCTROW = QString::fromAscii("Crosstable_Row");
+const QString szXMLCTDESTROW = QString::fromAscii("DestRow");
+const QString szXMLCTSOURCEROW = QString::fromAscii("SourceRow");
+const QString szXMLExt = QString::fromAscii(".xml");
+
 // Version Number
 #ifndef ATCM_VERSION
 #define ATCM_VERSION "DevelopmentVersion"
@@ -449,7 +453,6 @@ ctedit::ctedit(QWidget *parent) :
     m_szCurrentModel.clear();
     m_szCurrentProjectPath.clear();
     m_nGridRow = 0;
-    lstCopiedRecords.clear();
     lstCTRecords.clear();
     // Validator per Interi
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
@@ -1905,11 +1908,31 @@ void ctedit::displayUserMenu(const QPoint &pos)
     int             nRow = ui->tblCT->rowAt(pos.y());
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
     QIcon cIco;
+    QClipboard      *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    QString         szClipBuffer;
+    bool            fClipSourceOk = false;
+    QList<QStringList > lstPastedRecords;
+    QList<int>      lstDestRows;
+    QList<int>      lstSourceRows;
+
+
 
     // Aggiornamento numero riga
     if (nRow >= 0)  {
         m_nGridRow = nRow;
     }
+    // Verifica dei dati in ingresso in Clipboard
+    // Retrieve Clipboard object
+    szClipBuffer.clear();
+    if (mimeData->hasText())  {
+        szClipBuffer = clipboard->text();
+    }
+    // Check Clipboard object
+    if (! szClipBuffer.isEmpty()) {
+        fClipSourceOk = getRowsFromXMLBuffer(szClipBuffer, lstPastedRecords, lstSourceRows, lstDestRows);
+    }
+
     // Oggetto menu contestuale
     QMenu gridMenu(this);
     // Items del Menu contestuale
@@ -1955,9 +1978,14 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Paste Rows
     cIco = QIcon(QString::fromAscii(":/cteicons/img/edit-paste.png"));
     QAction *pasteRows = gridMenu.addAction(cIco, trUtf8("Paste Rows\t\t(Ctrl+V)"));
-    pasteRows->setEnabled(lstCopiedRecords.count() > 0 && m_nGridRow < MIN_DIAG - 1);
+    pasteRows->setEnabled(fClipSourceOk && m_nGridRow < MIN_DIAG - 1);
     // pasteRows->setShortcut(Qt::Key_Paste);
-    // Abilitazione delle voci di Menu
+    // Sep 3
+    gridMenu.addSeparator();
+    // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale
+    QAction *addMPNC005 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005 Variables"));
+    addMPNC005->setEnabled((TargetConfig.ser0_Enabled || TargetConfig.ser1_Enabled || TargetConfig.ser2_Enabled || TargetConfig.ser3_Enabled)
+                           && m_nGridRow < MIN_DIAG - 1);
     // Esecuzione del Menu
     QAction *actMenu = gridMenu.exec(ui->tblCT->viewport()->mapToGlobal(pos));
     this->setCursor(Qt::WaitCursor);
@@ -1990,13 +2018,13 @@ void ctedit::displayUserMenu(const QPoint &pos)
     else if (actMenu == menuRow)  {
         gotoRow();
     }
-    //else if (actMenu == menuBlocks)  {
-    //    on_cmdBlocchi_clicked();
-    //}
+    else if (actMenu == addMPNC005)  {
+        addModelVars(szMPNC005, m_nGridRow);
+    }
     this->setCursor(Qt::ArrowCursor);
 
 }
-void ctedit::copySelected(bool fClearSelection)
+int ctedit::copySelected(bool fClearSelection)
 // Copia delle righe selezionate in Buffer di Copiatura
 {
     // Recupera righe selezionate
@@ -2005,6 +2033,7 @@ void ctedit::copySelected(bool fClearSelection)
     int             nCur = 0;
     int             nCol = 0;
     int             nFirstRow = -1;
+    int             nCopied = 0;
     QString         szClipBuffer;
     QStringList     lstRecordFields;
     QClipboard      *clipboard = QApplication::clipboard();
@@ -2013,16 +2042,14 @@ void ctedit::copySelected(bool fClearSelection)
 
     // Check Selection
     if (selection.count() <= 0)
-        return;
-    // Clear Copied Items Rows
-    lstCopiedRecords.clear();
+        return 0;
     m_fCutOrPaste = true;
     // Compile Selected Row List
     xmlBuffer.setAutoFormatting(true);
     xmlBuffer.writeStartDocument();
     xmlBuffer.writeStartElement(szXMLCTENAME);
-    xmlBuffer.writeTextElement(szXMLCTEVERSION, szVERSION);
-    xmlBuffer.writeTextElement(szXMLCTNUMROWS, QString::number(selection.count()));
+    xmlBuffer.writeAttribute(szXMLCTEVERSION, szVERSION);
+    xmlBuffer.writeAttribute(szXMLCTNUMROWS, QString::number(selection.count()));
     for (nCur = 0; nCur < selection.count(); nCur++)  {
         // Reperisce l'Item Row Number dall'elenco degli elementi selezionati
         QModelIndex index = selection.at(nCur);
@@ -2030,15 +2057,18 @@ void ctedit::copySelected(bool fClearSelection)
         // Remember first row of selection
         if (nFirstRow < 0)
             nFirstRow = nRow;
-        // Add Row to buffer
-        lstCopiedRecords.append(lstCTRecords[nRow]);
         // Convert Record to Strings List
         recCT2List(lstRecordFields, nRow);
         // Add Element to XML
         xmlBuffer.writeStartElement(szXMLCTROW);
+        // Source Row
+        xmlBuffer.writeAttribute(szXMLCTSOURCEROW, QString::number(nRow + 1));
+        // Destination Row marked as free
+        xmlBuffer.writeAttribute(szXMLCTDESTROW, QString::number(-1));
         for (nCol = 0; nCol < lstRecordFields.count(); nCol++)  {
-            xmlBuffer.writeTextElement(lstHeadNames[nCol], lstRecordFields[nCol]);
+            xmlBuffer.writeAttribute(lstHeadNames[nCol], lstRecordFields[nCol]);
         }
+        nCopied++;
         xmlBuffer.writeEndElement();
     }
     xmlBuffer.writeEndElement();
@@ -2054,9 +2084,11 @@ void ctedit::copySelected(bool fClearSelection)
         }
     }
     selection.clear();
-    m_szMsg = tr("Rows Copied: %1") .arg(lstCopiedRecords.count());
+    m_szMsg = tr("Rows Copied: %1") .arg(nCopied);
     displayStatusMessage(m_szMsg);
     enableInterface();
+    // Return value
+    return nCopied;
 }
 void ctedit::pasteSelected()
 // Incolla righe da Buffer di copiatura a Riga corrente
@@ -2068,49 +2100,36 @@ void ctedit::pasteSelected()
     // Recupera righe selezionate
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
     // Gestione della ClipBoard
-    int             nBufferRows = 0;
-    QString         szClipBuffer;
-    QStringList     lstRecordFields;
     QClipboard      *clipboard = QApplication::clipboard();
-    const QMimeData       *mimeData = clipboard->mimeData();
-    QXmlStreamReader xmlBuffer;
-    QXmlStreamAttributes xmlAttrib;
-    QString         xmlName;
-    QString         xmlText;
-    QString         xmlValue;
+    const QMimeData *mimeData = clipboard->mimeData();
+    QString         szClipBuffer;
+    bool            fClipSourceOk = false;
+    QList<QStringList > lstPastedRecords;
+    QList<int>      lstDestRows;
+    QList<int>      lstSourceRows;
 
     // Retrieve Clipboard object
-    szClipBuffer.clear();
+    szClipBuffer.clear();   
     if (mimeData->hasText())  {
         szClipBuffer = clipboard->text();
     }
+    // Check Clipboard object
     if (! szClipBuffer.isEmpty()) {
-        xmlBuffer.addData(szClipBuffer.toUtf8());
-        // Se la clipboard contiene una definizione XML valida
-        xmlBuffer.readNextStartElement();
-        while (! xmlBuffer.atEnd())  {
-            xmlName = xmlBuffer.name().toString();
-            xmlText = xmlBuffer.text().toString();
-            if (xmlBuffer.isStartElement())  {
-                xmlAttrib = xmlBuffer.attributes();
-                qDebug() << tr("Entry Name:  %1") .arg(xmlName);
-                qDebug() << tr("Entry Text: %1") .arg(xmlText);
-            }
-            else  {
-                qDebug() << tr("\tValue Name:  %1") .arg(xmlName);
-                qDebug() << tr("\tValue Text: %1") .arg(xmlText);
-            }
-            xmlBuffer.readNext();
-        }
+        fClipSourceOk = getRowsFromXMLBuffer(szClipBuffer, lstPastedRecords, lstSourceRows, lstDestRows);
     }
     // No Records copied
-    if (lstCopiedRecords.count() && nBufferRows == 0)  {
-        m_szMsg = tr("Can't Copy as Copy Buffer is Empty");
+    fUsed = false;
+    if (! fClipSourceOk)  {
+        m_szMsg = tr("Can't Copy as Copy Buffer is Empty or Invalid");
         fUsed = true;
     }
     // Paste in System Area
-    if (m_nGridRow >= MAX_NONRETENTIVE - 1)  {
+    else if (m_nGridRow >= MAX_NONRETENTIVE - 1)  {
         m_szMsg = tr("Can't paste rows in System Area");
+        fUsed = true;
+    }
+    else if(m_nGridRow + lstPastedRecords.count() > MAX_NONRETENTIVE - 1)  {
+        m_szMsg = tr("Pasted Rows could overlap to System Area");
         fUsed = true;
     }
     // Error detected
@@ -2121,10 +2140,11 @@ void ctedit::pasteSelected()
     }
     m_fCutOrPaste = true;
     // Paste Rows
-    if (nRow >= 0 && nRow < MAX_NONRETENTIVE - 1 && lstCopiedRecords.count() > 0)  {
-        if (nRow + lstCopiedRecords.count() < MAX_NONRETENTIVE)  {
+    qDebug() << tr("Pasted Rows Count: %1") .arg(lstPastedRecords.count());
+    if (fClipSourceOk)  {
+        if (nRow + lstPastedRecords.count() < MAX_NONRETENTIVE)  {
             // Verifica che la destinazione delle righe sia libera
-            for (nCur = nRow; nCur < nRow + lstCopiedRecords.count(); nCur++)  {
+            for (nCur = nRow; nCur < nRow + lstPastedRecords.count(); nCur++)  {
                 if (lstCTRecords[nCur].UsedEntry)  {
                     fUsed = true;
                     break;
@@ -2137,34 +2157,19 @@ void ctedit::pasteSelected()
             }
             // No row used or overwrite confirmed
             if (! fUsed)  {
-                // Append to Undo List
-                lstUndo.append(lstCTRecords);
-                // Mark first destination row
-                nCur = nRow;
-                // Compile Selected Row List
-                for (nPasted = 0; nPasted < lstCopiedRecords.count(); nPasted ++)  {
-                    // Paste element
-                    lstCTRecords[nRow++] = lstCopiedRecords[nPasted];
-                }
-                // Restore Grid Position to First Destination Row && select first row
-                selection.clear();
-                ui->tblCT->selectionModel()->clearSelection();
-                m_nGridRow = nCur;
-                ctable2Grid();
-                m_isCtModified = true;
-                jumpToGridRow(nCur + 1, true);
-                jumpToGridRow(nCur, true);
+                nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows);
             }
         }
         else  {
             m_szMsg = tr("The Copy Buffer Excedes System Variables Limit. Rows not copied");
             warnUser(this, szMectTitle, m_szMsg);
         }
+        m_szMsg = tr("Rows Pasted: %1") .arg(nPasted);
     }
-    m_szMsg = tr("Rows Pasted: %1") .arg(nPasted);
+    else {
+        m_szMsg = tr("Error Pasting Rows: %1") .arg(lstPastedRecords.count());
+    }
     displayStatusMessage(m_szMsg);
-    // No Copy buffer clear...
-    // lstCopiedRecords.clear();
     enableInterface();
 }
 
@@ -2348,6 +2353,7 @@ void ctedit::removeSelected()
 void ctedit::cutSelected()
 // Taglia righe in Buffer di copiatura
 {
+    int nCopied = 0;
     // Recupera righe selezionate
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
 
@@ -2359,12 +2365,12 @@ void ctedit::cutSelected()
     }
     m_fCutOrPaste = true;
     // Copia Righe
-    copySelected(false);
+    nCopied = copySelected(false);
     // Elimina Righe
-    if(lstCopiedRecords.count() > 0)
+    if(nCopied > 0)
         emptySelected();
     // Result
-    m_szMsg = tr("Rows Cutted: %1") .arg(lstCopiedRecords.count());
+    m_szMsg = tr("Rows Cutted: %1") .arg(nCopied);
     displayStatusMessage(m_szMsg);
     // qDebug() << m_szMsg;
 }
@@ -2529,7 +2535,7 @@ void ctedit::showAllRows(bool fShowAll)
     int         nRow = 0;
     int16_t     nPrevBlock = -1;
 
-    qDebug() << tr("showAllRows: showAll = %1 Current Row = %2") .arg(fShowAll) .arg(m_nGridRow);
+    // qDebug() << tr("showAllRows: showAll = %1 Current Row = %2") .arg(fShowAll) .arg(m_nGridRow);
     // Items del Grid    
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Determina se il blocco corrente è cambiato dal precedente
@@ -2546,7 +2552,7 @@ void ctedit::showAllRows(bool fShowAll)
         // Ricerca il primo Item visibile
         if (lstCTRecords[nRow].UsedEntry && nFirstVisible < 0)  {
             nFirstVisible = nRow ;
-            qDebug() << tr("First Visible Row:%1") .arg(nFirstVisible);
+            // qDebug() << tr("First Visible Row:%1") .arg(nFirstVisible);
         }
         // Mostra tutti
         if (fShowAll)  {
@@ -2993,7 +2999,7 @@ int ctedit::globalChecks()
     }
     // Display finestra errore
     if (nErrors)  {
-        qDebug() << "Found Errors:" << nErrors;
+        // qDebug() << "Found Errors:" << nErrors;
         errWindow = new cteErrorList(this, false);
         errWindow->setModal(true);
         errWindow->lstErrors2Grid(lstCTErrors);
@@ -3654,7 +3660,7 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
         return;
     // Applicazione dei valori di default nel caso di una riga vuota
     if (! lstCTRecords[m_nGridRow].UsedEntry && index >= 0 && m_nGridRow < MAX_NONRETENTIVE -1)  {
-        qDebug() << tr("Adding Row: %1") .arg(m_nGridRow);
+        // qDebug() << tr("Adding Row: %1") .arg(m_nGridRow);
         if (m_nGridRow > 0 && lstCTRecords[m_nGridRow - 1].UsedEntry)  {
             // Copia da precedente se definita
             // Update
@@ -3701,7 +3707,7 @@ void ctedit::on_cboUpdate_currentIndexChanged(int index)
         return;
     // Per variabili di tipo H spegne la possibilità di essere un allarme
     if (index == Htype)  {
-        qDebug() << tr("Clear Alarm");
+        // qDebug() << tr("Clear Alarm");
         // Se la variabile era allarme ripulisce la selezione
         if (ui->cboBehavior->currentIndex() >= behavior_alarm)
             ui->cboBehavior->setCurrentIndex(-1);
@@ -3870,7 +3876,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         }
         // Goto Line
         if (keyEvent->key() == Qt::Key_L && nPrevKey == Qt::Key_Control)  {
-            qDebug() << tr("CTRL-L");
+            // qDebug() << tr("CTRL-L");
             if (m_nCurTab == TAB_CT)  {
                 gotoRow();
                 return true;
@@ -3881,7 +3887,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
             if (m_nCurTab == TAB_CT)  {
                 if (obj == ui->fraEdit)  {
                     // Enter su Editing Form
-                    qDebug() << tr("Enter in Form");
+                    // qDebug() << tr("Enter in Form");
                     if (! isFormEmpty() && isLineModified(m_nGridRow)) {
                         updateRow(m_nGridRow);
                         enableInterface();
@@ -3892,7 +3898,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 }
                 else if (obj == ui->tblCT)  {
                     // Enter su Grid
-                    qDebug() << tr("Enter in Grid");
+                    // qDebug() << tr("Enter in Grid");
                     // Salto a riga successiva
                     jumpToGridRow(findNextVisibleRow(m_nGridRow), false);
                     return true;
@@ -3903,7 +3909,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         if (obj == ui->tblCT)  {
             // Tasto Insert
             if (keyEvent->key() == Qt::Key_Insert) {
-                qDebug() << tr("Insert");
+                // qDebug() << tr("Insert");
                 insertRows();
                 return true;
             }
@@ -3928,7 +3934,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
         }
-        qDebug() << tr("Pressed Key Value") << keyEvent->key();
+        // qDebug() << tr("Pressed Key Value") << keyEvent->key();
         nPrevKey = keyEvent->key();
     }
     // Pass event to standard Event Handler
@@ -4766,7 +4772,7 @@ bool ctedit::updateRow(int nRow)
                     m_isCtModified = true;
                     ui->tblCT->currentRow();
                 }
-                qDebug() << "Row saved:" << nRow;
+                // qDebug() << "Row saved:" << nRow;
             }
         }
         else
@@ -4899,4 +4905,191 @@ bool ctedit::querySave()
         fRes = true;
     // Return value
     return fRes;
+}
+bool ctedit::getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows)
+{
+    int             nBufferRows = 0;
+    int             nCol = 0;
+    int             nRow = 0;
+    bool            fClipSourceOk = false;
+    bool            fOk = false;
+    QStringList     lstRecordFields;
+    QXmlStreamReader xmlBuffer;
+    QXmlStreamAttributes xmlAttrib;
+    QString         xmlElementName;
+    QString         xmlName;
+    QString         xmlText;
+    QString         xmlValue;
+
+    lstPastedRecords.clear();
+    lstSourceRows.clear();
+    lstDestRows.clear();
+    if (! szBuffer.isEmpty())  {
+        // Create Row Entity buffer
+        for (nCol = 0; nCol < lstHeadNames.count(); nCol++)  {
+            lstRecordFields.append(szEMPTY);
+        }
+        // Link Clipboard buffer to XML Parser
+        xmlBuffer.addData(szBuffer.toUtf8());
+        // Skip della definizione di XML Document
+        xmlBuffer.readNextStartElement();
+        // XML Parsing
+        while (! xmlBuffer.atEnd())  {
+            xmlName = xmlBuffer.name().toString();
+            xmlText = xmlBuffer.text().toString();
+            if (xmlBuffer.isStartElement())  {
+                // Read Elements Attributes
+                xmlElementName = xmlBuffer.name().toString();
+                xmlAttrib = xmlBuffer.attributes();
+                // Parsing number of Rows
+                if (xmlName == szXMLCTENAME)  {
+                    fClipSourceOk = true;
+                    xmlValue = xmlAttrib.value(szXMLCTNUMROWS).toString();
+                    if (!xmlValue.isEmpty())  {
+                        nBufferRows = xmlValue.toInt(&fOk);
+                        nBufferRows = fOk ? nBufferRows : 0;
+                        // qDebug() << tr("Number of Rows: %1") .arg(nBufferRows);
+                    }
+                }
+                // Parsing Row Entity
+                if (xmlElementName == szXMLCTROW)  {
+                    // Fill Row Entity buffer
+                    for (nCol = 0; nCol < lstHeadNames.count(); nCol++)  {
+                        lstRecordFields[nCol] = xmlAttrib.value(lstHeadNames[nCol]).toString();
+                    }
+                    // Retrieve Row Source field
+                    nRow = -1;
+                    xmlValue = xmlAttrib.value(szXMLCTSOURCEROW).toString();
+                    if (! xmlValue.isEmpty())  {
+                        nRow = xmlValue.toInt(&fOk);
+                        nRow = fOk ? nRow : -1;
+                    }
+                    lstSourceRows.append(nRow);
+                    // Retrieve Row Destination field
+                    nRow = -1;
+                    xmlValue = xmlAttrib.value(szXMLCTDESTROW).toString();
+                    if (! xmlValue.isEmpty())  {
+                        nRow = xmlValue.toInt(&fOk);
+                        nRow = fOk ? nRow : -1;
+                    }
+                    lstDestRows.append(nRow);
+                    // Append Data to Pasting Lists
+                    lstPastedRecords.append(lstRecordFields);
+                    // qDebug() << tr("Row Variable: %1") .arg(lstRecordFields[colName]);
+                }
+            }
+            xmlBuffer.readNext();
+        }
+        // Determina se i valori letti sono tra loro coerenti
+        fClipSourceOk = fClipSourceOk && (lstPastedRecords.count() > 0) && (lstPastedRecords.count() == nBufferRows);
+    }
+    // Return value
+    return fClipSourceOk;
+}
+bool ctedit::addModelVars(const QString szModelName, int nRow)
+{
+    QString     szFileName = szModelName + szXMLExt;
+    bool fRes = false;
+    QFile       fileXML(szMODELSPATH + szFileName);
+    QString     szXMLBuffer;
+    QList<QStringList > lstModelRows;
+    QList<int>  lstSourceRows;
+    QList<int>  lstDestRows;
+    int         nCur = 0;
+    int         nAdded = 0;
+    bool        fUsed = false;
+
+    if (fileXML.exists())  {
+        fileXML.open(QIODevice::ReadOnly | QIODevice::Text);
+        szXMLBuffer = QString::fromAscii(fileXML.readAll().data());
+        // Check Buffer Length
+        if (!szXMLBuffer.isEmpty())  {
+            // Load Rows from Buffer
+            fRes = getRowsFromXMLBuffer(szXMLBuffer, lstModelRows, lstSourceRows, lstDestRows);
+            if (fRes)  {
+                // Paste Rows in Current position
+                if (nRow + lstModelRows.count() < MIN_DIAG - 1)  {
+                    // Check free destination area
+                    for (nCur = nRow; nCur < nRow + lstModelRows.count(); nCur++)  {
+                        if (lstCTRecords[nCur].UsedEntry)  {
+                            fUsed = true;
+                            break;
+                        }
+                    }
+                    // Query confirm of used if any row is used
+                    if (fUsed)  {
+                        m_szMsg = tr("Some of destination rows may be used. Paste anyway ?");
+                        fUsed = ! queryUser(this, szMectTitle, m_szMsg);
+                    }
+                    if (! fUsed)  {
+                        nAdded = addRowsToCT(nRow, lstModelRows, lstDestRows);
+                        m_szMsg = tr("Added %1 Rows for Model: %2") .arg(nAdded) .arg(szModelName);
+                    }
+                }
+                else  {
+                    m_szMsg = tr("Pasted Rows could overlap to System Area");
+                }
+            }
+            else {
+                m_szMsg = tr("Error reading Variable File for Model: %1") .arg(szModelName);
+            }
+        }
+        else {
+            m_szMsg = tr("Empty Variable File for Model: %1") .arg(szModelName);
+        }
+    }
+    else {
+        m_szMsg = tr("Variable File Not Found for Model: %1") .arg(szModelName);
+    }
+    // Notify to user
+    displayStatusMessage(m_szMsg);
+    // Return Value
+    return (nAdded > 0);
+}
+int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows)
+{
+    int     nCur = 0;
+    int     nPasted = 0;
+    int     nDestRow = 0;
+
+    // Append to Undo List
+    lstUndo.append(lstCTRecords);
+    // Mark first destination row
+    nCur = nRow;
+    // Compile Selected Row List
+    for (nPasted = 0; nPasted < lstRecords2Add.count(); nPasted ++)  {
+        // Check Destination Row
+        nDestRow = nRow++;
+        if (lstDestRows[nPasted] > -1)
+            nDestRow = lstDestRows[nPasted];
+        // Force Block address to Row Number
+        lstRecords2Add[nPasted][colBlock] = QString::number(nDestRow + 1);
+        // Paste element
+        list2CTrec(lstRecords2Add[nPasted], nDestRow);
+        // Force Block Size to Var Size
+        if (lstCTRecords[nDestRow].Protocol ==  PLC)
+            lstCTRecords[nDestRow].BlockSize = 1;
+        else
+            lstCTRecords[nDestRow].BlockSize = varSizeInBlock(lstCTRecords[nDestRow].VarType);
+        // Controllo Protocollo / Porta RTU
+        int nProtocol = lstCTRecords[nDestRow].Protocol;
+        if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
+            int nPort = lstCTRecords[nDestRow].Port;
+            int nTotal = 0;
+            if (! isValidPort(nPort, nProtocol))  {
+                getFirstPortFromProtocol(nProtocol, nPort, nTotal);
+                if (nTotal > 0)
+                    lstCTRecords[nDestRow].Port = nPort;
+            }
+        }
+    }
+    // Restore Grid Position to First Destination Row && select first row
+    ui->tblCT->selectionModel()->clearSelection();
+    m_nGridRow = nCur;
+    ctable2Grid();
+    m_isCtModified = true;
+    jumpToGridRow(nCur + 1, true);
+    jumpToGridRow(nCur, true);
+    // Return value
+    return (nPasted);
 }

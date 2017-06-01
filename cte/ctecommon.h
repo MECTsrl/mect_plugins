@@ -23,10 +23,12 @@ const QChar   chDOUBLEQUOTE = QChar::fromAscii(34);
 const QChar   chSpace = QChar::fromAscii(20);
 const QChar   chBACKSLASH = QChar::fromAscii(92);
 const QChar   chX = QChar::fromLatin1(88);
+const QChar   chUNDERSCORE = QChar::fromAscii(95);
 
 // String Costants
 const QString szEMPTY = QString::fromAscii("");
 const QString szDOUBLEQUOTE = QString(1, chDOUBLEQUOTE);
+const QString szUNDERSCORE = QString(1, chUNDERSCORE);
 const QString szZERO = QString::fromAscii("0");
 const QString szSEMICOL = QString::fromAscii(";");
 const QString szSLASH = QString::fromAscii("/");
@@ -36,7 +38,9 @@ const QString szSHARP = QString::fromAscii("#");
 const QString szTRUE = QString::fromAscii("1");
 const QString szFALSE = QString::fromAscii("0");
 const QString szMectTitle = QString::fromAscii("Mect Editor");
-
+// External Models
+const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
+const QString szMPNC005 = QString::fromAscii("MPNC005");
 
 
 struct  TP_Config {

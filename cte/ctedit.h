@@ -48,7 +48,7 @@ private slots:
     void insertRows();                              // Aggiunta righe in posizione cursore
     void emptySelected();                           // Cancellazione delle righe correntemente selezionate
     void removeSelected();                          // Rimozione delle righe correntemente selezionate
-    void copySelected(bool fClearSelection);                            // Copia delle righe selezionate in Buffer di Copiatura
+    int  copySelected(bool fClearSelection);        // Copia delle righe selezionate in Buffer di Copiatura
     void pasteSelected();                           // Incolla righe da Buffer di copiatura a Riga corrente
     void cutSelected();                             // Taglia righe in Buffer di copiatura
     void displayUserMenu(const QPoint &pos);        // Menu contestuale Grid
@@ -93,6 +93,7 @@ private:
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
     void    initTargetList();                       // Init della lista dei Target definiti
     bool    updateRow(int nRow);                    // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
+    int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows);
     // Gestione interfaccia
     void    enableFields();                         // Abilitazione dei campi form in funzione di Protocollo
     bool    isLineModified(int nRow);               // Check se linea corrente Grid è diversa da Form in Editing
@@ -127,6 +128,9 @@ private:
     bool    isSameBitField(int nRow);
     bool    isBitField(enum varTypes nVarType);
     bool    isTooBigForBlock(int nRow, int nItemsInBlock, int nCurBlockSize);
+    // Import dati in XML
+    bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows);
+    bool    addModelVars(const QString szModelName, int nRow);
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Mect_CTE Version="&quot;DevelopmentVersion&quot;" CT_Rows="8">
+    <Crosstable_Row SourceRow="1" DestRow="-1" Priority="1" Update="V" Var_Name="PRODUCT_ID" Type="UDINT" Decimal="0" Protocol="PLC" IP_Address="" Port="" Node_ID="" Register="" Block="1" Blk_Size="8" Comment="" Behavior="Read/Write (%Q)" Source="" Condition="" Compare=""/>
+    <Crosstable_Row SourceRow="2" DestRow="-1" Priority="1" Update="V" Var_Name="SERIAL_NUMBER" Type="UDINT" Decimal="0" Protocol="PLC" IP_Address="" Port="" Node_ID="" Register="" Block="1" Blk_Size="8" Comment="" Behavior="Read/Write (%Q)" Source="" Condition="" Compare=""/>
+    <Crosstable_Row SourceRow="3" DestRow="-1" Priority="1" Update="V" Var_Name="TEST_ID" Type="UINT" Decimal="0" Protocol="PLC" IP_Address="" Port="" Node_ID="" Register="" Block="1" Blk_Size="8" Comment="" Behavior="Read/Write (%Q)" Source="" Condition="" Compare=""/>
+    <Crosstable_Row SourceRow="4" DestRow="-1" Priority="1" Update="V" Var_Name="TEST_STEP" Type="UINT" Decimal="0" Protocol="PLC" IP_Address="" Port="" Node_ID="" Register="" Block="1" Blk_Size="8" Comment="" Behavior="Read/Write (%Q)" Source="" Condition="" Compare=""/>
+    <Crosstable_Row SourceRow="5" DestRow="-1" Priority="1" Update="V" Var_Name="TEST_STEP_MAX" Type="UINT" Decimal="0" Protocol="PLC" IP_Address="" Port="" Node_ID="" Register="" Block="1" Blk_Size="8" Comment="" Behavior="Read/Write (%Q)" Source="" Condition="" Compare=""/>
+    <Crosstable_Row SourceRow="6" DestRow="-1" Priority="1" Update="P" Var_Name="TEST_DATE" Type="UDINT" Decimal="0" Protocol="PLC" IP_Address="" Port="" Node_ID="" Register="" Block="1" Blk_Size="8" Comment="" Behavior="Read/Write (%Q)" Source="" Condition="" Compare=""/>
+    <Crosstable_Row SourceRow="7" DestRow="-1" Priority="1" Update="P" Var_Name="TEST_TIME" Type="UDINT" Decimal="0" Protocol="PLC" IP_Address="" Port="" Node_ID="" Register="" Block="1" Blk_Size="8" Comment="" Behavior="Read/Write (%Q)" Source="" Condition="" Compare=""/>
+    <Crosstable_Row SourceRow="8" DestRow="-1" Priority="1" Update="P" Var_Name="TEST_DURATION" Type="UDINT" Decimal="0" Protocol="PLC" IP_Address="" Port="" Node_ID="" Register="" Block="1" Blk_Size="8" Comment="" Behavior="Read/Write (%Q)" Source="" Condition="" Compare=""/>
+</Mect_CTE>
