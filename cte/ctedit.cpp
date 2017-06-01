@@ -93,6 +93,7 @@ const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plu
 // Constanti per gestione XML di transito tra variabili
 const QString szXMLCTENAME = QString::fromAscii("Mect_CTE");
 const QString szXMLCTEVERSION = QString::fromAscii("Version");
+const QString szXMLMODELTAG = QString::fromAscii("Model");
 const QString szXMLCTNUMROWS = QString::fromAscii("CT_Rows");
 const QString szXMLCTROW = QString::fromAscii("Crosstable_Row");
 const QString szXMLCTDESTROW = QString::fromAscii("DestRow");
@@ -2049,6 +2050,7 @@ int ctedit::copySelected(bool fClearSelection)
     xmlBuffer.writeStartDocument();
     xmlBuffer.writeStartElement(szXMLCTENAME);
     xmlBuffer.writeAttribute(szXMLCTEVERSION, szVERSION);
+    xmlBuffer.writeAttribute(szXMLMODELTAG, m_szCurrentModel);
     xmlBuffer.writeAttribute(szXMLCTNUMROWS, QString::number(selection.count()));
     for (nCur = 0; nCur < selection.count(); nCur++)  {
         // Reperisce l'Item Row Number dall'elenco degli elementi selezionati
