@@ -128,7 +128,7 @@ echo QtCreator template wizards (copy)
 cd /D %IN_DIR%\qt_templates
 time /t
 
-for /d %%a in ("C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-*") do echo rd /s /q "%%~a"
+for /d %%a in ("C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-*") do rd /s /q "%%~a"
 
 mkdir %OUT_DIR%\Qt485\desktop\share\qtcreator\templates\wizards
 xcopy ATCM-template-project C:\Qt485\desktop\share\qtcreator\templates\wizards\ATCM-template-project /Q /Y /E /S /I >> %ErrorLog% 2>&1
