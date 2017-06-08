@@ -45,6 +45,7 @@
 #include <QHostAddress>
 #include <QClipboard>
 #include <QMimeData>
+#include <QSortFilterProxyModel>
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QXmlStreamAttributes>
@@ -1094,6 +1095,11 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
                     }
                 }
             }
+        }
+        else  {
+            // Svuota d'ufficio sempre le combo delle variabili di allarme
+            ui->cboVariable1->clear();
+            ui->cboVariable2->clear();
         }
     }
     // Abilitazione campi
@@ -3100,9 +3106,16 @@ int ctedit::fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<i
     if (fillVarList(lstVars, lstTypes, lstUpdates) > 0)
     {
         for (nItem = 0; nItem < lstVars.count(); nItem++)  {
-            comboBox->addItem(lstVars[nItem], lstVars[nItem]);
+            comboBox->addItem(lstVars[nItem]);
         }
         comboBox->setCurrentIndex(-1);
+//        // Sorting della Combo Box, non necessario perchè la lista su cui si lavora è già sorted
+//        QSortFilterProxyModel* proxy = new QSortFilterProxyModel(comboBox);
+//        proxy->setSourceModel(comboBox->model());
+//        comboBox->model()->setParent(proxy);
+//        comboBox->setModel(proxy);
+//        comboBox->model()->sort(0);
+
     }
     comboBox->blockSignals(oldState);
     return lstVars.count();
