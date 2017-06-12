@@ -685,7 +685,7 @@
                </font>
               </property>
               <property name="toolTip">
-               <string>Start Crosstable complier</string>
+               <string>Start Crosstable Compiler</string>
               </property>
               <property name="text">
                <string/>
