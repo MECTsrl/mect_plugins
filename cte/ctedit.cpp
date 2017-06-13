@@ -2465,9 +2465,13 @@ void ctedit::on_cmdImport_clicked()
         if (checkCTFile(szSourceFile))  {
             szMsg = tr("Rows from %1 to %2 will be overwritten !!\nDo you want to continue?") .arg(MIN_RETENTIVE) .arg(MAX_NONRETENTIVE);
             if (queryUser(this, szMectTitle, szMsg))  {
+                // Copia di Salvataggio
+                lstUndo.append(lstCTRecords);
                 lstNewRecs.clear();
                 lstSourceRecs.clear();
+                // Caricamento della nuova Cross Table
                 if (loadCTFile(szSourceFile, lstNewRecs, false))  {
+                    // Aggiunta alla Cross Table dei record letti dalla nuova CT
                     for (nRow = 0; nRow < MAX_NONRETENTIVE; nRow++)  {
                         lstSourceRecs.append(lstCTRecords[nRow]);
                         lstCTRecords[nRow] = lstNewRecs[nRow];
@@ -2487,6 +2491,7 @@ void ctedit::on_cmdImport_clicked()
                         }
                         fRes = ctable2Grid();
                     }
+                    m_isCtModified = true;
                 }
             }
         }
@@ -4502,7 +4507,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_LV].ser0_Enabled = true;
     lstTargets[TPAC1007_LV].ser1_Enabled = false;
     lstTargets[TPAC1007_LV].ser2_Enabled = false;
-    lstTargets[TPAC1007_LV].ser3_Enabled = false;
+    lstTargets[TPAC1007_LV].ser3_Enabled = true;
     lstTargets[TPAC1007_LV].can1_Enabled = false;
     // 14 TPAC1008_01
     lstTargets[TPAC1008_01].modelName =  QString::fromAscii(product_name[TPAC1008_01]);
