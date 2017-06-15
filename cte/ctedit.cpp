@@ -4638,10 +4638,10 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].analogOUTrowCT = -1;
     lstTargets[TPLC100_01_AA].tAmbient = true;
     lstTargets[TPLC100_01_AA].rpmPorts = 0;
-    lstTargets[TPLC100_01_AA].ser0_Enabled = true;
-    lstTargets[TPLC100_01_AA].ser1_Enabled = true;
-    lstTargets[TPLC100_01_AA].ser2_Enabled = true;
-    lstTargets[TPLC100_01_AA].ser3_Enabled = true;
+    lstTargets[TPLC100_01_AA].ser0_Enabled = false;
+    lstTargets[TPLC100_01_AA].ser1_Enabled = false;
+    lstTargets[TPLC100_01_AA].ser2_Enabled = false;
+    lstTargets[TPLC100_01_AA].ser3_Enabled = false;
     lstTargets[TPLC100_01_AA].can1_Enabled = true;
     // 21 TPLC100_01_AB
     lstTargets[TPLC100_01_AB].modelName =  QString::fromAscii(product_name[TPLC100_01_AB]);
@@ -4658,32 +4658,30 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].analogOUTrowCT = -1;
     lstTargets[TPLC100_01_AB].tAmbient = true;
     lstTargets[TPLC100_01_AB].rpmPorts = 0;
-    lstTargets[TPLC100_01_AB].ser0_Enabled = true;
-    lstTargets[TPLC100_01_AB].ser1_Enabled = true;
-    lstTargets[TPLC100_01_AB].ser2_Enabled = true;
+    lstTargets[TPLC100_01_AB].ser0_Enabled = false;     // Possibile in futuro
+    lstTargets[TPLC100_01_AB].ser1_Enabled = false;
+    lstTargets[TPLC100_01_AB].ser2_Enabled = false;
     lstTargets[TPLC100_01_AB].ser3_Enabled = true;
-    lstTargets[TPLC100_01_AB].can1_Enabled = true;
-    // 22 TPLC150
-    lstTargets[TPLC150].modelName =  QString::fromAscii(product_name[TPLC150]);
-    lstTargets[TPLC150].displayWidth =  -1;
-    lstTargets[TPLC150].displayHeight = -1;
-    lstTargets[TPLC150].usbPorts = 2;
-    lstTargets[TPLC150].ethPorts = 2;
-    lstTargets[TPLC150].sdCards = 0;
-    lstTargets[TPLC150].digitalIN = 12;
-    lstTargets[TPLC150].digitalOUT = 10;
-    lstTargets[TPLC150].nEncoders = 1;
-    lstTargets[TPLC150].analogIN = 12;
-    lstTargets[TPLC150].analogINrowCT = -1;
-    lstTargets[TPLC150].analogOUT = 4;
-    lstTargets[TPLC150].analogOUTrowCT = -1;
-    lstTargets[TPLC150].tAmbient = true;
-    lstTargets[TPLC150].rpmPorts = 1;
-    lstTargets[TPLC150].ser0_Enabled = true;
-    lstTargets[TPLC150].ser1_Enabled = true;
-    lstTargets[TPLC150].ser2_Enabled = true;
-    lstTargets[TPLC150].ser3_Enabled = true;
-    lstTargets[TPLC150].can1_Enabled = true;
+    lstTargets[TPLC100_01_AB].can1_Enabled = false;
+    // 22 TPAC1008_03_AC
+    lstTargets[TPAC1008_03_AC].modelName =  QString::fromAscii(product_name[TPAC1008_03_AC]);
+    lstTargets[TPAC1008_03_AC].displayWidth =  800;
+    lstTargets[TPAC1008_03_AC].displayHeight = 480;
+    lstTargets[TPAC1008_03_AC].sdCards = 0;
+    lstTargets[TPAC1008_03_AC].digitalIN = 8;
+    lstTargets[TPAC1008_03_AC].digitalOUT = 12;
+    lstTargets[TPAC1008_03_AC].nEncoders = 1;
+    lstTargets[TPAC1008_03_AC].analogIN = 4;
+    lstTargets[TPAC1008_03_AC].analogINrowCT = 5325;
+    lstTargets[TPAC1008_03_AC].analogOUT = 2;
+    lstTargets[TPAC1008_03_AC].analogOUTrowCT = 5347;
+    lstTargets[TPAC1008_03_AC].tAmbient = true;
+    lstTargets[TPAC1008_03_AC].rpmPorts = 1;
+    lstTargets[TPAC1008_03_AC].ser0_Enabled = true;         // Internal Port
+    lstTargets[TPAC1008_03_AC].ser1_Enabled = false;
+    lstTargets[TPAC1008_03_AC].ser2_Enabled = false;
+    lstTargets[TPAC1008_03_AC].ser3_Enabled = true;
+    lstTargets[TPAC1008_03_AC].can1_Enabled = true;
 }
 int ctedit::searchModelInList(QString szModel)
 // Ricerca il modello corrente nella Lista modelli attuale.
