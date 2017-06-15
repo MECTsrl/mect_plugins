@@ -1,0 +1,40 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Reset degli allarmi</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Reset degli allarmi</h3>
+		<p class="western">Gli allarmi vengono gestiti dall&rsquo;utente secondo quanto descritto nel capitolo &ldquo;<font color="#0000ff"><u><a class="western" href="Funzionamento_allarmi.html">Funzionamento allarmi</a></u></font>&rdquo;</p>
+		<p class="western">Inserendo il seguente codice all&rsquo;interno della funzione &ldquo; <font color="#808000">void</font> loop(<font color="#808000">void</font>)&rdquo; della pagina &ldquo;automation.cpp&rdquo; &egrave; possibile resettare gli allarmi tramite un ATCMbutton oppure direttamente dal codice plc.</p>
+		<pre class="western">
+		<font color="#808000">if</font> (Reset_alarms){
+        pthread_mutex_lock(&alarmevents_list_mutex);
+        {
+            <font color="#808000">for</font> (<font color="#808000">int</font> i = 0; i < _active_alarms_events_.count(); i++)
+            {
+                <font color="#808000">if</font> (! _active_alarms_events_.at(i)->isack)
+                {
+                    _active_alarms_events_.at(i)->ack = QDateTime::currentDateTime();
+                    _active_alarms_events_.at(i)->isack = <font color="#808000">true</font>;
+                }
+            }
+        }
+        pthread_mutex_unlock(&alarmevents_list_mutex);
+        doWrite_Reset_alarms(<font color="#808000">false</font>);
+    }</pre>
+		
+		<p class="western"><strong>ATTENZIONE:</strong> la variabile &ldquo;Reset_alarms&rdquo; &egrave; una variabile della &ldquo;Crosstable&rdquo; (Type: BIT, Behavior: Read/Write).
+		
+		<br/>
+	</body>
+</html>

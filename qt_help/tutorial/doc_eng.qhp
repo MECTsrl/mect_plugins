@@ -112,7 +112,9 @@
 						<section title="Select the language from the device" ref="Selezione_lingua_eng.html"/>
 						</section>	
 					<section title="Web interface functioning" ref="Interfaccia_web_eng.html"/>	
+					<section title="System password change" ref="Cambio_password_sistema_eng.html"/>
 					<section title="Appendix" ref="Appendice_eng.html">
+						<section title="Alarm reset" ref="Reset_allarmi_eng.html"/>
 						<section title="Backlight setting by HMI function" ref="Backlight_HMI_eng.html"/>
 						<section title="Date/time reading by HMI function" ref="Data_ora_HMI_eng.html"/>
 						<section title="Use of an USB/RS232 converter in HMI" ref="Convertitore_232_eng.html"/>
@@ -158,6 +160,9 @@
         </keywords>
         <files>
 			<file>PWM_eng.html</file>
+			<file>Reset_allarmi_eng.html</file>
+			<file>Cambio_password_sistema_eng.html</file>
+			<file>Cambio_password_sistema_1.png</file>
 			<file>convertire_progetto_2x_1.png</file>
 			<file>Installazione_OpenVPN_eng.html</file>
 			<file>Installazione_OpenVPN_1.png</file>
