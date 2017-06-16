@@ -2456,8 +2456,11 @@ void ctedit::on_cmdImport_clicked()
 {
     QString szSourceFile;
     QString szMsg;
-    QList<CrossTableRecord>  lstNewRecs, lstSourceRecs;
+    QList<CrossTableRecord>  lstNewRecs;
     int     nRow = 0;
+    int     nProtocol = 0;
+    int     nPort = 0;
+    int     nTotal = 0;
     bool    fRes = false;
 
     szSourceFile = QFileDialog::getOpenFileName(this, tr("Import From Crosstable File"), m_szCurrentCTFile, tr("Crosstable File (%1)") .arg(szCT_FILE_NAME));
@@ -2468,12 +2471,22 @@ void ctedit::on_cmdImport_clicked()
                 // Copia di Salvataggio
                 lstUndo.append(lstCTRecords);
                 lstNewRecs.clear();
-                lstSourceRecs.clear();
                 // Caricamento della nuova Cross Table
                 if (loadCTFile(szSourceFile, lstNewRecs, false))  {
                     // Aggiunta alla Cross Table dei record letti dalla nuova CT
                     for (nRow = 0; nRow < MAX_NONRETENTIVE; nRow++)  {
-                        lstSourceRecs.append(lstCTRecords[nRow]);
+                        // Controllo Protocollo / Porta RTU su righe importate
+                        nProtocol = lstNewRecs[nRow].Protocol;
+                        if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
+                            nPort = lstNewRecs[nRow].Port;
+                            nTotal = 0;
+                            if (! isValidPort(nPort, nProtocol))  {
+                                getFirstPortFromProtocol(nProtocol, nPort, nTotal);
+                                if (nTotal > 0)
+                                    lstNewRecs[nRow].Port = nPort;
+                            }
+                        }
+                        // Rimpiazza record in Cross Table
                         lstCTRecords[nRow] = lstNewRecs[nRow];
                     }
                     // Ricarica la lista dei dati CT in Grid
@@ -2486,10 +2499,7 @@ void ctedit::on_cmdImport_clicked()
                         szMsg = tr("Error Loading Crosstable from file:\n%1") .arg(szSourceFile);
                         szMsg.append(tr("\nOriginal Content Reloaded"));
                         warnUser(this, szMectTitle, szMsg);
-                        for (nRow = 0; nRow < lstSourceRecs.count(); nRow++)  {
-                            lstCTRecords[nRow] = lstSourceRecs[nRow];
-                        }
-                        fRes = ctable2Grid();
+                        on_cmdUndo_clicked();
                     }
                     m_isCtModified = true;
                 }
