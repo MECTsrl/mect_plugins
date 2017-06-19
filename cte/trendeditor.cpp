@@ -793,7 +793,7 @@ void TrendEditor::fillTrendsCombo(const QString szTrendsPath)
     // Memorizza posizione del Trend corrente nella Combo
     szCurrentTrend = m_szTrendFile;
     szCurrentTrend = szCurrentTrend.replace(szTrendExt, szEMPTY);
-    nPos = ui->cboTrendName->findText(szCurrentTrend);
+    nPos = ui->cboTrendName->currentIndex();
     // qDebug() << tr("Prev Trend Index: %1") .arg(nPos);
     // caricamento dei nomi files nella combo
     ui->cboTrendName->clear();

@@ -851,8 +851,14 @@
                  <widget class="QLabel" name="lblName">
                   <property name="minimumSize">
                    <size>
-                    <width>168</width>
+                    <width>170</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>170</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1156,8 +1162,14 @@
                  <widget class="QLineEdit" name="txtName">
                   <property name="minimumSize">
                    <size>
-                    <width>168</width>
+                    <width>170</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>170</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
