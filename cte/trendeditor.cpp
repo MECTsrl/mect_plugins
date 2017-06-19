@@ -479,7 +479,7 @@ bool TrendEditor::iface2TrendFile(const QString &szFileTrend)
 
 void TrendEditor::on_cmdLoad_clicked()
 {
-    QString szSourceFile = m_szTrendPath + m_szTrendFile;
+    QString szSourceFile = currentTrendFile();
 
 
     szSourceFile = QFileDialog::getOpenFileName(this, tr("Open Trend File"),
@@ -487,9 +487,11 @@ void TrendEditor::on_cmdLoad_clicked()
     if (! szSourceFile.isEmpty())  {
         QFile fTrend(szSourceFile);
         if (fTrend.exists())  {
+            // Carica il nuovo file
             if (trendFile2Iface(szSourceFile))  {
+                // Aggiorna il nome del File corrente ma non il path
                 QFileInfo infoSource(szSourceFile);
-                m_szTrendFile = infoSource.completeBaseName();
+                m_szTrendFile = infoSource.fileName();
                 fillTrendsCombo(m_szTrendPath);
             }
         }
@@ -502,7 +504,7 @@ void TrendEditor::on_cmdSave_clicked()
 
 void TrendEditor::on_cmdSaveAs_clicked()
 {
-    QString szDestFile = m_szTrendPath + m_szTrendFile;
+    QString szDestFile = currentTrendFile();
 
     // Checking interface Values
     if (! checkFields())
@@ -517,7 +519,7 @@ void TrendEditor::on_cmdSaveAs_clicked()
         // Scrittura nuovi valori
         if (iface2TrendFile(szDestFile))  {
             QFileInfo infoDestination(szDestFile);
-            m_szTrendFile = infoDestination.completeBaseName();
+            m_szTrendFile = infoDestination.fileName();
             fillTrendsCombo(m_szTrendPath);
         }
     }
@@ -751,7 +753,7 @@ void    TrendEditor::iface2MemList(QStringList &lstMemVars)
 }
 void TrendEditor::saveTrend(bool notifUser)
 {
-    QString         szDestFile = m_szTrendPath + m_szTrendFile;
+    QString         szDestFile = currentTrendFile();
 
     QFile fTrend(szDestFile);
     if (fTrend.exists())  {
@@ -789,7 +791,8 @@ void TrendEditor::fillTrendsCombo(const QString szTrendsPath)
     }
 
     // Memorizza posizione del Trend corrente nella Combo
-    szCurrentTrend = m_szTrendFile.replace(szTrendExt, szEMPTY);
+    szCurrentTrend = m_szTrendFile;
+    szCurrentTrend = szCurrentTrend.replace(szTrendExt, szEMPTY);
     nPos = ui->cboTrendName->findText(szCurrentTrend);
     // qDebug() << tr("Prev Trend Index: %1") .arg(nPos);
     // caricamento dei nomi files nella combo
@@ -824,7 +827,7 @@ void TrendEditor::on_cboTrendName_currentIndexChanged(int index)
             }
         }
     }
-    qDebug() << tr("Combo Trend Index: %1") .arg(index);
+    qDebug() << tr("Combo Trend Index: %1 File Trend: %2") .arg(index) .arg(m_szTrendFile);
     // Abilitazione bottone di Save se esiste un Trend corrente
     ui->cmdSave->setEnabled(ui->cboTrendName->currentIndex() >= 0);
 }
