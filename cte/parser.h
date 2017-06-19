@@ -195,7 +195,7 @@ struct  Alarms {
 /******************************************************************************
  ***************************** PROTOTYPES SECTION *****************************
  ******************************************************************************/
-int     LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable);
+int     LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *nRows);
 int     SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable);
 char    *ipaddr2str(uint32_t ipaddr, char *buffer);
 uint32_t str2ipaddr(char *str);

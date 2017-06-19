@@ -351,7 +351,7 @@ static uint16_t tagAddr(char *tag, struct CrossTableRecord *CrossTable)
 }
 
 
-int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
+int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *nRows)
 {
     uint32_t addr, indx;
     int ERR = FALSE;
@@ -401,7 +401,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
         ALCrossTable[addr].ALFilterCount = 0;
         ALCrossTable[addr].comparison = 0;
     }
-
+    *nRows = 0;
     // open file
     fprintf(stderr, "loading '%s' ...\n", crossTableFile);
     xtable = fopen(crossTableFile, "r");
@@ -414,12 +414,13 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
     for (addr = 1; addr <= DimCrossTable; ++ addr) {
         char row[LINESIZE], *p, *r;
 
+        // Situazione di file troncato e nessun carattere letto
         if (fgets(row, LINESIZE, xtable) == NULL) {
             CrossTable[addr].Error = 1;
             // no ERR = TRUE;
             continue;
         }
-
+        *nRows += 1;
         // Enable {0,1,2,3}
         p = strtok_csv(row, ";", &r);
         if (p == NULL) {

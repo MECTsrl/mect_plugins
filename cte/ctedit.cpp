@@ -123,8 +123,8 @@ enum colonne_e
     colRegister,
     colBlock,
     colBlockSize,
-    colComment,
     colBehavior,
+    colComment,
     colSourceVar,
     colCondition,
     colCompare,
@@ -684,6 +684,7 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
 {
     int nRes = 0;
     int nCur = 0;
+    int nTotalRows = 0;
     bool fRes = false;
 
     if (szFileCT.isEmpty())
@@ -695,7 +696,7 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     m_fShowAllRows = true;
     m_nGridRow = -1;
     // Opening File
-    nRes = LoadXTable(szFileCT.toAscii().data(), &CrossTable[0]);
+    nRes = LoadXTable(szFileCT.toAscii().data(), &CrossTable[0], &nTotalRows);
     // Return value is the result of Parsing C structure to C++ Objects.
     // Data in Array starts from element #1, in list from 0...
     if (nRes == 0)  {
@@ -709,7 +710,7 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
             fRes = true;
     }
     else  {
-        m_szMsg = tr("Error Loading CrossTable file: %1") .arg(szFileCT);
+        m_szMsg = tr("Error Loading CrossTable file: %1\n At Row: %2") .arg(szFileCT) .arg(nTotalRows);
         warnUser(this, szMectTitle, m_szMsg);
     }
     this->setCursor(Qt::ArrowCursor);

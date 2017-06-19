@@ -1058,8 +1058,14 @@
                  <widget class="QLabel" name="lblUpdate">
                   <property name="minimumSize">
                    <size>
-                    <width>60</width>
+                    <width>70</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>70</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1213,8 +1219,14 @@
                  <widget class="QComboBox" name="cboUpdate">
                   <property name="minimumSize">
                    <size>
-                    <width>60</width>
+                    <width>70</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>70</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1253,8 +1265,14 @@
                  <widget class="QLabel" name="lblPriority">
                   <property name="minimumSize">
                    <size>
-                    <width>60</width>
+                    <width>70</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>70</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1276,8 +1294,14 @@
                  <widget class="QComboBox" name="cboPriority">
                   <property name="minimumSize">
                    <size>
-                    <width>60</width>
+                    <width>70</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>70</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1293,8 +1317,14 @@
                  <widget class="QLabel" name="lblRow">
                   <property name="minimumSize">
                    <size>
-                    <width>40</width>
+                    <width>70</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>70</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1316,13 +1346,13 @@
                  <widget class="QLineEdit" name="txtRow">
                   <property name="minimumSize">
                    <size>
-                    <width>60</width>
+                    <width>70</width>
                     <height>0</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>80</width>
+                    <width>70</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -1416,6 +1446,58 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
+               <widget class="QLabel" name="lblBehavior">
+                <property name="minimumSize">
+                 <size>
+                  <width>70</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>70</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>8</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Behavior</string>
+                </property>
+                <property name="buddy">
+                 <cstring>cboBehavior</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cboBehavior">
+                <property name="minimumSize">
+                 <size>
+                  <width>148</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="lblComment">
                 <property name="minimumSize">
                  <size>
@@ -1461,40 +1543,6 @@
                 </property>
                 <property name="maxLength">
                  <number>128</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="lblBehavior">
-                <property name="font">
-                 <font>
-                  <pointsize>8</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Behavior</string>
-                </property>
-                <property name="buddy">
-                 <cstring>cboBehavior</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="cboBehavior">
-                <property name="minimumSize">
-                 <size>
-                  <width>100</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
                 </property>
                </widget>
               </item>
@@ -1932,12 +1980,12 @@
   <tabstop>txtDecimal</tabstop>
   <tabstop>cboProtocol</tabstop>
   <tabstop>txtIP</tabstop>
+  <tabstop>cboPort</tabstop>
   <tabstop>txtPort</tabstop>
   <tabstop>txtNode</tabstop>
   <tabstop>txtRegister</tabstop>
   <tabstop>txtBlock</tabstop>
   <tabstop>txtBlockSize</tabstop>
-  <tabstop>txtComment</tabstop>
   <tabstop>cboBehavior</tabstop>
   <tabstop>cboVariable1</tabstop>
   <tabstop>cboCondition</tabstop>
@@ -1945,7 +1993,9 @@
   <tabstop>optVariableVal</tabstop>
   <tabstop>txtFixedValue</tabstop>
   <tabstop>cboVariable2</tabstop>
+  <tabstop>txtComment</tabstop>
   <tabstop>tblCT</tabstop>
+  <tabstop>cmdBlocchi</tabstop>
  </tabstops>
  <resources>
   <include location="qtc.qrc"/>
