@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QStyleOption>
 #include <QMessageBox>
+#include <QString>
 
 #include "atcmbutton.h"
 #include "common.h"
@@ -516,7 +517,7 @@ void ATCMbutton::updateData()
             sprintf_fromValue(svalue, m_CtPasswordVarIndex, ivalue, decimal, 10);
 
             // only password status, no: m_status = DONE;
-            m_passwordValue = svalue;
+            m_passwordValue = QString(svalue).trimmed();
           } break;
         case ERROR:
         default:
@@ -722,7 +723,7 @@ bool ATCMbutton::checkPassword()
         if (dk->exec() == QDialog::Accepted)
         {
             //LOG_PRINT(verbose_e, "Password '%s' vs '%d'\n", m_passwordValue.toAscii().data(), value);
-            if (m_passwordValue.compare(QString("%1").arg(value)) != 0)
+            if (m_passwordValue != QString::number(value))
             {
                 QMessageBox::critical(this, trUtf8("Invalid Password"), trUtf8("The inserted password is wrong!!!"));
                 retval = false;
@@ -864,7 +865,7 @@ bool ATCMbutton::setPasswordVar(QString password)
     {
         m_CtPasswordVarIndex = 0;
         m_passwordValue = tPassword;
-        m_passwordVar = tPassword;
+        m_passwordVar.clear;
         return true;
     }
     else
