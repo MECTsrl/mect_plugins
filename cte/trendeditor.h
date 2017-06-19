@@ -22,7 +22,8 @@ class TrendEditor : public QWidget
 public:
     explicit TrendEditor(QWidget *parent = 0);
     ~TrendEditor();
-    void    setTrendsParameters(const QString szModel, const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile);
+    void    setTrendsParameters(const QString szModel, const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile); // Force Model to new received model and enable Save - Save As
+    void    fillTrendsCombo(const QString szTrendsPath);                        // Refresh combo of trend files
     bool    isModified();
     QString currentTrendFile();
     void    saveTrend(bool notifUser = false);
@@ -41,6 +42,8 @@ private slots:
     void on_cmdLoad_clicked();
     void on_cmdSave_clicked();
     void on_cmdSaveAs_clicked();
+
+    void on_cboTrendName_currentIndexChanged(int index);
 
 private:
     //---------------------------------------------------------------------

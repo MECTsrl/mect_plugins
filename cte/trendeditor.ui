@@ -58,14 +58,17 @@
          <string>Trend Name:</string>
         </property>
         <property name="buddy">
-         <cstring>txtTrendName</cstring>
+         <cstring>cboTrendName</cstring>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="txtTrendName">
-        <property name="enabled">
-         <bool>false</bool>
+       <widget class="QComboBox" name="cboTrendName">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
@@ -83,12 +86,7 @@
          <font>
           <family>MS Shell Dlg 2</family>
           <pointsize>9</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
          </font>
-        </property>
-        <property name="maxLength">
-         <number>128</number>
         </property>
        </widget>
       </item>
@@ -1607,7 +1605,7 @@
   <tabstop>txtMin_4</tabstop>
   <tabstop>txtMax_4</tabstop>
   <tabstop>txtComment_4</tabstop>
-  <tabstop>txtTrendName</tabstop>
+  <tabstop>cboTrendName</tabstop>
   <tabstop>cboOrientation</tabstop>
   <tabstop>cmdLoad</tabstop>
   <tabstop>cmdSave</tabstop>

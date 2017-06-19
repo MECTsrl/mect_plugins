@@ -376,6 +376,7 @@ bool TrendEditor::trendFile2Iface(const QString &szFileTrend)
     int             nRow = 1;
 
     if (fSource.exists())  {
+        qDebug() << tr("Loading Trend: %1") .arg(szFileTrend);
         fSource.open(QIODevice::ReadOnly | QIODevice::Text);
         if (fSource.isOpen())  {
             lstSourceRows.clear();
@@ -418,6 +419,9 @@ bool TrendEditor::trendFile2Iface(const QString &szFileTrend)
             // Close File
             fSource.close();
         }
+    }
+    else {
+        qDebug() << tr("Error Loading Trend: %1") .arg(szFileTrend);
     }
     // Return value
     return fRes;
@@ -485,8 +489,8 @@ void TrendEditor::on_cmdLoad_clicked()
         if (fTrend.exists())  {
             if (trendFile2Iface(szSourceFile))  {
                 QFileInfo infoSource(szSourceFile);
-                m_szTrendFile = infoSource.fileName();
-                ui->txtTrendName->setText(infoSource.completeBaseName());
+                m_szTrendFile = infoSource.completeBaseName();
+                fillTrendsCombo(m_szTrendPath);
             }
         }
     }
@@ -513,16 +517,15 @@ void TrendEditor::on_cmdSaveAs_clicked()
         // Scrittura nuovi valori
         if (iface2TrendFile(szDestFile))  {
             QFileInfo infoDestination(szDestFile);
-            m_szTrendFile = infoDestination.fileName();
-            ui->txtTrendName->setText(infoDestination.completeBaseName());
+            m_szTrendFile = infoDestination.completeBaseName();
+            fillTrendsCombo(m_szTrendPath);
         }
     }
 }
 void TrendEditor::setTrendsParameters(const QString szModel, const QString &szTrendsPath, const QString szNewFile, const QString szTemplateFile)
+// Force Model to new received model and enable Save - Save As
 {
-    QString         szNewTrendFile;
 
-    // Force Model to new received model and enable Save - Save As
     m_szCurrentModel = szModel.trimmed();
     ui->cmdSave->setEnabled(! m_szCurrentModel.isEmpty());
     ui->cmdSaveAs->setEnabled(! m_szCurrentModel.isEmpty());
@@ -531,19 +534,13 @@ void TrendEditor::setTrendsParameters(const QString szModel, const QString &szTr
     m_szTrendPath = szTrendsPath;
     m_szTrendFile = szNewFile;
     m_szTemplateFile = szTemplateFile;
-    szNewTrendFile = m_szTrendPath;
     // If is the received trend file name is empty, set it to default
     if (m_szTrendFile.isEmpty())  {
         m_szTrendFile = szTREND1FILE;
     }
-    // Build full File Name
-    szNewTrendFile.append(m_szTrendFile);
-    QFileInfo fTrend(szNewTrendFile);
-    if (fTrend.exists())  {
-        if (trendFile2Iface(szNewTrendFile))  {
-            ui->txtTrendName->setText(fTrend.completeBaseName());
-        }
-    }
+    // Fills Trends Combo
+    ui->cboTrendName->clear();
+    fillTrendsCombo(m_szTrendPath);
 }
 void TrendEditor::setObjectColor(QLabel *destObject, QColor newColor)
 // Imposta background e foreground di una label con il colore newColor
@@ -669,11 +666,11 @@ bool TrendEditor::updateTemplateFile(const QString &szTrendFile)
                             szLine.append(lstSourceRows[nRow].trimmed());
                         }
                     }
-                    qDebug() << tr("Template before: %1") .arg(szLine);
+                    // qDebug() << tr("Template before: %1") .arg(szLine);
                     if (! szLine.contains(szTrendFile))  {
                         szLine.append(szSpace(1));
                         szLine.append(szTrendFile);
-                        qDebug() << tr("Template after: %1") .arg(szLine);
+                        // qDebug() << tr("Template after: %1") .arg(szLine);
                         fAdded = true;
                     }
                 }
@@ -708,6 +705,7 @@ QString TrendEditor::currentTrendFile()
     return (m_szTrendPath + m_szTrendFile);
 }
 bool TrendEditor::isModified()
+// Compares Interface values with source values in lstSourceRows
 {
     QStringList     lstIfaceRows;
     int             nRow = 0;
@@ -718,12 +716,12 @@ bool TrendEditor::isModified()
     iface2MemList(lstIfaceRows);
     for (nRow = 0; nRow < lstIfaceRows.count(); nRow ++)  {
         if (nRow >= lstSourceRows.count() || lstIfaceRows[nRow] != lstSourceRows[nRow]) {
-            qDebug() << tr("Source: %1 Interface: %2") .arg(lstSourceRows[nRow]) .arg(lstIfaceRows[nRow]);
+            // qDebug() << tr("Source: %1 Interface: %2") .arg(lstSourceRows[nRow]) .arg(lstIfaceRows[nRow]);
             fEqual = false;
             break;
         }
     }
-    qDebug() << tr("Trends Modified (Rows %2):  %1") .arg(!fEqual) .arg(nRow);
+    // qDebug() << tr("Trends Modified (Rows %2):  %1") .arg(!fEqual) .arg(nRow);
     return ! fEqual;
 }
 void    TrendEditor::iface2MemList(QStringList &lstMemVars)
@@ -770,4 +768,63 @@ void TrendEditor::saveTrend(bool notifUser)
             notifyUser(this, szMectTitle, m_szMsg);
         }
     }
+}
+void TrendEditor::fillTrendsCombo(const QString szTrendsPath)
+// Refresh-Refill combo of trend files
+{
+    int             nPos = -1;
+    int             i = 0;
+    bool            oldState = ui->cboTrendName->blockSignals(true);
+    QDir            dirTrends(szTrendsPath);
+    QStringList     lstTrendFilters;
+    QFileInfoList   lstInfoTrendFiles;
+    QString         szCurrentTrend = m_szTrendFile;
+
+    // Preparazione della Lista di file trends presente in directory
+    lstTrendFilters.clear();
+    lstInfoTrendFiles.clear();
+    if (dirTrends.exists())  {
+        lstTrendFilters << szTRENDMASK;
+        lstInfoTrendFiles = dirTrends.entryInfoList(lstTrendFilters, QDir::Files | QDir::NoDotAndDotDot | QDir::Writable, QDir::Name);
+    }
+
+    // Memorizza posizione del Trend corrente nella Combo
+    szCurrentTrend = m_szTrendFile.replace(szTrendExt, szEMPTY);
+    nPos = ui->cboTrendName->findText(szCurrentTrend);
+    // qDebug() << tr("Prev Trend Index: %1") .arg(nPos);
+    // caricamento dei nomi files nella combo
+    ui->cboTrendName->clear();
+    for (i = 0; i < lstInfoTrendFiles.count(); i ++)  {
+        QFileInfo fInfo = lstInfoTrendFiles[i];
+        ui->cboTrendName->addItem(fInfo.completeBaseName());
+    }
+    // Riattiva Segnali Combo
+    ui->cboTrendName->blockSignals(oldState);
+    // Ricerca trend corrente nella combo ed eventualmente riapre il file
+    if (nPos < 0 || nPos != ui->cboTrendName->findText(szCurrentTrend))  {
+        nPos = ui->cboTrendName->findText(szCurrentTrend);
+        // qDebug() << tr("Current Trend Index: %1") .arg(nPos);
+        on_cboTrendName_currentIndexChanged(nPos);
+    }
+
+}
+
+void TrendEditor::on_cboTrendName_currentIndexChanged(int index)
+{
+    QString szSourceFile = m_szTrendPath;
+
+    // Selezionato un nuovo trend
+    if (index >= 0 && index < ui->cboTrendName->count())  {
+        szSourceFile.append(ui->cboTrendName->currentText());
+        szSourceFile.append(szTrendExt);
+        QFile fTrend(szSourceFile);
+        if (fTrend.exists())  {
+            if (trendFile2Iface(szSourceFile))  {
+                m_szTrendFile = ui->cboTrendName->currentText().trimmed() + szTrendExt;
+            }
+        }
+    }
+    qDebug() << tr("Combo Trend Index: %1") .arg(index);
+    // Abilitazione bottone di Save se esiste un Trend corrente
+    ui->cmdSave->setEnabled(ui->cboTrendName->currentIndex() >= 0);
 }

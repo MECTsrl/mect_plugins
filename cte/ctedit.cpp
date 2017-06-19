@@ -567,7 +567,7 @@ ctedit::~ctedit()
 }
 void    ctedit::setProjectPath(QString szProjectPath)
 {
-    QDir projectDir(szProjectPath);
+    QDir        projectDir(szProjectPath);
     QString     szProjectName;
 
     if (projectDir.exists() && ! szProjectPath.isEmpty())  {
@@ -2858,6 +2858,7 @@ void ctedit::tabSelected(int nTab)
     // Aggiornamento della lista di variabili e ripopolamento liste per Trends
     if (nTab == TAB_TREND) {
         trendEdit->updateVarLists(lstLoggedVars);
+        trendEdit->fillTrendsCombo(m_szCurrentCTPath);
     }
     // Ritorno a CT da altro Tab, prudenzialmente aggiorna le info di configurazione
     if (nTab == TAB_CT)  {
