@@ -865,7 +865,7 @@ bool ATCMbutton::setPasswordVar(QString password)
     {
         m_CtPasswordVarIndex = 0;
         m_passwordValue = tPassword;
-        m_passwordVar.clear;
+        m_passwordVar.clear();
         return true;
     }
     else
