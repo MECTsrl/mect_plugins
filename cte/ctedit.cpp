@@ -682,10 +682,11 @@ bool    ctedit::selectCTFile(QString szFileCT)
 bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid)
 // Load the current CT File. If fShowGrid then load data to user Grid
 {
-    int nRes = 0;
-    int nCur = 0;
-    int nTotalRows = 0;
-    bool fRes = false;
+    int     nRes = 0;
+    int     nCur = 0;
+    int     nTotalRows = 0;
+    int     nErr = 0;
+    bool    fRes = false;
 
     if (szFileCT.isEmpty())
         return false;
@@ -699,7 +700,8 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     nRes = LoadXTable(szFileCT.toAscii().data(), &CrossTable[0], &nTotalRows);
     // Return value is the result of Parsing C structure to C++ Objects.
     // Data in Array starts from element #1, in list from 0...
-    if (nRes == 0)  {
+    if (nRes == 0 || nTotalRows == DimCrossTable)  {
+        // Nessun errore oppure errori di secondo livello del Parser
         for (nCur = 1; nCur <= DimCrossTable; nCur++)  {
             lstCtRecs.append(CrossTable[nCur]);
         }
@@ -708,9 +710,16 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
         }
         else
             fRes = true;
+        // Sono presenti errori di secondo livello del Parser, proviamo il check
+        // Controllo errori
+        nErr = globalChecks();
+        if (nErr > 0)  {
+            m_szMsg = tr("Found Errors Loading CrossTable file: %1\n Total Erros: %2") .arg(szFileCT) .arg(nErr);
+            warnUser(this, szMectTitle, m_szMsg);
+        }
     }
     else  {
-        m_szMsg = tr("Error Loading CrossTable file: %1\n At Row: %2") .arg(szFileCT) .arg(nTotalRows);
+        m_szMsg = tr("Error Loading CrossTable file: %1\n At Row: %2\n\nCannot continue") .arg(szFileCT) .arg(nTotalRows);
         warnUser(this, szMectTitle, m_szMsg);
     }
     this->setCursor(Qt::ArrowCursor);
@@ -3373,7 +3382,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     //---------------------------------------
     // Controllo Behavior
     //---------------------------------------
-    szTemp = lstValues[colBehavior];
+    szTemp = lstValues[colBehavior].trimmed();
     nPos = szTemp.isEmpty() ? -1 : lstBehavior.indexOf(szTemp);
     if (nPos < 0 || nPos >= lstBehavior.count())  {
         fillErrorMessage(nRow, colBehavior, errCTNoBehavior, szVarName, szTemp, chSeverityError, &errCt);
@@ -4181,6 +4190,7 @@ bool ctedit::checkCTFile(QString szSourceFile)
         // Controllo nome del file
         if (fileCT.fileName() == szCT_FILE_NAME)  {
             QStringList stringList;
+            QStringList tokenList;
             QFile textFile(szSourceFile);
             textFile.open(QIODevice::ReadOnly);
             QTextStream textStream(&textFile);
@@ -4189,8 +4199,17 @@ bool ctedit::checkCTFile(QString szSourceFile)
                 QString line = textStream.readLine();
                 if (line.isNull())
                     break;
-                else
-                    stringList.append(line);
+                else  {
+                    line = line.trimmed();
+                    if (! line.isEmpty())  {
+                        stringList.append(line);
+                        tokenList.clear();
+                        tokenList = line.split(szSEMICOL, QString::KeepEmptyParts);
+                        qDebug() << tr("CT Columns: %1") .arg(tokenList.count());
+                        if (tokenList.count() != nCTCols)
+                            break;
+                    }
+                }
             }
             textFile.close();
             fRes = (stringList.count() == DimCrossTable);

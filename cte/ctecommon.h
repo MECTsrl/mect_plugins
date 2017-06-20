@@ -3,6 +3,7 @@
 #include <QString>
 
 // Int Constants
+const int nCTCols = 13;
 const int nMax_Int16 = 65535;
 const int nMaxNodeID = 63;
 const int nMaxRegister = 49999;
