@@ -610,6 +610,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
     QString     szFile;
     bool        fRes = false;
     int         nModel = AnyTPAC;
+    int         nErr = 0;
 
     if (fileExists(szFileCT)) {
         szFile = szFileCT;
@@ -647,7 +648,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         // Abilitazione dei protocolli in funzione del Modello
         if (! m_szCurrentModel.isEmpty())  {
             // nModel = lstProductNames.indexOf(m_szCurrentModel);
-            qDebug() << tr("Model in List: %1") .arg(nModel);
+            // qDebug() << tr("Model in List: %1") .arg(nModel);
             nModel = searchModelInList(m_szCurrentModel);
             qDebug() << tr("Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
             ui->lblModel->setStyleSheet(QString::fromAscii("background-color: LightCyan"));
@@ -661,7 +662,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         // Se il modello non è stato trovato in template.pri vale comunque AnyTPAC ma il salvataggio è disabilitato
         m_isCtModified = false;
         m_fCutOrPaste = false;
-        // Se tutto Ok, carica anche le impostazioni del file INI
+        // Carica anche le impostazioni del file INI
         mectSet->loadProjectFiles(m_szCurrentCTPath + szINIFILE, m_szCurrentProjectPath + szSLASH + m_szCurrentProjectName, m_szCurrentProjectPath + szSLASH, TargetConfig);
         // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
         mectSet->getTargetConfig(TargetConfig);
@@ -676,16 +677,22 @@ bool    ctedit::selectCTFile(QString szFileCT)
         trendEdit->setTrendsParameters(m_szCurrentModel, m_szCurrentCTPath, szEMPTY, szFileTemplate);
         // Abilita interfaccia
         enableInterface();
+        // Controllo errori globali su Cross Table
+        nErr = globalChecks();
+        qDebug() << tr("Load Errors: <%1>") .arg(nErr);
+        if (nErr > 0)  {
+            m_szMsg = tr("Found Errors Loading CrossTable file: %1\n Total Erros: %2") .arg(szFileCT) .arg(nErr);
+            warnUser(this, szMectTitle, m_szMsg);
+        }
     }
     return fRes;
 }
 bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid)
-// Load the current CT File. If fShowGrid then load data to user Grid
+// Load the current CT File. If fLoadGrid then load data to user Grid
 {
     int     nRes = 0;
     int     nCur = 0;
     int     nTotalRows = 0;
-    int     nErr = 0;
     bool    fRes = false;
 
     if (szFileCT.isEmpty())
@@ -700,23 +707,19 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     nRes = LoadXTable(szFileCT.toAscii().data(), &CrossTable[0], &nTotalRows);
     // Return value is the result of Parsing C structure to C++ Objects.
     // Data in Array starts from element #1, in list from 0...
+    // The Loading is Ok if nRes == 0 or there are enough rows of CT format
+    // Former checking will follow
     if (nRes == 0 || nTotalRows == DimCrossTable)  {
         // Nessun errore oppure errori di secondo livello del Parser
         for (nCur = 1; nCur <= DimCrossTable; nCur++)  {
             lstCtRecs.append(CrossTable[nCur]);
         }
+        // Load new records in Interface Grid
         if (fLoadGrid)  {
             fRes = ctable2Grid();
         }
         else
             fRes = true;
-        // Sono presenti errori di secondo livello del Parser, proviamo il check
-        // Controllo errori
-        nErr = globalChecks();
-        if (nErr > 0)  {
-            m_szMsg = tr("Found Errors Loading CrossTable file: %1\n Total Erros: %2") .arg(szFileCT) .arg(nErr);
-            warnUser(this, szMectTitle, m_szMsg);
-        }
     }
     else  {
         m_szMsg = tr("Error Loading CrossTable file: %1\n At Row: %2\n\nCannot continue") .arg(szFileCT) .arg(nTotalRows);
@@ -2481,7 +2484,7 @@ void ctedit::on_cmdImport_clicked()
                 // Copia di Salvataggio
                 lstUndo.append(lstCTRecords);
                 lstNewRecs.clear();
-                // Caricamento della nuova Cross Table
+                // Caricamento della nuova Cross Table (a questo livello non vengono fatti checks sulle righe caricate)
                 if (loadCTFile(szSourceFile, lstNewRecs, false))  {
                     // Aggiunta alla Cross Table dei record letti dalla nuova CT
                     for (nRow = 0; nRow < MAX_NONRETENTIVE; nRow++)  {
