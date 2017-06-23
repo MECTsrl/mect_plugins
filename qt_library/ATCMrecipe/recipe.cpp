@@ -167,6 +167,7 @@ void recipe::updateData()
         ui->labelStatus->clear();
         ui->labelStatus->repaint();
         // Clear Table
+        ui->tableWidget->setVisible(false);
         ui->tableWidget->setEnabled(false);
         ui->tableWidget->clearSelection();
         ui->tableWidget->setRowCount(0);
@@ -570,10 +571,13 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
             // ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
         }
     }
+
     // Selection mode of items and First Column width
     ui->tableWidget->setColumnWidth(0,230);
     ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->setVisible(true);
+    ui->tableWidget->setEnabled(true);
     ui->progressBarStatus->setVisible(false);
 
     return true;
