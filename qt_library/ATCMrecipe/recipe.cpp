@@ -292,12 +292,17 @@ void recipe::on_pushButtonSave_clicked()
             LOG_PRINT(error_e, "opened '%s'\n", fullfilename);
             for (int row = 0; row < varNbMax; row++)
             {
-                for (int col = 0; col < stepNbMax; col++)
+                // name
+                if (ui->tableWidget->item(row, 0) != NULL) {
+                    fprintf(fp, "%s; ", ui->tableWidget->item(row, 0)->text().toAscii().data());
+                }
+                // values
+                for (int col = 1; col < 1+stepNbMax; col++)
                 {
-                    if (ui->tableWidget->item(row,col) != NULL)
+                    if (ui->tableWidget->item(row, col) != NULL)
                     {
                         fprintf(fp, "%s ", ui->tableWidget->item(row,col)->text().toAscii().data());
-                        if (col < stepNbMax - 1)
+                        if (col < stepNbMax)
                         {
                             fprintf(fp, ";");
                         }
@@ -447,10 +452,14 @@ void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
         else
         {
             char token[LINE_SIZE]="";
-            int decimal = getVarDecimalByCtIndex(testsIndexes[ui->tableWidget->currentRow()]);
+            int ctIndex = testsIndexes[ui->tableWidget->currentRow()];
+            int decimal = getVarDecimalByCtIndex(ctIndex);
+            int ivalue;
             sprintf(token, "%.*f",decimal,value);
+            ivalue = intFormattedVarByCtIndex(ctIndex, token);
+            testsTable[ui->tableWidget->currentColumn() - 1][ui->tableWidget->currentRow()] = ivalue;
+            sprintf_fromValue(token, ctIndex, ivalue, decimal, 10);
             item->setText(token);
-            testsTable[ui->tableWidget->currentColumn() - 1][ui->tableWidget->currentRow()] = atof(token);
         }
     }
     delete dk;

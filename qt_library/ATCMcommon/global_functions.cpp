@@ -217,8 +217,32 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
         int16_t val_int16;
 
         step = 0;
-        while ((p = strtok_csv(NULL, SEPARATOR, &r)) != NULL)
+        for (step = 0; step < MAX_RCP_STEP; ++step)
         {
+            p = strtok_csv(NULL, SEPARATOR, &r);
+            if (p == NULL)
+            {
+                // fine riga
+                if (step < step_max) {
+                    // mancano valori
+                    LOG_PRINT(error_e, "Missing columns (only %d vs %d) at line %d\n", step, step_max, line_nb);
+                    value = 0;
+                    while (step < step_max) {
+                        (table[step]) << value;
+                        ++step;
+                    }
+                }
+                break;
+            }
+            if (line_nb == 0) {
+                // contiamo
+                step_max = step + 1;
+            } else if (line_nb > 0 && step >= step_max) {
+                // colonne superflue
+                LOG_PRINT(error_e, "Too many columns %d at line %d\n", step, line_nb);
+                break;
+            }
+
             value = 0;
             // compute value
             switch (varNameArray[ctIndex].type)
@@ -276,12 +300,9 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
                 /* unknown type */
                 value = 0;
             }
-            // assign value
+
+            // assign step value
             (table[step]) << value;
-            step++;
-        }
-        if (step > step_max) {
-            step_max = step;
         }
     }
 

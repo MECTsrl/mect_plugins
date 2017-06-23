@@ -1724,6 +1724,11 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
     return 0;
 }
 
+int intFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
+{
+    return theValue_string(ctIndex, formattedVar);
+}
+
 int doWrite(int ctIndex, void * valuep)
 {
     writeVarInQueueByCtIndex(ctIndex, theValue(ctIndex, valuep));

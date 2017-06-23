@@ -627,7 +627,6 @@ void ATCMlabel::writeAction()
         {
             int value  = 0, min = 0, max = 1;
             dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
-            dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
             dk->showFullScreen();
 
             if (dk->exec() == QDialog::Accepted)
