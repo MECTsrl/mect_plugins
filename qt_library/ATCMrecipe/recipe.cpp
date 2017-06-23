@@ -83,7 +83,7 @@ recipe::recipe(QWidget *parent) :
     ui->tableWidget->setSelectionMode(QAbstractItemView::NoSelection);
     connect(ui->tableWidget->horizontalHeader(),SIGNAL(sectionClicked(int)), this,SLOT(horizontalHeaderClicked(int)));
 
-    ui->tableWidget->setColumnWidth(0,230);
+    // ui->tableWidget->setColumnWidth(0,230);
 
     _familyName[0] = '\0';
     _recipeName[0] = '\0';
@@ -93,8 +93,8 @@ recipe::recipe(QWidget *parent) :
 
 void recipe::horizontalHeaderClicked(int column)
 {
-     // column #0 is names, last is #(1+stepNbMax-1)
-    if (column <= 0 || column > stepNbMax) {
+     // [NO MORE!!] column #0 is names, last is #(1+stepNbMax-1)
+    if (column < 0 || column >= stepNbMax) {
         return;
     }
 
@@ -222,7 +222,7 @@ void recipe::on_pushButtonBack_clicked()
 
 void recipe::on_pushButtonRead_clicked()
 {
-    if (ui->tableWidget->currentColumn() < 1)
+    if (ui->tableWidget->currentColumn() < 0)
     {
         QMessageBox::information(this,trUtf8("No step selected"), trUtf8("No step selected.\nPlease select a column to load from the panel"));
         return;
@@ -233,12 +233,12 @@ void recipe::on_pushButtonRead_clicked()
     ui->labelStatus->setText(trUtf8("Reading"));
     ui->labelStatus->repaint();
 
-    int stepIndex = ui->tableWidget->currentColumn() - 1;
+    int stepIndex = ui->tableWidget->currentColumn();
     readRecipe(stepIndex, &testsIndexes, testsTable);
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
         int decimal = getVarDecimalByCtIndex(testsIndexes[varIndex]);
-        ui->tableWidget->item(varIndex, stepIndex + 1)->setText(QString::number(testsTable[stepIndex][varIndex] / pow(10,decimal), 'f', decimal));
+        ui->tableWidget->item(varIndex, stepIndex)->setText(QString::number(testsTable[stepIndex][varIndex] / pow(10,decimal), 'f', decimal));
     }
 
     ui->pushButtonLoad->setEnabled(true);
@@ -256,7 +256,7 @@ void recipe::on_pushButtonRead_clicked()
 
 void recipe::on_pushButtonLoad_clicked()
 {
-    if (ui->tableWidget->currentColumn() < 1)
+    if (ui->tableWidget->currentColumn() < 0)
     {
         QMessageBox::information(this,trUtf8("No step selected"), trUtf8("No step selected.\nPlease select a column to load into the panel"));
         return;
@@ -266,7 +266,7 @@ void recipe::on_pushButtonLoad_clicked()
     ui->pushButtonSave->setEnabled(false);
     ui->labelStatus->setText(trUtf8("Writing"));
     ui->labelStatus->repaint();
-    writeRecipe(ui->tableWidget->currentColumn() - 1, &testsIndexes, testsTable);
+    writeRecipe(ui->tableWidget->currentColumn(), &testsIndexes, testsTable);
     ui->pushButtonLoad->setEnabled(true);
     ui->pushButtonRead->setEnabled(true);
     ui->pushButtonSave->setEnabled(true);
@@ -282,6 +282,7 @@ void recipe::on_pushButtonLoad_clicked()
 void recipe::on_pushButtonSave_clicked()
 {
     /* Edit the selected item */
+    QTableWidgetItem    *tItem;
     char fullfilename[FILENAME_MAX];
     FILE * fp;
     char value[DESCR_LEN];
@@ -304,16 +305,17 @@ void recipe::on_pushButtonSave_clicked()
             for (int row = 0; row < varNbMax; row++)
             {
                 // name
-                if (ui->tableWidget->item(row, 0) != NULL) {
-                    fprintf(fp, "%s; ", ui->tableWidget->item(row, 0)->text().toAscii().data());
+                tItem = ui->tableWidget->verticalHeaderItem(row);
+                if (tItem != NULL) {
+                    fprintf(fp, "%s; ", tItem->text().toAscii().data());
                 }
                 // values
-                for (int col = 1; col < 1+stepNbMax; col++)
+                for (int col = 0; col < stepNbMax; col++)
                 {
                     if (ui->tableWidget->item(row, col) != NULL)
                     {
                         fprintf(fp, "%s ", ui->tableWidget->item(row,col)->text().toAscii().data());
-                        if (col < stepNbMax)
+                        if (col < stepNbMax -1)
                         {
                             fprintf(fp, ";");
                         }
@@ -444,7 +446,7 @@ void recipe::on_pushButtonRight_clicked()
 
 void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
 {
-    if (item == NULL || ui->tableWidget->currentColumn() < 1)
+    if (item == NULL || ui->tableWidget->currentColumn() < 0)
     {
         return;
     }
@@ -468,7 +470,7 @@ void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
             int ivalue;
             sprintf(token, "%.*f",decimal,value);
             ivalue = intFormattedVarByCtIndex(ctIndex, token);
-            testsTable[ui->tableWidget->currentColumn() - 1][ui->tableWidget->currentRow()] = ivalue;
+            testsTable[ui->tableWidget->currentColumn()][ui->tableWidget->currentRow()] = ivalue;
             sprintf_fromValue(token, ctIndex, ivalue, decimal, 10);
             item->setText(token);
         }
@@ -520,6 +522,7 @@ bool recipe::getFamilyRecipe(const char * filename, char * familyName, char * re
 
 bool recipe::showRecipe(const char * familyName, const char * recipeName)
 {
+    QStringList         lstRowNames;
 #ifdef ENABLE_DESCR
     ui->labelStatus->setText(QString("%1/%2").arg(familyName).arg(recipeName));
 #endif
@@ -527,17 +530,18 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
     /* reset the current colum/row */
     current_row = 0;
     current_column = 0;
+    lstRowNames.clear();
 
     // Reset colum / row counters in Table
     ui->tableWidget->setRowCount(varNbMax);
-    ui->tableWidget->setColumnCount(stepNbMax + 1);
+    ui->tableWidget->setColumnCount(stepNbMax);
     /* first row */
-    ui->tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("Tag"));
+    // ui->tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("Tag"));
 
     for (int stepIndex = 0; stepIndex < stepNbMax; stepIndex++)
     {
         ui->tableWidget->setHorizontalHeaderItem(stepIndex + 1,
-                                                 new QTableWidgetItem(QString::number(stepIndex + 1))
+                                                 new QTableWidgetItem(QString::number(stepIndex))
                                                  );
     }
     ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
@@ -553,7 +557,9 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
         int decimal = getVarDecimalByCtIndex(ctIndex);
 
         ui->progressBarStatus->setValue(varIndex);
-        ui->tableWidget->setItem(varIndex, 0, new QTableWidgetItem(QString(varNameArray[ctIndex].tag)));
+
+        lstRowNames.append(QString(varNameArray[ctIndex].tag));
+        // ui->tableWidget->setItem(varIndex, 0, new QTableWidgetItem(QString(varNameArray[ctIndex].tag)));
 
         for (int stepIndex = 0; stepIndex < stepNbMax; stepIndex++)
         {
@@ -561,19 +567,20 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
 
             sprintf_fromValue(buf, ctIndex, value, decimal, 10);
             // Get Item from cell or allocate a new one
-            tItem = ui->tableWidget->item(varIndex, stepIndex + 1);
+            tItem = ui->tableWidget->item(varIndex, stepIndex);
             if (tItem == 0)
                 tItem = new QTableWidgetItem(QString(buf));
             else
                 tItem->setText(QString(buf));
             // Set Item in cell
-            ui->tableWidget->setItem(varIndex, stepIndex + 1, tItem);
+            ui->tableWidget->setItem(varIndex, stepIndex, tItem);
             // ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
         }
     }
 
     // Selection mode of items and First Column width
-    ui->tableWidget->setColumnWidth(0,230);
+    //ui->tableWidget->setColumnWidth(0,230);
+    ui->tableWidget->setVerticalHeaderLabels(lstRowNames);
     ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget->resizeColumnsToContents();
     ui->tableWidget->setVisible(true);
