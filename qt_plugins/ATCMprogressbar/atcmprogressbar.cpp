@@ -210,14 +210,14 @@ bool ATCMprogressbar::setVariable(QString variable)
     }
     else
     {
-        QObject *ancestor = getPage((QObject *)this);
-
-        if (ancestor != NULL) {
-            connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
-        }
         m_status = UNK; // not read yet
         m_value = minimum();
         LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_variable.toAscii().data());
+    }
+    QObject *ancestor = getPage((QObject *)this);
+
+    if (ancestor != NULL) {
+        connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
     }
     setToolTip("");
 #else
@@ -292,10 +292,12 @@ void ATCMprogressbar::updateData()
             if (ivalue && ! this->isVisible()) {
                 this->setVisible(true);
                 m_status = UNK;
+                do_update = true;
             }
             else if (! ivalue && this->isVisible()) {
                 this->setVisible(false);
                 m_status = UNK;
+                do_update = true; // useless
             }
             break;
         case ERROR:
