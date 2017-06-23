@@ -8,6 +8,8 @@
  * @brief Main page
  */
 #include <QTableWidget>
+#include <QTableWidgetItem>
+
 #include <QFileInfo>
 #include <QMessageBox>
 #include <unistd.h>
@@ -159,11 +161,19 @@ void recipe::updateData()
     else if (state == 2)
     {
         state = 0;
-        /* clear the table */
+        /* clear the table
         ui->tableWidget->clear();
-        ui->tableWidget->update();
+        ui->tableWidget->update(); */
         ui->labelStatus->clear();
         ui->labelStatus->repaint();
+        // Clear Table
+        ui->tableWidget->setEnabled(false);
+        ui->tableWidget->clearSelection();
+        ui->tableWidget->setRowCount(0);
+        ui->tableWidget->setColumnCount(0);
+        ui->tableWidget->clearContents();
+        ui->tableWidget->clear();
+
         state = 3;
     }
     else  if (state == 3)
@@ -517,6 +527,9 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
     current_row = 0;
     current_column = 0;
 
+    // Reset colum / row counters in Table
+    ui->tableWidget->setRowCount(varNbMax);
+    ui->tableWidget->setColumnCount(stepNbMax + 1);
     /* first row */
     ui->tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("Tag"));
 
@@ -530,6 +543,7 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
 
     /* variable rows */
     char buf[42];
+    QTableWidgetItem    *tItem;
 
     ui->progressBarStatus->setMaximum(varNbMax);
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
@@ -545,10 +559,19 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
             int value = testsTable[stepIndex].at(varIndex);
 
             sprintf_fromValue(buf, ctIndex, value, decimal, 10);
-            ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
+            // Get Item from cell or allocate a new one
+            tItem = ui->tableWidget->item(varIndex, stepIndex + 1);
+            if (tItem == 0)
+                tItem = new QTableWidgetItem(QString(buf));
+            else
+                tItem->setText(QString(buf));
+            // Set Item in cell
+            ui->tableWidget->setItem(varIndex, stepIndex + 1, tItem);
+            // ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
         }
     }
-
+    // Selection mode of items and First Column width
+    ui->tableWidget->setColumnWidth(0,230);
     ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget->resizeColumnsToContents();
     ui->progressBarStatus->setVisible(false);
