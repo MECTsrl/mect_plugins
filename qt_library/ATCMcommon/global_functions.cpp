@@ -319,26 +319,22 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     {
         return -1;
     }
-    pthread_mutex_lock(&datasync_recv_mutex);
+    for (int i = 0; i < table[step].count(); i++)
     {
-        for (int i = 0; i < table[step].count(); i++)
+        int ivalue = 0;
+        int ctIndex = (int)(indexes->at(i));
+        switch (readFromDbQuick(ctIndex, &ivalue))
         {
-            int ivalue = 0;
-            int ctIndex = (int)(indexes->at(i));
-            switch (readFromDbQuick(ctIndex, &ivalue))
-            {
-            case DONE:
-            case BUSY:
-                table[step].replace(i, ivalue);
-                break;
-            case ERROR:
-            default:
-                LOG_PRINT(error_e, "Error reading recipe step #%d for '%s'\n", step, varNameArray[ctIndex].tag);
-                errors++;
-            }
+        case DONE:
+        case BUSY:
+            table[step].replace(i, ivalue);
+            break;
+        case ERROR:
+        default:
+            LOG_PRINT(error_e, "Error reading recipe step #%d for '%s'\n", step, varNameArray[ctIndex].tag);
+            errors++;
         }
     }
-    pthread_mutex_unlock(&datasync_recv_mutex);
     return errors;
 }
 
