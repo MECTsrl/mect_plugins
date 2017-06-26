@@ -323,19 +323,17 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     {
         for (int i = 0; i < table[step].count(); i++)
         {
-            uint32_t valueu = 0;
+            int ivalue = 0;
             int ctIndex = (int)(indexes->at(i));
-            readFromDb(ctIndex, &valueu);
-
-            switch (pIODataStatusAreaI[ctIndex])
+            switch (readFromDbQuick(ctIndex, &ivalue))
             {
             case DONE:
             case BUSY:
-                table[step][i] = valueu;
+                table[step].at(i) = ivalue;
                 break;
             case ERROR:
             default:
-                LOG_PRINT(error_e, "Error reading (%d) '%s'\n", i, varNameArray[ctIndex].tag);
+                LOG_PRINT(error_e, "Error reading recipe step #%d for '%s'\n", step, varNameArray[ctIndex].tag);
                 errors++;
             }
         }

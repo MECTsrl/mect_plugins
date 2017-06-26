@@ -234,7 +234,9 @@ void recipe::on_pushButtonRead_clicked()
     ui->labelStatus->repaint();
 
     int stepIndex = ui->tableWidget->currentColumn();
-    readRecipe(stepIndex, &testsIndexes, testsTable);
+    if (readRecipe(stepIndex, &testsIndexes, testsTable))  {
+        QMessageBox::warning(this,trUtf8("Recipe Values"), trUtf8("Error reading Recipe!\nPlease check all Values"));
+    }
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
         int ivalue = testsTable[stepIndex].at(varIndex);
@@ -243,7 +245,6 @@ void recipe::on_pushButtonRead_clicked()
         sprintf_fromValue(svalue, varIndex, ivalue, decimal, 10);
         ui->tableWidget->item(varIndex, stepIndex)->setText(QString(svalue));
     }
-
     ui->pushButtonLoad->setEnabled(true);
     ui->pushButtonRead->setEnabled(true);
     ui->pushButtonSave->setEnabled(true);
