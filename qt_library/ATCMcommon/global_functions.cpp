@@ -228,7 +228,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
                     LOG_PRINT(error_e, "Missing columns (only %d vs %d) at line %d\n", step, step_max, line_nb);
                     value = 0;
                     while (step < step_max) {
-                        (table[step]) << value;
+                        table[step].append(value);
                         ++step;
                     }
                 }
@@ -302,7 +302,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
             }
 
             // assign step value
-            (table[step]) << value;
+            table[step].append(value);
         }
     }
 
@@ -329,7 +329,7 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
             {
             case DONE:
             case BUSY:
-                table[step].at(i) = ivalue;
+                table[step].replace(i, ivalue);
                 break;
             case ERROR:
             default:
