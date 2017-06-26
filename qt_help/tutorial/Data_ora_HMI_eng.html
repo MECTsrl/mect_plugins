@@ -28,13 +28,19 @@
 	<p class="western">Inside:</p>
 	<p class="western"> <font color="#808000">void</font> loop (<font color="#808000">void</font>)</p>
 	<p class="western">insert:</p>
-	<p class="western"><strong>doWrite_giorno(QDate::currentDate().day());</strong></p>
-	<p class="western"><strong>doWrite_minuti(QTime::currentTime().minute());</strong></p>
+	<pre class="western">
+	<font color="#808000">static int</font> counter_timer = 0;
+    <font color="#808000">if</font> (counter_timer == 7){ <font color="#808000">//update every 700ms</font>
+        <strong>doWrite_giorno(QDate::currentDate().day());</strong>
+        <strong>doWrite_minuti(QTime::currentTime().minute());</strong>
+        counter_timer = 0;
+    }
+    counter_timer ++;</pre>
 	
 	<p class="western">In the variables &ldquo;giorno&rdquo; and &ldquo;minuti&rdquo; there are the values of actual day and minutes and it is possible to use it 
 	in the PLC.</p>
-	<p class="western">To use the function for month, year, etc see: <font color="#0000ff"><u><a href="http://doc.qt.io/qt-4.8/qdate.html">doc.qt.io/qt-4.8/qdate</a></u></font></p>
-	<p class="western">To use the function for hour, minutes and seconds see: <font color="#0000ff"><u><a  href="http://doc.qt.io/qt-4.8/qtime.html">doc.qt.io/qt-4.8/qtime</a></u></font></p>
+	<p class="western">To use the function for month, year, etc see: <font color="#0000ff">http://doc.qt.io/qt-4.8/qdate.html</font></p>
+	<p class="western">To use the function for hour, minutes and seconds see: <font color="#0000ff">http://doc.qt.io/qt-4.8/qtime.html</font></p>
 	<br/>
 	</body>
 </html>

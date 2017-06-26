@@ -29,13 +29,19 @@
 	<p class="western">All&rsquo;interno di:</p>
 	<p class="western"> <font color="#808000">void</font> loop (<font color="#808000">void</font>)</p>
 	<p class="western">inserire:</p>
-	<p class="western"><strong>doWrite_giorno(QDate::currentDate().day());</strong></p>
-	<p class="western"><strong>doWrite_minuti(QTime::currentTime().minute());</strong></p>
-	
+	<pre class="western">
+	<font color="#808000">static int</font> counter_timer = 0;
+    <font color="#808000">if</font> (counter_timer == 7){ <font color="#808000">//update every 700ms</font>
+        <strong>doWrite_giorno(QDate::currentDate().day());</strong>
+        <strong>doWrite_minuti(QTime::currentTime().minute());</strong>
+        counter_timer = 0;
+    }
+    counter_timer ++;</pre>
+		
 	<p class="western">Dentro le variabili &ldquo;giorno&rdquo; e &ldquo;minuti&rdquo; avremo i valori attuali relativi al giorno e ai
 	minuti che possiamo utilizzare direttamente nel PLC.</p>
-	<p class="western">Per chiamare la funzione  per mese, anno ecc &egrave; possibile fare riferimento a: <font color="#0000ff"><u><a href="http://doc.qt.io/qt-4.8/qdate.html">doc.qt.io/qt-4.8/qdate</a></u></font></p>
-	<p class="western">Per chiamare la funzione  per ore, minuti e secondi fare riferimento a: <font color="#0000ff"><u><a  href="http://doc.qt.io/qt-4.8/qtime.html">doc.qt.io/qt-4.8/qtime</a></u></font></p>
+	<p class="western">Per chiamare la funzione  per mese, anno ecc &egrave; possibile fare riferimento a: <font color="#0000ff">http://doc.qt.io/qt-4.8/qdate.html</font></p>
+	<p class="western">Per chiamare la funzione  per ore, minuti e secondi fare riferimento a: <font color="#0000ff">http://doc.qt.io/qt-4.8/qtime.html</font></p>
 	<br/>
 	</body>
 </html>
