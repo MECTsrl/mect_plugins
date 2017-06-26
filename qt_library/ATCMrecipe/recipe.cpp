@@ -237,8 +237,11 @@ void recipe::on_pushButtonRead_clicked()
     readRecipe(stepIndex, &testsIndexes, testsTable);
     for (int varIndex = 0; varIndex < varNbMax; varIndex++)
     {
+        int ivalue = testsTable[stepIndex].at(varIndex);
         int decimal = getVarDecimalByCtIndex(testsIndexes[varIndex]);
-        ui->tableWidget->item(varIndex, stepIndex)->setText(QString::number(testsTable[stepIndex][varIndex] / pow(10,decimal), 'f', decimal));
+        char svalue[42] = "";
+        sprintf_fromValue(svalue, varIndex, ivalue, decimal, 10);
+        ui->tableWidget->item(varIndex, stepIndex)->setText(QString(svalue));
     }
 
     ui->pushButtonLoad->setEnabled(true);
@@ -523,6 +526,7 @@ bool recipe::getFamilyRecipe(const char * filename, char * familyName, char * re
 bool recipe::showRecipe(const char * familyName, const char * recipeName)
 {
     QStringList         lstRowNames;
+    QStringList         lstColNames;
 #ifdef ENABLE_DESCR
     ui->labelStatus->setText(QString("%1/%2").arg(familyName).arg(recipeName));
 #endif
@@ -531,20 +535,16 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
     current_row = 0;
     current_column = 0;
     lstRowNames.clear();
+    lstColNames.clear();
 
     // Reset colum / row counters in Table
     ui->tableWidget->setRowCount(varNbMax);
     ui->tableWidget->setColumnCount(stepNbMax);
-    /* first row */
-    // ui->tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("Tag"));
-
+    // Column Headers
     for (int stepIndex = 0; stepIndex < stepNbMax; stepIndex++)
     {
-        ui->tableWidget->setHorizontalHeaderItem(stepIndex + 1,
-                                                 new QTableWidgetItem(QString::number(stepIndex))
-                                                 );
+        lstColNames.append(QString::number(stepIndex + 1));
     }
-    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
     /* variable rows */
     char buf[42];
@@ -577,10 +577,11 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
             // ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
         }
     }
-
-    // Selection mode of items and First Column width
-    //ui->tableWidget->setColumnWidth(0,230);
+    // Table Headers
     ui->tableWidget->setVerticalHeaderLabels(lstRowNames);
+    ui->tableWidget->setHorizontalHeaderLabels(lstColNames);
+    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    // Selection mode of items
     ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget->resizeColumnsToContents();
     ui->tableWidget->setVisible(true);
