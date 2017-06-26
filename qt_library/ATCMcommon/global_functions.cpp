@@ -228,7 +228,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
                     LOG_PRINT(error_e, "Missing columns (only %d vs %d) at line %d\n", step, step_max, line_nb);
                     value = 0;
                     while (step < step_max) {
-                        (table[step]) << value;
+                        table[step].append(value);
                         ++step;
                     }
                 }
@@ -302,7 +302,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
             }
 
             // assign step value
-            (table[step]) << value;
+            table[step].append(value);
         }
     }
 
@@ -319,28 +319,22 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
     {
         return -1;
     }
-    pthread_mutex_lock(&datasync_recv_mutex);
+    for (int i = 0; i < table[step].count(); i++)
     {
-        for (int i = 0; i < table[step].count(); i++)
+        int ivalue = 0;
+        int ctIndex = (int)(indexes->at(i));
+        switch (readFromDbQuick(ctIndex, &ivalue))
         {
-            uint32_t valueu = 0;
-            int ctIndex = (int)(indexes->at(i));
-            readFromDb(ctIndex, &valueu);
-
-            switch (pIODataStatusAreaI[ctIndex])
-            {
-            case DONE:
-            case BUSY:
-                table[step][i] = valueu;
-                break;
-            case ERROR:
-            default:
-                LOG_PRINT(error_e, "Error reading (%d) '%s'\n", i, varNameArray[ctIndex].tag);
-                errors++;
-            }
+        case DONE:
+        case BUSY:
+            table[step].replace(i, ivalue);
+            break;
+        case ERROR:
+        default:
+            LOG_PRINT(error_e, "Error reading recipe step #%d for '%s'\n", step, varNameArray[ctIndex].tag);
+            errors++;
         }
     }
-    pthread_mutex_unlock(&datasync_recv_mutex);
     return errors;
 }
 
