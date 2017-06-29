@@ -16,7 +16,7 @@
 		<h3 class="western">MySQL/SQLite database access</h3>
 		<p class="western" >To access to a MySQL/SQLite database it is necessary to add in the project (.pro)</p>
 <pre class="western" >&nbsp;&nbsp;&nbsp;QT += sql</pre>
-<pre class="western" >&nbsp;&nbsp;&nbsp;QTPLUGIN += qslite</pre>
+<pre class="western" >&nbsp;&nbsp;&nbsp;QTPLUGIN += qsqlite</pre>
 <p class="western">then (for example in automation.cpp) something like (error check missing):</p>
 	
 	<pre class="western" >&nbsp;&nbsp;#include &lt;QtSql&gt;</pre>
@@ -57,7 +57,7 @@
 &nbsp;&nbsp;&nbsp;query.finish(); 
 &nbsp;&nbsp;&nbsp;// in testo there is the result
 }</pre>
-	<p class="western" >Moreover, it is necessary to add on TPAC a folder &ldquo;sqldrivers&rdquo;&nbsp; containing symbolic links to usrLib/libsql....</p>
+	<p class="western" >Moreover, it is necessary to add on TPAC a folder &ldquo;sqldrivers&rdquo;&nbsp; containing symbolic links to usr/lib/libsql*</p>
 	<br/>
 	</body>
 </html>
