@@ -57,8 +57,14 @@
 &nbsp;&nbsp;&nbsp;query.finish(); 
 &nbsp;&nbsp;&nbsp;// in testo c'&egrave; il risultato
 }</pre>
-	<p class="western" >Inoltre bisogna anche	aggiungere sul TPAC una cartella &ldquo;sqldrivers&rdquo; che
-	contenga i link simbolici a /usr/lib/libsql*</p>
+	<p class="western" >Inoltre bisogna anche aggiungere sul TPAC una cartella &ldquo;sqldrivers&rdquo; che
+	contenga i link simbolici:</p>
+	<pre class="western" >
+	mkdir sqldrivers
+	cd sqldrivers
+	ln –s /usr/lib/libsqlite* ./
+	ln –s /usr/lib/libqsqlite* ./
+	cd</pre>
 	<br/>
 	</body>
 </html>
