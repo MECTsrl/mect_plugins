@@ -17,19 +17,30 @@
 		<p class="western" >Per l'accesso a database MySQL/SQLite bisogna aggiungere nel file di progetto	(.pro)</p>
 <pre class="western" >&nbsp;&nbsp;&nbsp;QT += sql</pre>
 <pre class="western" >&nbsp;&nbsp;&nbsp;QTPLUGIN += qsqlite</pre>
-<p class="western">e poi (per esempio in automation.cpp) qualcosa del tipo (mancano i controlli di errore):</p>
+<p class="western">Inserire il seguente codice ad esempio in automation.cpp (mancano i controlli di errore):</p>
 	
-	<pre class="western" >&nbsp;&nbsp;#include &lt;QtSql&gt;</pre>
-	<pre class="western" >&nbsp;&nbsp;QSqlDatabase db;</pre>
+	<pre class="western" >
+	&nbsp;&nbsp;#include &lt;QtSql&gt 
+	&nbsp;&nbsp;#include &lt;QSqlDatabase&gt 
+	&nbsp;&nbsp;#include &lt;QDebug&gt
+	&nbsp;&nbsp;#include &lt;QSqlQuery&gt	</pre>
+	<pre class="western" >
+	&nbsp;&nbsp;QSqlDatabase db; //Database object</pre>
 
 <p class="western">All&rsquo;interno del setup()</p>
-<pre class="western" >&nbsp;&nbsp;&nbsp;db = QSqlDatabase::addDatabase(&quot;QMYSQL&quot;, &quot;DATABASE_ID&quot;);&nbsp; // oppure &quot;QSQLITE&quot;
-&nbsp;&nbsp;&nbsp;db.setHostName(&quot;DATABASE_ADDRESS&quot;); 
-&nbsp;&nbsp;&nbsp;db.setDatabaseName(&quot;DATABASE_NAME&quot;); 
-&nbsp;&nbsp;&nbsp;db.setUserName(&quot;DATABASE_USERNAME&quot;); 
-&nbsp;&nbsp;&nbsp;db.setPassword(&quot;DATABASE_PASSWORD&quot;);
-&nbsp;&nbsp;&nbsp;db.open();
-}</pre>
+<pre class="western" >
+	&nbsp;&nbsp;db = QSqlDatabase::addDatabase(&quot;QSQLITE&quot;, &quot;ConnectionName&quot;);
+    db.setDatabaseName(&quot;/local/flash/root/test.sqlite&quot;);
+    if (!db.open()) {
+        qDebug() << QString(&quot;Error occurred opening the database. %1&quot;) .arg(db.databaseName());
+        qDebug() << QString(&quot;%1.&quot;)  .arg(db.lastError().text());
+    }
+    else  {
+        qDebug() << QString(&quot;Data base %1 Opened&quot;) .arg(db.databaseName());
+    }
+</pre>
+<p class="western">Il primo parametro di addDatabase dice quale driver usare (in questo caso quello per SQLite), il secondo assegna un nome alla connessione, e serve per poter aprire più di un DB in contemporaea.</p>
+
 
 <p class="western">All&rsquo;interno del loop()</p>
 <pre class="western" >{
@@ -57,8 +68,12 @@
 &nbsp;&nbsp;&nbsp;query.finish(); 
 &nbsp;&nbsp;&nbsp;// in testo c'&egrave; il risultato
 }</pre>
-	<p class="western" >Inoltre bisogna anche aggiungere sul TPAC una cartella &ldquo;sqldrivers&rdquo; che
-	contenga i link simbolici:</p>
+<p class="western" >Nel codice bisognerebbe chiudere il file, o meglio il codice di apertura del DB dovrebbe essere eseguito solo quando serve e il file dovrebbe essere chiuso subito dopo, con una sequenza del genere.</p>
+<pre class="western" >
+// Closing DB 
+    if (db.isOpen())
+        db.close();</pre>
+	<p class="western" >Inoltre bisogna aggiungere sul TPAC una cartella &ldquo;sqldrivers&rdquo; che contenga i link simbolici ai plugin di interfaccia DB:</p>
 	<pre class="western" >
 	mkdir sqldrivers
 	cd sqldrivers

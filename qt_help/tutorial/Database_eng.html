@@ -17,19 +17,28 @@
 		<p class="western" >To access to a MySQL/SQLite database it is necessary to add in the project (.pro)</p>
 <pre class="western" >&nbsp;&nbsp;&nbsp;QT += sql</pre>
 <pre class="western" >&nbsp;&nbsp;&nbsp;QTPLUGIN += qsqlite</pre>
-<p class="western">then (for example in automation.cpp) something like (error check missing):</p>
-	
-	<pre class="western" >&nbsp;&nbsp;#include &lt;QtSql&gt;</pre>
-	<pre class="western" >&nbsp;&nbsp;QSqlDatabase db;</pre>
+<p class="western">Insert the following code, for example, in automation.cpp (error check missing):</p>
+	<pre class="western" >
+	&nbsp;&nbsp;#include &lt;QtSql&gt 
+	&nbsp;&nbsp;#include &lt;QSqlDatabase&gt 
+	&nbsp;&nbsp;#include &lt;QDebug&gt
+	&nbsp;&nbsp;#include &lt;QSqlQuery&gt	</pre>
+	<pre class="western" >
+	&nbsp;&nbsp;QSqlDatabase db; //Database object</pre>
 
 <p class="western">In setup()</p>
-<pre class="western" >&nbsp;&nbsp;&nbsp;db = QSqlDatabase::addDatabase(&quot;QMYSQL&quot;, &quot;DATABASE_ID&quot;);&nbsp; // or &quot;QSQLITE&quot;
-&nbsp;&nbsp;&nbsp;db.setHostName(&quot;DATABASE_ADDRESS&quot;); 
-&nbsp;&nbsp;&nbsp;db.setDatabaseName(&quot;DATABASE_NAME&quot;); 
-&nbsp;&nbsp;&nbsp;db.setUserName(&quot;DATABASE_USERNAME&quot;); 
-&nbsp;&nbsp;&nbsp;db.setPassword(&quot;DATABASE_PASSWORD&quot;);
-&nbsp;&nbsp;&nbsp;db.open();
-}</pre>
+<pre class="western" >
+	&nbsp;&nbsp;db = QSqlDatabase::addDatabase(&quot;QSQLITE&quot;, &quot;ConnectionName&quot;);
+    db.setDatabaseName(&quot;/local/flash/root/test.sqlite&quot;);
+    if (!db.open()) {
+        qDebug() << QString(&quot;Error occurred opening the database. %1&quot;) .arg(db.databaseName());
+        qDebug() << QString(&quot;%1.&quot;)  .arg(db.lastError().text());
+    }
+    else  {
+        qDebug() << QString(&quot;Data base %1 Opened&quot;) .arg(db.databaseName());
+    }
+</pre>
+<p class="western">First parameter of addDatabase specifies what driver to use (in this case tha driver for SQLite), second one gives a name to the connection, and it is necessary to open more than one DB simultaneously.</p>
 
 <p class="western">In loop()</p>
 <pre class="western" >{
@@ -57,7 +66,13 @@
 &nbsp;&nbsp;&nbsp;query.finish(); 
 &nbsp;&nbsp;&nbsp;// in testo there is the result
 }</pre>
-	<p class="western" >Moreover, it is necessary to add on TPAC a folder &ldquo;sqldrivers&rdquo;&nbsp; containing symbolic links:</p>
+<p class="western" >In the code the DB should be closed, or better the code to open DB chould be run only when needed and file should be closed immediately after the use, with the following sequence.</p>
+<pre class="western" >
+// Closing DB 
+    if (db.isOpen())
+        db.close();</pre>
+		
+	<p class="western" >Moreover a &ldquo;sqldrivers&rdquo; folder must be added on TPAC to contain the symbolic link to the interface DB plugins:</p>
 	<pre class="western" >
 	mkdir sqldrivers
 	cd sqldrivers
