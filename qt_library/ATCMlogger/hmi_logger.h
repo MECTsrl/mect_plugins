@@ -22,6 +22,7 @@
 #define RECORD_SIZE_BYTE 100
 #define MAX_RECORD_PER_DAY (24 * 3600 / 5)
 #define ALARMS_PERIOD_MS 100
+#define RS_ALARM_PUSH_CMD "/usr/sbin/rs_notify_alert.sh"
 
 typedef struct event_msg_e
 {
