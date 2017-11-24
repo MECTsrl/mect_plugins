@@ -6,6 +6,8 @@
 const int nCTCols = 13;
 const int nMax_Int16 = 65535;
 const int nMaxNodeID = 63;
+const int nStartInputRegister = 300000;
+const int nMaxInputRegister = nStartInputRegister + nMax_Int16;
 const int nMaxRegister = 49999;
 // Serial Ports
 const int nMaxSerialPorts = 3;

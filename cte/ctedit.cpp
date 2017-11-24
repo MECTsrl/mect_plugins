@@ -191,6 +191,7 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTWrongTCPPort] = trUtf8("TCP Port Not Allowed");
     lstErrorMessages[errCTNoNode] = trUtf8("Empty or Invalid Node Address");
     lstErrorMessages[errCTNoRegister] = trUtf8("Empty or Invalid Register Value");
+    lstErrorMessages[errCTInputOnlyModbusClient]  = trUtf8("Input Register allowed only on Modbus Client");
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
     lstErrorMessages[errCTNoBit] = trUtf8("Alarm/Event Variables must be of BIT type");
     lstErrorMessages[errCTBadPriorityUpdate] = trUtf8("Wrong Priority or Update for Alarm/Event Variable");
@@ -460,7 +461,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
     ui->txtPort->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
     ui->txtNode->setValidator(new QIntValidator(nValMin, nMaxNodeID, this));
-    ui->txtRegister->setValidator(new QIntValidator(nValMin, nMaxRegister, this));
+    ui->txtRegister->setValidator(new QIntValidator(nValMin, nMaxInputRegister, this));
     ui->txtNode->setValidator(new QIntValidator(nValMin, MAXBLOCKSIZE -1, this));
     ui->txtBlock->setValidator(new QIntValidator(nValMin, nValMax, this));
     ui->txtBlockSize->setValidator(new QIntValidator(nValMin, nValMax, this));
@@ -474,7 +475,7 @@ ctedit::ctedit(QWidget *parent) :
     QString szNameExp = QString::fromAscii("\\w+");
     QRegExp regExprName(szNameExp);
     ui->txtName->setValidator(new QRegExpValidator(regExprName, this));
-    ui->txtName->setMaxLength(MAX_IDNAME_LEN - 1);
+    ui->txtName->setMaxLength(MAX_IDNAME_LEN);
     // Validator per commenti
     QString szCommentExp = QString::fromAscii("^[^\\\\/:;,?\"'<>|]*$");
     QRegExp regExprComment(szCommentExp);
@@ -1346,7 +1347,7 @@ bool    ctedit::riassegnaBlocchi()
     int             nPrevRow = -2;
     int             nBlockStart = -1;
     int             j = 0;
-    int             nNextRegPos = 0;
+    uint32_t        nNextRegPos = 0;
     uint16_t        curBlock = 0;
     int16_t         curBSize = (int16_t) 0;
     int             nItemsInBlock = 0;
@@ -1359,14 +1360,16 @@ bool    ctedit::riassegnaBlocchi()
         // Ignora le righe con Priority == 0
         if (lstCTRecords[nRow].Enable > 0)  {
             // Salto riga o condizione di inizio nuovo blocco
-            // Inizio nuovo blocco
+            // Condizioni che scatenano un nuovo blocco Inizio nuovo blocco
             if (nPrevRow != nRow - 1
-                    || lstCTRecords[nRow - 1].Enable != lstCTRecords[nRow].Enable
-                    || lstCTRecords[nRow - 1].Protocol !=  lstCTRecords[nRow].Protocol
-                    || lstCTRecords[nRow - 1].IPAddress != lstCTRecords[nRow].IPAddress
-                    || lstCTRecords[nRow - 1].Port != lstCTRecords[nRow].Port
-                    || lstCTRecords[nRow - 1].NodeId != lstCTRecords[nRow].NodeId
-                    || isTooBigForBlock(nRow, nItemsInBlock, curBSize)
+                    || lstCTRecords[nRow - 1].Enable != lstCTRecords[nRow].Enable                       // Different Level of Priority
+                    || lstCTRecords[nRow - 1].Protocol !=  lstCTRecords[nRow].Protocol                  // Different Protocol
+                    || lstCTRecords[nRow - 1].IPAddress != lstCTRecords[nRow].IPAddress                 // Different IP Address
+                    || lstCTRecords[nRow - 1].Port != lstCTRecords[nRow].Port                           // Different Port
+                    || lstCTRecords[nRow - 1].NodeId != lstCTRecords[nRow].NodeId                       // Different Node ID
+                    || (lstCTRecords[nRow - 1].Update == Htype && lstCTRecords[nRow].Update != Htype)   // From H to Not H
+                    || (lstCTRecords[nRow - 1].Update != Htype && lstCTRecords[nRow].Update == Htype)   // From Not H to H
+                    || isTooBigForBlock(nRow, nItemsInBlock, curBSize)                                  // Block too big
                     // Per Modbus devono essere o tutti BIT o tutti != BIT
                     || (isModbus(lstCTRecords[nRow].Protocol) && ((lstCTRecords[nRow - 1].VarType == BIT && lstCTRecords[nRow].VarType != BIT) || (lstCTRecords[nRow - 1].VarType != BIT && lstCTRecords[nRow].VarType == BIT)))
                     // Per Modbus Contiguità di Registro
@@ -3370,14 +3373,24 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         }
     }
     //---------------------------------------
-    // Controllo per Register
+    // Controllo per Register (MODBUS)
     //---------------------------------------
     szTemp = lstValues[colRegister];
     nRegister = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
     nRegister = fOk && nRegister != -1 ? nRegister : -1;
     if (nProtocol != PLC)  {
-        if (nRegister < 0 || nRegister > nMaxRegister)  {
+        // Range allowed: 0..65535 or 300000..365535
+        if (nRegister < 0 || nRegister > nMaxInputRegister || (nRegister > nMax_Int16 && nRegister < nStartInputRegister))  {
             fillErrorMessage(nRow, colRegister, errCTNoRegister, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+        // Range 300000..365535 allowed only on MODBUS Client (no SERVER)
+        if ((nRegister > nStartInputRegister && nRegister < nMaxInputRegister) &&
+            ! ((nProtocol == RTU) ||
+               (nProtocol == TCP) ||
+               (nProtocol == TCPRTU)) )  {
+            fillErrorMessage(nRow, colRegister, errCTInputOnlyModbusClient, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }
@@ -3601,7 +3614,7 @@ int ctedit::varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs)
 // Search in Cross Table the index of szVarName
 {
     int nRow = -1;
-    char searchTag[MAX_IDNAME_LEN];
+    char searchTag[MAX_IDNAME_LEN + 1];
 
     if (! szVarName.isEmpty())  {
         strcpy(searchTag, szVarName.toAscii().data());
@@ -4429,7 +4442,26 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_C].ser2_Enabled = false;
     lstTargets[TP1070_01_C].ser3_Enabled = true;
     lstTargets[TP1070_01_C].can1_Enabled = false;
-    // 08 TPAC1006
+    // 08 TPAC1005
+    lstTargets[TPAC1005].modelName =  QString::fromAscii(product_name[TPAC1005]);
+    lstTargets[TPAC1005].displayWidth =  480;
+    lstTargets[TPAC1005].displayHeight = 272;
+    lstTargets[TPAC1005].sdCards = 0;
+    lstTargets[TPAC1005].digitalIN = 0;
+    lstTargets[TPAC1005].digitalOUT = 0;
+    lstTargets[TPAC1005].nEncoders = 0;
+    lstTargets[TPAC1005].analogIN = 0;
+    lstTargets[TPAC1005].analogINrowCT = -1;
+    lstTargets[TPAC1005].analogOUT = 0;
+    lstTargets[TPAC1005].analogOUTrowCT = -1;
+    lstTargets[TPAC1005].tAmbient = false;
+    lstTargets[TPAC1005].rpmPorts = 0;
+    lstTargets[TPAC1005].ser0_Enabled = true;
+    lstTargets[TPAC1005].ser1_Enabled = false;
+    lstTargets[TPAC1005].ser2_Enabled = false;
+    lstTargets[TPAC1005].ser3_Enabled = false;
+    lstTargets[TPAC1005].can1_Enabled = true;
+    // 09 TPAC1006
     lstTargets[TPAC1006].modelName =  QString::fromAscii(product_name[TPAC1006]);
     lstTargets[TPAC1006].displayWidth =  320;
     lstTargets[TPAC1006].displayHeight = 240;
@@ -4448,7 +4480,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1006].ser2_Enabled = false;
     lstTargets[TPAC1006].ser3_Enabled = true;
     lstTargets[TPAC1006].can1_Enabled = true;
-    //09 TPAC1007_03
+    //10 TPAC1007_03
     lstTargets[TPAC1007_03].modelName =  QString::fromAscii(product_name[TPAC1007_03]);
     lstTargets[TPAC1007_03].displayWidth =  480;
     lstTargets[TPAC1007_03].displayHeight = 272;
@@ -4467,7 +4499,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_03].ser2_Enabled = false;
     lstTargets[TPAC1007_03].ser3_Enabled = false;
     lstTargets[TPAC1007_03].can1_Enabled = false;
-    //10 TPAC1007_04_AA
+    //11 TPAC1007_04_AA
     lstTargets[TPAC1007_04_AA].modelName =  QString::fromAscii(product_name[TPAC1007_04_AA]);
     lstTargets[TPAC1007_04_AA].displayWidth =  480;
     lstTargets[TPAC1007_04_AA].displayHeight = 272;
@@ -4486,7 +4518,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AA].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AA].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AA].can1_Enabled = false;
-    //11 TPAC1007_04_AB
+    //12 TPAC1007_04_AB
     lstTargets[TPAC1007_04_AB].modelName =  QString::fromAscii(product_name[TPAC1007_04_AB]);
     lstTargets[TPAC1007_04_AB].displayWidth =  480;
     lstTargets[TPAC1007_04_AB].displayHeight = 272;
@@ -4505,7 +4537,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AB].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AB].can1_Enabled = false;
-    //12 TPAC1007_04_AC
+    //13 TPAC1007_04_AC
     lstTargets[TPAC1007_04_AC].modelName =  QString::fromAscii(product_name[TPAC1007_04_AC]);
     lstTargets[TPAC1007_04_AC].displayWidth =  480;
     lstTargets[TPAC1007_04_AC].displayHeight = 272;
@@ -4524,7 +4556,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AC].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AC].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AC].can1_Enabled = false;
-    // 13 TPAC1007_LV
+    // 14 TPAC1007_LV
     lstTargets[TPAC1007_LV].modelName =  QString::fromAscii(product_name[TPAC1007_LV]);
     lstTargets[TPAC1007_LV].displayWidth =  480;
     lstTargets[TPAC1007_LV].displayHeight = 272;
@@ -4543,7 +4575,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_LV].ser2_Enabled = false;
     lstTargets[TPAC1007_LV].ser3_Enabled = true;
     lstTargets[TPAC1007_LV].can1_Enabled = false;
-    // 14 TPAC1008_01
+    // 15 TPAC1008_01
     lstTargets[TPAC1008_01].modelName =  QString::fromAscii(product_name[TPAC1008_01]);
     lstTargets[TPAC1008_01].displayWidth =  800;
     lstTargets[TPAC1008_01].displayHeight = 480;
@@ -4562,7 +4594,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_01].ser2_Enabled = false;
     lstTargets[TPAC1008_01].ser3_Enabled = true;
     lstTargets[TPAC1008_01].can1_Enabled = true;
-    // 15 TPAC1008_02_AA
+    // 16 TPAC1008_02_AA
     lstTargets[TPAC1008_02_AA].modelName =  QString::fromAscii(product_name[TPAC1008_02_AA]);
     lstTargets[TPAC1008_02_AA].displayWidth =  800;
     lstTargets[TPAC1008_02_AA].displayHeight = 480;
@@ -4581,7 +4613,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AA].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AA].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AA].can1_Enabled = true;
-    // 16 TPAC1008_02_AB
+    // 17 TPAC1008_02_AB
     lstTargets[TPAC1008_02_AB].modelName =  QString::fromAscii(product_name[TPAC1008_02_AB]);
     lstTargets[TPAC1008_02_AB].displayWidth =  800;
     lstTargets[TPAC1008_02_AB].displayHeight = 480;
@@ -4600,7 +4632,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AB].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AB].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AB].can1_Enabled = false;
-    // 17 TPAC1008_02_AD
+    // 18 TPAC1008_02_AD
     lstTargets[TPAC1008_02_AD].modelName =  QString::fromAscii(product_name[TPAC1008_02_AD]);
     lstTargets[TPAC1008_02_AD].displayWidth =  800;
     lstTargets[TPAC1008_02_AD].displayHeight = 480;
@@ -4619,7 +4651,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AD].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AD].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AD].can1_Enabled = false;
-    // 18 TPAC1008_02_AE
+    // 19 TPAC1008_02_AE
     lstTargets[TPAC1008_02_AE].modelName =  QString::fromAscii(product_name[TPAC1008_02_AE]);
     lstTargets[TPAC1008_02_AE].displayWidth =  800;
     lstTargets[TPAC1008_02_AE].displayHeight = 480;
@@ -4638,7 +4670,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AE].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AE].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AE].can1_Enabled = false;
-    // 19 TPAC1008_02_AF
+    // 20 TPAC1008_02_AF
     lstTargets[TPAC1008_02_AF].modelName =  QString::fromAscii(product_name[TPAC1008_02_AF]);
     lstTargets[TPAC1008_02_AF].displayWidth =  800;
     lstTargets[TPAC1008_02_AF].displayHeight = 480;
@@ -4657,7 +4689,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AF].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AF].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AF].can1_Enabled = false;
-    // 20 TPLC100_01_AA
+    // 21 TPLC100_01_AA
     lstTargets[TPLC100_01_AA].modelName =  QString::fromAscii(product_name[TPLC100_01_AA]);
     lstTargets[TPLC100_01_AA].displayWidth =  -1;
     lstTargets[TPLC100_01_AA].displayHeight = -1;
@@ -4677,7 +4709,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].ser2_Enabled = false;
     lstTargets[TPLC100_01_AA].ser3_Enabled = false;
     lstTargets[TPLC100_01_AA].can1_Enabled = true;
-    // 21 TPLC100_01_AB
+    // 22 TPLC100_01_AB
     lstTargets[TPLC100_01_AB].modelName =  QString::fromAscii(product_name[TPLC100_01_AB]);
     lstTargets[TPLC100_01_AB].displayWidth =  -1;
     lstTargets[TPLC100_01_AB].displayHeight = -1;
@@ -4697,13 +4729,13 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].ser2_Enabled = false;
     lstTargets[TPLC100_01_AB].ser3_Enabled = true;
     lstTargets[TPLC100_01_AB].can1_Enabled = false;
-    // 22 TPAC1008_03_AC
+    // 23 TPAC1008_03_AC
     lstTargets[TPAC1008_03_AC].modelName =  QString::fromAscii(product_name[TPAC1008_03_AC]);
     lstTargets[TPAC1008_03_AC].displayWidth =  800;
     lstTargets[TPAC1008_03_AC].displayHeight = 480;
     lstTargets[TPAC1008_03_AC].sdCards = 0;
-    lstTargets[TPAC1008_03_AC].digitalIN = 8;
-    lstTargets[TPAC1008_03_AC].digitalOUT = 12;
+    lstTargets[TPAC1008_03_AC].digitalIN = 24;
+    lstTargets[TPAC1008_03_AC].digitalOUT = 16;
     lstTargets[TPAC1008_03_AC].nEncoders = 1;
     lstTargets[TPAC1008_03_AC].analogIN = 4;
     lstTargets[TPAC1008_03_AC].analogINrowCT = 5325;

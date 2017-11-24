@@ -108,21 +108,22 @@ const char *product_name[] = {
     /*05*/ "TP1070_01_A",
     /*06*/ "TP1070_01_B",
     /*07*/ "TP1070_01_C",
-    /*08*/ "TPAC1006",
-    /*09*/ "TPAC1007_03",
-    /*10*/ "TPAC1007_04_AA",
-    /*11*/ "TPAC1007_04_AB",
-    /*12*/ "TPAC1007_04_AC",
-    /*13*/ "TPAC1007_LV",
-    /*14*/ "TPAC1008_01",
-    /*15*/ "TPAC1008_02_AA",
-    /*16*/ "TPAC1008_02_AB",
-    /*17*/ "TPAC1008_02_AD",
-    /*18*/ "TPAC1008_02_AE",
-    /*19*/ "TPAC1008_02_AF",
-    /*20*/ "TPLC100_01_AA",
-    /*21*/ "TPLC100_01_AB",
-    /*22*/ "TPAC1008_03_AC"
+    /*08*/ "TPAC1005",
+    /*09*/ "TPAC1006",
+    /*10*/ "TPAC1007_03",
+    /*11*/ "TPAC1007_04_AA",
+    /*12*/ "TPAC1007_04_AB",
+    /*13*/ "TPAC1007_04_AC",
+    /*14*/ "TPAC1007_LV",
+    /*15*/ "TPAC1008_01",
+    /*16*/ "TPAC1008_02_AA",
+    /*17*/ "TPAC1008_02_AB",
+    /*18*/ "TPAC1008_02_AD",
+    /*19*/ "TPAC1008_02_AE",
+    /*20*/ "TPAC1008_02_AF",
+    /*21*/ "TPLC100_01_AA",
+    /*22*/ "TPLC100_01_AB",
+    /*23*/ "TPAC1008_03_AC"
 };
 
 /*      Mappatura tra Costanti di Tipo, valori Letti e scritti in file CSV
@@ -1064,8 +1065,8 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
             // Update
             sprintf(token, "%s;", updateTypeName[CrossTable[addr].Update]);
             strcat(row, token);
-            // Name
-            sprintf(token, "%-16s;", CrossTable[addr].Tag);
+            // Name: Forced to 31 chars MAX_IDNAME_LEN
+            sprintf(token, "%-31s;", CrossTable[addr].Tag);
             strcat(row, token);
             // Type
             sprintf(token, "%-9s;", varTypeName[CrossTable[addr].VarType]);

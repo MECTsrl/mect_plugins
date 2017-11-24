@@ -417,13 +417,13 @@ void net_conf::reload()
     {
         /* ETH0 */
         /* DHCP */
-        if (app_netconf_item_get(&tmp, "BOOTPROTO0") != NULL && strcmp(tmp, "[DHCP]") != 0)
+        if (app_netconf_item_get(&tmp, "BOOTPROTO0") != NULL && strcmp(tmp, "[DHCP]") == 0)
         {
-            on_checkBox_eth0_DHCP_clicked(false);
+            on_checkBox_eth0_DHCP_clicked(true);
         }
         else
         {
-            on_checkBox_eth0_DHCP_clicked(true);
+            on_checkBox_eth0_DHCP_clicked(false);
         }
         /* IP */
         if (app_netconf_item_get(&tmp, "IPADDR0") != NULL && tmp[0] != '\0')
@@ -508,13 +508,13 @@ void net_conf::reload()
     {
         /* ETH1 */
         /* DHCP */
-        if (app_netconf_item_get(&tmp, "BOOTPROTO1") != NULL && strcmp(tmp, "[DHCP]") != 0)
+        if (app_netconf_item_get(&tmp, "BOOTPROTO1") != NULL && strcmp(tmp, "[DHCP]") == 0)
         {
-            on_checkBox_eth1_DHCP_clicked(false);
+            on_checkBox_eth1_DHCP_clicked(true);
         }
         else
         {
-            on_checkBox_eth1_DHCP_clicked(true);
+            on_checkBox_eth1_DHCP_clicked(false);
         }
         /* IP */
         if (app_netconf_item_get(&tmp, "IPADDR1") != NULL && tmp[0] != '\0')
@@ -668,13 +668,13 @@ void net_conf::reload()
     }
 
     /* DHCP */
-    if (app_netconf_item_get(&tmp, "BOOTPROTOW0") != NULL && strcmp(tmp, "[DHCP]") != 0)
+    if (app_netconf_item_get(&tmp, "BOOTPROTOW0") != NULL && strcmp(tmp, "[DHCP]") == 0)
     {
-        on_checkBox_wlan0_DHCP_clicked(false);
+        on_checkBox_wlan0_DHCP_clicked(true);
     }
     else
     {
-        on_checkBox_wlan0_DHCP_clicked(true);
+        on_checkBox_wlan0_DHCP_clicked(false);
     }
     /* IP */
     if (app_netconf_item_get(&tmp, "IPADDRW0") != NULL && tmp[0] != '\0')

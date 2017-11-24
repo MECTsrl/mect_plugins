@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>313</width>
+    <width>321</width>
     <height>327</height>
    </rect>
   </property>
@@ -74,7 +74,7 @@ QComboBox
 }  </string>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tab_eth0">
       <attribute name="title">
@@ -714,7 +714,7 @@ QComboBox
               <string>DHCP</string>
              </property>
              <property name="checked">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>

@@ -17,7 +17,7 @@ extern "C" {
 #define DimAlarmsCT     1152
 #define MAX_IPADDR_LEN      17 // 123.567.901.345.
 #define MAX_NUMBER_LEN      12 // -2147483648. -32768.
-#define MAX_IDNAME_LEN      17 // abcdefghijklmno.
+#define MAX_IDNAME_LEN      31 // Max Variable Name Lenght
 #define MAX_VARTYPE_LEN      9 // UDINTABCD.
 #define MAX_PROTOCOL_LEN     9 // TCPRTUSRV.
 #define MAX_DEVICE_LEN      13 // /dev/ttyUSB0.
@@ -89,21 +89,22 @@ enum productId {
         /*05*/ TP1070_01_A,
         /*06*/ TP1070_01_B,
         /*07*/ TP1070_01_C,
-        /*08*/ TPAC1006,
-        /*09*/ TPAC1007_03,
-        /*10*/ TPAC1007_04_AA,
-        /*11*/ TPAC1007_04_AB,
-        /*12*/ TPAC1007_04_AC,
-        /*13*/ TPAC1007_LV,
-        /*14*/ TPAC1008_01,
-        /*15*/ TPAC1008_02_AA,
-        /*16*/ TPAC1008_02_AB,
-        /*17*/ TPAC1008_02_AD,
-        /*18*/ TPAC1008_02_AE,
-        /*19*/ TPAC1008_02_AF,
-        /*20*/ TPLC100_01_AA,
-        /*21*/ TPLC100_01_AB,
-        /*22*/ TPAC1008_03_AC,
+        /*08*/ TPAC1005,
+        /*09*/ TPAC1006,
+        /*10*/ TPAC1007_03,
+        /*11*/ TPAC1007_04_AA,
+        /*12*/ TPAC1007_04_AB,
+        /*13*/ TPAC1007_04_AC,
+        /*14*/ TPAC1007_LV,
+        /*15*/ TPAC1008_01,
+        /*16*/ TPAC1008_02_AA,
+        /*17*/ TPAC1008_02_AB,
+        /*18*/ TPAC1008_02_AD,
+        /*19*/ TPAC1008_02_AE,
+        /*20*/ TPAC1008_02_AF,
+        /*21*/ TPLC100_01_AA,
+        /*22*/ TPLC100_01_AB,
+        /*23*/ TPAC1008_03_AC,
                MODEL_TOTALS
 };
 
@@ -146,14 +147,14 @@ struct  CrossTableRecord {
     int16_t Enable;
     int  UsedEntry;
     enum UpdateType Update;
-    char Tag[MAX_IDNAME_LEN];
+    char Tag[MAX_IDNAME_LEN + 1];
     enum varTypes VarType;
     uint16_t Decimal;
     enum FieldbusType Protocol;
     uint32_t IPAddress;
     uint16_t Port;
     uint8_t NodeId;
-    uint16_t Offset;
+    uint32_t Offset;                                // da 0 a 65535 (Holding Registers) e da 300000 a 365535 (Input Registers)
     uint16_t Block;
     uint16_t BlockBase;
     int16_t BlockSize;
@@ -164,9 +165,9 @@ struct  CrossTableRecord {
     // Fields for Events / Alarms
     int     usedInAlarmsEvents;                     // 1 if used in AL/EV
     int     ALType;                                 // from enum EventAlarm (0=Alarm 1=Event...)
-    char    ALSource[MAX_IDNAME_LEN];               // Name of source variable in Alarms
+    char    ALSource[MAX_IDNAME_LEN + 1];           // Name of source variable in Alarms
     int     ALOperator;                             // Operator on variable, from enum logicalOperators
-    char    ALCompareVar[MAX_IDNAME_LEN];           // Compare variable (right side of operation, if any)
+    char    ALCompareVar[MAX_IDNAME_LEN + 1];       // Compare variable (right side of operation, if any)
     float   ALCompareVal;                           // Fixed comparision value (in alternative to Compare Variable)
     int     ALComparison;                           // Type of comparision (Signed, unsigned, float determined from left variable type)
     int     ALCompatible;                           // 1 if both side of comparision are between compatible types
@@ -179,8 +180,8 @@ struct  CrossTableRecord {
 struct  Alarms {
     enum EventAlarm ALType;
     uint16_t TagAddr;
-    char ALSource[MAX_IDNAME_LEN];
-    char ALCompareVar[MAX_IDNAME_LEN];
+    char ALSource[MAX_IDNAME_LEN + 1];
+    char ALCompareVar[MAX_IDNAME_LEN + 1];
     uint16_t SourceAddr;
     uint16_t CompareAddr;
     float ALCompareVal;

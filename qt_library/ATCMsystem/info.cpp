@@ -15,6 +15,12 @@
 #include "app_config.h"
 #include "qrcode.h"
 
+#include <QList>
+#include <QString>
+#include <QNetworkInterface>
+#include <QNetworkAddressEntry>
+
+
 #if 0
 #include "fw_build_version.h"
 #else
@@ -143,53 +149,100 @@ void info::reload()
     }
 
     /* RT */
-    uint16_t PLC_Version;
-    readFromDb(5394, &PLC_Version);
-    ui->labelFcrtsval->setText(QString("%1").arg((float)PLC_Version/1000.0, 0, 'f', 3));
+    int RT_Version = 0;
+    readFromDbQuick(PLC_Version, &RT_Version);
+    ui->labelFcrtsval->setText(QString("%1").arg((float)RT_Version/1000.0, 0, 'f', 3));
 
     /* PLC */
-    ui->labelPLCval->setText("-");
+    int PLC_Version = 0;
+    readFromDbQuick(PLC_PLC_Version, &PLC_Version);
+    ui->labelPLCval->setText(QString("%1").arg((float)PLC_Version/1000.0, 0, 'f', 3));
 
-    /* HMI */
-    ui->labelHMIval->setText(HMIversion);
+    /* HMI */    
+    int HMI_Version = 0;
+    readFromDbQuick(PLC_HMI_Version, &HMI_Version);
+//    ui->labelHMIval->setText(HMIversion);
+    ui->labelHMIval->setText(QString("%1").arg((float)HMI_Version/1000.0, 0, 'f', 3));
 
     char string[32];
-    /* MAC */
-    if (getMAC("eth0", string) == 0)
-    {
-        ui->labelMACval->setText(string);
-    }
-    else
-    {
-        ui->labelMACval->setText("-");
-    }
-    /* IP */
-    if (getIP("eth0", string) == 0)
-    {
-        ui->labelIPval->setText(string);
-    }
-    else
-    {
-        ui->labelIPval->setText("-");
-    }
-    /* GATEWAY */
+//    //----------------------
+//    /* Eth0 */
+//    //----------------------
+//    /* MAC */
+//    if (getMAC("eth0", string) == 0)
+//    {
+//        ui->labelMACval->setText(string);
+//    }
+//    else
+//    {
+//        ui->labelMACval->setText("-");
+//    }
+//    /* IP */
+//    if (getIP("eth0", string) == 0)
+//    {
+//        ui->labelIPval->setText(string);
+//    }
+//    else
+//    {
+//        ui->labelIPval->setText("-");
+//    }
+//    /* GATEWAY */
     if (app_build_gateway_get() != NULL)
     {
-        ui->labelGatewayval->setText(app_build_gateway_get());
+        ui->labelGW_eth0val->setText(app_build_gateway_get());
+        ui->labelGW_wl0val->setText(app_build_gateway_get());;
+        ui->labelGW_PPP0val->setText(app_build_gateway_get());;
+        ui->labelGW_PPP0val->setText(app_build_gateway_get());;
     }
     else
     {
-        ui->labelGatewayval->setText("-");
+        ui->labelGW_eth0val->setText("-");
+        ui->labelGW_wl0val->setText("-");;
+        ui->labelGW_PPP0val->setText("-");;
+        ui->labelGW_PPP0val->setText("-");;
     }
-    /* NETMASK */
-    if (app_build_netmask_get() != NULL)
-    {
-        ui->labelNetMaskval->setText(app_build_netmask_get());
+//    }
+//    /* NETMASK */
+//    if (app_build_netmask_get() != NULL)
+//    {
+//        ui->labelNetMaskval->setText(app_build_netmask_get());
+//    }
+//    else
+//    {
+//        ui->labelNetMaskval->setText("-");
+//    }
+    QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
+    QNetworkInterface eth;
+
+    foreach(eth, allInterfaces) {
+        QList<QNetworkAddressEntry> allEntries = eth.addressEntries();
+        // eth0
+        if (eth.name() == QString("eth0") && allEntries.count() > 0)  {
+            ui->labelMAC_eth0val->setText(eth.hardwareAddress());
+            ui->labelIP_eth0val->setText(allEntries[0].ip().toString());
+            ui->labelNetMask_eth0->setText(allEntries[0].netmask().toString());
+        }
+        // wlan0
+        if (eth.name() == QString("wlan0") && allEntries.count() > 0)  {
+            ui->labelMAC_wl0val->setText(eth.hardwareAddress());
+            ui->labelIP_wl0val->setText(allEntries[0].ip().toString());
+            ui->labelNetMask_wl0->setText(allEntries[0].netmask().toString());
+        }
+        // ppp0
+        if (eth.name() == QString("ppp0") && allEntries.count() > 0)  {
+            ui->labelMAC_PPP0val->setText(eth.hardwareAddress());
+            ui->labelIP_PPP0val->setText(allEntries[0].ip().toString());
+            ui->labelNetMask_PPP0->setText(allEntries[0].netmask().toString());
+        }
+        // tun0
+        if (eth.name() == QString("tun0") && allEntries.count() > 0)  {
+            ui->labelMAC_TUN0->setText(eth.hardwareAddress());
+            ui->labelIP_TUN0val->setText(allEntries[0].ip().toString());
+            ui->labelNetMask_TUN0->setText(allEntries[0].netmask().toString());
+        }
     }
-    else
-    {
-        ui->labelNetMaskval->setText("-");
-    }
+
+
     /* DNS1 */
     if (app_build_dns1_get() != NULL)
     {

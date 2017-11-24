@@ -305,7 +305,7 @@ void recipe::on_pushButtonSave_clicked()
         }
         else
         {
-            LOG_PRINT(error_e, "opened '%s'\n", fullfilename);
+            LOG_PRINT(info_e, "opened '%s'\n", fullfilename);
             for (int row = 0; row < varNbMax; row++)
             {
                 // name
@@ -328,7 +328,7 @@ void recipe::on_pushButtonSave_clicked()
                 fprintf(fp, "\n");
             }
             fclose(fp);
-            LOG_PRINT(error_e, "Saved '%s'\n", fullfilename);
+            LOG_PRINT(info_e, "Saved '%s'\n", fullfilename);
 
             getFamilyRecipe(fullfilename, _familyName, _recipeName);
 #ifdef ENABLE_DESCR

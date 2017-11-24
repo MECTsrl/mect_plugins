@@ -29,6 +29,7 @@ enum errorMessages_e
     errCTWrongTCPPort,
     errCTNoNode,
     errCTNoRegister,
+    errCTInputOnlyModbusClient,
     errCTNoBehavior,
     errCTNoBit,
     errCTBadPriorityUpdate,

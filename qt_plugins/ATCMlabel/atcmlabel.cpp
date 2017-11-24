@@ -565,6 +565,10 @@ void ATCMlabel::writeAction()
             if (decimal == 0)
             {
                 int value  = 0, min = m_min.toInt(), max = m_max.toInt();
+//                if (m_format == input_hex)  {
+//                    unsigned int uValue = m_value.toInt(0, 16);
+//                    value = uValue;
+//                }
                 dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
                 dk->showFullScreen();
 

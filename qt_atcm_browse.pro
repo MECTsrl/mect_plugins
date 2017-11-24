@@ -1,3 +1,5 @@
+QT += network
+
 TEMPLATE      = subdirs
 SUBDIRS       =	\
 qt_library \

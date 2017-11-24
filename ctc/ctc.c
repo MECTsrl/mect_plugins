@@ -40,7 +40,7 @@
 #define FIELD_MAX_LENGTH        4096
 #define ROW_FIELDS              13
 #define CROSSTABLE_DEF          10000
-#define ID_MAXLEN               16
+#define ID_MAXLEN               31
 #define ADDR_MAXLEN             15
 
 /* All crosstable types */
@@ -695,7 +695,7 @@ cb_field(void *s, size_t len, void *data)
             break;
 
             case 2:
-                strncpy(((struct row_s *)data)->name, buf, 17);
+                strncpy(((struct row_s *)data)->name, buf, ID_MAXLEN);
                 dbg_printf("Name %s\n", ((struct row_s *)data)->name);
 
             break;

@@ -194,7 +194,7 @@ size_t fillSyncroArea(void)
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
-        if (strlen(p) > TAG_LEN)
+        if (strlen(p) >= TAG_LEN)
         {
             sprintf(CrossTableErrorMsg, "Tag '%s' too long, maximum lenght is %d", p, TAG_LEN - 1);
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
