@@ -150,17 +150,17 @@ void info::reload()
 
     /* RT */
     int RT_Version = 0;
-    readFromDbQuick(PLC_Version, &RT_Version);
+    readFromDbQuick(ID_PLC_Version, &RT_Version);
     ui->labelFcrtsval->setText(QString("%1").arg((float)RT_Version/1000.0, 0, 'f', 3));
 
     /* PLC */
     int nPLC_Version = 0;
-    readFromDbQuick(PLC_PLC_Version, &nPLC_Version);
+    readFromDbQuick(ID_PLC_PLC_Version, &nPLC_Version);
     ui->labelPLCval->setText(QString("%1").arg((float)nPLC_Version/1000.0, 0, 'f', 3));
 
     /* HMI */    
     int HMI_Version = 0;
-    readFromDbQuick(PLC_HMI_Version, &HMI_Version);
+    readFromDbQuick(ID_PLC_HMI_Version, &HMI_Version);
 //    ui->labelHMIval->setText(HMIversion);
     ui->labelHMIval->setText(QString("%1").arg((float)HMI_Version/1000.0, 0, 'f', 3));
 
