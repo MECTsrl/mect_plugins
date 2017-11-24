@@ -43,11 +43,11 @@ extern int active_password;
 #include <linux/mxs-buzzer.h>
 #define BUZZER_DURATION_MS 120
 
-#define PLC_buzzerOn 5397
-#define PLC_Version 5394
-#define PLC_BUZZER 5438
-#define PLC_PLC_Version 5398
-#define PLC_HMI_Version 5399
+#define ID_PLC_buzzerOn 5397
+#define ID_PLC_Version 5394
+#define ID_PLC_BUZZER 5438
+#define ID_PLC_PLC_Version 5398
+#define ID_PLC_HMI_Version 5399
 
 extern int Buzzerfd;
 extern bool BuzzerTouch;

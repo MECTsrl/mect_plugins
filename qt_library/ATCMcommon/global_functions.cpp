@@ -825,7 +825,7 @@ bool beep(int duration_ms)
     duration_cs = duration_cs << 8;
     BuzzerValue += duration_cs;
     // Write value
-    doWrite(PLC_BUZZER, &BuzzerValue);
+    doWrite(ID_PLC_BUZZER, &BuzzerValue);
 }
 
 int set_backlight_level(int level)

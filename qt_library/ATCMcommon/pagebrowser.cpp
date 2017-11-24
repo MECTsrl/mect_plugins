@@ -111,7 +111,7 @@ void page::updateData()
 #endif
 
     int ivalue;
-    switch (readFromDbQuick(PLC_buzzerOn, &ivalue)) {
+    switch (readFromDbQuick(ID_PLC_buzzerOn, &ivalue)) {
     case DONE:
     case BUSY:
         if (ivalue != 0) {
