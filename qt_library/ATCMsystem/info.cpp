@@ -154,9 +154,9 @@ void info::reload()
     ui->labelFcrtsval->setText(QString("%1").arg((float)RT_Version/1000.0, 0, 'f', 3));
 
     /* PLC */
-    int PLC_Version = 0;
-    readFromDbQuick(PLC_PLC_Version, &PLC_Version);
-    ui->labelPLCval->setText(QString("%1").arg((float)PLC_Version/1000.0, 0, 'f', 3));
+    int nPLC_Version = 0;
+    readFromDbQuick(PLC_PLC_Version, &nPLC_Version);
+    ui->labelPLCval->setText(QString("%1").arg((float)nPLC_Version/1000.0, 0, 'f', 3));
 
     /* HMI */    
     int HMI_Version = 0;
@@ -164,7 +164,6 @@ void info::reload()
 //    ui->labelHMIval->setText(HMIversion);
     ui->labelHMIval->setText(QString("%1").arg((float)HMI_Version/1000.0, 0, 'f', 3));
 
-    char string[32];
 //    //----------------------
 //    /* Eth0 */
 //    //----------------------
@@ -417,20 +416,20 @@ void info::on_pushButtonQrc_clicked()
     szMessage.append(ui->labelHMIval->text());
     szMessage.append("\n");
     // MAC
-    szMessage.append(ui->labelMACtxt->text());
-    szMessage.append(ui->labelMACval->text());
+    szMessage.append(ui->labelMAC_eth0->text());
+    szMessage.append(ui->labelMAC_eth0val->text());
     szMessage.append("\n");
     // IP
-    szMessage.append(ui->labelIPtxt->text());
-    szMessage.append(ui->labelIPval->text());
+    szMessage.append(ui->labelIP_eth0->text());
+    szMessage.append(ui->labelIP_eth0val->text());
     szMessage.append("\n");
     // NET MASK
-    szMessage.append(ui->labelNetMasktxt->text());
-    szMessage.append(ui->labelNetMaskval->text());
+    szMessage.append(ui->labelNetMask_eth0->text());
+    szMessage.append(ui->labelNetMask_eth0val->text());
     szMessage.append("\n");
     // Gateway
-    szMessage.append(ui->labelGatewaytxt->text());
-    szMessage.append(ui->labelGatewayval->text());
+    szMessage.append(ui->labelGW_eth0->text());
+    szMessage.append(ui->labelGW_eth0val->text());
     szMessage.append("\n");
     // DNS1
     szMessage.append(ui->labelDNS1txt->text());
