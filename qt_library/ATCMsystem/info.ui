@@ -150,6 +150,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>DejaVu Sans</family>
@@ -163,10 +169,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>SN:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <string>S/N:</string>
          </property>
         </widget>
        </item>
@@ -200,6 +203,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>DejaVu Sans</family>
@@ -213,10 +222,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>BLD:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <string>Build:</string>
          </property>
         </widget>
        </item>
@@ -250,6 +256,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>DejaVu Sans</family>
@@ -263,10 +275,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>MOD:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <string>Model:</string>
          </property>
         </widget>
        </item>
@@ -300,6 +309,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>DejaVu Sans</family>
@@ -313,10 +328,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>LIB:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <string>Library:</string>
          </property>
         </widget>
        </item>
@@ -350,6 +362,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>DejaVu Sans</family>
@@ -363,10 +381,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>RT:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <string>Runtime:</string>
          </property>
         </widget>
        </item>
@@ -400,6 +415,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>DejaVu Sans</family>
@@ -415,9 +436,6 @@
          <property name="text">
           <string>PLC:</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
         </widget>
        </item>
        <item row="5" column="3" colspan="2">
@@ -427,6 +445,12 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>0</height>
+          </size>
          </property>
          <property name="focusPolicy">
           <enum>Qt::NoFocus</enum>
@@ -444,6 +468,12 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>DejaVu Sans</family>
@@ -459,9 +489,6 @@
          <property name="text">
           <string>HMI:</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
         </widget>
        </item>
        <item row="6" column="3" colspan="2">
@@ -471,6 +498,12 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>0</height>
+          </size>
          </property>
          <property name="focusPolicy">
           <enum>Qt::NoFocus</enum>
@@ -498,7 +531,7 @@
         <widget class="QTabWidget" name="tabWidget">
          <property name="minimumSize">
           <size>
-           <width>0</width>
+           <width>80</width>
            <height>0</height>
           </size>
          </property>
@@ -509,7 +542,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="eth0">
           <attribute name="title">
@@ -535,13 +568,13 @@
              </property>
              <layout class="QFormLayout" name="formLayout_2">
               <property name="horizontalSpacing">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="verticalSpacing">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="margin">
-               <number>0</number>
+               <number>2</number>
               </property>
               <item row="0" column="0">
                <widget class="QLabel" name="labelMAC_eth0">
@@ -550,6 +583,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="font">
                  <font>
@@ -565,9 +604,6 @@
                 </property>
                 <property name="text">
                  <string>MAC:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -601,6 +637,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -615,9 +657,6 @@
                 </property>
                 <property name="text">
                  <string>IP:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -651,6 +690,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -665,9 +710,6 @@
                 </property>
                 <property name="text">
                  <string>NM:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -701,6 +743,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -715,9 +763,6 @@
                 </property>
                 <property name="text">
                  <string>GW:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -775,13 +820,13 @@
                <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
               </property>
               <property name="horizontalSpacing">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="verticalSpacing">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="margin">
-               <number>0</number>
+               <number>2</number>
               </property>
               <item row="0" column="0">
                <widget class="QLabel" name="labelMAC_wl0">
@@ -790,6 +835,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="font">
                  <font>
@@ -805,9 +856,6 @@
                 </property>
                 <property name="text">
                  <string>MAC:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -841,6 +889,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -855,9 +909,6 @@
                 </property>
                 <property name="text">
                  <string>IP:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -891,6 +942,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -905,9 +962,6 @@
                 </property>
                 <property name="text">
                  <string>NM:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -941,6 +995,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -955,9 +1015,6 @@
                 </property>
                 <property name="text">
                  <string>GW:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1012,13 +1069,13 @@
              </property>
              <layout class="QFormLayout" name="formLayout_4">
               <property name="horizontalSpacing">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="verticalSpacing">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="margin">
-               <number>0</number>
+               <number>2</number>
               </property>
               <item row="0" column="0">
                <widget class="QLabel" name="labelMAC_PPP0">
@@ -1027,6 +1084,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="font">
                  <font>
@@ -1042,9 +1105,6 @@
                 </property>
                 <property name="text">
                  <string>MAC:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1078,6 +1138,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -1092,9 +1158,6 @@
                 </property>
                 <property name="text">
                  <string>IP:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1128,6 +1191,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -1142,9 +1211,6 @@
                 </property>
                 <property name="text">
                  <string>NM:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1178,6 +1244,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -1192,9 +1264,6 @@
                 </property>
                 <property name="text">
                  <string>GW:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1252,13 +1321,13 @@
                <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
               </property>
               <property name="horizontalSpacing">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="verticalSpacing">
-               <number>0</number>
+               <number>2</number>
               </property>
               <property name="margin">
-               <number>0</number>
+               <number>2</number>
               </property>
               <item row="0" column="0">
                <widget class="QLabel" name="labelMAC_TUN0">
@@ -1267,6 +1336,12 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
                 </property>
                 <property name="font">
                  <font>
@@ -1282,9 +1357,6 @@
                 </property>
                 <property name="text">
                  <string>MAC:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1318,6 +1390,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -1332,9 +1410,6 @@
                 </property>
                 <property name="text">
                  <string>IP:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1368,6 +1443,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -1382,9 +1463,6 @@
                 </property>
                 <property name="text">
                  <string>NM:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1418,6 +1496,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <family>DejaVu Sans</family>
@@ -1432,9 +1516,6 @@
                 </property>
                 <property name="text">
                  <string>GW:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1477,6 +1558,12 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>DejaVu Sans</family>
@@ -1491,9 +1578,6 @@
            </property>
            <property name="text">
             <string>DNS1:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -1527,6 +1611,12 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>DejaVu Sans</family>
@@ -1541,9 +1631,6 @@
            </property>
            <property name="text">
             <string>DNS2:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -1637,6 +1724,19 @@
      </item>
      <item row="0" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item>
         <widget class="QLabel" name="labelLICtxt">
          <property name="font">

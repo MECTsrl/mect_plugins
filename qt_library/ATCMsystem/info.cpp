@@ -219,7 +219,7 @@ void info::reload()
         if (eth.name() == QString("eth0") && allEntries.count() > 0)  {
             ui->labelMAC_eth0val->setText(eth.hardwareAddress());
             ui->labelIP_eth0val->setText(allEntries[0].ip().toString());
-            ui->labelNetMask_eth0->setText(allEntries[0].netmask().toString());
+            ui->labelNetMask_eth0val->setText(allEntries[0].netmask().toString());
         }
         // wlan0
         if (eth.name() == QString("wlan0") && allEntries.count() > 0)  {
