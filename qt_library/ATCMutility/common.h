@@ -120,7 +120,7 @@ extern "C" {
 #define DATA_SIZE (2 * sizeof(char))
 #define NAME_LEN 3
 #define DESCR_LEN 64
-#define TAG_LEN   (16 + 1)
+#define TAG_LEN   (31 + 1)
 #define LINE_SIZE 1024
 
 #define MAX_DECIMAL_DIGIT 6
