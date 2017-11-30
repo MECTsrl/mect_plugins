@@ -119,7 +119,7 @@ extern "C" {
 #define MAX_MSG 1024
 #define DATA_SIZE (2 * sizeof(char))
 #define NAME_LEN 3
-#define DESCR_LEN 64
+#define DESCR_LEN (128 + 1)
 #define TAG_LEN   (31 + 1)
 #define LINE_SIZE 1024
 
