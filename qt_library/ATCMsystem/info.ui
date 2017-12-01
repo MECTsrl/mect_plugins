@@ -139,8 +139,23 @@
      </property>
      <item>
       <layout class="QGridLayout" name="gridLayout_4">
-       <property name="spacing">
-        <number>4</number>
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>2</number>
+       </property>
+       <property name="rightMargin">
+        <number>2</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>0</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>3</number>
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="labelSNtxt">
@@ -154,6 +169,12 @@
           <size>
            <width>100</width>
            <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="font">
@@ -173,30 +194,8 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2" colspan="3">
-        <widget class="QLabel" name="labelSNval">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="3">
-        <widget class="QLabel" name="labelSOtxt">
+       <item row="5" column="0" colspan="3">
+        <widget class="QLabel" name="labelPLCtxt">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -207,6 +206,12 @@
           <size>
            <width>100</width>
            <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="font">
@@ -222,34 +227,12 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>Build:</string>
+          <string>PLC:</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="4">
-        <widget class="QLabel" name="labelSOval">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="4">
-        <widget class="QLabel" name="labelTargettxt">
+       <item row="4" column="0">
+        <widget class="QLabel" name="labelFcrtstxt">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -260,6 +243,12 @@
           <size>
            <width>100</width>
            <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="font">
@@ -275,29 +264,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>Model:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="4">
-        <widget class="QLabel" name="labelTargetval">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="text">
-          <string/>
+          <string>Runtime:</string>
          </property>
         </widget>
        </item>
@@ -313,6 +280,12 @@
           <size>
            <width>100</width>
            <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="font">
@@ -332,30 +305,8 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="2" colspan="3">
-        <widget class="QLabel" name="labelMectLib">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="labelFcrtstxt">
+       <item row="2" column="0" colspan="4">
+        <widget class="QLabel" name="labelTargettxt">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -366,6 +317,12 @@
           <size>
            <width>100</width>
            <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="font">
@@ -381,7 +338,44 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>Runtime:</string>
+          <string>Model:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="QLabel" name="labelSOtxt">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>DejaVu Sans</family>
+           <pointsize>11</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>Build:</string>
          </property>
         </widget>
        </item>
@@ -407,39 +401,96 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="3">
-        <widget class="QLabel" name="labelPLCtxt">
+       <item row="3" column="2" colspan="3">
+        <widget class="QLabel" name="labelMectLib">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>30</width>
            <height>0</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>DejaVu Sans</family>
-           <pointsize>11</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
-          </font>
          </property>
          <property name="focusPolicy">
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
-          <string>PLC:</string>
+          <string/>
          </property>
         </widget>
        </item>
-       <item row="5" column="3" colspan="2">
-        <widget class="QLabel" name="labelPLCval">
+       <item row="2" column="4">
+        <widget class="QLabel" name="labelTargetval">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLabel" name="labelSOval">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" colspan="3">
+        <widget class="QLabel" name="labelSNval">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3" colspan="2">
+        <widget class="QLabel" name="labelHMIval">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -474,6 +525,12 @@
            <height>0</height>
           </size>
          </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>DejaVu Sans</family>
@@ -491,8 +548,8 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="3" colspan="2">
-        <widget class="QLabel" name="labelHMIval">
+       <item row="5" column="3" colspan="2">
+        <widget class="QLabel" name="labelPLCval">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -542,7 +599,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="eth0">
           <attribute name="title">
