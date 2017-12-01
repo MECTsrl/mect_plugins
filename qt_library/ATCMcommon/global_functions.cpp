@@ -793,39 +793,14 @@ bool USBumount()
 
 bool beep(int duration_ms)
 {
-//    static int64_t buzzer_busy_timeout_ms = 0;
-//    static int64_t now_ms = 0;
-//    struct timespec now;
+    unsigned volume = 100;
+    unsigned on_cs = duration_ms / 10;
+    unsigned off_cs = 0;
+    unsigned replies = 1;
+    unsigned value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
 
-//    /* No buzzer */
-//    if (Buzzerfd == -1)
-//        return false;
-
-//    /* Milliseconds since some time reference */
-//    if (clock_gettime(CLOCK_MONOTONIC, &now) != 0)
-//        return false;
-//    now_ms = now.tv_sec * 1000 + now.tv_nsec / 1000000;
-
-//    /* Buzz for duration_ms (if done buzzing). */
-//    if (buzzer_busy_timeout_ms <= now_ms) {
-//        if (ioctl(Buzzerfd, BUZZER_BEEP, duration_ms) != 0) {
-//            LOG_PRINT(error_e, "buzzer error.\n");
-
-//            return false;
-//        }
-
-//        buzzer_busy_timeout_ms = now_ms + duration_ms;
-//    }
-//    else
-//        return false;
-
-//    return true;
-    unsigned int BuzzerValue = 0x01000064;
-    unsigned int duration_cs = duration_ms / 10;
-    duration_cs = duration_cs << 8;
-    BuzzerValue += duration_cs;
-    // Write value
-    doWrite(ID_PLC_BUZZER, &BuzzerValue);
+    doWrite(ID_PLC_BUZZER, &value);
+    return true;
 }
 
 int set_backlight_level(int level)

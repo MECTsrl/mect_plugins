@@ -37,8 +37,13 @@ private slots:
 
     void on_pushButtonQrc_clicked();
 
+    void on_pushButtonRefresh_clicked();
+
 private:
     Ui::info *ui;
+    void refreshSystemTab();
+    void refreshApplTab();
+    void refreshNetworkingTabs();
 };
 
 #endif // INFO_H
