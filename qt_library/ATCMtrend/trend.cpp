@@ -196,7 +196,7 @@ void trend::reload()
  */
 void trend::updateData()
 {
-    if (this->isVisible() == false)
+    if (! this->isVisible())
     {
         return;
     }
@@ -324,7 +324,7 @@ void trend::updateData()
             d_qwtplot->setAxisMaxMajor(QwtPlot::yRight + i, 0);
             d_qwtplot->setAxisMaxMinor(QwtPlot::yRight + i, 0);
         }
-        theDateTimeScaleDraw = new DateTimeScaleDraw(QDateTime::currentDateTime());
+        theDateTimeScaleDraw = new DateTimeScaleDraw(TzeroLoaded); // QDateTime::currentDateTime());
         d_qwtplot->setAxisScaleDraw(timeAxisId, theDateTimeScaleDraw);
 
         first_time = true;
@@ -1348,7 +1348,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
 
 bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax, int pen)
 {
-    if (_load_window_busy || this->isVisible() == false)
+    if (_load_window_busy || ! this->isVisible())
     {
         LOG_PRINT(verbose_e, "BUSY\n");
         return false;
@@ -1390,7 +1390,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
         LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
         sample_to_skip = TrendPeriodSec;
 
-        theDateTimeScaleDraw = new DateTimeScaleDraw(QDateTime::currentDateTime());
+        theDateTimeScaleDraw = new DateTimeScaleDraw(TzeroLoaded); // QDateTime::currentDateTime());
         d_qwtplot->setAxisScaleDraw(timeAxisId, theDateTimeScaleDraw);
         for (int i = 0; i < PEN_NB; i++)
         {
