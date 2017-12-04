@@ -127,7 +127,6 @@ void info::refreshSystemTab()
         ui->sys_text->appendPlainText("missing serial number");
     }
 
-    ui->sys_text->appendPlainText("");
     fp = fopen("/rootfs_version", "r");
     if (fp) {
     /*
@@ -148,6 +147,8 @@ void info::refreshSystemTab()
     } else {
         ui->sys_text->appendPlainText("missing /rootfs_version");
     }
+    // newline per QRcode
+    ui->sys_text->appendPlainText("");
 }
 
 void info::refreshApplTab()
@@ -159,13 +160,13 @@ void info::refreshApplTab()
     ui->appl_text->setPlainText("");
 
     readFromDbQuick(ID_PLC_Version, &i);
-    ui->appl_text->appendPlainText(QString("PLC_Version: %1").arg((float)i/1000.0, 0, 'f', 3));
+    ui->appl_text->appendPlainText(QString("PLC RunTime: %1").arg((float)i/1000.0, 0, 'f', 3));
 
     readFromDbQuick(ID_PLC_PLC_Version, &i);
-    ui->appl_text->appendPlainText(QString("PLC_PLC_Version: %1").arg((float)i/1000.0, 0, 'f', 3));
+    ui->appl_text->appendPlainText(QString("PLC Application: %1").arg((float)i/1000.0, 0, 'f', 3));
 
     readFromDbQuick(ID_PLC_HMI_Version, &i); // ex HMIversion
-    ui->appl_text->appendPlainText(QString("PLC_HMI_Version: %1").arg((float)i/1000.0, 0, 'f', 3));
+    ui->appl_text->appendPlainText(QString("HMI Application: %1").arg((float)i/1000.0, 0, 'f', 3));
 
     ui->appl_text->appendPlainText("");
     if (getSdSN(SDcardSN)) {
@@ -185,7 +186,8 @@ void info::refreshApplTab()
     {
         ui->appl_text->appendPlainText("USB: -");
     }
-}
+    // newline per QRcode
+    ui->appl_text->appendPlainText("");}
 
 void info::refreshNetworkingTabs()
 {
@@ -222,7 +224,8 @@ void info::refreshNetworkingTabs()
         fclose(fp);
         fp = NULL;
     }
-
+    // newline per QRcode
+    ui->dns_text->appendPlainText("");
 
     // [eth0],[wlan0],[ppp0],[tun0]: MACaddress and IPaddress(es)
     QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
@@ -352,7 +355,6 @@ void info::refreshNetworkingTabs()
     ui->wlan0_text->appendPlainText("");
     ui->ppp0_text->appendPlainText("");
     ui->tun0_text->appendPlainText("");
-    // no ui->dns_text->appendPlainText("");
 }
 
 /**
@@ -445,19 +447,19 @@ void info::on_pushButtonQrc_clicked()
     int     nRes = 0;
     char command[1024];
 
-    szMessage.append(ui->tabWidget->tabText(ui->tabWidget->indexOf((QWidget *)&ui->sys_text)));
+    szMessage.append(ui->tabWidget->tabText(0) + "\n");
     szMessage.append(ui->sys_text->toPlainText());
-    szMessage.append(ui->tabWidget->tabText(ui->tabWidget->indexOf((QWidget *)&ui->appl_text)));
+    szMessage.append(ui->tabWidget->tabText(1) + "\n");
     szMessage.append(ui->appl_text->toPlainText());
-    szMessage.append(ui->tabWidget->tabText(ui->tabWidget->indexOf((QWidget *)&ui->dns_text)));
+    szMessage.append(ui->tabWidget->tabText(2) + "\n");
     szMessage.append(ui->dns_text->toPlainText());
-    szMessage.append(ui->tabWidget->tabText(ui->tabWidget->indexOf((QWidget *)&ui->eth0_text)));
+    szMessage.append(ui->tabWidget->tabText(3) + "\n");
     szMessage.append(ui->eth0_text->toPlainText());
-    szMessage.append(ui->tabWidget->tabText(ui->tabWidget->indexOf((QWidget *)&ui->wlan0_text)));
+    szMessage.append(ui->tabWidget->tabText(4) + "\n");
     szMessage.append(ui->wlan0_text->toPlainText());
-    szMessage.append(ui->tabWidget->tabText(ui->tabWidget->indexOf((QWidget *)&ui->ppp0_text)));
+    szMessage.append(ui->tabWidget->tabText(5) + "\n");
     szMessage.append(ui->ppp0_text->toPlainText());
-    szMessage.append(ui->tabWidget->tabText(ui->tabWidget->indexOf((QWidget *)&ui->tun0_text)));
+    szMessage.append(ui->tabWidget->tabText(6) + "\n");
     szMessage.append(ui->tun0_text->toPlainText());
 
     // Compose Command
