@@ -78,10 +78,6 @@ page::page(QWidget *parent) :
     protection_level = pwd_operator_e;
     //char vncDisplay[64];
     //printVncDisplayString(vncDisplay);
-    if (ID_FORCE_BUZZER <= 0)
-    {
-        Tag2CtIndex("PLC_buzzerOn", &ID_FORCE_BUZZER);
-    }
 }
 
 void page::refreshPage()
@@ -114,21 +110,17 @@ void page::updateData()
     setAlarmsBuzzer();
 #endif
 
-    /* FIXME: use the static index of the new fix variable FORCE_BUZZER */
-    if (ID_FORCE_BUZZER != -1)
-    {
-        int ivalue;
-        switch (readFromDbQuick(ID_FORCE_BUZZER, &ivalue)) {
-        case DONE:
-        case BUSY:
-            if (ivalue != 0) {
-                beep(BUZZER_DURATION_MS);
-            }
-            break;
-        case ERROR:
-        default:
-            ; // do nothing
+    int ivalue;
+    switch (readFromDbQuick(ID_PLC_buzzerOn, &ivalue)) {
+    case DONE:
+    case BUSY:
+        if (ivalue != 0) {
+            beep(BUZZER_DURATION_MS);
         }
+        break;
+    case ERROR:
+    default:
+        ; // do nothing
     }
 
 #ifdef ENABLE_AUTODUMP
