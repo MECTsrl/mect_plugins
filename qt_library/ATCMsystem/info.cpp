@@ -15,6 +15,13 @@
 #include "app_config.h"
 #include "qrcode.h"
 
+#include <QList>
+#include <QString>
+#include <QPlainTextEdit>
+#include <QNetworkInterface>
+#include <QNetworkAddressEntry>
+
+
 #if 0
 #include "fw_build_version.h"
 #else
@@ -93,122 +100,261 @@ info::info(QWidget *parent) :
  */
 void info::reload()
 {
-    char version[LINE_SIZE] = "";
+    refreshSystemTab();
+    refreshApplTab();
+    refreshNetworkingTabs();
+}
 
-    /* SN:
-     * BLD: "Release:"
-     * MOD: "Target:"
-     * LIB: "MectPlugin:"
-     * RT:  "RunTime:"
-     * PLC:
-     * HMI: "MectApps:"
-     */
+void info::refreshSystemTab()
+{
+    FILE *fp = NULL;
+    char buff[1024];
 
-    /* SN */
-    if (app_build_serial_get() != NULL)
-    {
-        ui->labelSNval->setText(app_build_serial_get());
-    }
-    else
-    {
-        ui->labelSNval->setText("-");
-    }
-    /* BLD */
-    if (getVersion("grep Release: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
-    {
-        ui->labelSOval->setText(version);
-    }
-    else
-    {
-        ui->labelSOval->setText("-");
-    }
-    /* MOD */
-    if (getVersion("grep Target: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
-    {
-        ui->labelTargetval->setText(version);
-    }
-    else
-    {
-        ui->labelTargetval->setText("-");
+    ui->sys_text->setPlainText("");
+
+    fp = fopen(APP_CONFIG_SERIAL_FILE, "r");
+    if (fp) {
+    /*
+        $ cat /etc/serial.conf
+        2016031007
+    */
+        while (fgets(buff, 1023, fp)) {
+            ui->sys_text->appendPlainText(QString("S/N: %1").arg(buff).trimmed());
+        }
+        fclose(fp);
+        fp = NULL;
+    } else {
+        ui->sys_text->appendPlainText("missing serial number");
     }
 
-    /* LIB */
-    if (getVersion("grep MectPlugin: /rootfs_version | cut -d: -f2", version, LINE_SIZE))
+    fp = fopen("/rootfs_version", "r");
+    if (fp) {
+    /*
+        $ cat /rootfs_version
+        Release: 3.0.6
+        Target:  TPAC1007_03
+        Qt:      4.8.5
+        Qwt:     6.1-multiaxes
+        RunTime: mect_suite_3.0/0.0
+        MectPlugin: mect_suite_3.0/0.0
+        MectApps: mect_suite_3.0/0.0
+    */
+        while (fgets(buff, 1023, fp)) {
+            ui->sys_text->appendPlainText(QString(buff).trimmed());
+        }
+        fclose(fp);
+        fp = NULL;
+    } else {
+        ui->sys_text->appendPlainText("missing /rootfs_version");
+    }
+    // newline per QRcode
+    ui->sys_text->appendPlainText("");
+}
+
+void info::refreshApplTab()
+{
+    char SDcardSN[SN_LEN];
+    const char *usage[] = {"-", "Unused", "Application", "Storage"};
+    int i = 0;
+
+    ui->appl_text->setPlainText("");
+
+    readFromDbQuick(ID_PLC_Version, &i);
+    ui->appl_text->appendPlainText(QString("PLC RunTime: %1").arg((float)i/1000.0, 0, 'f', 3));
+
+    readFromDbQuick(ID_PLC_PLC_Version, &i);
+    ui->appl_text->appendPlainText(QString("PLC Application: %1").arg((float)i/1000.0, 0, 'f', 3));
+
+    readFromDbQuick(ID_PLC_HMI_Version, &i); // ex HMIversion
+    ui->appl_text->appendPlainText(QString("HMI Application: %1").arg((float)i/1000.0, 0, 'f', 3));
+
+    ui->appl_text->appendPlainText("");
+    if (getSdSN(SDcardSN)) {
+        strcpy(SDcardSN, "-");
+    }
+    i = checkSDusage() + 1;
+    if (i < 0 || i > 4)
+        i = 0;
+    ui->appl_text->appendPlainText(QString("SDcard: %1 (%2)").arg(SDcardSN).arg(usage[i]));
+
+    ui->appl_text->appendPlainText("");
+    if (USBCheck())
     {
-        ui->labelMectLib->setText(version);
+        ui->appl_text->appendPlainText("USB: INSERTED");
     }
     else
     {
-        ui->labelMectLib->setText("-");
+        ui->appl_text->appendPlainText("USB: -");
+    }
+    // newline per QRcode
+    ui->appl_text->appendPlainText("");}
+
+void info::refreshNetworkingTabs()
+{
+    FILE *fp = NULL;
+    char buff[1024];
+
+    // [dns]
+    ui->dns_text->setPlainText("");
+    fp = fopen("/etc/resolv.conf", "r");
+    if (fp) {
+        char buff[1024];
+        unsigned b3, b2, b1, b0;
+        const char *fmt = "nameserver %u.%u.%u.%u\n";
+    /*
+        $ cat /etc/resolv.conf
+        nameserver 8.8.8.8
+        nameserver 8.8.4.4
+    */
+        int dns = 0;
+        while (fgets(buff, 1023, fp)) {
+            int num = sscanf(buff, fmt,
+            &b3, &b2, &b1, &b0);
+
+            if (num < 4) {
+                continue;
+            }
+            ++dns;
+            quint32 nameserver = b0 + (b1 << 8) + (b2 << 16) + (b3 << 24);
+            ui->dns_text->appendPlainText(
+                QString("DNS[%1] %2")
+                    .arg(dns)
+                    .arg(QHostAddress(nameserver).toString()));
+        }
+        fclose(fp);
+        fp = NULL;
+    }
+    // newline per QRcode
+    ui->dns_text->appendPlainText("");
+
+    // [eth0],[wlan0],[ppp0],[tun0]: MACaddress and IPaddress(es)
+    QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
+    QNetworkInterface iface;
+
+    ui->eth0_text->setPlainText("");
+    ui->wlan0_text->setPlainText("");
+    ui->ppp0_text->setPlainText("");
+    ui->tun0_text->setPlainText("");
+    foreach(iface, allInterfaces) {
+        QList<QNetworkAddressEntry> allEntries = iface.addressEntries();
+        QPlainTextEdit *plainText = NULL;
+
+        if (iface.name() == QString("eth0"))  {
+            plainText = ui->eth0_text;
+        } else if (iface.name() == QString("wlan0"))  {
+            plainText = ui->wlan0_text;
+        } else if (iface.name() == QString("ppp0"))  {
+            plainText = ui->ppp0_text;
+        } else if (iface.name() == QString("tun0"))  {
+            plainText = ui->tun0_text;
+        }
+        if (plainText) {
+            // MAC 70:B3:D5:62:52:11
+            // IP[1] 192.168.5.211/24
+            // IP[2] 192.168.0.211/24
+            plainText->appendPlainText("MAC " + iface.hardwareAddress());
+            plainText->appendPlainText("");
+            for (int n = 0; n < allEntries.count(); ++n) {
+                plainText->appendPlainText(
+                    QString("IP[%1] %2/%3")
+                    .arg(n + 1)
+                    .arg(QString(allEntries[n].ip().toString()))
+                    .arg(QString("%1").arg(allEntries[n].prefixLength()))
+                );
+            }
+        }
     }
 
-    /* RT */
-    uint16_t PLC_Version;
-    readFromDb(5394, &PLC_Version);
-    ui->labelFcrtsval->setText(QString("%1").arg((float)PLC_Version/1000.0, 0, 'f', 3));
+    // [eth0],[wlan0],[ppp0],[tun0]: routing
+    ui->eth0_text->appendPlainText("");
+    ui->wlan0_text->appendPlainText("");
+    ui->ppp0_text->appendPlainText("");
+    ui->tun0_text->appendPlainText("");
+    fp = fopen("/proc/net/route", "r");
+    if (fp) {
+        char Iface[16];
+        unsigned Destination, Gateway;
+        int Flags, RefCnt, Use, Metric;
+        unsigned Mask;
+        int MTU, Window, IRTT;
+        const char *fmt = "%16s %X %X %X %d %d %d %X %d %d %d\n";
+    /*
+        $ cat /proc/net/route
+        Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+        tun0    1500010A        00000000        0005    0       0       0       FFFFFFFF        0       0       0
+        eth0    0005A8C0        00000000        0001    0       0       0       00FFFFFF        0       0       0
+        tun0    0000010A        1500010A        0003    0       0       0       0000FFFF        0       0       0
+        lo      0000007F        00000000        0001    0       0       0       000000FF        0       0       0
+        eth0    00000000        0A05A8C0        0003    0       0       0       00000000        0       0       0
+        $ route -n
+        Kernel IP routing table
+        Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+        10.1.0.21       0.0.0.0         255.255.255.255 UH    0      0        0 tun0
+        192.168.5.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+        10.1.0.0        10.1.0.21       255.255.0.0     UG    0      0        0 tun0
+        127.0.0.0       0.0.0.0         255.0.0.0       U     0      0        0 lo
+        0.0.0.0         192.168.5.10    0.0.0.0         UG    0      0        0 eth0
+    */
+        while (fgets(buff, 1023, fp)) {
+            int num = sscanf(buff, fmt,
+            Iface, &Destination, &Gateway, &Flags, &RefCnt, &Use, &Metric, &Mask, &MTU, &Window, &IRTT);
 
-    /* PLC */
-    ui->labelPLCval->setText("-");
+            if (num < 11) {
+                continue;
+            }
+            QPlainTextEdit *plainText = NULL;
 
-    /* HMI */
-    ui->labelHMIval->setText(HMIversion);
+            if (strcmp(Iface, "eth0") == 0)  {
+                plainText = ui->eth0_text;
+            } else if (strcmp(Iface, "wlan0") == 0)  {
+                plainText = ui->wlan0_text;
+            } else if (strcmp(Iface, "ppp0") == 0)  {
+                plainText = ui->ppp0_text;
+            } else if (strcmp(Iface, "tun0") == 0)  {
+                plainText = ui->tun0_text;
+            }
+            if (plainText ) {
+                // /usr/include/linux/route.h
+#define	RTF_UP          0x0001		/* route usable		  	*/
+#define	RTF_GATEWAY     0x0002		/* destination is a gateway	*/
+#define	RTF_HOST        0x0004		/* host entry (net otherwise)	*/
+#define RTF_REINSTATE	0x0008		/* reinstate route after tmout	*/
+#define	RTF_DYNAMIC     0x0010		/* created dyn. (by redirect)	*/
+#define	RTF_MODIFIED	0x0020		/* modified dyn. (by redirect)	*/
+#define RTF_MTU         0x0040		/* specific MTU for this route	*/
+#define RTF_WINDOW      0x0080		/* per route window clamping	*/
+#define RTF_IRTT        0x0100		/* Initial round trip time	*/
+#define RTF_REJECT      0x0200		/* Reject route			*/
+                if (Flags & RTF_UP) { // no RTF_GATEWAY
+                    if (Destination == 0 && Mask == 0) {
+                        plainText->appendPlainText(
+                            QString("default route via %1")
+                            .arg(QHostAddress(ntohl(Gateway)).toString())
+                        );
+                    } else {
+                        QNetworkAddressEntry x = QNetworkAddressEntry();
+                        x.setIp(QHostAddress(ntohl(Destination)));
+                        x.setNetmask(QHostAddress(ntohl(Mask)));
+                        plainText->appendPlainText(
+                            QString("route %1/%2 via %3")
+                            .arg(QHostAddress(ntohl(Destination)).toString())
+                            .arg(x.prefixLength())
+                            .arg(QHostAddress(ntohl(Gateway)).toString())
+                        );
+                    }
+                }
+            }
 
-    char string[32];
-    /* MAC */
-    if (getMAC("eth0", string) == 0)
-    {
-        ui->labelMACval->setText(string);
-    }
-    else
-    {
-        ui->labelMACval->setText("-");
-    }
-    /* IP */
-    if (getIP("eth0", string) == 0)
-    {
-        ui->labelIPval->setText(string);
-    }
-    else
-    {
-        ui->labelIPval->setText("-");
-    }
-    /* GATEWAY */
-    if (app_build_gateway_get() != NULL)
-    {
-        ui->labelGatewayval->setText(app_build_gateway_get());
-    }
-    else
-    {
-        ui->labelGatewayval->setText("-");
-    }
-    /* NETMASK */
-    if (app_build_netmask_get() != NULL)
-    {
-        ui->labelNetMaskval->setText(app_build_netmask_get());
-    }
-    else
-    {
-        ui->labelNetMaskval->setText("-");
-    }
-    /* DNS1 */
-    if (app_build_dns1_get() != NULL)
-    {
-        ui->labelDNS1val->setText(app_build_dns1_get());
-    }
-    else
-    {
-        ui->labelDNS1val->setText("-");
-    }
-    /* DNS2 */
-    if (app_build_dns2_get() != NULL)
-    {
-        ui->labelDNS2val->setText(app_build_dns2_get());
-    }
-    else
-    {
-        ui->labelDNS2val->setText("-");
+        }
+        fclose(fp);
+        fp = NULL;
     }
 
+    // newline per QRcode
+    ui->eth0_text->appendPlainText("");
+    ui->wlan0_text->appendPlainText("");
+    ui->ppp0_text->appendPlainText("");
+    ui->tun0_text->appendPlainText("");
 }
 
 /**
@@ -219,50 +365,16 @@ void info::updateData()
 	/* call the parent updateData member */
 	page::updateData();
 
-    static int divisor = 0;
+//    static int divisor = 0;
 
-    if (REFRESH_MS * divisor < REMOVABLE_REFRESH_MS)
-    {
-        divisor ++;
-        return;
-    }
+//    if (REFRESH_MS * divisor < REMOVABLE_REFRESH_MS)
+//    {
+//        divisor ++;
+//        return;
+//    }
 
-    divisor = 0;
+//    divisor = 0;
 
-    char serial[SN_LEN] = "-";
-    if (getSdSN(serial) == 0)
-    {
-        ui->labelSDval->setText(serial);
-    }
-    else
-    {
-        ui->labelSDval->setText("-");
-    }
-
-    switch (checkSDusage())
-    {
-    case 0:
-    ui->labelLICval->setText("Unused");
-        break;
-    case 1:
-    ui->labelLICval->setText("Application");
-        break;
-    case 2:
-    ui->labelLICval->setText("Storage");
-        break;
-    default:
-    ui->labelLICval->setText("-");
-        break;
-    }
-
-    if (USBCheck())
-    {
-        ui->labelUSBval->setText("INSERTED");
-    }
-    else
-    {
-        ui->labelUSBval->setText("-");
-    }
 }
 
 #ifdef TRANSLATION
@@ -335,70 +447,20 @@ void info::on_pushButtonQrc_clicked()
     int     nRes = 0;
     char command[1024];
 
-    // Serial #
-    szMessage.append(ui->labelSNtxt->text());
-    szMessage.append(ui->labelSNval->text());
-    szMessage.append("\n");
-    // Build
-    szMessage.append(ui->labelSOtxt->text());
-    szMessage.append(ui->labelSOval->text());
-    szMessage.append("\n");
-    // Target
-    szMessage.append(ui->labelTargettxt->text());
-    szMessage.append(ui->labelTargetval->text());
-    szMessage.append("\n");
-    // Build Version
-    szMessage.append(ui->labelMectLibtxt->text());
-    szMessage.append(ui->labelMectLib->text());
-    szMessage.append("\n");
-    // Real Time
-    szMessage.append(ui->labelFcrtstxt->text());
-    szMessage.append(ui->labelFcrtsval->text());
-    szMessage.append("\n");
-    // PLC
-    szMessage.append(ui->labelPLCtxt->text());
-    szMessage.append(ui->labelPLCval->text());
-    szMessage.append("\n");
-    // HMI
-    szMessage.append(ui->labelHMItxt->text());
-    szMessage.append(ui->labelHMIval->text());
-    szMessage.append("\n");
-    // MAC
-    szMessage.append(ui->labelMACtxt->text());
-    szMessage.append(ui->labelMACval->text());
-    szMessage.append("\n");
-    // IP
-    szMessage.append(ui->labelIPtxt->text());
-    szMessage.append(ui->labelIPval->text());
-    szMessage.append("\n");
-    // NET MASK
-    szMessage.append(ui->labelNetMasktxt->text());
-    szMessage.append(ui->labelNetMaskval->text());
-    szMessage.append("\n");
-    // Gateway
-    szMessage.append(ui->labelGatewaytxt->text());
-    szMessage.append(ui->labelGatewayval->text());
-    szMessage.append("\n");
-    // DNS1
-    szMessage.append(ui->labelDNS1txt->text());
-    szMessage.append(ui->labelDNS1val->text());
-    szMessage.append("\n");
-    // DNS2
-    szMessage.append(ui->labelDNS2txt->text());
-    szMessage.append(ui->labelDNS2val->text());
-    szMessage.append("\n");
-    // SD Card
-    szMessage.append(ui->labelSDtxt->text());
-    szMessage.append(ui->labelSDval->text());
-    szMessage.append("\n");
-    // USB Port
-    szMessage.append(ui->labelUSBtxt->text());
-    szMessage.append(ui->labelUSBval->text());
-    szMessage.append("\n");
-    // License
-    szMessage.append(ui->labelLICtxt->text());
-    szMessage.append(ui->labelLICval->text());
-    szMessage.append("\n");
+    szMessage.append(ui->tabWidget->tabText(0) + "\n");
+    szMessage.append(ui->sys_text->toPlainText());
+    szMessage.append(ui->tabWidget->tabText(1) + "\n");
+    szMessage.append(ui->appl_text->toPlainText());
+    szMessage.append(ui->tabWidget->tabText(2) + "\n");
+    szMessage.append(ui->dns_text->toPlainText());
+    szMessage.append(ui->tabWidget->tabText(3) + "\n");
+    szMessage.append(ui->eth0_text->toPlainText());
+    szMessage.append(ui->tabWidget->tabText(4) + "\n");
+    szMessage.append(ui->wlan0_text->toPlainText());
+    szMessage.append(ui->tabWidget->tabText(5) + "\n");
+    szMessage.append(ui->ppp0_text->toPlainText());
+    szMessage.append(ui->tabWidget->tabText(6) + "\n");
+    szMessage.append(ui->tun0_text->toPlainText());
 
     // Compose Command
     sprintf(command,"qrencode -t PNG -o %s \"%s\" > /dev/null 2>&1", szFile.toAscii().data(), szMessage.toAscii().data());
@@ -409,4 +471,11 @@ void info::on_pushButtonQrc_clicked()
         nRes = myCode->exec();
         delete myCode;
     }
+}
+
+void info::on_pushButtonRefresh_clicked()
+{
+    refreshSystemTab();
+    refreshApplTab();
+    refreshNetworkingTabs();
 }
