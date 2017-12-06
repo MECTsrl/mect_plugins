@@ -793,12 +793,14 @@ bool USBumount()
 
 bool beep(int duration_ms)
 {
-    unsigned volume = 100;
+    int volume = 100;
     unsigned on_cs = duration_ms / 10;
     unsigned off_cs = 0;
     unsigned replies = 1;
-    unsigned value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
+    unsigned value;
 
+    readFromDbQuick(ID_PLC_TOUCH_VOLUME, &volume);
+    value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
     doWrite(ID_PLC_BUZZER, &value);
     return true;
 }

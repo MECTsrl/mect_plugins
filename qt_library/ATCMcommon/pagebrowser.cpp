@@ -110,17 +110,19 @@ void page::updateData()
     setAlarmsBuzzer();
 #endif
 
-    int ivalue;
-    switch (readFromDbQuick(ID_PLC_buzzerOn, &ivalue)) {
-    case DONE:
-    case BUSY:
-        if (ivalue != 0) {
-            beep(BUZZER_DURATION_MS);
-        }
-        break;
-    case ERROR:
-    default:
-        ; // do nothing
+    int buzzerOn;
+
+    readFromDbQuick(ID_PLC_buzzerOn, &buzzerOn);
+    if (buzzerOn != 0) {
+        int volume = 100;
+        unsigned on_cs = BUZZER_DURATION_MS / 10;
+        unsigned off_cs = 0;
+        unsigned replies = 1;
+        unsigned value;
+
+        readFromDbQuick(ID_PLC_BEEP_VOLUME, &volume);
+        value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
+        doWrite(ID_PLC_BUZZER, &value);
     }
 
 #ifdef ENABLE_AUTODUMP
@@ -588,6 +590,8 @@ bool page::deactivateVarList(const QStringList listVarname)
  */
 bool page::setStatusVar(int SynIndex, char Status)
 {
+    Q_UNUSED(SynIndex);
+    Q_UNUSED(Status);
     LOG_PRINT(error_e, "called  page::setStatusVar()\n");
     return false;
 }
@@ -639,8 +643,15 @@ void page::setAlarmsBuzzer(int period_ms)
     pthread_mutex_unlock(&alarmevents_list_mutex);
     if (do_beep)
     {
-        LOG_PRINT(verbose_e, "BEEP FOR '%d'\n", period_ms / 2);
-        beep(period_ms / 2);
+        int volume = 100;
+        unsigned on_cs = (period_ms / 2) / 10;
+        unsigned off_cs = 0;
+        unsigned replies = 1;
+        unsigned value;
+
+        readFromDbQuick(ID_PLC_ALARM_VOLUME, &volume);
+        value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
+        doWrite(ID_PLC_BUZZER, &value);
     }
 #endif
 }

@@ -91,10 +91,13 @@ public:
         Q_UNUSED(object);
 
         if (event->type() == QEvent::MouseButtonPress) {
+
             clock_gettime(CLOCK_REALTIME, &LastTouch);
 
-            if (BuzzerTouch == true)
-                beep(BUZZER_DURATION_MS);
+            if (BuzzerTouch == true) {
+                beep(BUZZER_DURATION_MS); // ID_PLC_TOUCH_VOLUME
+                return true;
+            }
         }
 
         return false;
