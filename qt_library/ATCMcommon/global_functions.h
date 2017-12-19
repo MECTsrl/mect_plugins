@@ -96,10 +96,9 @@ public:
 
             if (BuzzerTouch == true) {
                 beep(BUZZER_DURATION_MS); // ID_PLC_TOUCH_VOLUME
-                return true;
             }
         }
-
+        // always return false, otherwise we steel the event
         return false;
     }
 };
