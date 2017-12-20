@@ -799,9 +799,32 @@ bool beep(int duration_ms)
     unsigned replies = 1;
     unsigned value;
 
-    readFromDbQuick(ID_PLC_TOUCH_VOLUME, &volume);
-    value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
-    doWrite(ID_PLC_BUZZER, &value);
+    if (varNameArray[ID_PLC_BUZZER].tag[0]) {
+        // new buzzer management
+        readFromDbQuick(ID_PLC_TOUCH_VOLUME, &volume);
+        value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
+        doWrite(ID_PLC_BUZZER, &value);
+    } else {
+        // workaround for old projects
+        static int64_t buzzer_busy_timeout_ms = 0;
+        static int64_t now_ms = 0;
+        struct timespec now;
+
+        /* No buzzer */
+        if (Buzzerfd == -1)
+            return false;
+
+        /* Milliseconds since some time reference */
+        if (clock_gettime(CLOCK_MONOTONIC, &now) != 0)
+            return false;
+        now_ms = now.tv_sec * 1000 + now.tv_nsec / 1000000;
+
+        /* Buzz for duration_ms (if done buzzing). */
+        if (buzzer_busy_timeout_ms <= now_ms) {
+            (void)ioctl(Buzzerfd, BUZZER_BEEP, duration_ms);
+            buzzer_busy_timeout_ms = now_ms + duration_ms;
+        }
+    }
     return true;
 }
 

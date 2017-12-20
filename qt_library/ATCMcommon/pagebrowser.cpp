@@ -120,9 +120,15 @@ void page::updateData()
         unsigned replies = 1;
         unsigned value;
 
-        readFromDbQuick(ID_PLC_BEEP_VOLUME, &volume);
-        value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
-        doWrite(ID_PLC_BUZZER, &value);
+        if (varNameArray[ID_PLC_BUZZER].tag[0]) {
+            // new buzzer management
+            readFromDbQuick(ID_PLC_BEEP_VOLUME, &volume);
+            value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
+            doWrite(ID_PLC_BUZZER, &value);
+        } else {
+            // workaround for old projects
+            beep(on_cs * 10);
+        }
     }
 
 #ifdef ENABLE_AUTODUMP
@@ -649,9 +655,15 @@ void page::setAlarmsBuzzer(int period_ms)
         unsigned replies = 1;
         unsigned value;
 
-        readFromDbQuick(ID_PLC_ALARM_VOLUME, &volume);
-        value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
-        doWrite(ID_PLC_BUZZER, &value);
+        if (varNameArray[ID_PLC_BUZZER].tag[0]) {
+            // new buzzer management
+            readFromDbQuick(ID_PLC_ALARM_VOLUME, &volume);
+            value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
+            doWrite(ID_PLC_BUZZER, &value);
+        } else {
+            // workaround for old projects
+            beep(on_cs * 10);
+        }
     }
 #endif
 }
