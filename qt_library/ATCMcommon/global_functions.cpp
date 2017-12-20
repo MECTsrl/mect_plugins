@@ -98,7 +98,7 @@ int readIniFile(void)
     LogPeriodSecF = settings.value(LOG_PERIOD_FAST_TAG, LOG_PERIOD_FAST_DEF).toInt();
     LOG_PRINT(verbose_e, "'%s' = %d\n", LOG_PERIOD_FAST_TAG, LogPeriodSecF);
 
-    MaxWindowSec = settings.value(WINDOW_SEC_TAG, MAX_SAMPLE_NB * ((LogPeriodSecF>LogPeriodSecS)?LogPeriodSecF:LogPeriodSecS)).toInt();
+    MaxWindowSec = settings.value(WINDOW_SEC_TAG, 60).toInt();
     LOG_PRINT(verbose_e, "'%s' = %d\n", WINDOW_SEC_TAG, MaxWindowSec);
 
     MaxLogUsageMb = settings.value(MAX_SPACE_AVAILABLE_TAG, MAX_SPACE_AVAILABLE_DEF).toInt();

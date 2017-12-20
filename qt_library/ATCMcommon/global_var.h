@@ -43,6 +43,8 @@ extern int active_password;
 #include <linux/mxs-buzzer.h>
 #define BUZZER_DURATION_MS 120
 
+#define ID_PLC_time         5390
+
 #define ID_PLC_buzzerOn     5397
 #define ID_PLC_Version      5394
 

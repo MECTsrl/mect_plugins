@@ -40,7 +40,7 @@ int active_password = pwd_operator_e;
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 int LogPeriodSecS = LOG_PERIOD_MS / 1000;
 int LogPeriodSecF = LOG_PERIOD_MS / 1000;
-int MaxWindowSec = MAX_SAMPLE_NB * ((LogPeriodSecF>LogPeriodSecS)?LogPeriodSecF:LogPeriodSecS);
+int MaxWindowSec = 60;
 char StoreInit[32];
 char StoreFinal[32];
 int MaxLogUsageMb = MAX_SPACE_AVAILABLE_DEF;

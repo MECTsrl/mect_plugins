@@ -27,6 +27,7 @@
 #include <ctype.h>
 #include <QMessageBox>
 #include <unistd.h>
+#include <QDesktopWidget>
 
 #include <time.h>
 
@@ -82,7 +83,7 @@ static QDateTime unzoom_actualTzero;
 static int unzoom_actualVisibleWindowSec;
 
 static DateTimeScaleDraw * theDateTimeScaleDraw;
-
+static int max_sample_nb = MAX_SAMPLE_NB;
 
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
@@ -98,10 +99,16 @@ trend::trend(QWidget *parent) :
     //setStyle::set(this);
 
     /* initialization */
+    //max_sample_nb = parent->geometry().width(); // 240 272 320 480 600 800
+    max_sample_nb = QApplication::desktop()->screenGeometry().width();
+
+    if (max_sample_nb < 42 || max_sample_nb > MAX_SAMPLE_NB) {
+        max_sample_nb = MAX_SAMPLE_NB;
+    }
     for (int i = 0; i < PEN_NB; i++)
     {
-        pens[i].x = new double [MAX_SAMPLE_NB + 1];
-        pens[i].y = new double [MAX_SAMPLE_NB + 1];
+        pens[i].x = new double [max_sample_nb + 1];
+        pens[i].y = new double [max_sample_nb + 1];
         pens[i].curve = NULL; // new InterruptedCurve(); // QwtPlotCurve();
     }
     
@@ -160,6 +167,7 @@ trend::trend(QWidget *parent) :
     first_time = false;
     overloadActualTzero = false;
     lastLogFileName.clear();
+    lastLog_time = 0;
 
     actualVisibleWindowSec = 0;
 
@@ -263,7 +271,7 @@ void trend::updateData()
 
         VisibleWindowSec = actualVisibleWindowSec;
         LoadedWindowSec = OVERLOAD_SECONDS(VisibleWindowSec);
-        TrendPeriodSec = (int)(LoadedWindowSec / MAX_SAMPLE_NB);
+        TrendPeriodSec = LoadedWindowSec / max_sample_nb;
         if (TrendPeriodSec < LogPeriodSecF)
             TrendPeriodSec = LogPeriodSecF;
 
@@ -544,52 +552,51 @@ void trend::updateData()
         do_pan = false;
     }
 
+    /* update the graph only if the status is online or if the new samples are visible */
+    static int tic = 0;
     if (_online_ || do_refresh_plot)
-    {
-        /* update the graph only if the status is online or if the new sample are visible */
+    {    
         if (_online_)
         {
-            static int counter = 0;
-
-            if (counter % 2 == 0)
+            if (tic % 2 == 0) // each second
             {
                 do_refresh_plot = true;
                 /* online mode: if necessary center the actual data */
                 QDateTime now =  QDateTime::currentDateTime();
 
-                actualTzero = now.addSecs(-actualVisibleWindowSec);
+                actualTzero = now.addSecs(- actualVisibleWindowSec);
             }
-
-            if (counter % 4 == 0)
+            if (tic % 4 == 0) // each even second
             {
                 ui->pushButtonOnline->setStyleSheet("QPushButton {"
                                                     "border-image: url(:/libicons/img/Chess1.png);"
                                                     "qproperty-focusPolicy: NoFocus;"
                                                     "}");
-            }
-            else if (counter % 4 == 2)
-            {
+                ui->pushButtonOnline->repaint();
+            } else if (tic % 4 == 2) { // each odd second
                 ui->pushButtonOnline->setStyleSheet("QPushButton {"
                                                     "border-image: url(:/libicons/img/Chess2.png);"
                                                     "qproperty-focusPolicy: NoFocus;"
                                                     "}");
+                ui->pushButtonOnline->repaint();
             }
-            ++counter;
         }
+
         if (do_refresh_plot)
         {
             do_refresh_plot = false;
             loadOrientedWindow();
         }
     }
-    else
+    else if (tic % 2 == 0) // each second
     {
         ui->pushButtonOnline->setStyleSheet("QPushButton {"
                                             "border-image: url(:/libicons/img/Chess.png);"
                                             "qproperty-focusPolicy: NoFocus;"
                                             "}");
+        ui->pushButtonOnline->repaint();
     }
-    ui->pushButtonOnline->repaint();
+    ++tic;
 }
 
 #ifdef TRANSLATION
@@ -903,7 +910,6 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     char buf[42];
     QList<int> filter;
     FILE * fp = NULL;
-    time_t last_used = 0;
     int samples[PEN_NB] = {0, 0, 0, 0};
     bool updating = false;
     char pathname[FILENAME_MAX];
@@ -926,6 +932,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     }
 
     LOG_PRINT(verbose_e, "FOUND LOG FILE '%s'\n", pathname);
+    // fprintf(stderr, "trend: loading (%s)\n", (filename ? filename : "(null)"));
+
     /*
      * File format:
      * date      ;     time;   tag1 ; ...;   tagN
@@ -1000,7 +1008,6 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
     }
 
     /* extract data */
-    last_used = 0;
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
         struct tm tfile;
@@ -1032,6 +1039,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         t = mktime(&tfile);
         lastLog_time = t;
 
+        // update screen counter
         if (row % 750 == 0)
         {
             ui->labelDate->setText(p); // HH:MM:SS
@@ -1050,13 +1058,8 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             /* too late */
             break;
         }
-        // skip samples for large time intervals
-        if ((t - last_used) < skip)
-        {
-            continue;
-        }
-        last_used = t;
 
+        // adding sample, skipping samples for large time intervals (must be separately checked for each pen)
         for (int i = 0; i < filter.count() && (p = strtok_csv(NULL, SEPARATOR, &r)) != NULL; ++i)
         {
             int j = filter.at(i);
@@ -1064,8 +1067,25 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             {                
                 continue;
             }
+            // skipping if last sample is too near
+            if (pens[j].sample > 0) {
+                double x = (t - t0);
+                double delta_t = x - pens[j].x[pens[j].sample - 1];
+
+                if (delta_t < skip) {
+                    continue;
+                }
+            }
+            // make space, losing the older one
+            if (pens[j].sample == max_sample_nb) {
+
+                //fprintf(stderr, "trend: %s#%d %s pen[%d] making space\n", (filename ? filename : "(null)"), row, buf, j);
+                memcpy(&pens[j].x[0], &pens[j].x[1], ((max_sample_nb - 1) * sizeof(double)));
+                memcpy(&pens[j].y[0], &pens[j].y[1], ((max_sample_nb - 1) * sizeof(double)));
+                pens[j].sample = max_sample_nb - 1;
+            }
             // add the sample
-            if (pens[j].sample < MAX_SAMPLE_NB) {
+            if (pens[j].sample < max_sample_nb) {
                 char *s = NULL;
                 double d;
                 d = strtod(p, &s);
@@ -1078,7 +1098,11 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
                 pens[j].x[pens[j].sample] = (t - t0);
                 pens[j].sample++;
 
-                ++samples[j];
+                ++samples[j]; // only for NANs
+
+                //fpos_t pos;
+                //fgetpos(fp, &pos);
+                //fprintf(stderr, "trend: pos=%u %s pen[%d].sample=%d/%d %f\n", pos.__pos, buf, j, pens[j].sample, max_sample_nb, d);
             }
         }
 
@@ -1092,7 +1116,7 @@ exit_function:
     // for each curve, if there were samples, we add a NAN (i.e. force a discontinuity) at the end of each log
     for (int j = 0; j < PEN_NB; ++j)
     {
-        if (samples[j] > 0 && pens[j].sample < MAX_SAMPLE_NB)
+        if (samples[j] > 0 && pens[j].sample < max_sample_nb)
         {
             pens[j].y[pens[j].sample] = NAN;
             pens[j].x[pens[j].sample] = pens[j].x[pens[j].sample - 1]; // ok: samples[j] > 0
@@ -1356,7 +1380,7 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
 
     _load_window_busy = true;
 
-    TrendPeriodSec = LoadedWindowSec / MAX_SAMPLE_NB;
+    TrendPeriodSec = LoadedWindowSec / max_sample_nb;
     if (TrendPeriodSec < LogPeriodSecF)
         TrendPeriodSec = LogPeriodSecF;
 
@@ -1433,11 +1457,8 @@ bool trend::loadWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             if (j < pens[i].sample)
             {
                 // shift left the samples (position and time)
-                for (int k = 0; k < (pens[i].sample - j); ++k)
-                {
-                    pens[i].x[k] = pens[i].x[k + j];
-                    pens[i].y[k] = pens[i].y[k + j];
-                }
+                memcpy(&pens[i].x[0], &pens[i].x[j], ((pens[i].sample - j) * sizeof(double)));
+                memcpy(&pens[i].y[0], &pens[i].y[j], ((pens[i].sample - j) * sizeof(double)));
                 // and reduce the size
                 pens[i].sample = (pens[i].sample - j);
             }
