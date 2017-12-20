@@ -19,21 +19,6 @@
 /* this define set the window icon the file can have a path into resource file or into the file system */
 #define WINDOW_ICON ":/libicons/img/Home.png"
 
-/**
- * @brief this macro is used to set the page 1  style.
- * the syntax is html stylesheet-like
- */
-#define SET_PAGE1_STYLE() { \
-    QString mystyle; \
-    mystyle.append(this->styleSheet()); \
-    /* this section set the style of the generic QPushButton in this page */ \
-    mystyle.append("QPushButton#pushButtonPages4"); \
-    mystyle.append("{"); \
-    mystyle.append("    background-image: url(:/icons/img/button1.png);"); \
-    mystyle.append("    background-repeat: none;"); \
-    mystyle.append("}"); \
-    this->setStyleSheet(mystyle); \
-    }
 
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
@@ -61,7 +46,6 @@ menu::menu(QWidget *parent) :
     }
     
     //setStyle::set(this);
-    SET_PAGE1_STYLE();
     labelDataOra = ui->labelDataOra;
     
     reload();
@@ -189,21 +173,25 @@ void menu::on_pushButtonInfo_clicked()
 
 void menu::on_pushButtonPages1_clicked()
 {
+    ui->pushButtonPages1->setDown(false); // in case the page doesn't exist
     goto_page("page100");
 }
 
 void menu::on_pushButtonPages2_clicked()
 {
+    ui->pushButtonPages2->setDown(false); // in case the page doesn't exist
     goto_page("page200");
 }
 
 void menu::on_pushButtonPages3_clicked()
 {
+    ui->pushButtonPages3->setDown(false); // in case the page doesn't exist
     goto_page("page300");
 }
 
 void menu::on_pushButtonPages4_clicked()
 {
+    ui->pushButtonPages4->setDown(false); // in case the page doesn't exist
     goto_page("page400");
 }
 

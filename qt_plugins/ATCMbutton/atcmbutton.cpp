@@ -705,6 +705,7 @@ void  ATCMbutton::goToPage()
 #endif
         {
             LOG_PRINT(verbose_e, "Going to page %s\n", m_pagename.toAscii().data());
+            this->setDown(false); // in case the page doesn't exist
             emit newPage(m_pagename.toAscii().data(), m_remember);
         }
     }
