@@ -227,7 +227,7 @@ void info::refreshNetworkingTabs()
     // newline per QRcode
     ui->dns_text->appendPlainText("");
 
-    // [eth0],[wlan0],[ppp0],[tun0]: MACaddress and IPaddress(es)
+    // [eth0],[wlan0],[ppp0],[tun_mrs]: MACaddress and IPaddress(es)
     QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
     QNetworkInterface iface;
 
@@ -245,7 +245,7 @@ void info::refreshNetworkingTabs()
             plainText = ui->wlan0_text;
         } else if (iface.name() == QString("ppp0"))  {
             plainText = ui->ppp0_text;
-        } else if (iface.name() == QString("tun0"))  {
+        } else if (iface.name() == QString("tun_mrs"))  {
             plainText = ui->tun0_text;
         }
         if (plainText) {
@@ -265,7 +265,7 @@ void info::refreshNetworkingTabs()
         }
     }
 
-    // [eth0],[wlan0],[ppp0],[tun0]: routing
+    // [eth0],[wlan0],[ppp0],[tun_mrs]: routing
     ui->eth0_text->appendPlainText("");
     ui->wlan0_text->appendPlainText("");
     ui->ppp0_text->appendPlainText("");
@@ -281,17 +281,17 @@ void info::refreshNetworkingTabs()
     /*
         $ cat /proc/net/route
         Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-        tun0    1500010A        00000000        0005    0       0       0       FFFFFFFF        0       0       0
+        tun_mrs 1500010A        00000000        0005    0       0       0       FFFFFFFF        0       0       0
         eth0    0005A8C0        00000000        0001    0       0       0       00FFFFFF        0       0       0
-        tun0    0000010A        1500010A        0003    0       0       0       0000FFFF        0       0       0
+        tun_mrs 0000010A        1500010A        0003    0       0       0       0000FFFF        0       0       0
         lo      0000007F        00000000        0001    0       0       0       000000FF        0       0       0
         eth0    00000000        0A05A8C0        0003    0       0       0       00000000        0       0       0
         $ route -n
         Kernel IP routing table
         Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-        10.1.0.21       0.0.0.0         255.255.255.255 UH    0      0        0 tun0
+        10.1.0.21       0.0.0.0         255.255.255.255 UH    0      0        0 tun_mrs
         192.168.5.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
-        10.1.0.0        10.1.0.21       255.255.0.0     UG    0      0        0 tun0
+        10.1.0.0        10.1.0.21       255.255.0.0     UG    0      0        0 tun_mrs
         127.0.0.0       0.0.0.0         255.0.0.0       U     0      0        0 lo
         0.0.0.0         192.168.5.10    0.0.0.0         UG    0      0        0 eth0
     */
@@ -310,7 +310,7 @@ void info::refreshNetworkingTabs()
                 plainText = ui->wlan0_text;
             } else if (strcmp(Iface, "ppp0") == 0)  {
                 plainText = ui->ppp0_text;
-            } else if (strcmp(Iface, "tun0") == 0)  {
+            } else if (strcmp(Iface, "tun_mrs") == 0)  {
                 plainText = ui->tun0_text;
             }
             if (plainText ) {
