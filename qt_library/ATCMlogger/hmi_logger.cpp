@@ -903,7 +903,7 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
                 fflush(alarmsfp);
                 sync();
                 doReloadAlarmsLog = true;
-                system(RS_ALARM_PUSH_CMD " start &");
+                system(RS_ALARM_PUSH_CMD " start > /dev/null 2>&1 &");
             }
         }
         retval = true;
@@ -952,7 +952,7 @@ exit_function:
                         fflush(alarmsfp);
                         sync();
                         doReloadAlarmsLog = true;
-                        system(RS_ALARM_PUSH_CMD " start &");
+                        system(RS_ALARM_PUSH_CMD " start > /dev/null 2>&1 &");
                     }
                 }
             }
