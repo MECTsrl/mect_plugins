@@ -29,17 +29,35 @@
 		<li/>
 <p class="western">Open	new project in QtCreator.</p>
 		<li/>
-<p class="western">When	you open the project the following image appears, then press &ldquo;<strong>Configure Project</strong>&rdquo; key.</p>
+<p class="western">When	you open the project the following image appears, then press &ldquo;<strong>Configure Project</strong>&rdquo; key.
+<img src="Rinominare_progetto_1.png" name="Immagine122" align="bottom" width="636" height="294" border="0"/></p>
 	</ol>
-	<p class="western"><img src="Rinominare_progetto_1.png" name="Immagine122" align="bottom" width="636" height="294" border="0"/>
-</p>
-	<ol start="7">
+	
+	<ol start="8">
 		<li/>
 <p class="western">Perform &ldquo;Clean All&rdquo; and &ldquo;Run qmake&rdquo; (see chapter &ldquo;<font color="#0000ff"><u><a class="western" href="Errori_compilazione_eng.html">Build errors</a></u></font>&rdquo;)</p>
 		<li/>
 <p class="western">Build the project.</p>
 		<li/>
-<p class="western">Set the parameters to send the project to the target, see chapter &ldquo;<font color="#0000ff"><u><a class="western" href="Trasferimento_applicazione_eng.html">Download to the panel of a graphic application</a></u></font>&rdquo;.</p>
+<p class="western">Set the parameters to send the project to the target:
+	<ul>
+		<li/>
+<p class="western"><strong>Disable</strong>, in the item &ldquo;Upload files via SFTP&rdquo;, flag &ldquo;<strong>Incremental deployment</strong>&rdquo;;</p>
+	</ul>
+	<p class="western"><img src="Trasferimento_applicazione_7.png" name="Immagine 62" align="bottom" width="699" height="329" border="0"/></p>
+	<ul>
+		<li/>
+<p class="western"><span lang="en-US">Click on &ldquo;Add Deploy Step&rdquo; and select &ldquo;<strong>Run custom remote command</strong>&rdquo;</span></p>
+	</ul>
+<p class="western"><img src="Trasferimento_applicazione_8.png" name="Immagine 69" align="bottom" width="685" height="417" border="0"/></p>
+	<ul>
+		<li/>
+<p class="western">Write &ldquo;<strong>stop</strong>&rdquo; (lowercase) and move &ldquo;Run custom remote command&rdquo; block	one position up by arrow in 
+	yellow (press Details).</p>
+	</ul>
+<p class="western"><img src="Trasferimento_applicazione_9.png" name="Immagine 107" align="bottom" width="699" height="63" border="0"/></p>
+<p class="western">Final result must be the following:</p>
+<p class="western"><img src="Trasferimento_applicazione_10.png" name="Immagine 108" align="bottom" width="700" height="361" border="0"/></p></p>
 	</ol>
 	<br/>
 		</body>

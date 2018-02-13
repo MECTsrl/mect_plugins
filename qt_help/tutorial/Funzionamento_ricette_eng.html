@@ -15,7 +15,7 @@
 	<body>
 		<h3 class="western">Recipes functioning</h3>
 		<p class="western">Recipes can only  descend from existing ones on target. New families of recipes can be built on PC and then loaded on target trough 
-		web interface described in the relevant paragraph.</p>
+		web interface described in the relevant paragraph or essere trasferite direttamente dal progetto.</p>
 	<p class="western">Recipes are text files in .csv format where in each row there is a variable and the value to link to.</p>
 	<p class="western">For example, to create a recipe that sets in the <strong>first</strong> step output  TPLC_OUT_1 to 0 and sets to 1 output TPLC_OUT_2 
 	and in step <b>two</b> the output TPLC_OUT_1 to 1 and to 0 the output TPLC_OUT_2 write:</p>
@@ -27,10 +27,30 @@
 	
 	<p class="western"><strong>WARNING:</strong> use &ldquo;;&rdquo; as separator.</p>
 	
-	<p class="western">Zip the file/folder to upload a recipe or a family of recipes on the device and transfer via web interface. See 
-	&ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web_eng.html">Web interface functioning</a></u></font>&rdquo; chapter.</p>
-	<p class="western"><u>Example showing how to create the zip file</u>: it is possible to create one or more folders containing recipes (files with .csv extension): &ldquo;Zip&rdquo; the folders and download them on the device by the transfer web interface.</p>
-	
+	<p class="western">Zip the file/folder to upload a recipe or a family of recipes on the device and transfer via <strong>web interface</strong> (see 
+	&ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web_eng.html">Web interface functioning</a></u></font>&rdquo; chapter) oppure direttamente con il <strong>progetto</strong>.</p>
+	<p class="western">In quest&rsquo;ultimo caso occorre seguire i questi passaggi:</p>
+	<ul>
+	<li/>
+	<p class="western">Da &ldquo;esplora risorse&rdquo; creare la cartella &ldquo;<strong>recipe</strong>&rdquo; all&rsquo;interno del progetto.</p>
+	<p class="western"><img src="Funzionamento_ricette_8.png" name="Immagine 331" align="bottom" width="261" height="287" border="0"/></p>
+	<li/>
+	<p class="western">Inserire all’interno i file .csv delle ricette.</p>
+	<li/>
+	<p class="western">Con il tasto destro premere la voce <strong>&ldquo;Add Exising Files..&rdquo;</strong> e selezionare le ricette da caricare.</p>
+	<p class="western"><img src="Funzionamento_ricette_9.png" name="Immagine 332" align="bottom" width="536" height="445" border="0"/></p>
+	<li/>
+	<p class="western">Aprire il file con estensione &ldquo;<strong>.pro</strong>&rdquo; e inserire il seguente codice (Ricetta_1 e Ricetta_2....dovranno essere sostituiti dai nomi delle ricette che si vogliono usare)</p>
+	<p class="western"><img src="Funzionamento_ricette_10.png" name="Immagine 333" align="bottom" width="866" height="467" border="0"/></p>
+	<pre class="western">recipe.files = recipe/Ricetta_1.csv recipe/Ricetta_2.csv</pre>
+	<pre class="western">recipe.path = /local/data/recipe</pre>
+	<br/>
+
+	<pre class="western"><font color="#003f80">INSTALLS</font> += \</pre>
+	<pre class="western">	recipe</pre>
+	</ul>
+	<br/>
+	<h4 class="western">Sul dispositivo</h4>
 	<p class="western">The recipes display/load/modify is in 2 steps:</p>
 	<ol>
 		<li/>

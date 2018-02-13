@@ -16,7 +16,7 @@
 		<h3 class="western">Funzionamento ricette</h3>
 		<p class="western">Le ricette potranno solo derivare dalle ricette preesistenti sul target. Nuove famiglie di
 	ricette possono essere create da PC e poi caricate sul target attraverso l&rsquo;interfaccia web descritta nel paragrafo ad essa
-	dedicato.</p>
+	dedicato oppure essere trasferite direttamente dal progetto.</p>
 <p class="western">Le ricette sono dei semplici file di testo in formato .csv dove in ciascuna riga &egrave;
 	specificata la variabile e il valore da associare.</p>
 	<p class="western">Per esempio, per creare una	ricetta che setti al <strong>primo step</strong> l&rsquo;uscita TPLC_OUT_1 a 0 e a 1
@@ -30,9 +30,29 @@
 	<p class="western"><strong>ATTENZIONE:</strong> utilizzare il &ldquo;;&rdquo; come separatore.</p>
 	
 	<p class="western">Per caricare una ricetta o una famiglia di ricette nel dispositivo occorre &ldquo;<strong>zippare</strong>&rdquo; il
-	file/cartella e trasferirla al dispositivo tramite interfaccia web. 
-	Vedi capitolo &ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web.html">Funzionamento interfaccia web</a></u></font>&rdquo;.</p>
-	<p class="western"><u>Esempio per la creazione dello zip</u>: si possono avere una o pi&ugrave; cartelle contenenti ricette (file con estensione .csv). Fare lo &ldquo;zip&rdquo; della/e cartella/e e usare l&rsquo;interfaccia web per il trasferimento verso il dispositivo.</p>
+	file/cartella e trasferirla al dispositivo attraverso <strong>interfaccia web</strong> (vedi capitolo &ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web.html">Funzionamento interfaccia web</a></u></font>&rdquo;) oppure direttamente con il <strong>progetto</strong>.</p>
+	<p class="western">In quest&rsquo;ultimo caso occorre seguire i questi passaggi:</p>
+	<ul>
+	<li/>
+	<p class="western">Da &ldquo;esplora risorse&rdquo; creare la cartella &ldquo;<strong>recipe</strong>&rdquo; all&rsquo;interno del progetto.</p>
+	<p class="western"><img src="Funzionamento_ricette_8.png" name="Immagine 331" align="bottom" width="261" height="287" border="0"/></p>
+	<li/>
+	<p class="western">Inserire all’interno i file .csv delle ricette.</p>
+	<li/>
+	<p class="western">Con il tasto destro premere la voce <strong>&ldquo;Add Exising Files..&rdquo;</strong> e selezionare le ricette da caricare.</p>
+	<p class="western"><img src="Funzionamento_ricette_9.png" name="Immagine 332" align="bottom" width="536" height="445" border="0"/></p>
+	<li/>
+	<p class="western">Aprire il file con estensione &ldquo;<strong>.pro</strong>&rdquo; e inserire il seguente codice (Ricetta_1 e Ricetta_2....dovranno essere sostituiti dai nomi delle ricette che si vogliono usare)</p>
+	<p class="western"><img src="Funzionamento_ricette_10.png" name="Immagine 333" align="bottom" width="866" height="467" border="0"/></p>
+	<pre class="western">recipe.files = recipe/Ricetta_1.csv recipe/Ricetta_2.csv</pre>
+	<pre class="western">recipe.path = /local/data/recipe</pre>
+	<br/>
+
+	<pre class="western"><font color="#003f80">INSTALLS</font> += \</pre>
+	<pre class="western">	recipe</pre>
+	</ul>
+	<br/>
+	<h4 class="western">Sul dispositivo</h4>
 	<p class="western">La visualizzazione/caricamento/modifica delle ricette &egrave; stata scomposta in due passi:</p>
 	<ol>
 		<li/>
@@ -74,8 +94,7 @@
 	Read (<span lang="it-IT"><img src="Funzionamento_ricette_5.gif" name="Immagine 67" align="bottom" width="24" height="24" border="0"/>
 </span>).</p>
 		<li/>
-<p class="western">Scrivere sui dispositivi i
-		valori visualizzati nella ricetta premendo il pulsante Load (<span lang="it-IT"><img src="Funzionamento_ricette_7.gif" name="Immagine 66" align="bottom" width="24" height="24" border="0"/>
+<p class="western">Scrivere sui dispositivi i valori visualizzati nella ricetta premendo il pulsante Load (<span lang="it-IT"><img src="Funzionamento_ricette_7.gif" name="Immagine 66" align="bottom" width="24" height="24" border="0"/>
 </span>).</p>
 	</ul>
 	<p class="western">Salvare la attuale ricetta:
