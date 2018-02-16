@@ -391,7 +391,7 @@
 					<p class="western"><strong>PLC_FiltAnIn_..</strong></p>
 				</td>
 				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
-					<p class="western">media mobile sugli ingressi analogici</p>
+					<p class="western">filtro sugli ingressi analogici</p>
 				</td>
 				<td width="96" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
 					<p class="western">-</p>
@@ -510,7 +510,7 @@
 					<p class="western"><strong>PLC_buzzerOn</strong></p>
 				</td>
 				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
-					<p class="western">se settata a 1 abilita il buzzer che continua a suonare fino a che la variabile non &egrave; settata a 0</p>
+					<p class="western">suono del buzzer (abilitato = 1 disabilitato = 0)</p>
 				</td>
 				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
 					<p class="western"><br/>
@@ -700,7 +700,75 @@
 				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
 					<p class="western">1</p>
 				</td>
-			</tr>			
+			</tr>	
+			<tr valign="top">
+				<td width="152" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>PLC_BEEP_VOLUME</strong></p>
+				</td>
+				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western">Volume del buzzer (quando buzzerOn)</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
+					<p class="western">1</p>
+				</td>
+			</tr>	
+			<tr valign="top">
+				<td width="152" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>PLC_TOUCH_VOLUME</strong></p>
+				</td>
+				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western">Volume del touch</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
+					<p class="western">1</p>
+				</td>
+			</tr>	
+			<tr valign="top">
+				<td width="152" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>PLC_ALARM_VOLUME</strong></p>
+				</td>
+				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western">Volume di allarme</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
+					<p class="western">1</p>
+				</td>
+			</tr>	
+			<tr valign="top">
+				<td width="152" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>PLC_BUZZER</strong></p>
+				</td>
+				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western">Abilitazione per i paramentri dinamici del buzzer (0x44332211 up=0x11(%) on=0x22(cs) off=0x33(cs) rep=0x44(times))</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
+					<p class="western">1</p>
+				</td>
+			</tr>					
 		</tbody>
 	</table>
 	<p class="western">Per le configurazioni delle variabili che hanno
@@ -1128,7 +1196,7 @@
 					<p class="western"><strong>PLC_AnIn&hellip;Filter</strong></p>
 				</td>
 				<td width="257" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
-					<p class="western">media mobile sugli ingressi analogici</p>
+					<p class="western">filtro sugli ingressi analogici</p>
 				</td>
 				<td width="68" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
 					<p class="western">-</p>
@@ -1248,8 +1316,7 @@
 					<p class="western"><strong>PLC_buzzerOn</strong></p>
 				</td>
 				<td width="257" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
-					<p class="western">se settata a 1 abilita il buzzer che continua
-					a suonare fino a che la variabile non &egrave; settata a 0</p>
+					<p class="western">suono del buzzer (abilitato = 1 disabilitato = 0)</p>
 				</td>
 				<td width="68"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
 					<p class="western"><br/>
@@ -1475,7 +1542,75 @@
 				<td width="67"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
 					<p class="western">1</p>
 				</td>
-			</tr>			
+			</tr>
+<tr valign="top">
+				<td width="152" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>PLC_BEEP_VOLUME</strong></p>
+				</td>
+				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western">Volume del buzzer (quando buzzerOn)</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
+					<p class="western">1</p>
+				</td>
+			</tr>	
+			<tr valign="top">
+				<td width="152" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>PLC_TOUCH_VOLUME</strong></p>
+				</td>
+				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western">Volume del touch</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
+					<p class="western">1</p>
+				</td>
+			</tr>	
+			<tr valign="top">
+				<td width="152" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>PLC_ALARM_VOLUME</strong></p>
+				</td>
+				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western">Volume di allarme</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
+					<p class="western">1</p>
+				</td>
+			</tr>	
+			<tr valign="top">
+				<td width="152" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western"><strong>PLC_BUZZER</strong></p>
+				</td>
+				<td width="236" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" >
+					<p class="western">Abilitazione per i paramentri dinamici del buzzer (0x44332211 up=0x11(%) on=0x22(cs) off=0x33(cs) rep=0x44(times))</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="96"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">1</p>
+				</td>
+				<td width="95"  style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding: 0.1cm" align="center">
+					<p class="western">1</p>
+				</td>
+			</tr>								
 		</tbody>
 	</table>
 	<p class="western">Per le configurazioni delle variabili che hanno
