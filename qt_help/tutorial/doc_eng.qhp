@@ -100,11 +100,7 @@
 					<section title="Alarm functioning" ref="Funzionamento_allarmi_eng.html">	
 						<section title="Alarms page" ref="Pagina_alarms_eng.html"/>
 						<section title="Alarms_history page" ref="Pagina_alarms_history_eng.html"/>
-						</section>
-					<section title="System variables" ref="Variabili_sistema_eng.html">	
-						<section title="System variables configuration" ref="Config_variabili_sistema_eng.html"/>
-						</section>
-					<section title="Diagnostic variables" ref="Variabili_diagnostica_eng.html"/>	
+						</section>						
 					<section title="Fonts" ref="Fonts_eng.html"/>
 					<section title="Languages translation" ref="Traduzione_lingue_eng.html">	
 						<section title="Add a new language file" ref="Add_file_lingue_eng.html"/>
@@ -145,6 +141,10 @@
 					<section title="Add libraries to the project" ref="Aggiungere_librerie_eng.html"/>
 					<section title="Project path" ref="Path_progetto_eng.html"/>
 					</section>
+				<section title="System variables" ref="Variabili_sistema_eng.html">	
+						<section title="System variables configuration" ref="Config_variabili_sistema_eng.html"/>
+						</section>
+				<section title="Diagnostic variables" ref="Variabili_diagnostica_eng.html"/>
 				<section title="Micro SD card insertion" ref="SD_card_eng.html"/>
 				<section title="VNC activation" ref="VNC_eng.html"/>	
 				<section title="Remote connection" ref="Connetivita_eng.html">

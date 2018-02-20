@@ -100,11 +100,7 @@
 					<section title="Funzionamento allarmi" ref="Funzionamento_allarmi.html">	
 						<section title="Pagina alarms" ref="Pagina_alarms.html"/>
 						<section title="Pagina alarms_history" ref="Pagina_alarms_history.html"/>
-						</section>
-					<section title="Variabili di sistema" ref="Variabili_sistema.html">	
-						<section title="Configurazione delle variabili di sistema" ref="Config_variabili_sistema.html"/>
-						</section>
-					<section title="Variabili di diagnostica" ref="Variabili_diagnostica.html"/>	
+						</section>					
 					<section title="Fonts" ref="Fonts.html"/>
 					<section title="Traduzione delle lingue" ref="Traduzione_lingue.html">	
 						<section title="Aggiungere un nuovo file di lingue" ref="Add_file_lingue.html"/>
@@ -144,7 +140,11 @@
 					<section title="Debug PLC" ref="Debug_PLC.html"/>
 					<section title="Aggiungere librerie nel progetto" ref="Aggiungere_librerie.html"/>
 					<section title="Path di progetto" ref="Path_progetto.html"/>
-					</section>					
+					</section>	
+				<section title="Variabili di sistema" ref="Variabili_sistema.html">	
+						<section title="Configurazione delle variabili di sistema" ref="Config_variabili_sistema.html"/>
+						</section>
+				<section title="Variabili di diagnostica" ref="Variabili_diagnostica.html"/>	
 				<section title="Inserimento della micro SD card" ref="SD_card.html"/>
 				<section title="Attivazione della VNC" ref="VNC.html"/>	
 				<section title="Connessione da remoto" ref="Connetivita.html">
