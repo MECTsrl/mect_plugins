@@ -112,7 +112,6 @@
 					<section title="Appendice" ref="Appendice.html">
 						<section title="Reset degli allarmi" ref="Reset_allarmi.html"/>
 						<section title="Modifica backlight tramite funzione HMI" ref="Backlight_HMI.html"/>
-						<section title="Lettura data/ora tramite funzione HMI" ref="Data_ora_HMI.html"/>
 						<section title="Utilizzo del convertitore USB/RS232 nel HMI" ref="Convertitore_232.html"/>
 						<section title="Accesso a database MySQL/SQLite" ref="Database.html"/>
 						<section title="Inserire una finestra di popup" ref="Popup.html"/>
@@ -188,7 +187,6 @@
 			<file>Database.html</file>
 			<file>Convertitore_232.html</file>
 			<file>Convertitore_232_1.png</file>
-			<file>Data_ora_HMI.html</file>
 			<file>Backlight_HMI.html</file>
 			<file>Appendice.html</file>
 			<file>Interfaccia_web.html</file>
