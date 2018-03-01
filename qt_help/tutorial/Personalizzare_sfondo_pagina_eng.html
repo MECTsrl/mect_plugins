@@ -16,72 +16,27 @@
 	<h3 class="western">Customize the background page</h3>
 	<p class="western">It is possible to customize the page background, changing its colour, adding an image and inserting an edge.</p>
 	<p class="western">To do this do:</p>
-	<ul>
+	<ol>
 		<li/>
-<p class="western">Click the right mouse key on a free area of the page,</p>
+<p class="western">Click the right mouse key on a free area of the page</p>
 		<li/>
 <p class="western">Choose &ldquo;Change styleSheet&rdquo;</p>
-<img src="Personalizzare_sfondo_pagina_1.png" name="Immagine123" align="left" width="293" height="186">
-  <br clear="left"/>
-</img>
 		<li/>
-<p class="western">In the new window add the following code:</p>
+<p class="western">You see the following figure:</p>		
+<p class="western"><img src="Personalizzare_sfondo_pagina_0.png" name="Immagine123" align="bottom" width="350" height="239" border="0"/></p>
+	</ol>	
+	<ol start="4">	
+		<li/>
+<p class="western">Put the cursor inside curly brackets and select:</p>
 	<ul>
 		<li/>
-	<p class="western">QWidget#&lt;pagename&gt;</p>
-	<p class="western">{</p>
-	<p class="western">}</p>
-	<p class="western">where in the &lt;page name&gt; field write the actual page name.</p>
-	</ul>
-	</ul>
-	<ul>
-		<li/>
-<p class="western">To change background color put in the curly bracket the code:</p>
+	<p class="western"><strong>image</strong>: &ldquo;Add Resource &#8594; image&rdquo;</p>
+				<li/>
+			<p class="western"><strong>color</strong>: &ldquo;Add Color &#8594; background-color&rdquo;</p>
+			</ul>
+	</ol>
+	<p class="western"><strong>Warning:</strong> using the gradient to set the background of a page will slow down the device. It is better to use a defined color or an image.</p>
 	
-	<ul>
-		<li/>
-	<p class="western">background-color: rgb(RRR, GGG,	BBB);</p>
-	<p class="western">	</span>where in the RRR, GGG, BBB field put the desired color in RGB format</p>
-	</ul>
-	</ul>
-	<ul>
-		<li/>
-<p class="western">To add a border put in the curly bracket the code:</p>
-	<ul>
-		<li/>
-	<p class="western">border: Wpx solid  rgb(RRR, GGG, BBB);</p>
-	<li/>
-	<p class="western">border-radius: Rpx;</p>
-	<p class="western">where in the Wpx field put the thikness of the border in pixel (eg.: 2px) and in the  RRR, GGG, 	BBB field put the desired color
-		in RGB format and in the Rpx field put the radius of the border in pixel (eg.: 8px).</p>
-	</ul>
-	</ul>
-	<ul>
-		<li/>
-<p class="western">To show the image in the original size and centered put in the curly bracket the code:</p>
-		<ul>
-		<li/>
-	<p class="western">border-image: url(:/systemicons/img/Camera.png);</p>
-	<p class="western">where in the &ldquo;:/systemicons/img/Camera.png&rdquo; put the path of the desired image in the resource file.</p>
-	</ul>
-	</ul>	
-	<ul>
-		<li/>
-<p class="western">To resize the image in the window put in the curly bracket the code:</p>
-	<ul>
-		<li/>
-	<p class="western">image: url(:/systemicons/img/Camera.png);</p>
-	<p class="western">where in the &ldquo;:/systemicons/img/Camera.png&rdquo; put the path of the desired image in the resource file.</p>
-	</ul>
-	</ul>
-	<ul>
-		<li/>
-<p class="western">Press OK</p>
-	</ul>
-	<p class="western"><strong>WARNING:</strong> program is case sensitive.</p>
-	<p class="western">All these setups can be done without writing code, select drop down menu: &ldquo;<strong>Add
-	Resource</strong>&rdquo; and &ldquo;<strong>Add Color</strong>&rdquo;.</p>
-	<p class="western"><strong>WARNING:</strong> don&rsquo;t use a gradient color because slows down the panel performance.</p>
 	<br/>
 	<h3 class="western">Splash screen customization</h3>
 	<p class="western" style="margin-bottom: 0cm">To customize the splash screen overwrite the &ldquo;<i>splash.png</i>&rdquo; file

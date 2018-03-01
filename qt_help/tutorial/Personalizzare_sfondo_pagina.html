@@ -17,75 +17,28 @@
 	<p class="western">&Egrave; possibile personalizzare lo fondo di una pagina, cambiandone il colore, aggiungendo una immagine e  mettendo
 	un bordo.</p>
 	<p class="western">Per fare questo procedere come segue:</p>
-	<ul>
+	<ol>
 		<li/>
-<p class="western">Premere il tasto destro del mouse su un punto libero della pagina,</p>
+<p class="western">Premere il tasto destro del mouse su un punto libero della pagina</p>
 		<li/>
 <p class="western">Scegliere la voce &ldquo;Change styleSheet&rdquo;</p>
-<img src="Personalizzare_sfondo_pagina_1.png" name="Immagine123" align="left" width="293" height="186">
-  <br clear="left"/>
-</img>
 		<li/>
-<p class="western">Nella nuova finestra visualizzata apparir&agrave; il seguente codice:</p>
-	<ul>
+<p class="western">Apparir&agrave; la seguente immagine:</p>
+<p class="western"><img src="Personalizzare_sfondo_pagina_0.png" name="Immagine123" align="bottom" width="350" height="239" border="0"/></p>
+	</ol>	
+	<ol start="4">	
 		<li/>
-	<p class="western">QWidget#&lt;nome pagina&gt;</p>
-	<p class="western">{</p>
-	<p class="western">}</p>
-	<p class="western">dove al posto di &lt;nome_pagina&gt; c&rsquo;&egrave; il nome della pagina attuale.</p>
-	</ul>
-	</ul>
-	<ul>
-		<li/>
-<p class="western">Per dare un colore di sfondo mettere all&rsquo;interno delle graffe il codice:</p>
+		<p class="western">	Posizionare il cursore all&rsquo;interno delle parentesi graffe e selezionare nel caso di:</p>
+			<ul>
+				<li/>
+			<p class="western">un&rsquo;<strong>immagine</strong>: &ldquo;Add Resource &#8594; image&rdquo;</p>
+				<li/>
+			<p class="western">un <strong>colore</strong>: &ldquo;Add Color &#8594; background-color&rdquo;</p>
+			</ul>
+	</ol>
+<p class="western"><strong>NOTA:</strong> per impostare lo sfondo di una pagina &egrave; fortemente sconsigliato utilizzare il gradiente in quanto il dispositivo risulterebbe essere lento. Per ovviare a questa situazione utilizzare un colore unico oppure un&rsquo;immagine.</p>
 	
-	<ul>
-		<li/>
-	<p class="western">background-color: rgb(RRR, GGG,	BBB);</p>
-	<p class="western">	</span>dove al posto di RRR, GGG, BBB mettere il colore desiderato in formato RGB</p>
-	</ul>
-	</ul>
-	<ul>
-		<li/>
-<p class="western">Per aggiungere un bordo mettere all&rsquo;interno delle graffe il codice:</p>
-	<ul>
-		<li/>
-	<p class="western">border: Wpx solid  rgb(RRR, GGG, BBB);</p>
-	<li/>
-	<p class="western">border-radius: Rpx;</p>
-	<p class="western">dove al posto di Wpx mettere lo spessore del	bordo in pixel (es.: 2px) e al posto di  RRR, GGG, 	BBB mettere il
-	colore desiderato in formato RGB e al posto di Rpx mettere il raggio di 	curvatura del bordo in pixel (es.: 8px).</p>
-	</ul>
-	</ul>
-	<ul>
-		<li/>
-<p class="western">Per visualizzare l&rsquo;immagine a grandezza naturale centrata mettere all&rsquo;interno delle graffe il codice:</p>
-		<ul>
-		<li/>
-	<p class="western">border-image: url(:/systemicons/img/Camera.png);</p>
-	<p class="western">dove al posto di &ldquo;:/systemicons/img/Camera.png&rdquo; mettere il percorso dell&rsquo;immagine 	desiderata presa dal file
-	di risorse.</p>
-	</ul>
-	</ul>	
-	<ul>
-		<li/>
-<p class="western">per adattare l&rsquo;immagine adattata alla finestra mettere all&rsquo;interno delle graffe il codice:</p>
-	<ul>
-		<li/>
-	<p class="western">image: url(:/systemicons/img/Camera.png);</p>
-	<p class="western">dove al posto di &ldquo;:/systemicons/img/Camera.png&rdquo; mettere il percorso dell&rsquo;immagine desiderata presa dal file di
-	risorse.</p>
-	</ul>
-	</ul>
-	<ul>
-		<li/>
-<p class="western">premere OK</p>
-	</ul>
-	<p class="western"><strong>ATTENZIONE:</strong> il programma &egrave; case sensitive, quindi le lettere maiuscole sono DIVERSE dalle lettere minuscole.</p>
-	<p class="western">Tutte queste operazioni possono essere fatte	senza scrivere codice, basta selezionare i menu a tendina: &ldquo;<strong>Add
-	Resource</strong>&rdquo; e &ldquo;<strong>Add Color</strong>&rdquo;.</p>
-	<p class="western"><strong>ATTENZIONE:</strong> non bisogna selezionare un colore con il gradiente perch&eacute; diminuiscono sensibilmente le prestazioni
-	e quindi il pannello potrebbe risultare molto lento.</p>
+	
 	<br/>
 	<h3 class="western">Personalizzare la Splash screen</h3>
 	<p class="western" style="margin-bottom: 0cm">Per personalizzare la	splash screen baster&agrave; sovrascrivere il file &ldquo;<i>splash.png</i>&rdquo;
