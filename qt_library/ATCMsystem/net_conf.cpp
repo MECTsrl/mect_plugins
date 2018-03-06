@@ -419,10 +419,12 @@ void net_conf::reload()
         /* DHCP */
         if (app_netconf_item_get(&tmp, "BOOTPROTO0") != NULL && strcmp(tmp, "[DHCP]") == 0)
         {
+            ui->checkBox_eth0_DHCP->setChecked(true);
             on_checkBox_eth0_DHCP_clicked(true);
         }
         else
         {
+            ui->checkBox_eth0_DHCP->setChecked(false);
             on_checkBox_eth0_DHCP_clicked(false);
         }
         /* IP */
@@ -510,10 +512,12 @@ void net_conf::reload()
         /* DHCP */
         if (app_netconf_item_get(&tmp, "BOOTPROTO1") != NULL && strcmp(tmp, "[DHCP]") == 0)
         {
+            ui->checkBox_eth1_DHCP->setChecked(true);
             on_checkBox_eth1_DHCP_clicked(true);
         }
         else
         {
+            ui->checkBox_eth1_DHCP->setChecked(false);
             on_checkBox_eth1_DHCP_clicked(false);
         }
         /* IP */
@@ -670,10 +674,12 @@ void net_conf::reload()
     /* DHCP */
     if (app_netconf_item_get(&tmp, "BOOTPROTOW0") != NULL && strcmp(tmp, "[DHCP]") == 0)
     {
+        ui->checkBox_wlan0_DHCP->setChecked(true);
         on_checkBox_wlan0_DHCP_clicked(true);
     }
     else
     {
+        ui->checkBox_wlan0_DHCP->setChecked(false);
         on_checkBox_wlan0_DHCP_clicked(false);
     }
     /* IP */
