@@ -545,8 +545,13 @@ void ATCMbutton::updateData()
                 sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
 
                 bool isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
-                do_update = (m_status != status) || (m_statusactualval.compare(QString(svalue)) != 0)
-                         || (isPressed && ! isDown()) || (! isPressed && isDown());
+                if (isCheckable()) {
+                    do_update = (m_status != status) || (m_statusactualval.compare(QString(svalue)) != 0)
+                             || (isPressed && ! isChecked()) || (! isPressed && isChecked());
+                } else {
+                    do_update = (m_status != status) || (m_statusactualval.compare(QString(svalue)) != 0)
+                             || (isPressed && ! isDown()) || (! isPressed && isDown());
+                }
                 if (do_update) {
                     m_status = status;
                     m_statusactualval = svalue;
