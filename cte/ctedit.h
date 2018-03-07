@@ -192,6 +192,9 @@ private:
     QList<Err_CT>           lstCTErrors;
     QStringList             lstUniqueVarNames;      // Lista per controllo univocità identificatori
     QStringList             lstErrorMessages;       // Lista dei messaggi di errore
+    // Gestione Server ModBus
+    MODBUS_Srv              serverModBus[srvTotals];// Elenco dei Server ModBus definiti nel Sistema
+
     // Variabili di stato ad uso globale
     int                     m_nCurTab;              // Tab corrente in interfaccia
     bool                    m_isCtModified;         // Flag dati modificato

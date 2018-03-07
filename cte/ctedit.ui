@@ -290,7 +290,7 @@
                <widget class="QLabel" name="lblJumpTo">
                 <property name="minimumSize">
                  <size>
-                  <width>60</width>
+                  <width>150</width>
                   <height>0</height>
                  </size>
                 </property>
@@ -313,7 +313,7 @@
                <widget class="QComboBox" name="cboSections">
                 <property name="minimumSize">
                  <size>
-                  <width>140</width>
+                  <width>150</width>
                   <height>0</height>
                  </size>
                 </property>
@@ -880,7 +880,7 @@
                  <widget class="QLabel" name="lblPort">
                   <property name="minimumSize">
                    <size>
-                    <width>80</width>
+                    <width>60</width>
                     <height>0</height>
                    </size>
                   </property>
@@ -1018,7 +1018,7 @@
                  <widget class="QLineEdit" name="txtPort">
                   <property name="minimumSize">
                    <size>
-                    <width>80</width>
+                    <width>60</width>
                     <height>0</height>
                    </size>
                   </property>
@@ -1180,10 +1180,10 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>XXXXXXXXXXXXXXXX</string>
+                   <string/>
                   </property>
                   <property name="maxLength">
-                   <number>16</number>
+                   <number>31</number>
                   </property>
                  </widget>
                 </item>
@@ -1329,13 +1329,13 @@
                  <widget class="QLabel" name="lblRow">
                   <property name="minimumSize">
                    <size>
-                    <width>70</width>
+                    <width>50</width>
                     <height>0</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>70</width>
+                    <width>50</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -1358,13 +1358,13 @@
                  <widget class="QLineEdit" name="txtRow">
                   <property name="minimumSize">
                    <size>
-                    <width>70</width>
+                    <width>50</width>
                     <height>0</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>70</width>
+                    <width>50</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -1374,6 +1374,9 @@
                     <weight>50</weight>
                     <bold>false</bold>
                    </font>
+                  </property>
+                  <property name="text">
+                   <string/>
                   </property>
                   <property name="maxLength">
                    <number>6</number>
@@ -1410,7 +1413,7 @@
                  <widget class="QComboBox" name="cboPort">
                   <property name="minimumSize">
                    <size>
-                    <width>80</width>
+                    <width>60</width>
                     <height>0</height>
                    </size>
                   </property>
@@ -1426,7 +1429,7 @@
                  <widget class="QLabel" name="lblPort_RTU">
                   <property name="minimumSize">
                    <size>
-                    <width>80</width>
+                    <width>60</width>
                     <height>0</height>
                    </size>
                   </property>
@@ -1461,13 +1464,13 @@
                <widget class="QLabel" name="lblBehavior">
                 <property name="minimumSize">
                  <size>
-                  <width>70</width>
+                  <width>50</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>70</width>
+                  <width>50</width>
                   <height>16777215</height>
                  </size>
                 </property>
@@ -1670,13 +1673,13 @@
                      <widget class="QComboBox" name="cboVariable1">
                       <property name="minimumSize">
                        <size>
-                        <width>180</width>
+                        <width>250</width>
                         <height>0</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>250</width>
+                        <width>16777215</width>
                         <height>16777215</height>
                        </size>
                       </property>
@@ -1714,6 +1717,18 @@
                     </item>
                     <item>
                      <widget class="QLabel" name="lblTypeVar1">
+                      <property name="minimumSize">
+                       <size>
+                        <width>50</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>100</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
                       <property name="frameShape">
                        <enum>QFrame::NoFrame</enum>
                       </property>
@@ -1768,13 +1783,13 @@
                      <widget class="QComboBox" name="cboCondition">
                       <property name="minimumSize">
                        <size>
-                        <width>150</width>
+                        <width>80</width>
                         <height>0</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>250</width>
+                        <width>100</width>
                         <height>16777215</height>
                        </size>
                       </property>
@@ -1817,8 +1832,14 @@
                    <widget class="QRadioButton" name="optFixedVal">
                     <property name="minimumSize">
                      <size>
-                      <width>150</width>
+                      <width>120</width>
                       <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>120</width>
+                      <height>16777215</height>
                      </size>
                     </property>
                     <property name="font">
@@ -1839,13 +1860,13 @@
                    <widget class="QRadioButton" name="optVariableVal">
                     <property name="minimumSize">
                      <size>
-                      <width>150</width>
+                      <width>120</width>
                       <height>0</height>
                      </size>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>16777215</width>
+                      <width>120</width>
                       <height>16777215</height>
                      </size>
                     </property>
@@ -1885,13 +1906,13 @@
                    <widget class="QLineEdit" name="txtFixedValue">
                     <property name="minimumSize">
                      <size>
-                      <width>150</width>
+                      <width>250</width>
                       <height>0</height>
                      </size>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>250</width>
+                      <width>16777215</width>
                       <height>16777215</height>
                      </size>
                     </property>
@@ -1910,13 +1931,13 @@
                    <widget class="QComboBox" name="cboVariable2">
                     <property name="minimumSize">
                      <size>
-                      <width>180</width>
+                      <width>250</width>
                       <height>0</height>
                      </size>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>250</width>
+                      <width>16777215</width>
                       <height>16777215</height>
                      </size>
                     </property>

@@ -68,7 +68,7 @@
 #define MAX_NODE 5299
 #define MIN_SYSTEM  5390
 #define COMMANDLINE 2048
-
+#define MAX_TCPSRV_REGS 4095
 // Tabs in TabWidget
 #define TAB_CT 0
 #define TAB_SYSTEM 1
@@ -191,7 +191,9 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTWrongTCPPort] = trUtf8("TCP Port Not Allowed");
     lstErrorMessages[errCTNoNode] = trUtf8("Empty or Invalid Node Address");
     lstErrorMessages[errCTNoRegister] = trUtf8("Empty or Invalid Register Value");
+    lstErrorMessages[errCTRegisterTooBig] = trUtf8("Register Number too big for TCP Server");
     lstErrorMessages[errCTInputOnlyModbusClient]  = trUtf8("Input Register allowed only on Modbus Client");
+    lstErrorMessages[errCTModBusServerDuplicate] = trUtf8("Server Already present with different Port/Node");
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
     lstErrorMessages[errCTNoBit] = trUtf8("Alarm/Event Variables must be of BIT type");
     lstErrorMessages[errCTBadPriorityUpdate] = trUtf8("Wrong Priority or Update for Alarm/Event Variable");
@@ -397,7 +399,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtIP->setToolTip(szToolTip);
     // Porta di comunicazione
     szToolTip.clear();
-    szToolTip.append(tr("TCP Communication Port, e.g. 502"));
+    szToolTip.append(tr("TCP Communication Port, e.g. 502") );
     ui->txtPort->setToolTip(szToolTip);
     // Combo Porta seriale
     szToolTip.clear();
@@ -409,6 +411,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtNode->setToolTip(szToolTip);
     // Register
     szToolTip.clear();
+    szToolTip.append(tr("For TCP_SRV\n"));
     szToolTip.append(tr("Modbus address of the Register to be used\n"));
     szToolTip.append(tr("ADR=[0..29999] -> Coil / Holding Register (ADR)"));
     szToolTip.append(tr("ADR=[30000..39999] -> Input  Register (ADR-30001)\n"));
@@ -1703,10 +1706,14 @@ void ctedit::enableFields()
         if (nProtocol != PLC)  {
             ui->txtNode->setEnabled(true);
             ui->txtRegister->setEnabled(true);
-            // TCP, TCPRTU, TCP_SRV, TCPRTU_SRV
-            if (nProtocol == TCP || nProtocol == TCPRTU  ||
-                     nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
+            // IP abilitato solo per protocolli Client TCP, TCPRTU
+            if (nProtocol == TCP || nProtocol == TCPRTU)  {
                 ui->txtIP->setEnabled(true);
+            }
+            // Porta Abilitata per tutti i protocolli di Network
+            // TCP, TCPRTU, TCP_SRV, TCPRTU_SRV
+            if (nProtocol == TCP || nProtocol == TCPRTU ||
+                nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV    )  {
                 ui->txtPort->setEnabled(true);
             }
         }
@@ -1774,7 +1781,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     }
     // Calcola la porta di default in funzione del protocollo (if any available)
     getFirstPortFromProtocol(index, nDefaultPort, nTotalFree);
-    // Recupera il numero di porta corrente
+    // Recupera il numero di porta corrente (Per protocolli seriali è attiva la Combo di Selezione)
     szCurPort.clear();
     if (index == RTU || index == MECT_PTC || index == RTU_SRV)  {
         szCurPort = ui->cboPort->currentText();
@@ -1807,8 +1814,9 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     else if (index == TCP_SRV || index == TCPRTU_SRV)  {
         // Default IP to Empty for Servers
         szTemp = ui->txtIP->text().trimmed();
-        if (szTemp.isEmpty())
+        if (szTemp.isEmpty())  {
             ui->txtIP->setText(szEMPTY_IP);
+        }
     }
     // Disabilitazione  tipo BIT per i vari tipi di SRV (TCP_SRV, RTU_SRV, TCP_RTU_SRV)
     // Non è ammesso BIT per i protocolli SERVER (TCP/RTU)
@@ -3017,6 +3025,12 @@ int ctedit::globalChecks()
     // Ripulitura lista errori
     lstCTErrors.clear();
     lstUniqueVarNames.clear();
+    // Ripulitura Array Server ModBus (1 per ogni Seriale + Protocolli TCP_SRV e TCPRTU_SRV
+    for (nRow = 0; nRow < srvTotals; nRow++)  {
+        serverModBus[nRow].nProtocol = -1;
+        serverModBus[nRow].nPort = -1;
+        serverModBus[nRow].nodeId = -1;
+    }
     // Ciclo Globale su tutti gli Items di CT
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Controlla solo righe utilizzate
@@ -3031,10 +3045,11 @@ int ctedit::globalChecks()
             else  {
                 lstUniqueVarNames.append(szTemp);
             }
-        // Controlli specifici di Riga
-        fRecOk = recCT2List(lstFields, nRow);
-        if (fRecOk)
-            nErrors += checkFormFields(nRow, lstFields, false);
+            // Controlli specifici di Riga
+            fRecOk = recCT2List(lstFields, nRow);
+            if (fRecOk)  {
+                nErrors += checkFormFields(nRow, lstFields, false);
+            }
         }
     }
     // Display finestra errore
@@ -3373,26 +3388,110 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         }
     }
     //---------------------------------------
+    // Controlli Univocità Server (MODBUS)
+    //---------------------------------------
+    if (nProtocol == TCP_SRV)  {
+        // Non esiste ancora un Server TCP definito
+        if (serverModBus[srvTCP].nPort < 0)  {
+            serverModBus[srvTCP].nPort = nPort;
+            serverModBus[srvTCP].nProtocol = nProtocol;
+            serverModBus[srvTCP].szIpAddress = szIP;
+            serverModBus[srvTCP].nodeId = nNodeID;
+        }
+        else  {
+            // Controllo su Porta
+            if (serverModBus[srvTCP].nPort != nPort)  {
+                szTemp = QString::fromAscii("Port: ") + lstValues[colPort] + QString::fromAscii(" Vs TCP Server Port: ") + QString::number(serverModBus[srvTCP].nPort);
+                fillErrorMessage(nRow, colPort, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
+            // Controllo su Node ID
+            if (serverModBus[srvTCP].nodeId != nNodeID)  {
+                szTemp = QString::fromAscii("Node Id: ") + lstValues[colNodeID] + QString::fromAscii(" Vs TCP Server Node Id: ") + QString::number(serverModBus[srvTCP].nodeId);
+                fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
+        }
+    }
+    else if (nProtocol == TCPRTU_SRV)  {
+        // Non esiste ancora un Server TCP_RTU definito
+        if (serverModBus[srvTCPRTU].nPort < 0)  {
+            serverModBus[srvTCPRTU].nPort = nPort;
+            serverModBus[srvTCPRTU].nProtocol = nProtocol;
+            serverModBus[srvTCPRTU].szIpAddress = szIP;
+            serverModBus[srvTCPRTU].nodeId = nNodeID;
+        }
+        else  {
+            // Controllo su Porta
+            if (serverModBus[srvTCPRTU].nPort != nPort)  {
+                szTemp = QString::fromAscii("Port: ") + lstValues[colPort] + QString::fromAscii(" Vs TCP_RTU Server Port: ") + QString::number(serverModBus[srvTCPRTU].nPort);
+                fillErrorMessage(nRow, colPort, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
+            // Controllo su Node ID
+            if (serverModBus[srvTCPRTU].nodeId != nNodeID)  {
+                szTemp = QString::fromAscii("Node Id: ") + lstValues[colNodeID] + QString::fromAscii(" Vs TCP_RTU Server Node Id: ") + QString::number(serverModBus[srvTCPRTU].nodeId);
+                fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
+        }
+    }
+    else if (nProtocol == RTU_SRV)  {
+        // Non esiste ancora un Server RTU_SRV definito per la porta richiesta
+        // # Porta entro i Range
+        if (nPort >= 0 && nPort <= nMaxSerialPorts) {
+            if (serverModBus[nPort].nPort < 0)  {
+                serverModBus[nPort].nPort = nPort;
+                serverModBus[nPort].nProtocol = nProtocol;
+                serverModBus[nPort].szIpAddress = szIP;
+                serverModBus[nPort].nodeId = nNodeID;
+            }
+            else {
+                // Controllo su Node ID
+                if (serverModBus[nPort].nodeId != nNodeID)  {
+                    szTemp = QString::fromAscii("Node Id: ") + lstValues[colNodeID] + QString::fromAscii(" Vs RTU Server Node Id: ") + QString::number(serverModBus[nPort].nodeId);
+                    fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                    lstCTErrors.append(errCt);
+                    nErrors++;
+                }
+            }
+        }
+    }
+    //---------------------------------------
     // Controllo per Register (MODBUS)
     //---------------------------------------
     szTemp = lstValues[colRegister];
     nRegister = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
     nRegister = fOk && nRegister != -1 ? nRegister : -1;
     if (nProtocol != PLC)  {
-        // Range allowed: 0..65535 or 300000..365535
-        if (nRegister < 0 || nRegister > nMaxInputRegister || (nRegister > nMax_Int16 && nRegister < nStartInputRegister))  {
-            fillErrorMessage(nRow, colRegister, errCTNoRegister, szVarName, szTemp, chSeverityError, &errCt);
-            lstCTErrors.append(errCt);
-            nErrors++;
+        if (nProtocol== TCP_SRV || nProtocol == TCPRTU_SRV)  {
+            // Range allowed 0..MAX_TCPSRV_REGS (4095)
+            if (nRegister > MAX_TCPSRV_REGS)  {
+                fillErrorMessage(nRow, colRegister, errCTRegisterTooBig, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
         }
-        // Range 300000..365535 allowed only on MODBUS Client (no SERVER)
-        if ((nRegister > nStartInputRegister && nRegister < nMaxInputRegister) &&
-            ! ((nProtocol == RTU) ||
-               (nProtocol == TCP) ||
-               (nProtocol == TCPRTU)) )  {
-            fillErrorMessage(nRow, colRegister, errCTInputOnlyModbusClient, szVarName, szTemp, chSeverityError, &errCt);
-            lstCTErrors.append(errCt);
-            nErrors++;
+        else {
+            // Range allowed: 0..65535 or 300000..365535
+            if (nRegister < 0 || nRegister > nMaxInputRegister || (nRegister > nMax_Int16 && nRegister < nStartInputRegister))  {
+                fillErrorMessage(nRow, colRegister, errCTNoRegister, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
+            // Range 300000..365535 allowed only on MODBUS Client (no SERVER)
+            if ((nRegister > nStartInputRegister && nRegister < nMaxInputRegister) &&
+                ! ((nProtocol == RTU) ||
+                   (nProtocol == TCP) ||
+                   (nProtocol == TCPRTU)) )  {
+                fillErrorMessage(nRow, colRegister, errCTInputOnlyModbusClient, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
         }
     }
     //---------------------------------------
@@ -4906,7 +5005,7 @@ bool ctedit::isValidPort(int nPort, int nProtocol)
         case TCPRTU:
         case TCP_SRV:
         case TCPRTU_SRV:
-        if ((nPort >= 0 && nPort <= nMax_Int16) && (TargetConfig.ethPorts > 0)) {
+        if ((nPort > 0 && nPort <= nMax_Int16) && (TargetConfig.ethPorts > 0)) {
                 if (nPort != nPortFTPControl && nPort != nPortSFTP && nPort != nPortTELNET && nPort != nPortHTTP && nPort != nPortVNC)  {
                     fRes = true;
                 }

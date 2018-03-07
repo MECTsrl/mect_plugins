@@ -45,6 +45,24 @@ const QString szMectTitle = QString::fromAscii("Mect Editor");
 const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
 const QString szMPNC005 = QString::fromAscii("MPNC005");
 
+enum modbusserver_e
+{
+    srvRTU0 = 0,
+    srvRTU1,
+    srvRTU2,
+    srvRTU3,
+    srvTCP,
+    srvTCPRTU,
+    srvTotals
+};
+
+
+struct  MODBUS_Srv  {
+    QString szIpAddress;
+    int     nProtocol;
+    int     nPort;
+    int     nodeId;
+};
 
 struct  TP_Config {
     // General Params
