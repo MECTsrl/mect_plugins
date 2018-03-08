@@ -15,6 +15,7 @@ enum errorMessages_e
     errCTNoPriority,
     errCTNoUpdate,
     errCTNoName,
+    errCTNameTooLong,
     errCTNoType,
     errCTNoDecimals,
     errCTNoDecimalZero,

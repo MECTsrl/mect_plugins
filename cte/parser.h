@@ -147,7 +147,7 @@ struct  CrossTableRecord {
     int16_t Enable;
     int  UsedEntry;
     enum UpdateType Update;
-    char Tag[MAX_IDNAME_LEN + 1];
+    char Tag[2 * MAX_IDNAME_LEN + 1];
     enum varTypes VarType;
     uint16_t Decimal;
     enum FieldbusType Protocol;
@@ -165,9 +165,9 @@ struct  CrossTableRecord {
     // Fields for Events / Alarms
     int     usedInAlarmsEvents;                     // 1 if used in AL/EV
     int     ALType;                                 // from enum EventAlarm (0=Alarm 1=Event...)
-    char    ALSource[MAX_IDNAME_LEN + 1];           // Name of source variable in Alarms
+    char    ALSource[2 * MAX_IDNAME_LEN + 1];           // Name of source variable in Alarms
     int     ALOperator;                             // Operator on variable, from enum logicalOperators
-    char    ALCompareVar[MAX_IDNAME_LEN + 1];       // Compare variable (right side of operation, if any)
+    char    ALCompareVar[2 * MAX_IDNAME_LEN + 1];       // Compare variable (right side of operation, if any)
     float   ALCompareVal;                           // Fixed comparision value (in alternative to Compare Variable)
     int     ALComparison;                           // Type of comparision (Signed, unsigned, float determined from left variable type)
     int     ALCompatible;                           // 1 if both side of comparision are between compatible types

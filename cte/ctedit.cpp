@@ -177,6 +177,7 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNoPriority] = trUtf8("No Priority Selected");
     lstErrorMessages[errCTNoUpdate] = trUtf8("No PLC Refresh Selected");
     lstErrorMessages[errCTNoName] = trUtf8("Invalid or Empty Variable Name");
+    lstErrorMessages[errCTNameTooLong] = trUtf8("Variable Name Too Long");
     lstErrorMessages[errCTNoType] = trUtf8("No Type Selected");
     lstErrorMessages[errCTNoDecimals] = trUtf8("Invalid Decimals");
     lstErrorMessages[errCTNoDecimalZero] = trUtf8("Decimals Must be 0 for BIT Type");
@@ -3224,6 +3225,13 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         lstCTErrors.append(errCt);
         nErrors++;
     }
+    // Controllo Lunghezza (si può sfiorare solo in lettura da file)
+    if (szVarName.length() > MAX_IDNAME_LEN)  {
+        szTemp = QString::fromAscii("Name Lenght Exceedes: ") + QString::number(MAX_IDNAME_LEN) + QString::fromAscii(" chars. Will be truncated");
+        fillErrorMessage(nRow, colName, errCTNameTooLong, szVarName, szTemp, chSeverityWarning, &errCt);
+        lstCTErrors.append(errCt);
+        nErrors++;
+    }
     //---------------------------------------
     // Controllo Type
     //---------------------------------------
@@ -4046,6 +4054,8 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                     // qDebug() << tr("Enter in Form");
                     if (! isFormEmpty() && isLineModified(m_nGridRow)) {
                         updateRow(m_nGridRow);
+                        // Salto a riga successiva
+                        jumpToGridRow(findNextVisibleRow(m_nGridRow), false);
                         enableInterface();
                     }
                     // QKeyEvent newEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier, szEMPTY);

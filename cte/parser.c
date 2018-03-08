@@ -476,7 +476,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
             ERR = TRUE;
             break;
         }
-        strncpy(CrossTable[addr].Tag, p, MAX_IDNAME_LEN);
+        strncpy(CrossTable[addr].Tag, p, 2 * MAX_IDNAME_LEN);
         // Marked Entry as used
         if (strlen(CrossTable[addr].Tag) > 0)
             CrossTable[addr].UsedEntry = 1;
