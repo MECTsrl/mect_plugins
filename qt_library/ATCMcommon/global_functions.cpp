@@ -802,7 +802,7 @@ bool beep(int duration_ms)
     if (varNameArray[ID_PLC_BUZZER].tag[0]) {
         // new buzzer management
         readFromDbQuick(ID_PLC_TOUCH_VOLUME, &volume);
-        value = volume + (on_cs << 8) + (off_cs << 16) + (replies << 24);
+        value = (volume & 0xFF) + (on_cs << 8) + (off_cs << 16) + (replies << 24);
         doWrite(ID_PLC_BUZZER, &value);
     } else {
         // workaround for old projects

@@ -78,23 +78,29 @@ public:
 
         if (Buzzerfd < 0)
             fprintf(stderr,"can't open buzzer device '%s'\n", BUZZER);
-    };
+        LastTouch.start();
+    }
 
     ~MyEventFilter()
     {
         if (Buzzerfd != -1)
             close(Buzzerfd);
-    };
+    }
 
     bool eventFilter(QObject* object, QEvent* event)
     {
         Q_UNUSED(object);
 
-        if (event->type() == QEvent::MouseButtonPress) {
+        if (event->type() == QEvent::MouseButtonPress) {// no TouchBegin
+            bool doBuzzer = false;
 
-            clock_gettime(CLOCK_REALTIME, &LastTouch);
+            if (LastTouch.elapsed() > (2 * IOLAYER_PERIOD_ms)) { // REFRESH_MS) {
+                doBuzzer = true;
+            }
+            LastTouch.restart();
 
-            if (BuzzerTouch == true) {
+            if (BuzzerTouch && doBuzzer) {
+                // fprintf(stderr, "beep() <-- MouseButtonPress, object=%p %s\n", object, object->objectName().toAscii().data());
                 beep(BUZZER_DURATION_MS); // ID_PLC_TOUCH_VOLUME
             }
         }

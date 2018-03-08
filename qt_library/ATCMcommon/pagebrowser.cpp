@@ -182,9 +182,7 @@ void page::updateData()
     /* check the password timeout in order to logout */
     if (PwdTimeoutSec > 0 && active_password != pwd_operator_e)
     {
-        struct timespec Now;
-        clock_gettime(CLOCK_REALTIME, &Now);
-        if (PwdTimeoutSec < (int)(Now.tv_sec - LastTouch.tv_sec))
+        if ((1000 * PwdTimeoutSec) < LastTouch.elapsed())
         {
             active_password = pwd_operator_e;
             if (windowTitle().compare(PwdLogoutPage))

@@ -11,6 +11,7 @@
 #define _GLOBAL_VAR_H_
 #include <stdio.h>
 #include <QDateTime>
+#include <QTime>
 #include <QEvent>
 #include <QHash>
 #include "defines.h"
@@ -58,7 +59,7 @@ extern int active_password;
 extern int Buzzerfd;
 extern bool BuzzerTouch;
 extern bool BuzzerAlarm;
-extern struct timespec LastTouch;
+extern QTime LastTouch;
 
 extern int MaxWindowSec;
 
