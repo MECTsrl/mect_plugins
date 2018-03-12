@@ -112,7 +112,8 @@ private:
     int     findNextVisibleRow(int nRow);           // Cerca la prossima riga visibile cui saltare (Per Enter on Grid)
     // Gestione Controlli
     bool    checkCTFile(QString szSourceFile);      // Controllo validità file CT per Import
-    int     checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine = true);   // Controlli formali sulla riga a termine editing
+    int     checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine = true);     // Controlli formali sulla riga a termine editing
+    bool    checkVarsCompatibility(varTypes nTypeV1, int nDecV1, varTypes nTypeV2, int nDecV2);      // Controllo tra i due operandi di un Allarme
     int     globalChecks();                         // Controlli complessivi su tutta la CT
     bool    isFormEmpty();                          // Controllo Form Editing vuoto
     bool    isValidVarName(QString szName);         // Controllo del Nome Variabile
@@ -206,6 +207,7 @@ private:
     bool                    m_fCutOrPaste;          // Vero se è in corso un Cut or Paste
     bool                    m_fEmptyForm;           // Vero se il Form di Data Entry risulta vuoto
     varTypes                m_vtAlarmVarType;       // Tipo della variabile SX in un espressione Allarme/Evento
+    int                     m_nAlarmDecimals;       // Numero di Decimali della Variabile SX di un Allarme
     bool                    m_fSkipLine;            // Se vero non devono essere fatti controlli sulla riga in uscita
 };
 

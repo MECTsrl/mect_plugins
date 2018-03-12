@@ -204,7 +204,7 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTInvalidNum] = trUtf8("Invalid Numeric Value in Alarm/Event Condition");
     lstErrorMessages[errCTEmptyCondExpression] = trUtf8("Empty or Invalid Expression in Alarm/Event Condition");
     lstErrorMessages[errCTNoVar2] = trUtf8("Empty or Invalid Right Condition Variable");
-    lstErrorMessages[errCTIncompatibleVar] = trUtf8("Incompatible Var in Alarm/Event Condition");
+    lstErrorMessages[errCTIncompatibleVar] = trUtf8("Incompatible Var Type or Decimals in Alarm/Event Condition");
     // Titoli colonne
     lstHeadCols.clear();
     lstHeadSizes.clear();
@@ -515,6 +515,7 @@ ctedit::ctedit(QWidget *parent) :
     m_fCutOrPaste = false;
     m_nCurTab = 0;
     m_vtAlarmVarType = UNKNOWN;
+    m_nAlarmDecimals = -1;
     // Creazione del Tab per il System Editor
     QVBoxLayout *vbSystem = new QVBoxLayout(ui->tabSystem);
     mectSet = new MectSettings(ui->tabSystem);
@@ -972,11 +973,13 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     int     nPos = 0;
     int     nProtocol = -1;
     int     nReg = 0;
+    int     nDec = 0;
     bool    fOk = false;
     QList<int> lstVarTypes;
 
     lstVarTypes.clear();
     m_vtAlarmVarType = UNKNOWN;
+    m_nAlarmDecimals = -1;
     // Row #
     szTemp = QString::number(m_nGridRow + 1);
     ui->txtRow->setText(szTemp);
@@ -1010,6 +1013,8 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     // Decimal
     szTemp = lstRecValues[colDecimal].trimmed();
     ui->txtDecimal->setText(szTemp);
+    nDec = szTemp.toInt(&fOk);
+    nDec = fOk ? nDec : 0;
     // Protocol
     szTemp = lstRecValues[colProtocol].trimmed();
     ui->cboProtocol->setCurrentIndex(-1);
@@ -1068,8 +1073,8 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
             // Seleziona tutte le variabili tranne le H lstAllVarTypes a prescindere dallo stato della variabile
             ui->cboVariable1->setCurrentIndex(-1);
             ui->cboVariable2->setCurrentIndex(-1);
-            fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates);
-            fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates);
+            fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates, true);
+            fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates, true);
             ui->txtFixedValue->setText(szEMPTY);
             // Ricerca posizione prima variabile
             szTemp = lstRecValues[colSourceVar].trimmed();
@@ -3022,10 +3027,10 @@ void ctedit::on_cboBehavior_currentIndexChanged(int index)
     if (index > behavior_readwrite) {
         ui->fraCondition->setVisible(true);
         if (ui->cboVariable1->count() <= 0)  {
-            fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates);
+            fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates, true);
         }
-        if (ui->cboVariable1->count() <= 0)  {
-            fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates);
+        if (ui->cboVariable2->count() <= 0)  {
+            fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates, true);
         }
         // Imposta almeno uno dei due optionButtons
         if (! ui->optFixedVal->isChecked() && ! ui->optVariableVal->isChecked())
@@ -3222,7 +3227,6 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     int         nPort = -1;
     int         nNodeID = -1;
     int         nRegister = -1;
-    varTypes    nTypeVar1 = UNKNOWN;
     bool        fOk = false;
     Err_CT      errCt;
     QString     szTemp;
@@ -3557,6 +3561,11 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     // Controlli specifici per Allarmi/Eventi
     //---------------------------------------
     if (nPos >= behavior_alarm && nPos <= behavior_event)  {
+        varTypes    nTypeVar1 = UNKNOWN;
+        int         nDecVar1 = -1;
+        int         nDecVar2 = -1;
+        QStringList lstAlarmVars;
+
         // Controllo che la variabile Alarm/Event sia di tipo BIT
         if (nType != BIT)  {
             fillErrorMessage(nRow, colType, errCTNoBit, szVarName, szVarName, chSeverityError, &errCt);
@@ -3570,8 +3579,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             nErrors++;
         }
         // Controllo che la variabile selezionata come Var1 sia NON H
-        QStringList lstAlarmVars;
-        fillVarList(lstAlarmVars, lstAllVarTypes, lstNoHUpdates);
+        fillVarList(lstAlarmVars, lstAllVarTypes, lstNoHUpdates, true);
         // Variable 1
         szVar1 = lstValues[colSourceVar];
         nPos = szVar1.isEmpty() ? -1 : lstAlarmVars.indexOf(szVar1);
@@ -3583,8 +3591,10 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         // Ricerca della Variabile 1 per estrarre il Tipo
         if (! szVar1.isEmpty())  {
             nPos = varName2Row(szVar1, lstCTRecords);
-            if (nPos >= 0 && nPos < lstCTRecords.count())
+            if (nPos >= 0 && nPos < lstCTRecords.count())  {
                 nTypeVar1 = lstCTRecords[nPos].VarType;
+                nDecVar1 = lstCTRecords[nPos].Decimal;
+            }
         }
         // Controllo sull'operatore di comparazione
         szTemp = lstValues[colCondition];
@@ -3637,18 +3647,15 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
                         nErrors++;
                     }
                     nPos = varName2Row(szTemp, lstCTRecords);
-                    // Verifica di Compatibilità di tipo
+                    // Verifica di Compatibilità di tipo e decimali tra i due operandi
                     if (nPos >= 0 && nPos < lstCTRecords.count())  {
                         varTypes tipoVar2 = lstCTRecords[nPos].VarType;
-                        QList<int> lstCompatTypes;
-                        // Ricerca dei tipi compatibili con Var1
-                        fillCompatibleTypesList(nTypeVar1, lstCompatTypes);
-                        if (lstCompatTypes.indexOf(tipoVar2) < 0)  {
+                        nDecVar2 = lstCTRecords[nPos].Decimal;
+                        if (! checkVarsCompatibility(nTypeVar1, nDecVar1, tipoVar2, nDecVar2))  {
                             // Variabile 2 non compatibile
                             fillErrorMessage(nRow, colCompare, errCTIncompatibleVar, szVarName, szTemp, chSeverityError, &errCt);
                             lstCTErrors.append(errCt);
                             nErrors++;
-
                         }
                     }
                 }
@@ -3722,7 +3729,7 @@ void ctedit::on_cboVariable1_currentIndexChanged(int index)
             // Fill Var Type List with compatible types
             fillCompatibleTypesList(m_vtAlarmVarType, lstVTypes);
             // Fill Right Var Combo List
-            fillComboVarNames(ui->cboVariable2, lstVTypes, lstNoHUpdates);
+            fillComboVarNames(ui->cboVariable2, lstVTypes, lstNoHUpdates, true);
             // Reset Index Variable
             ui->cboVariable2->setCurrentIndex(-1);
             // Search Left variable in Right List to remove it
@@ -3857,8 +3864,184 @@ int  ctedit::fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes)
     }
     return lstTypes.count();
 }
-// Trucco per impostare il valore del #Blocco e altri valori nel caso di nuova riga
+bool ctedit::checkVarsCompatibility(varTypes nTypeV1, int nDecV1, varTypes nTypeV2, int nDecV2)
+// Controllo di compatibilità completo tra i due operandi di un Allarme
+{
+    bool   isCompatible = false;
+
+    switch (nTypeV1) {
+
+    case BIT:
+    case BYTE_BIT:
+    case WORD_BIT:
+    case DWORD_BIT:
+        switch (nTypeV2) {
+        case BIT:
+        case BYTE_BIT:
+        case WORD_BIT:
+        case DWORD_BIT:
+            isCompatible = true;
+            break;
+        case INT16:
+        case INT16BA:
+        case DINT:
+        case DINTDCBA:
+        case DINTCDAB:
+        case DINTBADC:
+            isCompatible = false; // only == 0 and != 0
+            break;
+        case UINT8:
+        case UINT16:
+        case UINT16BA:
+        case UDINT:
+        case UDINTDCBA:
+        case UDINTCDAB:
+        case UDINTBADC:
+            isCompatible = false; // only == 0 and != 0
+            break;
+        case REAL:
+        case REALDCBA:
+        case REALCDAB:
+        case REALBADC:
+            isCompatible = false; // only == 0 and != 0
+            break;
+        default:
+            ; // FIXME: assert
+        }
+        break;
+
+    case INT16:
+    case INT16BA:
+    case DINT:
+    case DINTDCBA:
+    case DINTCDAB:
+    case DINTBADC:
+        switch (nTypeV2) {
+        case BIT:
+        case BYTE_BIT:
+        case WORD_BIT:
+        case DWORD_BIT:
+            isCompatible = false;
+            break;
+        case INT16:
+        case INT16BA:
+        case DINT:
+        case DINTDCBA:
+        case DINTCDAB:
+        case DINTBADC:
+            isCompatible = (nDecV1 == nDecV2);
+            break;
+        case UINT8:
+        case UINT16:
+        case UINT16BA:
+        case UDINT:
+        case UDINTDCBA:
+        case UDINTCDAB:
+        case UDINTBADC:
+            isCompatible = false;
+            break;
+        case REAL:
+        case REALDCBA:
+        case REALCDAB:
+        case REALBADC:
+            isCompatible = false;
+            break;
+        default:
+            ; // FIXME: assert
+        }
+        break;
+
+    case UINT8:
+    case UINT16:
+    case UINT16BA:
+    case UDINT:
+    case UDINTDCBA:
+    case UDINTCDAB:
+    case UDINTBADC:
+        switch (nTypeV2) {
+        case BIT:
+        case BYTE_BIT:
+        case WORD_BIT:
+        case DWORD_BIT:
+            isCompatible = false;
+            break;
+        case INT16:
+        case INT16BA:
+        case DINT:
+        case DINTDCBA:
+        case DINTCDAB:
+        case DINTBADC:
+            // compatible = (CrossTable[ALCrossTable[indx].SourceAddr].Decimal == CrossTable[ALCrossTable[indx].CompareAddr].Decimal);
+            isCompatible = false;
+            break;
+        case UINT8:
+        case UINT16:
+        case UINT16BA:
+        case UDINT:
+        case UDINTDCBA:
+        case UDINTCDAB:
+        case UDINTBADC:
+            isCompatible = (nDecV1 == nDecV2);
+            break;
+        case REAL:
+        case REALDCBA:
+        case REALCDAB:
+        case REALBADC:
+            isCompatible = false;
+            break;
+        default:
+            ; // FIXME: assert
+        }
+        break;
+
+    case REAL:
+    case REALDCBA:
+    case REALCDAB:
+    case REALBADC:
+        switch (nTypeV2) {
+        case BIT:
+        case BYTE_BIT:
+        case WORD_BIT:
+        case DWORD_BIT:
+            isCompatible = false;
+            break;
+        case INT16:
+        case INT16BA:
+        case DINT:
+        case DINTDCBA:
+        case DINTCDAB:
+        case DINTBADC:
+            isCompatible = false;
+            break;
+        case UINT8:
+        case UINT16:
+        case UINT16BA:
+        case UDINT:
+        case UDINTDCBA:
+        case UDINTCDAB:
+        case UDINTBADC:
+            isCompatible = false;
+            break;
+        case REAL:
+        case REALDCBA:
+        case REALCDAB:
+        case REALBADC:
+            isCompatible = true; // no decimal test
+            break;
+        default:
+            ;
+        }
+        break;
+
+    default:
+        ;
+    }
+    // Return Value
+    return isCompatible;
+}
+
 void ctedit::on_cboPriority_currentIndexChanged(int index)
+// Trucco per impostare il valore del #Blocco e altri valori nel caso di nuova riga
 {
 
     if (lstCTRecords.count() <= 0 ||  index < 0 || m_nGridRow < 0)
