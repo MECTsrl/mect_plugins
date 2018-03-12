@@ -76,6 +76,8 @@ private slots:
     void on_optVariableVal_toggled(bool checked);
     void on_cboSections_currentIndexChanged(int index);
 
+    void on_chkInputRegister_clicked(bool checked);
+
 private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
@@ -103,8 +105,8 @@ private:
     void    jumpToGridRow(int nRow, bool fCenter = false);                // Salto alla riga nRow del Grid
     void    enableInterface();                      // Abilita l'interfaccia in funzione dello stato del sistema
     void    setSectionArea(int nRow);               // Set Current item in combo cboSection from current Row
-    int     fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates); // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
-    int     fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<int> &lstUpdates);   // Caricamento ComboBox con Nomi Variabili filtrate in funzione del Tipo and Update Type in lstUpdates
+    int     fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal = false); // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
+    int     fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal = false);   // Caricamento ComboBox con Nomi Variabili filtrate in funzione del Tipo and Update Type in lstUpdates
     int     fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes);           // Riempie la lista dei tipi compatibili tra loro
     int     varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs);        // Search in Cross Table Record List the index of szVarName
     int     findNextVisibleRow(int nRow);           // Cerca la prossima riga visibile cui saltare (Per Enter on Grid)

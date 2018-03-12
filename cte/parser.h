@@ -26,6 +26,7 @@ extern "C" {
 #define MIN_LOCALIO 5300
 #define MAX_LOCALIO 5389
 
+#define START_INPUT_REGS 300000 // Start Numbering of the Input Register
 
 #define COMP_UNSIGNED   77
 #define COMP_SIGNED     78
@@ -144,33 +145,34 @@ enum tabSettings_e
 
 
 struct  CrossTableRecord {
-    int16_t Enable;
-    int  UsedEntry;
+    int16_t     Enable;
+    int         UsedEntry;
     enum UpdateType Update;
     char Tag[2 * MAX_IDNAME_LEN + 1];
     enum varTypes VarType;
-    uint16_t Decimal;
+    uint16_t    Decimal;
     enum FieldbusType Protocol;
-    uint32_t IPAddress;
-    uint16_t Port;
-    uint8_t NodeId;
-    uint32_t Offset;                                // da 0 a 65535 (Holding Registers) e da 300000 a 365535 (Input Registers)
-    uint16_t Block;
-    uint16_t BlockBase;
-    int16_t BlockSize;
-    int     Behavior;
-    int16_t Counter;
-    uint32_t OldVal;
-    uint16_t Error;
+    uint32_t    IPAddress;
+    uint16_t    Port;
+    uint8_t     NodeId;                                 // Port
+    int         InputReg;                               // 1 if Offset > 300000
+    uint32_t    Offset;                                 // from 0 to 65535 (Holding Registers) from 300000 to 365535 (Input Registers)
+    uint16_t    Block;
+    uint16_t    BlockBase;
+    int16_t     BlockSize;
+    int         Behavior;
+    int16_t     Counter;
+    uint32_t    OldVal;
+    uint16_t    Error;
     // Fields for Events / Alarms
-    int     usedInAlarmsEvents;                     // 1 if used in AL/EV
-    int     ALType;                                 // from enum EventAlarm (0=Alarm 1=Event...)
-    char    ALSource[2 * MAX_IDNAME_LEN + 1];           // Name of source variable in Alarms
-    int     ALOperator;                             // Operator on variable, from enum logicalOperators
-    char    ALCompareVar[2 * MAX_IDNAME_LEN + 1];       // Compare variable (right side of operation, if any)
-    float   ALCompareVal;                           // Fixed comparision value (in alternative to Compare Variable)
-    int     ALComparison;                           // Type of comparision (Signed, unsigned, float determined from left variable type)
-    int     ALCompatible;                           // 1 if both side of comparision are between compatible types
+    int         usedInAlarmsEvents;                     // 1 if used in AL/EV
+    int         ALType;                                 // from enum EventAlarm (0=Alarm 1=Event...)
+    char        ALSource[2 * MAX_IDNAME_LEN + 1];       // Name of source variable in Alarms
+    int         ALOperator;                             // Operator on variable, from enum logicalOperators
+    char        ALCompareVar[2 * MAX_IDNAME_LEN + 1];   // Compare variable (right side of operation, if any)
+    float       ALCompareVal;                           // Fixed comparision value (in alternative to Compare Variable)
+    int         ALComparison;                           // Type of comparision (Signed, unsigned, float determined from left variable type)
+    int         ALCompatible;                           // 1 if both side of comparision are between compatible types
     //
     uint16_t device;
     uint16_t node;

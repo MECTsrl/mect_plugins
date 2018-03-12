@@ -412,11 +412,11 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtNode->setToolTip(szToolTip);
     // Register
     szToolTip.clear();
-    szToolTip.append(tr("For TCP_SRV\n"));
-    szToolTip.append(tr("Modbus address of the Register to be used\n"));
-    szToolTip.append(tr("ADR=[0..29999] -> Coil / Holding Register (ADR)"));
-    szToolTip.append(tr("ADR=[30000..39999] -> Input  Register (ADR-30001)\n"));
-    szToolTip.append(tr("ADR=[40000..49999] -> Holding Register (ADR-40001)"));
+    szToolTip.append(tr("For Modbus:\n"));
+    szToolTip.append(tr("ADR=[0..65535]       -> Holding Register\n"));
+    szToolTip.append(tr("ADR=[300000..365535] -> Input  Register\n\n"));
+    szToolTip.append(tr("For Modbus Server: (RTU_SRV, TCP_SRV or TCPRTU_SRV):\n"));
+    szToolTip.append(tr("ADR=[0..4095]"));
     ui->txtRegister->setToolTip(szToolTip);
     // Block
     szToolTip.clear();
@@ -465,7 +465,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
     ui->txtPort->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
     ui->txtNode->setValidator(new QIntValidator(nValMin, nMaxNodeID, this));
-    ui->txtRegister->setValidator(new QIntValidator(nValMin, nMaxInputRegister, this));
+    ui->txtRegister->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
     ui->txtNode->setValidator(new QIntValidator(nValMin, MAXBLOCKSIZE -1, this));
     ui->txtBlock->setValidator(new QIntValidator(nValMin, nValMax, this));
     ui->txtBlockSize->setValidator(new QIntValidator(nValMin, nValMax, this));
@@ -971,6 +971,8 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     QString szTemp;
     int     nPos = 0;
     int     nProtocol = -1;
+    int     nReg = 0;
+    bool    fOk = false;
     QList<int> lstVarTypes;
 
     lstVarTypes.clear();
@@ -1039,10 +1041,14 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     // Register
     szTemp = lstRecValues[colRegister].trimmed();
     ui->txtRegister->setText(szTemp);
+    // Input Register
+    nReg = szTemp.toInt(&fOk);
+    nReg = fOk ? nReg : 0;
+    ui->chkInputRegister->setChecked(nReg >= nStartInputRegister);
     // Block
     szTemp = lstRecValues[colBlock].trimmed();
     ui->txtBlock->setText(szTemp);
-    // N° Registro
+    // Dimensione Blocco
     szTemp = lstRecValues[colBlockSize].trimmed();
     ui->txtBlockSize->setText(szTemp);
     // Comment
@@ -1733,6 +1739,16 @@ void ctedit::enableFields()
             ui->cboPort->setVisible(false);
             ui->txtPort->setVisible(true);
         }
+        // Visibilità Check Box Input Regs per protocolli RTU - TCP - TCPRTU
+        if (nProtocol == RTU || nProtocol == TCP || nProtocol == TCPRTU)  {
+            ui->lblInputRegister->setVisible(true);
+            ui->chkInputRegister->setVisible(true);
+            ui->chkInputRegister->setEnabled(true);
+        }
+        else  {
+            ui->lblInputRegister->setVisible(false);
+            ui->chkInputRegister->setVisible(false);
+        }
     }
 }
 void ctedit::on_cboType_currentIndexChanged(int index)
@@ -1762,6 +1778,23 @@ void ctedit::on_cboType_currentIndexChanged(int index)
         disableComboItem(ui->cboBehavior, behavior_event);
     }
 }
+void ctedit::on_chkInputRegister_clicked(bool checked)
+// Cambio di Registro da Holding a Input Register e viceversa
+{
+    bool    fOk = false;
+    int     nVal = ui->txtRegister->text().toInt(&fOk);
+
+    nVal = fOk ? nVal : 0;
+    // Passaggio da valore normale a Input Register
+    if (checked && (nVal >= 0 && nVal <= nMax_Int16))  {
+        nVal += nStartInputRegister;
+    }
+    if (! checked && nVal >= nStartInputRegister)  {
+        nVal -= nStartInputRegister;
+    }
+    // Refresh del valore
+    ui->txtRegister->setText(QString::number(nVal));
+}
 void ctedit::on_cboProtocol_currentIndexChanged(int index)
 // Cambio di Protocollo della Variabile. Abilita i campi specifici del protocollo e imposta eventuali valori di default se necessari
 {
@@ -1778,6 +1811,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         ui->txtIP->setText(szEMPTY);
         ui->txtPort->setText(szEMPTY);
         ui->txtNode->setText(szEMPTY);
+        ui->chkInputRegister->setChecked(false);
         ui->txtRegister->setText(szEMPTY);
     }
     // Calcola la porta di default in funzione del protocollo (if any available)
@@ -1801,6 +1835,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         ui->txtPort->setText(szEMPTY);
         ui->txtNode->setText(szEMPTY);
         ui->cboPort->setCurrentIndex(-1);
+        ui->chkInputRegister->setChecked(false);
         ui->txtRegister->setText(szEMPTY);       
     }
     // RTU vari - MECT - CANOPEN
@@ -1920,6 +1955,7 @@ void ctedit::clearEntryForm()
     ui->txtIP->setText(szEMPTY);
     ui->txtPort->setText(szEMPTY);
     ui->txtNode->setText(szEMPTY);
+    ui->chkInputRegister->setChecked(false);
     ui->txtRegister->setText(szEMPTY);
     ui->txtBlock->setText(szEMPTY);
     ui->txtBlockSize->setText(szEMPTY);
@@ -3100,7 +3136,7 @@ bool ctedit::isValidVarName(QString szName)
     // Return value
     return fRes;
 }
-int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates)
+int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal)
 // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
 {
     bool    fTypeFilter = lstTypes.count() > 0;
@@ -3127,7 +3163,12 @@ int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &
             else {
                 fUpdateOk = f2Add;
             }
-
+            // Skip Vars with decimal number defined with another variable
+            if (fSkipVarDecimal)  {
+                if (lstCTRecords[nRow].Decimal > 3)  {
+                    f2Add = false;
+                }
+            }
             // If Var is defined and of a correct type, insert in list
             if (f2Add && fUpdateOk)  {
                 lstVars.append(QString::fromAscii(lstCTRecords[nRow].Tag));
@@ -3141,7 +3182,7 @@ int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &
     return lstVars.count();
 }
 
-int ctedit::fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<int> &lstUpdates)
+int ctedit::fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal)
 // Caricamento ComboBox con Nomi Variabili filtrate in funzione del Tipo e della Persistenza
 {
     QStringList lstVars;
@@ -3151,7 +3192,7 @@ int ctedit::fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<i
     lstVars.clear();
     comboBox->setCurrentIndex(-1);
     comboBox->clear();
-    if (fillVarList(lstVars, lstTypes, lstUpdates) > 0)
+    if (fillVarList(lstVars, lstTypes, lstUpdates, fSkipVarDecimal) > 0)
     {
         for (nItem = 0; nItem < lstVars.count(); nItem++)  {
             comboBox->addItem(lstVars[nItem]);
@@ -3840,6 +3881,8 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
             // Node id
             ui->txtNode->setText(QString::number(lstCTRecords[m_nGridRow - 1].NodeId));
             // Register
+            ui->chkInputRegister->setChecked(lstCTRecords[m_nGridRow - 1].InputReg == 1);
+            // Register
             ui->txtRegister->setText(QString::number(lstCTRecords[m_nGridRow - 1].Offset));
             // Behavior
             ui->cboBehavior->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Behavior);
@@ -4011,8 +4054,10 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
 //                return true;
 //            }
 //        }
-        // Sequenze valide per tutto il form
-        // Save
+        //-------------------------------------------------
+        // Sequenze valide per tutto il Tab CrossTable Editor
+        //-------------------------------------------------
+        // Save su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Save)) {
             if (m_nCurTab == TAB_CT)  {
                 // qDebug() << tr("Save");
@@ -4021,7 +4066,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
         }
-        // Find
+        // Find su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Find)) {
             if (m_nCurTab == TAB_CT)  {
                 // qDebug() << tr("Find");
@@ -4029,7 +4074,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
         }
-        // Undo
+        // Undo su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Undo)) {
             if (m_nCurTab == TAB_CT)  {
                 // qDebug() << tr("Undo");
@@ -4038,7 +4083,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
         }
-        // Goto Line
+        // Goto Line su Tab CrossTable Editor
         if (keyEvent->key() == Qt::Key_L && nPrevKey == Qt::Key_Control)  {
             // qDebug() << tr("CTRL-L");
             if (m_nCurTab == TAB_CT)  {
@@ -4046,7 +4091,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
         }
-        // Return / Enter Button
+        // Return / Enter Button [differenziato tra Grid e Form di Data Entry]
         if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)  {
             if (m_nCurTab == TAB_CT)  {
                 if (obj == ui->fraEdit)  {
@@ -4071,7 +4116,9 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 }
             }
         }
-        // Sequenze significative solo sul Grid
+        //-------------------------------------------------
+        // Sequenze significative solo sul Grid del Tab CTE
+        //-------------------------------------------------
         if (obj == ui->tblCT)  {
             // Tasto Insert
             if (keyEvent->key() == Qt::Key_Insert) {

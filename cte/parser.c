@@ -623,8 +623,8 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
             ERR = TRUE;
             break;
         }
+        // Register || Input Register
         CrossTable[addr].Offset = atoi(p);
-
         // Block {number}
         p = strtok_csv(NULL, ";", &r);
         if (p == NULL) {
@@ -1077,7 +1077,7 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
             // Protocol
             sprintf(token, "%-10s;", fieldbusName[CrossTable[addr].Protocol]);
             strcat(row, token);
-            // IP Address
+            // IP Address only for TCP Objects
             if (CrossTable[addr].Protocol == TCP || CrossTable[addr].Protocol == TCPRTU || CrossTable[addr].Protocol == TCP_SRV || CrossTable[addr].Protocol ==TCPRTU_SRV)  {
                 ipaddr2str(CrossTable[addr].IPAddress, token);
             }
@@ -1087,7 +1087,10 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
             strcat(row, token);
             // (Protocollo PLC) or (Port - NodeId - Register tutti a 0) -> Forza vuoto
             // Escluso range LOCAL_IO
-            if (CrossTable[addr].Protocol == PLC || ((addr < MIN_LOCALIO || addr > MAX_LOCALIO) && (CrossTable[addr].Port == 0 && CrossTable[addr].NodeId == 0 && CrossTable[addr].Offset == 0)))  {
+            if (CrossTable[addr].Protocol == PLC ||
+                    ((addr < MIN_LOCALIO || addr > MAX_LOCALIO) &&
+                     (CrossTable[addr].Port == 0 && CrossTable[addr].NodeId == 0 && CrossTable[addr].Offset == 0)))
+            {
                 sprintf(token, "%-4s;", "");
                 strcat(row, token);
                 strcat(row, token);
@@ -1100,7 +1103,7 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
                 // Node Id
                 sprintf(token, "%-4d;", CrossTable[addr].NodeId);
                 strcat(row, token);
-                // Register - Offset
+                // Register - Offset || Input Register
                 sprintf(token, "%-4d;", CrossTable[addr].Offset);
                 strcat(row, token);
             }

@@ -784,14 +784,8 @@
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
                <layout class="QGridLayout" name="gridLayout">
-                <item row="2" column="10">
-                 <widget class="QLabel" name="lblNode">
-                  <property name="minimumSize">
-                   <size>
-                    <width>40</width>
-                    <height>0</height>
-                   </size>
-                  </property>
+                <item row="2" column="14">
+                 <widget class="QLabel" name="lblBlockSize">
                   <property name="font">
                    <font>
                     <pointsize>8</pointsize>
@@ -800,14 +794,14 @@
                    </font>
                   </property>
                   <property name="text">
-                   <string>Node ID</string>
+                   <string>Blk Size</string>
                   </property>
                   <property name="buddy">
-                   <cstring>txtNode</cstring>
+                   <cstring>txtBlockSize</cstring>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="12">
+                <item row="2" column="13">
                  <widget class="QLabel" name="lblBlock">
                   <property name="minimumSize">
                    <size>
@@ -827,23 +821,6 @@
                   </property>
                   <property name="buddy">
                    <cstring>txtBlock</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="13">
-                 <widget class="QLabel" name="lblBlockSize">
-                  <property name="font">
-                   <font>
-                    <pointsize>8</pointsize>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string>Blk Size</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>txtBlockSize</cstring>
                   </property>
                  </widget>
                 </item>
@@ -905,7 +882,7 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="11">
+                <item row="2" column="12">
                  <widget class="QLabel" name="lblRegister">
                   <property name="minimumSize">
                    <size>
@@ -1089,7 +1066,7 @@
                   </property>
                  </widget>
                 </item>
-                <item row="8" column="12">
+                <item row="8" column="13">
                  <widget class="QLineEdit" name="txtBlock">
                   <property name="minimumSize">
                    <size>
@@ -1187,7 +1164,7 @@
                   </property>
                  </widget>
                 </item>
-                <item row="8" column="13">
+                <item row="8" column="14">
                  <widget class="QLineEdit" name="txtBlockSize">
                   <property name="minimumSize">
                    <size>
@@ -1250,7 +1227,7 @@
                   </property>
                  </widget>
                 </item>
-                <item row="8" column="11">
+                <item row="8" column="12">
                  <widget class="QLineEdit" name="txtRegister">
                   <property name="minimumSize">
                    <size>
@@ -1451,6 +1428,73 @@
                   </property>
                   <property name="buddy">
                    <cstring>txtPort</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="10">
+                 <widget class="QLabel" name="lblNode">
+                  <property name="minimumSize">
+                   <size>
+                    <width>40</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>8</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Node ID</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>txtNode</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="11">
+                 <widget class="QLabel" name="lblInputRegister">
+                  <property name="minimumSize">
+                   <size>
+                    <width>66</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>8</pointsize>
+                    <weight>50</weight>
+                    <bold>false</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Input Reg.</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>txtRegister</cstring>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="11">
+                 <widget class="QCheckBox" name="chkInputRegister">
+                  <property name="minimumSize">
+                   <size>
+                    <width>66</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>8</pointsize>
+                   </font>
+                  </property>
+                  <property name="layoutDirection">
+                   <enum>Qt::LeftToRight</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -2016,6 +2060,7 @@
   <tabstop>cboPort</tabstop>
   <tabstop>txtPort</tabstop>
   <tabstop>txtNode</tabstop>
+  <tabstop>chkInputRegister</tabstop>
   <tabstop>txtRegister</tabstop>
   <tabstop>txtBlock</tabstop>
   <tabstop>txtBlockSize</tabstop>
