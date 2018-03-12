@@ -888,9 +888,9 @@ void system_ini::save_all()
 void system_ini::on_pushButton_PwdLogoutPage_clicked()
 {
     char value_pwd [32];
-    alphanumpad tatiera_alfanum(value_pwd, ui->pushButton_PwdLogoutPage->text().toAscii().data());//alphanumpad=>tipo oggetto, value => destinazione e valore di default. toAscii().data()=>trasformazione da stringa a Char* xè la dialog box alphanumpad non vuole stringhe
-    tatiera_alfanum.showFullScreen();//schermata intera per la dialog box
-    if(tatiera_alfanum.exec()==QDialog::Accepted)//exec=>eseguo alphanumpad, se quando termina è uguale ad Accepted, ossia è stato premuto OK => devo considerare il nuovo valore da inserire nel bottone
+    alphanumpad tastiera_alfanum(value_pwd, ui->pushButton_PwdLogoutPage->text().toAscii().data());//alphanumpad=>tipo oggetto, value => destinazione e valore di default. toAscii().data()=>trasformazione da stringa a Char* xè la dialog box alphanumpad non vuole stringhe
+    tastiera_alfanum.showFullScreen();//schermata intera per la dialog box
+    if(tastiera_alfanum.exec()==QDialog::Accepted)//exec=>eseguo alphanumpad, se quando termina è uguale ad Accepted, ossia è stato premuto OK => devo considerare il nuovo valore da inserire nel bottone
     {
         ui->pushButton_PwdLogoutPage->setText(value_pwd);
     }
@@ -899,9 +899,9 @@ void system_ini::on_pushButton_PwdLogoutPage_clicked()
 void system_ini::on_pushButton_StartPage_clicked()
 {
     char value_start [32];
-    alphanumpad tatiera_alfanum(value_start, ui->pushButton_StartPage->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted)
+    alphanumpad tastiera_alfanum(value_start, ui->pushButton_StartPage->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
         ui->pushButton_StartPage->setText(value_start);
     }
@@ -910,9 +910,9 @@ void system_ini::on_pushButton_StartPage_clicked()
 void system_ini::on_pushButton_HomePage_clicked()
 {
     char value_home [32];
-    alphanumpad tatiera_alfanum(value_home, ui->pushButton_HomePage->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted)
+    alphanumpad tastiera_alfanum(value_home, ui->pushButton_HomePage->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
         ui->pushButton_HomePage->setText(value_home);
     }

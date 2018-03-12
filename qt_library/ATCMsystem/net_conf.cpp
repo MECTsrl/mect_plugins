@@ -937,9 +937,9 @@ bool net_conf::checkNetAddr(char * ipaddr)
 void net_conf::on_pushButton_eth0_IP_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_IP->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_IP->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth0_IP->setText(value);
     }
@@ -948,9 +948,9 @@ void net_conf::on_pushButton_eth0_IP_clicked()
 void net_conf::on_pushButton_eth0_NM_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_NM->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_NM->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth0_NM->setText(value);
     }
@@ -959,9 +959,9 @@ void net_conf::on_pushButton_eth0_NM_clicked()
 void net_conf::on_pushButton_eth0_GW_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_GW->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_GW->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth0_GW->setText(value);
     }
@@ -970,9 +970,9 @@ void net_conf::on_pushButton_eth0_GW_clicked()
 void net_conf::on_pushButton_eth0_DNS1_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_DNS1->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_DNS1->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth0_DNS1->setText(value);
     }
@@ -981,9 +981,9 @@ void net_conf::on_pushButton_eth0_DNS1_clicked()
 void net_conf::on_pushButton_eth0_DNS2_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth0_DNS2->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_DNS2->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth0_DNS2->setText(value);
     }
@@ -992,9 +992,9 @@ void net_conf::on_pushButton_eth0_DNS2_clicked()
 void net_conf::on_pushButton_eth1_IP_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_IP->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_IP->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth1_IP->setText(value);
     }
@@ -1003,9 +1003,9 @@ void net_conf::on_pushButton_eth1_IP_clicked()
 void net_conf::on_pushButton_eth1_NM_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_NM->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_NM->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth1_NM->setText(value);
     }
@@ -1014,9 +1014,9 @@ void net_conf::on_pushButton_eth1_NM_clicked()
 void net_conf::on_pushButton_eth1_GW_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_GW->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_GW->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth1_GW->setText(value);
     }
@@ -1025,9 +1025,9 @@ void net_conf::on_pushButton_eth1_GW_clicked()
 void net_conf::on_pushButton_eth1_DNS1_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_DNS1->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_DNS1->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth1_DNS1->setText(value);
     }
@@ -1036,9 +1036,9 @@ void net_conf::on_pushButton_eth1_DNS1_clicked()
 void net_conf::on_pushButton_eth1_DNS2_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_eth1_DNS2->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_DNS2->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_eth1_DNS2->setText(value);
     }
@@ -1047,9 +1047,9 @@ void net_conf::on_pushButton_eth1_DNS2_clicked()
 void net_conf::on_pushButton_wlan0_IP_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_IP->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_IP->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_wlan0_IP->setText(value);
     }
@@ -1058,9 +1058,9 @@ void net_conf::on_pushButton_wlan0_IP_clicked()
 void net_conf::on_pushButton_wlan0_NM_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_NM->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_NM->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_wlan0_NM->setText(value);
     }
@@ -1069,9 +1069,9 @@ void net_conf::on_pushButton_wlan0_NM_clicked()
 void net_conf::on_pushButton_wlan0_GW_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_GW->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_GW->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_wlan0_GW->setText(value);
     }
@@ -1080,9 +1080,9 @@ void net_conf::on_pushButton_wlan0_GW_clicked()
 void net_conf::on_pushButton_wlan0_DNS1_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_DNS1->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_DNS1->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_wlan0_DNS1->setText(value);
     }
@@ -1091,9 +1091,9 @@ void net_conf::on_pushButton_wlan0_DNS1_clicked()
 void net_conf::on_pushButton_wlan0_DNS2_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wlan0_DNS2->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_DNS2->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_wlan0_DNS2->setText(value);
     }
@@ -1177,9 +1177,9 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
 void net_conf::on_pushButton_wlan0_pwd_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, wlan0_pwd.toAscii().data(), true);
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted)
+    alphanumpad tastiera_alfanum(value, wlan0_pwd.toAscii().data(), true);
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
         wlan0_pwd = value;
         ui->pushButton_wlan0_pwd->setText(QString("*").repeated(wlan0_pwd.length()));
@@ -1210,6 +1210,8 @@ void net_conf::on_pushButton_wan0_enable_clicked()
 {
     ui->tab_wan0->setEnabled(false);
     ui->tab_wan0->repaint();
+    // WLAN Current Cfg Update forced
+    saveWLAN0cfg();
     if (!is_wan_active)
     {
         if (app_netconf_item_set("1", "ONBOOTP0"))
@@ -1247,9 +1249,9 @@ bool net_conf::isWanOn(void)
 void net_conf::on_pushButton_wan0_dialnb_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, DIALNB, ui->pushButton_wan0_dialnb->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted)
+    numpad tastiera_alfanum(value, DIALNB, ui->pushButton_wan0_dialnb->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
         ui->pushButton_wan0_dialnb->setText(value);
     }
@@ -1258,9 +1260,9 @@ void net_conf::on_pushButton_wan0_dialnb_clicked()
 void net_conf::on_pushButton_wan0_apn_clicked()
 {
     char value [32];
-    alphanumpad tatiera_alfanum(value, ui->pushButton_wan0_apn->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted)
+    alphanumpad tastiera_alfanum(value, ui->pushButton_wan0_apn->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
         ui->pushButton_wan0_apn->setText(value);
     }
@@ -1269,9 +1271,9 @@ void net_conf::on_pushButton_wan0_apn_clicked()
 void net_conf::on_pushButton_wan0_DNS1_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wan0_DNS1->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wan0_DNS1->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_wan0_DNS1->setText(value);
     }
@@ -1280,9 +1282,9 @@ void net_conf::on_pushButton_wan0_DNS1_clicked()
 void net_conf::on_pushButton_wan0_DNS2_clicked()
 {
     char value [32];
-    numpad tatiera_alfanum(value, IPADDR, ui->pushButton_wan0_DNS2->text().toAscii().data());
-    tatiera_alfanum.showFullScreen();
-    if(tatiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
+    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wan0_DNS2->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
     {
         ui->pushButton_wan0_DNS2->setText(value);
     }
