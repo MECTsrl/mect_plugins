@@ -154,7 +154,7 @@ ctedit::ctedit(QWidget *parent) :
 
     ui->setupUi(this);
     // Version Number
-    ui->lblModel->setToolTip(szVERSION);
+    ui->lblMessage->setToolTip(szVERSION);
     // Liste di servizio
     lstUsedVarNames.clear();
     lstLoggedVars.clear();
@@ -201,8 +201,9 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNoVar1] = trUtf8("Empty or Invalid Left Condition Variable");
     lstErrorMessages[errCTNoCondition] = trUtf8("Empty or Invalid Alarm/Event Condition");
     lstErrorMessages[errCTRiseFallNotBit] = trUtf8("Rising/Falling Variable must be of BIT Type");
+    lstErrorMessages[errCTInvalidNum] = trUtf8("Invalid Numeric Value in Alarm/Event Condition");;
     lstErrorMessages[errCTInvalidNum] = trUtf8("Invalid Numeric Value in Alarm/Event Condition");
-    lstErrorMessages[errCTEmptyCondExpression] = trUtf8("Empty or Invalid Expression in Alarm/Event Condition");
+    lstErrorMessages[errCTNegWithUnsigned] = trUtf8("Negative Value compared with Unsigned in Alarm/Event Condition");
     lstErrorMessages[errCTNoVar2] = trUtf8("Empty or Invalid Right Condition Variable");
     lstErrorMessages[errCTIncompatibleVar] = trUtf8("Incompatible Var Type or Decimals in Alarm/Event Condition");
     // Titoli colonne
@@ -658,6 +659,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
             nModel = searchModelInList(m_szCurrentModel);
             qDebug() << tr("Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
             ui->lblModel->setStyleSheet(QString::fromAscii("background-color: LightCyan"));
+            ui->lblModel->setToolTip(getModelInfo(nModel));
         }
         else  {
             TargetConfig = lstTargets[AnyTPAC];
@@ -975,6 +977,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     int     nReg = 0;
     int     nDec = 0;
     bool    fOk = false;
+    int     nLeftVar = 0;
     QList<int> lstVarTypes;
 
     lstVarTypes.clear();
@@ -1080,8 +1083,15 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
             szTemp = lstRecValues[colSourceVar].trimmed();
             // qDebug() << "Alarm Source Variable:" << szTemp;
             nPos = -1;
+            nDec = 4;
+            nLeftVar = -1;
             if (! szTemp.isEmpty())  {
                 nPos = ui->cboVariable1->findText(szTemp, Qt::MatchExactly);
+                nLeftVar = varName2Row(szTemp, lstCTRecords);
+                // Recupera il Numero Decimali per la formattazione del valore fixed
+                if (nLeftVar > 0)  {
+                    nDec = lstCTRecords[nLeftVar].Decimal;
+                }
             }
             ui->cboVariable1->setCurrentIndex(nPos);
             // Operatore confronto
@@ -1113,6 +1123,11 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
                     if (! c.isLetter())  {
                         // Numero
                         ui->optFixedVal->setChecked(true);
+                        // Formattazione del Numero in funzione dei Decimali della variabile di source
+                        QLocale c(QLocale::C);
+                        double dVal = c.toDouble(szTemp, &fOk);
+                        dVal = fOk ? dVal : 0.0;
+                        szTemp = QString::number(dVal, 'f', nDec);
                         ui->txtFixedValue->setText(szTemp);
                     }
                     else  {
@@ -2877,6 +2892,41 @@ QString ctedit::getModelName()
     // return value
     return szModel;
 }
+QString ctedit::getModelInfo(int nModel)
+// Prepara il ToolTipText con le info di modello
+{
+    QString     szText(szEMPTY);
+
+    if (nModel >= 0 && nModel < lstTargets.count())  {
+        szText.append(QString::fromAscii("Model: \t%1\n\n") .arg(lstTargets[nModel].modelName ));
+        // Structural Parameters
+        szText.append(QString::fromAscii("Display Width: \t\t%1\n") .arg(lstTargets[nModel].displayWidth));
+        szText.append(QString::fromAscii("Display Height: \t%1\n") .arg(lstTargets[nModel].displayHeight));
+        szText.append(QString::fromAscii("USB Ports: \t\t%1\n") .arg(lstTargets[nModel].usbPorts));
+        szText.append(QString::fromAscii("Ethernet Ports: \t\t%1\n") .arg(lstTargets[nModel].ethPorts));
+        szText.append(QString::fromAscii("SD Cards: \t\t%1\n") .arg(lstTargets[nModel].sdCards));
+        szText.append(QString::fromAscii("Encoders: \t\t%1\n") .arg(lstTargets[nModel].nEncoders));
+        szText.append(QString::fromAscii("Digital IN: \t\t%1\n") .arg(lstTargets[nModel].digitalIN));
+        szText.append(QString::fromAscii("Digital OUT: \t\t%1\n") .arg(lstTargets[nModel].digitalOUT));
+        szText.append(QString::fromAscii("Analog IN: \t\t%1\n") .arg(lstTargets[nModel].analogIN));
+        szText.append(QString::fromAscii("Analog OUT: \t\t%1\n") .arg(lstTargets[nModel].analogOUT));
+        // Bus Interfaces
+        // Serial 0
+        szText.append(QString::fromAscii("Serial 0 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser0_Enabled)));
+        // Serial 1
+        szText.append(QString::fromAscii("Serial 1 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser1_Enabled)));
+        // Serial 2
+        szText.append(QString::fromAscii("Serial 2 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser2_Enabled)));
+        // Serial 3
+        szText.append(QString::fromAscii("Serial 3 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser3_Enabled)));
+        // Can0
+        szText.append(QString::fromAscii("Can 0 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].can0_Enabled)));
+        // Can1
+        szText.append(QString::fromAscii("Can 1 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].can1_Enabled)));
+    }
+    return szText;
+}
+
 void ctedit::displayStatusMessage(QString szMessage, int nSeconds)
 // Show message in ui->lblMessage
 {
@@ -3635,6 +3685,14 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
                         lstCTErrors.append(errCt);
                         nErrors++;
                     }
+                    // Controllo di coerenza sul Valore da confrontare con il tipo della variabile
+                    if (dblVal < 0.0 &&
+                        (nTypeVar1 ==  UINT8 || nTypeVar1 ==  UINT16 || nTypeVar1 ==  UINT16BA || nTypeVar1 ==  UDINT || nTypeVar1 ==  UDINTDCBA || nTypeVar1 ==  UDINTCDAB || nTypeVar1 ==  UDINTBADC))  {
+                        // Valore Negativo comparato con un valore UNSIGNED
+                        fillErrorMessage(nRow, colCompare, errCTNegWithUnsigned, szVarName, szTemp, chSeverityError, &errCt);
+                        lstCTErrors.append(errCt);
+                        nErrors++;
+                    }
                 }
                 else  {
                     // Variabile
@@ -3691,6 +3749,7 @@ void ctedit::on_cboVariable1_currentIndexChanged(int index)
 {
     QString szVarName;
     int     nRow = -1;
+    int     nDecimals = 0;
     QList<int> lstVTypes;
     QString szRightVar;
 
@@ -3706,9 +3765,14 @@ void ctedit::on_cboVariable1_currentIndexChanged(int index)
         if (nRow >= 0 && nRow < lstCTRecords.count())  {
             // Recupera il tipo della Variabile a SX dell'espressione Allarme/Evento
             m_vtAlarmVarType = lstCTRecords[nRow].VarType;
+            // Recupera il # decimali della variabile
+            nDecimals = lstCTRecords[nRow].Decimal;
             // qDebug() << "Row First Variable in Alarm (Row - Name - nType - Type):" << nRow << szVarName << m_vtAlarmVarType << QString::fromAscii(varTypeName[m_vtAlarmVarType]);
             QString szVar1Type = QString::fromAscii(varTypeNameExtended[m_vtAlarmVarType]);
             szVar1Type.prepend(QString::fromAscii("["));
+            szVar1Type.append(QString::fromAscii("]"));
+            szVar1Type.append(QString::fromAscii(" - [Dec: "));
+            szVar1Type.append(QString::number(nDecimals));
             szVar1Type.append(QString::fromAscii("]"));
             ui->lblTypeVar1->setText(szVar1Type);
             // Disabilita le voci per Rising and falling
@@ -3716,6 +3780,8 @@ void ctedit::on_cboVariable1_currentIndexChanged(int index)
                 // qDebug() << "Condition Enabled";
                 enableComboItem(ui->cboCondition, oper_rising);
                 enableComboItem(ui->cboCondition, oper_falling);
+                // Decimals for BYTE_BIT WORD_BIT DWORD_BIT is the Bit Index -> Forced to 0 for Validate
+                nDecimals = 0;
             }
             else  {
                 // qDebug() << "Condition is Disabled";
@@ -3742,6 +3808,12 @@ void ctedit::on_cboVariable1_currentIndexChanged(int index)
                 if (nRow >= 0 && nRow < ui->cboVariable2->count())  {
                     ui->cboVariable2->setCurrentIndex(nRow);
                 }
+            }
+            // Decimal Validator
+            QDoubleValidator * validFixed = ((QDoubleValidator *) ui->txtFixedValue->validator());
+            if (validFixed != 0)  {
+                validFixed->setDecimals(nDecimals);
+                validFixed->setNotation(QDoubleValidator::StandardNotation);
             }
         }
     }
@@ -3971,7 +4043,6 @@ bool ctedit::checkVarsCompatibility(varTypes nTypeV1, int nDecV1, varTypes nType
         case DINTDCBA:
         case DINTCDAB:
         case DINTBADC:
-            // compatible = (CrossTable[ALCrossTable[indx].SourceAddr].Decimal == CrossTable[ALCrossTable[indx].CompareAddr].Decimal);
             isCompatible = false;
             break;
         case UINT8:
@@ -4686,7 +4757,45 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_B].ser2_Enabled = false;
     lstTargets[TP1043_01_B].ser3_Enabled = false;
     lstTargets[TP1043_01_B].can1_Enabled = true;
-    // 03 TP1057_01_A
+    //03 TP1043_02_A
+    lstTargets[TP1043_01_A].modelName =  QString::fromAscii(product_name[TP1043_02_A]);
+    lstTargets[TP1043_01_A].displayWidth =  480;
+    lstTargets[TP1043_01_A].displayHeight = 272;
+    lstTargets[TP1043_01_A].sdCards = 1;
+    lstTargets[TP1043_01_A].digitalIN = 0;
+    lstTargets[TP1043_01_A].digitalOUT = 0;
+    lstTargets[TP1043_01_A].nEncoders = 0;
+    lstTargets[TP1043_01_A].analogIN = 0;
+    lstTargets[TP1043_01_A].analogINrowCT = -1;
+    lstTargets[TP1043_01_A].analogOUT = 0;
+    lstTargets[TP1043_01_A].analogOUTrowCT = -1;
+    lstTargets[TP1043_01_A].tAmbient = false;
+    lstTargets[TP1043_01_A].rpmPorts = 0;
+    lstTargets[TP1043_01_A].ser0_Enabled = true;
+    lstTargets[TP1043_01_A].ser1_Enabled = false;
+    lstTargets[TP1043_01_A].ser2_Enabled = false;
+    lstTargets[TP1043_01_A].ser3_Enabled = false;
+    lstTargets[TP1043_01_A].can1_Enabled = false;
+    // 04 TP1043_02_B
+    lstTargets[TP1043_01_B].modelName =  QString::fromAscii(product_name[TP1043_02_B]);
+    lstTargets[TP1043_01_B].displayWidth =  480;
+    lstTargets[TP1043_01_B].displayHeight = 272;
+    lstTargets[TP1043_01_B].sdCards = 1;
+    lstTargets[TP1043_01_B].digitalIN = 0;
+    lstTargets[TP1043_01_B].digitalOUT = 0;
+    lstTargets[TP1043_01_B].nEncoders = 0;
+    lstTargets[TP1043_01_B].analogIN = 0;
+    lstTargets[TP1043_01_B].analogINrowCT = -1;
+    lstTargets[TP1043_01_B].analogOUT = 0;
+    lstTargets[TP1043_01_B].analogOUTrowCT = -1;
+    lstTargets[TP1043_01_B].tAmbient = false;
+    lstTargets[TP1043_01_B].rpmPorts = 0;
+    lstTargets[TP1043_01_B].ser0_Enabled = false;
+    lstTargets[TP1043_01_B].ser1_Enabled = false;
+    lstTargets[TP1043_01_B].ser2_Enabled = false;
+    lstTargets[TP1043_01_B].ser3_Enabled = false;
+    lstTargets[TP1043_01_B].can1_Enabled = true;
+    // 05 TP1057_01_A
     lstTargets[TP1057_01_A].modelName =  QString::fromAscii(product_name[TP1057_01_A]);
     lstTargets[TP1057_01_A].displayWidth =  320;
     lstTargets[TP1057_01_A].displayHeight = 240;
@@ -4705,7 +4814,7 @@ void ctedit::initTargetList()
     lstTargets[TP1057_01_A].ser2_Enabled = false;
     lstTargets[TP1057_01_A].ser3_Enabled = true;
     lstTargets[TP1057_01_A].can1_Enabled = false;
-    // 04 TP1057_01_B
+    // 06 TP1057_01_B
     lstTargets[TP1057_01_B].modelName =  QString::fromAscii(product_name[TP1057_01_B]);
     lstTargets[TP1057_01_B].displayWidth =  320;
     lstTargets[TP1057_01_B].displayHeight = 240;
@@ -4724,7 +4833,7 @@ void ctedit::initTargetList()
     lstTargets[TP1057_01_B].ser2_Enabled = false;
     lstTargets[TP1057_01_B].ser3_Enabled = true;
     lstTargets[TP1057_01_B].can1_Enabled = true;
-    // 05 TP1070_01_A
+    // 07 TP1070_01_A
     lstTargets[TP1070_01_A].modelName =  QString::fromAscii(product_name[TP1070_01_A]);
     lstTargets[TP1070_01_A].displayWidth =  800;
     lstTargets[TP1070_01_A].displayHeight = 480;
@@ -4743,7 +4852,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_A].ser2_Enabled = false;
     lstTargets[TP1070_01_A].ser3_Enabled = true;
     lstTargets[TP1070_01_A].can1_Enabled = false;
-    // 06 TP1070_01_B
+    // 08 TP1070_01_B
     lstTargets[TP1070_01_B].modelName =  QString::fromAscii(product_name[TP1070_01_B]);
     lstTargets[TP1070_01_B].displayWidth =  800;
     lstTargets[TP1070_01_B].displayHeight = 480;
@@ -4762,7 +4871,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_B].ser2_Enabled = false;
     lstTargets[TP1070_01_B].ser3_Enabled = true;
     lstTargets[TP1070_01_B].can1_Enabled = true;
-    // 07 TP1070_01_C
+    // 09 TP1070_01_C
     lstTargets[TP1070_01_C].modelName =  QString::fromAscii(product_name[TP1070_01_C]);
     lstTargets[TP1070_01_C].displayWidth =  800;
     lstTargets[TP1070_01_C].displayHeight = 480;
@@ -4781,7 +4890,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_C].ser2_Enabled = false;
     lstTargets[TP1070_01_C].ser3_Enabled = true;
     lstTargets[TP1070_01_C].can1_Enabled = false;
-    // 08 TPAC1005
+    // 10 TPAC1005
     lstTargets[TPAC1005].modelName =  QString::fromAscii(product_name[TPAC1005]);
     lstTargets[TPAC1005].displayWidth =  480;
     lstTargets[TPAC1005].displayHeight = 272;
@@ -4800,7 +4909,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1005].ser2_Enabled = false;
     lstTargets[TPAC1005].ser3_Enabled = false;
     lstTargets[TPAC1005].can1_Enabled = true;
-    // 09 TPAC1006
+    // 11 TPAC1006
     lstTargets[TPAC1006].modelName =  QString::fromAscii(product_name[TPAC1006]);
     lstTargets[TPAC1006].displayWidth =  320;
     lstTargets[TPAC1006].displayHeight = 240;
@@ -4819,7 +4928,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1006].ser2_Enabled = false;
     lstTargets[TPAC1006].ser3_Enabled = true;
     lstTargets[TPAC1006].can1_Enabled = true;
-    //10 TPAC1007_03
+    // 12 TPAC1007_03
     lstTargets[TPAC1007_03].modelName =  QString::fromAscii(product_name[TPAC1007_03]);
     lstTargets[TPAC1007_03].displayWidth =  480;
     lstTargets[TPAC1007_03].displayHeight = 272;
@@ -4838,7 +4947,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_03].ser2_Enabled = false;
     lstTargets[TPAC1007_03].ser3_Enabled = false;
     lstTargets[TPAC1007_03].can1_Enabled = false;
-    //11 TPAC1007_04_AA
+    // 13 TPAC1007_04_AA
     lstTargets[TPAC1007_04_AA].modelName =  QString::fromAscii(product_name[TPAC1007_04_AA]);
     lstTargets[TPAC1007_04_AA].displayWidth =  480;
     lstTargets[TPAC1007_04_AA].displayHeight = 272;
@@ -4857,7 +4966,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AA].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AA].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AA].can1_Enabled = false;
-    //12 TPAC1007_04_AB
+    // 14 TPAC1007_04_AB
     lstTargets[TPAC1007_04_AB].modelName =  QString::fromAscii(product_name[TPAC1007_04_AB]);
     lstTargets[TPAC1007_04_AB].displayWidth =  480;
     lstTargets[TPAC1007_04_AB].displayHeight = 272;
@@ -4876,7 +4985,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AB].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AB].can1_Enabled = false;
-    //13 TPAC1007_04_AC
+    // 15 TPAC1007_04_AC
     lstTargets[TPAC1007_04_AC].modelName =  QString::fromAscii(product_name[TPAC1007_04_AC]);
     lstTargets[TPAC1007_04_AC].displayWidth =  480;
     lstTargets[TPAC1007_04_AC].displayHeight = 272;
@@ -4895,7 +5004,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AC].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AC].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AC].can1_Enabled = false;
-    // 14 TPAC1007_LV
+    // 16 TPAC1007_LV
     lstTargets[TPAC1007_LV].modelName =  QString::fromAscii(product_name[TPAC1007_LV]);
     lstTargets[TPAC1007_LV].displayWidth =  480;
     lstTargets[TPAC1007_LV].displayHeight = 272;
@@ -4914,7 +5023,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_LV].ser2_Enabled = false;
     lstTargets[TPAC1007_LV].ser3_Enabled = true;
     lstTargets[TPAC1007_LV].can1_Enabled = false;
-    // 15 TPAC1008_01
+    // 17 TPAC1008_01
     lstTargets[TPAC1008_01].modelName =  QString::fromAscii(product_name[TPAC1008_01]);
     lstTargets[TPAC1008_01].displayWidth =  800;
     lstTargets[TPAC1008_01].displayHeight = 480;
@@ -4933,7 +5042,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_01].ser2_Enabled = false;
     lstTargets[TPAC1008_01].ser3_Enabled = true;
     lstTargets[TPAC1008_01].can1_Enabled = true;
-    // 16 TPAC1008_02_AA
+    // 18 TPAC1008_02_AA
     lstTargets[TPAC1008_02_AA].modelName =  QString::fromAscii(product_name[TPAC1008_02_AA]);
     lstTargets[TPAC1008_02_AA].displayWidth =  800;
     lstTargets[TPAC1008_02_AA].displayHeight = 480;
@@ -4952,7 +5061,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AA].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AA].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AA].can1_Enabled = true;
-    // 17 TPAC1008_02_AB
+    // 19 TPAC1008_02_AB
     lstTargets[TPAC1008_02_AB].modelName =  QString::fromAscii(product_name[TPAC1008_02_AB]);
     lstTargets[TPAC1008_02_AB].displayWidth =  800;
     lstTargets[TPAC1008_02_AB].displayHeight = 480;
@@ -4971,7 +5080,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AB].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AB].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AB].can1_Enabled = false;
-    // 18 TPAC1008_02_AD
+    // 20 TPAC1008_02_AD
     lstTargets[TPAC1008_02_AD].modelName =  QString::fromAscii(product_name[TPAC1008_02_AD]);
     lstTargets[TPAC1008_02_AD].displayWidth =  800;
     lstTargets[TPAC1008_02_AD].displayHeight = 480;
@@ -4990,7 +5099,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AD].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AD].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AD].can1_Enabled = false;
-    // 19 TPAC1008_02_AE
+    // 21 TPAC1008_02_AE
     lstTargets[TPAC1008_02_AE].modelName =  QString::fromAscii(product_name[TPAC1008_02_AE]);
     lstTargets[TPAC1008_02_AE].displayWidth =  800;
     lstTargets[TPAC1008_02_AE].displayHeight = 480;
@@ -5009,7 +5118,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AE].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AE].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AE].can1_Enabled = false;
-    // 20 TPAC1008_02_AF
+    // 22 TPAC1008_02_AF
     lstTargets[TPAC1008_02_AF].modelName =  QString::fromAscii(product_name[TPAC1008_02_AF]);
     lstTargets[TPAC1008_02_AF].displayWidth =  800;
     lstTargets[TPAC1008_02_AF].displayHeight = 480;
@@ -5028,7 +5137,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AF].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AF].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AF].can1_Enabled = false;
-    // 21 TPLC100_01_AA
+    // 23 TPLC100_01_AA
     lstTargets[TPLC100_01_AA].modelName =  QString::fromAscii(product_name[TPLC100_01_AA]);
     lstTargets[TPLC100_01_AA].displayWidth =  -1;
     lstTargets[TPLC100_01_AA].displayHeight = -1;
@@ -5048,7 +5157,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].ser2_Enabled = false;
     lstTargets[TPLC100_01_AA].ser3_Enabled = false;
     lstTargets[TPLC100_01_AA].can1_Enabled = true;
-    // 22 TPLC100_01_AB
+    // 24 TPLC100_01_AB
     lstTargets[TPLC100_01_AB].modelName =  QString::fromAscii(product_name[TPLC100_01_AB]);
     lstTargets[TPLC100_01_AB].displayWidth =  -1;
     lstTargets[TPLC100_01_AB].displayHeight = -1;
@@ -5068,7 +5177,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].ser2_Enabled = false;
     lstTargets[TPLC100_01_AB].ser3_Enabled = true;
     lstTargets[TPLC100_01_AB].can1_Enabled = false;
-    // 23 TPAC1008_03_AC
+    // 25 TPAC1008_03_AC
     lstTargets[TPAC1008_03_AC].modelName =  QString::fromAscii(product_name[TPAC1008_03_AC]);
     lstTargets[TPAC1008_03_AC].displayWidth =  800;
     lstTargets[TPAC1008_03_AC].displayHeight = 480;

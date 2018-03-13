@@ -103,27 +103,29 @@ const char *product_name[] = {
     /*00*/ "AnyTPAC",
     /*01*/ "TP1043_01_A",
     /*02*/ "TP1043_01_B",
-    /*03*/ "TP1057_01_A",
-    /*04*/ "TP1057_01_B",
-    /*05*/ "TP1070_01_A",
-    /*06*/ "TP1070_01_B",
-    /*07*/ "TP1070_01_C",
-    /*08*/ "TPAC1005",
-    /*09*/ "TPAC1006",
-    /*10*/ "TPAC1007_03",
-    /*11*/ "TPAC1007_04_AA",
-    /*12*/ "TPAC1007_04_AB",
-    /*13*/ "TPAC1007_04_AC",
-    /*14*/ "TPAC1007_LV",
-    /*15*/ "TPAC1008_01",
-    /*16*/ "TPAC1008_02_AA",
-    /*17*/ "TPAC1008_02_AB",
-    /*18*/ "TPAC1008_02_AD",
-    /*19*/ "TPAC1008_02_AE",
-    /*20*/ "TPAC1008_02_AF",
-    /*21*/ "TPLC100_01_AA",
-    /*22*/ "TPLC100_01_AB",
-    /*23*/ "TPAC1008_03_AC"
+    /*03*/ "TP1043_02_A",
+    /*04*/ "TP1043_02_B",
+    /*05*/ "TP1057_01_A",
+    /*06*/ "TP1057_01_B",
+    /*07*/ "TP1070_01_A",
+    /*08*/ "TP1070_01_B",
+    /*09*/ "TP1070_01_C",
+    /*10*/ "TPAC1005",
+    /*11*/ "TPAC1006",
+    /*12*/ "TPAC1007_03",
+    /*13*/ "TPAC1007_04_AA",
+    /*14*/ "TPAC1007_04_AB",
+    /*15*/ "TPAC1007_04_AC",
+    /*16*/ "TPAC1007_LV",
+    /*17*/ "TPAC1008_01",
+    /*18*/ "TPAC1008_02_AA",
+    /*19*/ "TPAC1008_02_AB",
+    /*20*/ "TPAC1008_02_AD",
+    /*21*/ "TPAC1008_02_AE",
+    /*22*/ "TPAC1008_02_AF",
+    /*23*/ "TPLC100_01_AA",
+    /*24*/ "TPLC100_01_AB",
+    /*25*/ "TPAC1008_03_AC"
 };
 
 /*      Mappatura tra Costanti di Tipo, valori Letti e scritti in file CSV
@@ -315,11 +317,12 @@ static int newAlarmEvent(int isAlarm, uint16_t addr, char *expr, size_t len)
         }
         if (isalpha(*p))  {
             strncpy(ALCrossTable[lastAlarmEvent].ALCompareVar, p, MAX_IDNAME_LEN);
-            ALCrossTable[lastAlarmEvent].ALCompareVal = f;
+            ALCrossTable[lastAlarmEvent].ALCompareVal = 0.0;
         }
         else  {
             // Trying to convert string in float
             f = strtof(p, &s);
+            fprintf(stderr, "Row %d - Fixed Alarm Value:%f\n", addr, f);
             if (s == p) {
                 // Error in Conversion, maybe identifier (check later on)
                 strncpy(ALCrossTable[lastAlarmEvent].ALCompareVar, p, MAX_IDNAME_LEN);
@@ -396,7 +399,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
         ALCrossTable[addr].TagAddr = 0;
         ALCrossTable[addr].SourceAddr = 0;
         ALCrossTable[addr].CompareAddr = 0;
-        ALCrossTable[addr].ALCompareVal = 0;
+        ALCrossTable[addr].ALCompareVal = 0.0;
         ALCrossTable[addr].ALOperator = 0;
         ALCrossTable[addr].ALFilterTime = 0;
         ALCrossTable[addr].ALFilterCount = 0;
@@ -970,9 +973,9 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                     case DINTDCBA:
                     case DINTCDAB:
                     case DINTBADC:
-                        for (n = 0; n < CrossTable[addr].Decimal; ++n) {
-                            fvalue *= 10;
-                        }
+//                        for (n = 0; n < CrossTable[addr].Decimal; ++n) {
+//                            fvalue *= 10;&
+//                        }
                         // NB this may either overflow or underflow
                         ALCrossTable[indx].ALCompareVal = fvalue;
                         break;
@@ -983,13 +986,13 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                     case UDINTDCBA:
                     case UDINTCDAB:
                     case UDINTBADC:
-                        if (fvalue <= 0) {
-                            fvalue = 0; // why check unsigned with a negative value?
-                        } else {
-                            for (n = 0; n < CrossTable[addr].Decimal; ++n) {
-                                fvalue *= 10;
-                            }
-                        }
+//                        if (fvalue <= 0) {
+//                            fvalue = 0; // why check unsigned with a negative value?
+//                        } else {
+//                            for (n = 0; n < CrossTable[addr].Decimal; ++n) {
+//                                fvalue *= 10;
+//                            }
+//                        }
                         // NB this may overflow
                         ALCrossTable[indx].ALCompareVal = fvalue;
                         break;

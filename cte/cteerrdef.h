@@ -40,6 +40,7 @@ enum errorMessages_e
     errCTNoCondition,
     errCTRiseFallNotBit,
     errCTInvalidNum,
+    errCTNegWithUnsigned,
     errCTEmptyCondExpression,
     errCTNoVar2,
     errCTIncompatibleVar,

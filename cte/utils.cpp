@@ -39,6 +39,11 @@ QString szSpace(int nSpaces)
     // Return Value
     return szTemp;
 }
+QString     bool2String(bool logicalValue)
+// Ritorna Yes/No in funzione di logicalValue
+{
+    return (logicalValue ? QString::fromAscii("Yes") : QString::fromAscii("No"));
+}
 
 void splitFileName(const QString &fileName, QString &szPath, QString &szFile, QString &szSuffisso)
 // Spezza un file name nelle sue componentiPath, Nome File, Suffisso

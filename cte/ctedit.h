@@ -123,6 +123,7 @@ private:
     // Gestione Configurazione Progetto
     QString getModelName();                         // Lettura del file template.pri per determinare il modello di TPAC
     int     searchModelInList(QString szModel);     // Ricerca il modello corrente nella Lista modelli attuale
+    QString getModelInfo(int nModel);               // Prepara il ToolTipText con le info di modello
     // Calcolo valori in funzione del Modello e del Protocollo
     void    enableProtocolsFromModel();             // Abilita i Protocolli in funzione del Modello corrente (da TargetConfig)
     int     varSizeInBlock(int nVarType);
