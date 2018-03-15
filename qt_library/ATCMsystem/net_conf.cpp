@@ -1146,6 +1146,8 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
 {
     ui->tab_wlan0->setEnabled(false);
     ui->tab_wlan0->repaint();
+    // WiFi Current Cfg Update forced
+    saveWLAN0cfg();
     if (!is_wlan_active)
     {
         if (app_netconf_item_set("1", "ONBOOTW0"))
@@ -1210,8 +1212,8 @@ void net_conf::on_pushButton_wan0_enable_clicked()
 {
     ui->tab_wan0->setEnabled(false);
     ui->tab_wan0->repaint();
-    // WLAN Current Cfg Update forced
-    saveWLAN0cfg();
+    // Mobile Current Cfg Update forced
+    saveWAN0cfg();
     if (!is_wan_active)
     {
         if (app_netconf_item_set("1", "ONBOOTP0"))
