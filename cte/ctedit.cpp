@@ -120,6 +120,7 @@ enum colonne_e
     colIP,
     colPort,
     colNodeID,
+    colInputReg,
     colRegister,
     colBlock,
     colBlockSize,
@@ -243,6 +244,9 @@ ctedit::ctedit(QWidget *parent) :
     lstHeadCols[colNodeID] = trUtf8("Node ID");
     lstHeadNames[colNodeID] = trUtf8("Node_ID");
     lstHeadSizes[colNodeID] = 8;
+    lstHeadCols[colInputReg] = trUtf8("I/R");
+    lstHeadNames[colInputReg] = trUtf8("I/R");
+    lstHeadSizes[colInputReg] = 8;
     lstHeadCols[colRegister] = trUtf8("Register");
     lstHeadNames[colRegister] = trUtf8("Register");
     lstHeadSizes[colRegister] = 8;
@@ -411,11 +415,16 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.clear();
     szToolTip.append(tr("Remode Node Address, 0 for broadcast"));
     ui->txtNode->setToolTip(szToolTip);
+    // Check Input Register
+    szToolTip.clear();
+    szToolTip.append(tr("For Modbus Client:\n"));
+    szToolTip.append(tr("Check to mark as INPUT REGISTER\n"));
+    szToolTip.append(tr("instead of HOLDING REGISTER\n"));
+    ui->chkInputRegister->setToolTip(szToolTip);
     // Register
     szToolTip.clear();
     szToolTip.append(tr("For Modbus:\n"));
-    szToolTip.append(tr("ADR=[0..65535]       -> Holding Register\n"));
-    szToolTip.append(tr("ADR=[300000..365535] -> Input  Register\n\n"));
+    szToolTip.append(tr("ADR=[0..65535]\n\n"));
     szToolTip.append(tr("For Modbus Server: (RTU_SRV, TCP_SRV or TCPRTU_SRV):\n"));
     szToolTip.append(tr("ADR=[0..4095]"));
     ui->txtRegister->setToolTip(szToolTip);
@@ -826,6 +835,7 @@ bool    ctedit::ctable2Grid()
     //ui->tblCT->horizontalHeader()->setResizeMode(colPriority, QHeaderView::Stretch);
     //ui->tblCT->horizontalHeader()->setResizeMode(colUpdate, QHeaderView::Stretch);
     //ui->tblCT->horizontalHeader()->setResizeMode(colBehavior, QHeaderView::Stretch);
+    ui->tblCT->setColumnHidden(colInputReg, true);
     ui->tblCT->setEnabled(true);
     // Show All Elements
     if (fRes)  {
@@ -892,7 +902,9 @@ bool ctedit::recCT2List(QStringList &lstRecValues, int nRow)
         lstRecValues[colPort] = QString::number(lstCTRecords[nRow].Port);
         // Node Id
         lstRecValues[colNodeID] = QString::number(lstCTRecords[nRow].NodeId);
-        // Register
+        // Input Register
+        lstRecValues[colInputReg] = (lstCTRecords[nRow].InputReg > 0) ? szTRUE : szFALSE;
+        // Offeset Register
         lstRecValues[colRegister] = QString::number(lstCTRecords[nRow].Offset);
         // Block
         lstRecValues[colBlock] = QString::number(lstCTRecords[nRow].Block);
@@ -901,7 +913,8 @@ bool ctedit::recCT2List(QStringList &lstRecValues, int nRow)
         // PLC forza tutto a Blank
         if (lstCTRecords[nRow].Protocol == PLC)  {
             lstRecValues[colPort] = szEMPTY;
-            lstRecValues[colNodeID] = szEMPTY;
+            lstRecValues[colNodeID] = szEMPTY;            
+            lstRecValues[colInputReg] = szEMPTY;
             lstRecValues[colRegister] = szEMPTY;
         }
         // Commento
@@ -1046,13 +1059,12 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     // Node ID
     szTemp = lstRecValues[colNodeID].trimmed();
     ui->txtNode->setText(szTemp);
+    // Input Register
+    szTemp = lstRecValues[colInputReg].trimmed();
+    ui->chkInputRegister->setChecked(szTemp == szTRUE);
     // Register
     szTemp = lstRecValues[colRegister].trimmed();
     ui->txtRegister->setText(szTemp);
-    // Input Register
-    nReg = szTemp.toInt(&fOk);
-    nReg = fOk ? nReg : 0;
-    ui->chkInputRegister->setChecked(nReg >= nStartInputRegister);
     // Block
     szTemp = lstRecValues[colBlock].trimmed();
     ui->txtBlock->setText(szTemp);
@@ -1223,6 +1235,9 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     // Node ID
     szTemp = ui->txtNode->text();
     lstRecValues[colNodeID]  = szTemp.trimmed();
+    // Input Register
+    szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
+    lstRecValues[colInputReg] = szTemp.trimmed();
     // Register
     szTemp = ui->txtRegister->text();
     lstRecValues[colRegister] = szTemp.trimmed();
@@ -1284,6 +1299,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
         lstRecValues[colIP] = szEMPTY;
         lstRecValues[colPort] = szEMPTY;
         lstRecValues[colNodeID] = szEMPTY;
+        lstRecValues[colInputReg] = szEMPTY;
         lstRecValues[colRegister] = szEMPTY;
     }
     // Protocolli Seriali e CAN Porta a 0 se vuota
@@ -1345,6 +1361,7 @@ void ctedit::saveCTFile()
                 lstCTRecords[nCur].IPAddress = 0;
                 lstCTRecords[nCur].Port = 0;
                 lstCTRecords[nCur].NodeId = 0;
+                lstCTRecords[nCur].InputReg = 0;
                 lstCTRecords[nCur].Offset = 0;
             }
             if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV || nProtocol == CANOPEN)  {
@@ -1402,7 +1419,8 @@ bool    ctedit::riassegnaBlocchi()
                     || isTooBigForBlock(nRow, nItemsInBlock, curBSize)                                  // Block too big
                     // Per Modbus devono essere o tutti BIT o tutti != BIT
                     || (isModbus(lstCTRecords[nRow].Protocol) && ((lstCTRecords[nRow - 1].VarType == BIT && lstCTRecords[nRow].VarType != BIT) || (lstCTRecords[nRow - 1].VarType != BIT && lstCTRecords[nRow].VarType == BIT)))
-                    // Per Modbus Contiguità di Registro
+                    // Per Modbus Contiguità di Registro e stesso Tipo (Holding || Input)
+                    || (isModbus(lstCTRecords[nRow].Protocol) && (lstCTRecords[nRow].InputReg != lstCTRecords[nRow - 1].InputReg))
                     || (isModbus(lstCTRecords[nRow].Protocol) && (lstCTRecords[nRow].Offset != nNextRegPos && !isSameBitField(nRow)))
                     )  {
                 // Rinumera block start del Blocco precedente se esiste
@@ -1497,6 +1515,7 @@ void ctedit::freeCTrec(int nRow)
     lstCTRecords[nRow].IPAddress = 0;
     lstCTRecords[nRow].Port = 0;
     lstCTRecords[nRow].NodeId = 0;
+    lstCTRecords[nRow].InputReg = 0;
     lstCTRecords[nRow].Offset = 0;
     lstCTRecords[nRow].Block = 0;
     lstCTRecords[nRow].BlockBase = 0;
@@ -1584,7 +1603,9 @@ bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
         nPos = lstRecValues[colNodeID].toInt(&fOk);
         nPos = fOk ? nPos : 0;
         lstCTRecords[nRow].NodeId = nPos;
-        // Register
+        // Flag Input Register
+        lstCTRecords[nRow].InputReg = (lstRecValues[colInputReg] == szTRUE) ? 1 : 0;
+        // OffSet Register
         nPos = lstRecValues[colRegister].toInt(&fOk);
         nPos = fOk ? nPos : 0;
         lstCTRecords[nRow].Offset = nPos;
@@ -1798,23 +1819,23 @@ void ctedit::on_cboType_currentIndexChanged(int index)
         disableComboItem(ui->cboBehavior, behavior_event);
     }
 }
-void ctedit::on_chkInputRegister_clicked(bool checked)
-// Cambio di Registro da Holding a Input Register e viceversa
-{
-    bool    fOk = false;
-    int     nVal = ui->txtRegister->text().toInt(&fOk);
+//void ctedit::on_chkInputRegister_clicked(bool checked)
+//// Cambio di Registro da Holding a Input Register e viceversa
+//{
+//    bool    fOk = false;
+//    int     nVal = ui->txtRegister->text().toInt(&fOk);
 
-    nVal = fOk ? nVal : 0;
-    // Passaggio da valore normale a Input Register
-    if (checked && (nVal >= 0 && nVal <= nMax_Int16))  {
-        nVal += nStartInputRegister;
-    }
-    if (! checked && nVal >= nStartInputRegister)  {
-        nVal -= nStartInputRegister;
-    }
-    // Refresh del valore
-    ui->txtRegister->setText(QString::number(nVal));
-}
+//    nVal = fOk ? nVal : 0;
+//    // Passaggio da valore normale a Input Register
+//    if (checked && (nVal >= 0 && nVal <= nMax_Int16))  {
+//        nVal += nStartInputRegister;
+//    }
+//    if (! checked && nVal >= nStartInputRegister)  {
+//        nVal -= nStartInputRegister;
+//    }
+//    // Refresh del valore
+//    ui->txtRegister->setText(QString::number(nVal));
+//}
 void ctedit::on_cboProtocol_currentIndexChanged(int index)
 // Cambio di Protocollo della Variabile. Abilita i campi specifici del protocollo e imposta eventuali valori di default se necessari
 {
@@ -2498,6 +2519,7 @@ bool ctedit::isLineModified(int nRow)
 {
     int     nModif = 0;
     int     nProtocol = ui->cboProtocol->currentIndex();
+    QString szTemp(szEMPTY);
 
     // Confronto tra Form Editing e riga Grid
     if(nRow >= 0 && nRow < lstCTRecords.count())  {
@@ -2513,6 +2535,12 @@ bool ctedit::isLineModified(int nRow)
         else
             nModif += (ui->txtPort->text().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed());
         nModif += (ui->txtNode->text().trimmed() != ui->tblCT->item(nRow, colNodeID)->text().trimmed());
+        // Input Register
+        if (ui->chkInputRegister->isVisible()) {
+            szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
+            nModif += (szTemp != ui->tblCT->item(nRow, colInputReg)->text().trimmed());
+        }
+        // Offset Register
         nModif += (ui->txtRegister->text().trimmed() != ui->tblCT->item(nRow, colRegister)->text().trimmed());
         // nModif += (ui->txtBlock->text().trimmed() != ui->tblCT->item(nRow, colBlock)->text().trimmed());
         // nModif += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(nRow, colBlockSize)->text().trimmed());
@@ -3218,9 +3246,9 @@ int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &
             else {
                 fUpdateOk = f2Add;
             }
-            // Skip Vars with decimal number defined with another variable
+            // Skip Vars with decimal number defined with another variable [Only for NON BIT Variables]
             if (fSkipVarDecimal)  {
-                if (lstCTRecords[nRow].Decimal > 3)  {
+                if (! isBitField(lstCTRecords[nRow].VarType) && lstCTRecords[nRow].Decimal > 3)  {
                     f2Add = false;
                 }
             }
@@ -3580,14 +3608,14 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             }
         }
         else {
-            // Range allowed: 0..65535 or 300000..365535
-            if (nRegister < 0 || nRegister > nMaxInputRegister || (nRegister > nMax_Int16 && nRegister < nStartInputRegister))  {
+            // Range allowed: 0..65535
+            if (nRegister < 0 || nRegister > nMax_Int16)  {
                 fillErrorMessage(nRow, colRegister, errCTNoRegister, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
-            // Range 300000..365535 allowed only on MODBUS Client (no SERVER)
-            if ((nRegister > nStartInputRegister && nRegister < nMaxInputRegister) &&
+            // Input Register allowed only on MODBUS Client (no SERVER)
+            if ((lstValues[colInputReg] == szTRUE) &&
                 ! ((nProtocol == RTU) ||
                    (nProtocol == TCP) ||
                    (nProtocol == TCPRTU)) )  {
@@ -4134,10 +4162,10 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
             ui->txtPort->setText(QString::number(lstCTRecords[m_nGridRow - 1].Port));
             // Node id
             ui->txtNode->setText(QString::number(lstCTRecords[m_nGridRow - 1].NodeId));
-            // Register
+            // Input Register
             ui->chkInputRegister->setChecked(lstCTRecords[m_nGridRow - 1].InputReg == 1);
             // Register
-            ui->txtRegister->setText(QString::number(lstCTRecords[m_nGridRow - 1].Offset));
+            ui->txtRegister->setText(QString::number(lstCTRecords[m_nGridRow - 1].Offset + varSizeInBlock(lstCTRecords[m_nGridRow - 1].VarType)));
             // Behavior
             ui->cboBehavior->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Behavior);
         }
@@ -4505,6 +4533,7 @@ bool ctedit::isSameBitField(int nRow)
             lstCTRecords[nRow].IPAddress == lstCTRecords[nRow -1].IPAddress &&
             lstCTRecords[nRow].Port == lstCTRecords[nRow - 1].Port &&
             lstCTRecords[nRow].NodeId == lstCTRecords[nRow - 1].NodeId &&
+            lstCTRecords[nRow].InputReg == lstCTRecords[nRow - 1].InputReg &&
             lstCTRecords[nRow].Offset == lstCTRecords[nRow - 1].Offset)  {
                 fRes = true;
             }

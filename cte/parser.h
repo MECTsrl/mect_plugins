@@ -157,7 +157,7 @@ struct  CrossTableRecord {
     uint32_t    IPAddress;
     uint16_t    Port;
     uint8_t     NodeId;                                 // Port
-    int         InputReg;                               // 1 if Offset > 300000
+    uint32_t    InputReg;                               // 1 if Offset > 300000
     uint32_t    Offset;                                 // from 0 to 65535 (Holding Registers) from 300000 to 365535 (Input Registers)
     uint16_t    Block;
     uint16_t    BlockBase;

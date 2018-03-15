@@ -76,7 +76,7 @@ private slots:
     void on_optVariableVal_toggled(bool checked);
     void on_cboSections_currentIndexChanged(int index);
 
-    void on_chkInputRegister_clicked(bool checked);
+//    void on_chkInputRegister_clicked(bool checked);
 
 private:
     //---------------------------------------------------------------------

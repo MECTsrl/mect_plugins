@@ -376,6 +376,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
         CrossTable[addr].IPAddress = 0x00000000;
         CrossTable[addr].Port = 0;
         CrossTable[addr].NodeId = 0;
+        CrossTable[addr].InputReg = 0;
         CrossTable[addr].Offset = 0;
         CrossTable[addr].Block = 0;
         CrossTable[addr].BlockSize = 0;
@@ -626,8 +627,14 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
             ERR = TRUE;
             break;
         }
-        // Register || Input Register
-        CrossTable[addr].Offset = atoi(p);
+        // Register || If Offset > 300000 mark as Input Register and decrease Offest value of 300000
+        uint32_t nRegister = atoi(p);
+        CrossTable[addr].InputReg = 0;
+        if (nRegister >= START_INPUT_REGS)  {
+            nRegister -= START_INPUT_REGS;
+            CrossTable[addr].InputReg = 1;
+        }
+        CrossTable[addr].Offset = nRegister;
         // Block {number}
         p = strtok_csv(NULL, ";", &r);
         if (p == NULL) {
@@ -1097,6 +1104,7 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
                 sprintf(token, "%-4s;", "");
                 strcat(row, token);
                 strcat(row, token);
+                sprintf(token, "%-6s;", "");
                 strcat(row, token);
             }
             else  {
@@ -1107,7 +1115,13 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
                 sprintf(token, "%-4d;", CrossTable[addr].NodeId);
                 strcat(row, token);
                 // Register - Offset || Input Register
-                sprintf(token, "%-4d;", CrossTable[addr].Offset);
+                // Register || Input Register: If marked as Input Register increase Offset value of 300000
+                uint32_t nRegister = CrossTable[addr].Offset;
+                if (CrossTable[addr].InputReg)  {
+                    nRegister += START_INPUT_REGS;
+                }
+                CrossTable[addr].Offset = nRegister;
+                sprintf(token, "%-6d;", nRegister);
                 strcat(row, token);
             }
             // Block
