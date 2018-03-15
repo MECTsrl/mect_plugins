@@ -1781,7 +1781,7 @@ void ctedit::enableFields()
             ui->txtPort->setVisible(true);
         }
         // Visibilità Check Box Input Regs per protocolli RTU - TCP - TCPRTU
-        if (nProtocol == RTU || nProtocol == TCP || nProtocol == TCPRTU)  {
+        if (nProtocol == RTU || nProtocol == TCPRTU)  {
             ui->lblInputRegister->setVisible(true);
             ui->chkInputRegister->setVisible(true);
             ui->chkInputRegister->setEnabled(true);
@@ -1893,7 +1893,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         szTemp = ui->txtIP->text().trimmed();
         if (szTemp.isEmpty())  {
             ui->txtIP->setText(szEMPTY_IP);
-        }
+        }        
     }
     // Disabilitazione  tipo BIT per i vari tipi di SRV (TCP_SRV, RTU_SRV, TCP_RTU_SRV)
     // Non è ammesso BIT per i protocolli SERVER (TCP/RTU)
@@ -1902,6 +1902,10 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     }
     else {
         enableComboItem(ui->cboType, BIT);
+    }
+    // De-check Flag Input register for all but RTU - TCPRTU
+    if ( ! (index == RTU) || (index == TCPRTU))  {
+        ui->chkInputRegister->setChecked(false);
     }
     // Imposta la Porta di default se la porta è vuota oppure quella presente non è valida
     if (szCurPort.isEmpty() || (nDefaultPort >= 0 && ! fPortOk))  {
@@ -3617,7 +3621,6 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             // Input Register allowed only on MODBUS Client (no SERVER)
             if ((lstValues[colInputReg] == szTRUE) &&
                 ! ((nProtocol == RTU) ||
-                   (nProtocol == TCP) ||
                    (nProtocol == TCPRTU)) )  {
                 fillErrorMessage(nRow, colRegister, errCTInputOnlyModbusClient, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
@@ -4163,7 +4166,7 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
             // Node id
             ui->txtNode->setText(QString::number(lstCTRecords[m_nGridRow - 1].NodeId));
             // Input Register
-            ui->chkInputRegister->setChecked(lstCTRecords[m_nGridRow - 1].InputReg == 1);
+            // ui->chkInputRegister->setChecked(lstCTRecords[m_nGridRow - 1].InputReg == 1);
             // Register
             ui->txtRegister->setText(QString::number(lstCTRecords[m_nGridRow - 1].Offset + varSizeInBlock(lstCTRecords[m_nGridRow - 1].VarType)));
             // Behavior
