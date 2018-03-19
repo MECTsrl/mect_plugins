@@ -230,6 +230,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
 
         }
     }
+//    qDebug() << tr("LoadProjectFiles: Languages Loaded");
     QString szValue;
     ui->comboBoxLanguage->setCurrentIndex(indexlang);
     ui->lineEdit_Retries->setText(settings.value(QString::fromAscii("SYSTEM/retries")).toString());
@@ -519,6 +520,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
         // Disable all Tab
         m_tabEnabled[tabCan1] = false;
     }
+//    qDebug() << tr("LoadProjectFiles: <%1> Tabs Enabled") .arg(targetConfig.modelName) ;
     // Set Model Info for current Model
     setModel(targetConfig);
     m_isIniModified = false;
@@ -562,7 +564,7 @@ bool MectSettings::saveOrCheckAll(QString szFileName, bool checkOnly)
 {
     bool        changed = false;
     QSettings   settings(szFileName, QSettings::IniFormat, this);
-    qDebug() << tr("File Settings: %1") .arg(szFileName);
+//    qDebug() << tr("File Settings: %1") .arg(szFileName);
 
     /* SYSTEM */
     changed = checkOrSet(settings, QString::fromAscii("SYSTEM/language"), LanguageMap.key(ui->comboBoxLanguage->currentText(),szDEFLANG), checkOnly, changed);
@@ -1200,7 +1202,7 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.can1_BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_CANOPEN_1->text().toInt(&fOk);
     TargetConfig.can1_BlockSize = fOk ? nVal : 0;
-    qDebug() << tr("Updated Configuration");
+//    qDebug() << tr("getTargetConfig: Updated Configuration");
     // Global settings
     targetConfig = TargetConfig;
     // Return value

@@ -616,8 +616,8 @@ void    ctedit::setProjectPath(QString szProjectPath)
         m_szCurrentPLCPath.clear();
     }
     //qDebug() << "Project Path:" << m_szCurrentProjectPath;
-    qDebug() << "Project Name:" << m_szCurrentProjectName;
-    // qDebug() << "PLC Path:" << m_szCurrentPLCPath;
+    //qDebug() << "Project Name:" << m_szCurrentProjectName;
+    //qDebug() << "PLC Path:" << m_szCurrentPLCPath;
 }
 
 bool    ctedit::selectCTFile(QString szFileCT)
@@ -666,9 +666,9 @@ bool    ctedit::selectCTFile(QString szFileCT)
             // nModel = lstProductNames.indexOf(m_szCurrentModel);
             // qDebug() << tr("Model in List: %1") .arg(nModel);
             nModel = searchModelInList(m_szCurrentModel);
-            qDebug() << tr("Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
             ui->lblModel->setStyleSheet(QString::fromAscii("background-color: LightCyan"));
             ui->lblModel->setToolTip(getModelInfo(nModel));
+            qDebug() << tr("selectCTFile: Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
         }
         else  {
             TargetConfig = lstTargets[AnyTPAC];
@@ -681,10 +681,13 @@ bool    ctedit::selectCTFile(QString szFileCT)
         m_fCutOrPaste = false;
         // Carica anche le impostazioni del file INI
         mectSet->loadProjectFiles(m_szCurrentCTPath + szINIFILE, m_szCurrentProjectPath + szSLASH + m_szCurrentProjectName, m_szCurrentProjectPath + szSLASH, TargetConfig);
+//        qDebug() << tr("LoadProjectFiles: <%1> Done") .arg(m_szCurrentModel) ;
         // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
         mectSet->getTargetConfig(TargetConfig);
+//        qDebug() << tr("getTargetConfig: <%1> Done") .arg(TargetConfig.modelName) ;
         // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
         enableProtocolsFromModel();
+//        qDebug() << tr("enableProtocolsFromModel: <%1> Done") .arg(TargetConfig.modelName) ;
         // Se tutto Ok, carica anche il primo trend utile
         QString szFileTemplate;
         szFileTemplate = m_szCurrentProjectPath;
@@ -987,7 +990,6 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     QString szTemp;
     int     nPos = 0;
     int     nProtocol = -1;
-    int     nReg = 0;
     int     nDec = 0;
     bool    fOk = false;
     int     nLeftVar = 0;
@@ -1229,7 +1231,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
         szTemp = ui->cboPort->currentText();
     else
         szTemp = ui->txtPort->text();
-    qDebug() << tr("Port: ") << szTemp;
+//    qDebug() << tr("Port: ") << szTemp;
 
     lstRecValues[colPort] = szTemp.trimmed();
     // Node ID
@@ -1945,7 +1947,7 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
     if (! deselected.isEmpty() &&  deselected.count() == 1)  {
         // Considera sempre la prima riga della lista
         nRow = deselected.indexes().at(0).row();
-        qDebug() << "Previous Row: " << nRow;
+        // qDebug() << "Previous Row: " << nRow;
     }
     // Se la riga corrente è stata modificata, salva il contenuto
     if (nRow >= 0 && nRow < lstCTRecords.count())  {
@@ -1969,7 +1971,7 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
         clearEntryForm();
         // Estrae il numero di riga del modello lavorando sulla prima riga selezionata
         nRow = selected.indexes().at(0).row();
-        qDebug() << "New Row: " << nRow;
+        // qDebug() << "New Row: " << nRow;
         if (nRow >= 0)  {
             // Cambia riga corrente
             m_nGridRow = nRow;
@@ -2920,7 +2922,7 @@ QString ctedit::getModelName()
     else {
         qDebug() << tr("Template File: %1 not found") .arg(szFileTemplate);
     }
-    qDebug() << tr("Current Model: <%1>") .arg(szModel);
+    // qDebug() << tr("getModelName: Current Model: <%1>") .arg(szModel);
     // return value
     return szModel;
 }
@@ -4663,7 +4665,7 @@ bool ctedit::checkCTFile(QString szSourceFile)
                         stringList.append(line);
                         tokenList.clear();
                         tokenList = line.split(szSEMICOL, QString::KeepEmptyParts);
-                        qDebug() << tr("CT Columns: %1") .arg(tokenList.count());
+                        // qDebug() << tr("CT Columns: %1") .arg(tokenList.count());
                         if (tokenList.count() != nCTCols)
                             break;
                     }
@@ -4790,43 +4792,43 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_B].ser3_Enabled = false;
     lstTargets[TP1043_01_B].can1_Enabled = true;
     //03 TP1043_02_A
-    lstTargets[TP1043_01_A].modelName =  QString::fromAscii(product_name[TP1043_02_A]);
-    lstTargets[TP1043_01_A].displayWidth =  480;
-    lstTargets[TP1043_01_A].displayHeight = 272;
-    lstTargets[TP1043_01_A].sdCards = 1;
-    lstTargets[TP1043_01_A].digitalIN = 0;
-    lstTargets[TP1043_01_A].digitalOUT = 0;
-    lstTargets[TP1043_01_A].nEncoders = 0;
-    lstTargets[TP1043_01_A].analogIN = 0;
-    lstTargets[TP1043_01_A].analogINrowCT = -1;
-    lstTargets[TP1043_01_A].analogOUT = 0;
-    lstTargets[TP1043_01_A].analogOUTrowCT = -1;
-    lstTargets[TP1043_01_A].tAmbient = false;
-    lstTargets[TP1043_01_A].rpmPorts = 0;
-    lstTargets[TP1043_01_A].ser0_Enabled = true;
-    lstTargets[TP1043_01_A].ser1_Enabled = false;
-    lstTargets[TP1043_01_A].ser2_Enabled = false;
-    lstTargets[TP1043_01_A].ser3_Enabled = false;
-    lstTargets[TP1043_01_A].can1_Enabled = false;
+    lstTargets[TP1043_02_A].modelName =  QString::fromAscii(product_name[TP1043_02_A]);
+    lstTargets[TP1043_02_A].displayWidth =  480;
+    lstTargets[TP1043_02_A].displayHeight = 272;
+    lstTargets[TP1043_02_A].sdCards = 1;
+    lstTargets[TP1043_02_A].digitalIN = 0;
+    lstTargets[TP1043_02_A].digitalOUT = 0;
+    lstTargets[TP1043_02_A].nEncoders = 0;
+    lstTargets[TP1043_02_A].analogIN = 0;
+    lstTargets[TP1043_02_A].analogINrowCT = -1;
+    lstTargets[TP1043_02_A].analogOUT = 0;
+    lstTargets[TP1043_02_A].analogOUTrowCT = -1;
+    lstTargets[TP1043_02_A].tAmbient = false;
+    lstTargets[TP1043_02_A].rpmPorts = 0;
+    lstTargets[TP1043_02_A].ser0_Enabled = true;
+    lstTargets[TP1043_02_A].ser1_Enabled = false;
+    lstTargets[TP1043_02_A].ser2_Enabled = false;
+    lstTargets[TP1043_02_A].ser3_Enabled = false;
+    lstTargets[TP1043_02_A].can1_Enabled = false;
     // 04 TP1043_02_B
-    lstTargets[TP1043_01_B].modelName =  QString::fromAscii(product_name[TP1043_02_B]);
-    lstTargets[TP1043_01_B].displayWidth =  480;
-    lstTargets[TP1043_01_B].displayHeight = 272;
-    lstTargets[TP1043_01_B].sdCards = 1;
-    lstTargets[TP1043_01_B].digitalIN = 0;
-    lstTargets[TP1043_01_B].digitalOUT = 0;
-    lstTargets[TP1043_01_B].nEncoders = 0;
-    lstTargets[TP1043_01_B].analogIN = 0;
-    lstTargets[TP1043_01_B].analogINrowCT = -1;
-    lstTargets[TP1043_01_B].analogOUT = 0;
-    lstTargets[TP1043_01_B].analogOUTrowCT = -1;
-    lstTargets[TP1043_01_B].tAmbient = false;
-    lstTargets[TP1043_01_B].rpmPorts = 0;
-    lstTargets[TP1043_01_B].ser0_Enabled = false;
-    lstTargets[TP1043_01_B].ser1_Enabled = false;
-    lstTargets[TP1043_01_B].ser2_Enabled = false;
-    lstTargets[TP1043_01_B].ser3_Enabled = false;
-    lstTargets[TP1043_01_B].can1_Enabled = true;
+    lstTargets[TP1043_02_B].modelName =  QString::fromAscii(product_name[TP1043_02_B]);
+    lstTargets[TP1043_02_B].displayWidth =  480;
+    lstTargets[TP1043_02_B].displayHeight = 272;
+    lstTargets[TP1043_02_B].sdCards = 1;
+    lstTargets[TP1043_02_B].digitalIN = 0;
+    lstTargets[TP1043_02_B].digitalOUT = 0;
+    lstTargets[TP1043_02_B].nEncoders = 0;
+    lstTargets[TP1043_02_B].analogIN = 0;
+    lstTargets[TP1043_02_B].analogINrowCT = -1;
+    lstTargets[TP1043_02_B].analogOUT = 0;
+    lstTargets[TP1043_02_B].analogOUTrowCT = -1;
+    lstTargets[TP1043_02_B].tAmbient = false;
+    lstTargets[TP1043_02_B].rpmPorts = 0;
+    lstTargets[TP1043_02_B].ser0_Enabled = false;
+    lstTargets[TP1043_02_B].ser1_Enabled = false;
+    lstTargets[TP1043_02_B].ser2_Enabled = false;
+    lstTargets[TP1043_02_B].ser3_Enabled = false;
+    lstTargets[TP1043_02_B].can1_Enabled = true;
     // 05 TP1057_01_A
     lstTargets[TP1057_01_A].modelName =  QString::fromAscii(product_name[TP1057_01_A]);
     lstTargets[TP1057_01_A].displayWidth =  320;
@@ -5243,8 +5245,11 @@ int ctedit::searchModelInList(QString szModel)
         }
     }
     // Valori di Default se la ricerca non ha trovato nulla
-    if (nCur <= AnyTPAC && nCur >= lstTargets.count())
+    if (nModel < 0 || nModel >= lstTargets.count())  {
         nModel = AnyTPAC;
+        qDebug() << tr("searchModelInList: Model Code Forced to AnyTPAC");
+    }
+    // qDebug() << tr("searchModelInList: Model Code <%1> Model No <%2>") .arg(TargetConfig.modelName) .arg(nModel);
     // Imposta configurazione corrente
     TargetConfig = lstTargets[nModel];
     // Return value

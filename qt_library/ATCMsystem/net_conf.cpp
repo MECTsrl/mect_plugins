@@ -307,16 +307,18 @@ bool net_conf::saveWLAN0cfg()
         }
     }
     char command[256];
-    sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
+    system("/usr/sbin/wifi.sh stop"); // do wait
+    sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\" >/dev/null 2>&1 &",
             wlan0_essid.toAscii().data(),
             wlan0_pwd.toAscii().data()
             );
-    if (system(command))
-    {
-        /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the wifi network configuration for '%1'").arg(wlan0_essid));
-        return false;
-    }
+    system(command);
+//    if (system(command))
+//    {
+//        /* error */
+//        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the wifi network configuration for '%1'").arg(wlan0_essid));
+//        return false;
+//    }
     return true;
 }
 
@@ -352,16 +354,18 @@ bool net_conf::saveWAN0cfg()
         return false;
     }
     char command[256];
-    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
+    system("/usr/sbin/usb3g.sh stop"); // do wait
+    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\" >/dev/null 2>&1 &",
             ui->pushButton_wan0_dialnb->text().toAscii().data(),
             ui->pushButton_wan0_apn->text().toAscii().data()
             );
-    if (system(command))
-    {
-        /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the ppp network configuration for '%1'").arg(ui->pushButton_wan0_dialnb->text()));
-        return false;
-    }
+    system(command);
+//    if (system(command))
+//    {
+//        /* error */
+//        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the ppp network configuration for '%1'").arg(ui->pushButton_wan0_dialnb->text()));
+//        return false;
+//    }
     return true;
 }
 
@@ -830,7 +834,7 @@ void net_conf::updateIcons()
         ui->tab_wan0->setEnabled(true);
         is_wan_active = isWanOn();
         char ip[32];
-        ui->label_wan0_IP->setText("-");
+//        ui->label_wan0_IP->setText("-");
         if (is_wan_active)
         {
             ui->pushButton_wan0_enable->setIcon(QIcon(":/libicons/img/GprsOn.png"));
