@@ -465,4 +465,5 @@ ATCM-template-project/project.pro \
 ATCM-template-project/resources.qrc \
 ATCM-template-project/style.h \
 ATCM-template-project/systemicons.qrc \
+    ATCM-template-project/project.pro.shared
 
