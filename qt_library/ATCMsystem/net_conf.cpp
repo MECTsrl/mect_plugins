@@ -355,7 +355,7 @@ bool net_conf::saveWAN0cfg()
     }
     char command[256];
     system("/usr/sbin/usb3g.sh stop"); // do wait
-    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\" >/dev/null 2>&1 &",
+    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\" >/dev/null 2>&1 ",
             ui->pushButton_wan0_dialnb->text().toAscii().data(),
             ui->pushButton_wan0_apn->text().toAscii().data()
             );
@@ -1161,7 +1161,7 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
             ui->tab_wlan0->repaint();
             return;
         }
-        system("/usr/sbin/wifi.sh start >/dev/null 2>&1");
+        system("/usr/sbin/wifi.sh start >/dev/null 2>&1 &");
     }
     else
     {
@@ -1172,7 +1172,7 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
             ui->tab_wlan0->repaint();
             return;
         }
-        system("/usr/sbin/wifi.sh stop >/dev/null 2>&1");
+        system("/usr/sbin/wifi.sh stop >/dev/null 2>&1 &");
     }
 
     ui->tab_wlan0->setEnabled(true);
@@ -1227,7 +1227,7 @@ void net_conf::on_pushButton_wan0_enable_clicked()
             ui->tab_wan0->repaint();
             return;
         }
-        system("/usr/sbin/usb3g.sh start >/dev/null 2>&1");
+        system("/usr/sbin/usb3g.sh start >/dev/null 2>&1 &");
     }
     else
     {
@@ -1238,7 +1238,7 @@ void net_conf::on_pushButton_wan0_enable_clicked()
             ui->tab_wan0->repaint();
             return;
         }
-        system("/usr/sbin/usb3g.sh stop >/dev/null 2>&1");
+        system("/usr/sbin/usb3g.sh stop >/dev/null 2>&1 &");
     }
 
     ui->tab_wan0->setEnabled(true);
