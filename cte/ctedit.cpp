@@ -245,7 +245,7 @@ ctedit::ctedit(QWidget *parent) :
     lstHeadNames[colNodeID] = trUtf8("Node_ID");
     lstHeadSizes[colNodeID] = 8;
     lstHeadCols[colInputReg] = trUtf8("I/R");
-    lstHeadNames[colInputReg] = trUtf8("I/R");
+    lstHeadNames[colInputReg] = trUtf8("I_R");
     lstHeadSizes[colInputReg] = 8;
     lstHeadCols[colRegister] = trUtf8("Register");
     lstHeadNames[colRegister] = trUtf8("Register");
