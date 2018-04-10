@@ -413,7 +413,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->cboPort->setToolTip(szToolTip);
     // Indirizzo nodo remoto
     szToolTip.clear();
-    szToolTip.append(tr("Remode Node Address, 0 for broadcast"));
+    szToolTip.append(tr("Remode Node Address 1..247"));
     ui->txtNode->setToolTip(szToolTip);
     // Check Input Register
     szToolTip.clear();
@@ -474,9 +474,8 @@ ctedit::ctedit(QWidget *parent) :
     // Validator per Interi
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
     ui->txtPort->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
-    ui->txtNode->setValidator(new QIntValidator(nValMin, nMaxNodeID, this));
+    ui->txtNode->setValidator(new QIntValidator(1, nMaxNodeID, this));
     ui->txtRegister->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
-    ui->txtNode->setValidator(new QIntValidator(nValMin, MAXBLOCKSIZE -1, this));
     ui->txtBlock->setValidator(new QIntValidator(nValMin, nValMax, this));
     ui->txtBlockSize->setValidator(new QIntValidator(nValMin, nValMax, this));
     // Validatori per Double
@@ -3518,7 +3517,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     nNodeID = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
     nNodeID = fOk && nNodeID != -1 ? nNodeID : -1;
     if (nProtocol != PLC)  {
-        if (nNodeID < 0 || nNodeID > nMaxNodeID)  {
+        if (nNodeID < 1 || nNodeID > nMaxNodeID)  {
             fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
