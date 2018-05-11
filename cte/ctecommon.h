@@ -6,6 +6,7 @@
 const int nCTCols = 13;
 const int nMax_Int16 = 65535;
 const int nMaxNodeID = 255;
+const int nMaxRTUNodeID = 247;
 const int nStartInputRegister = 300000;
 const int nMaxInputRegister = nStartInputRegister + nMax_Int16;
 const int nMaxRegister = 49999;
@@ -27,6 +28,7 @@ const QChar   chSpace = QChar::fromAscii(20);
 const QChar   chBACKSLASH = QChar::fromAscii(92);
 const QChar   chX = QChar::fromLatin1(88);
 const QChar   chUNDERSCORE = QChar::fromAscii(95);
+const QChar   chZERO = QChar::fromAscii(48);
 
 // String Costants
 const QString szEMPTY = QString::fromAscii("");

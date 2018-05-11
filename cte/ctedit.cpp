@@ -49,6 +49,8 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QXmlStreamAttributes>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
@@ -73,6 +75,7 @@
 #define TAB_CT 0
 #define TAB_SYSTEM 1
 #define TAB_TREND 2
+#define TAB_DEVICES 3
 
 #undef  WORD_BIT
 
@@ -130,6 +133,16 @@ enum colonne_e
     colCondition,
     colCompare,
     colTotals
+};
+
+enum colTree_e
+{
+    colTreeName = 0,
+    colTreeProtocol,
+    colTreeDevice,
+    colTreeNode,
+    colTreeVariable,
+    colTreeTotals
 };
 
 enum regions_e
@@ -413,7 +426,9 @@ ctedit::ctedit(QWidget *parent) :
     ui->cboPort->setToolTip(szToolTip);
     // Indirizzo nodo remoto
     szToolTip.clear();
-    szToolTip.append(tr("Remode Node Address 0..255"));
+    szToolTip.append(tr("Remode Node Address 0..255\n"));
+    szToolTip.append(tr("\tFor RTU 1..247\n"));
+    szToolTip.append(tr("\tFor TCP 0 or 255"));
     ui->txtNode->setToolTip(szToolTip);
     // Check Input Register
     szToolTip.clear();
@@ -538,6 +553,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->tabWidget->setTabEnabled(TAB_CT, true);
     ui->tabWidget->setTabEnabled(TAB_SYSTEM, true);
     ui->tabWidget->setTabEnabled(TAB_TREND, true);
+    ui->tabWidget->setTabEnabled(TAB_DEVICES, true);
     ui->tabWidget->setCurrentIndex(m_nCurTab);
 
     // Connessione Segnali - Slot
@@ -1706,12 +1722,13 @@ void ctedit::enableFields()
     ui->txtRegister->setEnabled(false);
     ui->txtComment->setEnabled(false);
     ui->cboBehavior->setEnabled(false);
-    // Variabili di Sistema, abilitate in modifica solo il nome, priorità, update. No Insert in campi vuoti
+    // Variabili di Sistema, abilitate in modifica solo il nome, commento. No Insert in campi vuoti
+    // Da versione 3.1.2 disabilitati i campi (priorità, update)
     if (m_nGridRow >= MIN_DIAG -1)  {
         bool fDecimal = false;
         if (nProtocol != -1)  {
-            ui->cboPriority->setEnabled(true);
-            ui->cboUpdate->setEnabled(true);
+//            ui->cboPriority->setEnabled(true);
+//            ui->cboUpdate->setEnabled(true);
             ui->txtName->setEnabled(true);
             ui->txtComment->setEnabled(true);
         }
@@ -3010,11 +3027,15 @@ void ctedit::tabSelected(int nTab)
         trendEdit->fillTrendsCombo(m_szCurrentCTPath);
     }
     // Ritorno a CT da altro Tab, prudenzialmente aggiorna le info di configurazione
-    if (nTab == TAB_CT)  {
+    else if (nTab == TAB_CT)  {
         // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
         mectSet->getTargetConfig(TargetConfig);
         // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
         enableProtocolsFromModel();
+    }
+    // Passaggio a tab DEVICES
+    else if (nTab == TAB_DEVICES)  {
+        fillDeviceTree();
     }
     // Set Current Tab
     m_nCurTab = nTab;
@@ -3517,11 +3538,28 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     nNodeID = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
     nNodeID = fOk && nNodeID != -1 ? nNodeID : -1;
     if (nProtocol != PLC)  {
+        // Il Node ID deve essere compreso tra 0 e 255
         if (nNodeID < 0 || nNodeID > nMaxNodeID)  {
             fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }
+        /*
+        // Per RTU valori 0..247
+        else if (nProtocol == RTU && nNodeID > nMaxRTUNodeID)  {
+            szTemp = QString::fromAscii("Port: ") + lstValues[colPort] + QString::fromAscii("Must be from 0 to ") + QString::number(nMaxRTUNodeID);
+            fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+        // Per TCP sono ammessi solo i valori 0 o 255
+        else if (nProtocol == TCP && (nNodeID > 0 || nNodeID < nMaxNodeID))  {
+            szTemp = QString::fromAscii("Port: ") + lstValues[colPort] + QString::fromAscii("Must be from 0 or ") + QString::number(nMaxNodeID);
+            fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+        */
     }
     //---------------------------------------
     // Controlli Univocità Server (MODBUS)
@@ -5660,4 +5698,120 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
     jumpToGridRow(nCur, true);
     // Return value
     return (nPasted);
+}
+void    ctedit::fillDeviceTree()
+// Riempimento Albero dei device collegati al TP
+{
+    QTreeWidgetItem *tItem;
+    QTreeWidgetItem *tProtocol;
+    QTreeWidgetItem *tRoot;
+    QTreeWidgetItem *tDevice;
+    QTreeWidgetItem *tNode;
+    QString         szDevice;
+    QString         szNode;
+    QStringList     lstTreeHeads;
+    QStringList     usedProtocols;
+    QStringList     usedDevices;
+    int             nCur = 0;
+    int             nDevice = -1;
+    int             nItem = 0;
+    char            ip[MAX_IPADDR_LEN];
+
+    // Preparing Tree
+    usedDevices.clear();
+    usedProtocols.clear();
+    lstTreeHeads.clear();
+    lstTreeHeads
+            << QString::fromAscii("TP")
+            << QString::fromAscii("Protocol")
+            << QString::fromAscii("Devices")
+            << QString::fromAscii("Node")
+            << QString::fromAscii("Variables")
+        ;
+    ui->deviceTree->clear();
+    ui->deviceTree->setColumnCount(colTreeTotals);
+    tRoot = new QTreeWidgetItem(ui->deviceTree, 0);
+    tRoot->setText(colTreeName, m_szCurrentModel);
+    // Variables Loop
+    for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
+        // Examinate Each Item
+        if (lstCTRecords[nCur].UsedEntry)  {
+            int nProtocol = lstCTRecords[nCur].Protocol;
+            int nPort = lstCTRecords[nCur].Port;
+            QString szProtocol = lstProtocol[nProtocol];
+            // Searching Protocol
+            tProtocol = 0;
+            for (nItem = 0; nItem < tRoot->childCount(); nItem ++)  {
+                tItem = tRoot->child(nItem);
+                if (tItem->text(colTreeName) == szProtocol)  {
+                    tProtocol = tItem;
+                    break;
+                }
+            }
+            // Adding Protocol
+            if (tProtocol == 0)  {
+                // Adding Protocol
+                usedProtocols.append(szProtocol);
+                tProtocol = new QTreeWidgetItem(tRoot, 0);
+                tProtocol->setText(colTreeName, szProtocol);
+            }
+            // Variabili di tipo PLC, aggiunte direttamente all'albero
+            if (nProtocol == PLC)  {
+                if (tProtocol != 0)  {
+                    tItem = new QTreeWidgetItem(tProtocol, 1);
+                    tItem->setText(colTreeName, QString::fromAscii(lstCTRecords[nCur].Tag));
+                }
+            }
+            // Altri tipi di variabili
+            else {
+                if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
+                    // Device = IP Address
+                    ipaddr2str(lstCTRecords[nCur].IPAddress, ip);
+                    szDevice = QString::fromAscii(ip);
+                    szNode = QString::number(lstCTRecords[nCur].Port);
+                }
+                else {
+                    szDevice =  tr("%1") .arg(nPort, 2, 10, chZERO);
+                    szNode = QString::number(lstCTRecords[nCur].NodeId);
+                }
+                // Searching Device
+                tDevice = 0;
+                for (nItem = 0; nItem < tProtocol->childCount(); nItem ++)  {
+                    tItem = tProtocol->child(nItem);
+                    if (tItem->text(colTreeName) == szDevice)  {
+                        tDevice = tItem;
+                        break;
+                    }
+                }
+                // Adding Device
+                if (tDevice == 0)  {
+                    // Adding Protocol
+                    tDevice = new QTreeWidgetItem(tProtocol, 0);
+                    tDevice->setText(colTreeName, szDevice);
+                }
+                // Searching Node
+                tNode = 0;
+                for (nItem = 0; nItem < tDevice->childCount(); nItem ++)  {
+                    tItem = tDevice->child(nItem);
+                    if (tItem->text(colTreeName) == szNode)  {
+                        tNode = tItem;
+                        break;
+                    }
+                }
+                // Adding Device
+                if (tNode == 0)  {
+                    // Adding Protocol
+                    tNode = new QTreeWidgetItem(tDevice, 0);
+                    tNode->setText(colTreeName, szNode);
+                }
+                // Adding Variable
+                if (tNode != 0)  {
+                    tItem = new QTreeWidgetItem(tNode, 1);
+                    tItem->setText(colTreeName, QString::fromAscii(lstCTRecords[nCur].Tag));
+                }
+            }
+        }
+    }
+    // Tree Header
+    ui->deviceTree->setHeaderLabels(lstTreeHeads);
 }
