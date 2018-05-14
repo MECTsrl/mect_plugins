@@ -138,11 +138,15 @@ enum colonne_e
 enum colTree_e
 {
     colTreeName = 0,
-    colTreeProtocol,
-    colTreeDevice,
-    colTreeNode,
-    colTreeVariable,
+    colTreeDeviceInfo,
     colTreeTotals
+};
+enum treeRoles
+{
+    treeRoot = 1000,
+    treeDevice,
+    treeNode,
+    treeVariable
 };
 
 enum regions_e
@@ -719,6 +723,8 @@ bool    ctedit::selectCTFile(QString szFileCT)
             m_szMsg = tr("Found Errors Loading CrossTable file: %1\n Total Erros: %2") .arg(szFileCT) .arg(nErr);
             warnUser(this, szMectTitle, m_szMsg);
         }
+        // Porta in primo piano il Tab delle Variabili
+        ui->tabWidget->setCurrentIndex(TAB_CT);
     }
     return fRes;
 }
@@ -3035,7 +3041,7 @@ void ctedit::tabSelected(int nTab)
     }
     // Passaggio a tab DEVICES
     else if (nTab == TAB_DEVICES)  {
-        fillDeviceTree();
+        fillDeviceTree(m_nGridRow);
     }
     // Set Current Tab
     m_nCurTab = nTab;
@@ -5699,96 +5705,87 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
     // Return value
     return (nPasted);
 }
-void    ctedit::fillDeviceTree()
+void    ctedit::fillDeviceTree(int nCurRow)
 // Riempimento Albero dei device collegati al TP
 {
     QTreeWidgetItem *tItem;
-    QTreeWidgetItem *tProtocol;
     QTreeWidgetItem *tRoot;
     QTreeWidgetItem *tDevice;
     QTreeWidgetItem *tNode;
+    QTreeWidgetItem *tCurrentNode;
     QString         szDevice;
     QString         szNode;
     QStringList     lstTreeHeads;
     QStringList     usedProtocols;
     QStringList     usedDevices;
-    int             nCur = 0;
+    int             nRow = 0;
     int             nDevice = -1;
     int             nItem = 0;
     char            ip[MAX_IPADDR_LEN];
+    QString         szToolTip;
 
     // Preparing Tree
     usedDevices.clear();
     usedProtocols.clear();
     lstTreeHeads.clear();
     lstTreeHeads
-            << QString::fromAscii("TP")
-            << QString::fromAscii("Protocol")
-            << QString::fromAscii("Devices")
-            << QString::fromAscii("Node")
-            << QString::fromAscii("Variables")
+            << QString::fromAscii("Name")
+            << QString::fromAscii("Device Info")
         ;
     ui->deviceTree->clear();
     ui->deviceTree->setColumnCount(colTreeTotals);
-    tRoot = new QTreeWidgetItem(ui->deviceTree, 0);
+    tRoot = new QTreeWidgetItem(ui->deviceTree, treeRoot);
     tRoot->setText(colTreeName, m_szCurrentModel);
+    tCurrentNode = 0;
+    qDebug() << tr("fillDeviceTree(): Current Row: %1") .arg(nCurRow);
     // Variables Loop
-    for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
+    for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Examinate Each Item
-        if (lstCTRecords[nCur].UsedEntry)  {
-            int nProtocol = lstCTRecords[nCur].Protocol;
-            int nPort = lstCTRecords[nCur].Port;
+        if (lstCTRecords[nRow].UsedEntry)  {
+            int nProtocol = lstCTRecords[nRow].Protocol;
+            int nPort = lstCTRecords[nRow].Port;
             QString szProtocol = lstProtocol[nProtocol];
-            // Searching Protocol
-            tProtocol = 0;
-            for (nItem = 0; nItem < tRoot->childCount(); nItem ++)  {
-                tItem = tRoot->child(nItem);
-                if (tItem->text(colTreeName) == szProtocol)  {
-                    tProtocol = tItem;
-                    break;
-                }
-            }
-            // Adding Protocol
-            if (tProtocol == 0)  {
-                // Adding Protocol
-                usedProtocols.append(szProtocol);
-                tProtocol = new QTreeWidgetItem(tRoot, 0);
-                tProtocol->setText(colTreeName, szProtocol);
-            }
-            // Variabili di tipo PLC, aggiunte direttamente all'albero
+            // Variabili di tipo PLC, aggiunte direttamente all'albero sotto un generico Device PLC
             if (nProtocol == PLC)  {
-                if (tProtocol != 0)  {
-                    tItem = new QTreeWidgetItem(tProtocol, 1);
-                    tItem->setText(colTreeName, QString::fromAscii(lstCTRecords[nCur].Tag));
-                }
+                szDevice = szProtocol;
             }
             // Altri tipi di variabili
             else {
                 if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
                     // Device = IP Address
-                    ipaddr2str(lstCTRecords[nCur].IPAddress, ip);
+                    ipaddr2str(lstCTRecords[nRow].IPAddress, ip);
                     szDevice = QString::fromAscii(ip);
-                    szNode = QString::number(lstCTRecords[nCur].Port);
+                    szNode = QString::number(lstCTRecords[nRow].Port);
                 }
                 else {
                     szDevice =  tr("%1") .arg(nPort, 2, 10, chZERO);
-                    szNode = QString::number(lstCTRecords[nCur].NodeId);
+                    szNode = QString::number(lstCTRecords[nRow].NodeId);
                 }
-                // Searching Device
-                tDevice = 0;
-                for (nItem = 0; nItem < tProtocol->childCount(); nItem ++)  {
-                    tItem = tProtocol->child(nItem);
-                    if (tItem->text(colTreeName) == szDevice)  {
-                        tDevice = tItem;
-                        break;
-                    }
+                // Concatena Device a Protocol per ottenere un Device univoco
+                szDevice.prepend(szUNDERSCORE);
+                szDevice.prepend(szProtocol);
+            }
+            // Searching Device
+            tDevice = 0;
+            for (nItem = 0; nItem < tRoot->childCount(); nItem ++)  {
+                tItem = tRoot->child(nItem);
+                if (tItem->text(colTreeName) == szDevice)  {
+                    tDevice = tItem;
+                    break;
                 }
-                // Adding Device
-                if (tDevice == 0)  {
-                    // Adding Protocol
-                    tDevice = new QTreeWidgetItem(tProtocol, 0);
-                    tDevice->setText(colTreeName, szDevice);
-                }
+            }
+            // Adding Device
+            if (tDevice == 0)  {
+                // Adding Protocol
+                tDevice = new QTreeWidgetItem(tRoot, treeDevice);
+                tDevice->setText(colTreeName, szDevice);
+            }
+            tDevice->setExpanded(true);
+            // Non informazioni di nodo per PCL
+            if (nProtocol == PLC)  {
+                tNode = tDevice;
+            }
+            else  {
                 // Searching Node
                 tNode = 0;
                 for (nItem = 0; nItem < tDevice->childCount(); nItem ++)  {
@@ -5801,17 +5798,70 @@ void    ctedit::fillDeviceTree()
                 // Adding Device
                 if (tNode == 0)  {
                     // Adding Protocol
-                    tNode = new QTreeWidgetItem(tDevice, 0);
+                    tNode = new QTreeWidgetItem(tDevice, treeNode);
                     tNode->setText(colTreeName, szNode);
                 }
-                // Adding Variable
-                if (tNode != 0)  {
-                    tItem = new QTreeWidgetItem(tNode, 1);
-                    tItem->setText(colTreeName, QString::fromAscii(lstCTRecords[nCur].Tag));
+            }
+            // Espande il Nodo con le sue variabili
+            tNode->setExpanded(true);
+            // Adding Variable
+            if (tNode != 0)  {
+                tItem = new QTreeWidgetItem(tNode, treeVariable);
+                tItem->setText(colTreeName, QString::fromAscii(lstCTRecords[nRow].Tag));
+                // ToolTip con info variabile
+                QVariant vRow = nRow;
+                szToolTip.clear();
+                szToolTip.append(QString::fromAscii("Device:\t\t") + szDevice + szNEWLINE);
+                if (nProtocol != PLC)  {
+                    szToolTip.append(QString::fromAscii("Node:\t\t") + szNode + szNEWLINE);
                 }
+                szToolTip.append(QString::fromAscii("CT Row:\t") + QString::number(nRow + 1) + szNEWLINE);
+                szToolTip.append(QString::fromAscii("Priority:\t") + QString::number(lstCTRecords[nRow].Enable) + szNEWLINE);
+                szToolTip.append(QString::fromAscii("Update:\t") + lstUpdateNames[lstCTRecords[nRow].Update] + szNEWLINE);
+                szToolTip.append(QString::fromAscii("Type:\t\t") + lstTipi[lstCTRecords[nRow].VarType] + szNEWLINE);
+                szToolTip.append(QString::fromAscii("Decimals:\t") + QString::number(lstCTRecords[nRow].Decimal));
+                tItem->setToolTip(colTreeName, szToolTip);
+                tItem->setData(colTreeName, Qt::UserRole, vRow);
+                // tItem coincide con la riga corrente
+                if (nRow == nCurRow)  {
+                    tCurrentNode = tItem;
+                }
+                // Aggiornamento del Numero di variabili del Nodo contenitore
+                szToolTip.clear();
+                szToolTip.append(QString::fromAscii("Variables:\t") + QString::number(tNode->childCount()));
+                tNode->setToolTip(colTreeName, szToolTip);
             }
         }
     }
     // Tree Header
     ui->deviceTree->setHeaderLabels(lstTreeHeads);
+    ui->deviceTree->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->deviceTree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    // Seleziona l'item corrispondente alla riga corrente
+    tRoot->setExpanded(true);
+    if (tCurrentNode != 0)  {
+        qDebug() << tr("fillDeviceTree(): Selected: %1") .arg(tCurrentNode->text(colTreeName));
+        tCurrentNode->setSelected(true);
+        ui->deviceTree->scrollToItem(tCurrentNode, QAbstractItemView::PositionAtCenter);
+    }
+    else {
+        tRoot->setSelected(true);
+    }
+}
+
+void ctedit::on_deviceTree_doubleClicked(const QModelIndex &index)
+// Passaggio da Device Tree a Variabile
+{
+    QVariant    vRow;
+    bool        fOk;
+    int         nRow;
+
+    vRow = index.data(Qt::UserRole);
+    nRow = vRow.toInt(&fOk);
+    qDebug() << tr("Tree Item Clicked: %1 - %2") .arg(nRow) .arg(fOk);
+    if (fOk && nRow >= 0 && nRow < lstCTRecords.count())  {
+        // Che fare ??
+        ui->tabWidget->setCurrentIndex(TAB_CT);
+        jumpToGridRow(nRow, true);
+    }
 }
