@@ -76,7 +76,7 @@ private slots:
     void on_optVariableVal_toggled(bool checked);
     void on_cboSections_currentIndexChanged(int index);
     void on_deviceTree_doubleClicked(const QModelIndex &index);
-
+    void on_tblCT_doubleClicked(const QModelIndex &index);
 
 private:
     //---------------------------------------------------------------------

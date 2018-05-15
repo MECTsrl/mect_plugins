@@ -5214,7 +5214,43 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AF].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AF].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AF].can1_Enabled = false;
-    // 23 TPLC100_01_AA
+    // 23 TPLC050_01_AA
+    lstTargets[TPLC050_01_AA].modelName =  QString::fromAscii(product_name[TPLC050_01_AA]);
+    lstTargets[TPLC050_01_AA].displayWidth =  -1;
+    lstTargets[TPLC050_01_AA].displayHeight = -1;
+    lstTargets[TPLC050_01_AA].sdCards = 1;
+    lstTargets[TPLC050_01_AA].digitalIN = 8;
+    lstTargets[TPLC050_01_AA].digitalOUT = 8;
+    lstTargets[TPLC050_01_AA].nEncoders = 1;
+    lstTargets[TPLC050_01_AA].analogIN = 2;
+    lstTargets[TPLC050_01_AA].analogINrowCT = 5328;
+    lstTargets[TPLC050_01_AA].analogOUT = 0;
+    lstTargets[TPLC050_01_AA].tAmbient = true;
+    lstTargets[TPLC050_01_AA].rpmPorts = 0;
+    lstTargets[TPLC050_01_AA].ser0_Enabled = true;
+    lstTargets[TPLC050_01_AA].ser1_Enabled = false;
+    lstTargets[TPLC050_01_AA].ser2_Enabled = false;
+    lstTargets[TPLC050_01_AA].ser3_Enabled = false;
+    lstTargets[TPLC050_01_AA].can1_Enabled = false;
+    // 24 TPLC050_01_AB
+    lstTargets[TPLC050_01_AB].modelName =  QString::fromAscii(product_name[TPLC050_01_AB]);
+    lstTargets[TPLC050_01_AB].displayWidth =  -1;
+    lstTargets[TPLC050_01_AB].displayHeight = -1;
+    lstTargets[TPLC050_01_AB].sdCards = 1;
+    lstTargets[TPLC050_01_AB].digitalIN = 0;
+    lstTargets[TPLC050_01_AB].digitalOUT = 0;
+    lstTargets[TPLC050_01_AB].nEncoders = 1;
+    lstTargets[TPLC050_01_AB].analogIN = 2;
+    lstTargets[TPLC050_01_AB].analogINrowCT = 5328;
+    lstTargets[TPLC050_01_AB].analogOUT = 0;
+    lstTargets[TPLC050_01_AB].tAmbient = true;
+    lstTargets[TPLC050_01_AB].rpmPorts = 0;
+    lstTargets[TPLC050_01_AB].ser0_Enabled = true;
+    lstTargets[TPLC050_01_AB].ser1_Enabled = false;
+    lstTargets[TPLC050_01_AB].ser2_Enabled = false;
+    lstTargets[TPLC050_01_AB].ser3_Enabled = false;
+    lstTargets[TPLC050_01_AB].can1_Enabled = false;
+    // 25 TPLC100_01_AA
     lstTargets[TPLC100_01_AA].modelName =  QString::fromAscii(product_name[TPLC100_01_AA]);
     lstTargets[TPLC100_01_AA].displayWidth =  -1;
     lstTargets[TPLC100_01_AA].displayHeight = -1;
@@ -5234,7 +5270,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].ser2_Enabled = false;
     lstTargets[TPLC100_01_AA].ser3_Enabled = false;
     lstTargets[TPLC100_01_AA].can1_Enabled = true;
-    // 24 TPLC100_01_AB
+    // 26 TPLC100_01_AB
     lstTargets[TPLC100_01_AB].modelName =  QString::fromAscii(product_name[TPLC100_01_AB]);
     lstTargets[TPLC100_01_AB].displayWidth =  -1;
     lstTargets[TPLC100_01_AB].displayHeight = -1;
@@ -5254,7 +5290,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].ser2_Enabled = false;
     lstTargets[TPLC100_01_AB].ser3_Enabled = true;
     lstTargets[TPLC100_01_AB].can1_Enabled = false;
-    // 25 TPAC1008_03_AC
+    // 27 TPAC1008_03_AC
     lstTargets[TPAC1008_03_AC].modelName =  QString::fromAscii(product_name[TPAC1008_03_AC]);
     lstTargets[TPAC1008_03_AC].displayWidth =  800;
     lstTargets[TPAC1008_03_AC].displayHeight = 480;
@@ -5721,6 +5757,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
     int             nRow = 0;
     int             nDevice = -1;
     int             nItem = 0;
+    int             nVariables = 0;
     char            ip[MAX_IPADDR_LEN];
     QString         szToolTip;
 
@@ -5828,8 +5865,15 @@ void    ctedit::fillDeviceTree(int nCurRow)
                 }
                 // Aggiornamento del Numero di variabili del Nodo contenitore
                 szToolTip.clear();
-                szToolTip.append(QString::fromAscii("Variables:\t") + QString::number(tNode->childCount()));
+                szToolTip.append(QString::fromAscii("Variables:\t") + QString::number(tNode->childCount()));                
                 tNode->setToolTip(colTreeName, szToolTip);
+                tNode->setText(colTreeDeviceInfo, tr("Node Variables: %1") .arg(tNode->childCount()));
+                // Aggiornamento del Numero Nodi Device
+                if (nProtocol != PLC)  {
+                    tDevice->setText(colTreeDeviceInfo, tr("Device Nodes: %1") .arg(tDevice->childCount()));
+                }
+                // Variables Counter
+                nVariables++;
             }
         }
     }
@@ -5839,6 +5883,8 @@ void    ctedit::fillDeviceTree(int nCurRow)
     ui->deviceTree->setSelectionBehavior(QAbstractItemView::SelectRows);
     // Seleziona l'item corrispondente alla riga corrente
     tRoot->setExpanded(true);
+    tRoot->setText(colTreeDeviceInfo, tr("Total Variables: %1") .arg(nVariables));
+    // Salto alla riga corrispondente alla variabile selezionata in griglia CT
     if (tCurrentNode != 0)  {
         qDebug() << tr("fillDeviceTree(): Selected: %1") .arg(tCurrentNode->text(colTreeName));
         tCurrentNode->setSelected(true);
@@ -5863,5 +5909,16 @@ void ctedit::on_deviceTree_doubleClicked(const QModelIndex &index)
         // Che fare ??
         ui->tabWidget->setCurrentIndex(TAB_CT);
         jumpToGridRow(nRow, true);
+    }
+}
+
+void ctedit::on_tblCT_doubleClicked(const QModelIndex &index)
+// Passaggio da Variabile a Device Tree
+{
+    int nRow = index.row();
+
+    if (lstCTRecords[nRow].UsedEntry)  {
+        fillDeviceTree(nRow);
+        ui->tabWidget->setCurrentIndex(TAB_DEVICES);
     }
 }
