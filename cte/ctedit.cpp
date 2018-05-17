@@ -690,12 +690,18 @@ bool    ctedit::selectCTFile(QString szFileCT)
             qDebug() << tr("selectCTFile: Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
         }
         else  {
-            TargetConfig = lstTargets[AnyTPAC];
-            ui->lblModel->setStyleSheet(QString::fromAscii("background-color: Red"));
-            m_szMsg = tr("No Model Type Found in file: %1") .arg(szTemplateFile);
-            warnUser(this, szMectTitle, m_szMsg);
+            nModel = AnyTPAC;
         }
-        // Se il modello non è stato trovato in template.pri vale comunque AnyTPAC ma il salvataggio è disabilitato
+        // Imposta configurazione corrente
+        TargetConfig = lstTargets[nModel];
+        // Se il modello non è stato trovato in template.pri oppure nella lista modelli definiti vale comunque AnyTPAC ma il salvataggio è disabilitato
+        // (Viene ripulita la variabile m_szCurrentModel)
+        if (nModel == AnyTPAC)  {
+            ui->lblModel->setStyleSheet(QString::fromAscii("background-color: Red"));
+            m_szMsg = tr("No Model Type Found in file: <%1>\nor Model Unknown: <%2>") .arg(szTemplateFile) .arg(m_szCurrentModel);
+            warnUser(this, szMectTitle, m_szMsg);
+            m_szCurrentModel.clear();
+        }
         m_isCtModified = false;
         m_fCutOrPaste = false;
         // Carica anche le impostazioni del file INI
@@ -5223,7 +5229,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].digitalOUT = 8;
     lstTargets[TPLC050_01_AA].nEncoders = 1;
     lstTargets[TPLC050_01_AA].analogIN = 2;
-    lstTargets[TPLC050_01_AA].analogINrowCT = 5328;
+    lstTargets[TPLC050_01_AA].analogINrowCT = 5306;
     lstTargets[TPLC050_01_AA].analogOUT = 0;
     lstTargets[TPLC050_01_AA].tAmbient = true;
     lstTargets[TPLC050_01_AA].rpmPorts = 0;
@@ -5324,13 +5330,11 @@ int ctedit::searchModelInList(QString szModel)
         }
     }
     // Valori di Default se la ricerca non ha trovato nulla
-    if (nModel < 0 || nModel >= lstTargets.count())  {
+    if (nModel < 0 || nCur >= lstTargets.count())  {
         nModel = AnyTPAC;
         qDebug() << tr("searchModelInList: Model Code Forced to AnyTPAC");
     }
     // qDebug() << tr("searchModelInList: Model Code <%1> Model No <%2>") .arg(TargetConfig.modelName) .arg(nModel);
-    // Imposta configurazione corrente
-    TargetConfig = lstTargets[nModel];
     // Return value
     return nModel;
 }
