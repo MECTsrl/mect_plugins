@@ -6,6 +6,7 @@
 #include "cteerrdef.h"
 #include "mectsettings.h"
 #include "trendeditor.h"
+#include "ctecommon.h"
 
 #include <QObject>
 #include <QTableView>
@@ -133,6 +134,7 @@ private:
     bool    isSameBitField(int nRow);
     bool    isBitField(enum varTypes nVarType);
     bool    isTooBigForBlock(int nRow, int nItemsInBlock, int nCurBlockSize);
+    bool    checkServersDevicesAndNodes();          // Caricamento della lista dei Nodi e dei Devices a partire dalle variabili di CT
     // Import dati in XML
     bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows);
     bool    addModelVars(const QString szModelName, int nRow);
@@ -184,6 +186,7 @@ private:
     QList<CrossTableRecord> lstCTRecords;           // Lista completa di record per tabella
     QList<QList<CrossTableRecord> > lstUndo;        // Lista degli Undo di elementi di Cross Table Editor
     CrossTableRecord        CrossTable[1 + DimCrossTable];	 // campi sono riempiti a partire dall'indice 1
+
     // System Configuration
     TP_Config               TargetConfig;           // Configurazione corrente del Target letta da Form mectSettings
     QList<TP_Config>        lstTargets;             // Lista di tutti i Target definiti
@@ -199,6 +202,17 @@ private:
     QStringList             lstErrorMessages;       // Lista dei messaggi di errore
     // Gestione Server ModBus
     MODBUS_Srv              serverModBus[srvTotals];// Elenco dei Server ModBus definiti nel Sistema
+    //------------------------------------------------------------------
+    // Gestione Nodi / Servers per Tab Devices
+    //------------------------------------------------------------------
+    serverStruct            theServers[nMAX_SERVERS];// Array con Informazioni Server definiti
+    deviceStruct            theDevices[nMAX_DEVICES];// Array con Informazioni Devices definiti
+    nodeStruct              theNodes[nMAX_NODES];   // Array con struttura dei Nodi definiti
+    int                     theServersNumber;
+    int                     theDevicesNumber;
+    int                     theTcpDevicesNumber;
+    int                     thePlcVarsNumber;
+    int                     theNodesNumber;
 
     // Variabili di stato ad uso globale
     int                     m_nCurTab;              // Tab corrente in interfaccia

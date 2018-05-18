@@ -178,8 +178,8 @@ struct  CrossTableRecord {
     int         ALComparison;                           // Type of comparision (Signed, unsigned, float determined from left variable type)
     int         ALCompatible;                           // 1 if both side of comparision are between compatible types
     //
-    uint16_t device;
-    uint16_t node;
+    uint16_t    device;                                 // Numero progressivo di DEVICE associato alla variabile
+    uint16_t    node;                                   // Numero di NODO associato alla variabile
     char Comment[MAX_COMMENT_LEN];
 };
 
