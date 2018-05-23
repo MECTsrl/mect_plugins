@@ -148,6 +148,8 @@ enum treeRoles
     treeRoot = 1000,
     treeDevice,
     treeNode,
+    treePriority,
+    treeBlock,
     treeVariable
 };
 
@@ -5753,7 +5755,7 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
     // Return value
     return (nPasted);
 }
-void    ctedit::fillDeviceTree(int nCurRow)
+void    ctedit::fillDeviceTree_old(int nCurRow)
 // Riempimento Albero dei device collegati al TP
 {
     QTreeWidgetItem *tItem;
@@ -6131,7 +6133,7 @@ bool ctedit::checkServersDevicesAndNodes()
                 }
             add_device:
                 if (d < theDevicesNumber) {
-                    // Device Present, add Variable 2 divice
+                    // Device Present, add Variable 2 device
                     lstCTRecords[nCur].device = d;  // found
                     theDevices[d].nVars ++;       // this one, also Htype
                 } else if (theDevicesNumber >= nMAX_DEVICES) {
@@ -6302,4 +6304,139 @@ bool ctedit::checkServersDevicesAndNodes()
         qDebug() << szRow;
     }
     return fRes;
+}
+void    ctedit::fillDeviceTree(int nCurRow)
+// Riempimento Albero dei device collegati al TP
+{
+    QTreeWidgetItem *tItem;
+    QTreeWidgetItem *tRoot;
+    QTreeWidgetItem *tCurrentDevice;
+    QTreeWidgetItem *tCurrentNode;
+    QTreeWidgetItem *tCurrentPriority;
+    QTreeWidgetItem *tCurrentBlock;
+    QTreeWidgetItem *tCurrentVariable;
+    QString         szName;
+    QStringList     lstTreeHeads;
+    QStringList     usedProtocols;
+    QStringList     usedDevices;
+    int             nRow = 0;
+    int             nDevice = -1;
+    int             nNode = -1;
+    int             nPriority = -1;
+    int             nBlock = -1;
+    int             nVariables = 0;
+    QString         szToolTip;
+
+    // Preparing Tree
+    usedDevices.clear();
+    usedProtocols.clear();
+    lstTreeHeads.clear();
+    lstTreeHeads
+            << QString::fromAscii("Name")
+            << QString::fromAscii("Device Info")
+        ;
+    ui->deviceTree->clear();
+    ui->deviceTree->setColumnCount(colTreeTotals);
+    tRoot = new QTreeWidgetItem(ui->deviceTree, treeRoot);
+    tRoot->setText(colTreeName, m_szCurrentModel);
+    tCurrentVariable = 0;
+    // Build Server-Device-Nodes structures
+    if (! checkServersDevicesAndNodes())  {
+        qDebug() << tr("fillDeviceTree(): Error rebuildin Device Tree");
+        return;
+    }
+    // Variables Loop
+    for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
+        // Considera solo le Variabili utilizzate
+        if (lstCTRecords[nRow].UsedEntry)  {
+            nDevice = lstCTRecords[nRow].device;
+            nNode = lstCTRecords[nRow].node;
+            nPriority = lstCTRecords[nRow].Update;
+            nBlock = lstCTRecords[nRow].Block;
+            // Determinazione del Device
+            if (lstCTRecords[nRow].Protocol == PLC)  {
+                szName = lstProtocol[PLC];
+                nDevice = -1;
+            }
+            else  {
+                if (nDevice >= 0 && nDevice < nMAX_DEVICES)  {
+                    szName = theDevices[nDevice].szDeviceName;
+                }
+                else  {
+                    szName = QString::fromAscii("UNDEFINED");
+                }
+            }
+            // Ricerca del Device in Tree
+            tCurrentDevice = searchTreeChild(tRoot, colTreeName, szName);
+            // Adding Device
+            if (tCurrentDevice == 0)  {
+                tCurrentDevice = new QTreeWidgetItem(tRoot, treeDevice);
+                tCurrentDevice->setText(colTreeName, szName);
+            }
+            tCurrentDevice->setExpanded(true);
+            // If Protocol == PLC skip tree costruction
+            if (lstCTRecords[nRow].Protocol == PLC)  {
+                tCurrentNode = tCurrentDevice;
+                goto addPriorityNode;
+            }
+            // Current Node
+            if (nNode >= 0 && nNode < nMAX_NODES)  {
+                szName = theNodes[nDevice].szNodeName;
+            }
+            else  {
+                szName = QString::fromAscii("UNDEFINED");
+            }
+            // Ricerca del Node in Tree
+            tCurrentNode = searchTreeChild(tCurrentDevice, colTreeName, szName);
+            // Adding Node
+            if (tCurrentNode == 0)  {
+                tCurrentNode = new QTreeWidgetItem(tCurrentDevice, treeNode);
+                tCurrentNode->setText(colTreeName, szName);
+            }
+            tCurrentNode->setExpanded(true);
+
+addPriorityNode:
+            szName = QString::fromAscii("Priority_%1") .arg(nPriority);
+            // Ricerca del Prority in Tree
+            tCurrentPriority = searchTreeChild(tCurrentNode, colTreeName, szName);
+            // Adding Device
+            if (tCurrentPriority == 0)  {
+                tCurrentPriority = new QTreeWidgetItem(tCurrentNode, treePriority);
+                tCurrentPriority->setText(colTreeName, szName);
+            }
+            tCurrentPriority->setExpanded(true);
+            // Block Name
+            szName = QString::fromAscii("Block_") + int2PaddedString(nBlock, 2, 10);
+            // Ricerca del Block in Tree
+            tCurrentBlock = searchTreeChild(tCurrentPriority, colTreeName, szName);
+            // Adding Node
+            if (tCurrentBlock == 0)  {
+                tCurrentBlock = new QTreeWidgetItem(tCurrentPriority, treeBlock);
+                tCurrentBlock->setText(colTreeName, szName);
+            }
+            tCurrentBlock->setExpanded(true);
+            // Adding Variable
+            szName = QString::fromAscii(lstCTRecords[nRow].Tag);
+            tItem  = new QTreeWidgetItem(tCurrentBlock, treeVariable);
+            tItem->setText(colTreeName, szName);
+            if (nRow == nCurRow)
+                tCurrentVariable = tItem;
+        }   // Used Entry
+    }
+    // Tree Header
+    ui->deviceTree->setHeaderLabels(lstTreeHeads);
+    ui->deviceTree->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->deviceTree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    // Seleziona l'item corrispondente alla riga corrente
+    tRoot->setExpanded(true);
+    tRoot->setText(colTreeDeviceInfo, tr("Total Variables: %1") .arg(nVariables));
+    // Salto alla riga corrispondente alla variabile selezionata in griglia CT
+    if (tCurrentVariable != 0)  {
+        qDebug() << tr("fillDeviceTree(): Selected: %1") .arg(tCurrentVariable->text(colTreeName));
+        tCurrentVariable->setSelected(true);
+        ui->deviceTree->scrollToItem(tCurrentVariable, QAbstractItemView::PositionAtCenter);
+    }
+    else {
+        tRoot->setSelected(true);
+    }
 }

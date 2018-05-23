@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 #include <QComboBox>
 #include <QColor>
 
@@ -46,4 +48,5 @@ const  char     cZero = 48;             // Zero
     bool        disableAndBlockSignals(QWidget *widget);                    // Disabilita e blocca segnali di un oggetto QWidget*
     bool        enableAndUnlockSignals(QWidget *widget);                    // Riabilita e sblocca segnali di un oggetto QWidget*
     QColor      getIdealTextColor(const QColor& rBackgroundColor);          // Return an ideal label color, based on the given background color.
+    QTreeWidgetItem *searchTreeChild(QTreeWidgetItem *tFather, int nCol, QString &szName);    // Search Child Item in Tree by Column and Name
 #endif // UTILS_H

@@ -463,3 +463,20 @@ QColor getIdealTextColor(const QColor& rBackgroundColor)
     int BackgroundDelta = (rBackgroundColor.red() * 0.299) + (rBackgroundColor.green() * 0.587) + (rBackgroundColor.blue() * 0.114);
     return QColor((255- BackgroundDelta < THRESHOLD) ? Qt::black : Qt::white);
 }
+QTreeWidgetItem *searchTreeChild(QTreeWidgetItem *tFather, int nCol, QString &szName)
+// Search Child Item in Tree by Column and Name
+{
+    QTreeWidgetItem *tChild = 0;
+    QTreeWidgetItem *tItem = 0;
+    int             nItem = 0;
+
+    for (nItem = 0; nItem < tFather->childCount(); nItem ++)  {
+        tItem = tFather->child(nItem);
+        if (tItem->text(nCol) == szName)  {
+            tChild = tItem;
+            break;
+        }
+    }
+    // Return Element or 0
+    return  tChild;
+}

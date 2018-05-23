@@ -111,7 +111,9 @@ private:
     int     fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes);           // Riempie la lista dei tipi compatibili tra loro
     int     varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs);        // Search in Cross Table Record List the index of szVarName
     int     findNextVisibleRow(int nRow);           // Cerca la prossima riga visibile cui saltare (Per Enter on Grid)
-    void    fillDeviceTree(int nCurRow = 0);           // Riempimento Albero dei device collegati al TP
+    void    fillDeviceTree(int nCurRow = 0);        // Riempimento Albero dei device collegati al TP
+    void    fillDeviceTree_old(int nCurRow = 0);    // Riempimento Albero dei device collegati al TP (versione precendente)
+
     // Gestione Controlli
     bool    checkCTFile(QString szSourceFile);      // Controllo validità file CT per Import
     int     checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine = true);     // Controlli formali sulla riga a termine editing
