@@ -1745,12 +1745,12 @@ void ctedit::enableFields()
     ui->txtComment->setEnabled(false);
     ui->cboBehavior->setEnabled(false);
     // Variabili di Sistema, abilitate in modifica solo il nome, commento. No Insert in campi vuoti
-    // Da versione 3.1.2 disabilitati i campi (priorità, update)
+    // Da versione 3.1.2 disabilitati i campi (priorità)
     if (m_nGridRow >= MIN_DIAG -1)  {
         bool fDecimal = false;
         if (nProtocol != -1)  {
 //            ui->cboPriority->setEnabled(true);
-//            ui->cboUpdate->setEnabled(true);
+            ui->cboUpdate->setEnabled(true);
             ui->txtName->setEnabled(true);
             ui->txtComment->setEnabled(true);
         }
@@ -6094,7 +6094,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     lstCTRecords[nCur].node = theNodesNumber++;
                     theNodes[n].nDevice = lstCTRecords[nCur].device;
                     theNodes[n].nNodeId = lstCTRecords[nCur].NodeId;
-                    theNodes[n].szNodeName = QString::fromAscii("NODE_") + int2PaddedString(theNodesNumber, 2, 10);
+                    theNodes[n].szNodeName = QString::fromAscii("NODE_") + QString::number(lstCTRecords[nCur].NodeId);
                 }
                 theNodes[n].nVars++;
                 // Ricerca Variabile Diag
@@ -6271,7 +6271,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
                 if (nNode >= 0 && nNode < nMAX_NODES)  {
                     szInfo = tr("Total Variables: %1") .arg(theNodes[nNode].nVars);
                     szToolTip = tr("Device Id:\t%1\n") .arg(theNodes[nNode].nDevice);
-                    szToolTip.append(tr("Node Id:\t%1\n") .arg(theNodes[nNode].nNodeId));
+                    szToolTip.append(tr("Node Id:\t%1\n") .arg(nNode));
                     szToolTip.append(tr("Total Variables:\t%1\n") .arg(theNodes[nNode].nVars));
                     szToolTip.append(tr("Diag Variable Id:\t%1\n") .arg(theNodes[nNode].diagnosticAddr));
                     szToolTip.append(tr("Diag Variable Name:\t%1") .arg(theNodes[nNode].diagnosticVarName));
