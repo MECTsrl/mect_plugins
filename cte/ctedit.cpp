@@ -76,8 +76,7 @@
 #define TAB_SYSTEM 1
 #define TAB_TREND 2
 #define TAB_DEVICES 3
-
-
+#define TAB_TIMINGS 4
 
 #undef  WORD_BIT
 
@@ -567,6 +566,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->tabWidget->setTabEnabled(TAB_SYSTEM, true);
     ui->tabWidget->setTabEnabled(TAB_TREND, true);
     ui->tabWidget->setTabEnabled(TAB_DEVICES, true);
+    ui->tabWidget->setTabEnabled(TAB_TIMINGS, true);
     ui->tabWidget->setCurrentIndex(m_nCurTab);
 
     // Connessione Segnali - Slot
@@ -2136,9 +2136,14 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Sep 3
     gridMenu.addSeparator();
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale
-    QAction *addMPNC005 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005 Variables"));
+    QAction *addMPNC005 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005 Modules"));
     addMPNC005->setEnabled((TargetConfig.ser0_Enabled || TargetConfig.ser1_Enabled || TargetConfig.ser2_Enabled || TargetConfig.ser3_Enabled)
                            && m_nGridRow < MIN_DIAG - 1);
+    // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
+    QAction *addTPLC050 = gridMenu.addAction(cIco, trUtf8("Paste TPLC050 Modules"));
+    addTPLC050->setVisible((TargetConfig.modelName.contains(szTPLC050))
+                           && m_nGridRow < MIN_DIAG - 1);
+    addTPLC050->setEnabled(addTPLC050->isVisible());
     // Esecuzione del Menu
     QAction *actMenu = gridMenu.exec(ui->tblCT->viewport()->mapToGlobal(pos));
     this->setCursor(Qt::WaitCursor);
@@ -2171,8 +2176,13 @@ void ctedit::displayUserMenu(const QPoint &pos)
     else if (actMenu == menuRow)  {
         gotoRow();
     }
+    // Add MPNC005  szTPLC050
     else if (actMenu == addMPNC005)  {
         addModelVars(szMPNC005, m_nGridRow);
+    }
+    // Add TPLC050
+    else if (actMenu == addTPLC050)  {
+        addModelVars(szTPLC050, m_nGridRow);
     }
     this->setCursor(Qt::ArrowCursor);
 
@@ -3059,6 +3069,10 @@ void ctedit::tabSelected(int nTab)
     else if (nTab == TAB_DEVICES)  {
         fillDeviceTree(m_nGridRow);
     }
+    // Passaggio a tab TIMINGS
+    else if (nTab == TAB_TIMINGS)  {
+        fillTimingsTree(m_nGridRow);
+    }
     // Set Current Tab
     m_nCurTab = nTab;
 }
@@ -3359,6 +3373,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     QString     szVarName;
     QString     szIP;
     QString     szVar1;
+    QString     szNodeID;
 
     // Form per Display Errori
     cteErrorList    *errWindow;
@@ -3505,9 +3520,14 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     //---------------------------------------
     // Controllo per Port Value in funzione del Protocollo
     //---------------------------------------
+    // Calcolo Numero Porta
     szTemp = lstValues[colPort];
     nPort = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
     nPort = fOk && nPort != -1 ? nPort : -1;
+    // Calcolo numero Nodo
+    szNodeID = lstValues[colNodeID];
+    nNodeID = szNodeID.isEmpty() ? -1 : szNodeID.toInt(&fOk);
+    nNodeID = fOk && nNodeID != -1 ? nNodeID : -1;
     // Protocolli Seriali errCTNoDevicePort
     if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
         // # Porta fuori Range
@@ -3518,9 +3538,12 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         }
         // Numero Porta non abilitata (o non presente) [check solo per parte utente della CT...]
         if ( (nRow < MAX_NONRETENTIVE) && (! isValidPort(nPort, nProtocol)))  {
-            fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
-            lstCTErrors.append(errCt);
-            nErrors++;
+            // Controllo disabilitato per TPCL050 su Protocollo RTU - Porta 3 - Nodo 1
+            if (! (TargetConfig.modelName.contains(szTPLC050) && nProtocol == RTU && nPort == 3 && nNodeID == 1))  {
+                fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
         }
     }
     // Protocolli TCP
@@ -3556,13 +3579,10 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     //---------------------------------------
     // Controllo per Node ID
     //---------------------------------------
-    szTemp = lstValues[colNodeID];
-    nNodeID = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
-    nNodeID = fOk && nNodeID != -1 ? nNodeID : -1;
     if (nProtocol != PLC)  {
         // Il Node ID deve essere compreso tra 0 e 255
         if (nNodeID < 0 || nNodeID > nMaxNodeID)  {
-            fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
+            fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szNodeID, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }
@@ -5660,6 +5680,7 @@ bool ctedit::addModelVars(const QString szModelName, int nRow)
     int         nCur = 0;
     int         nAdded = 0;
     bool        fUsed = false;
+    bool        checkRTUPort = (szModelName != szTPLC050);
 
     if (fileXML.exists())  {
         fileXML.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -5684,7 +5705,7 @@ bool ctedit::addModelVars(const QString szModelName, int nRow)
                         fUsed = ! queryUser(this, szMectTitle, m_szMsg);
                     }
                     if (! fUsed)  {
-                        nAdded = addRowsToCT(nRow, lstModelRows, lstDestRows);
+                        nAdded = addRowsToCT(nRow, lstModelRows, lstDestRows, checkRTUPort);
                         m_szMsg = tr("Added %1 Rows for Model: %2") .arg(nAdded) .arg(szModelName);
                     }
                 }
@@ -5708,7 +5729,7 @@ bool ctedit::addModelVars(const QString szModelName, int nRow)
     // Return Value
     return (nAdded > 0);
 }
-int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows)
+int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool checkRTU)
 {
     int     nCur = 0;
     int     nPasted = 0;
@@ -5736,12 +5757,17 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
         // Controllo Protocollo / Porta RTU
         int nProtocol = lstCTRecords[nDestRow].Protocol;
         if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
-            int nPort = lstCTRecords[nDestRow].Port;
-            int nTotal = 0;
-            if (! isValidPort(nPort, nProtocol))  {
-                getFirstPortFromProtocol(nProtocol, nPort, nTotal);
-                if (nTotal > 0)
-                    lstCTRecords[nDestRow].Port = nPort;
+            // Controllo che la porta RTU selezionata sia disponibile all'utente sul modello
+            // Controllo disabilitato per TPLC050
+            if (checkRTU)  {
+                int nPort = lstCTRecords[nDestRow].Port;
+                int nTotal = 0;
+                if (! isValidPort(nPort, nProtocol))  {
+                    getFirstPortFromProtocol(nProtocol, nPort, nTotal);
+                    if (nTotal > 0)  {
+                        lstCTRecords[nDestRow].Port = nPort;
+                    }
+                }
             }
         }
     }
@@ -6364,4 +6390,10 @@ addPriorityNode:
     ui->deviceTree->header()->resizeSection(colTreeName, (ui->deviceTree->width() / 2) - 12);
     ui->deviceTree->header()->resizeSection(colTreeInfo, (ui->deviceTree->width() / 2) - 12);
     ui->deviceTree->header()->resizeSections(QHeaderView::Interactive);
+}
+void    ctedit::fillTimingsTree(int nCurRow)
+// Riempimento Albero delle variabili raggruppate per Priorità (Timings)
+{
+    QTreeWidgetItem *tItem;
+    QTreeWidgetItem *tRoot;
 }

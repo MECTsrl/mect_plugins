@@ -29,5 +29,6 @@
     </qresource>
     <qresource prefix="/ctexml">
         <file>models/MPNC005.xml</file>
+        <file>models/TPLC050.xml</file>
     </qresource>
 </RCC>

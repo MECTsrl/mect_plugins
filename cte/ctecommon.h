@@ -51,6 +51,7 @@ const QString szMectTitle = QString::fromAscii("Mect Editor");
 // External Models
 const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
 const QString szMPNC005 = QString::fromAscii("MPNC005");
+const QString szTPLC050 = QString::fromAscii("TPLC050");
 
 enum modbusserver_e
 {

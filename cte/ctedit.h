@@ -96,7 +96,7 @@ private:
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
     void    initTargetList();                       // Init della lista dei Target definiti
     bool    updateRow(int nRow);                    // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
-    int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows);
+    int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool checkRTU = true);
     // Gestione interfaccia
     void    enableFields();                         // Abilitazione dei campi form in funzione di Protocollo
     bool    isLineModified(int nRow);               // Check se linea corrente Grid è diversa da Form in Editing
@@ -112,6 +112,7 @@ private:
     int     varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs);        // Search in Cross Table Record List the index of szVarName
     int     findNextVisibleRow(int nRow);           // Cerca la prossima riga visibile cui saltare (Per Enter on Grid)
     void    fillDeviceTree(int nCurRow = 0);        // Riempimento Albero dei device collegati al TP
+    void    fillTimingsTree(int nCurRow);           // Riempimento Albero delle variabili raggruppate per Priorità (Timings)
 
     // Gestione Controlli
     bool    checkCTFile(QString szSourceFile);      // Controllo validità file CT per Import
