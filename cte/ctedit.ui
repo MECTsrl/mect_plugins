@@ -2060,7 +2060,7 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_10">
        <item>
-        <widget class="QTreeWidget" name="timingsTree">
+        <widget class="QTreeWidget" name="timingTree">
          <column>
           <property name="text">
            <string notr="true">1</string>
