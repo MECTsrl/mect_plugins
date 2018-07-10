@@ -19,6 +19,7 @@
 #include <QPoint>
 #include <QColor>
 #include <QTimer>
+#include <QTreeWidgetItem>
 
 namespace Ui {
 class ctedit;
@@ -76,8 +77,8 @@ private slots:
     void on_optFixedVal_toggled(bool checked);
     void on_optVariableVal_toggled(bool checked);
     void on_cboSections_currentIndexChanged(int index);
-    void on_deviceTree_doubleClicked(const QModelIndex &index);
     void on_tblCT_doubleClicked(const QModelIndex &index);
+    void treeItemDoubleClicked(const QModelIndex &index);
 
 private:
     //---------------------------------------------------------------------
@@ -113,7 +114,7 @@ private:
     int     findNextVisibleRow(int nRow);           // Cerca la prossima riga visibile cui saltare (Per Enter on Grid)
     void    fillDeviceTree(int nCurRow = 0);        // Riempimento Albero dei device collegati al TP
     void    fillTimingsTree(int nCurRow);           // Riempimento Albero delle variabili raggruppate per Priorità (Timings)
-
+    QTreeWidgetItem *addVariable2Tree(QTreeWidgetItem *tParent, int nRow);   // Aggiunge la variabile della riga nRow agganciandola al nodo tParent. Ritorna oggetto
     // Gestione Controlli
     bool    checkCTFile(QString szSourceFile);      // Controllo validità file CT per Import
     int     checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine = true);     // Controlli formali sulla riga a termine editing

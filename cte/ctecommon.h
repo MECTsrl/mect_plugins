@@ -156,6 +156,8 @@ struct  deviceStruct {
     QString     szIpAddress;
     int         nPort;
     int         nMaxBlockSize;
+    int         nSilence;
+    int         nTimeOut;
     int         nVars;
     int         diagnosticAddr;
     QString     diagnosticVarName;
