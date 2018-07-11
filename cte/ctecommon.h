@@ -104,24 +104,32 @@ struct  TP_Config {
     // Serial 0
     bool        ser0_Enabled;
     int         ser0_BaudRate;
+    int         ser0_DataBits;
+    int         ser0_StopBits;
     int         ser0_TimeOut;
     int         ser0_Silence;
     int         ser0_BlockSize;
     // Serial 1
     bool        ser1_Enabled;
     int         ser1_BaudRate;
+    int         ser1_DataBits;
+    int         ser1_StopBits;
     int         ser1_TimeOut;
     int         ser1_Silence;
     int         ser1_BlockSize;
     // Serial 2
     bool        ser2_Enabled;
     int         ser2_BaudRate;
+    int         ser2_DataBits;
+    int         ser2_StopBits;
     int         ser2_TimeOut;
     int         ser2_Silence;
     int         ser2_BlockSize;
     // Serial 3
     bool        ser3_Enabled;
     int         ser3_BaudRate;
+    int         ser3_DataBits;
+    int         ser3_StopBits;
     int         ser3_TimeOut;
     int         ser3_Silence;
     int         ser3_BlockSize;
@@ -157,8 +165,12 @@ struct  deviceStruct {
     QString     szIpAddress;
     int         nPort;
     int         nMaxBlockSize;
+    int         nBaudRate;
+    int         nDataBits;
+    int         nStopBits;
     int         nSilence;
     int         nTimeOut;
+    double      dCharTime;
     int         nVars;
     int         diagnosticAddr;
     QString     diagnosticVarName;

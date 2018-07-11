@@ -4792,24 +4792,32 @@ void ctedit::initTargetList()
     // Serial 0
     tpRec.ser0_Enabled = false;
     tpRec.ser0_BaudRate = 38400;
+    tpRec.ser0_DataBits = 8;
+    tpRec.ser0_StopBits = 1;
     tpRec.ser0_TimeOut = 50;
     tpRec.ser0_Silence = 2;
     tpRec.ser0_BlockSize = 64;
     // Serial 1
     tpRec.ser1_Enabled = false;
     tpRec.ser1_BaudRate = 38400;
+    tpRec.ser1_DataBits = 8;
+    tpRec.ser1_StopBits = 1;
     tpRec.ser1_TimeOut = 50;
     tpRec.ser1_Silence = 2;
     tpRec.ser1_BlockSize = 64;
     // Serial 2
     tpRec.ser2_Enabled = false;
     tpRec.ser2_BaudRate = 38400;
+    tpRec.ser2_DataBits = 8;
+    tpRec.ser2_StopBits = 1;
     tpRec.ser2_TimeOut = 50;
     tpRec.ser2_Silence = 2;
     tpRec.ser2_BlockSize = 64;
     // Serial 3
     tpRec.ser3_Enabled = true;
     tpRec.ser3_BaudRate = 38400;
+    tpRec.ser3_DataBits = 8;
+    tpRec.ser3_StopBits = 1;
     tpRec.ser3_TimeOut = 50;
     tpRec.ser3_Silence = 2;
     tpRec.ser3_BlockSize = 64;
@@ -5882,8 +5890,12 @@ bool ctedit::checkServersDevicesAndNodes()
         theDevices[nCur].szIpAddress.clear();
         theDevices[nCur].nPort = 0;
         theDevices[nCur].nMaxBlockSize = 0;
+        theDevices[nCur].nBaudRate = 0;
+        theDevices[nCur].nDataBits = 0;
+        theDevices[nCur].nStopBits = 0;
         theDevices[nCur].nSilence = 0;
         theDevices[nCur].nTimeOut = 0;
+        theDevices[nCur].dCharTime = 0.0;
         theDevices[nCur].nVars = 0;
         theDevices[nCur].szDeviceName.clear();
         theDevices[nCur].diagnosticAddr = 0;
@@ -6081,21 +6093,33 @@ bool ctedit::checkServersDevicesAndNodes()
                             theDevices[d].nMaxBlockSize = TargetConfig.ser0_BlockSize;
                             theDevices[d].nSilence = TargetConfig.ser0_Silence;
                             theDevices[d].nTimeOut = TargetConfig.ser0_TimeOut;
+                            theDevices[d].nBaudRate = TargetConfig.ser0_BaudRate;
+                            theDevices[d].nDataBits = TargetConfig.ser0_DataBits;
+                            theDevices[d].nStopBits = TargetConfig.ser0_StopBits;
                         }
                         else if (theDevices[d].nPort == 1)  {
                             theDevices[d].nMaxBlockSize = TargetConfig.ser1_BlockSize;
                             theDevices[d].nSilence = TargetConfig.ser1_Silence;
                             theDevices[d].nTimeOut = TargetConfig.ser1_TimeOut;
+                            theDevices[d].nBaudRate = TargetConfig.ser1_BaudRate;
+                            theDevices[d].nDataBits = TargetConfig.ser1_DataBits;
+                            theDevices[d].nStopBits = TargetConfig.ser1_StopBits;
                         }
                         else if (theDevices[d].nPort == 2)  {
                             theDevices[d].nMaxBlockSize = TargetConfig.ser2_BlockSize;
                             theDevices[d].nSilence = TargetConfig.ser2_Silence;
                             theDevices[d].nTimeOut = TargetConfig.ser2_TimeOut;
+                            theDevices[d].nBaudRate = TargetConfig.ser2_BaudRate;
+                            theDevices[d].nDataBits = TargetConfig.ser2_DataBits;
+                            theDevices[d].nStopBits = TargetConfig.ser2_StopBits;
                         }
                         else if (theDevices[d].nPort == 3)  {
                             theDevices[d].nMaxBlockSize = TargetConfig.ser3_BlockSize;
                             theDevices[d].nSilence = TargetConfig.ser3_Silence;
                             theDevices[d].nTimeOut = TargetConfig.ser3_TimeOut;
+                            theDevices[d].nBaudRate = TargetConfig.ser3_BaudRate;
+                            theDevices[d].nDataBits = TargetConfig.ser3_DataBits;
+                            theDevices[d].nStopBits = TargetConfig.ser3_StopBits;
                         }
                         break;
                     case MECT_PTC:
@@ -6123,11 +6147,13 @@ bool ctedit::checkServersDevicesAndNodes()
                             theDevices[d].nMaxBlockSize = TargetConfig.can0_BlockSize;
                             theDevices[d].nSilence = -1;
                             theDevices[d].nTimeOut = -1;
+                            theDevices[d].nBaudRate = TargetConfig.can0_BaudRate;
                         }
                         else if (theDevices[d].nPort == 1)  {
                             theDevices[d].nMaxBlockSize = TargetConfig.can1_BlockSize;
                             theDevices[d].nSilence = -1;
                             theDevices[d].nTimeOut = -1;
+                            theDevices[d].nBaudRate = TargetConfig.can1_BaudRate;
                         }
                         break;
                     case RTU_SRV:
@@ -6138,21 +6164,33 @@ bool ctedit::checkServersDevicesAndNodes()
                             theDevices[d].nMaxBlockSize = TargetConfig.ser0_BlockSize;
                             theDevices[d].nSilence = TargetConfig.ser0_Silence;
                             theDevices[d].nTimeOut = TargetConfig.ser0_TimeOut;
+                            theDevices[d].nBaudRate = TargetConfig.ser0_BaudRate;
+                            theDevices[d].nDataBits = TargetConfig.ser0_DataBits;
+                            theDevices[d].nStopBits = TargetConfig.ser0_StopBits;
                         }
                         else if (theDevices[d].nPort == 1)  {
                             theDevices[d].nMaxBlockSize = TargetConfig.ser1_BlockSize;
                             theDevices[d].nSilence = TargetConfig.ser1_Silence;
                             theDevices[d].nTimeOut = TargetConfig.ser1_TimeOut;
+                            theDevices[d].nBaudRate = TargetConfig.ser1_BaudRate;
+                            theDevices[d].nDataBits = TargetConfig.ser1_DataBits;
+                            theDevices[d].nStopBits = TargetConfig.ser1_StopBits;
                         }
                         else if (theDevices[d].nPort == 2)  {
                             theDevices[d].nMaxBlockSize = TargetConfig.ser2_BlockSize;
                             theDevices[d].nSilence = TargetConfig.ser2_Silence;
                             theDevices[d].nTimeOut = TargetConfig.ser2_TimeOut;
+                            theDevices[d].nBaudRate = TargetConfig.ser2_BaudRate;
+                            theDevices[d].nDataBits = TargetConfig.ser2_DataBits;
+                            theDevices[d].nStopBits = TargetConfig.ser2_StopBits;
                         }
                         else if (theDevices[d].nPort == 3)  {
                             theDevices[d].nMaxBlockSize = TargetConfig.ser3_BlockSize;
                             theDevices[d].nSilence = TargetConfig.ser3_Silence;
                             theDevices[d].nTimeOut = TargetConfig.ser3_TimeOut;
+                            theDevices[d].nBaudRate = TargetConfig.ser3_BaudRate;
+                            theDevices[d].nDataBits = TargetConfig.ser3_DataBits;
+                            theDevices[d].nStopBits = TargetConfig.ser3_StopBits;
                         }
                         break;
                     case TCP_SRV:
@@ -6175,6 +6213,11 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (nDiag >= 0)  {
                         theDevices[d].diagnosticAddr = nDiag + 1;
                         theDevices[d].diagnosticVarName = szDiagName;
+                    }
+                    // Calcolo del Char Time in ms
+                    if (theDevices[d].nProtocol == RTU || theDevices[d].nProtocol == RTU_SRV)  {
+                        int nBits = 1 + theDevices[d].nDataBits + theDevices[d].nStopBits;
+                        theDevices[d].dCharTime = ((double) nBits / (double) theDevices[d].nBaudRate) * 1000.0;
                     }
                     // Check Block Size
                     if (nCur == base && lstCTRecords[nCur].BlockSize > theDevices[d].nMaxBlockSize) {
@@ -6238,7 +6281,7 @@ bool ctedit::checkServersDevicesAndNodes()
         szRow.append(QString::fromAscii("\t# Vars: %1") .arg(theServers[nCur].nVars));
         qDebug() << szRow;
     }
-    // Clean Device
+    // Devices List
     qDebug() << tr("Devices: %1") .arg(theDevicesNumber);
     for (nCur = 0; nCur < theDevicesNumber; nCur++)  {
         szRow = QString::fromAscii("\t%1 - Device Name: %2") .arg(nCur+1) .arg(theDevices[nCur].szDeviceName);
@@ -6246,6 +6289,10 @@ bool ctedit::checkServersDevicesAndNodes()
         szRow.append(QString::fromAscii("\tProtocol: %1") .arg(lstProtocol[theDevices[nCur].nProtocol]));
         szRow.append(QString::fromAscii("\tIp Str: %1") .arg(theDevices[nCur].szIpAddress));
         szRow.append(QString::fromAscii("\tPort: %1") .arg(theDevices[nCur].nPort));
+        szRow.append(QString::fromAscii("\tBaud Rate: %1") .arg(theDevices[nCur].nBaudRate));
+        szRow.append(QString::fromAscii("\tData Bits: %1") .arg(theDevices[nCur].nDataBits));
+        szRow.append(QString::fromAscii("\tStop Bits: %1") .arg(theDevices[nCur].nStopBits));
+        szRow.append(QString::fromAscii("\tChar Time: %1") .arg(theDevices[nCur].dCharTime));
         szRow.append(QString::fromAscii("\tBlock Size: %1") .arg(theDevices[nCur].nMaxBlockSize));
         szRow.append(QString::fromAscii("\tVars: %1") .arg(theDevices[nCur].nVars));
         szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theDevices[nCur].diagnosticAddr));
@@ -6341,22 +6388,22 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         // Colonna Nome
         szName = theDevices[nDevice].szDeviceName;
         // Colonna Info
-        szInfo = tr("Total Variables: %1") .arg(theDevices[nDevice].nVars);
+        szInfo = tr("Total Variables: %1\t") .arg(theDevices[nDevice].nVars, 6, 10);
         if (theDevices[nDevice].nSilence >= 0)
-            szInfo.append(tr("\tSilence: %1 ms\t") .arg(theDevices[nDevice].nSilence));
+            szInfo.append(tr("Silence: %1 ms \t") .arg(theDevices[nDevice].nSilence, 6, 10));
         else
-            szInfo.append(tr("\t\t\t"));
+            szInfo.append(tr("\t\t"));
         if (theDevices[nDevice].nTimeOut >= 0)
-            szInfo.append(tr("\tTimeOut: %1 ms\t") .arg(theDevices[nDevice].nTimeOut));
+            szInfo.append(tr("TimeOut: %1 ms \t") .arg(theDevices[nDevice].nTimeOut, 6, 10));
         else
-            szInfo.append(tr("\t\t\t"));
-        szInfo.append(tr("Max Block Size: %1").arg(theDevices[nDevice].nMaxBlockSize));
+            szInfo.append(tr("\t\t"));
+        szInfo.append(tr("Max Block Size: %1 ").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
         // ToolTip
         szToolTip = tr("Protocol:\t%1\n") .arg(lstProtocol[theDevices[nDevice].nProtocol]);
         szToolTip.append(tr("Ip Address:\t%1\n") .arg(theDevices[nDevice].szIpAddress));
         szToolTip.append(tr("Port:\t%1\n") .arg(theDevices[nDevice].nPort));
-        szToolTip.append(tr("Total Variables:\t%1\n") .arg(theDevices[nDevice].nVars));
-        szToolTip.append(tr("Diag Variable Id:\t%1\n") .arg(theDevices[nDevice].diagnosticAddr));
+        szToolTip.append(tr("Total Variables:\t%1\n") .arg(theDevices[nDevice].nVars, 6, 10));
+        szToolTip.append(tr("Diag Variable Id:\t%1\n") .arg(theDevices[nDevice].diagnosticAddr, 6, 10));
         szToolTip.append(tr("Diag Variable Name:\t%1") .arg(theDevices[nDevice].diagnosticVarName));
     }
     else  {
@@ -6378,8 +6425,8 @@ QTreeWidgetItem *ctedit::addNode2Tree(QTreeWidgetItem *tParent, int nNode)
     // Ricerca Info Nodo
     if (nNode >= 0 && nNode < theNodesNumber)  {
         szName = theNodes[nNode].szNodeName;
-        szInfo = tr("Total Variables: %1") .arg(theNodes[nNode].nVars);
-        szToolTip = tr("Device Id:\t%1\n") .arg(theNodes[nNode].nDevice);
+        szInfo = tr("Total Variables: %1") .arg(theNodes[nNode].nVars, 6, 10);
+        szToolTip = tr("Device Id:\t%1\n") .arg(theNodes[nNode].nDevice,6, 10);
         szToolTip.append(tr("Node Id:\t%1\n") .arg(nNode));
         szToolTip.append(tr("Total Variables:\t%1\n") .arg(theNodes[nNode].nVars));
         szToolTip.append(tr("Diag Variable Id:\t%1\n") .arg(theNodes[nNode].diagnosticAddr));
@@ -6452,6 +6499,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
     int             nBlock = -1;
     int             nBlockSize = -1;
     int             nUsedVariables = 0;
+    bool            isPLC = false;
 
     // Preparing Tree
     lstTreeHeads.clear();
@@ -6466,7 +6514,8 @@ void    ctedit::fillDeviceTree(int nCurRow)
     tCurrentVariable = 0;
     // Build Server-Device-Nodes structures
     if (! checkServersDevicesAndNodes())  {
-        qDebug() << tr("fillDeviceTree(): Error rebuildin Device Tree");
+        m_szMsg = tr("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QString::fromAscii("Devices"));
+        warnUser(this, szMectTitle, m_szMsg);
         return;
     }
     // Variables Loop
@@ -6478,10 +6527,11 @@ void    ctedit::fillDeviceTree(int nCurRow)
             nPriority = lstCTRecords[nRow].Enable;
             nBlock = lstCTRecords[nRow].Block;
             nBlockSize = lstCTRecords[nRow].BlockSize;
+            isPLC = (lstCTRecords[nRow].Protocol == PLC);
             //----------------------------
             // Analisi del Device
             //----------------------------
-            if (lstCTRecords[nRow].Protocol == PLC)  {
+            if (isPLC)  {
                 szName = QString::fromLatin1("PLC");
                 nDevice = -1;
             }
@@ -6502,7 +6552,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
             }
             tCurrentDevice->setExpanded(true);
             // If Protocol == PLC skip tree costruction, jump 2 Variable appending
-            if (lstCTRecords[nRow].Protocol == PLC)  {
+            if (isPLC)  {
                 tCurrentBlock = tCurrentDevice;
                 goto addVariable;
             }            
@@ -6543,7 +6593,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
             if (tCurrentBlock == 0)  {
                 tCurrentBlock = addBlock2Tree(tCurrentPriority, nBlock, nBlockSize);
             }
-            tCurrentBlock->setExpanded(true);
+            // tCurrentBlock->setExpanded(true);
 addVariable:
             //----------------------------
             // Adding Variable
@@ -6601,6 +6651,9 @@ void    ctedit::fillTimingsTree(int nCurRow)
     int             nNode = -1;
     int             nPriority = -1;
     int             nUsedVariables = 0;
+    bool            isPLC = false;
+    int             nBlock = -1;
+    int             nBlockSize = -1;
     QString         szToolTip;
 
     // Preparing Tree
@@ -6615,22 +6668,17 @@ void    ctedit::fillTimingsTree(int nCurRow)
     tRoot->setText(colTreeName, m_szCurrentModel);
     tCurrentVariable = 0;
     if (! checkServersDevicesAndNodes())  {
-        qDebug() << tr("fillDeviceTree(): Error rebuildin Device Tree");
+        m_szMsg = tr("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QString::fromAscii("Timings"));
+        warnUser(this, szMectTitle, m_szMsg);
         return;
     }
     // Creazione primo livello di Albero (Devices)
-    for (nDevice = 1; nDevice <= 3; nDevice++)  {
-        szName = QString::fromAscii("Priority %1") .arg(nDevice);
-        tCurrentPriority = new QTreeWidgetItem(tRoot, treePriority);
-        tCurrentPriority->setText(colTreeName, szName);
+    for (nDevice = 0; nDevice < theDevicesNumber; nDevice++)  {
+        tCurrentDevice = addDevice2Tree(tRoot, nDevice);
+        tCurrentDevice->setExpanded(true);
     }
     // Nodo per Variabili PLC
-    szName = lstProtocol[PLC];
-    tCurrentNode = new QTreeWidgetItem(tRoot, treePriority);
-    tCurrentNode->setText(colTreeName, szName);
-    szName = tr("Total Variables: %1") .arg(thePlcVarsNumber);
-    // Aggiunta colonna Info e Tooltip
-    tCurrentNode->setText(colTreeInfo, szName);
+    tCurrentDevice =  addDevice2Tree(tRoot, -1);
     // Variables Loop
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Considera solo le Variabili utilizzate
@@ -6638,41 +6686,73 @@ void    ctedit::fillTimingsTree(int nCurRow)
             nDevice = lstCTRecords[nRow].device;
             nNode = lstCTRecords[nRow].node;
             nPriority = lstCTRecords[nRow].Enable;
+            nBlock = lstCTRecords[nRow].Block;
+            nBlockSize = lstCTRecords[nRow].BlockSize;
+            isPLC = (lstCTRecords[nRow].Protocol == PLC);
             // Protocollo PLC raggruppato tutto insieme senza distinzione di Variabili
-            if (lstCTRecords[nRow].Protocol == PLC)  {
+            if (isPLC)  {
                 szName = lstProtocol[PLC];
-                // Ricerca del Protocollo PLC in Tree
-                tCurrentNode = searchTreeChild(tRoot, colTreeName, szName);
-                // Adding PLC Node
-                if (tCurrentNode != 0)  {
-                    goto addVar2TimeTree;
-                }
-                else
-                    continue;
             }
             else  {
-                //----------------------------
-                // Analisi Priority
-                //----------------------------
-                szName = QString::fromAscii("Priority %1") .arg(nPriority);
-                // Ricerca del Prority in Tree
-                tCurrentPriority = searchTreeChild(tRoot, colTreeName, szName);
-                // Adding Priority
-                if (tCurrentPriority != 0)  {
-                    tCurrentPriority->setExpanded(true);
-                }
-                // To Be Continued
-                continue;
+                szName = theDevices[nDevice].szDeviceName;
             }
+            //----------------------------
+            // Ricerca del Device in Tree. Deve già esistere in quanto creati a monte da Lista Devices
+            //----------------------------
+            tCurrentDevice = searchTreeChild(tRoot, colTreeName, szName);
+            if (tCurrentDevice != 0)  {
+                if (! isPLC)  {
+                    //----------------------------
+                    // Analisi Priority
+                    //----------------------------
+                    szName = QString::fromAscii("Priority %1") .arg(nPriority);
+                    // Ricerca del Prority in Tree
+                    tCurrentPriority = searchTreeChild(tCurrentDevice, colTreeName, szName);
+                    // Adding Priority
+                    if (tCurrentPriority == 0)  {
+                        tCurrentPriority = addPriority2Tree(tCurrentDevice, nPriority);
+                    }
+                    tCurrentPriority->setExpanded(true);
+                    //----------------------------
+                    // Analisi Node
+                    //----------------------------
+                    if (nNode >= 0 && nNode < theNodesNumber)  {
+                        szName = theNodes[nNode].szNodeName;
+                    }
+                    else  {
+                        szName = QString::fromAscii("UNDEFINED");
+                    }
+                    // Ricerca del Node in Tree
+                    tCurrentNode = searchTreeChild(tCurrentPriority, colTreeName, szName);
+                    // Adding Node
+                    if (tCurrentNode == 0)  {
+                        tCurrentNode = addNode2Tree(tCurrentPriority, nNode);
+                    }
+                    tCurrentNode->setExpanded(true);
+                    //----------------------------
+                    // Block Name
+                    //----------------------------
+                    szName = QString::fromAscii("Block_") + int2PaddedString(nBlock, 2, 10);
+                    // Ricerca del Block in Tree
+                    tCurrentBlock = searchTreeChild(tCurrentNode, colTreeName, szName);
+                    // Adding Block
+                    if (tCurrentBlock == 0)  {
+                        tCurrentBlock = addBlock2Tree(tCurrentNode, nBlock, nBlockSize);
+                    }
+                }
+                else  {
+                    // Se variabile PLC non resta da fare altro che aggiungere la Variabile alla lista
+                    tCurrentBlock = tCurrentDevice;
+                }
+                //----------------------------
+                // Adding Variable to Current Block
+                //----------------------------
+                tItem = addVariable2Tree(tCurrentBlock, nRow);
+                // Trovata riga corrente in griglia
+                if (nRow == nCurRow)  {
+                    tCurrentVariable = tItem;
+                }
 
-addVar2TimeTree:
-            //----------------------------
-            // Adding Variable
-            //----------------------------
-            tItem = addVariable2Tree(tCurrentNode, nRow);
-            // Trovata riga corrente in griglia
-            if (nRow == nCurRow)  {
-                tCurrentVariable = tItem;
             }
             // Incremento numero variabili utilizzate
             nUsedVariables++;
@@ -6693,5 +6773,4 @@ addVar2TimeTree:
     ui->timingTree->header()->resizeSection(colTreeName, (ui->timingTree->width() / 2) - 12);
     ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 2) - 12);
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
-
 }

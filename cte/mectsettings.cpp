@@ -1153,6 +1153,10 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.ser0_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text().toInt(&fOk);
     TargetConfig.ser0_BlockSize = fOk ? nVal : 0;
+    nVal = ui->comboBox_Databits_SERIAL_PORT_0->currentText().toInt(&fOk);
+    TargetConfig.ser0_DataBits = fOk ? nVal : 0;
+    nVal = ui->comboBox_Stopbits_SERIAL_PORT_0->currentText().toInt(&fOk);
+    TargetConfig.ser0_StopBits = fOk ? nVal : 0;
     //  Serial 1
     TargetConfig.ser1_Enabled = (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_1->currentText().toInt(&fOk);
@@ -1163,6 +1167,10 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.ser1_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text().toInt(&fOk);
     TargetConfig.ser1_BlockSize = fOk ? nVal : 0;
+    nVal = ui->comboBox_Databits_SERIAL_PORT_1->currentText().toInt(&fOk);
+    TargetConfig.ser1_DataBits = fOk ? nVal : 0;
+    nVal = ui->comboBox_Stopbits_SERIAL_PORT_1->currentText().toInt(&fOk);
+    TargetConfig.ser1_StopBits = fOk ? nVal : 0;
     //  Serial 2
     TargetConfig.ser2_Enabled = (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_2->currentText().toInt(&fOk);
@@ -1173,6 +1181,10 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.ser2_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text().toInt(&fOk);
     TargetConfig.ser2_BlockSize = fOk ? nVal : 0;
+    nVal = ui->comboBox_Databits_SERIAL_PORT_2->currentText().toInt(&fOk);
+    TargetConfig.ser2_DataBits = fOk ? nVal : 0;
+    nVal = ui->comboBox_Stopbits_SERIAL_PORT_2->currentText().toInt(&fOk);
+    TargetConfig.ser2_StopBits = fOk ? nVal : 0;
     //  Serial 3
     TargetConfig.ser3_Enabled = (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_3->currentText().toInt(&fOk);
@@ -1183,6 +1195,10 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.ser3_Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->text().toInt(&fOk);
     TargetConfig.ser3_BlockSize = fOk ? nVal : 0;
+    nVal = ui->comboBox_Databits_SERIAL_PORT_3->currentText().toInt(&fOk);
+    TargetConfig.ser3_DataBits = fOk ? nVal : 0;
+    nVal = ui->comboBox_Stopbits_SERIAL_PORT_3->currentText().toInt(&fOk);
+    TargetConfig.ser3_StopBits = fOk ? nVal : 0;
     // TCP
     nVal = ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt(&fOk);
     TargetConfig.tcp_TimeOut = fOk ? nVal : 0;
