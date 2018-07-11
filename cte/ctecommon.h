@@ -90,6 +90,7 @@ struct  TP_Config {
     int         analogOUT;
     int         analogOUTrowCT;
     bool        tAmbient;
+    bool        audioIF;
     int         rpmPorts;
     // Config Parameters
     int         retries;

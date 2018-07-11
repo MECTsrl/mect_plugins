@@ -128,6 +128,8 @@ const char *product_name[] = {
     /*25*/ "TPLC100_01_AA",
     /*26*/ "TPLC100_01_AB",
     /*27*/ "TPAC1008_03_AC"
+    /*28*/ "TPAC1008_03_AD",
+    /*29*/ "TP1070_02_E"
 };
 
 /*      Mappatura tra Costanti di Tipo, valori Letti e scritti in file CSV

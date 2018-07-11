@@ -114,7 +114,13 @@ private:
     int     findNextVisibleRow(int nRow);           // Cerca la prossima riga visibile cui saltare (Per Enter on Grid)
     void    fillDeviceTree(int nCurRow = 0);        // Riempimento Albero dei device collegati al TP
     void    fillTimingsTree(int nCurRow);           // Riempimento Albero delle variabili raggruppate per Priorità (Timings)
-    QTreeWidgetItem *addVariable2Tree(QTreeWidgetItem *tParent, int nRow);   // Aggiunge la variabile della riga nRow agganciandola al nodo tParent. Ritorna oggetto
+    // Devices and Timing tree
+    QTreeWidgetItem *addItem2Tree(QTreeWidgetItem *tParent, int nRole, const QString &szName, const QString &szInfo, const QString &szToolTip);    // Aggiunta di un Item all'albero
+    QTreeWidgetItem *addVariable2Tree(QTreeWidgetItem *tParent, int nRow);      // Aggiunge la variabile della riga nRow agganciandola al nodo tParent. Ritorna oggetto
+    QTreeWidgetItem *addDevice2Tree(QTreeWidgetItem *tParent, int nDevice);     // Aggiunge il Device nDevice agganciandolo al nodo tParent. Ritorna oggetto
+    QTreeWidgetItem *addNode2Tree(QTreeWidgetItem *tParent, int nNode);         // Aggiunge il Nodo nNode agganciandolo al nodo tParent. Ritorna oggetto
+    QTreeWidgetItem *addPriority2Tree(QTreeWidgetItem *tParent, int nPriority); // Aggiunge la Priority nPriority agganciandolo al nodo tParent. Ritorna oggetto
+    QTreeWidgetItem *addBlock2Tree(QTreeWidgetItem *tParent, int nBlock, int nBlockSize);   // Aggiunge il blocco nBlock agganciandolo al nodo tParent. Ritorna oggetto
     // Gestione Controlli
     bool    checkCTFile(QString szSourceFile);      // Controllo validità file CT per Import
     int     checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine = true);     // Controlli formali sulla riga a termine editing
