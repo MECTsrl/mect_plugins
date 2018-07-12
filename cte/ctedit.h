@@ -144,6 +144,13 @@ private:
     bool    isBitField(enum varTypes nVarType);
     bool    isTooBigForBlock(int nRow, int nItemsInBlock, int nCurBlockSize);
     bool    checkServersDevicesAndNodes();          // Caricamento della lista dei Nodi e dei Devices a partire dalle variabili di CT
+    double  serialCharTime_ms(int nBaudRate, int nDataBits, int nStopBits);                         // Calcolo del tempo di trasmissione di 1 byte su canale seriale in funzione di Baud Rate, Data Bits, Stop Bits
+    double  minSerialSilenceTime(int nBaudRate, double dblCharTime_ms);                             // Calcolo del minimo tempo di Silence per una linea seriale
+    int     blockReadTime_ms(int nType, int nRegisters, int nSilence_ms, double dblCharTime_ms);    // Calcolo del Tempo di lettura di un Blocco in funzione del numero di registri e del tempo di lettura di un char
+    int     readHoldigRegisters_ms(int nRegisters, int nSilence_ms, double dblCharTime_ms);         // Calcolo del Tempo di lettura di un blocco di Input/Holding Registers in funzione del # Registri, Silence, charTime
+    int     readCoils_ms(int nCoils, int nSilence_ms, double dblCharTime_ms);                       // Calcolo del Tempo di lettura di un blocco di Bit Registers (Coils) in funzione del # Bit, Silence, charTime
+    bool    isSilenceOk(int nSilence_ms, int nBaudRate, double dblCharTime_ms);                     // Verifica che il tempo di silence specificato sia adeguato al BaudRate corrente
+    int     searchBlock(int nBlock);                // Ricerca in theBlocks del blocco nBlock
     // Import dati in XML
     bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows);
     bool    addModelVars(const QString szModelName, int nRow);
@@ -214,14 +221,16 @@ private:
     //------------------------------------------------------------------
     // Gestione Nodi / Servers per Tab Devices
     //------------------------------------------------------------------
-    serverStruct            theServers[nMAX_SERVERS];// Array con Informazioni Server definiti
-    deviceStruct            theDevices[nMAX_DEVICES];// Array con Informazioni Devices definiti
-    nodeStruct              theNodes[nMAX_NODES];   // Array con struttura dei Nodi definiti
+    serverStruct            theServers[nMAX_SERVERS];   // Array con Informazioni Server definiti
+    deviceStruct            theDevices[nMAX_DEVICES];   // Array con Informazioni Devices definiti
+    nodeStruct              theNodes[nMAX_NODES];       // Array con struttura dei Nodi definiti
+    blockStruct             theBlocks[nMAX_BLOCKS];     // Array con struttura dei Blocchi definiti
     int                     theServersNumber;
     int                     theDevicesNumber;
     int                     theTcpDevicesNumber;
     int                     thePlcVarsNumber;
     int                     theNodesNumber;
+    int                     theBlocksNumber;
 
     // Variabili di stato ad uso globale
     int                     m_nCurTab;              // Tab corrente in interfaccia

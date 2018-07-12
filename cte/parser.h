@@ -159,10 +159,10 @@ struct  CrossTableRecord {
     uint16_t    Decimal;
     enum FieldbusType Protocol;
     uint32_t    IPAddress;
-    uint16_t    Port;
-    uint8_t     NodeId;                                 // Port
+    uint16_t    Port;                                   // TCP / RTU Port
+    uint8_t     NodeId;                                 // Node for Port
     uint32_t    InputReg;                               // 1 if Offset > 300000
-    uint32_t    Offset;                                 // from 0 to 65535 (Holding Registers) from 300000 to 365535 (Input Registers)
+    uint32_t    Offset;                                 // Modbus Register from 0 to 65535 (Holding Registers) from 300000 to 365535 (Input Registers)
     uint16_t    Block;
     uint16_t    BlockBase;
     int16_t     BlockSize;
@@ -179,9 +179,11 @@ struct  CrossTableRecord {
     float       ALCompareVal;                           // Fixed comparision value (in alternative to Compare Variable)
     int         ALComparison;                           // Type of comparision (Signed, unsigned, float determined from left variable type)
     int         ALCompatible;                           // 1 if both side of comparision are between compatible types
-    //
-    uint16_t    device;                                 // Numero progressivo di DEVICE associato alla variabile
-    uint16_t    node;                                   // Numero di NODO associato alla variabile
+    //  Fields added for checking Server/Device Config
+    int         nDevice;                                // Numero progressivo di DEVICE indice lista theDevices[]
+    int         nNode;                                  // Numero di NODO indice lista theNodes[]
+    int         nBlock;                                 // Numero di BLOCCO indice lista theBlocks[]
+
     char Comment[MAX_COMMENT_LEN];
 };
 

@@ -14,6 +14,7 @@ const int nMaxRegister = 49999;
 const int nMAX_SERVERS  = 5;        // 3 RTU_SRV + 1 TCP_SRV + 1 TCPRTU_SRV (PLC in dataMain->dataNotifySet/Get)
 const int nMAX_DEVICES = 16;        // 3 RTU + n TCP + m TCPRTU + 2 CANOPEN + 1 RTUSRV + 1 TCPSRV + 1 TCPRTUSRV
 const int nMAX_NODES = 64;          // Numero Massimo di Nodi definiti
+const int nMAX_BLOCKS = 4096;       // Numero massimo di Blocchi definiti
 
 // Serial Ports
 const int nMaxSerialPorts = 3;
@@ -171,6 +172,7 @@ struct  deviceStruct {
     int         nSilence;
     int         nTimeOut;
     double      dCharTime;
+    double      dMinSilence;
     int         nVars;
     int         diagnosticAddr;
     QString     diagnosticVarName;
@@ -183,6 +185,16 @@ struct  nodeStruct {
     int         nVars;
     int         diagnosticAddr;
     QString     diagnosticVarName;
+};
+// Struttura per Blocchi
+struct blockStruct  {
+    int         nBlockId;
+    int         nDevice;
+    int         nBlockSize;
+    int         nProtocol;
+    int         nRegisters;
+    int         nByteSize;
+    double      dblReadTime_ms;
 };
 
 #endif // CTECOMMON_H

@@ -386,8 +386,9 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
         CrossTable[addr].BlockSize = 0;
         CrossTable[addr].Behavior = -1;
         CrossTable[addr].OldVal = 0;
-        CrossTable[addr].device = 0xffff;
-        CrossTable[addr].node = 0xffff;
+        CrossTable[addr].nDevice = 0xffff;
+        CrossTable[addr].nNode = 0xffff;
+        CrossTable[addr].nBlock = 0xffff;
         // New Elements used for Alarms
         CrossTable[addr].usedInAlarmsEvents = FALSE;
         CrossTable[addr].ALType = -1;

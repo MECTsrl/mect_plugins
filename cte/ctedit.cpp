@@ -50,6 +50,8 @@
 #include <QXmlStreamAttributes>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include <math.h>
+
 
 /* ----  Local Defines:   ----------------------------------------------------- */
 #define _TRUE  1
@@ -498,6 +500,7 @@ ctedit::ctedit(QWidget *parent) :
     theTcpDevicesNumber = 0;
     theNodesNumber = 0;
     thePlcVarsNumber = 0;
+    theBlocksNumber = 0;
     // Validator per Interi
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
     ui->txtPort->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
@@ -1563,8 +1566,9 @@ void ctedit::freeCTrec(int nRow)
     lstCTRecords[nRow].Counter = 0;
     lstCTRecords[nRow].OldVal = 0;
     lstCTRecords[nRow].Error = 0;
-    lstCTRecords[nRow].device = 0xffff;
-    lstCTRecords[nRow].node = 0xffff;
+    lstCTRecords[nRow].nDevice = 0xffff;
+    lstCTRecords[nRow].nNode = 0xffff;
+    lstCTRecords[nRow].nBlock = 0xffff;
     lstCTRecords[nRow].usedInAlarmsEvents = FALSE;
     lstCTRecords[nRow].ALType = -1;
     strcpy(lstCTRecords[nRow].ALSource, "");
@@ -4526,7 +4530,7 @@ int ctedit::varSizeInBlock(int nVarType)
     int nSize = 1;
 
     switch (nVarType) {
-        // Doppio Byte
+        // Doppio Word
         case DWORD_BIT:
         case REAL:
         case REALDCBA:
@@ -5859,6 +5863,52 @@ void ctedit::on_tblCT_doubleClicked(const QModelIndex &index)
         ui->tabWidget->setCurrentIndex(TAB_DEVICES);
     }
 }
+double  ctedit::serialCharTime_ms(int nBaudRate, int nDataBits, int nStopBits)
+// Calcolo del tempo di trasmissione di 1 byte su canale seriale in funzione di Baud Rate, Data Bits, Stop Bits
+{
+    int nBits = 1 + nDataBits + nStopBits;
+    return (((double) nBits / (double) nBaudRate) * 1000.0);
+}
+double  ctedit::minSerialSilenceTime(int nBaudRate, double dblCharTime_ms)
+// Calcolo del minimo tempo di Silence per una linea seriale
+{
+    return (nBaudRate > 9600 ? 1.75 : 3.5 * dblCharTime_ms);
+}
+
+int  ctedit::blockReadTime_ms(int nType, int nRegisters, int nSilence_ms, double dblCharTime_ms)
+// Calcolo del Tempo di lettura di un Blocco in funzione del numero di registri e del tempo di lettura di un char
+{
+    if (nType == BIT)  {
+        return readCoils_ms(nRegisters, nSilence_ms, dblCharTime_ms);
+    }
+    else  {
+        return readHoldigRegisters_ms(nRegisters, nSilence_ms, dblCharTime_ms);
+    }
+}
+int ctedit::readHoldigRegisters_ms(int nRegisters, int nSilence_ms, double dblCharTime_ms)
+// Calcolo del Tempo di lettura di un blocco di Input/Holding Registers in funzione del # Registri, Silence, charTime
+{
+    // <SLAVE:1> <FC:1> <ADR:2> <N REG:2> <CRC:2> + [Silence]
+    double dblValue = (((double) (1 + 1 + 2 + 2 + 2)) * dblCharTime_ms) + (double) nSilence_ms;             // Modbus Request
+    // <SLAVE:1> <FC:1> <DES:1> [2 * n Values] <CRC:2> + [Silence]
+    dblValue += (((double) (1 + 1 + 1 + (2 * nRegisters) + 2)) * dblCharTime_ms) + (double) nSilence_ms;    // Modbus Answer
+    return (int) ceil(dblValue);
+}
+int  ctedit::readCoils_ms(int nCoils, int nSilence_ms, double dblCharTime_ms)
+// Calcolo del Tempo di lettura di un blocco di Bit Registers (Coils) in funzione del # Bit, Silence, charTime
+{
+    // <SLAVE:1> <FC:1> <ADR:2> <N COILS:2> <CRC:2> + [Silence]
+    double dblValue = (((double) (1 + 1 + 2 + 2 + 2)) * dblCharTime_ms) + (double) nSilence_ms;             // Modbus Request
+    // <SLAVE:1> <FC:1> <DES:1> [2 * n Values] <CRC:2> + [Silence]
+    dblValue += (((double) (1 + 1 + 1 + ceil((double) nCoils / 8.0) + 2)) * dblCharTime_ms) + (double) nSilence_ms;    // Modbus Answer
+    return (int) ceil(dblValue);
+}
+bool ctedit::isSilenceOk(int nSilence_ms, int nBaudRate, double dblCharTime_ms)
+// Verifica che il tempo di silence specificato sia adeguato al BaudRate corrente
+{
+    return ((double) nSilence_ms >= minSerialSilenceTime(nBaudRate, dblCharTime_ms));
+}
+
 bool ctedit::checkServersDevicesAndNodes()
 {
     int         nCur = 0;
@@ -5873,6 +5923,7 @@ bool ctedit::checkServersDevicesAndNodes()
     theTcpDevicesNumber = 0;
     theNodesNumber = 0;
     thePlcVarsNumber = 0;
+    theBlocksNumber = 0;
     // Clean Servers
     for (nCur = 0; nCur < nMAX_SERVERS; nCur++)  {
         theServers[nCur].nProtocol = -1;
@@ -5883,7 +5934,7 @@ bool ctedit::checkServersDevicesAndNodes()
         theServers[nCur].szServerName.clear();
         theServers[nCur].nVars = 0;
     }
-    // Clean Device
+    // Clean Devices
     for (nCur = 0; nCur < nMAX_DEVICES; nCur++)  {
         theDevices[nCur].nServer = 0;
         theDevices[nCur].nProtocol = -1;
@@ -5896,6 +5947,7 @@ bool ctedit::checkServersDevicesAndNodes()
         theDevices[nCur].nSilence = 0;
         theDevices[nCur].nTimeOut = 0;
         theDevices[nCur].dCharTime = 0.0;
+        theDevices[nCur].dMinSilence = 0.0;
         theDevices[nCur].nVars = 0;
         theDevices[nCur].szDeviceName.clear();
         theDevices[nCur].diagnosticAddr = 0;
@@ -5903,24 +5955,35 @@ bool ctedit::checkServersDevicesAndNodes()
     }
     // Clean Nodes
     for (nCur = 0; nCur < nMAX_NODES; nCur++)  {
-        theNodes[nCur].nDevice = 0xffff;;
-        theNodes[nCur].nNodeId = 0xffff;;
+        theNodes[nCur].nDevice = 0xffff;
+        theNodes[nCur].nNodeId = 0xffff;
         theNodes[nCur].szNodeName.clear();
         theNodes[nCur].nVars = 0;
         theNodes[nCur].diagnosticAddr = 0;
         theNodes[nCur].diagnosticVarName.clear();
     }
+    // Clean Blocks
+    for (nCur = 0; nCur < nMAX_BLOCKS; nCur++)  {
+        theBlocks[nCur].nBlockId = 0;
+        theBlocks[nCur].nDevice = 0xffff;
+        theBlocks[nCur].nBlockSize = 0;
+        theBlocks[nCur].nProtocol = 0;
+        theBlocks[nCur].nRegisters = 0;
+        theBlocks[nCur].nByteSize = 0;
+        theBlocks[nCur].dblReadTime_ms = 0.0;
+    }
     // Clean Dev-Node Info in Variables
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
-        lstCTRecords[nCur].device = 0xffff;
-        lstCTRecords[nCur].node = 0xffff;
+        lstCTRecords[nCur].nDevice = 0xffff;
+        lstCTRecords[nCur].nNode = 0xffff;
+        lstCTRecords[nCur].nBlock = 0xffff;
     }
     // Spazzolamento Elementi CT per creazione Liste
     int     base = 1;
     int     block = 0;
-    int     s = 0;
-    int     d = 0;
-    int     n = 0;
+    int     nSer = 0;
+    int     nDev = 0;
+    int     nNod = 0;
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Block Address
         if (lstCTRecords[nCur].Block != block)  {
@@ -5945,18 +6008,18 @@ bool ctedit::checkServersDevicesAndNodes()
                 break;
             case RTU_SRV:
                 // add unique variable's server
-                for (s = 0; s < theServersNumber; s++) {
-                    if (theServers[s].nProtocol == RTU_SRV && lstCTRecords[nCur].Port == theServers[s].nPort) {
+                for (nSer = 0; nSer < theServersNumber; nSer++) {
+                    if (theServers[nSer].nProtocol == RTU_SRV && lstCTRecords[nCur].Port == theServers[nSer].nPort) {
                         // already present
-                        if (theServers[s].IPAddress != lstCTRecords[nCur].IPAddress) {
+                        if (theServers[nSer].IPAddress != lstCTRecords[nCur].IPAddress) {
                             char str1[MAX_IPADDR_LEN];
                             char str2[MAX_IPADDR_LEN];
-                            ipaddr2str(theServers[s].IPAddress, str1);
+                            ipaddr2str(theServers[nSer].IPAddress, str1);
                             ipaddr2str(lstCTRecords[nCur].IPAddress, str2);
                             qDebug() << tr("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'IP Address' %3 (should be %4)") .arg(nCur) .arg(QString::fromAscii(str2)) .arg(QString::fromAscii(str1));
                         }
-                        if (theServers[s].NodeId != lstCTRecords[nCur].NodeId) {
-                            qDebug() << tr("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'Node ID' %3 (should be %4)") .arg(nCur) .arg(lstCTRecords[nCur].NodeId) .arg(theServers[s].NodeId);
+                        if (theServers[nSer].NodeId != lstCTRecords[nCur].NodeId) {
+                            qDebug() << tr("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'Node ID' %3 (should be %4)") .arg(nCur) .arg(lstCTRecords[nCur].NodeId) .arg(theServers[nSer].NodeId);
                         }
                         break;
                     }
@@ -5966,47 +6029,47 @@ bool ctedit::checkServersDevicesAndNodes()
             case TCP_SRV:
             case TCPRTU_SRV:
                 // add unique variable's server
-                for (s = 0; s < theServersNumber; s++) {
-                    if (lstCTRecords[nCur].Protocol == theServers[s].nProtocol) {
+                for (nSer = 0; nSer < theServersNumber; nSer++) {
+                    if (lstCTRecords[nCur].Protocol == theServers[nSer].nProtocol) {
                         // already present
-                        if (theServers[s].IPAddress != lstCTRecords[nCur].IPAddress) {
+                        if (theServers[nSer].IPAddress != lstCTRecords[nCur].IPAddress) {
                             char str1[MAX_IPADDR_LEN];
                             char str2[MAX_IPADDR_LEN];
-                            ipaddr2str(theServers[s].IPAddress, str1);
+                            ipaddr2str(theServers[nSer].IPAddress, str1);
                             ipaddr2str(lstCTRecords[nCur].IPAddress, str2);
                             qDebug() << tr("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'IP Address' %3 (should be %4)") .arg(nCur) .arg(QString::fromAscii(str2)) .arg(QString::fromAscii(str1));
                         }
-                        if (theServers[s].nPort != lstCTRecords[nCur].Port) {
-                            qDebug() << tr("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'Port' %3 (should be %4)") .arg(nCur) .arg(lstCTRecords[nCur].Port) .arg(theServers[s].nPort);
+                        if (theServers[nSer].nPort != lstCTRecords[nCur].Port) {
+                            qDebug() << tr("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'Port' %3 (should be %4)") .arg(nCur) .arg(lstCTRecords[nCur].Port) .arg(theServers[nSer].nPort);
                         }
-                        if (theServers[s].NodeId != lstCTRecords[nCur].NodeId) {
-                            qDebug() << tr("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'Node ID' %3 (should be %4)") .arg(nCur) .arg(lstCTRecords[nCur].NodeId) .arg(theServers[s].NodeId);
+                        if (theServers[nSer].NodeId != lstCTRecords[nCur].NodeId) {
+                            qDebug() << tr("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'Node ID' %3 (should be %4)") .arg(nCur) .arg(lstCTRecords[nCur].NodeId) .arg(theServers[nSer].NodeId);
                         }
                         break;
                     }
                 }
             add_server:
-                if (s < theServersNumber) {
-                    theServers[s].nVars++;
+                if (nSer < theServersNumber) {
+                    theServers[nSer].nVars++;
                     // ok already present
                 } else if (theServersNumber >= nMAX_SERVERS) {
                     qDebug() << tr("checkServersDevicesAndNodes(): ERROR: too many Servers");
                     fRes = false;
                 } else {
                     // new server entry
-                    s = theServersNumber++;
-                    theServers[s].nProtocol = lstCTRecords[nCur].Protocol;
-                    theServers[s].IPAddress = lstCTRecords[nCur].IPAddress;
-                    theServers[s].szIpAddress.clear();
-                    theServers[s].nPort = lstCTRecords[nCur].Port;
-                    if (theServers[s].nProtocol == TCP_SRV || theServers[s].nProtocol == TCPRTU_SRV)  {
+                    nSer = theServersNumber++;
+                    theServers[nSer].nProtocol = lstCTRecords[nCur].Protocol;
+                    theServers[nSer].IPAddress = lstCTRecords[nCur].IPAddress;
+                    theServers[nSer].szIpAddress.clear();
+                    theServers[nSer].nPort = lstCTRecords[nCur].Port;
+                    if (theServers[nSer].nProtocol == TCP_SRV || theServers[nSer].nProtocol == TCPRTU_SRV)  {
                         char str1[MAX_IPADDR_LEN];
-                        ipaddr2str(theServers[s].IPAddress, str1);
-                        theServers[s].szIpAddress = QString::fromAscii(str1);
+                        ipaddr2str(theServers[nSer].IPAddress, str1);
+                        theServers[nSer].szIpAddress = QString::fromAscii(str1);
                     }
-                    theServers[s].nVars++;
-                    theServers[s].NodeId = lstCTRecords[nCur].NodeId;
-                    theServers[s].szServerName = tr("srv[%1]%2_%3_%4") .arg(s) .arg(lstProtocol[theServers[s].nProtocol]) .arg(theServers[s].szIpAddress) .arg(theServers[s].nPort);
+                    theServers[nSer].nVars++;
+                    theServers[nSer].NodeId = lstCTRecords[nCur].NodeId;
+                    theServers[nSer].szServerName = tr("srv[%1]%2_%3_%4") .arg(nSer) .arg(lstProtocol[theServers[nSer].nProtocol]) .arg(theServers[nSer].szIpAddress) .arg(theServers[nSer].nPort);
                 }
 
                 break;
@@ -6018,8 +6081,8 @@ bool ctedit::checkServersDevicesAndNodes()
             switch (lstCTRecords[nCur].Protocol) {
             case PLC:
                 // no plc client
-                lstCTRecords[nCur].device = 0xffff;
-                lstCTRecords[nCur].node = 0xffff;
+                lstCTRecords[nCur].nDevice = 0xffff;
+                lstCTRecords[nCur].nNode = 0xffff;
                 break;
             case RTU:
             case TCP:
@@ -6027,10 +6090,10 @@ bool ctedit::checkServersDevicesAndNodes()
             case CANOPEN:
             case MECT_PTC:
                 // add unique variable's device (Protocol, IPAddress, Port, --)
-                for (d = 0; d < theDevicesNumber; d++) {
-                    if (lstCTRecords[nCur].Protocol == theDevices[d].nProtocol
-                     && lstCTRecords[nCur].IPAddress == theDevices[d].IPAddress
-                     && lstCTRecords[nCur].Port == theDevices[d].nPort) {
+                for (nDev = 0; nDev < theDevicesNumber; nDev++) {
+                    if (lstCTRecords[nCur].Protocol == theDevices[nDev].nProtocol
+                     && lstCTRecords[nCur].IPAddress == theDevices[nDev].IPAddress
+                     && lstCTRecords[nCur].Port == theDevices[nDev].nPort) {
                         // already present
                         break;
                     }
@@ -6039,9 +6102,9 @@ bool ctedit::checkServersDevicesAndNodes()
                 // no break
             case RTU_SRV:
                 // add unique variable's device (Protocol, --, Port, --)
-                for (d = 0; d < theDevicesNumber; d++) {
-                    if (lstCTRecords[nCur].Protocol == theDevices[d].nProtocol
-                     && lstCTRecords[nCur].Port == theDevices[d].nPort) {
+                for (nDev = 0; nDev < theDevicesNumber; nDev++) {
+                    if (lstCTRecords[nCur].Protocol == theDevices[nDev].nProtocol
+                     && lstCTRecords[nCur].Port == theDevices[nDev].nPort) {
                         // already present
                         break;
                     }
@@ -6051,222 +6114,246 @@ bool ctedit::checkServersDevicesAndNodes()
             case TCP_SRV:
             case TCPRTU_SRV:
                 // add unique variable's device (Protocol, --, --, --)
-                for (d = 0; d < theDevicesNumber; d++) {
-                    if (lstCTRecords[nCur].Protocol == theDevices[d].nProtocol) {
+                for (nDev = 0; nDev < theDevicesNumber; nDev++) {
+                    if (lstCTRecords[nCur].Protocol == theDevices[nDev].nProtocol) {
                         // already present
                         break;
                     }
                 }
             add_device:
-                if (d < theDevicesNumber) {
+                if (nDev < theDevicesNumber) {
                     // Device Present, add Variable 2 device
-                    lstCTRecords[nCur].device = d;  // found
-                    theDevices[d].nVars ++;       // this one, also Htype
+                    lstCTRecords[nCur].nDevice = nDev;  // found
+                    theDevices[nDev].nVars ++;       // this one, also Htype
                 } else if (theDevicesNumber >= nMAX_DEVICES) {
                     // Too many Devices
-                    lstCTRecords[nCur].device = 0xffff; // FIXME: error
+                    lstCTRecords[nCur].nDevice = 0xffff; // FIXME: error
                     qDebug() << tr("checkServersDevicesAndNodes(): ERROR: too many Servers");
                     fRes = false;
                 } else {
                     QString szDeviceName;
                     QString szIpAddr;
                     // new device entry
-                    lstCTRecords[nCur].device = theDevicesNumber;
-                    d = theDevicesNumber++;
-                    theDevices[d].nProtocol = lstCTRecords[nCur].Protocol;
-                    theDevices[d].IPAddress = lstCTRecords[nCur].IPAddress;
-                    theDevices[d].nPort = lstCTRecords[nCur].Port;
-                    theDevices[d].nVars++;
+                    lstCTRecords[nCur].nDevice = theDevicesNumber;
+                    nDev = theDevicesNumber++;
+                    theDevices[nDev].nProtocol = lstCTRecords[nCur].Protocol;
+                    theDevices[nDev].IPAddress = lstCTRecords[nCur].IPAddress;
+                    theDevices[nDev].nPort = lstCTRecords[nCur].Port;
+                    theDevices[nDev].nVars++;
                     char str1[MAX_IPADDR_LEN];
                     ipaddr2str(lstCTRecords[nCur].IPAddress, str1);
                     szIpAddr = QString::fromAscii(str1);
-                    szDeviceName = lstProtocol[theDevices[d].nProtocol];
+                    szDeviceName = lstProtocol[theDevices[nDev].nProtocol];
                     // Check Device Protocol
-                    switch (theDevices[d].nProtocol) {
+                    switch (theDevices[nDev].nProtocol) {
                     case PLC:
                         // FIXME: assert
-                        theDevices[d].nMaxBlockSize = MAXBLOCKSIZE;
+                        theDevices[nDev].nMaxBlockSize = MAXBLOCKSIZE;
                         break;
                     case RTU:
-                        szDeviceName.append(QString::number(theDevices[d].nPort));
-                        if (theDevices[d].nPort == 0)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.ser0_BlockSize;
-                            theDevices[d].nSilence = TargetConfig.ser0_Silence;
-                            theDevices[d].nTimeOut = TargetConfig.ser0_TimeOut;
-                            theDevices[d].nBaudRate = TargetConfig.ser0_BaudRate;
-                            theDevices[d].nDataBits = TargetConfig.ser0_DataBits;
-                            theDevices[d].nStopBits = TargetConfig.ser0_StopBits;
+                        szDeviceName.append(QString::number(theDevices[nDev].nPort));
+                        if (theDevices[nDev].nPort == 0)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser0_BlockSize;
+                            theDevices[nDev].nSilence = TargetConfig.ser0_Silence;
+                            theDevices[nDev].nTimeOut = TargetConfig.ser0_TimeOut;
+                            theDevices[nDev].nBaudRate = TargetConfig.ser0_BaudRate;
+                            theDevices[nDev].nDataBits = TargetConfig.ser0_DataBits;
+                            theDevices[nDev].nStopBits = TargetConfig.ser0_StopBits;
                         }
-                        else if (theDevices[d].nPort == 1)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.ser1_BlockSize;
-                            theDevices[d].nSilence = TargetConfig.ser1_Silence;
-                            theDevices[d].nTimeOut = TargetConfig.ser1_TimeOut;
-                            theDevices[d].nBaudRate = TargetConfig.ser1_BaudRate;
-                            theDevices[d].nDataBits = TargetConfig.ser1_DataBits;
-                            theDevices[d].nStopBits = TargetConfig.ser1_StopBits;
+                        else if (theDevices[nDev].nPort == 1)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser1_BlockSize;
+                            theDevices[nDev].nSilence = TargetConfig.ser1_Silence;
+                            theDevices[nDev].nTimeOut = TargetConfig.ser1_TimeOut;
+                            theDevices[nDev].nBaudRate = TargetConfig.ser1_BaudRate;
+                            theDevices[nDev].nDataBits = TargetConfig.ser1_DataBits;
+                            theDevices[nDev].nStopBits = TargetConfig.ser1_StopBits;
                         }
-                        else if (theDevices[d].nPort == 2)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.ser2_BlockSize;
-                            theDevices[d].nSilence = TargetConfig.ser2_Silence;
-                            theDevices[d].nTimeOut = TargetConfig.ser2_TimeOut;
-                            theDevices[d].nBaudRate = TargetConfig.ser2_BaudRate;
-                            theDevices[d].nDataBits = TargetConfig.ser2_DataBits;
-                            theDevices[d].nStopBits = TargetConfig.ser2_StopBits;
+                        else if (theDevices[nDev].nPort == 2)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser2_BlockSize;
+                            theDevices[nDev].nSilence = TargetConfig.ser2_Silence;
+                            theDevices[nDev].nTimeOut = TargetConfig.ser2_TimeOut;
+                            theDevices[nDev].nBaudRate = TargetConfig.ser2_BaudRate;
+                            theDevices[nDev].nDataBits = TargetConfig.ser2_DataBits;
+                            theDevices[nDev].nStopBits = TargetConfig.ser2_StopBits;
                         }
-                        else if (theDevices[d].nPort == 3)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.ser3_BlockSize;
-                            theDevices[d].nSilence = TargetConfig.ser3_Silence;
-                            theDevices[d].nTimeOut = TargetConfig.ser3_TimeOut;
-                            theDevices[d].nBaudRate = TargetConfig.ser3_BaudRate;
-                            theDevices[d].nDataBits = TargetConfig.ser3_DataBits;
-                            theDevices[d].nStopBits = TargetConfig.ser3_StopBits;
+                        else if (theDevices[nDev].nPort == 3)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser3_BlockSize;
+                            theDevices[nDev].nSilence = TargetConfig.ser3_Silence;
+                            theDevices[nDev].nTimeOut = TargetConfig.ser3_TimeOut;
+                            theDevices[nDev].nBaudRate = TargetConfig.ser3_BaudRate;
+                            theDevices[nDev].nDataBits = TargetConfig.ser3_DataBits;
+                            theDevices[nDev].nStopBits = TargetConfig.ser3_StopBits;
                         }
                         break;
                     case MECT_PTC:
-                        theDevices[d].nMaxBlockSize = MAXBLOCKSIZE;
-                        theDevices[d].nSilence = 0;
-                        theDevices[d].nTimeOut = 0;
+                        theDevices[nDev].nMaxBlockSize = MAXBLOCKSIZE;
+                        theDevices[nDev].nSilence = 0;
+                        theDevices[nDev].nTimeOut = 0;
                         break;
                     case TCP:
                         szDeviceName.append(QString::number(theTcpDevicesNumber));
                         ++theTcpDevicesNumber;
-                        theDevices[d].szIpAddress = szIpAddr;
-                        theDevices[d].nMaxBlockSize = TargetConfig.tcp_BlockSize;
-                        theDevices[d].nSilence = TargetConfig.tcp_Silence;
-                        theDevices[d].nTimeOut = TargetConfig.tcp_TimeOut;
+                        theDevices[nDev].szIpAddress = szIpAddr;
+                        theDevices[nDev].nMaxBlockSize = TargetConfig.tcp_BlockSize;
+                        theDevices[nDev].nSilence = TargetConfig.tcp_Silence;
+                        theDevices[nDev].nTimeOut = TargetConfig.tcp_TimeOut;
                         break;
                     case TCPRTU:
-                        theDevices[d].szIpAddress = szIpAddr;
-                        theDevices[d].nMaxBlockSize = TargetConfig.tcp_BlockSize;
-                        theDevices[d].nSilence = TargetConfig.tcp_Silence;
-                        theDevices[d].nTimeOut = TargetConfig.tcp_TimeOut;
+                        theDevices[nDev].szIpAddress = szIpAddr;
+                        theDevices[nDev].nMaxBlockSize = TargetConfig.tcp_BlockSize;
+                        theDevices[nDev].nSilence = TargetConfig.tcp_Silence;
+                        theDevices[nDev].nTimeOut = TargetConfig.tcp_TimeOut;
                         break;
                     case CANOPEN:
-                        szDeviceName.append(QString::number(theDevices[d].nPort));
-                        if (theDevices[d].nPort == 0)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.can0_BlockSize;
-                            theDevices[d].nSilence = -1;
-                            theDevices[d].nTimeOut = -1;
-                            theDevices[d].nBaudRate = TargetConfig.can0_BaudRate;
+                        szDeviceName.append(QString::number(theDevices[nDev].nPort));
+                        if (theDevices[nDev].nPort == 0)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.can0_BlockSize;
+                            theDevices[nDev].nSilence = -1;
+                            theDevices[nDev].nTimeOut = -1;
+                            theDevices[nDev].nBaudRate = TargetConfig.can0_BaudRate;
                         }
-                        else if (theDevices[d].nPort == 1)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.can1_BlockSize;
-                            theDevices[d].nSilence = -1;
-                            theDevices[d].nTimeOut = -1;
-                            theDevices[d].nBaudRate = TargetConfig.can1_BaudRate;
+                        else if (theDevices[nDev].nPort == 1)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.can1_BlockSize;
+                            theDevices[nDev].nSilence = -1;
+                            theDevices[nDev].nTimeOut = -1;
+                            theDevices[nDev].nBaudRate = TargetConfig.can1_BaudRate;
                         }
                         break;
                     case RTU_SRV:
                         szDeviceName = QString::fromAscii("RTU");
-                        szDeviceName.append(QString::number(theDevices[d].nPort));
-                        theDevices[d].nServer = s; // searched before
-                        if (theDevices[d].nPort == 0)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.ser0_BlockSize;
-                            theDevices[d].nSilence = TargetConfig.ser0_Silence;
-                            theDevices[d].nTimeOut = TargetConfig.ser0_TimeOut;
-                            theDevices[d].nBaudRate = TargetConfig.ser0_BaudRate;
-                            theDevices[d].nDataBits = TargetConfig.ser0_DataBits;
-                            theDevices[d].nStopBits = TargetConfig.ser0_StopBits;
+                        szDeviceName.append(QString::number(theDevices[nDev].nPort));
+                        theDevices[nDev].nServer = nSer; // searched before
+                        if (theDevices[nDev].nPort == 0)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser0_BlockSize;
+                            theDevices[nDev].nSilence = TargetConfig.ser0_Silence;
+                            theDevices[nDev].nTimeOut = TargetConfig.ser0_TimeOut;
+                            theDevices[nDev].nBaudRate = TargetConfig.ser0_BaudRate;
+                            theDevices[nDev].nDataBits = TargetConfig.ser0_DataBits;
+                            theDevices[nDev].nStopBits = TargetConfig.ser0_StopBits;
                         }
-                        else if (theDevices[d].nPort == 1)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.ser1_BlockSize;
-                            theDevices[d].nSilence = TargetConfig.ser1_Silence;
-                            theDevices[d].nTimeOut = TargetConfig.ser1_TimeOut;
-                            theDevices[d].nBaudRate = TargetConfig.ser1_BaudRate;
-                            theDevices[d].nDataBits = TargetConfig.ser1_DataBits;
-                            theDevices[d].nStopBits = TargetConfig.ser1_StopBits;
+                        else if (theDevices[nDev].nPort == 1)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser1_BlockSize;
+                            theDevices[nDev].nSilence = TargetConfig.ser1_Silence;
+                            theDevices[nDev].nTimeOut = TargetConfig.ser1_TimeOut;
+                            theDevices[nDev].nBaudRate = TargetConfig.ser1_BaudRate;
+                            theDevices[nDev].nDataBits = TargetConfig.ser1_DataBits;
+                            theDevices[nDev].nStopBits = TargetConfig.ser1_StopBits;
                         }
-                        else if (theDevices[d].nPort == 2)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.ser2_BlockSize;
-                            theDevices[d].nSilence = TargetConfig.ser2_Silence;
-                            theDevices[d].nTimeOut = TargetConfig.ser2_TimeOut;
-                            theDevices[d].nBaudRate = TargetConfig.ser2_BaudRate;
-                            theDevices[d].nDataBits = TargetConfig.ser2_DataBits;
-                            theDevices[d].nStopBits = TargetConfig.ser2_StopBits;
+                        else if (theDevices[nDev].nPort == 2)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser2_BlockSize;
+                            theDevices[nDev].nSilence = TargetConfig.ser2_Silence;
+                            theDevices[nDev].nTimeOut = TargetConfig.ser2_TimeOut;
+                            theDevices[nDev].nBaudRate = TargetConfig.ser2_BaudRate;
+                            theDevices[nDev].nDataBits = TargetConfig.ser2_DataBits;
+                            theDevices[nDev].nStopBits = TargetConfig.ser2_StopBits;
                         }
-                        else if (theDevices[d].nPort == 3)  {
-                            theDevices[d].nMaxBlockSize = TargetConfig.ser3_BlockSize;
-                            theDevices[d].nSilence = TargetConfig.ser3_Silence;
-                            theDevices[d].nTimeOut = TargetConfig.ser3_TimeOut;
-                            theDevices[d].nBaudRate = TargetConfig.ser3_BaudRate;
-                            theDevices[d].nDataBits = TargetConfig.ser3_DataBits;
-                            theDevices[d].nStopBits = TargetConfig.ser3_StopBits;
+                        else if (theDevices[nDev].nPort == 3)  {
+                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser3_BlockSize;
+                            theDevices[nDev].nSilence = TargetConfig.ser3_Silence;
+                            theDevices[nDev].nTimeOut = TargetConfig.ser3_TimeOut;
+                            theDevices[nDev].nBaudRate = TargetConfig.ser3_BaudRate;
+                            theDevices[nDev].nDataBits = TargetConfig.ser3_DataBits;
+                            theDevices[nDev].nStopBits = TargetConfig.ser3_StopBits;
                         }
                         break;
                     case TCP_SRV:
                     case TCPRTU_SRV:
                         szDeviceName = QString::fromAscii("TCPS");
-                        theDevices[d].szIpAddress = szIpAddr;
-                        theDevices[d].nServer = s; // searched before
-                        theDevices[d].nMaxBlockSize = TargetConfig.tcp_BlockSize;
-                        theDevices[d].nSilence = TargetConfig.tcp_Silence;
-                        theDevices[d].nTimeOut = TargetConfig.tcp_TimeOut;
+                        theDevices[nDev].szIpAddress = szIpAddr;
+                        theDevices[nDev].nServer = nSer; // searched before
+                        theDevices[nDev].nMaxBlockSize = TargetConfig.tcp_BlockSize;
+                        theDevices[nDev].nSilence = TargetConfig.tcp_Silence;
+                        theDevices[nDev].nTimeOut = TargetConfig.tcp_TimeOut;
                         break;
                     default:
                         ;
                     }
-                    theDevices[d].szDeviceName = szDeviceName;
+                    theDevices[nDev].szDeviceName = szDeviceName;
                     // Ricerca Variabile Diagnostica
                     szDiagName = szDeviceName;
                     szDiagName.append(QString::fromAscii("_STATUS"));
                     nDiag = varName2Row(szDiagName, lstCTRecords);
                     if (nDiag >= 0)  {
-                        theDevices[d].diagnosticAddr = nDiag + 1;
-                        theDevices[d].diagnosticVarName = szDiagName;
+                        theDevices[nDev].diagnosticAddr = nDiag + 1;
+                        theDevices[nDev].diagnosticVarName = szDiagName;
                     }
                     // Calcolo del Char Time in ms
-                    if (theDevices[d].nProtocol == RTU || theDevices[d].nProtocol == RTU_SRV)  {
-                        int nBits = 1 + theDevices[d].nDataBits + theDevices[d].nStopBits;
-                        theDevices[d].dCharTime = ((double) nBits / (double) theDevices[d].nBaudRate) * 1000.0;
+                    if (theDevices[nDev].nProtocol == RTU || theDevices[nDev].nProtocol == RTU_SRV)  {
+                        theDevices[nDev].dCharTime = serialCharTime_ms(theDevices[nDev].nBaudRate, theDevices[nDev].nDataBits, theDevices[nDev].nStopBits);
+                        theDevices[nDev].dMinSilence = minSerialSilenceTime(theDevices[nDev].nBaudRate, theDevices[nDev].dCharTime);
                     }
                     // Check Block Size
-                    if (nCur == base && lstCTRecords[nCur].BlockSize > theDevices[d].nMaxBlockSize) {
+                    if (nCur == base && lstCTRecords[nCur].BlockSize > theDevices[nDev].nMaxBlockSize) {
                         qDebug() << tr("checkServersDevicesAndNodes(): warning: variable %1 block %2 size %3, exceeding max_block_size %4 (%5)")
-                                    .arg(nCur) .arg(block) .arg(lstCTRecords[nCur].BlockSize) .arg(theDevices[d].nMaxBlockSize) .arg(theDevices[d].szDeviceName);
+                                    .arg(nCur) .arg(block) .arg(lstCTRecords[nCur].BlockSize) .arg(theDevices[nDev].nMaxBlockSize) .arg(theDevices[nDev].szDeviceName);
                     }
                 }
                 // add unique variable's node
-                for (n = 0; n < theNodesNumber; ++n) {
-                     if (lstCTRecords[nCur].device == theNodes[n].nDevice) {
+                for (nNod = 0; nNod < theNodesNumber; ++nNod) {
+                     if (lstCTRecords[nCur].nDevice == theNodes[nNod].nDevice) {
                          if (lstCTRecords[nCur].Protocol == RTU_SRV || lstCTRecords[nCur].Protocol == TCP_SRV  || lstCTRecords[nCur].Protocol == TCPRTU_SRV) {
                              // already present (any NodeId)
                              break;
-                         } else if (lstCTRecords[nCur].NodeId == theNodes[n].nNodeId) {
+                         } else if (lstCTRecords[nCur].NodeId == theNodes[nNod].nNodeId) {
                              // already present
                              break;
                          }
                     }
                 }
             add_node:
-                if (n < theNodesNumber) {
-                    lstCTRecords[nCur].node = n; // found
+                if (nNod < theNodesNumber) {
+                    lstCTRecords[nCur].nNode = nNod; // found
                 } else if (theNodesNumber >= nMAX_NODES) {
-                    lstCTRecords[nCur].node = 0xffff;
+                    lstCTRecords[nCur].nNode = 0xffff;
                     qDebug() << tr("checkServersDevicesAndNodes(): ERROR: too many Nodes");
                     fRes = false;
                 } else {
                     // new node entry
-                    lstCTRecords[nCur].node = theNodesNumber++;
-                    theNodes[n].nDevice = lstCTRecords[nCur].device;
-                    theNodes[n].nNodeId = lstCTRecords[nCur].NodeId;
-                    theNodes[n].szNodeName = QString::fromAscii("NODE_") + QString::number(n+1) + QString::fromAscii(", NODE_ID=") + QString::number(lstCTRecords[nCur].NodeId);
+                    lstCTRecords[nCur].nNode = theNodesNumber++;
+                    theNodes[nNod].nDevice = lstCTRecords[nCur].nDevice;
+                    theNodes[nNod].nNodeId = lstCTRecords[nCur].NodeId;
+                    theNodes[nNod].szNodeName = QString::fromAscii("NODE_") + QString::number(nNod+1) + QString::fromAscii(", NODE_ID=") + QString::number(lstCTRecords[nCur].NodeId);
                 }
-                theNodes[n].nVars++;
+                theNodes[nNod].nVars++;
                 // Ricerca Variabile Diag
-                szDiagName = theNodes[n].szNodeName;
+                szDiagName = theNodes[nNod].szNodeName;
                 szDiagName.append(QString::fromAscii("_STATUS"));
                 nDiag = varName2Row(szDiagName, lstCTRecords);
                 if (nDiag >= 0)  {
-                    theNodes[d].diagnosticAddr = nDiag + 1;
-                    theNodes[d].diagnosticVarName = szDiagName;
+                    theNodes[nNod].diagnosticAddr = nDiag + 1;
+                    theNodes[nNod].diagnosticVarName = szDiagName;
                 }
                 break;
             default:
                 break;
             }           // switch on Protocol 2 to Create Devices / Nodes
-
+            // Ricerca del Blocco della variabile in lista blocchi
+            if (theBlocksNumber == 0 || (theBlocksNumber > 0 && theBlocks[theBlocksNumber -1].nBlockId != block))  {
+                theBlocks[theBlocksNumber].nBlockId = block;
+                theBlocks[theBlocksNumber].nBlockSize = lstCTRecords[nCur].BlockSize;
+                theBlocks[theBlocksNumber].nProtocol = lstCTRecords[nCur].Protocol;
+                theBlocks[theBlocksNumber].nDevice = nDev;
+                theBlocksNumber ++;
+            }
+            // Incrementing Byte Size of Block
+            if (! isBitField(lstCTRecords[nCur].VarType) ||  (! isSameBitField(nCur))) {
+                theBlocks[theBlocksNumber - 1].nRegisters += varSizeInBlock(lstCTRecords[nCur].VarType);
+                theBlocks[theBlocksNumber - 1].nByteSize += (2 * varSizeInBlock(lstCTRecords[nCur].VarType));
+            }
+            // Updating Block ID for Variable
+            lstCTRecords[nCur].nBlock = theBlocksNumber - 1;
         }   // Used Entry
     }       // Variables Cycle
+    // Blocks Cycle
+    for (nCur = 0; nCur < theBlocksNumber; nCur++)  {
+        nDev = theBlocks[nCur].nDevice;
+        // Calcolo del tempo di lettura del Blocco
+        if (nDev != 0xffff)  {
+            if (theDevices[nDev].dCharTime != 0.0)  {
+                theBlocks[nCur].dblReadTime_ms = blockReadTime_ms(lstCTRecords[theBlocks[nCur].nBlockId - 1].VarType, theBlocks[nCur].nRegisters, theDevices[nDev].nSilence, theDevices[nDev].dCharTime);
+            }
+        }
+    }
     // Debug Dump
     QString szRow;
     qDebug() << tr("Variables: %1") .arg(nUsedVars);
@@ -6284,7 +6371,7 @@ bool ctedit::checkServersDevicesAndNodes()
     // Devices List
     qDebug() << tr("Devices: %1") .arg(theDevicesNumber);
     for (nCur = 0; nCur < theDevicesNumber; nCur++)  {
-        szRow = QString::fromAscii("\t%1 - Device Name: %2") .arg(nCur+1) .arg(theDevices[nCur].szDeviceName);
+        szRow = QString::fromAscii("\t%1 - Device Name: %2") .arg(nCur+1, 4, 10) .arg(theDevices[nCur].szDeviceName);
         szRow.append(QString::fromAscii("\tServer Id: %1") .arg(theDevices[nCur].nServer));
         szRow.append(QString::fromAscii("\tProtocol: %1") .arg(lstProtocol[theDevices[nCur].nProtocol]));
         szRow.append(QString::fromAscii("\tIp Str: %1") .arg(theDevices[nCur].szIpAddress));
@@ -6293,6 +6380,7 @@ bool ctedit::checkServersDevicesAndNodes()
         szRow.append(QString::fromAscii("\tData Bits: %1") .arg(theDevices[nCur].nDataBits));
         szRow.append(QString::fromAscii("\tStop Bits: %1") .arg(theDevices[nCur].nStopBits));
         szRow.append(QString::fromAscii("\tChar Time: %1") .arg(theDevices[nCur].dCharTime));
+        szRow.append(QString::fromAscii("\tMin Silence Time: %1") .arg(theDevices[nCur].dMinSilence));
         szRow.append(QString::fromAscii("\tBlock Size: %1") .arg(theDevices[nCur].nMaxBlockSize));
         szRow.append(QString::fromAscii("\tVars: %1") .arg(theDevices[nCur].nVars));
         szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theDevices[nCur].diagnosticAddr));
@@ -6300,11 +6388,20 @@ bool ctedit::checkServersDevicesAndNodes()
     }
     qDebug() << tr("Nodes: %1") .arg(theNodesNumber);
     for (nCur = 0; nCur < theNodesNumber; nCur++)  {
-        szRow = QString::fromAscii("\t%1 - Node Name: %2") .arg(nCur+1) .arg(theNodes[nCur].szNodeName);
+        szRow = QString::fromAscii("\t%1 - Node Name: %2") .arg(nCur+1, 4, 10) .arg(theNodes[nCur].szNodeName);
         szRow.append(QString::fromAscii("\tDevice Id: %1") .arg(theNodes[nCur].nDevice));
         szRow.append(QString::fromAscii("\tNode Id: %1") .arg(theNodes[nCur].nNodeId));
         szRow.append(QString::fromAscii("\t# Vars: %1") .arg(theNodes[nCur].nVars));
         szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theNodes[nCur].diagnosticAddr));
+        qDebug() << szRow;
+    }
+    qDebug() << tr("Blocks: %1") .arg(theBlocksNumber);
+    for (nCur = 0; nCur < theBlocksNumber; nCur++)  {
+        szRow = QString::fromAscii("\t%1 - Block Id: %2") .arg(nCur+1, 4, 10) .arg(theBlocks[nCur].nBlockId, 6, 10);
+        szRow.append(QString::fromAscii("\tProtocol: %1") .arg(lstProtocol[theBlocks[nCur].nProtocol]));
+        szRow.append(QString::fromAscii("\tBlock Size: %1") .arg(theBlocks[nCur].nBlockSize, 6, 10));
+        szRow.append(QString::fromAscii("\t#Registers: %1") .arg(theBlocks[nCur].nRegisters, 6, 10));
+        szRow.append(QString::fromAscii("\tByte Size: %1") .arg(theBlocks[nCur].nByteSize, 6, 10));
         qDebug() << szRow;
     }
     return fRes;
@@ -6336,8 +6433,8 @@ QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow)
     // Tool Tip
     szToolTip.clear();
     if (lstCTRecords[nRow].Protocol != PLC)  {
-        szToolTip.append(QString::fromAscii("Device:\t\t%1\n") .arg(lstCTRecords[nRow].device));
-        szToolTip.append(QString::fromAscii("%1:\t\t%2\n") .arg(lstHeadCols[colNodeID]) .arg(lstCTRecords[nRow].node));
+        szToolTip.append(QString::fromAscii("Device:\t\t%1\n") .arg(lstCTRecords[nRow].nDevice));
+        szToolTip.append(QString::fromAscii("%1:\t\t%2\n") .arg(lstHeadCols[colNodeID]) .arg(lstCTRecords[nRow].nNode));
     }
     szToolTip.append(QString::fromAscii("Row:\t%1\n") .arg(nRow + 1));
     szToolTip.append(QString::fromAscii("%1:\t%2\n") .arg(lstHeadCols[colPriority]) .arg(lstCTRecords[nRow].Enable));
@@ -6379,6 +6476,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     QString         szName(szEMPTY);
     QString         szInfo(szEMPTY);
     QString         szToolTip(szEMPTY);
+    char            cFormat = 102;
 
     if (nDevice <0)  {
         szName = QString::fromLatin1("PLC");
@@ -6389,15 +6487,24 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         szName = theDevices[nDevice].szDeviceName;
         // Colonna Info
         szInfo = tr("Total Variables: %1\t") .arg(theDevices[nDevice].nVars, 6, 10);
-        if (theDevices[nDevice].nSilence >= 0)
-            szInfo.append(tr("Silence: %1 ms \t") .arg(theDevices[nDevice].nSilence, 6, 10));
-        else
-            szInfo.append(tr("\t\t"));
+        szInfo.append(tr("Max Block Size: %1 ").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
+        // TimeOut
         if (theDevices[nDevice].nTimeOut >= 0)
             szInfo.append(tr("TimeOut: %1 ms \t") .arg(theDevices[nDevice].nTimeOut, 6, 10));
         else
             szInfo.append(tr("\t\t"));
-        szInfo.append(tr("Max Block Size: %1 ").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
+        // Silence
+        if (theDevices[nDevice].nSilence >= 0)
+            szInfo.append(tr("Silence: %1 ms \t") .arg(theDevices[nDevice].nSilence, 6, 10));
+        else
+            szInfo.append(tr("\t\t"));
+        if (theDevices[nDevice].nProtocol == RTU || theDevices[nDevice].nProtocol == RTU_SRV)  {
+            szInfo.append(tr("Min.Silence: %1 ms \t") .arg(theDevices[nDevice].dMinSilence));
+            if ((double) theDevices[nDevice].nSilence >= theDevices[nDevice].dMinSilence)
+                szInfo.append(tr("OK"));
+            else
+                szInfo.append(tr("Too Short"));
+        }
         // ToolTip
         szToolTip = tr("Protocol:\t%1\n") .arg(lstProtocol[theDevices[nDevice].nProtocol]);
         szToolTip.append(tr("Ip Address:\t%1\n") .arg(theDevices[nDevice].szIpAddress));
@@ -6464,6 +6571,22 @@ QTreeWidgetItem *ctedit::addPriority2Tree(QTreeWidgetItem *tParent, int nPriorit
     // Return Value
     return tPriority;
 }
+int     ctedit::searchBlock(int nBlock)
+// Ricerca in theBlocks del blocco nBlock
+{
+    int nFound = -1;
+    int nCur = 0;
+
+    for (nCur = 0; nCur < theBlocksNumber; nCur++)   {
+        if (theBlocks[nCur].nBlockId == nBlock)  {
+            nFound = nCur;
+            break;
+        }
+    }
+    // Return Value
+    return nFound;
+}
+
 QTreeWidgetItem *ctedit::addBlock2Tree(QTreeWidgetItem *tParent, int nBlock, int nBlockSize)
 // Aggiunge il blocco nBlock agganciandolo al nodo tParent. Ritorna oggetto
 {
@@ -6471,9 +6594,15 @@ QTreeWidgetItem *ctedit::addBlock2Tree(QTreeWidgetItem *tParent, int nBlock, int
     QString         szName(szEMPTY);
     QString         szInfo(szEMPTY);
     QString         szToolTip(szEMPTY);
+    int             nInfoBlock = searchBlock(nBlock);
 
     szName = QString::fromAscii("Block_") + int2PaddedString(nBlock, 2, 10);
-    szInfo = tr("Block Size: %1") .arg(nBlockSize);
+    szInfo = tr("Block Size: %1\t") .arg(nBlockSize);
+    if (nInfoBlock >= 0 && nInfoBlock < theBlocksNumber)  {
+        if (theBlocks[nInfoBlock].nProtocol == RTU || theBlocks[nInfoBlock].nProtocol == RTU_SRV)  {
+            szInfo.append(tr("Read Time: %1 ms\t") .arg(theBlocks[nInfoBlock].dblReadTime_ms));
+        }
+    }
     // Adding Node Item to Tree
     tBlock = addItem2Tree(tParent, treeBlock, szName, szInfo, szToolTip);
     // Return Value
@@ -6522,8 +6651,8 @@ void    ctedit::fillDeviceTree(int nCurRow)
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Considera solo le Variabili utilizzate
         if (lstCTRecords[nRow].UsedEntry > 0 && lstCTRecords[nRow].Enable > 0)  {
-            nDevice = lstCTRecords[nRow].device;
-            nNode = lstCTRecords[nRow].node;
+            nDevice = lstCTRecords[nRow].nDevice;
+            nNode = lstCTRecords[nRow].nNode;
             nPriority = lstCTRecords[nRow].Enable;
             nBlock = lstCTRecords[nRow].Block;
             nBlockSize = lstCTRecords[nRow].BlockSize;
@@ -6683,8 +6812,8 @@ void    ctedit::fillTimingsTree(int nCurRow)
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Considera solo le Variabili utilizzate
         if (lstCTRecords[nRow].UsedEntry > 0 && lstCTRecords[nRow].Enable > 0)  {
-            nDevice = lstCTRecords[nRow].device;
-            nNode = lstCTRecords[nRow].node;
+            nDevice = lstCTRecords[nRow].nDevice;
+            nNode = lstCTRecords[nRow].nNode;
             nPriority = lstCTRecords[nRow].Enable;
             nBlock = lstCTRecords[nRow].Block;
             nBlockSize = lstCTRecords[nRow].BlockSize;
