@@ -194,7 +194,7 @@ struct blockStruct  {
     int         nProtocol;
     int         nRegisters;
     int         nByteSize;
-    double      dblReadTime_ms;
+    int         nReadTime_ms;
 };
 
 #endif // CTECOMMON_H

@@ -540,6 +540,7 @@ ctedit::ctedit(QWidget *parent) :
     colorNonRetentive[1] = QColor(255,255,220,255);        // Giallino
     colorSystem[0] = QColor(255,227,215,255);              // Rosa Dark
     colorSystem[1] = QColor(255,240,233,255);              // Rosa
+    colorGray = QColor(200,200,200,255);                   // Gray
     szColorRet[0] = QString::fromAscii("color: #AAFFFF");
     szColorRet[1] = QString::fromAscii("color: #D2FFFF");
     szColorNonRet[0] = QString::fromAscii("color: #FFFFBE");
@@ -820,15 +821,16 @@ bool    ctedit::list2GridRow(QStringList &lstRecValues, int nRow)
         // Rende il valore non Editabile
         tItem->setFlags(tItem->flags() ^ Qt::ItemIsEditable);
         // Flag Marcatore della riga
-        if (lstCTRecords[nRow].UsedEntry)
-            ui->tblCT->showRow(nRow);
-        else
-            ui->tblCT->hideRow(nRow);
         // Aggiunta al Grid
         if (fAdd)  {
             ui->tblCT->setItem(nRow, nCol, tItem);
         }
     }
+    // Riga Visibile o invisibile
+    if (lstCTRecords[nRow].UsedEntry)
+        ui->tblCT->showRow(nRow);
+    else
+        ui->tblCT->hideRow(nRow);
     return true;
 }
 
@@ -2709,6 +2711,12 @@ void ctedit::setRowColor(int nRow, int nAlternate)
             cSfondo = colorSystem[1];
         }
     }
+    // Righe utilizzate ma a priorità 0
+    if (lstCTRecords[nRow].UsedEntry && lstCTRecords[nRow].Enable == 0)  {
+        // cSfondo = colorGray;
+        // cSfondo = cSfondo.lighter(150);
+        cSfondo = cSfondo.darker(130);
+    }
     // Impostazione del colore di sfondo
     QBrush bCell(cSfondo, Qt::SolidPattern);
     setRowBackground(bCell, ui->tblCT->model(), nRow);
@@ -3856,6 +3864,8 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             // Ricarica Record vuoto a griglia
             fOk = recCT2List(lstValues, nRow);
             fOk = list2GridRow(lstValues, nRow);
+            // Repaint Colori
+            showAllRows(m_fShowAllRows);
         }
         delete errWindow;
     }
@@ -5399,6 +5409,10 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_E].ser2_Enabled = false;
     lstTargets[TP1070_02_E].ser3_Enabled = true;
     lstTargets[TP1070_02_E].can1_Enabled = false;
+    // Ciclo di verifica caricamento modelli:
+    for (nModel = 0; nModel < MODEL_TOTALS; nModel++)  {
+        qDebug() << QString::fromLatin1("Model: %1 - Model Name: %2") .arg(QString::number(nModel)) .arg(lstTargets[nModel].modelName);
+    }
 }
 int ctedit::searchModelInList(QString szModel)
 // Ricerca il modello corrente nella Lista modelli attuale.
@@ -5508,6 +5522,8 @@ bool ctedit::updateRow(int nRow)
                     m_isCtModified = true;
                     ui->tblCT->currentRow();
                 }
+                // Repaint Colori
+                showAllRows(m_fShowAllRows);
                 // qDebug() << "Row saved:" << nRow;
             }
         }
@@ -5970,7 +5986,7 @@ bool ctedit::checkServersDevicesAndNodes()
         theBlocks[nCur].nProtocol = 0;
         theBlocks[nCur].nRegisters = 0;
         theBlocks[nCur].nByteSize = 0;
-        theBlocks[nCur].dblReadTime_ms = 0.0;
+        theBlocks[nCur].nReadTime_ms = 0;
     }
     // Clean Dev-Node Info in Variables
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
@@ -6350,7 +6366,7 @@ bool ctedit::checkServersDevicesAndNodes()
         // Calcolo del tempo di lettura del Blocco
         if (nDev != 0xffff)  {
             if (theDevices[nDev].dCharTime != 0.0)  {
-                theBlocks[nCur].dblReadTime_ms = blockReadTime_ms(lstCTRecords[theBlocks[nCur].nBlockId - 1].VarType, theBlocks[nCur].nRegisters, theDevices[nDev].nSilence, theDevices[nDev].dCharTime);
+                theBlocks[nCur].nReadTime_ms = blockReadTime_ms(lstCTRecords[theBlocks[nCur].nBlockId - 1].VarType, theBlocks[nCur].nRegisters, theDevices[nDev].nSilence, theDevices[nDev].dCharTime);
             }
         }
     }
@@ -6586,6 +6602,22 @@ int     ctedit::searchBlock(int nBlock)
     // Return Value
     return nFound;
 }
+int     ctedit::searchDevice(int nDevice)
+// Ricerca in theDevice del device nDevice
+{
+    int nFound = -1;
+    int nCur = 0;
+
+    for (nCur = 0; nCur < theDevicesNumber; nCur++)   {
+//        if (theDevices[nCur]. == nBlock)  {
+//            nFound = nCur;
+//            break;
+//        }
+    }
+    // Return Value
+    return nFound;
+}
+
 
 QTreeWidgetItem *ctedit::addBlock2Tree(QTreeWidgetItem *tParent, int nBlock, int nBlockSize)
 // Aggiunge il blocco nBlock agganciandolo al nodo tParent. Ritorna oggetto
@@ -6600,7 +6632,7 @@ QTreeWidgetItem *ctedit::addBlock2Tree(QTreeWidgetItem *tParent, int nBlock, int
     szInfo = tr("Block Size: %1\t") .arg(nBlockSize);
     if (nInfoBlock >= 0 && nInfoBlock < theBlocksNumber)  {
         if (theBlocks[nInfoBlock].nProtocol == RTU || theBlocks[nInfoBlock].nProtocol == RTU_SRV)  {
-            szInfo.append(tr("Read Time: %1 ms\t") .arg(theBlocks[nInfoBlock].dblReadTime_ms));
+            szInfo.append(tr("\tBlock Read Time: %1 ms\t") .arg(theBlocks[nInfoBlock].nReadTime_ms));
         }
     }
     // Adding Node Item to Tree

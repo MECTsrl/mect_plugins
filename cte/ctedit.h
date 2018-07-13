@@ -151,6 +151,7 @@ private:
     int     readCoils_ms(int nCoils, int nSilence_ms, double dblCharTime_ms);                       // Calcolo del Tempo di lettura di un blocco di Bit Registers (Coils) in funzione del # Bit, Silence, charTime
     bool    isSilenceOk(int nSilence_ms, int nBaudRate, double dblCharTime_ms);                     // Verifica che il tempo di silence specificato sia adeguato al BaudRate corrente
     int     searchBlock(int nBlock);                // Ricerca in theBlocks del blocco nBlock
+    int     searchDevice(int nDevice);              // Ricerca in theDevice del device nDevice
     // Import dati in XML
     bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows);
     bool    addModelVars(const QString szModelName, int nRow);
@@ -193,9 +194,11 @@ private:
     QColor      colorRetentive[2];
     QColor      colorNonRetentive[2];
     QColor      colorSystem[2];
+    QColor      colorGray;
     QString     szColorRet[2];
     QString     szColorNonRet[2];
     QString     szColorSystem[2];
+
 
     // Record CrossTable
     QList<CrossTableRecord> lstCopiedRecords;       // Lista di Record per copia/incolla

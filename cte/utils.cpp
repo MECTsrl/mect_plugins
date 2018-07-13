@@ -424,8 +424,8 @@ void setRowBackground(const QBrush& brush, QAbstractItemModel* model, int row, c
         if(parent.model() != model)
             return;
     }
-    for(int i=0; i < model->columnCount(parent); ++i)
-        model->setData(model->index(row,i,parent),brush,Qt::BackgroundRole);
+    for(int nCol=0; nCol < model->columnCount(parent); ++nCol)
+        model->setData(model->index(row,nCol,parent),brush,Qt::BackgroundRole);
 }
 void doEvents()
 {
