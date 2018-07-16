@@ -1294,6 +1294,8 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     lstRecValues[colBlockSize] = szTemp.trimmed();
     // Comment
     szTemp = ui->txtComment->text();
+    szTemp.remove(chOpenSQB);
+    szTemp.remove(chCloseSQB);
     lstRecValues[colComment] = szTemp.trimmed().left(MAX_COMMENT_LEN - 1);
     // Clear all values for Alarms/Events
     lstRecValues[colSourceVar] = szEMPTY;
@@ -5371,7 +5373,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].ser2_Enabled = false;
     lstTargets[TPAC1008_03_AC].ser3_Enabled = true;
     lstTargets[TPAC1008_03_AC].can1_Enabled = true;
-    // 28 TPAC1008_03_AC
+    // 28 TPAC1008_03_AD
     lstTargets[TPAC1008_03_AD].modelName =  QString::fromAscii(product_name[TPAC1008_03_AD]);
     lstTargets[TPAC1008_03_AD].displayWidth =  800;
     lstTargets[TPAC1008_03_AD].displayHeight = 480;
@@ -5965,6 +5967,7 @@ bool ctedit::checkServersDevicesAndNodes()
         theDevices[nCur].dCharTime = 0.0;
         theDevices[nCur].dMinSilence = 0.0;
         theDevices[nCur].nVars = 0;
+        theDevices[nCur].nDeviceReadTime = 0;
         theDevices[nCur].szDeviceName.clear();
         theDevices[nCur].diagnosticAddr = 0;
         theDevices[nCur].diagnosticVarName.clear();
@@ -5975,6 +5978,7 @@ bool ctedit::checkServersDevicesAndNodes()
         theNodes[nCur].nNodeId = 0xffff;
         theNodes[nCur].szNodeName.clear();
         theNodes[nCur].nVars = 0;
+        theNodes[nCur].nNodeReadTime = 0;
         theNodes[nCur].diagnosticAddr = 0;
         theNodes[nCur].diagnosticVarName.clear();
     }
@@ -5982,6 +5986,7 @@ bool ctedit::checkServersDevicesAndNodes()
     for (nCur = 0; nCur < nMAX_BLOCKS; nCur++)  {
         theBlocks[nCur].nBlockId = 0;
         theBlocks[nCur].nDevice = 0xffff;
+        theBlocks[nCur].nNode = 0xffff;
         theBlocks[nCur].nBlockSize = 0;
         theBlocks[nCur].nProtocol = 0;
         theBlocks[nCur].nRegisters = 0;
@@ -6349,6 +6354,7 @@ bool ctedit::checkServersDevicesAndNodes()
                 theBlocks[theBlocksNumber].nBlockSize = lstCTRecords[nCur].BlockSize;
                 theBlocks[theBlocksNumber].nProtocol = lstCTRecords[nCur].Protocol;
                 theBlocks[theBlocksNumber].nDevice = nDev;
+                theBlocks[theBlocksNumber].nNode = nNod;
                 theBlocksNumber ++;
             }
             // Incrementing Byte Size of Block
@@ -6365,9 +6371,17 @@ bool ctedit::checkServersDevicesAndNodes()
         nDev = theBlocks[nCur].nDevice;
         // Calcolo del tempo di lettura del Blocco
         if (nDev != 0xffff)  {
+            // Incremento del tempo di lettura del Device
             if (theDevices[nDev].dCharTime != 0.0)  {
                 theBlocks[nCur].nReadTime_ms = blockReadTime_ms(lstCTRecords[theBlocks[nCur].nBlockId - 1].VarType, theBlocks[nCur].nRegisters, theDevices[nDev].nSilence, theDevices[nDev].dCharTime);
+                theDevices[nDev].nDeviceReadTime +=  theBlocks[nCur].nReadTime_ms;
+                // Incremento del tempo di lettura del Nodo (se esiste)
+                nNod = theBlocks[nCur].nNode;
+                if (nDev != 0xffff)  {
+                    theNodes[nNod].nNodeReadTime += theBlocks[nCur].nReadTime_ms;
+                }
             }
+
         }
     }
     // Debug Dump
@@ -6503,7 +6517,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         szName = theDevices[nDevice].szDeviceName;
         // Colonna Info
         szInfo = tr("Total Variables: %1\t") .arg(theDevices[nDevice].nVars, 6, 10);
-        szInfo.append(tr("Max Block Size: %1 ").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
+        szInfo.append(tr("Max Block Size: %1\t").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
         // TimeOut
         if (theDevices[nDevice].nTimeOut >= 0)
             szInfo.append(tr("TimeOut: %1 ms \t") .arg(theDevices[nDevice].nTimeOut, 6, 10));
@@ -6517,9 +6531,11 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         if (theDevices[nDevice].nProtocol == RTU || theDevices[nDevice].nProtocol == RTU_SRV)  {
             szInfo.append(tr("Min.Silence: %1 ms \t") .arg(theDevices[nDevice].dMinSilence));
             if ((double) theDevices[nDevice].nSilence >= theDevices[nDevice].dMinSilence)
-                szInfo.append(tr("OK"));
+                szInfo.append(tr("OK\t"));
             else
-                szInfo.append(tr("Too Short"));
+                szInfo.append(tr("Too Short\t"));
+            // Total Read Time
+            szInfo.append(tr("Dev.Read Time: %1 ms\t").arg(theDevices[nDevice].nDeviceReadTime, 6, 10));
         }
         // ToolTip
         szToolTip = tr("Protocol:\t%1\n") .arg(lstProtocol[theDevices[nDevice].nProtocol]);
@@ -6715,6 +6731,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
             // If Protocol == PLC skip tree costruction, jump 2 Variable appending
             if (isPLC)  {
                 tCurrentBlock = tCurrentDevice;
+                tCurrentBlock->setExpanded(false);
                 goto addVariable;
             }            
             //----------------------------
@@ -6790,8 +6807,8 @@ addVariable:
     ui->deviceTree->setHeaderLabels(lstTreeHeads);
     ui->deviceTree->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->deviceTree->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->deviceTree->header()->resizeSection(colTreeName, (ui->deviceTree->width() / 2) - 12);
-    ui->deviceTree->header()->resizeSection(colTreeInfo, (ui->deviceTree->width() / 2) - 12);
+    ui->deviceTree->header()->resizeSection(colTreeName, (ui->deviceTree->width() / 3) - 12);
+    //ui->deviceTree->header()->resizeSection(colTreeInfo, (ui->deviceTree->width() / 2) - 12);
     ui->deviceTree->header()->resizeSections(QHeaderView::Interactive);
 }
 void    ctedit::fillTimingsTree(int nCurRow)
@@ -6931,7 +6948,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     ui->timingTree->setHeaderLabels(lstTreeHeads);
     ui->timingTree->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->timingTree->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->timingTree->header()->resizeSection(colTreeName, (ui->timingTree->width() / 2) - 12);
-    ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 2) - 12);
+    ui->timingTree->header()->resizeSection(colTreeName, (ui->timingTree->width() / 3) - 12);
+    //ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 2) - 12);
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
 }

@@ -35,6 +35,9 @@ const QChar   chBACKSLASH = QChar::fromAscii(92);
 const QChar   chX = QChar::fromLatin1(88);
 const QChar   chUNDERSCORE = QChar::fromAscii(95);
 const QChar   chZERO = QChar::fromAscii(48);
+const QChar   chOpenSQB = QChar::fromAscii(91);     // [
+const QChar   chCloseSQB = QChar::fromAscii(93);    // ]
+
 
 // String Costants
 const QString szEMPTY = QString::fromAscii("");
@@ -174,6 +177,7 @@ struct  deviceStruct {
     double      dCharTime;
     double      dMinSilence;
     int         nVars;
+    int         nDeviceReadTime;
     int         diagnosticAddr;
     QString     diagnosticVarName;
 };
@@ -183,6 +187,7 @@ struct  nodeStruct {
     int         nDevice;
     int         nNodeId;
     int         nVars;
+    int         nNodeReadTime;
     int         diagnosticAddr;
     QString     diagnosticVarName;
 };
@@ -190,6 +195,7 @@ struct  nodeStruct {
 struct blockStruct  {
     int         nBlockId;
     int         nDevice;
+    int         nNode;
     int         nBlockSize;
     int         nProtocol;
     int         nRegisters;
