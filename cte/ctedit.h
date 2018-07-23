@@ -103,6 +103,7 @@ private:
     bool    isLineModified(int nRow);               // Check se linea corrente Grid è diversa da Form in Editing
     bool    riassegnaBlocchi();                     // Riassegnazione blocchi variabili
     void    showAllRows(bool fShowAll);             // Visualizza o nascondi tutte le righe
+    void    setRowsColor();                         // Imposta il colore di sfondo di tutte le righe senza cambiare riga corrente
     void    setRowColor(int nRow, int nAlternate);  // Imposta il colore di sfondo di una riga
     void    jumpToGridRow(int nRow, bool fCenter = false);                // Salto alla riga nRow del Grid
     void    enableInterface();                      // Abilita l'interfaccia in funzione dello stato del sistema

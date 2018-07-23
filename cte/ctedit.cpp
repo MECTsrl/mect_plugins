@@ -520,9 +520,16 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtName->setValidator(new QRegExpValidator(regExprName, this));
     ui->txtName->setMaxLength(MAX_IDNAME_LEN);
     // Validator per commenti
-    QString szCommentExp = QString::fromAscii("^[^\\\\/:;,?\"'<>|]*$");
+    QString szCommentExp = QString::fromAscii("^[^\\\\/:\\\[\\\]\$;,?\"'<>|]*$");
     QRegExp regExprComment(szCommentExp);
-    ui->txtComment->setValidator(new QRegExpValidator(regExprComment, this));
+    if (regExprComment.isValid())  {
+        ui->txtComment->setValidator(new QRegExpValidator(regExprComment, this));
+        qDebug() << QString::fromLatin1("Valid RegExp: %1") .arg(szCommentExp);
+    }
+    else  {
+        ui->txtComment->setValidator(new QRegExpValidator(regExprName, this));
+        qDebug() << QString::fromLatin1("Invalid RegExp: %1") .arg(szCommentExp);
+    }
     ui->txtComment->setMaxLength(MAX_COMMENT_LEN - 1);
     // Campi sempre locked
     ui->txtRow->setEnabled(false);
@@ -1294,8 +1301,6 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     lstRecValues[colBlockSize] = szTemp.trimmed();
     // Comment
     szTemp = ui->txtComment->text();
-    szTemp.remove(chOpenSQB);
-    szTemp.remove(chCloseSQB);
     lstRecValues[colComment] = szTemp.trimmed().left(MAX_COMMENT_LEN - 1);
     // Clear all values for Alarms/Events
     lstRecValues[colSourceVar] = szEMPTY;
@@ -2146,8 +2151,8 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Sep 3
     gridMenu.addSeparator();
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale
-    QAction *addMPNC005 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005 Modules"));
-    addMPNC005->setEnabled((TargetConfig.ser0_Enabled || TargetConfig.ser1_Enabled || TargetConfig.ser2_Enabled || TargetConfig.ser3_Enabled)
+    QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005/MPNC006 Modules"));
+    addMPNC006->setEnabled((TargetConfig.ser0_Enabled || TargetConfig.ser1_Enabled || TargetConfig.ser2_Enabled || TargetConfig.ser3_Enabled)
                            && m_nGridRow < MIN_DIAG - 1);
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
     QAction *addTPLC050 = gridMenu.addAction(cIco, trUtf8("Paste TPLC050 Modules"));
@@ -2187,8 +2192,8 @@ void ctedit::displayUserMenu(const QPoint &pos)
         gotoRow();
     }
     // Add MPNC005  szTPLC050
-    else if (actMenu == addMPNC005)  {
-        addModelVars(szMPNC005, m_nGridRow);
+    else if (actMenu == addMPNC006)  {
+        addModelVars(szMPNC006, m_nGridRow);
     }
     // Add TPLC050
     else if (actMenu == addTPLC050)  {
@@ -2684,6 +2689,27 @@ void ctedit::on_cmdImport_clicked()
         }
     }
 }
+void    ctedit::setRowsColor()
+// Imposta il colore di sfondo di tutte le righe senza cambiare riga corrente
+{
+    int         nRow = 0;
+    int         nAlternate = 0;
+    int16_t     nPrevBlock = -1;
+
+    for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
+        // Determina se il blocco corrente è cambiato dal precedente
+        if (lstCTRecords[nRow].UsedEntry)  {
+            if (nPrevBlock != lstCTRecords[nRow].Block)
+                nAlternate = ((nAlternate + 1) % 2);
+            nPrevBlock = lstCTRecords[nRow].Block;
+        }
+        else
+            nPrevBlock = -1;
+        // Impostazione colore riga
+        setRowColor(nRow, nAlternate);
+    }
+}
+
 void ctedit::setRowColor(int nRow, int nAlternate)
 // Imposta il colore di sfondo di una riga
 {
@@ -2722,35 +2748,18 @@ void ctedit::setRowColor(int nRow, int nAlternate)
     // Impostazione del colore di sfondo
     QBrush bCell(cSfondo, Qt::SolidPattern);
     setRowBackground(bCell, ui->tblCT->model(), nRow);
-    /*for (nCol = 0; nCol < colTotals; nCol++)  {
-        tItem = ui->tblCT->item(nRow, nCol);
-        tItem->setData(Qt::BackgroundRole, bCell);
-        // tItem->setBackground(bCell);
-    } */
 }
 
 void ctedit::showAllRows(bool fShowAll)
 // Visualizza o nascondi tutte le righe
 {
-    int         nAlternate = 0;
     int         nFirstVisible = -1;
     int         nRow = 0;
-    int16_t     nPrevBlock = -1;
 
     // qDebug() << tr("showAllRows: showAll = %1 Current Row = %2") .arg(fShowAll) .arg(m_nGridRow);
+    setRowsColor();
     // Items del Grid    
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
-        // Determina se il blocco corrente è cambiato dal precedente
-        if (lstCTRecords[nRow].UsedEntry)  {
-            if (nPrevBlock != lstCTRecords[nRow].Block)
-                nAlternate = ((nAlternate + 1) % 2);
-            nPrevBlock = lstCTRecords[nRow].Block;
-        }
-        else
-            nPrevBlock = -1;
-        // Impostazione colore riga
-        setRowColor(nRow, nAlternate);
-        // Mostra o nascondi le righe se sono abilitate
         // Ricerca il primo Item visibile
         if (lstCTRecords[nRow].UsedEntry && nFirstVisible < 0)  {
             nFirstVisible = nRow ;
@@ -3069,17 +3078,19 @@ void ctedit::on_cmdUndo_clicked()
 void ctedit::tabSelected(int nTab)
 // Change current Tab
 {
-    // Aggiornamento della lista di variabili e ripopolamento liste per Trends
-    if (nTab == TAB_TREND) {
-        trendEdit->updateVarLists(lstLoggedVars);
-        trendEdit->fillTrendsCombo(m_szCurrentCTPath);
-    }
-    // Ritorno a CT da altro Tab, prudenzialmente aggiorna le info di configurazione
-    else if (nTab == TAB_CT)  {
+    int nPrevTab = m_nCurTab;
+
+    // Ritorno a CT da Tab System, prudenzialmente aggiorna le info di configurazione
+    if (nPrevTab == TAB_SYSTEM)  {
         // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
         mectSet->getTargetConfig(TargetConfig);
         // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
         enableProtocolsFromModel();
+    }
+    // Entering Trends: Aggiornamento della lista di variabili e ripopolamento liste per Trends
+    if (nTab == TAB_TREND) {
+        trendEdit->updateVarLists(lstLoggedVars);
+        trendEdit->fillTrendsCombo(m_szCurrentCTPath);
     }
     // Passaggio a tab DEVICES
     else if (nTab == TAB_DEVICES)  {
@@ -3866,8 +3877,10 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             // Ricarica Record vuoto a griglia
             fOk = recCT2List(lstValues, nRow);
             fOk = list2GridRow(lstValues, nRow);
-            // Repaint Colori
-            showAllRows(m_fShowAllRows);
+            // Repaint Colori Grid
+            if (fOk)  {
+                setRowsColor();
+            }
         }
         delete errWindow;
     }
@@ -5525,8 +5538,7 @@ bool ctedit::updateRow(int nRow)
                     ui->tblCT->currentRow();
                 }
                 // Repaint Colori
-                showAllRows(m_fShowAllRows);
-                // qDebug() << "Row saved:" << nRow;
+                setRowsColor();
             }
         }
         else
@@ -5985,6 +5997,7 @@ bool ctedit::checkServersDevicesAndNodes()
     // Clean Blocks
     for (nCur = 0; nCur < nMAX_BLOCKS; nCur++)  {
         theBlocks[nCur].nBlockId = 0;
+        theBlocks[nCur].nPriority = 0;
         theBlocks[nCur].nDevice = 0xffff;
         theBlocks[nCur].nNode = 0xffff;
         theBlocks[nCur].nBlockSize = 0;
@@ -6351,6 +6364,7 @@ bool ctedit::checkServersDevicesAndNodes()
             // Ricerca del Blocco della variabile in lista blocchi
             if (theBlocksNumber == 0 || (theBlocksNumber > 0 && theBlocks[theBlocksNumber -1].nBlockId != block))  {
                 theBlocks[theBlocksNumber].nBlockId = block;
+                theBlocks[theBlocksNumber].nPriority = lstCTRecords[nCur].Enable;
                 theBlocks[theBlocksNumber].nBlockSize = lstCTRecords[nCur].BlockSize;
                 theBlocks[theBlocksNumber].nProtocol = lstCTRecords[nCur].Protocol;
                 theBlocks[theBlocksNumber].nDevice = nDev;

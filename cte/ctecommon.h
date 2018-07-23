@@ -54,7 +54,7 @@ const QString szFALSE = QString::fromAscii("0");
 const QString szMectTitle = QString::fromAscii("Mect Editor");
 // External Models
 const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
-const QString szMPNC005 = QString::fromAscii("MPNC005");
+const QString szMPNC006 = QString::fromAscii("MPNC006");
 const QString szTPLC050 = QString::fromAscii("TPLC050");
 
 enum modbusserver_e
@@ -194,6 +194,7 @@ struct  nodeStruct {
 // Struttura per Blocchi
 struct blockStruct  {
     int         nBlockId;
+    int         nPriority;
     int         nDevice;
     int         nNode;
     int         nBlockSize;
