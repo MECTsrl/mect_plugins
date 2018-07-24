@@ -142,6 +142,7 @@ enum colTree_e
 {
     colTreeName = 0,
     colTreeInfo,
+    colTreeTimings,
     colTreeTotals
 };
 enum treeRoles
@@ -303,14 +304,11 @@ ctedit::ctedit(QWidget *parent) :
     lstRegions[regDiagnostic]   = trUtf8("Diagnostic\t[5000 - 5299]");
     lstRegions[regLocalIO]      = trUtf8("Local I/O\t[5300 - 5389]");
     lstRegions[regSystem]       = trUtf8("System\t[5390 - 5472]");
-    // Lista Priorità
+    // Lista Priorità (campo Enable)
     lstPriority.clear();
-    lstPriority
-            << QString::fromAscii("0")
-            << QString::fromAscii("1")
-            << QString::fromAscii("2")
-            << QString::fromAscii("3")
-        ;
+    for (nCol = 0; nCol < nNumPriority; nCol++)  {
+        lstPriority.append(QString::number(nCol));
+    }
     // Lista PLC (Frequenza Aggiornamento)
     lstUpdateNames.clear();
     lstAllUpdates.clear();
@@ -379,8 +377,8 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.append(tr("1 - Enabled High Priority\n"));
     szToolTip.append(tr("2 - Enabled Medium Priority\n"));
     szToolTip.append(tr("3 - Enabled Low Priority"));
-    for  (nCol=0; nCol<4; nCol++)   {
-        ui->cboPriority->addItem(lstPriority[nCol], QString::number(nCol));
+    for  (nCol = 0; nCol < nNumPriority; nCol++)   {
+        ui->cboPriority->addItem(lstPriority[nCol], lstPriority[nCol]);
     }
     ui->cboPriority->setToolTip(szToolTip);
     // Combo Update
@@ -524,11 +522,11 @@ ctedit::ctedit(QWidget *parent) :
     QRegExp regExprComment(szCommentExp);
     if (regExprComment.isValid())  {
         ui->txtComment->setValidator(new QRegExpValidator(regExprComment, this));
-        qDebug() << QString::fromLatin1("Valid RegExp: %1") .arg(szCommentExp);
+//        qDebug() << QString::fromLatin1("Valid RegExp: %1") .arg(szCommentExp);
     }
     else  {
         ui->txtComment->setValidator(new QRegExpValidator(regExprName, this));
-        qDebug() << QString::fromLatin1("Invalid RegExp: %1") .arg(szCommentExp);
+//        qDebug() << QString::fromLatin1("Invalid RegExp: %1") .arg(szCommentExp);
     }
     ui->txtComment->setMaxLength(MAX_COMMENT_LEN - 1);
     // Campi sempre locked
@@ -927,7 +925,7 @@ bool ctedit::recCT2List(QStringList &lstRecValues, int nRow)
     // Abilitazione riga
     if (lstCTRecords[nRow].UsedEntry)  {
         // Priority
-        if (lstCTRecords[nRow].Enable >= 0 && lstCTRecords[nRow].Enable < lstPriority.count())
+        if (lstCTRecords[nRow].Enable >= 0 && lstCTRecords[nRow].Enable < nNumPriority)
             lstRecValues[colPriority] = lstPriority[lstCTRecords[nRow].Enable];
         // Campo Update
         if (lstCTRecords[nRow].Update >= 0 && lstCTRecords[nRow].Update < lstUpdateNames.count())
@@ -1227,7 +1225,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     listClear(lstRecValues);
     // Priority
     nPos = ui->cboPriority->currentIndex();
-    if (nPos>= 0 && nPos < lstPriority.count())
+    if (nPos>= 0 && nPos < nNumPriority)
         szTemp = ui->cboPriority->itemData(nPos).toString();
     else
         szTemp = szEMPTY;
@@ -1615,7 +1613,7 @@ bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
     else  {
         // Priority
         nPos = lstPriority.indexOf(lstRecValues[colPriority]);
-        nPos = (nPos >= 0 && nPos < lstPriority.count()) ? nPos : 0;
+        nPos = (nPos >= 0 && nPos < nNumPriority) ? nPos : 0;
         lstCTRecords[nRow].Enable = (int16_t) nPos;
         // Update
         nPos = lstUpdateNames.indexOf(lstRecValues[colUpdate]);
@@ -5942,6 +5940,7 @@ bool ctedit::isSilenceOk(int nSilence_ms, int nBaudRate, double dblCharTime_ms)
 bool ctedit::checkServersDevicesAndNodes()
 {
     int         nCur = 0;
+    int         nPriority = 0;
     bool        fRes = true;
     int         nUsedVars = 0;
     int         nDiag = 0;
@@ -5979,7 +5978,9 @@ bool ctedit::checkServersDevicesAndNodes()
         theDevices[nCur].dCharTime = 0.0;
         theDevices[nCur].dMinSilence = 0.0;
         theDevices[nCur].nVars = 0;
-        theDevices[nCur].nDeviceReadTime = 0;
+        for (nPriority = 0; nPriority < nNumPriority; nPriority++)  {
+            theDevices[nCur].nDeviceReadTime[nPriority] = 0;
+        }
         theDevices[nCur].szDeviceName.clear();
         theDevices[nCur].diagnosticAddr = 0;
         theDevices[nCur].diagnosticVarName.clear();
@@ -5990,7 +5991,9 @@ bool ctedit::checkServersDevicesAndNodes()
         theNodes[nCur].nNodeId = 0xffff;
         theNodes[nCur].szNodeName.clear();
         theNodes[nCur].nVars = 0;
-        theNodes[nCur].nNodeReadTime = 0;
+        for (nPriority = 0; nPriority < nNumPriority; nPriority++)  {
+            theNodes[nCur].nNodeReadTime[nPriority] = 0;
+        }
         theNodes[nCur].diagnosticAddr = 0;
         theNodes[nCur].diagnosticVarName.clear();
     }
@@ -6024,6 +6027,8 @@ bool ctedit::checkServersDevicesAndNodes()
             base = nCur;
             block = lstCTRecords[nCur].Block;
         }
+        // Priority con controllo di Boundary per Array di Read Time
+        nPriority = (lstCTRecords[nCur].Enable >= 0 && lstCTRecords[nCur].Enable < nNumPriority) ? lstCTRecords[nCur].Enable : 0;
         lstCTRecords[nCur].BlockBase = base;
         // Consideriamo solo gli elementi abilitati
         if (lstCTRecords[nCur].UsedEntry > 0 && lstCTRecords[nCur].Enable > 0)  {
@@ -6364,7 +6369,7 @@ bool ctedit::checkServersDevicesAndNodes()
             // Ricerca del Blocco della variabile in lista blocchi
             if (theBlocksNumber == 0 || (theBlocksNumber > 0 && theBlocks[theBlocksNumber -1].nBlockId != block))  {
                 theBlocks[theBlocksNumber].nBlockId = block;
-                theBlocks[theBlocksNumber].nPriority = lstCTRecords[nCur].Enable;
+                theBlocks[theBlocksNumber].nPriority = nPriority;
                 theBlocks[theBlocksNumber].nBlockSize = lstCTRecords[nCur].BlockSize;
                 theBlocks[theBlocksNumber].nProtocol = lstCTRecords[nCur].Protocol;
                 theBlocks[theBlocksNumber].nDevice = nDev;
@@ -6380,22 +6385,28 @@ bool ctedit::checkServersDevicesAndNodes()
             lstCTRecords[nCur].nBlock = theBlocksNumber - 1;
         }   // Used Entry
     }       // Variables Cycle
-    // Blocks Cycle
+    //---------------------------
+    // Blocks Cycle for Reading times
+    //---------------------------
     for (nCur = 0; nCur < theBlocksNumber; nCur++)  {
-        nDev = theBlocks[nCur].nDevice;
-        // Calcolo del tempo di lettura del Blocco
-        if (nDev != 0xffff)  {
-            // Incremento del tempo di lettura del Device
-            if (theDevices[nDev].dCharTime != 0.0)  {
-                theBlocks[nCur].nReadTime_ms = blockReadTime_ms(lstCTRecords[theBlocks[nCur].nBlockId - 1].VarType, theBlocks[nCur].nRegisters, theDevices[nDev].nSilence, theDevices[nDev].dCharTime);
-                theDevices[nDev].nDeviceReadTime +=  theBlocks[nCur].nReadTime_ms;
-                // Incremento del tempo di lettura del Nodo (se esiste)
-                nNod = theBlocks[nCur].nNode;
-                if (nDev != 0xffff)  {
-                    theNodes[nNod].nNodeReadTime += theBlocks[nCur].nReadTime_ms;
+        nPriority = theBlocks[nCur].nPriority;
+        // Solo per Devices Seriali aggiorna il tempo di lettura blocco sui Device e Nodi di appartenenza
+        if (theBlocks[nCur].nProtocol == RTU || theBlocks[nCur].nProtocol == RTU_SRV)  {
+            nDev = theBlocks[nCur].nDevice;
+            // Calcolo del tempo di lettura del Blocco
+            if (nDev != 0xffff)  {
+                // Incremento del tempo di lettura del Device
+                if (theDevices[nDev].dCharTime != 0.0)  {
+                    theBlocks[nCur].nReadTime_ms = blockReadTime_ms(lstCTRecords[theBlocks[nCur].nBlockId - 1].VarType, theBlocks[nCur].nRegisters, theDevices[nDev].nSilence, theDevices[nDev].dCharTime);
+                    theDevices[nDev].nDeviceReadTime[nPriority] +=  theBlocks[nCur].nReadTime_ms;
+                    // Incremento del tempo di lettura del Nodo (se esiste)
+                    nNod = theBlocks[nCur].nNode;
+                    if (nNod != 0xffff)  {
+                        theNodes[nNod].nNodeReadTime[nPriority] += theBlocks[nCur].nReadTime_ms;
+                    }
                 }
-            }
 
+            }
         }
     }
     // Debug Dump
@@ -6428,6 +6439,8 @@ bool ctedit::checkServersDevicesAndNodes()
         szRow.append(QString::fromAscii("\tBlock Size: %1") .arg(theDevices[nCur].nMaxBlockSize));
         szRow.append(QString::fromAscii("\tVars: %1") .arg(theDevices[nCur].nVars));
         szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theDevices[nCur].diagnosticAddr));
+        szRow.append(QString::fromAscii("\tRead Time ms: P0=%1 P1=%2 P2=%3 P3=%4") .arg(theDevices[nCur].nDeviceReadTime[0]) .arg(theDevices[nCur].nDeviceReadTime[1])
+                .arg(theDevices[nCur].nDeviceReadTime[2]) .arg(theDevices[nCur].nDeviceReadTime[3]));
         qDebug() << szRow;
     }
     qDebug() << tr("Nodes: %1") .arg(theNodesNumber);
@@ -6437,6 +6450,8 @@ bool ctedit::checkServersDevicesAndNodes()
         szRow.append(QString::fromAscii("\tNode Id: %1") .arg(theNodes[nCur].nNodeId));
         szRow.append(QString::fromAscii("\t# Vars: %1") .arg(theNodes[nCur].nVars));
         szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theNodes[nCur].diagnosticAddr));
+        szRow.append(QString::fromAscii("\tRead Time ms: P0=%1 P1=%2 P2=%3 P3=%4") .arg(theNodes[nCur].nNodeReadTime[0]) .arg(theNodes[nCur].nNodeReadTime[1])
+                .arg(theNodes[nCur].nNodeReadTime[2]) .arg(theNodes[nCur].nNodeReadTime[3]));
         qDebug() << szRow;
     }
     qDebug() << tr("Blocks: %1") .arg(theBlocksNumber);
@@ -6446,17 +6461,19 @@ bool ctedit::checkServersDevicesAndNodes()
         szRow.append(QString::fromAscii("\tBlock Size: %1") .arg(theBlocks[nCur].nBlockSize, 6, 10));
         szRow.append(QString::fromAscii("\t#Registers: %1") .arg(theBlocks[nCur].nRegisters, 6, 10));
         szRow.append(QString::fromAscii("\tByte Size: %1") .arg(theBlocks[nCur].nByteSize, 6, 10));
+        szRow.append(QString::fromAscii("\tPriority: %1 - Read Time: %2 ms") .arg(theBlocks[nCur].nPriority, 4, 10) .arg(theBlocks[nCur].nReadTime_ms, 6, 10));
         qDebug() << szRow;
     }
     return fRes;
 }
-QTreeWidgetItem *ctedit::addItem2Tree(QTreeWidgetItem *tParent, int nRole, const QString &szName, const QString &szInfo, const QString &szToolTip)
+QTreeWidgetItem *ctedit::addItem2Tree(QTreeWidgetItem *tParent, int nRole, const QString &szName, const QString &szInfo, const QString &szTimings, const QString &szToolTip)
 // Aggiunta di un Item all'albero
 {
     QTreeWidgetItem *tItem = new QTreeWidgetItem(tParent, nRole);
     // Adding Columns to Variable Item
     tItem->setText(colTreeName, szName);
     tItem->setText(colTreeInfo, szInfo);
+    tItem->setText(colTreeTimings, szTimings);
     tItem->setToolTip(colTreeName, szToolTip);
     tItem->setToolTip(colTreeInfo, szToolTip);
     // Return Item Value
@@ -6469,6 +6486,7 @@ QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow)
     QTreeWidgetItem *tVariable;
     QString         szName(szEMPTY);
     QString         szInfo(szEMPTY);
+    QString         szTimings(szEMPTY);
     QString         szToolTip(szEMPTY);
     QColor          cSfondo = colorNonRetentive[0];
 
@@ -6491,7 +6509,7 @@ QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow)
     szInfo.append(QString::fromAscii("%1\t%2\t") .arg(lstHeadCols[colType]) .arg(lstTipi[lstCTRecords[nRow].VarType]));
     szInfo.append(QString::fromAscii("%1:\t%2") .arg(lstHeadCols[colBehavior]) .arg(lstBehavior[lstCTRecords[nRow].Behavior]));
     // Adding Variable Item to Tree
-    tVariable  = addItem2Tree(tParent, treeVariable, szName, szInfo, szToolTip);
+    tVariable  = addItem2Tree(tParent, treeVariable, szName, szInfo, szTimings, szToolTip);
     // Numero riga per Double Click
     QVariant vRow = nRow;
     tVariable->setData(colTreeName, Qt::UserRole, vRow);
@@ -6520,6 +6538,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     QString         szName(szEMPTY);
     QString         szInfo(szEMPTY);
     QString         szToolTip(szEMPTY);
+    QString         szTimings(szEMPTY);
     char            cFormat = 102;
 
     if (nDevice <0)  {
@@ -6549,7 +6568,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
             else
                 szInfo.append(tr("Too Short\t"));
             // Total Read Time
-            szInfo.append(tr("Dev.Read Time: %1 ms\t").arg(theDevices[nDevice].nDeviceReadTime, 6, 10));
+            // szInfo.append(tr("Dev.Read Time: %1 ms\t").arg(theDevices[nDevice].nDeviceReadTime, 6, 10));
         }
         // ToolTip
         szToolTip = tr("Protocol:\t%1\n") .arg(lstProtocol[theDevices[nDevice].nProtocol]);
@@ -6563,7 +6582,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         szName = QString::fromAscii("UNDEFINED");
     }
     // Adding Device Item to tree
-    tCurrentDevice = addItem2Tree(tParent, treeDevice, szName, szInfo, szToolTip);
+    tCurrentDevice = addItem2Tree(tParent, treeDevice, szName, szInfo, szTimings, szToolTip);
     // Return Value
     return tCurrentDevice;
 }
@@ -6574,6 +6593,7 @@ QTreeWidgetItem *ctedit::addNode2Tree(QTreeWidgetItem *tParent, int nNode)
     QString         szName(szEMPTY);
     QString         szInfo(szEMPTY);
     QString         szToolTip(szEMPTY);
+    QString         szTimings(szEMPTY);
 
     // Ricerca Info Nodo
     if (nNode >= 0 && nNode < theNodesNumber)  {
@@ -6589,7 +6609,7 @@ QTreeWidgetItem *ctedit::addNode2Tree(QTreeWidgetItem *tParent, int nNode)
         szName = QString::fromAscii("UNDEFINED");
     }
     // Adding Node Item to Tree
-    tCurrentNode = addItem2Tree(tParent, treeNode, szName, szInfo, szToolTip);
+    tCurrentNode = addItem2Tree(tParent, treeNode, szName, szInfo, szTimings, szToolTip);
     // Return Value
     return tCurrentNode;
 }
@@ -6600,6 +6620,7 @@ QTreeWidgetItem *ctedit::addPriority2Tree(QTreeWidgetItem *tParent, int nPriorit
     QString         szName(szEMPTY);
     QString         szInfo(szEMPTY);
     QString         szToolTip(szEMPTY);
+    QString         szTimings(szEMPTY);
 
     szName = QString::fromAscii("Priority %1") .arg(nPriority);
     // Read Period per Priorita
@@ -6613,7 +6634,7 @@ QTreeWidgetItem *ctedit::addPriority2Tree(QTreeWidgetItem *tParent, int nPriorit
     else
         szInfo.append(QString::fromLatin1("Undefined"));
     // Adding Node Item to Tree
-    tPriority = addItem2Tree(tParent, treePriority, szName, szInfo, szToolTip);
+    tPriority = addItem2Tree(tParent, treePriority, szName, szInfo, szTimings, szToolTip);
     // Return Value
     return tPriority;
 }
@@ -6656,17 +6677,18 @@ QTreeWidgetItem *ctedit::addBlock2Tree(QTreeWidgetItem *tParent, int nBlock, int
     QString         szName(szEMPTY);
     QString         szInfo(szEMPTY);
     QString         szToolTip(szEMPTY);
+    QString         szTimings(szEMPTY);
     int             nInfoBlock = searchBlock(nBlock);
 
     szName = QString::fromAscii("Block_") + int2PaddedString(nBlock, 2, 10);
     szInfo = tr("Block Size: %1\t") .arg(nBlockSize);
     if (nInfoBlock >= 0 && nInfoBlock < theBlocksNumber)  {
         if (theBlocks[nInfoBlock].nProtocol == RTU || theBlocks[nInfoBlock].nProtocol == RTU_SRV)  {
-            szInfo.append(tr("\tBlock Read Time: %1 ms\t") .arg(theBlocks[nInfoBlock].nReadTime_ms));
+            szTimings.append(tr("Block Read Time: %1 ms\t") .arg(theBlocks[nInfoBlock].nReadTime_ms));
         }
     }
     // Adding Node Item to Tree
-    tBlock = addItem2Tree(tParent, treeBlock, szName, szInfo, szToolTip);
+    tBlock = addItem2Tree(tParent, treeBlock, szName, szInfo, szTimings, szToolTip);
     // Return Value
     return tBlock;
 }
@@ -6697,6 +6719,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
     lstTreeHeads
             << QString::fromAscii("Name")
             << QString::fromAscii("Info")
+            << QString::fromAscii("Timings")
         ;
     ui->deviceTree->clear();
     ui->deviceTree->setColumnCount(colTreeTotals);
@@ -6822,7 +6845,7 @@ addVariable:
     ui->deviceTree->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->deviceTree->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->deviceTree->header()->resizeSection(colTreeName, (ui->deviceTree->width() / 3) - 12);
-    //ui->deviceTree->header()->resizeSection(colTreeInfo, (ui->deviceTree->width() / 2) - 12);
+    ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 3) - 12);
     ui->deviceTree->header()->resizeSections(QHeaderView::Interactive);
 }
 void    ctedit::fillTimingsTree(int nCurRow)
@@ -6853,6 +6876,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     lstTreeHeads
             << QString::fromAscii("Name")
             << QString::fromAscii("Info")
+            << QString::fromAscii("Timings")
         ;
     ui->timingTree->clear();
     ui->timingTree->setColumnCount(colTreeTotals);
@@ -6958,11 +6982,20 @@ void    ctedit::fillTimingsTree(int nCurRow)
     szName.append(tr("Black List: %1\t") .arg(TargetConfig.blacklist));
     tRoot->setText(colTreeInfo, szName);
     tRoot->setToolTip(colTreeName, ui->lblModel->toolTip());
+    // Salto alla riga corrispondente alla variabile selezionata in griglia CT
+    if (tCurrentVariable != 0)  {
+        qDebug() << tr("fillDeviceTree(): Selected: %1") .arg(tCurrentVariable->text(colTreeName));
+        tCurrentVariable->setSelected(true);
+        ui->deviceTree->scrollToItem(tCurrentVariable, QAbstractItemView::PositionAtCenter);
+    }
+    else {
+        tRoot->setSelected(true);
+    }
     // Tree Header
     ui->timingTree->setHeaderLabels(lstTreeHeads);
     ui->timingTree->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->timingTree->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->timingTree->header()->resizeSection(colTreeName, (ui->timingTree->width() / 3) - 12);
-    //ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 2) - 12);
+    ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 3) - 12);
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
 }
