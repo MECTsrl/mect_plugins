@@ -499,7 +499,7 @@ void TrendEditor::on_cmdLoad_clicked()
 }
 void TrendEditor::on_cmdSave_clicked()
 {
-    saveTrend(false);
+    saveTrend(true);
 }
 
 void TrendEditor::on_cmdSaveAs_clicked()
@@ -521,6 +521,9 @@ void TrendEditor::on_cmdSaveAs_clicked()
             QFileInfo infoDestination(szDestFile);
             m_szTrendFile = infoDestination.fileName();
             fillTrendsCombo(m_szTrendPath);
+            // Ripristinato per versione 3.1.3
+            m_szMsg = trUtf8("Trend File has been successfully Saved As File:\n%1").arg(szDestFile);
+            notifyUser(this, szMectTitle, m_szMsg);
         }
     }
 }
@@ -766,7 +769,7 @@ void TrendEditor::saveTrend(bool notifUser)
     }
     else  {
         if (notifUser)  {
-            m_szMsg = tr("Trend file has been successfully saved:\n%1") .arg(m_szTrendFile);
+            m_szMsg = tr("Trend file has been successfully Saved:\nFile: %1") .arg(m_szTrendFile);
             notifyUser(this, szMectTitle, m_szMsg);
         }
     }

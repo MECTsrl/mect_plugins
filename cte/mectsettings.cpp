@@ -694,7 +694,9 @@ bool MectSettings::saveOrCheckAll(QString szFileName, bool checkOnly)
         return changed;
     // Global Sync
     settings.sync();
-    // QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
+    // Ripristinato per versione 3.1.3
+    m_szMsg = trUtf8("Configuration has been successfully saved.\nFile: %1").arg(szFileName);
+    notifyUser(this, szMectTitle, m_szMsg);
     return true;
 }
 bool MectSettings::checkFields()

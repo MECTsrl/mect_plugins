@@ -235,7 +235,7 @@
       <enum>QTabWidget::East</enum>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tabCT">
       <property name="enabled">
@@ -1635,7 +1635,7 @@
                 <widget class="QFrame" name="fraLeft">
                  <property name="minimumSize">
                   <size>
-                   <width>0</width>
+                   <width>650</width>
                    <height>70</height>
                   </size>
                  </property>
@@ -1763,13 +1763,13 @@
                      <widget class="QLabel" name="lblTypeVar1">
                       <property name="minimumSize">
                        <size>
-                        <width>100</width>
+                        <width>150</width>
                         <height>0</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>100</width>
+                        <width>150</width>
                         <height>16777215</height>
                        </size>
                       </property>
@@ -1858,7 +1858,7 @@
                 <widget class="QFrame" name="fraSelector">
                  <property name="minimumSize">
                   <size>
-                   <width>150</width>
+                   <width>120</width>
                    <height>0</height>
                   </size>
                  </property>
@@ -1936,6 +1936,12 @@
                </item>
                <item>
                 <widget class="QFrame" name="fraRight">
+                 <property name="minimumSize">
+                  <size>
+                   <width>250</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="maximumSize">
                   <size>
                    <width>270</width>
@@ -1953,7 +1959,7 @@
                    <widget class="QLineEdit" name="txtFixedValue">
                     <property name="minimumSize">
                      <size>
-                      <width>250</width>
+                      <width>240</width>
                       <height>0</height>
                      </size>
                     </property>
@@ -1978,7 +1984,7 @@
                    <widget class="QComboBox" name="cboVariable2">
                     <property name="minimumSize">
                      <size>
-                      <width>250</width>
+                      <width>240</width>
                       <height>0</height>
                      </size>
                     </property>
@@ -2045,6 +2051,11 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QTreeWidget" name="deviceTree">
+         <property name="font">
+          <font>
+           <family>MS Shell Dlg 2</family>
+          </font>
+         </property>
          <column>
           <property name="text">
            <string notr="true">1</string>
@@ -2061,6 +2072,11 @@
       <layout class="QVBoxLayout" name="verticalLayout_10">
        <item>
         <widget class="QTreeWidget" name="timingTree">
+         <property name="font">
+          <font>
+           <family>MS Shell Dlg 2</family>
+          </font>
+         </property>
          <column>
           <property name="text">
            <string notr="true">1</string>

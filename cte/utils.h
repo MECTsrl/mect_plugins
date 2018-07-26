@@ -15,6 +15,7 @@ const  char     cDoubleQuote = 34;      // Carattere "
 const  char     cSingleQuote = 39;      // '
 const  char     cSpace = 32;            // Blank
 const  char     cZero = 48;             // Zero
+const  char     cFloat = 102;           // Carattere f per formattazione Floating Point
 
 
     QString     getPathFromFileName(const QString &fileName);               // Estrae il Path assoluto dal File Name ricevuto come parametro

@@ -10,7 +10,14 @@ const int nMaxRTUNodeID = 247;
 const int nStartInputRegister = 300000;
 const int nMaxInputRegister = nStartInputRegister + nMax_Int16;
 const int nMaxRegister = 49999;
+const int nCompareDecimals = 4;
+// Priority
 const int nNumPriority = 4;
+const int nPriorityNone = 0;
+const int nPriorityHigh = 1;
+const int nPriorityMedium = 2;
+const int nPriorityLow = 3;
+
 // Gestione Server / Device / Nodi
 const int nMAX_SERVERS  = 5;        // 3 RTU_SRV + 1 TCP_SRV + 1 TCPRTU_SRV (PLC in dataMain->dataNotifySet/Get)
 const int nMAX_DEVICES = 16;        // 3 RTU + n TCP + m TCPRTU + 2 CANOPEN + 1 RTUSRV + 1 TCPSRV + 1 TCPRTUSRV

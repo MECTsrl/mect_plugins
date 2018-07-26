@@ -54,7 +54,7 @@ private slots:
     void pasteSelected();                           // Incolla righe da Buffer di copiatura a Riga corrente
     void cutSelected();                             // Taglia righe in Buffer di copiatura
     void displayUserMenu(const QPoint &pos);        // Menu contestuale Grid
-    void tableItemChanged(const QItemSelection & selected, const QItemSelection & deselected);
+    void tableCTItemChanged(const QItemSelection & selected, const QItemSelection & deselected);
     void clearEntryForm();                          // Svutamento elementi Form Data Entry
     void clearStatusMessage();                      // Clear message in ui->lblMessage
     void tabSelected(int nTab);                     // Change current Tab
@@ -78,7 +78,9 @@ private slots:
     void on_optVariableVal_toggled(bool checked);
     void on_cboSections_currentIndexChanged(int index);
     void on_tblCT_doubleClicked(const QModelIndex &index);
+    void on_txtName_editingFinished();              // Modificato nome della variabile
     void treeItemDoubleClicked(const QModelIndex &index);
+
 
 private:
     //---------------------------------------------------------------------

@@ -583,7 +583,7 @@ ctedit::ctedit(QWidget *parent) :
     connect(ui->tblCT, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(displayUserMenu(const QPoint &)));
     // connect(ui->tblCT, SIGNAL(clicked(QModelIndex)), this, SLOT(itemClicked(QModelIndex)));
     connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-            SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
+            SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabSelected(int)));
     connect(ui->deviceTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
     connect(ui->timingTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
@@ -1186,10 +1186,18 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
                         // Numero
                         ui->optFixedVal->setChecked(true);
                         // Formattazione del Numero in funzione dei Decimali della variabile di source
-                        QLocale c(QLocale::C);
-                        double dVal = c.toDouble(szTemp, &fOk);
+                        QLocale cLocale(QLocale::C);
+                        double dVal = cLocale.toDouble(szTemp, &fOk);
                         dVal = fOk ? dVal : 0.0;
-                        szTemp = QString::number(dVal, 'f', nDec);
+                        // Valore numerico in Stringa formattata in funzione dei decimali previsti
+                        if (lstCTRecords[nLeftVar].VarType == BYTE_BIT ||
+                            lstCTRecords[nLeftVar].VarType  == WORD_BIT ||
+                            lstCTRecords[nLeftVar].VarType  == DWORD_BIT)  {
+                            szTemp = QString::number(dVal, 'f', nCompareDecimals);
+                        }
+                        else  {
+                            szTemp = QString::number(dVal, 'f', nDec);
+                        }
                         ui->txtFixedValue->setText(szTemp);
                     }
                     else  {
@@ -1453,6 +1461,7 @@ bool    ctedit::riassegnaBlocchi()
     this->setCursor(Qt::WaitCursor);
     // Copia l'attuale CT nella lista Undo
     lstUndo.append(lstCTRecords);
+    qDebug() << "riassegnaBlocchi() - lstUndo added";
     for (nRow = 0; nRow < MIN_DIAG - 1; nRow++)  {
         // Ignora le righe con Priority == 0
         if (lstCTRecords[nRow].Enable > 0)  {
@@ -1972,8 +1981,8 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     // Abilitazione del campi di data entry in funzione del Protocollo
     enableFields();
 }
-void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelection & deselected)
-// Slot attivato ad ogni cambio di riga in
+void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSelection & deselected)
+// Slot attivato ad ogni cambio di riga in Table CT
 {
     int         nRow = -1;
     QStringList lstFields;
@@ -2008,13 +2017,16 @@ void ctedit::tableItemChanged(const QItemSelection & selected, const QItemSelect
     // Cambio riga Ko
     if (! fRes)    {
         // Disconnette segnale per evitare ricorsione
+//        disableAndBlockSignals(ui->tblCT);
         disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-                    SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
+                    SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
         // Cambia Selezione (ritorna a riga precedente)
         ui->tblCT->selectRow(nRow);
+        m_nGridRow = nRow;
+//        enableAndUnlockSignals(ui->tblCT);
         // Riconnette slot gestione
         connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-                    SLOT(tableItemChanged(const QItemSelection &, const QItemSelection & ) ));
+                    SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
         return;
     }
     // Si può cambiare riga, legge contenuto
@@ -2371,6 +2383,7 @@ void ctedit::insertRows()
     if (nCurPos + selection.count() < MAX_NONRETENTIVE - 1)  {
         // Append to Undo List
         lstUndo.append(lstCTRecords);
+        qDebug() << "insertRows() - lstUndo added";
         // Enter in Paste Mode
         m_fCutOrPaste = true;
         // Ricerca del Punto di Inserzione
@@ -2436,6 +2449,7 @@ void ctedit::emptySelected()
         return;
     }
     lstUndo.append(lstCTRecords);
+    qDebug() << "emptySelected() - lstUndo added";
     // Compile Selected Row List
     m_fCutOrPaste = true;
     for (nCur = 0; nCur < selection.count(); nCur++)  {
@@ -2489,6 +2503,7 @@ void ctedit::removeSelected()
         return;
     }
     lstUndo.append(lstCTRecords);
+    qDebug() << "removeSelected() - lstUndo added";
     // Compile Selected Row List
     m_fCutOrPaste = true;
     for (nCur = 0; nCur < selection.count(); nCur++)  {
@@ -2617,8 +2632,19 @@ bool ctedit::isLineModified(int nRow)
         if (ui->cboBehavior->currentIndex() >= behavior_alarm)  {
             nModif += (ui->cboVariable1->currentText().trimmed() != ui->tblCT->item(nRow, colSourceVar)->text().trimmed());
             nModif += (ui->cboCondition->currentText().trimmed() != ui->tblCT->item(nRow, colCondition)->text().trimmed());
-            if (ui->optFixedVal->isChecked())
-                nModif += (ui->txtFixedValue->text().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+            if (ui->optFixedVal->isChecked())  {
+                // Confronto tra Real arrotondati a 4 decimali
+                bool    fIfVal = false;
+                bool    fTbVal = false;
+                double dblIfaceVal = ui->txtFixedValue->text().toDouble(&fIfVal);
+                dblIfaceVal = fIfVal ? myRound(dblIfaceVal, nCompareDecimals) : 0.0;
+                double dblTableVal = ui->tblCT->item(nRow, colCompare)->text().toDouble(&fTbVal);
+                dblTableVal = fIfVal ? myRound(dblTableVal, nCompareDecimals) : 0.0;
+                // Entrambi convertiti, valori diversi, oppure Uno dei due non convertibile
+                if ((fIfVal && fTbVal && dblIfaceVal != dblTableVal) || (fIfVal != fTbVal))
+                    nModif++;
+//                nModif += (ui->txtFixedValue->text().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+            }
             else
                 nModif += (ui->cboVariable2->currentText().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
         }
@@ -2646,6 +2672,7 @@ void ctedit::on_cmdImport_clicked()
             if (queryUser(this, szMectTitle, szMsg))  {
                 // Copia di Salvataggio
                 lstUndo.append(lstCTRecords);
+                qDebug() << "on_cmdImport_clicked() - lstUndo added";
                 lstNewRecs.clear();
                 // Caricamento della nuova Cross Table (a questo livello non vengono fatti checks sulle righe caricate)
                 if (loadCTFile(szSourceFile, lstNewRecs, false))  {
@@ -3101,6 +3128,7 @@ void ctedit::tabSelected(int nTab)
     // Set Current Tab
     m_nCurTab = nTab;
 }
+
 void ctedit::enableInterface()
 // Abilita l'interfaccia in funzione dello stato del sistema
 {
@@ -4490,14 +4518,25 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)  {
             if (m_nCurTab == TAB_CT)  {
                 if (obj == ui->fraEdit)  {
-                    // Enter su Editing Form
-                    // qDebug() << tr("Enter in Form");
-                    if (! isFormEmpty() && isLineModified(m_nGridRow)) {
-                        updateRow(m_nGridRow);
-                        // Salto a riga successiva
-                        jumpToGridRow(findNextVisibleRow(m_nGridRow), false);
-                        enableInterface();
-                    }
+                    int nextRow = findNextVisibleRow(m_nGridRow);
+                    // Salto a riga successiva
+                    jumpToGridRow(nextRow, false);
+//                    bool fRowOk = false;
+//                    // Enter su Editing Form
+//                    // qDebug() << tr("Enter in Form");
+//                    if (! isFormEmpty() && isLineModified(m_nGridRow)) {
+//                        fRowOk = updateRow(m_nGridRow);
+//                        if (fRowOk)  {
+//                            int nextRow = findNextVisibleRow(m_nGridRow);
+//                            // Salto a riga successiva
+//                            jumpToGridRow(nextRow, false);
+//                            // Eventuale Cambio Area utente
+//                            setSectionArea(nextRow);
+//                            m_isCtModified = true;
+//                            // Aggiornamento interfaccia
+//                            enableInterface();
+//                        }
+//                    }
                     // QKeyEvent newEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier, szEMPTY);
                     ui->tblCT->setFocus();
                     return true;
@@ -4745,6 +4784,30 @@ void ctedit::on_cboSections_currentIndexChanged(int index)
     }
     // Jump to Row
     jumpToGridRow(nRow, true);
+}
+void ctedit::on_txtName_editingFinished()
+// Modificato nome della variabile
+{
+    QString szVarName;
+
+    if (ui->txtName->isModified())  {
+        szVarName = ui->txtName->text();
+        // Applicazione dei valori di default Priority nel caso di una riga vuota preceduta da una riga vuota o con protocollo differente
+        // Solo su variabili in area utente
+        if (! szVarName.isEmpty() && ! lstCTRecords[m_nGridRow].UsedEntry && m_nGridRow < MAX_NONRETENTIVE -1)  {
+            // Solo se la riga è la prima di un blocco oppure ha un protocollo differente dalla precedente
+            if ((m_nGridRow == 0) || (m_nGridRow > 0 && (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 || lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex())))  {
+                // Forza il livello di priorià a Medio
+                ui->cboPriority->setCurrentIndex(nPriorityMedium);
+            }
+            // Se il nome della variabile è cambiato rispetto al valore precedente
+            if (szVarName != QString::fromAscii(lstCTRecords[m_nGridRow].Tag))  {
+                // Ricarica le combo dei nomi variabili
+                fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates, true);
+                fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates, true);
+            }
+        }
+    }
 }
 
 bool ctedit::checkCTFile(QString szSourceFile)
@@ -5523,24 +5586,23 @@ bool ctedit::updateRow(int nRow)
         fRes = iface2values(lstFields);
         // Primo controllo di coerenza sulla riga corrente
         nErrors = checkFormFields(nRow, lstFields, true);
-        if (nErrors == 0)  {
+        if (fRes && nErrors == 0)  {
             // Copia l'attuale CT nella lista Undo
             lstUndo.append(lstCTRecords);
-            if (fRes)  {
-                // Salva Record
-                fIsSaved = list2CTrec(lstFields, nRow);
-                // Aggiorna Grid Utente per riga corrente
-                if (fIsSaved)  {
-                    fRes = list2GridRow(lstFields, nRow);
-                    m_isCtModified = true;
-                    ui->tblCT->currentRow();
-                }
+            qDebug() << "updateRow() - lstUndo added";
+            // Salva Record
+            fIsSaved = list2CTrec(lstFields, nRow);
+            // Aggiorna Grid Utente per riga corrente
+            if (fIsSaved)  {
+                fRes = list2GridRow(lstFields, nRow);
+                m_isCtModified = fIsSaved;
                 // Repaint Colori
                 setRowsColor();
             }
         }
-        else
+        else  {
             fRes = false;
+        }
     }
     // Return Value
     return fRes;
@@ -5734,7 +5796,7 @@ bool ctedit::getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPas
                     xmlValue = xmlAttrib.value(szXMLCTDESTROW).toString();
                     if (! xmlValue.isEmpty())  {
                         nRow = xmlValue.toInt(&fOk);
-                        nRow = fOk ? nRow : -1;
+                        nRow = (fOk && nRow) > 0 ? (nRow -1) : -1;
                     }
                     lstDestRows.append(nRow);
                     // Append Data to Pasting Lists
@@ -5819,6 +5881,7 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
 
     // Append to Undo List
     lstUndo.append(lstCTRecords);
+    qDebug() << "addRowsToCT() - lstUndo added";
     // Mark first destination row
     nCur = nRow;
     // Compile Selected Row List
@@ -6117,6 +6180,8 @@ bool ctedit::checkServersDevicesAndNodes()
             }       // switch on Protocol 1
             // Seconda verifica per la gestione dei Device / Nodi
             // client variables =---> link to the server and add unique devices and nodes
+            nDev = 0xffff;
+            nNod = 0xffff;
             switch (lstCTRecords[nCur].Protocol) {
             case PLC:
                 // no plc client
@@ -6405,7 +6470,6 @@ bool ctedit::checkServersDevicesAndNodes()
                         theNodes[nNod].nNodeReadTime[nPriority] += theBlocks[nCur].nReadTime_ms;
                     }
                 }
-
             }
         }
     }
@@ -6431,27 +6495,26 @@ bool ctedit::checkServersDevicesAndNodes()
         szRow.append(QString::fromAscii("\tProtocol: %1") .arg(lstProtocol[theDevices[nCur].nProtocol]));
         szRow.append(QString::fromAscii("\tIp Str: %1") .arg(theDevices[nCur].szIpAddress));
         szRow.append(QString::fromAscii("\tPort: %1") .arg(theDevices[nCur].nPort));
-        szRow.append(QString::fromAscii("\tBaud Rate: %1") .arg(theDevices[nCur].nBaudRate));
-        szRow.append(QString::fromAscii("\tData Bits: %1") .arg(theDevices[nCur].nDataBits));
-        szRow.append(QString::fromAscii("\tStop Bits: %1") .arg(theDevices[nCur].nStopBits));
-        szRow.append(QString::fromAscii("\tChar Time: %1") .arg(theDevices[nCur].dCharTime));
-        szRow.append(QString::fromAscii("\tMin Silence Time: %1") .arg(theDevices[nCur].dMinSilence));
-        szRow.append(QString::fromAscii("\tBlock Size: %1") .arg(theDevices[nCur].nMaxBlockSize));
-        szRow.append(QString::fromAscii("\tVars: %1") .arg(theDevices[nCur].nVars));
-        szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theDevices[nCur].diagnosticAddr));
-        szRow.append(QString::fromAscii("\tRead Time ms: P0=%1 P1=%2 P2=%3 P3=%4") .arg(theDevices[nCur].nDeviceReadTime[0]) .arg(theDevices[nCur].nDeviceReadTime[1])
-                .arg(theDevices[nCur].nDeviceReadTime[2]) .arg(theDevices[nCur].nDeviceReadTime[3]));
+        szRow.append(QString::fromAscii("\tBaud Rate: %1") .arg(theDevices[nCur].nBaudRate, 4, 10));
+        szRow.append(QString::fromAscii("\tData Bits: %1") .arg(theDevices[nCur].nDataBits, 2, 10));
+        szRow.append(QString::fromAscii("\tStop Bits: %1") .arg(theDevices[nCur].nStopBits, 2, 10));
+        szRow.append(QString::fromAscii("\tChar Time: %1 ms") .arg(theDevices[nCur].dCharTime, 8, cFloat, 4));
+        szRow.append(QString::fromAscii("\tMin Silence Time: %1 ms") .arg(theDevices[nCur].dMinSilence, 8, cFloat, 4));
+        szRow.append(QString::fromAscii("\tBlock Size: %1") .arg(theDevices[nCur].nMaxBlockSize, 4, 10));
+        szRow.append(QString::fromAscii("\tVars: %1") .arg(theDevices[nCur].nVars, 4, 10));
+        szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theDevices[nCur].diagnosticAddr, 6, 10));
+        szRow.append(QString::fromAscii("\tRead Time ms: P0=%1 P1=%2 P2=%3 P3=%4") .arg(theDevices[nCur].nDeviceReadTime[0],4,10) .arg(theDevices[nCur].nDeviceReadTime[1],4,10)
+                .arg(theDevices[nCur].nDeviceReadTime[2],4,10) .arg(theDevices[nCur].nDeviceReadTime[3],4,10));
         qDebug() << szRow;
     }
     qDebug() << tr("Nodes: %1") .arg(theNodesNumber);
     for (nCur = 0; nCur < theNodesNumber; nCur++)  {
         szRow = QString::fromAscii("\t%1 - Node Name: %2") .arg(nCur+1, 4, 10) .arg(theNodes[nCur].szNodeName);
-        szRow.append(QString::fromAscii("\tDevice Id: %1") .arg(theNodes[nCur].nDevice));
-        szRow.append(QString::fromAscii("\tNode Id: %1") .arg(theNodes[nCur].nNodeId));
-        szRow.append(QString::fromAscii("\t# Vars: %1") .arg(theNodes[nCur].nVars));
-        szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theNodes[nCur].diagnosticAddr));
-        szRow.append(QString::fromAscii("\tRead Time ms: P0=%1 P1=%2 P2=%3 P3=%4") .arg(theNodes[nCur].nNodeReadTime[0]) .arg(theNodes[nCur].nNodeReadTime[1])
-                .arg(theNodes[nCur].nNodeReadTime[2]) .arg(theNodes[nCur].nNodeReadTime[3]));
+        szRow.append(QString::fromAscii("\tDevice Id: %1 - Node Id: %2") .arg(theNodes[nCur].nDevice,4,10).arg(theNodes[nCur].nNodeId,4,10));
+        szRow.append(QString::fromAscii("\t# Vars: %1") .arg(theNodes[nCur].nVars,4,10));
+        szRow.append(QString::fromAscii("\tDiag Adr: %1") .arg(theNodes[nCur].diagnosticAddr,6,10));
+        szRow.append(QString::fromAscii("\tRead Time ms: P0=%1 P1=%2 P2=%3 P3=%4") .arg(theNodes[nCur].nNodeReadTime[0],4,10) .arg(theNodes[nCur].nNodeReadTime[1],4,10)
+                .arg(theNodes[nCur].nNodeReadTime[2],4,10) .arg(theNodes[nCur].nNodeReadTime[3],4,10));
         qDebug() << szRow;
     }
     qDebug() << tr("Blocks: %1") .arg(theBlocksNumber);
@@ -6459,6 +6522,7 @@ bool ctedit::checkServersDevicesAndNodes()
         szRow = QString::fromAscii("\t%1 - Block Id: %2") .arg(nCur+1, 4, 10) .arg(theBlocks[nCur].nBlockId, 6, 10);
         szRow.append(QString::fromAscii("\tProtocol: %1") .arg(lstProtocol[theBlocks[nCur].nProtocol]));
         szRow.append(QString::fromAscii("\tBlock Size: %1") .arg(theBlocks[nCur].nBlockSize, 6, 10));
+        szRow.append(QString::fromAscii("\tNode: %1 - Device: %2") .arg(theBlocks[nCur].nNode, 4, 10) .arg(theBlocks[nCur].nDevice, 4, 10));
         szRow.append(QString::fromAscii("\t#Registers: %1") .arg(theBlocks[nCur].nRegisters, 6, 10));
         szRow.append(QString::fromAscii("\tByte Size: %1") .arg(theBlocks[nCur].nByteSize, 6, 10));
         szRow.append(QString::fromAscii("\tPriority: %1 - Read Time: %2 ms") .arg(theBlocks[nCur].nPriority, 4, 10) .arg(theBlocks[nCur].nReadTime_ms, 6, 10));
@@ -6529,6 +6593,7 @@ QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow)
     QBrush bCell(cSfondo, Qt::SolidPattern);
     tVariable->setBackground(colTreeName, bCell);
     tVariable->setBackground(colTreeInfo, bCell);
+    tVariable->setBackground(colTreeTimings, bCell);
     return tVariable;
 }
 QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
@@ -6539,7 +6604,6 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     QString         szInfo(szEMPTY);
     QString         szToolTip(szEMPTY);
     QString         szTimings(szEMPTY);
-    char            cFormat = 102;
 
     if (nDevice <0)  {
         szName = QString::fromLatin1("PLC");
@@ -6844,8 +6908,8 @@ addVariable:
     ui->deviceTree->setHeaderLabels(lstTreeHeads);
     ui->deviceTree->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->deviceTree->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->deviceTree->header()->resizeSection(colTreeName, (ui->deviceTree->width() / 3) - 12);
-    ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 3) - 12);
+    ui->deviceTree->header()->resizeSection(colTreeName, (ui->deviceTree->width() / 4) - 12);
+    ui->deviceTree->header()->resizeSection(colTreeInfo, (ui->deviceTree->width() / 2) - 12);
     ui->deviceTree->header()->resizeSections(QHeaderView::Interactive);
 }
 void    ctedit::fillTimingsTree(int nCurRow)
@@ -6995,7 +7059,8 @@ void    ctedit::fillTimingsTree(int nCurRow)
     ui->timingTree->setHeaderLabels(lstTreeHeads);
     ui->timingTree->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->timingTree->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->timingTree->header()->resizeSection(colTreeName, (ui->timingTree->width() / 3) - 12);
-    ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 3) - 12);
+    ui->timingTree->header()->resizeSection(colTreeName, (ui->timingTree->width() / 4) - 12);
+    ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 2) - 12);
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
 }
+

@@ -52,6 +52,7 @@ private:
     QString     m_szProjectPath;
     QString     m_szFilePro;
     QString     m_szModel;
+    QString     m_szMsg;
     TP_Config   TargetConfig;
     int         m_nModel;
     bool        m_tabEnabled[tabTotals];
