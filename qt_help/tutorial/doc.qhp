@@ -12,10 +12,12 @@
         <toc>
             <section title="MectSuite Tutorial" ref="Home_Tutorial.html">
 				<section title="Introduzione" ref="Introduzione.html"/>
-				<section title="Installazione" ref="Installazione.html"/>
 				<section title="Aggiornamenti" ref="Aggiornamenti.html"/>
 				<section title="Convertire un progetto 2.0.13 in 3.x" ref="Convertire_progetto_2x.html"/>
 				<section title="Operazioni preliminari" ref="Operazioni_preliminari.html"/>
+				<section title="Creazione nuovo progetto" ref="Creazione_progetto.html"/>
+				<section title="Aprire un progetto" ref="Aprire_progetto.html"/>
+				<section title="Rinominare un progetto" ref="Rinominare_progetto.html"/>
 				<section title="HMI" ref="HMI.html">
 					<section title="Crosstable Editor" ref="Crosstable_Editor.html">
 						<section title="Descrizione della Crosstable" ref="Descrizione_Crosstable.html">
@@ -35,12 +37,9 @@
 						</section>
 					<section title="Struttura progetto vuoto" ref="Struttura_progetto.html"/>
 					<section title="Pagine di libreria" ref="Pagine_libreria.html"/>
-					<section title="Creazione nuovo progetto" ref="Creazione_progetto.html"/>
 					<section title="Aggiungere una pagina" ref="Aggiungere_pagina.html"/>
 					<section title="Rimuovere una pagina" ref="Rimuovere_pagina.html"/>
-					<section title="Rinominare una pagina" ref="Rinominare_pagina.html"/>
-					<section title="Rinominare un progetto" ref="Rinominare_progetto.html"/>
-					<section title="Aprire un progetto" ref="Aprire_progetto.html"/>
+					<section title="Rinominare una pagina" ref="Rinominare_pagina.html"/>										
 					<section title="Aggiungere immagini / font" ref="Aggiungere_immagine_font.html"/>
 					<section title="Personalizzare sfondo pagina" ref="Personalizzare_sfondo_pagina.html"/>
 					<section title="Aggiungere elementi grafici" ref="Aggiungere_elementi_grafici.html"/>
@@ -140,9 +139,8 @@
 					<section title="Aggiungere librerie nel progetto" ref="Aggiungere_librerie.html"/>
 					<section title="Path di progetto" ref="Path_progetto.html"/>
 					</section>	
-				<section title="Variabili di sistema" ref="Variabili_sistema.html">	
-						<section title="Configurazione delle variabili di sistema" ref="Config_variabili_sistema.html"/>
-						</section>
+				<section title="Variabili di prodotto (Local I/O)" ref="Variabili_prodotto.html"/>	
+				<section title="Configurazione ingressi / uscite" ref="Config_ingressi_uscite.html"/>						
 				<section title="Variabili di diagnostica" ref="Variabili_diagnostica.html"/>	
 				<section title="Inserimento della micro SD card" ref="SD_card.html"/>
 				<section title="Attivazione della VNC" ref="VNC.html"/>	
@@ -214,8 +212,8 @@
 			<file>Traduzione_lingue_2.png</file>
 			<file>Fonts.html</file>
 			<file>Fonts_1.png</file>
-			<file>Variabili_sistema.html</file>
-			<file>Config_variabili_sistema.html</file>
+			<file>Variabili_prodotto.html</file>
+			<file>Config_ingressi_uscite.html</file>
 			<file>Pagina_alarms_history.html</file>
 			<file>Pagina_alarms_history_1.png</file>	
 			<file>Pagina_alarms_history_2.png</file>	
@@ -403,7 +401,6 @@
 			<file>Home.png</file>
 			<file>Introduzione.html</file>			
 			<file>Introduzione_1.png</file>
-			<file>Installazione.html</file>
 			<file>Aggiornamenti.html</file>
 			<file>Operazioni_preliminari.html</file>
 			<file>HMI.html</file>

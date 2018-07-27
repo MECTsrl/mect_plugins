@@ -12,10 +12,12 @@
         <toc>
             <section title="MectSuite Tutorial ENG" ref="Home_Tutorial.html">
 				<section title="Introduction" ref="Introduzione_eng.html"/>
-				<section title="Installation" ref="Installazione_eng.html"/>
 				<section title="Update" ref="Aggiornamenti_eng.html"/>
 				<section title="Convert a 2.0.13 project into 3.x version" ref="Convertire_progetto_2x_eng.html"/>
 				<section title="Preliminary operation" ref="Operazioni_preliminari_eng.html"/>
+				<section title="New project creation" ref="Creazione_progetto_eng.html"/>
+				<section title="Open an existing project" ref="Aprire_progetto_eng.html"/>
+				<section title="Rename a project" ref="Rinominare_progetto_eng.html"/>
 				<section title="HMI" ref="HMI_eng.html">
 					<section title="Crosstable Editor" ref="Crosstable_Editor_eng.html">
 						<section title="Description of Crosstable fields" ref="Descrizione_Crosstable_eng.html">
@@ -34,13 +36,10 @@
 						<section title="Trend creation and modification" ref="Modifica_trend_eng.html"/>
 						</section>
 					<section title="Empty project structure" ref="Struttura_progetto_eng.html"/>
-					<section title="Library pages" ref="Pagine_libreria_eng.html"/>
-					<section title="New project creation" ref="Creazione_progetto_eng.html"/>
+					<section title="Library pages" ref="Pagine_libreria_eng.html"/>					
 					<section title="Add a new page" ref="Aggiungere_pagina_eng.html"/>
 					<section title="Remove an existing page" ref="Rimuovere_pagina_eng.html"/>
-					<section title="Rename an existing page" ref="Rinominare_pagina_eng.html"/>
-					<section title="Rename a project" ref="Rinominare_progetto_eng.html"/>
-					<section title="Open an existing project" ref="Aprire_progetto_eng.html"/>
+					<section title="Rename an existing page" ref="Rinominare_pagina_eng.html"/>										
 					<section title="Add images / fonts" ref="Aggiungere_immagine_font_eng.html"/>
 					<section title="Customize the background page" ref="Personalizzare_sfondo_pagina_eng.html"/>
 					<section title="Adding graphic items" ref="Aggiungere_elementi_grafici_eng.html"/>
@@ -140,9 +139,8 @@
 					<section title="Add libraries to the project" ref="Aggiungere_librerie_eng.html"/>
 					<section title="Project path" ref="Path_progetto_eng.html"/>
 					</section>
-				<section title="System variables" ref="Variabili_sistema_eng.html">	
-						<section title="System variables configuration" ref="Config_variabili_sistema_eng.html"/>
-						</section>
+				<section title="Device variables (Local I/O)" ref="Variabili_prodotto_eng.html"/>	
+				<section title="Inputs / outputs configuration" ref="Config_ingressi_uscite_eng.html"/>						
 				<section title="Diagnostic variables" ref="Variabili_diagnostica_eng.html"/>
 				<section title="Micro SD card insertion" ref="SD_card_eng.html"/>
 				<section title="VNC activation" ref="VNC_eng.html"/>	
@@ -214,8 +212,8 @@
 			<file>Traduzione_lingue_2.png</file>
 			<file>Fonts_eng.html</file>
 			<file>Fonts_1.png</file>
-			<file>Variabili_sistema_eng.html</file>
-			<file>Config_variabili_sistema_eng.html</file>
+			<file>Variabili_prodotto_eng.html</file>
+			<file>Config_ingressi_uscite_eng.html</file>
 			<file>Pagina_alarms_history_eng.html</file>
 			<file>Pagina_alarms_history_1.png</file>	
 			<file>Pagina_alarms_history_2.png</file>	
@@ -403,7 +401,6 @@
 			<file>Home.png</file>
 			<file>Introduzione_eng.html</file>
 			<file>Introduzione_1.png</file>
-			<file>Installazione_eng.html</file>
 			<file>Aggiornamenti_eng.html</file>
 			<file>Operazioni_preliminari_eng.html</file>
 			<file>HMI_eng.html</file>
