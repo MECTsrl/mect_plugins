@@ -118,6 +118,7 @@ private:
     void    fillDeviceTree(int nCurRow = 0);        // Riempimento Albero dei device collegati al TP
     void    fillTimingsTree(int nCurRow);           // Riempimento Albero delle variabili raggruppate per Priorità (Timings)
     // Devices and Timing tree
+    QString     priority2String(int nPriority);     // Formattazione stringa per nome priorità
     QTreeWidgetItem *addItem2Tree(QTreeWidgetItem *tParent, int nRole, const QString &szName, const QString &szInfo, const QString &szTimings, const QString &szToolTip);    // Aggiunta di un Item all'albero
     QTreeWidgetItem *addVariable2Tree(QTreeWidgetItem *tParent, int nRow);      // Aggiunge la variabile della riga nRow agganciandola al nodo tParent. Ritorna oggetto
     QTreeWidgetItem *addDevice2Tree(QTreeWidgetItem *tParent, int nDevice);     // Aggiunge il Device nDevice agganciandolo al nodo tParent. Ritorna oggetto
@@ -154,7 +155,6 @@ private:
     int     readCoils_ms(int nCoils, int nSilence_ms, double dblCharTime_ms);                       // Calcolo del Tempo di lettura di un blocco di Bit Registers (Coils) in funzione del # Bit, Silence, charTime
     bool    isSilenceOk(int nSilence_ms, int nBaudRate, double dblCharTime_ms);                     // Verifica che il tempo di silence specificato sia adeguato al BaudRate corrente
     int     searchBlock(int nBlock);                // Ricerca in theBlocks del blocco nBlock
-    int     searchDevice(int nDevice);              // Ricerca in theDevice del device nDevice
     // Import dati in XML
     bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows);
     bool    addModelVars(const QString szModelName, int nRow);
@@ -179,6 +179,7 @@ private:
     QStringList lstHeadNames;
     QList<int>  lstHeadSizes;
     QStringList lstPriority;
+    QStringList lstPriorityDesc;
     QStringList lstUpdateNames;
     QStringList lstTipi;
     QStringList lstProtocol;
