@@ -6648,7 +6648,8 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
             // szInfo.append(tr("Dev.Read Time: %1 ms\t").arg(theDevices[nDevice].nDeviceReadTime, 6, 10));
         }
         // ToolTip
-        szToolTip = tr("Protocol:\t%1\n") .arg(lstProtocol[theDevices[nDevice].nProtocol]);
+        szToolTip.append(tr("Device ID:\t%1\n") .arg(nDevice, 8, 10));
+        szToolTip.append(tr("Protocol:\t%1\n") .arg(lstProtocol[theDevices[nDevice].nProtocol]));
         if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
             szToolTip.append(tr("Ip Address:\t%1\n") .arg(theDevices[nDevice].szIpAddress));
         }
@@ -6711,18 +6712,19 @@ QTreeWidgetItem *ctedit::addPriority2Tree(QTreeWidgetItem *tParent, int nPriorit
     QString         szInfo(szEMPTY);
     QString         szToolTip(szEMPTY);
     QString         szTimings(szEMPTY);
+    int             nPeriod = 0;
 
     szName = priority2String(nPriority);
     // Read Period per Priorita
-    szInfo = tr("Read Period: ");
     if (nPriority == nPriorityHigh)
-        szInfo.append(QString::number(TargetConfig.readPeriod1));
+        nPeriod = TargetConfig.readPeriod1;
     else if (nPriority == nPriorityMedium)
-        szInfo.append(QString::number(TargetConfig.readPeriod2));
+        nPeriod = TargetConfig.readPeriod2;
     else if (nPriority == nPriorityLow)
-        szInfo.append(QString::number(TargetConfig.readPeriod3));
+        nPeriod = TargetConfig.readPeriod3;
     else
-        szInfo.append(QString::fromLatin1("Undefined"));
+        nPeriod = 0;
+    szInfo = QString::fromAscii("Read Period: %1 ms") .arg(nPeriod, 10, 10);
     // Adding Node Item to Tree
     tPriority = addItem2Tree(tParent, treePriority, szName, szInfo, szTimings, szToolTip);
     // Return Value
@@ -6755,7 +6757,7 @@ QTreeWidgetItem *ctedit::addBlock2Tree(QTreeWidgetItem *tParent, int nBlock, int
     int             nInfoBlock = searchBlock(nBlock);
 
     szName = QString::fromAscii("Block_") + int2PaddedString(nBlock, 2, 10);
-    szInfo = tr("Block Size: %1\t") .arg(nBlockSize);
+    szInfo = tr("Block Variables: %1\t") .arg(nBlockSize, 12, 10);
     if (nInfoBlock >= 0 && nInfoBlock < theBlocksNumber)  {
         if (theBlocks[nInfoBlock].nProtocol == RTU || theBlocks[nInfoBlock].nProtocol == RTU_SRV)  {
             szTimings.append(tr("Read Time: %1 ms\t") .arg(theBlocks[nInfoBlock].nReadTime_ms, 6, 10));
