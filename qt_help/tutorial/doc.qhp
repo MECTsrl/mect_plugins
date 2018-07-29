@@ -14,7 +14,12 @@
 				<section title="Introduzione" ref="Introduzione.html"/>
 				<section title="Aggiornamenti" ref="Aggiornamenti.html"/>
 				<section title="Convertire un progetto 2.0.13 in 3.x" ref="Convertire_progetto_2x.html"/>
-				<section title="Operazioni preliminari" ref="Operazioni_preliminari.html"/>
+				<section title="Operazioni preliminari" ref="Operazioni_preliminari.html">
+					<section title="Connessione da locale" ref="Connetivita_locale.html"/>
+					<section title="Connessione da remoto (sMily)" ref="Connetivita.html">
+						<section title="Installazione OpenVPN" ref="Installazione_OpenVPN.html"/>
+						</section>
+					</section>
 				<section title="Creazione nuovo progetto" ref="Creazione_progetto.html"/>
 				<section title="Aprire un progetto" ref="Aprire_progetto.html"/>
 				<section title="Rinominare un progetto" ref="Rinominare_progetto.html"/>
@@ -35,6 +40,8 @@
 						<section title="Visualizzazione di un trend" ref="Visualizzazione_trend.html"/>
 						<section title="Modifica e creazione di un trend" ref="Modifica_trend.html"/>
 						</section>
+					<section title="Devices" ref="Devices.html"/>	
+					<section title="Timings" ref="Timings.html"/>
 					<section title="Struttura progetto vuoto" ref="Struttura_progetto.html"/>
 					<section title="Pagine di libreria" ref="Pagine_libreria.html"/>
 					<section title="Aggiungere una pagina" ref="Aggiungere_pagina.html"/>
@@ -143,10 +150,7 @@
 				<section title="Configurazione ingressi / uscite" ref="Config_ingressi_uscite.html"/>						
 				<section title="Variabili di diagnostica" ref="Variabili_diagnostica.html"/>	
 				<section title="Inserimento della micro SD card" ref="SD_card.html"/>
-				<section title="Attivazione della VNC" ref="VNC.html"/>	
-				<section title="Connessione da remoto" ref="Connetivita.html">
-					<section title="Installazione OpenVPN" ref="Installazione_OpenVPN.html"/>
-					</section>
+				<section title="Attivazione della VNC" ref="VNC.html"/>					
 				<section title="Configurazione CAN" ref="Can.html"/>		
             </section>
         </toc>
@@ -156,6 +160,9 @@
             <keyword id="MyApplication::foobar" ref="doc.html#foobar"/>
         </keywords>
         <files>
+			<file>Timings.html</file>
+			<file>Devices.html</file>
+			<file>Connetivita_locale.html</file>
 			<file>PWM.html</file>
 			<file>Reset_allarmi.html</file>
 			<file>Cambio_password_sistema.html</file>

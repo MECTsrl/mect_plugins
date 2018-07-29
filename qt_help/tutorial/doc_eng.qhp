@@ -14,7 +14,12 @@
 				<section title="Introduction" ref="Introduzione_eng.html"/>
 				<section title="Update" ref="Aggiornamenti_eng.html"/>
 				<section title="Convert a 2.0.13 project into 3.x version" ref="Convertire_progetto_2x_eng.html"/>
-				<section title="Preliminary operation" ref="Operazioni_preliminari_eng.html"/>
+				<section title="Preliminary operation" ref="Operazioni_preliminari_eng.html">
+					<section title="Local connection" ref="Connetivita_locale_eng.html"/>
+					<section title="sMily remote connection" ref="Connetivita_eng.html">
+					<section title="OpenVPN installation" ref="Installazione_OpenVPN_eng.html"/>
+						</section>
+				</section>
 				<section title="New project creation" ref="Creazione_progetto_eng.html"/>
 				<section title="Open an existing project" ref="Aprire_progetto_eng.html"/>
 				<section title="Rename a project" ref="Rinominare_progetto_eng.html"/>
@@ -35,6 +40,8 @@
 						<section title="Trend display" ref="Visualizzazione_trend_eng.html"/>
 						<section title="Trend creation and modification" ref="Modifica_trend_eng.html"/>
 						</section>
+					<section title="Devices" ref="Devices_eng.html"/>
+					<section title="Timings" ref="Timings_eng.html"/>
 					<section title="Empty project structure" ref="Struttura_progetto_eng.html"/>
 					<section title="Library pages" ref="Pagine_libreria_eng.html"/>					
 					<section title="Add a new page" ref="Aggiungere_pagina_eng.html"/>
@@ -144,9 +151,6 @@
 				<section title="Diagnostic variables" ref="Variabili_diagnostica_eng.html"/>
 				<section title="Micro SD card insertion" ref="SD_card_eng.html"/>
 				<section title="VNC activation" ref="VNC_eng.html"/>	
-				<section title="Remote connection" ref="Connetivita_eng.html">
-					<section title="OpenVPN installation" ref="Installazione_OpenVPN_eng.html"/>
-					</section>
 				<section title="CAN configuration" ref="Can_eng.html"/>		
             </section>
         </toc>
@@ -156,6 +160,9 @@
             <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
         </keywords>
         <files>
+			<file>Timings_eng.html</file>
+			<file>Devices_eng.html</file>
+			<file>Connetivita_locale_eng.html</file>
 			<file>PWM_eng.html</file>
 			<file>Reset_allarmi_eng.html</file>
 			<file>Cambio_password_sistema_eng.html</file>
