@@ -1,0 +1,241 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Configurazione ingressi/uscite TPLC050 e TPLC100</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Configurazione ingressi/uscite TPLC050 e TPLC100</h3>
+				<p class="western">Le configurazioni delle linee digitali e analogiche vengono effettuate nel programma all&rsquo;interno del &ldquo;Task0_Init&rdquo; del software plc.</p>
+		<br/>		
+	<center>
+		<table width="700" cellpadding="4" cellspacing="0">
+			<col width="141">
+			<col width="282">
+			<col width="252">
+			<thead>
+				<tr valign="top">
+					<th width="141" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>Variabile</strong></p>
+					</th>
+					<th width="282" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>TPLC050</strong></p>
+					</th>
+					<th width="252" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>TPLC100</strong></p>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>PLC_DigDir_1</strong></p>
+						<p class="western"><strong>PLC_DigDir_2</strong></p>
+						<p class="western"><strong>PLC_DigDir_3</strong></p>
+						<p class="western"><strong>PLC_DigDir_4</strong></p>
+						<p class="western"><strong>PLC_DigDir_5</strong></p>
+						<p class="western"><strong>PLC_DigDir_6</strong></p>
+						<p class="western"><strong>PLC_DigDir_7</strong></p>
+						<p class="western"><strong>PLC_DigDir_8</strong></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione 8 I/O:</p>
+						<ul>
+							<li/>
+							<p class="western">0 ingresso</p>
+							<li/>
+							<p class="western">1 uscita</p>
+						</ul>
+						<p class="western">Es&deg;: ch3 = uscita</p>
+						<p class="western"><strong>PLC_DigDir_3 := 1;</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione 8 I/O:</p>
+						<br/>
+						<br/>						
+						<p class="western">-</p>						
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"><strong>PLC_AnInConf_1</strong></p>
+						<p class="western"><strong>PLC_AnInConf_2</strong></p>
+						<p class="western"><strong>PLC_AnInConf_3</strong></p>
+						<p class="western"><strong>PLC_AnInConf_4</strong></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione input analogici (solo 1 e 2):</p>
+						<ul>
+							<li/>
+							<p class="western">0 non configurato</p>
+							<li/>
+							<p class="western">1 corrente</p>
+							<li/>
+							<p class="western">2 tensione</p>
+							<li/>
+							<p class="western">3 TCJ (Termocoppia tipo J)</p>
+							<li/>
+							<p class="western">4 TCK (Termocoppia tipo K)</p>
+							<li/>
+							<p class="western">5 TCT (Termocoppia tipo T)</p>
+							<li/>
+							<p class="western"><span lang="en-US">6 </span>PT100E (Risoluzione del grado) range: -40 +800°C</p>
+							<li/>
+							<p class="western">7 <span lang="en-US">PT100R (Risoluzione del decimo di grado) range: -40 +200°C</span></p>
+							<li/>
+							<p class="western">
+							8 TCS (Termocoppia tipo S)</p>
+							<li/>
+							<p class="western">
+							9 TCB (Termocoppia tipo B)</p>
+							<li/>
+							<p class="western">10 TCR (Termocoppia tipo R)</p>
+						</ul>
+						<p class="western">Es&deg;: ch1 = TCT (Termocoppia tipo J)</p>
+						<p class="western"><strong>PLC_AnInConf_1 := 5;</strong></p>
+						<p class="western"><br/></p>						
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione input analogici:</p>
+						<ul>
+							<li/>
+							<p class="western">0 non configurato</p>
+							<li/>
+							<p class="western">1 corrente</p>
+							<li/>
+							<p class="western">2 tensione</p>
+							</ul>
+						<p class="western"><span lang="en-US">Es&deg;: ch2 = corrente</span></p>
+						<p class="western"><strong>PLC_AnInConf_2 := 1;</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>						
+						<p class="western"><strong>PLC_AnInConf_5</strong></p>
+						<p class="western"><strong>PLC_AnInConf_6</strong></p>
+						<p class="western"><strong>PLC_AnInConf_7</strong></p>
+						<p class="western"><strong>PLC_AnInConf_8</strong></p>
+						<p class="western"><strong>PLC_AnInConf_9</strong></p>
+						<p class="western"><strong>PLC_AnInConf_10</strong></p>
+						<p class="western"> <strong>PLC_AnInConf_11</strong></p>
+						<p class="western"><strong> PLC_AnInConf_12</strong></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione input analogici:</p>
+						<br/>
+						<br/>
+						<p class="western">-</p>						
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione input analogici:</p>
+						<ul>
+							<li/>
+							<p class="western">0 non configurato</p>							
+							<li/>
+							<p class="western">3 TCJ (Termocoppia tipo J)</p>
+							<li/>
+							<p class="western">4 TCK (Termocoppia tipo K)</p>
+							<li/>
+							<p class="western">5 TCT (Termocoppia tipo T)</p>
+							<li/>
+							<p class="western">7 <span lang="en-US">PT100 (Risoluzione del decimo di grado) range: -40 +200°C</span></p>
+						</ul>
+						<p class="western"><span lang="en-US">Es&deg;: ch2 = PT100</span></p>
+						<p class="western"><strong>PLC_AnInConf_10 := 7;</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"> <strong>PLC_AnOutConf_1</strong></p>
+						<p class="western"> <strong>PLC_AnOutConf_2</strong></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione uscite analogiche:</p>
+						<br/>
+						<br/>
+						<p class="western">-</p>						
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione uscite analogiche:</p>
+						<ul>
+							<li/>
+							<p class="western">0 non configurato</p>
+							<li/>
+							<p class="western">1 tensione</p>
+							<li/>
+							<p class="western">3 PWM</p>
+						</ul>
+						<p class="western"><span lang="en-US">Es&deg;: ch2= </span>in tensione</p>
+						<p class="western"><strong>PLC_AnOutConf_2 := 1;</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"><strong> PLC_ EnableEncoder</strong></p>
+						<p class="western"><br/></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Abilitazione encoder:</p>
+						<ul>
+							<li/>
+							<p class="western">0 encoder disabilitato</p>
+							<li/>
+							<p class="western">1 encoder bidirezionale abilitato</p>
+							<li/>
+							<p class="western">2 contatore</p>
+						</ul>
+						<p class="western">Es&deg;: Encoder = abilitato</p>
+						<p class="western"><strong>PLC_EnableEncoder :=  1;</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Abilitazione encoder:</p>
+						<br/>
+						<br/>
+						<p class="western">-</p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"> <strong>PLC_TempScale</strong></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione unit&agrave; di misura della temperatura:</p>
+						<br/>
+						<br/>
+						<p class="western">-</p>						
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configurazione scala della temperatura:</p>
+						<ul>
+							<li/>
+							<p class="western">0 Celsius</p>
+							<li/>
+							<p class="western">1 Fahrenheit</p>
+							<li/>
+							<p class="western">2 Kelvin</p>
+						</ul>
+						<p class="western">Es&deg;: temperature in Fahrenheit</p>
+						<p class="western"><strong>PLC_TempScale := 1;</strong></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</center>
+	<p class="western">Le variabili <strong>PLC_time..</strong> sono gestite	automaticamente e servono per fare i grafici temporali (sono numeri
+	reali con unit&agrave; in secondi e risoluzione di 10 ms).</p>
+<br/>
+	</body>
+</html>

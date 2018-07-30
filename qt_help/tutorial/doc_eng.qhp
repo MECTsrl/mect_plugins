@@ -146,8 +146,15 @@
 					<section title="Add libraries to the project" ref="Aggiungere_librerie_eng.html"/>
 					<section title="Project path" ref="Path_progetto_eng.html"/>
 					</section>
-				<section title="Device variables (Local I/O)" ref="Variabili_prodotto_eng.html"/>	
-				<section title="Inputs / outputs configuration" ref="Config_ingressi_uscite_eng.html"/>						
+				<section title="Device variables (Local I/O)" ref="Variabili_prodotto_eng.html">	
+				<section title="TPAC1006 / TPAC1008_02 models" ref="Modelli_tpac1006_100801_100802_eng.html"/>
+				<section title="TPAC1007 models" ref="Modelli_tpac1007_eng.html"/>
+				<section title="TPLC050 / TPLC100 models" ref="Modelli_tplc050_100_eng.html"/>
+					</section>
+				<section title="Inputs / outputs configuration" ref="Config_ingressi_uscite_eng.html">	
+				<section title="TPAC1006, TPAC1007 and TPAC1008_02 Inputs / outputs configuration" ref="Config_ingressi_uscite_tpac1006_1007_100802_eng.html"/>
+				<section title="TPLC050 and TPLC100 Inputs / outputs configuration" ref="Config_ingressi_uscite_tplc050_100_eng.html"/>
+					</section>				
 				<section title="Diagnostic variables" ref="Variabili_diagnostica_eng.html"/>
 				<section title="Micro SD card insertion" ref="SD_card_eng.html"/>
 				<section title="VNC activation" ref="VNC_eng.html"/>	
@@ -160,8 +167,17 @@
             <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
         </keywords>
         <files>
+			<file>Config_ingressi_uscite_tplc050_100_eng.html</file>
+			<file>Config_ingressi_uscite_tpac1006_1007_100802_eng.html</file>
+			<file>Modelli_tplc050_100_eng.html</file>
+			<file>Modelli_tpac1007_eng.html</file>
+			<file>Modelli_tpac1006_100801_100802_eng.html</file>
 			<file>Timings_eng.html</file>
+			<file>Timings_1.png</file>
+			<file>Timings_2.png</file>
 			<file>Devices_eng.html</file>
+			<file>Devices_1.png</file>
+			<file>Devices_2.png</file>
 			<file>Connetivita_locale_eng.html</file>
 			<file>PWM_eng.html</file>
 			<file>Reset_allarmi_eng.html</file>

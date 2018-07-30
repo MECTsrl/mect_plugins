@@ -14,22 +14,48 @@
 	</head>	
 	<body>
 		<h3 class="western">Devices</h3>
-		<p class="western" style="margin-bottom: 0cm">Con il &ldquo;Trends Editor&rdquo; &egrave; possibile configurare le variabili
-	storicizzate (variabili che hanno il parametro <strong>S</strong>, <strong>F</strong>, <strong>V</strong> e <strong>X</strong> nel campo &ldquo;Update&rdquo; del &ldquo;Crosstable Editor&rdquo;) di cui si
-	vuole avere il <strong>grafico in funzione del tempo</strong>. 
-	</p>
-	<p class="western" style="margin-bottom: 0cm">Nel &ldquo;Trend Editor&rdquo; si possono impostare <strong>4 tracce</strong> (grafici).</p>
-	<p class="western" style="margin-bottom: 0cm"><br/>
-
-	</p>
-	<p class="western">Per avviare il &ldquo;Trends Editor&rdquo; vedere la figura seguente:</p>
-	<p class="western"><img src="Trends_Editor_1.png" align="bottom" width="850" height="440" border="0"/></p>
+		<p class="western" style="margin-bottom: 0cm">La finestra &ldquo;Devices&rdquo; fornisce una visione topologica delle variabili utilizzate nella Crosstable del Progetto.</p>
+		<p class="western"><img src="Devices_1.png" align="bottom" width="850" height="440" border="0"/></p>
 	<br/>
 
 	<p class="western" style="margin-bottom: 0cm">L&rsquo;interfaccia si presenta nel seguente modo:</p>
-	
-	<p class="western"><img src="Trends_Editor_2.png" align="bottom" width="980" height="490" border="0"/></p>
-		<p class="western">In un progetto &egrave; possibile avere pi&ugrave; file di Trend.</p>
-	<br/>
+	<p class="western"><img src="Devices_2.png" align="bottom" width="1565" height="960" border="0"/></p>
+		<p class="western">Nella finestra sono presenti 3 colonne: </p>
+		<ul>
+			<li/>
+			<p class="western"><strong>Name:</strong> Vista ad albero con la seguente organizzazione:</p>
+				<ul>
+				<li>
+				<p class="western">Pannello &#8594; Device (interfaccia di comunicazione) &#8594; Nodo &#8594; Priorit&agrave; &#8594; Blocco &#8594; Variabili.</p>
+				</ul>
+			<li/>	
+			<p class="western"><strong>Info:</strong> Informazioni dell&rsquo;elemento nell&rsquo;albero:</p>
+			<ul>
+				<li>
+				<p class="western">Per il <strong>Pannello</strong> riassume il numero di variabili utilizzate nel progetto, le interfacce utilizzate, i parametri Retries e Blacklist (da &ldquo;<font color="#0000ff"><u><a class="western" href="System_Editor.html">System</a></u></font>&rdquo;).</p>
+				<li>
+				<p class="western">Per i <strong>Device</strong> (interfaccia) riassume il numero di variabili legate al device, i parametri Max Block Size, Timeout e Silence (da &ldquo;<font color="#0000ff"><u><a class="western" href="System_Editor.html">System</a></u></font>&rdquo;). 
+				Per le interfacce di tipo RTU &egrave; calcolato il minimo tempo di Silence richiesto dal Baudrate impostato (in &ldquo;<font color="#0000ff"><u><a class="western" href="System_Editor.html">System</a></u></font>&rdquo;) e se questo tempo è sufficiente (OK o KO).</p>
+				<li>
+				<p class="western">Per i <strong>Nodi</strong> il numero di variabili gestite dal nodo.</p>
+				<li>
+				<p class="western">Per i <strong>Blocchi</strong> il numero di variabili nel blocco.</p>
+				<li>
+				<p class="western">Per ogni <strong>Variabile</strong> del blocco la Riga di Crosstable, il Tipo e il Comportamento (R/O, RW, etc).</p>
+				</ul>
+			<li/>
+			<p class="western"><strong>Timings:</strong> Informazioni dei tempi di lettura richiesti per l&rsquo;elemento selezionato (solo per elementi di tipo RTU):</p>
+				<ul>
+				<li>
+				<p class="western">Per i <strong>Device</strong> il tempo totale richiesto per leggere tutte le variabili raggruppate anche per Priorit&agrave;.</p>
+				<li>
+				<p class="western">Per i <strong>Nodi</strong> il tempo richiesto per la lettura delle variabili del nodo raggruppate anche per Priorit&agrave;.</p>
+				<li>
+				<p class="western">Per ogni livello di <strong>Priorit&agrave;</strong> il tempo richiesto per la lettura dei Blocchi a quel livello di priorit&agrave;.</p>
+				<li>
+				<p class="western">Per i <strong>Blocchi</strong> il tempo richiesto per la lettura del Blocco.</p>
+				</ul>
+		</ul> 
+		<br/>
 	</body>
 </html>
