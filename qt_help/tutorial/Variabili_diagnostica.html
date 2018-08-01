@@ -116,10 +116,10 @@
 				<p class="western">Lo : indica il numero del nodo (Node ID) all&rsquo;interno della Crosstable (parte da 1);</p>
 				<li>
 				<p class="western">Hi : indica il numero del device (Protocol + IP Address + Port + Node ID) all&rsquo;interno della Crosstable (parte da 0).</p>
-			<ul/>
-		<li>
+			</ul>	
+		<li>		
 		<p class="western"><strong>NODE_*_STATUS:</strong></p>
-		<ul>
+			<ul>
 				<li>
 				<p class="western">0 = Nessun nodo;</p>
 				<li>
@@ -130,6 +130,15 @@
 				<p class="western">3 = Blacklist;</p>
 				<li>
 				<p class="western">4 = Non connesso.</p>
+				<li>
+				<p class="western">5 = Nodo disabilitato.</p>
+				<p class="western">L&rsquo;abilitazione o la disabilitazione del nodo deve essere effettuata da HMI. </p>
+				<ul>
+					<li>
+					<p class="western">Nodo disabilitato: doWrite_NODE_xx_STATUS(0)</p>
+					<li>
+					<p class="western">Nodo abilitato: doWrite_NODE_xx_STATUS(1)</p>
+				</ul>
 			</ul>
 	</ul>	
 	<br/>

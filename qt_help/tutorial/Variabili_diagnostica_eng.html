@@ -116,22 +116,31 @@
 				<p class="western">Lo : node number (Node ID) in the Crosstable (starts from 1);</p>
 				<li>
 				<p class="western">Hi : device number (Protocol + IP Address + Port + Node ID) in the Crosstable (starts from 0).</p>
-			<ul/>
+			</ul>
 		<li>
 		<p class="western"><strong>NODE_*_STATUS:</strong></p>
 		<ul>
-				<li>
-				<p class="western">0 = No node;</p>
-				<li>
-				<p class="western">1 = Node OK;</p>
-				<li>
-				<p class="western">2 = Timeout;</p>
-				<li>
-				<p class="western">3 = Blacklist;</p>
-				<li>
-				<p class="western">4 = Not connected.</p>
-			</ul>
-	</ul>	
+			<li>
+			<p class="western">0 = No node;</p>
+			<li>
+			<p class="western">1 = Node OK;</p>
+			<li>
+			<p class="western">2 = Timeout;</p>
+			<li>
+			<p class="western">3 = Blacklist;</p>
+			<li>
+			<p class="western">4 = Not connected.</p>
+			<li>
+			<p class="western">5 = Disabled.</p>
+			<p class="western">Enabling or disabling the node must be performed by HMI. </p>
+				<ul>
+					<li>
+					<p class="western">Node disabled: doWrite_NODE_xx_STATUS(0)</p>
+					<li>
+					<p class="western">Nodo enabled: doWrite_NODE_xx_STATUS(1)</p>
+				</ul>
+		</ul>
+</ul>	
 	<br/>
 	</body>
 </html>
