@@ -5363,7 +5363,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].modelName =  QString::fromAscii(product_name[TPLC050_01_AA]);
     lstTargets[TPLC050_01_AA].displayWidth =  -1;
     lstTargets[TPLC050_01_AA].displayHeight = -1;
-    lstTargets[TPLC050_01_AA].sdCards = 1;
+    lstTargets[TPLC050_01_AA].sdCards = 0;
     lstTargets[TPLC050_01_AA].digitalIN = 8;
     lstTargets[TPLC050_01_AA].digitalOUT = 8;
     lstTargets[TPLC050_01_AA].nEncoders = 1;

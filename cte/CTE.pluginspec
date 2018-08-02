@@ -1,4 +1,4 @@
-<plugin name="CTE" version="3.1.4" compatVersion="2.7.84">
+<plugin name="CTE" version="3.1.5" compatVersion="2.7.84">
     <vendor>MECT srl</vendor>
     <copyright>(C) 2017 MECT srl</copyright>
     <license>
