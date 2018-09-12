@@ -114,11 +114,13 @@ void recipe::reload()
 {
     /* clear the status label and reset the progressbar */
     ui->progressBarStatus->setVisible(false);
-    state = 1;
+    ui->tableWidget->setVisible(false);
     current_row = 0;
     current_column = 0;
     stepNbMax = 0;
     varNbMax = 0;
+    // Start Recipe Loading
+    state = 1;
 }
 
 /**
@@ -130,13 +132,12 @@ void recipe::updateData()
     {
         return;
     }
-
+    // Loading Recipe
     if (state == 1)
     {
         ui->progressBarStatus->setVisible(true);
         ui->progressBarStatus->setValue(0);
         ui->progressBarStatus->update();
-        state = 0;
         current_row = 0;
         current_column = 0;
         /* load the actual receipt  */
@@ -156,17 +157,18 @@ void recipe::updateData()
             go_back();
             return;
         }
+        // Next step
         state = 2;
     }
+    // Clear Table
     else if (state == 2)
     {
-        state = 0;
         /* clear the table
         ui->tableWidget->clear();
         ui->tableWidget->update(); */
         ui->labelStatus->clear();
         ui->labelStatus->repaint();
-        // Clear Table
+        // Clear Table and disabling Column Resize
         ui->tableWidget->setVisible(false);
         ui->tableWidget->setEnabled(false);
         ui->tableWidget->clearSelection();
@@ -174,14 +176,28 @@ void recipe::updateData()
         ui->tableWidget->setColumnCount(0);
         ui->tableWidget->clearContents();
         ui->tableWidget->clear();
-
+        ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+        // Next step
         state = 3;
     }
+    // Loading Recipe to Grid
     else  if (state == 3)
     {
-        state = 0;
         getFamilyRecipe(_actual_recipe_, _familyName, _recipeName);
         showRecipe(_familyName, _recipeName);
+        state = 4;
+    }
+    else if (state == 4)  {
+        // AutoResize Columns
+        ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+        // Selection mode of items
+        ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+        ui->tableWidget->resizeColumnsToContents();
+        ui->tableWidget->setVisible(true);
+        ui->tableWidget->setEnabled(true);
+        ui->progressBarStatus->setVisible(false);
+        // Loading Ended
+        state = 0;
     }
     //LOG_PRINT(error_e, "UPDATE %d %d visible %d\n", refresh_timer->isActive(), refresh_timer->interval(), this->isVisible());
 
@@ -560,7 +576,6 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
         ui->progressBarStatus->setValue(varIndex);
 
         lstRowNames.append(QString(varNameArray[ctIndex].tag));
-        // ui->tableWidget->setItem(varIndex, 0, new QTableWidgetItem(QString(varNameArray[ctIndex].tag)));
 
         for (int stepIndex = 0; stepIndex < stepNbMax; stepIndex++)
         {
@@ -578,16 +593,11 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
             // ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
         }
     }
+    // Progress to 100%
+    ui->progressBarStatus->setValue(varNbMax);
     // Table Headers
     ui->tableWidget->setVerticalHeaderLabels(lstRowNames);
     ui->tableWidget->setHorizontalHeaderLabels(lstColNames);
-    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    // Selection mode of items
-    ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->tableWidget->resizeColumnsToContents();
-    ui->tableWidget->setVisible(true);
-    ui->tableWidget->setEnabled(true);
-    ui->progressBarStatus->setVisible(false);
 
     return true;
 }
