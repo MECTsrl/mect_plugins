@@ -852,6 +852,7 @@ bool    ctedit::ctable2Grid()
     bool        fRes = true;
     int         nCur = 0;
     int         nColWidth = 0;
+    int         nColHeight = 0;
     QStringList lstFields;
 
     lstFields.clear();
@@ -885,14 +886,22 @@ bool    ctedit::ctable2Grid()
     for (nCur = 0; nCur < lstHeadCols.count(); nCur++)  {
         szTemp.fill(chX, lstHeadSizes[nCur]);
         nColWidth = fm.width(szTemp) * 1.2;
+        nColHeight = fm.height();
         ui->tblCT->setColumnWidth(nCur, nColWidth);
     }
+    nColHeight = fm.height() * 2;
+    qDebug() << tr("Col Height: %1") .arg(nColHeight);
     // ui->tblCT;
     //dWidth = fm.width(g_szLocalDateTimeFormat) * 1.10;
     //txtDate->setMaximumWidth(qRound(dWidth));
     //ui->tblCT->horizontalHeader()->setResizeMode(colPriority, QHeaderView::Stretch);
     //ui->tblCT->horizontalHeader()->setResizeMode(colUpdate, QHeaderView::Stretch);
     //ui->tblCT->horizontalHeader()->setResizeMode(colBehavior, QHeaderView::Stretch);
+    // Altezza Righe
+    QHeaderView *verticalHeader = ui->tblCT->verticalHeader();
+    verticalHeader->setResizeMode(QHeaderView::Fixed);
+    verticalHeader->setDefaultSectionSize(nColHeight);
+    // Nascondi Colonna Input Registers
     ui->tblCT->setColumnHidden(colInputReg, true);
     ui->tblCT->setEnabled(true);
     // Show All Elements
