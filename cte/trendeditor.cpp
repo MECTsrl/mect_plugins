@@ -352,8 +352,8 @@ bool TrendEditor::iface2Tokens(QStringList &lstTokens, int nRow)
     lstTokens[nTrendVisible] = (chkVisible->isChecked() ? szTRUE : szFALSE);
     // Variabile Name
     lstTokens[nTrendVarName] = cboVariable->currentText().trimmed();
-    lstTokens[nTrendVarName].append(szSpace(16));
-    lstTokens[nTrendVarName] = lstTokens[nTrendVarName].left(16);
+    lstTokens[nTrendVarName].append(szSpace(MAX_IDNAME_LEN));
+    lstTokens[nTrendVarName] = lstTokens[nTrendVarName].left(MAX_IDNAME_LEN);
     // Color Name
     lstTokens[nTrendColor] = lblColor->text().trimmed();
     // Trend Min
