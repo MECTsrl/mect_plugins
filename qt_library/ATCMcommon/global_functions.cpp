@@ -196,7 +196,7 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
         p = strtok_csv(line, SEPARATOR, &r);
         if (p == NULL || p[0] == '\0')
         {
-            LOG_PRINT(error_e, "Invalid tag '%s' at line %d\n", line, line_nb);
+            LOG_PRINT(verbose_e, "skipping blank line\n");
             continue;
         }
         int ctIndex;
