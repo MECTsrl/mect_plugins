@@ -392,7 +392,6 @@ void net_conf::reload()
     char *tmp = NULL;
 
     setup = true;
-    on_pushButton_wlan0_scan_clicked();
     is_wlan_active = isWlanOn();
     if (is_wlan_active)
     {
