@@ -211,10 +211,6 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
 
         /* values */
         u_int32_t value;
-        float val_float;
-        u_int8_t val_bit;
-        int32_t val_int32;
-        int16_t val_int16;
 
         step = 0;
         for (step = 0; step < MAX_RCP_STEP; ++step)
@@ -249,32 +245,42 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
             {
             case uintab_e:
             case uintba_e:
+            {
+                u_int16_t val_uint16;
+
+                val_uint16 = strtoul(p, NULL, 10);
+                memcpy(&value, &val_uint16, sizeof(val_uint16));
+                break;
+            }
             case intab_e:
             case intba_e:
             {
-                val_float = atof(p);
-                for (int n = 0; n < decimal; ++n) {
-                    val_float = val_float * 10;
-                }
-                val_int16 = (int16_t)val_float;
-                value = (u_int32_t)val_int16;
+                int16_t val_int16;
+
+                val_int16 = strtol(p, NULL, 10);
+                memcpy(&value, &val_int16, sizeof(val_int16));
                 break;
             }
             case udint_abcd_e:
             case udint_badc_e:
             case udint_cdab_e:
             case udint_dcba_e:
+            {
+                u_int32_t val_uint32;
+
+                val_uint32 = strtoul(p, NULL, 10);
+                memcpy(&value, &val_uint32, sizeof(val_uint32));
+                break;
+            }
             case dint_abcd_e:
             case dint_badc_e:
             case dint_cdab_e:
             case dint_dcba_e:
             {
-                val_float = atof(p);
-                for (int n = 0; n < decimal; ++n) {
-                    val_float = val_float * 10;
-                }
-                val_int32 = (int32_t)val_float;
-                memcpy(&value, &val_int32, sizeof(u_int32_t));
+                int32_t val_int32;
+
+                val_int32 = strtol(p, NULL, 10);
+                memcpy(&value, &val_int32, sizeof(val_int32));
                 break;
             }
             case fabcd_e:
@@ -282,18 +288,26 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
             case fcdab_e:
             case fdcba_e:
             {
-                val_float = atof(p);
-                memcpy(&value, &val_float, sizeof(u_int32_t));
+                float val_float;
+                val_float = strtof(p, NULL);
+                memcpy(&value, &val_float, sizeof(val_float));
                 break;
             }
             case byte_e:
+            {
+                u_int8_t val_byte;
+                val_byte = strtoul(p, NULL, 0);
+                value = (u_int32_t)val_byte;
+                break;
+            }
             case bytebit_e:
             case wordbit_e:
             case dwordbit_e:
             case bit_e:
             {
-                val_bit = atoi(p);
-                value = (u_int32_t)val_bit;
+                u_int8_t val_bit;
+                val_bit = strtol(p, NULL, 0);
+                value = (u_int32_t)(val_bit?1:0);
                 break;
             }
             default:
