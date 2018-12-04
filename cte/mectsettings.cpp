@@ -13,6 +13,7 @@
 
 
 #define MAX_SPACE_AVAILABLE_MAX 128
+#define TREND_WINDOW_MAX 2147483647
 #define LINE_SIZE 1024
 #define MAXBLOCKSIZE 64
 
@@ -40,7 +41,7 @@ MectSettings::MectSettings(QWidget *parent) :
     ui->lineEdit_SlowLogPeriod->setValidator(new QIntValidator(2, nMax_Int16, this));
     ui->lineEdit_FastLogPeriod->setValidator(new QIntValidator(1, nMax_Int16, this));
     ui->lineEdit_MaxLogSpace->setValidator(new QIntValidator(1, MAX_SPACE_AVAILABLE_MAX, this));
-    ui->lineEdit_TraceWindow->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_TraceWindow->setValidator(new QIntValidator(0, TREND_WINDOW_MAX, this));
     /* SERIAL 0 */
     ui->lineEdit_Silence_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_Timeout_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
