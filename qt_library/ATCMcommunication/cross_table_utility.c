@@ -1485,23 +1485,22 @@ int activateVar(const char * varname)
 int deactivateVar(const char * varname)
 {
     int CtIndex;
-    int retval = 1;
     unsigned i;
 
     if (varname[0] == '\0')
     {
         LOG_PRINT(error_e, "'%s' Empty variable\n", varname);
-        return retval;
+        return 1;
     }
     if (Tag2CtIndex(varname, &CtIndex) != 0)
     {
         LOG_PRINT(error_e, "'%s' not found into DataVector\n", varname);
-        return retval;
+        return 1;
     }
     if (varNameArray[CtIndex].blockhead != CtIndex)
     {
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
-        return retval;
+        return 1;
     }
     pthread_mutex_lock(&datasync_send_mutex);
     {
@@ -1511,13 +1510,12 @@ int deactivateVar(const char * varname)
             {
                 CLR_SYNCRO_FLAG(i);
                 varNameArray[CtIndex].visible = 0;
-                retval = 0;
                 break;
             }
         }
     }
     pthread_mutex_unlock(&datasync_send_mutex);
-    return retval;
+    return 0;  // it's ok even if not found
 }
 
 /**
