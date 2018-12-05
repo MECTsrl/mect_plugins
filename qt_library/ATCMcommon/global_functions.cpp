@@ -241,75 +241,114 @@ int loadRecipe(char *filename, QList<u_int16_t> *indexes, QList<u_int32_t> table
 
             value = 0;
             // compute value
-            switch (varNameArray[ctIndex].type)
-            {
+            switch (varNameArray[ctIndex].type) {
+
+            case byte_e: {
+                u_int8_t val_uint8;
+
+                if (decimal > 0) {
+                    double var_double = strtod(p, NULL);
+
+                    for (int n = 0; n < decimal; ++n) {
+                        var_double = var_double * 10.0;
+                    }
+                    val_uint8 = (u_int8_t)var_double;
+                } else {
+                    val_uint8 = strtoul(p, NULL, 0);
+                }
+                value = (u_int32_t)val_uint8;
+            }   break;
+
             case uintab_e:
-            case uintba_e:
-            {
+            case uintba_e: {
                 u_int16_t val_uint16;
 
-                val_uint16 = strtoul(p, NULL, 10);
+                if (decimal > 0) {
+                    double var_double = strtod(p, NULL);
+
+                    for (int n = 0; n < decimal; ++n) {
+                        var_double = var_double * 10.0;
+                    }
+                    val_uint16 = (u_int16_t)var_double;
+                } else {
+                    val_uint16 = strtoul(p, NULL, 10);
+                }
                 memcpy(&value, &val_uint16, sizeof(val_uint16));
-                break;
-            }
+            }   break;
+
             case intab_e:
-            case intba_e:
-            {
+            case intba_e: {
                 int16_t val_int16;
 
-                val_int16 = strtol(p, NULL, 10);
+                if (decimal > 0) {
+                    double var_double = strtod(p, NULL);
+
+                    for (int n = 0; n < decimal; ++n) {
+                        var_double = var_double * 10.0;
+                    }
+                    val_int16 = (int16_t)var_double;
+                } else {
+                    val_int16 = strtol(p, NULL, 10);
+                }
                 memcpy(&value, &val_int16, sizeof(val_int16));
-                break;
-            }
+            }   break;
+
             case udint_abcd_e:
             case udint_badc_e:
             case udint_cdab_e:
-            case udint_dcba_e:
-            {
+            case udint_dcba_e: {
                 u_int32_t val_uint32;
 
-                val_uint32 = strtoul(p, NULL, 10);
+                if (decimal > 0) {
+                    double var_double = strtod(p, NULL);
+
+                    for (int n = 0; n < decimal; ++n) {
+                        var_double = var_double * 10.0;
+                    }
+                    val_uint32 = (u_int32_t)var_double;
+                } else {
+                    val_uint32 = strtoul(p, NULL, 10);
+                }
                 memcpy(&value, &val_uint32, sizeof(val_uint32));
-                break;
-            }
+            }   break;
+
             case dint_abcd_e:
             case dint_badc_e:
             case dint_cdab_e:
-            case dint_dcba_e:
-            {
+            case dint_dcba_e: {
                 int32_t val_int32;
 
-                val_int32 = strtol(p, NULL, 10);
+                if (decimal > 0) {
+                    double var_double = strtod(p, NULL);
+
+                    for (int n = 0; n < decimal; ++n) {
+                        var_double = var_double * 10.0;
+                    }
+                    val_int32 = (int32_t)var_double;
+                } else {
+                    val_int32 = strtol(p, NULL, 10);
+                }
                 memcpy(&value, &val_int32, sizeof(val_int32));
-                break;
-            }
+            }   break;
+
             case fabcd_e:
             case fbadc_e:
             case fcdab_e:
-            case fdcba_e:
-            {
+            case fdcba_e: {
                 float val_float;
                 val_float = strtof(p, NULL);
                 memcpy(&value, &val_float, sizeof(val_float));
-                break;
-            }
-            case byte_e:
-            {
-                u_int8_t val_byte;
-                val_byte = strtoul(p, NULL, 0);
-                value = (u_int32_t)val_byte;
-                break;
-            }
+            }   break;
+
             case bytebit_e:
             case wordbit_e:
             case dwordbit_e:
-            case bit_e:
-            {
+            case bit_e: {
                 u_int8_t val_bit;
                 val_bit = strtol(p, NULL, 0);
-                value = (u_int32_t)(val_bit?1:0);
-                break;
-            }
+                value = (u_int32_t)(val_bit ? 1 : 0);
+            }   break;
+
             default:
                 /* unknown type */
                 value = 0;
