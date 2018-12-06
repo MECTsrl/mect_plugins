@@ -31,8 +31,6 @@
 
 #include <time.h>
 
-#define VERT_TICKS  4
-
 #define OVERLOAD_SECONDS(Visible) (Visible * 12 / 10) // 20%
 #define DELTA_TIME_FACTOR  5 // 20%
 
@@ -1178,14 +1176,19 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
               TzeroLoaded.toString().toAscii().data()
               );
     double horiz_ticks;
+    double vert_ticks;
     if (this->width() <= 320){
         horiz_ticks = 3;
+        vert_ticks = 4;
     } else if (this->width() <= 480){
         horiz_ticks = 5;
+        vert_ticks = 8;
     } else if (this->width() <= 800){
         horiz_ticks = 9;
+        vert_ticks = 16;
     } else {
         horiz_ticks = 9;
+        vert_ticks = 16;
     }
     double deltax = (sfinal - sinint) / horiz_ticks;
     for (int i = 0; i < (horiz_ticks + 1); i++)
@@ -1262,8 +1265,8 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
             d_qwtplot->setAxisScaleDraw(QwtAxisId( valueAxisId, pen_index ), new NormalScaleDraw(decimal));
             /* prepare the value axis tick */
             QList<double> arrayTicks;
-            double deltay = (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / VERT_TICKS;
-            for (int i = 0; i < (VERT_TICKS + 1); i++)
+            double deltay = (pens[pen_index].yMaxActual - pens[pen_index].yMinActual) / vert_ticks;
+            for (int i = 0; i < (vert_ticks + 1); i++)
             {
                 arrayTicks.append(pens[pen_index].yMinActual + i * deltay);
             }
