@@ -208,3 +208,13 @@ void data_manager::on_pushButtonBack_clicked()
 {
     go_back();
 }
+
+void data_manager::on_pushButtonLogStart_clicked()
+{
+    logStart();
+}
+
+void data_manager::on_pushButtonLogStop_clicked()
+{
+    logStop();
+}

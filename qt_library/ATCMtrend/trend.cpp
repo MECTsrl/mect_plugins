@@ -1177,29 +1177,59 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
               );
     double horiz_ticks;
     double vert_ticks;
-    if (this->width() <= 320){
-        horiz_ticks = 3;
-        vert_ticks = 4;
-    } else if (this->width() <= 480){
-        horiz_ticks = 5;
-        vert_ticks = 8;
-    } else if (this->width() <= 800){
-        horiz_ticks = 9;
-        vert_ticks = 16;
+    if (_layout_ == LANDSCAPE) {
+        // width -> horiz_ticks -> datetime side by side
+        if (this->width() <= 320) { // 240 272 320
+            horiz_ticks = 2;;
+        } else if (this->width() <= 480) {
+            horiz_ticks = 5;
+        } else if (this->width() <= 800) {
+            horiz_ticks = 10;
+        } else {
+            horiz_ticks = 10;
+        }
+        // height -> vert_ticks -> values stacked
+        if (this->height() <= 320) { // 240 272 320
+            vert_ticks = 8;
+        } else if (this->height() <= 480) {
+            vert_ticks = 16;
+        } else if (this->height() <= 800) {
+            vert_ticks = 16;
+        } else {
+            vert_ticks = 16;
+        }
     } else {
-        horiz_ticks = 9;
-        vert_ticks = 16;
+        // width -> vert_ticks -> values side by side
+        if (this->width() <= 320) { // 240 272 320
+            vert_ticks = 3;
+        } else if (this->width() <= 480) {
+            vert_ticks = 7;
+        } else if (this->width() <= 800) {
+            vert_ticks = 12;
+        } else {
+            vert_ticks = 12;
+        }
+        // height -> horiz_ticks -> datetime stacked
+        if (this->height() <= 320) { // 240 272 320
+            horiz_ticks = 6;
+        } else if (this->height() <= 480) {
+            horiz_ticks = 12;
+        } else if (this->height() <= 800) {
+            horiz_ticks = 16;
+        } else {
+            horiz_ticks = 16;
+        }
     }
     double deltax = (sfinal - sinint) / horiz_ticks;
     for (int i = 0; i < (horiz_ticks + 1); i++)
     {
         arrayTimeTicks.append(sinint + i * deltax);
-    }
-    
+    }    
     QwtScaleDiv scale = QwtScaleDiv(sinint,sfinal);
     scale.setTicks(QwtScaleDiv::MajorTick, (arrayTimeTicks));
     d_qwtplot->setAxisScaleDiv( QwtAxisId( timeAxisId, 0 ), scale);
     d_qwtplot->setAxisVisible( QwtAxisId( timeAxisId, 0 ), true);
+
     /* prepare the values */
     for (int pen_index = 0; pen_index < PEN_NB; pen_index++)
     {
@@ -1271,11 +1301,10 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                 arrayTicks.append(pens[pen_index].yMinActual + i * deltay);
             }
             QwtScaleDiv scale = QwtScaleDiv(pens[pen_index].yMinActual,pens[pen_index].yMaxActual);
-
-            //scale = d_qwtplot->axisScaleDiv(valueAxisId + pen_index);
             scale.setTicks(QwtScaleDiv::MajorTick, (arrayTicks));
             d_qwtplot->setAxisAutoScale(QwtAxisId( valueAxisId, pen_index ), false);
             d_qwtplot->setAxisScaleDiv( QwtAxisId( valueAxisId, pen_index ), scale);
+            // we do not want many Y scales: d_qwtplot->setAxisVisible( QwtAxisId( valueAxisId, pen_index ), true );
             
             /* if online, the last sample is pens[pen_index].sample */
             if (_online_)
