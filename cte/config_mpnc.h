@@ -50,11 +50,14 @@ private:
     QGridLayout             *mainGrid;          // Main Grid LayOut
     QTableWidget            *tblCT;             // Table Widget per CT
     QComboBox               *cboSelector;       // Combo Box selettore MPNC
+    QList<QPushButton *>    lstRemove;          // Lista per i bottoni Remove Modules
     QList<QPushButton *>    lstPulsanti;        // Lista per i bottoni Moduli
     QList<bool>             lstModuleIsPresent; // Lista abilitazione moduli
     QString                 szModuleStyle;      // Style di base dei Bottoni per i Moduli
+    QString                 szRemoveStyle;      // Style di base dei Bottoni per Remove Modules
     QStringList             lstSfondi;          // Lista dei nomi degli sfondi associati ai Bottoni
-    QSignalMapper           *mapButtonClicked;  // Signal Mapper per Bottone Clicked
+    QSignalMapper           *mapRemoveClicked;  // Signal Mapper per Remove Module Clicked
+    QSignalMapper           *mapModuleClicked;  // Signal Mapper per Module Clicked
     // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema
     int                     m_nTesta;           // Testa selezionata, -1 se non presente
     QList<int>              lstCapofila;        // # Riga della elemento capofila della Testa nEsima

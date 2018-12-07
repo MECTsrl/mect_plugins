@@ -9,6 +9,7 @@
 #include <QDebug>
 
 const int nItemsPerGroup = 4;
+const int nTotalGroups = 4;
 const int nTotalItems = 17;
 // Elementi MPNC
 const int nTotalRows = 212;
@@ -26,6 +27,7 @@ const int nRowFlags = 3;
 const int nRowGrid = 4;
 // Sfondi per Moduli
 const QString szFileAdd = szPathIMG + QString::fromAscii("Add_32.png");
+const QString szFileRemove = szPathIMG + QString::fromAscii("Remove_32.png");
 const QString szFileMPNC006 = szPathIMG + QString::fromAscii("MPNC006_R.png");
 const QString szFileMPNC030 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC035 = szPathIMG + QString::fromAscii("MPNC030_R.png");
@@ -44,7 +46,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     externalLayOut = new QVBoxLayout(this);             // Lay-Out Esterno del Frame
     mainGrid = new QGridLayout();
     mainGrid->setHorizontalSpacing(2);
-    mapButtonClicked = new QSignalMapper(this);         // Signal Mapper per Bottone Clicked
+    mapRemoveClicked = new QSignalMapper(this);         // Signal Mapper per Remove Module Clicked
+    mapModuleClicked = new QSignalMapper(this);         // Signal Mapper per Module Clicked
     // Labels per Flags
     QStringList lstFlags;
     for (i = 0; i < nItemsPerGroup; i++)  {
@@ -137,7 +140,44 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     lblBox->setText(QString::fromAscii("MPNC020 02\n16 Digital Output"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowDesc, nBaseDigOut, 1, nItemsPerGroup);
-    // Bottoni per gestione dei moduli
+    // Bottoni per eliminazione Moduli
+    szRemoveStyle.clear();
+    szRemoveStyle.append(QString::fromAscii("QPushButton:disabled { \n"));
+    szRemoveStyle.append(QString::fromAscii("    border: 0px ;\n"));
+    szRemoveStyle.append(QString::fromAscii("    border-radius: 2px;"));
+    szRemoveStyle.append(QString::fromAscii("    background-color: transparent;"));
+    szRemoveStyle.append(QString::fromAscii("    background-image: url("");"));
+    szRemoveStyle.append(QString::fromAscii("}\n"));
+    szRemoveStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
+    szRemoveStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
+    szRemoveStyle.append(QString::fromAscii("}\n"));
+    szRemoveStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
+    szRemoveStyle.append(QString::fromAscii("    border: 1px solid yellow;\n"));
+    szRemoveStyle.append(QString::fromAscii("}\n"));
+    szRemoveStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
+    szRemoveStyle.append(QString::fromAscii("    border: 1px solid red;\n"));
+    szRemoveStyle.append(QString::fromAscii("}\n"));
+    szRemoveStyle.append(QString::fromAscii("QPushButton { \n"));
+    szRemoveStyle.append(QString::fromAscii("  border: 0px solid blue;\n"));
+    szRemoveStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
+    szRemoveStyle.append(QString::fromAscii("  min-height: 36px;\n"));
+    szRemoveStyle.append(QString::fromAscii("  max-height: 36px;\n"));
+    szRemoveStyle.append(QString::fromAscii("  min-width: 36px;\n"));
+    szRemoveStyle.append(QString::fromAscii("  max-width: 36px;\n"));
+    szRemoveStyle.append(QString::fromAscii("  background-position: center  center;\n"));
+    szRemoveStyle.append(QString::fromAscii("}"));
+    // Bottoni per gestione dei Moduli
+    for (i = 0; i < nTotalGroups; i++)  {
+        QPushButton *remove = new QPushButton(this);
+        remove->setEnabled(true);
+        remove->setFlat(true);
+        remove->setVisible(true);
+        remove->setStyleSheet(szRemoveStyle);
+        mapRemoveClicked->setMapping(remove, int(i));
+        connect(remove, SIGNAL(clicked()), mapRemoveClicked, SLOT(map()));
+        mainGrid->addWidget(remove, nRowDesc, (nBaseAnIn + 3) + (i * nItemsPerGroup));
+        lstRemove.append(remove);
+    }
     // StyleSheet di base per ogni bottone
     szModuleStyle.clear();
     szModuleStyle.append(QString::fromAscii("QPushButton:disabled { \n"));
@@ -166,8 +206,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
         module->setEnabled(false);
         module->setFlat(true);
         module->setStyleSheet(szModuleStyle);
-        mapButtonClicked->setMapping(module, int(i));
-        connect(module, SIGNAL(clicked()), mapButtonClicked, SLOT(map()));
+        mapModuleClicked->setMapping(module, int(i));
+        connect(module, SIGNAL(clicked()), mapModuleClicked, SLOT(map()));
         mainGrid->addWidget(module, nRowButtons, i);
         lstPulsanti.append(module);
     }
@@ -199,7 +239,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     //-------------------------------------
     // Collegamento del Mapper Bottoni
     //-------------------------------------
-    connect(mapButtonClicked, SIGNAL(mapped(int)), this, SLOT(buttonClicked(int)));
+    connect(mapModuleClicked, SIGNAL(mapped(int)), this, SLOT(buttonClicked(int)));
     // Combo per cambio Modulo MPNC
     connect(cboSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(changeRootElement(int)));
     // Init variabili di gestione

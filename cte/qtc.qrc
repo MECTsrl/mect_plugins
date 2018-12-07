@@ -27,6 +27,7 @@
         <file>img/MPNC006_R.png</file>
         <file>img/MPNC020_R.png</file>
         <file>img/MPNC030_R.png</file>
+        <file>img/Remove_32.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>
