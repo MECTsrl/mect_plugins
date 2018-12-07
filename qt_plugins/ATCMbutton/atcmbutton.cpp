@@ -356,23 +356,21 @@ bool ATCMbutton::setStatusvar(QString variable)
 {
     m_statusvar = variable.trimmed();
 #ifdef TARGET_ARM
+    m_text = "";
     if (m_statusvar.isEmpty()) {
         m_status = ERROR;
-        m_text = "";
         m_CtIndex = 0;
         LOG_PRINT(verbose_e, "empty variable\n");
     }
     else if (Tag2CtIndex(m_statusvar.toAscii().data(), &m_CtIndex) != 0)
     {
         m_status = ERROR;
-        m_text = "";
         m_CtIndex = 0;
         LOG_PRINT(error_e, "unknown variable '%s'\n", m_statusvar.trimmed().toAscii().data());
     }
     else
     {
         m_status = UNK; // not read yet
-        m_text =  "";
         LOG_PRINT(info_e, "set variable #%d '%s'\n", m_CtIndex, m_statusvar.toAscii().data());
     }
 
@@ -380,24 +378,30 @@ bool ATCMbutton::setStatusvar(QString variable)
     QObject *ancestor = getPage((QObject *)this);
 
     if (ancestor != NULL) {
+        // avoid multiple connects after QEvent::LanguageChange
+        disconnect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
         connect(ancestor, SIGNAL(varRefresh()), this, SLOT(updateData()));
     }
 
-    setToolTip("");
     // here because in the constructor checkable is not yet determined
     if (isCheckable())
     {
+        // avoid multiple connects after QEvent::LanguageChange
+        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
         connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
     }
     else
     {
+        // avoid multiple connects after QEvent::LanguageChange
+        disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ));
+        disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ));
         connect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) , Qt::DirectConnection);
         connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
     }
+    setToolTip("");
 #else
     setToolTip(m_statusvar);
 #endif
-
 
     return true;
 }
