@@ -7,6 +7,8 @@
 #include "mectsettings.h"
 #include "trendeditor.h"
 #include "ctecommon.h"
+#include "config_mpnc.h"
+#include "config_mpne.h"
 
 #include <QObject>
 #include <QTableView>
@@ -158,6 +160,8 @@ private:
     // Import dati in XML
     bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows);
     bool    addModelVars(const QString szModelName, int nRow);
+    void    showTabMPNC();
+    void    showTabMPNE();
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
@@ -165,6 +169,8 @@ private:
     Ui::ctedit *ui;
     MectSettings    *mectSet;
     TrendEditor     *trendEdit;
+    Config_MPNC     *configMPNC;
+    Config_MPNE     *configMPNE;
 
     int         m_nGridRow;                         // Riga corrente sul Grid
     QString     m_szCurrentCTFile;                  // File Cross Table corrente (completo di Path)
@@ -250,6 +256,12 @@ private:
     varTypes                m_vtAlarmVarType;       // Tipo della variabile SX in un espressione Allarme/Evento
     int                     m_nAlarmDecimals;       // Numero di Decimali della Variabile SX di un Allarme
     bool                    m_fSkipLine;            // Se vero non devono essere fatti controlli sulla riga in uscita
+    // Gestione nodi su MPNC
+    QList<int>              lstMPNC;                // Liste delle righe capofila delle teste MPNC presenti
+    int                     m_nMPNC;                // Indice della Testa MPNC correntemente visualizzata
+    // Gestione nodi su MPNE
+    QList<int>              lstMPNE;                // Liste delle capofila delle teste MPNE presenti
+    int                     m_nMPNE;                // Indice della Testa MPNE correntemente visualizzata
 };
 
 #endif // CTEDIT_H

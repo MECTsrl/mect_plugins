@@ -2,6 +2,20 @@
 #define CTECOMMON_H
 #include <QString>
 
+// Parametri generali della CT
+#define MAXBLOCKSIZE 64
+#define MIN_RETENTIVE 1
+#define MAX_RETENTIVE 192
+#define MIN_NONRETENTIVE 193
+#define MAX_NONRETENTIVE 4999
+#define MIN_DIAG 5000
+#define MAX_DIAG 5171
+#define MIN_NODE 5172
+#define MAX_NODE 5299
+#define MIN_SYSTEM  5390
+#define COMMANDLINE 2048
+#define MAX_TCPSRV_REGS 4095
+
 // Int Constants
 const int nCTCols = 13;
 const int nMax_Int16 = 65535;
@@ -60,6 +74,8 @@ const QString szSHARP = QString::fromAscii("#");
 const QString szTRUE = QString::fromAscii("1");
 const QString szFALSE = QString::fromAscii("0");
 const QString szMectTitle = QString::fromAscii("Mect Editor");
+const QString szPathIMG = QString::fromAscii(":/cteicons/img/");
+
 // External Models
 const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
 const QString szMPNC006 = QString::fromAscii("MPNC006");

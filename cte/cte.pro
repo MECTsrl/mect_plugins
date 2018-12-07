@@ -9,7 +9,9 @@ HEADERS += \
     cteerrorlist.h \
     mectsettings.h \
     trendeditor.h \
-    ctecommon.h
+    ctecommon.h \
+    config_mpnc.h \
+    config_mpne.h
 
 SOURCES += \
     cteplugin.cpp \
@@ -18,7 +20,9 @@ SOURCES += \
     utils.cpp \  
     cteerrorlist.cpp \
     mectsettings.cpp \
-    trendeditor.cpp
+    trendeditor.cpp \
+    config_mpnc.cpp \
+    config_mpne.cpp
 
 FORMS += \
     ctedit.ui \  

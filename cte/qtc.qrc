@@ -23,6 +23,10 @@
         <file>img/List-add.png</file>
         <file>img/Edit-trash.png</file>
         <file>img/Mect_small.png</file>
+        <file>img/Add_32.png</file>
+        <file>img/MPNC006_R.png</file>
+        <file>img/MPNC020_R.png</file>
+        <file>img/MPNC030_R.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>

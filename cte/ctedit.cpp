@@ -60,25 +60,15 @@
 #define STD_DISPLAY_TIME 5
 #define MAX_DISPLAY_TIME 15
 
-// Parametri generali della CT
-#define MAXBLOCKSIZE 64
-#define MIN_RETENTIVE 1
-#define MAX_RETENTIVE 192
-#define MIN_NONRETENTIVE 193
-#define MAX_NONRETENTIVE 4999
-#define MIN_DIAG 5000
-#define MAX_DIAG 5171
-#define MIN_NODE 5172
-#define MAX_NODE 5299
-#define MIN_SYSTEM  5390
-#define COMMANDLINE 2048
-#define MAX_TCPSRV_REGS 4095
 // Tabs in TabWidget
 #define TAB_CT 0
 #define TAB_SYSTEM 1
 #define TAB_TREND 2
 #define TAB_DEVICES 3
 #define TAB_TIMINGS 4
+#define TAB_MPNC 5
+#define TAB_MPNE 6
+#define TAB_TEST 7
 
 #undef  WORD_BIT
 
@@ -184,6 +174,10 @@ ctedit::ctedit(QWidget *parent) :
     lstLoggedVars.clear();
     lstUndo.clear();
     lstCTErrors.clear();
+    lstMPNC.clear();                    // Liste delle capofila delle teste MPNC presenti
+    m_nMPNC = -1;                       // Indice della Testa MPNC correntemente visualizzata
+    lstMPNE.clear();                    // Liste delle capofila delle teste MPNE presenti
+    m_nMPNE = -1;                       // Indice della Testa MPNE correntemente visualizzata
     //------------------------
     // Riempimento liste
     //------------------------
@@ -576,6 +570,14 @@ ctedit::ctedit(QWidget *parent) :
     QVBoxLayout *vbTrend = new QVBoxLayout(ui->tabTrend);
     trendEdit = new TrendEditor(ui->tabTrend);
     vbTrend->addWidget(trendEdit);
+    // Creazione del Tab per il configuratore MPNC
+    QVBoxLayout *vbMPNC= new QVBoxLayout(ui->tabMPNC);
+    configMPNC = new Config_MPNC(ui->tabMPNC);
+    vbMPNC->addWidget(configMPNC);
+    // Creazione del Tab per il configuratore MPNE
+    QVBoxLayout *vbMPNE= new QVBoxLayout(ui->tabMPNE);
+    configMPNE = new Config_MPNE(ui->tabMPNE);
+    vbMPNE->addWidget(configMPNE);
 
     // Seleziona il primo Tab
     ui->tabWidget->setTabEnabled(TAB_CT, true);
@@ -583,6 +585,8 @@ ctedit::ctedit(QWidget *parent) :
     ui->tabWidget->setTabEnabled(TAB_TREND, true);
     ui->tabWidget->setTabEnabled(TAB_DEVICES, true);
     ui->tabWidget->setTabEnabled(TAB_TIMINGS, true);
+    ui->tabWidget->setTabEnabled(TAB_MPNC, true);
+    ui->tabWidget->setTabEnabled(TAB_MPNE, true);
     ui->tabWidget->setCurrentIndex(m_nCurTab);
 
     // Connessione Segnali - Slot
@@ -2101,7 +2105,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
 {
     int             nRow = ui->tblCT->rowAt(pos.y());
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
-    QIcon cIco;
+    QIcon           cIco;
     QClipboard      *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
     QString         szClipBuffer;
@@ -2131,46 +2135,46 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QMenu gridMenu(this);
     // Items del Menu contestuale
     // Renum Blocks
-    //cIco = QIcon(QString::fromAscii(":/cteicons/img/Blocks.png"));
+    //cIco = QIcon(szPathIMG + QString::fromAscii("Blocks.png"));
     //QAction *menuBlocks = gridMenu.addAction(cIco, trUtf8("Renum Blocks"));
     //menuBlocks->setEnabled(true);
     // Goto Line
-    cIco = QIcon(QString::fromAscii(":/cteicons/img/Goto.png"));
+    cIco = QIcon(szPathIMG + QString::fromAscii("Goto.png"));
     QAction *menuRow = gridMenu.addAction(cIco, trUtf8("Goto Line\t\t(Ctrl+L)"));
     menuRow->setEnabled(true);
     // Sep0
     gridMenu.addSeparator();
     // Inserisci righe
-    cIco = QIcon(QString::fromAscii(":/cteicons/img/List-add.png"));
+    cIco = QIcon(szPathIMG + QString::fromAscii("List-add.png"));
     QAction *insRows = gridMenu.addAction(cIco, trUtf8("Insert Blank Rows\t\t(Ins)"));
     insRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // insRows->setShortcut(Qt::Key_Insert);
 
     // Cancella righe
-    cIco = QIcon(QString::fromAscii(":/cteicons/img/Edit-clear.png"));
+    cIco = QIcon(szPathIMG + QString::fromAscii("Edit-clear.png"));
     QAction *emptyRows = gridMenu.addAction(cIco, trUtf8("Clear Rows\t\t(Del)"));
     emptyRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // emptyRows->setShortcut(Qt::Key_Delete);
     // Elimina righe
-    cIco = QIcon(QString::fromAscii(":/cteicons/img/Edit-trash.png"));
+    cIco = QIcon(szPathIMG + QString::fromAscii("Edit-trash.png"));
     QAction *remRows = gridMenu.addAction(cIco, trUtf8("Delete Rows"));
     remRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // Sep1
     gridMenu.addSeparator();
     // Copia righe (Sempre permesso)
-    cIco = QIcon(QString::fromAscii(":/cteicons/img/Copy.png"));
+    cIco = QIcon(szPathIMG + QString::fromAscii("Copy.png"));
     QAction *copyRows = gridMenu.addAction(cIco, trUtf8("Copy Rows\t\t(Ctrl+C)"));
     copyRows->setEnabled(selection.count() > 0);
     // copyRows->setShortcut(Qt::Key_Copy);
     // Taglia righe
-    cIco = QIcon(QString::fromAscii(":/cteicons/img/Cut.png"));
+    cIco = QIcon(szPathIMG + QString::fromAscii("Cut.png"));
     QAction *cutRows = gridMenu.addAction(cIco, trUtf8("Cut Rows\t\t(Ctrl+X)"));
     cutRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // cutRows->setShortcut(Qt::Key_Cut);
     // Sep 2
     gridMenu.addSeparator();
     // Paste Rows
-    cIco = QIcon(QString::fromAscii(":/cteicons/img/edit-paste.png"));
+    cIco = QIcon(szPathIMG + QString::fromAscii("edit-paste.png"));
     QAction *pasteRows = gridMenu.addAction(cIco, trUtf8("Paste Rows\t\t(Ctrl+V)"));
     pasteRows->setEnabled(fClipSourceOk && m_nGridRow < MIN_DIAG - 1);
     // pasteRows->setShortcut(Qt::Key_Paste);
@@ -3140,6 +3144,12 @@ void ctedit::tabSelected(int nTab)
     // Passaggio a tab TIMINGS
     else if (nTab == TAB_TIMINGS)  {
         fillTimingsTree(m_nGridRow);
+    }
+    else if (nTab == TAB_MPNC)  {
+        showTabMPNC();
+    }
+    else if (nTab == TAB_MPNE)  {
+        showTabMPNE();
     }
     // Set Current Tab
     m_nCurTab = nTab;
@@ -7126,3 +7136,24 @@ void    ctedit::fillTimingsTree(int nCurRow)
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
 }
 
+void    ctedit::showTabMPNC()
+{
+    QList<CrossTableRecord> lstRows;
+    int nCur = 0;
+
+    lstMPNC.clear();
+    lstMPNC.append(200);
+    lstMPNC.append(450);
+    m_nMPNC = 0;
+    lstRows.clear();
+    for (nCur = 0; nCur < MAX_NONRETENTIVE; nCur++)  {
+        lstRows.append(lstCTRecords[nCur]);
+    }
+    configMPNC->showTestaNodi(m_nMPNC, lstMPNC, lstRows);
+}
+void    ctedit::showTabMPNE()
+{
+    lstMPNE.clear();
+    m_nMPNE = -1;
+    configMPNE->showTestaNodi(m_nMPNE, lstMPNE);
+}
