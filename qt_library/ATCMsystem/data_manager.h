@@ -42,6 +42,10 @@ private slots:
 
     void on_pushButtonBack_clicked();
 
+    void on_pushButtonLogStart_clicked();
+
+    void on_pushButtonLogStop_clicked();
+
 private:
     Ui::data_manager *ui;
 };
