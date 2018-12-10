@@ -79,7 +79,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     for (i = 0; i < nTotalItems; i++)  {
         lstModuleIsPresent.append(false);
     }
-    // Labels per Combo Selettore
+    // Label per Combo Selettore
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
     szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
@@ -95,12 +95,14 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     // Label MPNC006
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
+    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
+    szTemp.append(QString::fromAscii("  background-color: AliceBlue;\n"));
     szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
     szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
     szTemp.append(QString::fromAscii("  font: 8px;\n"));
     szTemp.append(QString::fromAscii("}"));
     lblBox = new QLabel(this);
-    lblBox->setFrameStyle(QFrame::Box | QFrame::Sunken);
     lblBox->setText(QString::fromAscii("MPNC006"));
     lblBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     lblBox->setStyleSheet(szTemp);
@@ -109,33 +111,32 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     // ANIN
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
+    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
+    szTemp.append(QString::fromAscii("  background-color: AliceBlue;\n"));
     szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
     szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
     szTemp.append(QString::fromAscii("  font: 14px;\n"));
     szTemp.append(QString::fromAscii("}"));
     lblBox = new QLabel(this);
-    lblBox->setFrameStyle(QFrame::Box | QFrame::Sunken);
     lblBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     lblBox->setText(QString::fromAscii("MPNC030\n4 Analog Input"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowDesc, nBaseAnIn, 1, nItemsPerGroup);
     // ANOUT
     lblBox = new QLabel(this);
-    lblBox->setFrameStyle(QFrame::Box | QFrame::Sunken);
     lblBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     lblBox->setText(QString::fromAscii("MPNC035\n4 Analog Output"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowDesc, nBaseAnOut, 1, nItemsPerGroup);
     // DIGIN
     lblBox = new QLabel(this);
-    lblBox->setFrameStyle(QFrame::Box | QFrame::Sunken);
     lblBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     lblBox->setText(QString::fromAscii("MPNC020 01\n16 Digital Input"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowDesc, nBaseDigIn, 1, nItemsPerGroup);
     // DIGOUT
     lblBox = new QLabel(this);
-    lblBox->setFrameStyle(QFrame::Box | QFrame::Sunken);
     lblBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     lblBox->setText(QString::fromAscii("MPNC020 02\n16 Digital Output"));
     lblBox->setStyleSheet(szTemp);
@@ -144,9 +145,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szRemoveStyle.clear();
     szRemoveStyle.append(QString::fromAscii("QPushButton:disabled { \n"));
     szRemoveStyle.append(QString::fromAscii("    border: 0px ;\n"));
-    szRemoveStyle.append(QString::fromAscii("    border-radius: 2px;"));
-    szRemoveStyle.append(QString::fromAscii("    background-color: transparent;"));
-    szRemoveStyle.append(QString::fromAscii("    background-image: url("");"));
+    szRemoveStyle.append(QString::fromAscii("    background-color: transparent;\n"));
+    szRemoveStyle.append(QString::fromAscii("    background-image: url("");\n"));
     szRemoveStyle.append(QString::fromAscii("}\n"));
     szRemoveStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
     szRemoveStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
@@ -162,14 +162,15 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szRemoveStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
     szRemoveStyle.append(QString::fromAscii("  min-height: 36px;\n"));
     szRemoveStyle.append(QString::fromAscii("  max-height: 36px;\n"));
-    szRemoveStyle.append(QString::fromAscii("  min-width: 36px;\n"));
-    szRemoveStyle.append(QString::fromAscii("  max-width: 36px;\n"));
+    szRemoveStyle.append(QString::fromAscii("  min-width: 40px;\n"));
+    szRemoveStyle.append(QString::fromAscii("  max-width: 40px;\n"));
+    szRemoveStyle.append(QString::fromAscii("  background-color: AliceBlue;\n"));
     szRemoveStyle.append(QString::fromAscii("  background-position: center  center;\n"));
     szRemoveStyle.append(QString::fromAscii("}"));
     // Bottoni per gestione dei Moduli
     for (i = 0; i < nTotalGroups; i++)  {
         QPushButton *remove = new QPushButton(this);
-        remove->setEnabled(true);
+        remove->setEnabled(false);
         remove->setFlat(true);
         remove->setVisible(true);
         remove->setStyleSheet(szRemoveStyle);
@@ -240,6 +241,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     // Collegamento del Mapper Bottoni
     //-------------------------------------
     connect(mapModuleClicked, SIGNAL(mapped(int)), this, SLOT(buttonClicked(int)));
+    connect(mapRemoveClicked, SIGNAL(mapped(int)), this, SLOT(groupItemRemove(int)));
     // Combo per cambio Modulo MPNC
     connect(cboSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(changeRootElement(int)));
     // Init variabili di gestione
@@ -309,6 +311,27 @@ void    Config_MPNC::customizeButtons()
         lstModuleIsPresent[nBaseDigIn] = true;
         lstModuleIsPresent[nBaseDigIn + 1] = true;
         lstModuleIsPresent[nBaseDigIn + 2] = true;
+    }
+    // Abilitazione dei bottoni "Remove"
+    for (nCur = 0; nCur < nTotalGroups; nCur++)  {
+        szNewStyle = szRemoveStyle.left(szRemoveStyle.length() - 1);
+        curIsEnabled = false;
+        szIcon.clear();
+        // Se esiste almeno la base di quel gruppo abilita bottone Remove
+        if (lstModuleIsPresent[nBaseHead + (nCur * nItemsPerGroup)])  {
+            curIsEnabled = true;
+            szIcon = szFileRemove;
+        }
+        if (! szIcon.isEmpty())  {
+            szIcon = QString::fromAscii("    qproperty-icon: url(%1); \n") .arg(szIcon);
+            szIcon.append(QString::fromAscii("    background-color: Cornflowerblue;\n"));
+            szNewStyle.append(szIcon);
+        }
+        // Abilitazione bottone Remove
+        lstRemove[nCur]->setEnabled(curIsEnabled);
+        // Cambio StyleSheet
+        szNewStyle.append(QString::fromAscii("}"));
+        lstRemove[nCur]->setStyleSheet(szNewStyle);
     }
     for (nCur = 0; nCur < nTotalItems; nCur++)  {
         // Recupero dello Style generale per i bottoni
@@ -392,5 +415,11 @@ void    Config_MPNC::changeRootElement(int nItem)
     getUsedModules(m_nBaseRow);
     // Abilitazione interfaccia
     customizeButtons();
+
+}
+void    Config_MPNC::groupItemRemove(int nGroup)
+// Rimozione elemento da gruppo
+{
+    qDebug() << QString::fromAscii("groupItemRemove(): Group Clicked: %1") .arg(nGroup);
 
 }

@@ -33,7 +33,8 @@ public slots:
 
 private slots:
     void    customizeButtons();                 // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
-    void    buttonClicked(int nButton);         // Gestore della pressione dei bottoni
+    void    buttonClicked(int nButton);         // Gestore della pressione dei bottoni (Define Module)
+    void    groupItemRemove(int nGroup);        // Rimozione elemento da gruppo
     void    getUsedModules(int nRow);           // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
     void    changeRootElement(int nItem);       // Cambio di Item della Combo dei MPNC definiti
 
