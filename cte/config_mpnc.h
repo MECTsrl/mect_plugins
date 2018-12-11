@@ -37,12 +37,15 @@ private slots:
     void    groupItemRemove(int nGroup);        // Rimozione elemento da gruppo
     void    getUsedModules(int nRow);           // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
     void    changeRootElement(int nItem);       // Cambio di Item della Combo dei MPNC definiti
+    void    filterVariables(int nGroup, int nItem); // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
 
 private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
     //---------------------------------------------------------------------
-
+    int     getLastModuleUsed(int nGroup);      // Ricerca dell'ultimo modulo usato nel gruppo
+    int     rel2AbsModulePos(int nGroup, int nModule);  // Calcola la posizione assoluta del Modulo
+    void    abs2RelModulePos(int nAbs, int &nGroup, int &nModule);  // Calcola la posizione assoluta del Modulo
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
@@ -57,8 +60,11 @@ private:
     QString                 szModuleStyle;      // Style di base dei Bottoni per i Moduli
     QString                 szRemoveStyle;      // Style di base dei Bottoni per Remove Modules
     QStringList             lstSfondi;          // Lista dei nomi degli sfondi associati ai Bottoni
+    QStringList             lstModuleName;      // Lista dei nomi dei moduli
+    QStringList             lstPosFlags;           // Lista dei nomi delle Posizioni (A..D)
     QSignalMapper           *mapRemoveClicked;  // Signal Mapper per Remove Module Clicked
     QSignalMapper           *mapModuleClicked;  // Signal Mapper per Module Clicked
+    QString                 m_szMsg;            // Messaggio di servizio
     // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema
     int                     m_nTesta;           // Testa selezionata, -1 se non presente
     QList<int>              lstCapofila;        // # Riga della elemento capofila della Testa nEsima
