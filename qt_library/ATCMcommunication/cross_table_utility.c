@@ -79,7 +79,7 @@ static write_queue_elem_t * queue_head = NULL, * queue_tail = NULL;
  *
  * Enable:   Flag 0/1
  * PLC:      Flag 0/1
- * Tag:      char[16]
+ * Tag:      char[TAG_LEN]
  * type:     BYTE|UINT|INT|UDINTABCD|UDINTBADC|UDINTCDAB|UDINTDCBA|DINTABCD|DINTBADC|DINTCDAB|DINTDCBA|REAL|REALBADC|REALCDAB|REALDCBA
  * Decimal:  0-4|address
  * Protocol: RTU|TCP|TCPRTU
