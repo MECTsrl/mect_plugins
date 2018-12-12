@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 
 #ifdef STANDALONE
+
 #define LOG_PRINT(level, format, args...) \
 { \
     fprintf (stderr, "[%s:%s:%d]", __FILE__, __func__, __LINE__); \
@@ -17,16 +18,19 @@
     fflush(stderr); \
 }
 #define CROSS_TABLE        LOCAL_ETC_DIR"/Crosstable.csv"
-#define TAG_LEN   (16 + 1)
+#define TAG_LEN   (31 + 1)
 #define DB_SIZE_ELEM 5472
 #define TAG_STORED_SLOW    'S'
 #define TAG_STORED_FAST    'F'
 #define TAG_STORED_ON_VAR  'V'
 #define TAG_STORED_ON_SHOT 'X'
+
 #else
+
 #include "app_logprint.h"
 #include "utility.h"
 #include "common.h"
+
 #endif
 
 #define LINE_SIZE 1024
