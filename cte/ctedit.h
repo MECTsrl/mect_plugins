@@ -11,6 +11,7 @@
 #include "config_mpne.h"
 
 #include <QObject>
+#include <QTableWidget>
 #include <QTableView>
 #include <QModelIndex>
 #include <QModelIndexList>
@@ -39,6 +40,7 @@ public:
     void    displayStatusMessage(QString szMessage, int nSeconds = 0);// Show message in ui->lblMessage
     bool    needSave();
     bool    querySave();
+
 
 protected:
      bool   eventFilter(QObject *obj, QEvent *event);        // Gestore Event Handler
@@ -90,11 +92,10 @@ private:
     //---------------------------------------------------------------------
     // Lettura e scrittura dati da e per strutture di appoggio
     bool    ctable2Grid();                          // Lettura di tutta la CT in Grid
-    bool    grid2CTable();                          // Dump di tutto il Grid in lista di CT Records
-    bool    list2GridRow(QStringList &lstRecValues, int nRow);  // Inserimento o modifica elemento in Grid (valori -> GRID)
+    bool    recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, bool fIgnoreAlarms = false);// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
+    bool    list2GridRow(QTableWidget *table, QStringList &lstRecValues, int nRow);  // Inserimento o modifica elemento in Grid (valori -> GRID)
     bool    list2CTrec(QStringList &lstRecValues, int nRow);// Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
-    bool    recCT2List(QStringList &lstRecValues, int nRow);// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
-    void    listClear(QStringList &lstRecValues);   // Svuotamento e pulizia Lista Stringhe per passaggio dati Interfaccia <---> Record CT
+    bool    grid2CTable();                          // Dump di tutto il Grid in lista di CT Records
     bool    values2Iface(QStringList &lstRecValues);// Copia Lista Stringhe convertite da CT Record a Zona di Editing
     bool    iface2values(QStringList &lstRecValues);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
     void    freeCTrec(int nRow);                    // Marca il Record della CT come inutilizzato
@@ -184,8 +185,6 @@ private:
     QStringList lstHeadCols;
     QStringList lstHeadNames;
     QList<int>  lstHeadSizes;
-    QStringList lstPriority;
-    QStringList lstPriorityDesc;
     QStringList lstUpdateNames;
     QStringList lstTipi;
     QStringList lstProtocol;

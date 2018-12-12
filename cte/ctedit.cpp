@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "cteerrorlist.h"
 #include "stdlib.h"
+#include "cteUtils.h"
 
 #include <QFile>
 #include <QFileDialog>
@@ -105,29 +106,6 @@ const QString szXMLExt = QString::fromAscii(".xml");
 #define STR(x) _STR(x)
 const QString szVERSION = QString::fromAscii(STR(ATCM_VERSION));
 
-enum colonne_e
-{
-    colPriority = 0,
-    colUpdate,
-    colName,
-    colType,
-    colDecimal,
-    colProtocol,
-    colIP,
-    colPort,
-    colNodeID,
-    colInputReg,
-    colRegister,
-    colBlock,
-    colBlockSize,
-    colBehavior,
-    colComment,
-    colSourceVar,
-    colCondition,
-    colCompare,
-    colTotals
-};
-
 enum colTree_e
 {
     colTreeName = 0,
@@ -181,6 +159,8 @@ ctedit::ctedit(QWidget *parent) :
     //------------------------
     // Riempimento liste
     //------------------------
+    initLists();
+
     // Lista Modelli
     lstTargets.clear();
     initTargetList();
@@ -298,18 +278,7 @@ ctedit::ctedit(QWidget *parent) :
     lstRegions[regDiagnostic]   = trUtf8("Diagnostic\t[5000 - 5299]");
     lstRegions[regLocalIO]      = trUtf8("Local I/O\t[5300 - 5389]");
     lstRegions[regSystem]       = trUtf8("System\t[5390 - 5472]");
-    // Lista Priorità (campo Enable)
-    lstPriority.clear();
-    for (nCol = 0; nCol < nNumPriority; nCol++)  {
-        lstPriority.append(QString::number(nCol));
-    }
-    lstPriorityDesc.clear();
-    lstPriorityDesc
-        << QString::fromAscii("None")
-        << QString::fromAscii("High")
-        << QString::fromAscii("Medium")
-        << QString::fromAscii("Low")
-        ;
+
     // Lista PLC (Frequenza Aggiornamento)
     lstUpdateNames.clear();
     lstAllUpdates.clear();
@@ -806,7 +775,7 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     this->setCursor(Qt::ArrowCursor);
     return fRes;
 }
-bool    ctedit::list2GridRow(QStringList &lstRecValues, int nRow)
+bool    ctedit::list2GridRow(QTableWidget *table,  QStringList &lstRecValues, int nRow)
 // Inserimento o modifica elemento in Grid (valori -> GRID)
 {
     int                 nCol = 0;
@@ -817,7 +786,7 @@ bool    ctedit::list2GridRow(QStringList &lstRecValues, int nRow)
     // Insert Items at Row, Col
     for (nCol = 0; nCol < colTotals; nCol++)  {
         szTemp = lstRecValues[nCol];
-        tItem = ui->tblCT->item(nRow, nCol);
+        tItem = table->item(nRow, nCol);
         // Allocazione Elemento se non già definito
         if (tItem == NULL)  {
             fAdd = true;
@@ -839,14 +808,14 @@ bool    ctedit::list2GridRow(QStringList &lstRecValues, int nRow)
         // Flag Marcatore della riga
         // Aggiunta al Grid
         if (fAdd)  {
-            ui->tblCT->setItem(nRow, nCol, tItem);
+            table->setItem(nRow, nCol, tItem);
         }
     }
-    // Riga Visibile o invisibile
-    if (lstCTRecords[nRow].UsedEntry)
-        ui->tblCT->showRow(nRow);
-    else
-        ui->tblCT->hideRow(nRow);
+//    // Riga Visibile o invisibile
+//    if (lstCTRecords[nRow].UsedEntry)
+//        ui->tblCT->showRow(nRow);
+//    else
+//        ui->tblCT->hideRow(nRow);
     return true;
 }
 
@@ -872,11 +841,11 @@ bool    ctedit::ctable2Grid()
     // Caricamento elementi
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Covert CT Record 2 User Values
-        fRes = recCT2List(lstFields, nCur);
+        fRes = recCT2List(lstCTRecords, lstFields, nCur);
         // If Ok add row to Table View
         if (fRes)  {
             ui->tblCT->insertRow(nCur);
-            fRes = list2GridRow(lstFields, nCur);
+            fRes = list2GridRow(ui->tblCT, lstFields, nCur);
         }
     }
     // qDebug() << tr("Loaded Rows: %1") .arg(nCur);
@@ -929,109 +898,116 @@ bool    ctedit::ctable2Grid()
     this->setCursor(Qt::ArrowCursor);
     return fRes;
 }
-bool ctedit::recCT2List(QStringList &lstRecValues, int nRow)
+bool ctedit::recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, bool fIgnoreAlarms)
 // Conversione da CT Record a record come Lista Stringhe per Interfaccia (Grid)
 // Da Record C a QStringList di valori per caricamento griglia
 {
-    QString szTemp;
-    char ip[MAX_IPADDR_LEN];
+    QString     szTemp;
+    char        ip[MAX_IPADDR_LEN];
 
-    if (nRow < 0 || nRow >= lstCTRecords.count())
+    if (nRow < 0 || nRow >= CTRecords.count())  {
         return false;
+    }
     // Pulizia Buffers
     szTemp.clear();
-    listClear(lstRecValues);
+    listClear(lstRecValues, colTotals);
     // Recupero informazioni da Record CT
     // Abilitazione riga
-    if (lstCTRecords[nRow].UsedEntry)  {
+    if (CTRecords[nRow].UsedEntry)  {
         // Priority
-        if (lstCTRecords[nRow].Enable >= 0 && lstCTRecords[nRow].Enable < nNumPriority)
-            lstRecValues[colPriority] = lstPriority[lstCTRecords[nRow].Enable];
+        if (CTRecords[nRow].Enable >= 0 && CTRecords[nRow].Enable < nNumPriority)  {
+            szTemp = lstPriority.at((int) CTRecords[nRow].Enable);
+            qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1 - Enable: %2 - Cols: %3") .arg(nRow) .arg(szTemp) .arg(lstRecValues.count());
+            lstRecValues[colPriority] = szTemp;
+        }
         // Campo Update
-        if (lstCTRecords[nRow].Update >= 0 && lstCTRecords[nRow].Update < lstUpdateNames.count())
-            lstRecValues[colUpdate] = lstUpdateNames[lstCTRecords[nRow].Update];
+        qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1 - Update: %2") .arg(nRow) .arg(CTRecords[nRow].Update);
+        if (CTRecords[nRow].Update >= 0 && CTRecords[nRow].Update < lstUpdateNames.count())
+            lstRecValues[colUpdate] = lstUpdateNames[CTRecords[nRow].Update];
         // Campo Name
-        lstRecValues[colName] = QString::fromAscii(lstCTRecords[nRow].Tag);
+        qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1 - Tag: %2") .arg(nRow) .arg(QString::fromAscii(CTRecords[nRow].Tag));
+        lstRecValues[colName] = QString::fromAscii(CTRecords[nRow].Tag);
         // Campo Type
-        if (lstCTRecords[nRow].VarType >= BIT && lstCTRecords[nRow].VarType < TYPE_TOTALS)
-            lstRecValues[colType] = lstTipi[lstCTRecords[nRow].VarType];
+        qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1 - VarType: %2") .arg(nRow) .arg(CTRecords[nRow].VarType);
+        if (CTRecords[nRow].VarType >= BIT && CTRecords[nRow].VarType < TYPE_TOTALS)
+            lstRecValues[colType] = lstTipi[CTRecords[nRow].VarType];
         // Campo Decimal
-        lstRecValues[colDecimal] = QString::number(lstCTRecords[nRow].Decimal);
+        lstRecValues[colDecimal] = QString::number(CTRecords[nRow].Decimal);
         // Protocol
-        if (lstCTRecords[nRow].Protocol >= 0 && lstCTRecords[nRow].Protocol < lstProtocol.count())
-            lstRecValues[colProtocol] = lstProtocol[lstCTRecords[nRow].Protocol];
+        if (CTRecords[nRow].Protocol >= 0 && CTRecords[nRow].Protocol < lstProtocol.count())
+            lstRecValues[colProtocol] = lstProtocol[CTRecords[nRow].Protocol];
         // IP Address (Significativo solo per Protocolli a base TCP)
-        if (lstCTRecords[nRow].Protocol == TCP || lstCTRecords[nRow].Protocol == TCPRTU ||
-                lstCTRecords[nRow].Protocol == TCP_SRV || lstCTRecords[nRow].Protocol ==TCPRTU_SRV)  {
-            ipaddr2str(lstCTRecords[nRow].IPAddress, ip);
+        if (CTRecords[nRow].Protocol == TCP || CTRecords[nRow].Protocol == TCPRTU ||
+                CTRecords[nRow].Protocol == TCP_SRV || CTRecords[nRow].Protocol ==TCPRTU_SRV)  {
+            ipaddr2str(CTRecords[nRow].IPAddress, ip);
             szTemp = QString::fromAscii(ip);
         }
         else
             szTemp = szEMPTY;
         lstRecValues[colIP] = szTemp;
         // Port
-        lstRecValues[colPort] = QString::number(lstCTRecords[nRow].Port);
+        lstRecValues[colPort] = QString::number(CTRecords[nRow].Port);
         // Node Id
-        lstRecValues[colNodeID] = QString::number(lstCTRecords[nRow].NodeId);
+        lstRecValues[colNodeID] = QString::number(CTRecords[nRow].NodeId);
         // Input Register
-        lstRecValues[colInputReg] = (lstCTRecords[nRow].InputReg > 0) ? szTRUE : szFALSE;
+        lstRecValues[colInputReg] = (CTRecords[nRow].InputReg > 0) ? szTRUE : szFALSE;
         // Offeset Register
-        lstRecValues[colRegister] = QString::number(lstCTRecords[nRow].Offset);
+        lstRecValues[colRegister] = QString::number(CTRecords[nRow].Offset);
         // Block
-        lstRecValues[colBlock] = QString::number(lstCTRecords[nRow].Block);
+        lstRecValues[colBlock] = QString::number(CTRecords[nRow].Block);
         // N.Registro
-        lstRecValues[colBlockSize] = QString::number(lstCTRecords[nRow].BlockSize);
+        lstRecValues[colBlockSize] = QString::number(CTRecords[nRow].BlockSize);
         // PLC forza tutto a Blank
-        if (lstCTRecords[nRow].Protocol == PLC)  {
+        if (CTRecords[nRow].Protocol == PLC)  {
             lstRecValues[colPort] = szEMPTY;
             lstRecValues[colNodeID] = szEMPTY;            
             lstRecValues[colInputReg] = szEMPTY;
             lstRecValues[colRegister] = szEMPTY;
         }
         // Commento
-        lstRecValues[colComment] = QString::fromAscii(lstCTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
+        lstRecValues[colComment] = QString::fromAscii(CTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
         // Behavior
-        // Allarme o Evento
-        if (lstCTRecords[nRow].usedInAlarmsEvents && lstCTRecords[nRow].Behavior >= behavior_alarm)  {
-            // Tipo Allarme-Evento
-            if (lstCTRecords[nRow].ALType == Alarm)
-                lstRecValues[colBehavior] = lstBehavior[behavior_alarm];
-            else if (lstCTRecords[nRow].ALType == Event)
-                lstRecValues[colBehavior] = lstBehavior[behavior_event];
-            // Operatore Logico
-            if (lstCTRecords[nRow].ALOperator >= 0 && lstCTRecords[nRow].ALOperator < oper_totals)
-                lstRecValues[colCondition] = lstCondition[lstCTRecords[nRow].ALOperator];
-            else
+        qDebug() << QString::fromAscii("recCT2List() - Row: %1 Fixed Data Processed") .arg(nRow);
+        if (! fIgnoreAlarms)  {
+            // Allarme o Evento
+            if (CTRecords[nRow].usedInAlarmsEvents && CTRecords[nRow].Behavior >= behavior_alarm)  {
+                // Tipo Allarme-Evento
+                if (CTRecords[nRow].ALType == Alarm)
+                    lstRecValues[colBehavior] = lstBehavior[behavior_alarm];
+                else if (CTRecords[nRow].ALType == Event)
+                    lstRecValues[colBehavior] = lstBehavior[behavior_event];
+                // Operatore Logico
+                if (CTRecords[nRow].ALOperator >= 0 && CTRecords[nRow].ALOperator < oper_totals)
+                    lstRecValues[colCondition] = lstCondition[CTRecords[nRow].ALOperator];
+                else
+                    lstRecValues[colCondition] = szEMPTY;
+                // Source Var
+                lstRecValues[colSourceVar] = QString::fromAscii(CTRecords[nRow].ALSource);
+                // Compare Var or Value
+                szTemp = QString::fromAscii(CTRecords[nRow].ALCompareVar);
+                if (szTemp.isEmpty())
+                    lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
+                else
+                    lstRecValues[colCompare] = szTemp;
+                // Rising o Falling senza seconda parte
+                if (CTRecords[nRow].ALOperator == oper_rising || CTRecords[nRow].ALOperator == oper_falling)
+                    lstRecValues[colCompare] = szEMPTY;
+            }
+            else   {
+                // R/O o R/W
+                if (CTRecords[nRow].Behavior == behavior_readonly)
+                    lstRecValues[colBehavior] = lstBehavior[behavior_readonly];
+                else if (CTRecords[nRow].Behavior == behavior_readwrite)
+                    lstRecValues[colBehavior] = lstBehavior[behavior_readwrite];
+                // Source Var - Condition - Compare
+                lstRecValues[colSourceVar] = szEMPTY;
                 lstRecValues[colCondition] = szEMPTY;
-            // Source Var
-            lstRecValues[colSourceVar] = QString::fromAscii(lstCTRecords[nRow].ALSource);
-            // Compare Var or Value
-            szTemp = QString::fromAscii(lstCTRecords[nRow].ALCompareVar);
-            if (szTemp.isEmpty())
-                lstRecValues[colCompare] = QString::number(lstCTRecords[nRow].ALCompareVal, 'f', 4);
-            else
-                lstRecValues[colCompare] = szTemp;
-            // Rising o Falling senza seconda parte
-            if (lstCTRecords[nRow].ALOperator == oper_rising || lstCTRecords[nRow].ALOperator == oper_falling)
                 lstRecValues[colCompare] = szEMPTY;
-        }
-        else   {
-            // R/O o R/W
-            if (lstCTRecords[nRow].Behavior == behavior_readonly)
-                lstRecValues[colBehavior] = lstBehavior[behavior_readonly];
-            else if (lstCTRecords[nRow].Behavior == behavior_readwrite)
-                lstRecValues[colBehavior] = lstBehavior[behavior_readwrite];
-            // Source Var - Condition - Compare
-            lstRecValues[colSourceVar] = szEMPTY;
-            lstRecValues[colCondition] = szEMPTY;
-            lstRecValues[colCompare] = szEMPTY;
 
+            }
         }
-        // Caso Alarm / Event
-            // behavior_alarm,
-            // behavior_event,
-
     }
+    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
     // Return value
     return true;
 }
@@ -1250,7 +1226,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
 
     // Pulizia Buffers
     szTemp.clear();
-    listClear(lstRecValues);
+    listClear(lstRecValues, colTotals);
     // Priority
     nPos = ui->cboPriority->currentIndex();
     if (nPos>= 0 && nPos < nNumPriority)
@@ -1614,16 +1590,6 @@ void ctedit::freeCTrec(int nRow)
     lstCTRecords[nRow].ALComparison = -1;
     lstCTRecords[nRow].ALCompatible  = FALSE;
     strcpy(lstCTRecords[nRow].Comment, "");
-}
-void ctedit::listClear(QStringList &lstRecValues)
-// Svuotamento e pulizia Lista Stringhe per passaggio dati Interfaccia <---> Record CT
-// La lista passata come parametro viene svuotata e riempita con colTotals stringhe vuote
-{
-    int nCol = 0;
-    lstRecValues.clear();
-    for (nCol = 0; nCol < colTotals; nCol++)  {
-        lstRecValues.append(szEMPTY);
-    }
 }
 
 bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
@@ -2061,7 +2027,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
             // Imposta Sezione in cboSections
             setSectionArea(nRow);
             // Convert CT Record 2 User Values
-            fRes = recCT2List(lstFields, nRow);
+            fRes = recCT2List(lstCTRecords, lstFields, nRow);
             if (fRes)
                 fRes = values2Iface(lstFields);
         }
@@ -2267,7 +2233,7 @@ int ctedit::copySelected(bool fClearSelection)
         if (nFirstRow < 0)
             nFirstRow = nRow;
         // Convert Record to Strings List
-        recCT2List(lstRecordFields, nRow);
+        recCT2List(lstCTRecords, lstRecordFields, nRow);
         // Add Element to XML
         xmlBuffer.writeStartElement(szXMLCTROW);
         // Source Row
@@ -3307,7 +3273,7 @@ int ctedit::globalChecks()
                 lstUniqueVarNames.append(szTemp);
             }
             // Controlli specifici di Riga
-            fRecOk = recCT2List(lstFields, nRow);
+            fRecOk = recCT2List(lstCTRecords, lstFields, nRow);
             if (fRecOk)  {
                 nErrors += checkFormFields(nRow, lstFields, false);
             }
@@ -3927,8 +3893,8 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             // Pulizia Record sottostante
             freeCTrec(nRow);
             // Ricarica Record vuoto a griglia
-            fOk = recCT2List(lstValues, nRow);
-            fOk = list2GridRow(lstValues, nRow);
+            fOk = recCT2List(lstCTRecords, lstValues, nRow);
+            fOk = list2GridRow(ui->tblCT, lstValues, nRow);
             // Repaint Colori Grid
             if (fOk)  {
                 setRowsColor();
@@ -5620,7 +5586,7 @@ bool ctedit::updateRow(int nRow)
             fIsSaved = list2CTrec(lstFields, nRow);
             // Aggiorna Grid Utente per riga corrente
             if (fIsSaved)  {
-                fRes = list2GridRow(lstFields, nRow);
+                fRes = list2GridRow(ui->tblCT, lstFields, nRow);
                 m_isCtModified = fIsSaved;
                 // Repaint Colori
                 setRowsColor();
@@ -7142,8 +7108,8 @@ void    ctedit::showTabMPNC()
     int nCur = 0;
 
     lstMPNC.clear();
-    lstMPNC.append(200);
-    lstMPNC.append(450);
+    lstMPNC.append(199);
+    lstMPNC.append(449);
     m_nMPNC = 0;
     lstRows.clear();
     for (nCur = 0; nCur < MAX_NONRETENTIVE; nCur++)  {

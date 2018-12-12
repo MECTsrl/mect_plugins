@@ -43,7 +43,8 @@ enum FieldbusType {PLC = 0,
                    MECT_PTC,
                    RTU_SRV,
                    TCP_SRV,
-                   TCPRTU_SRV
+                   TCPRTU_SRV,
+                   FIELDBUS_TOTAL
                   };
 
 enum EventAlarm { Event = 0, Alarm};
@@ -53,7 +54,8 @@ enum UpdateType { Htype = 0,
                   Stype,
                   Ftype,
                   Vtype,
-                  Xtype
+                  Xtype,
+                  UPDATE_TOTALS
                 };
 #undef WORD_BIT
 enum varTypes {BIT = 0,
@@ -209,6 +211,8 @@ struct  Alarms {
 int     LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *nRows);
 int     SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable);
 char    *ipaddr2str(uint32_t ipaddr, char *buffer);
+char    *getUpdateName(enum UpdateType update, char *buffer);
+char    *getTypeName(enum varTypes varType, char *buffer);
 uint32_t str2ipaddr(char *str);
 
 /******************************************************************************

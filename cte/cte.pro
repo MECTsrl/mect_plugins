@@ -11,7 +11,8 @@ HEADERS += \
     trendeditor.h \
     ctecommon.h \
     config_mpnc.h \
-    config_mpne.h
+    config_mpne.h \
+    cteUtils.h
 
 SOURCES += \
     cteplugin.cpp \
@@ -22,7 +23,8 @@ SOURCES += \
     mectsettings.cpp \
     trendeditor.cpp \
     config_mpnc.cpp \
-    config_mpne.cpp
+    config_mpne.cpp \
+    cteUtils.cpp
 
 FORMS += \
     ctedit.ui \  

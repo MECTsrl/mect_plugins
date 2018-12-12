@@ -232,6 +232,31 @@ char *ipaddr2str(uint32_t ipaddr, char *buffer)
     }
     return buffer;
 }
+char    *getUpdateName(enum UpdateType update, char *buffer)
+{
+    if (buffer != NULL) {
+        if (update >= 0 && update < UPDATE_TOTALS)  {
+            strcpy(buffer, updateTypeName[update]);
+        }
+        else {
+            strcpy(buffer, "");
+        }
+    }
+    return buffer;
+}
+char    *getTypeName(enum varTypes varType, char *buffer)
+{
+    if (buffer != NULL) {
+        if (varType >= 0 && varType < TYPE_TOTALS)  {
+            strcpy(buffer, varTypeNameExtended[varType]);
+        }
+        else {
+            strcpy(buffer, "");
+        }
+    }
+    return buffer;
+}
+
 /*
  * Public domain strtok_r() by Charlie Gordon
  *

@@ -36,6 +36,7 @@ const  char     cFloat = 102;           // Carattere f per formattazione Floatin
     QString     szSpace(int nSpaces);                                       // Ritorna una stringa di nSpaces Spazio o vuota se nSpaces <= 0
     QString     bool2String(bool logicalValue);                             // Ritorna Yes/No in funzione di logicalValue
     double      myRound(double dblVal, unsigned decPlaces);                 // Arrotondamento a n Cifre Decimali di un double
+    void        listClear(QStringList &lstRecValues, int nCols);            // Svuotamento e pulizia Lista Stringhe
     void        setCellEnabled(QTableWidgetItem *tItem, bool fEnabled);     // Abilita o disabilita una cella di un QTableWidget
     void        setCellEditable(QTableWidgetItem *tItem, bool fEnabled);    // Permette Editing diretto su cella di un QTableWidget
     void        setCellSelectable(QTableWidgetItem *tItem, bool fEnabled);  // Permette la selezione della Cella

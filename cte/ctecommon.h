@@ -81,6 +81,29 @@ const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
 const QString szMPNC006 = QString::fromAscii("MPNC006");
 const QString szTPLC050 = QString::fromAscii("TPLC050");
 
+enum colonne_e
+{
+    colPriority = 0,
+    colUpdate,
+    colName,
+    colType,
+    colDecimal,
+    colProtocol,
+    colIP,
+    colPort,
+    colNodeID,
+    colInputReg,
+    colRegister,
+    colBlock,
+    colBlockSize,
+    colBehavior,
+    colComment,
+    colSourceVar,
+    colCondition,
+    colCompare,
+    colTotals
+};
+
 enum modbusserver_e
 {
     srvRTU0 = 0,

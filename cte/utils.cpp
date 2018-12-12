@@ -308,6 +308,16 @@ double myRound(double dblVal, unsigned decPlaces)
     return dblFloor;
 
 }
+void listClear(QStringList &lstRecValues, int nCols)
+// Svuotamento e pulizia Lista Stringhe per passaggio dati Interfaccia <---> Record CT
+// La lista passata come parametro viene svuotata e riempita con colTotals stringhe vuote
+{
+    int nCol = 0;
+    lstRecValues.clear();
+    for (nCol = 0; nCol < nCols; nCol++)  {
+        lstRecValues.append(QString::fromAscii(""));
+    }
+}
 
 void setCellEnabled(QTableWidgetItem *tItem, bool fEnabled)
 // Abilita o disabilita una cella di un QTableWidget

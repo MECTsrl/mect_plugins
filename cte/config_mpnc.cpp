@@ -1,5 +1,6 @@
 #include "config_mpnc.h"
 #include "utils.h"
+#include "ctedit.h"
 #include <QVBoxLayout>
 #include <QSpacerItem>
 #include <QPixmap>
@@ -9,7 +10,7 @@
 #include <QDebug>
 
 const int nItemsPerGroup = 4;
-const int nTotalGroups = 4;
+const int nTotalGroups = 5;
 const int nTotalItems = 17;
 // Elementi MPNC
 const int nTotalRows = 212;
@@ -34,6 +35,9 @@ const QString szFileMPNC035 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC020_01 = szPathIMG + QString::fromAscii("MPNC020_R.png");
 const QString szFileMPNC020_02 = szPathIMG + QString::fromAscii("MPNC020_R.png");
 
+// Numero di righe definite
+const int nMPNC_Rows = 212;
+
 
 Config_MPNC::Config_MPNC(QWidget *parent) :
     QWidget(parent)
@@ -42,6 +46,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     QString     szTemp;
     QLabel      *lblBox;
 
+    // Progenitore del Controllo
+    myParent = parent;
     // Creazione del Layout principale del Form
     externalLayOut = new QVBoxLayout(this);             // Lay-Out Esterno del Frame
     mainGrid = new QGridLayout();
@@ -175,7 +181,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szRemoveStyle.append(QString::fromAscii("  background-position: center  center;\n"));
     szRemoveStyle.append(QString::fromAscii("}"));
     // Bottoni per rimozione dei Moduli
-    for (i = 0; i <= nTotalGroups; i++)  {
+    for (i = 0; i < nTotalGroups; i++)  {
         QPushButton *remove = new QPushButton(this);
         remove->setEnabled(false);
         remove->setFlat(true);
@@ -314,7 +320,7 @@ void    Config_MPNC::customizeButtons()
     // Testa Nodi non presente, disabilito tutti i moduli
     prevIsEnabled = lstModuleIsPresent[nBaseHead];
     // Abilitazione dei bottoni "Remove"
-    for (nCur = 0; nCur <= nTotalGroups; nCur++)  {
+    for (nCur = 0; nCur < nTotalGroups; nCur++)  {
         szNewStyle = szRemoveStyle.left(szRemoveStyle.length() - 1);
         curIsEnabled = false;
         szIcon.clear();
@@ -328,11 +334,11 @@ void    Config_MPNC::customizeButtons()
         }
         // Icona Remove
         szIcon = curIsEnabled ? szFileRemove : QString::fromAscii("");
+        szIcon = QString::fromAscii("    qproperty-icon: url(%1); \n") .arg(szIcon);
         if (! szIcon.isEmpty())  {
-            szIcon = QString::fromAscii("    qproperty-icon: url(%1); \n") .arg(szIcon);
             szIcon.append(QString::fromAscii("    background-color: Cornflowerblue;\n"));
-            szNewStyle.append(szIcon);
         }
+        szNewStyle.append(szIcon);
         // Abilitazione bottone Remove
         lstRemove[nCur]->setEnabled(curIsEnabled);
         // Cambio StyleSheet
@@ -429,21 +435,26 @@ void    Config_MPNC::changeRootElement(int nItem)
 int     Config_MPNC::rel2AbsModulePos(int nGroup, int nModule)
 // Calcola la posizione assoluta del Modulo
 {
-    int nPos = -1;
-    if (nGroup > 0 && nGroup <= nTotalGroups && nModule > 0 && nModule <= nItemsPerGroup)  {
-        nPos = nBaseAnIn + ((nGroup - 1 )* nItemsPerGroup) + nModule - 1;
+    int nAbs = -1;
+
+    if (nGroup == 0)  {
+        nAbs = 0;
     }
-    qDebug() << QString::fromAscii("rel2AbsModulePos(): Group: %1 Module: %2 Pos: %3") .arg(nGroup) .arg(nModule) .arg(nPos);
-    return nPos;
+    else if (nGroup > 0 && nGroup < nTotalGroups && nModule >= 0 && nModule < nItemsPerGroup)  {
+        nAbs = nBaseAnIn + ((nGroup - 1 )* nItemsPerGroup) + nModule;
+    }
+    qDebug() << QString::fromAscii("rel2AbsModulePos(): Group: %1 Module: %2 Abs: %3") .arg(nGroup) .arg(nModule) .arg(nAbs);
+    return nAbs;
 }
 void    Config_MPNC::abs2RelModulePos(int nAbs, int &nGroup, int &nModule)
 // Calcola la posizione assoluta del Modulo
 {
     nGroup = 0;
     nModule = 0;
+    // Calcolo dei bottoni ulterioni
     if (nAbs > 0 && nAbs < nTotalItems)  {
         nGroup =  ((nAbs - 1) / nItemsPerGroup) + 1;
-        nModule = ((nAbs - 1) % nItemsPerGroup) + 1;
+        nModule = ((nAbs - 1) % nItemsPerGroup);
     }
     qDebug() << QString::fromAscii("abs2RelModulePos(): AbsPos: %1 Group: %2 Module: %3") .arg(nAbs) .arg(nGroup) .arg(nModule);
 }
@@ -455,10 +466,10 @@ int     Config_MPNC::getLastModuleUsed(int nGroup)
 {
     int nItem = -1;
 
-    if (nGroup > 0 && nGroup <= nTotalGroups)  {
-        for (nItem = nItemsPerGroup; nItem > 0; nItem--)  {
+    if (nGroup > 0 && nGroup < nTotalGroups)  {
+        for (nItem = nItemsPerGroup - 1; nItem >= 0; nItem--)  {
             int nPos = rel2AbsModulePos(nGroup, nItem);
-            if (nPos > 0 && nPos < lstModuleIsPresent.count() && lstModuleIsPresent[nPos])  {
+            if (nPos >= 0 && nPos < lstModuleIsPresent.count() && lstModuleIsPresent[nPos])  {
                 break;
             }
         }
@@ -476,10 +487,10 @@ void    Config_MPNC::buttonClicked(int nButton)
 
     abs2RelModulePos(nButton, nGroup, nItem);
     // Premuto un bottone di un gruppo
-    if (nGroup > 0 && nItem > 0)  {
+    if (nGroup > 0 && nItem >= 0)  {
         nLastUsed = getLastModuleUsed(nGroup);
         if (nItem > nLastUsed)  {
-            m_szMsg = QString::fromAscii("Are you sure you want to Add a module [%1] at position [%2]?") .arg(lstModuleName[nGroup]) .arg(lstPosFlags[nItem - 1]);
+            m_szMsg = QString::fromAscii("Are you sure you want to Add a module [%1] at position [%2]?") .arg(lstModuleName[nGroup]) .arg(lstPosFlags[nItem]);
             if (queryUser(this, szMectTitle, m_szMsg))  {
                 lstModuleIsPresent[nButton] = true;
                 // Refresh Bottoni
@@ -496,8 +507,8 @@ void    Config_MPNC::groupItemRemove(int nGroup)
     int nPos = getLastModuleUsed(nGroup);
 
     qDebug() << QString::fromAscii("groupItemRemove(): Group Clicked: %1 - Name: %2 - Pos: %3") .arg(nGroup) .arg(lstModuleName[nGroup]) .arg(nPos);
-    if (nPos > 0)  {
-        m_szMsg = QString::fromAscii("Are you sure you want to remove the module [%1] at position [%2]?") .arg(lstModuleName[nGroup]) .arg(lstPosFlags[nPos - 1]);
+    if (nPos >= 0)  {
+        m_szMsg = QString::fromAscii("Are you sure you want to remove the module [%1] at position [%2]?") .arg(lstModuleName[nGroup]) .arg(lstPosFlags[nPos]);
         if (queryUser(this, szMectTitle, m_szMsg))  {
             int nItem = rel2AbsModulePos(nGroup, nPos);
             lstModuleIsPresent[nItem] = false;
@@ -509,6 +520,25 @@ void    Config_MPNC::groupItemRemove(int nGroup)
 void    Config_MPNC::filterVariables(int nGroup, int nItem)
 // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
 {
-    qDebug() << QString::fromAscii("filterVariables(): Group: %1 - Name: %2 - Item: %3") .arg(nGroup) .arg(lstModuleName[nGroup]) .arg(nItem);
+    QStringList lstLineValues;
+    int         nRow = 0;
+    bool        fRes = false;
 
+    qDebug() << QString::fromAscii("filterVariables(): Group: %1 - Name: %2 - Item: %3") .arg(nGroup) .arg(lstModuleName[nGroup]) .arg(nItem);
+    // Preparazione tabella
+    this->setCursor(Qt::WaitCursor);
+    tblCT->setEnabled(false);
+    tblCT->clearSelection();
+    tblCT->setRowCount(0);
+    tblCT->clear();
+    tblCT->setColumnCount(colTotals);
+    // Ciclo di caricamento
+    for (nRow = m_nBaseRow; nRow < m_nBaseRow + nMPNC_Rows; nRow++)  {
+        // Decodifica dei valori di CT e conversione in stringa
+        // Aggiunta alla Table
+        if (fRes)  {
+            tblCT->insertRow(nRow);
+            // ((ctedit *) myParent)->list2GridRow(tblCT, lstLineValues, nRow);
+        }
+    }
 }

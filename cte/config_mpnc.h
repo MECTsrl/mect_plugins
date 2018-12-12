@@ -50,6 +50,7 @@ private:
     // Variabili varie
     //---------------------------------------------------------------------
     // Oggetti di Interfaccia e gestione
+    QWidget *               myParent;           // Puntatore a CT Editor
     QVBoxLayout*            externalLayOut;     // LayOut più esterno
     QGridLayout             *mainGrid;          // Main Grid LayOut
     QTableWidget            *tblCT;             // Table Widget per CT
@@ -67,7 +68,7 @@ private:
     QString                 m_szMsg;            // Messaggio di servizio
     // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema
     int                     m_nTesta;           // Testa selezionata, -1 se non presente
-    QList<int>              lstCapofila;        // # Riga della elemento capofila della Testa nEsima
+    QList<int >             lstCapofila;        // # Riga della elemento capofila della Testa nEsima
     int                     m_nBaseRow;         // Base Row della riga corrente
     QList<CrossTableRecord> lstCTUserRows;      // Lista Record CT (Parte Utente)
 
