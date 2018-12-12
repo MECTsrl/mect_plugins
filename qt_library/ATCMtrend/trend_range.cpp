@@ -75,9 +75,7 @@ trend_range::trend_range(QWidget *parent) :
 void trend_range::reload()
 {
     /* initial time */
-    ui->spinBoxYearIn->setValue(actualTzero.date().year());
-    ui->spinBoxMonthIn->setValue(actualTzero.date().month());
-    ui->spinBoxDayIn->setValue(actualTzero.date().day());
+    ui->dateEdit->setDate(actualTzero.date());
     ui->spinBoxHoursIn->setValue(actualTzero.time().hour());
     ui->spinBoxMinutesIn->setValue(actualTzero.time().minute());
     ui->spinBoxSecondsIn->setValue(actualTzero.time().second());
@@ -171,7 +169,7 @@ void trend_range::on_pushButtonOk_clicked()
     }
     
     QDateTime tmpTzero = QDateTime(
-                QDate(ui->spinBoxYearIn->value(),ui->spinBoxMonthIn->value(), ui->spinBoxDayIn->value()),
+                ui->dateEdit->date(),
                 QTime(ui->spinBoxHoursIn->value(), ui->spinBoxMinutesIn->value(), ui->spinBoxSecondsIn->value())
                 );
     
