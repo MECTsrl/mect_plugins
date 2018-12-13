@@ -1684,20 +1684,18 @@ void trend::showStatus(QString message, bool iserror)
 
 void trend::on_pushButtonHome_clicked()
 {
-    go_home();
     _trend_data_reload_ = true;
     LOG_PRINT(verbose_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
     disableUpdate();
-    hide();
+    go_home();
 }
 
 void trend::on_pushButtonBack_clicked()
 {
-    go_back();
     _trend_data_reload_ = true;
     LOG_PRINT(verbose_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
     disableUpdate();
-    hide();
+    go_back();
 }
 
 void trend::on_pushButtonTime_clicked()
