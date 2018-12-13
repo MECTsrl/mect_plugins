@@ -123,16 +123,6 @@ enum treeRoles
     treeVariable
 };
 
-enum regions_e
-{
-    regRetentive = 0,
-    regNonRetentive,
-    regDiagnostic,
-    regLocalIO,
-    regSystem,
-    regTotals
-};
-
 
 ctedit::ctedit(QWidget *parent) :
     QDialog(parent),
@@ -147,6 +137,14 @@ ctedit::ctedit(QWidget *parent) :
     ui->setupUi(this);
     // Version Number
     ui->lblMessage->setToolTip(szVERSION);
+    // Style Sheet
+    QFile fileQSS(szFileQSS);
+    if (fileQSS.exists())  {
+        fileQSS.open(QFile::ReadOnly);
+        QString styleSheet = QLatin1String(fileQSS.readAll());
+        fileQSS.close();
+        this->setStyleSheet(styleSheet);
+    }
     // Liste di servizio
     lstUsedVarNames.clear();
     lstLoggedVars.clear();
@@ -204,87 +202,11 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNegWithUnsigned] = trUtf8("Negative Value compared with Unsigned in Alarm/Event Condition");
     lstErrorMessages[errCTNoVar2] = trUtf8("Empty or Invalid Right Condition Variable");
     lstErrorMessages[errCTIncompatibleVar] = trUtf8("Incompatible Var Type or Decimals in Alarm/Event Condition");
-    // Titoli colonne
-    lstHeadCols.clear();
-    lstHeadSizes.clear();
-    lstHeadNames.clear();
-    for (nCol = 0; nCol < colTotals; nCol++)  {
-        lstHeadCols.append(szEMPTY);
-        lstHeadNames.append(szEMPTY);
-        lstHeadSizes.append(10);
-    }
-
-    lstHeadCols[colPriority] = trUtf8("Priority");
-    lstHeadNames[colPriority] = trUtf8("Priority");
-    lstHeadSizes[colPriority] = 8;
-    lstHeadCols[colUpdate] = trUtf8("Update");
-    lstHeadNames[colUpdate] = trUtf8("Update");
-    lstHeadSizes[colUpdate] = 8;
-    lstHeadCols[colName] = trUtf8("Var.Name");
-    lstHeadNames[colName] = trUtf8("Var_Name");
-    lstHeadSizes[colName] = 20;
-    lstHeadCols[colType] = trUtf8("Type");
-    lstHeadNames[colType] = trUtf8("Type");
-    lstHeadSizes[colType] = 10;
-    lstHeadCols[colDecimal] = trUtf8("Decimal");
-    lstHeadNames[colDecimal] = trUtf8("Decimal");
-    lstHeadSizes[colDecimal] = 8;
-    lstHeadCols[colProtocol] = trUtf8("Protocol");
-    lstHeadNames[colProtocol] = trUtf8("Protocol");
-    lstHeadSizes[colProtocol] = 10;
-    lstHeadCols[colIP] = trUtf8("IP Address");
-    lstHeadNames[colIP] = trUtf8("IP_Address");
-    lstHeadSizes[colIP] = 18;
-    lstHeadCols[colPort] = trUtf8("Port");
-    lstHeadNames[colPort] = trUtf8("Port");
-    lstHeadSizes[colPort] = 8;
-    lstHeadCols[colNodeID] = trUtf8("Node ID");
-    lstHeadNames[colNodeID] = trUtf8("Node_ID");
-    lstHeadSizes[colNodeID] = 8;
-    lstHeadCols[colInputReg] = trUtf8("I/R");
-    lstHeadNames[colInputReg] = trUtf8("I_R");
-    lstHeadSizes[colInputReg] = 8;
-    lstHeadCols[colRegister] = trUtf8("Register");
-    lstHeadNames[colRegister] = trUtf8("Register");
-    lstHeadSizes[colRegister] = 8;
-    lstHeadCols[colBlock] = trUtf8("Block");
-    lstHeadNames[colBlock] = trUtf8("Block");
-    lstHeadSizes[colBlock] = 8;
-    lstHeadCols[colBlockSize] = trUtf8("Blk Size");
-    lstHeadNames[colBlockSize] = trUtf8("Blk_Size");
-    lstHeadSizes[colBlockSize] = 8;
-    lstHeadCols[colComment] = trUtf8("Comment");
-    lstHeadNames[colComment] = trUtf8("Comment");
-    lstHeadSizes[colComment] = 20;
-    lstHeadCols[colBehavior] = trUtf8("Behavior");
-    lstHeadNames[colBehavior] = trUtf8("Behavior");
-    lstHeadSizes[colBehavior] = 16;
-    lstHeadCols[colSourceVar] = trUtf8("Source");
-    lstHeadNames[colSourceVar] = trUtf8("Source");
-    lstHeadSizes[colSourceVar] = 20;
-    lstHeadCols[colCondition] = trUtf8("Condition");
-    lstHeadNames[colCondition] = trUtf8("Condition");
-    lstHeadSizes[colCondition] = 10;
-    lstHeadCols[colCompare] = trUtf8("Compare");
-    lstHeadNames[colCompare] = trUtf8("Compare");
-    lstHeadSizes[colCompare] = 20;
-    // Regioni CT
-    lstRegions.clear();
-    for (nCol = 0; nCol < regTotals; nCol++)  {
-        lstRegions.append(szEMPTY);
-    }
-    lstRegions[regRetentive]    = trUtf8("Retentive\t[1 -  192]");
-    lstRegions[regNonRetentive] = trUtf8("Non Retentive\t[193 - 4999]");
-    lstRegions[regDiagnostic]   = trUtf8("Diagnostic\t[5000 - 5299]");
-    lstRegions[regLocalIO]      = trUtf8("Local I/O\t[5300 - 5389]");
-    lstRegions[regSystem]       = trUtf8("System\t[5390 - 5472]");
 
     // Lista PLC (Frequenza Aggiornamento)
-    lstUpdateNames.clear();
     lstAllUpdates.clear();
     lstNoHUpdates.clear();
-    for (nCol = Htype; nCol <= Xtype; nCol++)  {
-        lstUpdateNames.append(QString::fromAscii(updateTypeName[nCol]));
+    for (nCol = Htype; nCol < UPDATE_TOTALS; nCol++)  {
         lstAllUpdates.append(nCol);
         // Esclude dalla lista solo le variabili H
         if (nCol != Htype)  {
@@ -296,36 +218,19 @@ ctedit::ctedit(QWidget *parent) :
         }
     }
     // Lista TIPI Variabili (Esclude tipo UNKNOWN con TYPE_TOTALS - 1)
-    lstTipi.clear();
     lstAllVarTypes.clear();
     for (nCol = 0; nCol < TYPE_TOTALS - 1; nCol++)  {
-        lstTipi.append(QString::fromAscii(varTypeNameExtended[nCol]));
         lstAllVarTypes.append(nCol);
     }
     // Lista Protocolli (tipi di Bus)
-    lstProtocol.clear();
     lstBusEnabler.clear();
-    for (nCol = PLC; nCol <= TCPRTU_SRV; nCol++)  {
-        lstProtocol.append(QString::fromAscii(fieldbusName[nCol]));
+    for (nCol = PLC; nCol < FIELDBUS_TOTAL; nCol++)  {
         lstBusEnabler.append(true);         // Di default tutti i tipi di Bus sono abilitati
     }
     // Lista Prodotti
     lstProductNames.clear();
     for (nCol = AnyTPAC; nCol < MODEL_TOTALS; nCol++)  {
         lstProductNames.append(QString::fromAscii(product_name[nCol]));
-    }
-    // Lista Significati (da mantenere allineata con enum behaviors in parser.h)
-    lstBehavior.clear();
-    lstBehavior
-            << QString::fromAscii("Read/Only  (%I)")
-            << QString::fromAscii("Read/Write (%Q)")
-            << QString::fromAscii("Alarm")
-            << QString::fromAscii("Event")
-        ;
-    // Lista condizioni di Allarme / Eventi
-    lstCondition.clear();
-    for (nCol = 0; nCol < oper_totals; nCol++)  {
-        lstCondition.append(QString::fromAscii(logic_operators[nCol]));
     }
     // Caricamento delle varie Combos
     // Combo delle Porte Seriali
@@ -462,7 +367,6 @@ ctedit::ctedit(QWidget *parent) :
     m_szCurrentModel.clear();
     m_szCurrentProjectPath.clear();
     m_nGridRow = 0;
-    lstCTRecords.clear();
     theServersNumber = 0;
     theDevicesNumber = 0;
     theTcpDevicesNumber = 0;
@@ -508,20 +412,6 @@ ctedit::ctedit(QWidget *parent) :
     // Stringhe generiche per gestione dei formati di Data e ora
     m_szFormatDate = QString::fromAscii("yyyy.MM.dd");
     m_szFormatTime = QString::fromAscii("hh:mm:ss");
-    // Costanti per i colori di sfondo
-    colorRetentive[0] = QColor(170,255,255,255);           // Azzurro Dark
-    colorRetentive[1] = QColor(210,255,255,255);           // Azzurro
-    colorNonRetentive[0] = QColor(255,255,190,255);        // Giallino Dark
-    colorNonRetentive[1] = QColor(255,255,220,255);        // Giallino
-    colorSystem[0] = QColor(255,227,215,255);              // Rosa Dark
-    colorSystem[1] = QColor(255,240,233,255);              // Rosa
-    colorGray = QColor(200,200,200,255);                   // Gray
-    szColorRet[0] = QString::fromAscii("color: #AAFFFF");
-    szColorRet[1] = QString::fromAscii("color: #D2FFFF");
-    szColorNonRet[0] = QString::fromAscii("color: #FFFFBE");
-    szColorNonRet[1] = QString::fromAscii("color: #FFFFDC");
-    szColorSystem[0] = QString::fromAscii("color: #FFE3D7");
-    szColorSystem[1] = QString::fromAscii("color: #FFF0E9");
     // Variabili di stato globale dell'editor
     m_isCtModified = false;
     m_isConfModified = false;
@@ -575,14 +465,6 @@ ctedit::ctedit(QWidget *parent) :
     // Event Filter    
     ui->tblCT->installEventFilter(this);
     ui->fraEdit->installEventFilter(this);
-    // Style Sheet
-    QFile fileQSS(szFileQSS);
-    if (fileQSS.exists())  {
-        fileQSS.open(QFile::ReadOnly);
-        QString styleSheet = QLatin1String(fileQSS.readAll());
-        fileQSS.close();
-        this->setStyleSheet(styleSheet);
-    }
     // Spegne Block e BlockSize
     ui->lblBlock->setVisible(false);
     ui->txtBlock->setVisible(false);
@@ -775,50 +657,6 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     this->setCursor(Qt::ArrowCursor);
     return fRes;
 }
-bool    ctedit::list2GridRow(QTableWidget *table,  QStringList &lstRecValues, int nRow)
-// Inserimento o modifica elemento in Grid (valori -> GRID)
-{
-    int                 nCol = 0;
-    QString             szTemp;
-    QTableWidgetItem    *tItem;
-    bool                fAdd = false;
-
-    // Insert Items at Row, Col
-    for (nCol = 0; nCol < colTotals; nCol++)  {
-        szTemp = lstRecValues[nCol];
-        tItem = table->item(nRow, nCol);
-        // Allocazione Elemento se non già definito
-        if (tItem == NULL)  {
-            fAdd = true;
-            tItem = new QTableWidgetItem(szTemp);
-        }
-        else  {
-            fAdd = false;
-            tItem->setText(szTemp);
-        }
-        // Allineamento Celle
-        if (nCol == colName || nCol == colComment || nCol == colSourceVar || nCol == colCompare)
-            // Item Allineato a Sx
-            tItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        else
-            // Item Centrato in Cella
-            tItem->setTextAlignment(Qt::AlignCenter);
-        // Rende il valore non Editabile
-        tItem->setFlags(tItem->flags() ^ Qt::ItemIsEditable);
-        // Flag Marcatore della riga
-        // Aggiunta al Grid
-        if (fAdd)  {
-            table->setItem(nRow, nCol, tItem);
-        }
-    }
-//    // Riga Visibile o invisibile
-//    if (lstCTRecords[nRow].UsedEntry)
-//        ui->tblCT->showRow(nRow);
-//    else
-//        ui->tblCT->hideRow(nRow);
-    return true;
-}
-
 bool    ctedit::ctable2Grid()
 // Lettura di tutta la CT in Grid
 {
@@ -897,119 +735,6 @@ bool    ctedit::ctable2Grid()
     // Return value
     this->setCursor(Qt::ArrowCursor);
     return fRes;
-}
-bool ctedit::recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, bool fIgnoreAlarms)
-// Conversione da CT Record a record come Lista Stringhe per Interfaccia (Grid)
-// Da Record C a QStringList di valori per caricamento griglia
-{
-    QString     szTemp;
-    char        ip[MAX_IPADDR_LEN];
-
-    if (nRow < 0 || nRow >= CTRecords.count())  {
-        return false;
-    }
-    // Pulizia Buffers
-    szTemp.clear();
-    listClear(lstRecValues, colTotals);
-    // Recupero informazioni da Record CT
-    // Abilitazione riga
-    if (CTRecords[nRow].UsedEntry)  {
-        // Priority
-        if (CTRecords[nRow].Enable >= 0 && CTRecords[nRow].Enable < nNumPriority)  {
-            szTemp = lstPriority.at((int) CTRecords[nRow].Enable);
-            qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1 - Enable: %2 - Cols: %3") .arg(nRow) .arg(szTemp) .arg(lstRecValues.count());
-            lstRecValues[colPriority] = szTemp;
-        }
-        // Campo Update
-        qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1 - Update: %2") .arg(nRow) .arg(CTRecords[nRow].Update);
-        if (CTRecords[nRow].Update >= 0 && CTRecords[nRow].Update < lstUpdateNames.count())
-            lstRecValues[colUpdate] = lstUpdateNames[CTRecords[nRow].Update];
-        // Campo Name
-        qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1 - Tag: %2") .arg(nRow) .arg(QString::fromAscii(CTRecords[nRow].Tag));
-        lstRecValues[colName] = QString::fromAscii(CTRecords[nRow].Tag);
-        // Campo Type
-        qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1 - VarType: %2") .arg(nRow) .arg(CTRecords[nRow].VarType);
-        if (CTRecords[nRow].VarType >= BIT && CTRecords[nRow].VarType < TYPE_TOTALS)
-            lstRecValues[colType] = lstTipi[CTRecords[nRow].VarType];
-        // Campo Decimal
-        lstRecValues[colDecimal] = QString::number(CTRecords[nRow].Decimal);
-        // Protocol
-        if (CTRecords[nRow].Protocol >= 0 && CTRecords[nRow].Protocol < lstProtocol.count())
-            lstRecValues[colProtocol] = lstProtocol[CTRecords[nRow].Protocol];
-        // IP Address (Significativo solo per Protocolli a base TCP)
-        if (CTRecords[nRow].Protocol == TCP || CTRecords[nRow].Protocol == TCPRTU ||
-                CTRecords[nRow].Protocol == TCP_SRV || CTRecords[nRow].Protocol ==TCPRTU_SRV)  {
-            ipaddr2str(CTRecords[nRow].IPAddress, ip);
-            szTemp = QString::fromAscii(ip);
-        }
-        else
-            szTemp = szEMPTY;
-        lstRecValues[colIP] = szTemp;
-        // Port
-        lstRecValues[colPort] = QString::number(CTRecords[nRow].Port);
-        // Node Id
-        lstRecValues[colNodeID] = QString::number(CTRecords[nRow].NodeId);
-        // Input Register
-        lstRecValues[colInputReg] = (CTRecords[nRow].InputReg > 0) ? szTRUE : szFALSE;
-        // Offeset Register
-        lstRecValues[colRegister] = QString::number(CTRecords[nRow].Offset);
-        // Block
-        lstRecValues[colBlock] = QString::number(CTRecords[nRow].Block);
-        // N.Registro
-        lstRecValues[colBlockSize] = QString::number(CTRecords[nRow].BlockSize);
-        // PLC forza tutto a Blank
-        if (CTRecords[nRow].Protocol == PLC)  {
-            lstRecValues[colPort] = szEMPTY;
-            lstRecValues[colNodeID] = szEMPTY;            
-            lstRecValues[colInputReg] = szEMPTY;
-            lstRecValues[colRegister] = szEMPTY;
-        }
-        // Commento
-        lstRecValues[colComment] = QString::fromAscii(CTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
-        // Behavior
-        qDebug() << QString::fromAscii("recCT2List() - Row: %1 Fixed Data Processed") .arg(nRow);
-        if (! fIgnoreAlarms)  {
-            // Allarme o Evento
-            if (CTRecords[nRow].usedInAlarmsEvents && CTRecords[nRow].Behavior >= behavior_alarm)  {
-                // Tipo Allarme-Evento
-                if (CTRecords[nRow].ALType == Alarm)
-                    lstRecValues[colBehavior] = lstBehavior[behavior_alarm];
-                else if (CTRecords[nRow].ALType == Event)
-                    lstRecValues[colBehavior] = lstBehavior[behavior_event];
-                // Operatore Logico
-                if (CTRecords[nRow].ALOperator >= 0 && CTRecords[nRow].ALOperator < oper_totals)
-                    lstRecValues[colCondition] = lstCondition[CTRecords[nRow].ALOperator];
-                else
-                    lstRecValues[colCondition] = szEMPTY;
-                // Source Var
-                lstRecValues[colSourceVar] = QString::fromAscii(CTRecords[nRow].ALSource);
-                // Compare Var or Value
-                szTemp = QString::fromAscii(CTRecords[nRow].ALCompareVar);
-                if (szTemp.isEmpty())
-                    lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
-                else
-                    lstRecValues[colCompare] = szTemp;
-                // Rising o Falling senza seconda parte
-                if (CTRecords[nRow].ALOperator == oper_rising || CTRecords[nRow].ALOperator == oper_falling)
-                    lstRecValues[colCompare] = szEMPTY;
-            }
-            else   {
-                // R/O o R/W
-                if (CTRecords[nRow].Behavior == behavior_readonly)
-                    lstRecValues[colBehavior] = lstBehavior[behavior_readonly];
-                else if (CTRecords[nRow].Behavior == behavior_readwrite)
-                    lstRecValues[colBehavior] = lstBehavior[behavior_readwrite];
-                // Source Var - Condition - Compare
-                lstRecValues[colSourceVar] = szEMPTY;
-                lstRecValues[colCondition] = szEMPTY;
-                lstRecValues[colCompare] = szEMPTY;
-
-            }
-        }
-    }
-    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
-    // Return value
-    return true;
 }
 
 void ctedit::on_cmdHideShow_toggled(bool checked)
@@ -2717,49 +2442,10 @@ void    ctedit::setRowsColor()
         else
             nPrevBlock = -1;
         // Impostazione colore riga
-        setRowColor(nRow, nAlternate);
+        setRowColor(ui->tblCT, nRow, nAlternate, lstCTRecords[nRow].UsedEntry, lstCTRecords[nRow].Enable);
     }
 }
 
-void ctedit::setRowColor(int nRow, int nAlternate)
-// Imposta il colore di sfondo di una riga
-{
-    QColor      cSfondo = colorRetentive[0];
-
-    // Impostazione del Backgound color in funzione della zona
-    if (nRow >= 0 && nRow < MAX_RETENTIVE)  {
-        cSfondo = colorRetentive[nAlternate];
-        // qDebug() << tr("Row: %1 Alt: %2 - Retentive Row") .arg(nRow) .arg(nAlternate);
-    }
-    else if (nRow >= MIN_NONRETENTIVE - 1 && nRow <= MAX_NONRETENTIVE -1) {
-        cSfondo = colorNonRetentive[nAlternate];
-        // qDebug() << tr("Row: %1 Alt: %2 - NON Retentive Row") .arg(nRow) .arg(nAlternate);
-    }
-    else if (nRow >= MIN_DIAG - 1)  {
-        // qDebug() << tr("Row: %1 Alt: %2 - SYSTEM Row") .arg(nRow) .arg(nAlternate);
-        if (nRow <= MAX_DIAG - 1)  {
-            cSfondo = colorSystem[0];
-        }
-        else if (nRow >= MIN_NODE - 1 && nRow <= MAX_NODE - 1)  {
-            cSfondo = colorSystem[1];
-        }
-        else if (nRow >= MIN_LOCALIO - 1  && nRow <= MAX_LOCALIO - 1)  {
-            cSfondo = colorSystem[0];
-        }
-        else  {
-            cSfondo = colorSystem[1];
-        }
-    }
-    // Righe utilizzate ma a priorità 0
-    if (lstCTRecords[nRow].UsedEntry && lstCTRecords[nRow].Enable == 0)  {
-        // cSfondo = colorGray;
-        // cSfondo = cSfondo.lighter(150);
-        cSfondo = cSfondo.darker(130);
-    }
-    // Impostazione del colore di sfondo
-    QBrush bCell(cSfondo, Qt::SolidPattern);
-    setRowBackground(bCell, ui->tblCT->model(), nRow);
-}
 
 void ctedit::showAllRows(bool fShowAll)
 // Visualizza o nascondi tutte le righe

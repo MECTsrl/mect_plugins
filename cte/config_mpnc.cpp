@@ -1,6 +1,6 @@
 #include "config_mpnc.h"
 #include "utils.h"
-#include "ctedit.h"
+#include "cteUtils.h"
 #include <QVBoxLayout>
 #include <QSpacerItem>
 #include <QPixmap>
@@ -522,6 +522,7 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
 {
     QStringList lstLineValues;
     int         nRow = 0;
+    int         nDisplayRows = 0;
     bool        fRes = false;
 
     qDebug() << QString::fromAscii("filterVariables(): Group: %1 - Name: %2 - Item: %3") .arg(nGroup) .arg(lstModuleName[nGroup]) .arg(nItem);
@@ -535,10 +536,20 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
     // Ciclo di caricamento
     for (nRow = m_nBaseRow; nRow < m_nBaseRow + nMPNC_Rows; nRow++)  {
         // Decodifica dei valori di CT e conversione in stringa
+        fRes = recCT2List(lstCTUserRows, lstLineValues, nRow);
         // Aggiunta alla Table
         if (fRes)  {
             tblCT->insertRow(nRow);
-            // ((ctedit *) myParent)->list2GridRow(tblCT, lstLineValues, nRow);
+            list2GridRow(tblCT, lstLineValues, nRow);
+            nDisplayRows++;
         }
     }
+    if (nDisplayRows)  {
+        tblCT->setSelectionBehavior(QAbstractItemView::SelectRows);
+        tblCT->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        tblCT->setHorizontalHeaderLabels(lstHeadCols);
+
+    }
+    qDebug() << QString::fromAscii("Displayed Rows: %1") .arg(nDisplayRows);
+    this->setCursor(Qt::ArrowCursor);
 }

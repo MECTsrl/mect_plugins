@@ -1,5 +1,6 @@
 #ifndef CTECOMMON_H
 #define CTECOMMON_H
+#include <QChar>
 #include <QString>
 
 // Parametri generali della CT
@@ -114,6 +115,17 @@ enum modbusserver_e
     srvTCPRTU,
     srvTotals
 };
+
+enum regions_e
+{
+    regRetentive = 0,
+    regNonRetentive,
+    regDiagnostic,
+    regLocalIO,
+    regSystem,
+    regTotals
+};
+
 
 
 struct  MODBUS_Srv  {

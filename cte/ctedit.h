@@ -92,8 +92,6 @@ private:
     //---------------------------------------------------------------------
     // Lettura e scrittura dati da e per strutture di appoggio
     bool    ctable2Grid();                          // Lettura di tutta la CT in Grid
-    bool    recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, bool fIgnoreAlarms = false);// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
-    bool    list2GridRow(QTableWidget *table, QStringList &lstRecValues, int nRow);  // Inserimento o modifica elemento in Grid (valori -> GRID)
     bool    list2CTrec(QStringList &lstRecValues, int nRow);// Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
     bool    grid2CTable();                          // Dump di tutto il Grid in lista di CT Records
     bool    values2Iface(QStringList &lstRecValues);// Copia Lista Stringhe convertite da CT Record a Zona di Editing
@@ -109,7 +107,6 @@ private:
     bool    riassegnaBlocchi();                     // Riassegnazione blocchi variabili
     void    showAllRows(bool fShowAll);             // Visualizza o nascondi tutte le righe
     void    setRowsColor();                         // Imposta il colore di sfondo di tutte le righe senza cambiare riga corrente
-    void    setRowColor(int nRow, int nAlternate);  // Imposta il colore di sfondo di una riga
     void    jumpToGridRow(int nRow, bool fCenter = false);                // Salto alla riga nRow del Grid
     void    enableInterface();                      // Abilita l'interfaccia in funzione dello stato del sistema
     void    setSectionArea(int nRow);               // Set Current item in combo cboSection from current Row
@@ -182,36 +179,18 @@ private:
     QString     m_szCurrentProjectName;             // Project Name senza Path
     QString     m_szCurrentModel;                   // Modello TPAC del progetto
     // Liste varie per prompt colonne e valori Combo Box (per traduzioni)
-    QStringList lstHeadCols;
-    QStringList lstHeadNames;
-    QList<int>  lstHeadSizes;
-    QStringList lstUpdateNames;
-    QStringList lstTipi;
-    QStringList lstProtocol;
     QList<bool> lstBusEnabler;
-    QStringList lstBehavior;
-    QStringList lstCondition;
     QStringList lstProductNames;
-    QStringList lstRegions;
 
     // Variabili di servizio
     QString     m_szFormatDate;                     // Format Masks per Date e tempo
     QString     m_szFormatTime;
     QString     m_szMsg;                            // Variabile di servizio per Messaggi
     QTimer      *tmrMessage;                        // Timer per la gestione Messaggi
-    // Colori per sfondi grid
-    QColor      colorRetentive[2];
-    QColor      colorNonRetentive[2];
-    QColor      colorSystem[2];
-    QColor      colorGray;
-    QString     szColorRet[2];
-    QString     szColorNonRet[2];
-    QString     szColorSystem[2];
 
 
     // Record CrossTable
     QList<CrossTableRecord> lstCopiedRecords;       // Lista di Record per copia/incolla
-    QList<CrossTableRecord> lstCTRecords;           // Lista completa di record per tabella
     QList<QList<CrossTableRecord> > lstUndo;        // Lista degli Undo di elementi di Cross Table Editor
     CrossTableRecord        CrossTable[1 + DimCrossTable];	 // campi sono riempiti a partire dall'indice 1
 
