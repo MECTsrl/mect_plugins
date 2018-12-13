@@ -676,6 +676,7 @@ bool    ctedit::ctable2Grid()
     ui->tblCT->setRowCount(0);
     ui->tblCT->clear();
     ui->tblCT->setColumnCount(colTotals);
+    qDebug() << QString::fromAscii("ctable2Gid()");
     // Caricamento elementi
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Covert CT Record 2 User Values
@@ -6790,18 +6791,12 @@ void    ctedit::fillTimingsTree(int nCurRow)
 
 void    ctedit::showTabMPNC()
 {
-    QList<CrossTableRecord> lstRows;
-    int nCur = 0;
-
     lstMPNC.clear();
     lstMPNC.append(199);
     lstMPNC.append(449);
+    lstMPNC.append(699);
     m_nMPNC = 0;
-    lstRows.clear();
-    for (nCur = 0; nCur < MAX_NONRETENTIVE; nCur++)  {
-        lstRows.append(lstCTRecords[nCur]);
-    }
-    configMPNC->showTestaNodi(m_nMPNC, lstMPNC, lstRows);
+    configMPNC->showTestaNodi(m_nMPNC, lstMPNC);
 }
 void    ctedit::showTabMPNE()
 {

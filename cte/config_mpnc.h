@@ -12,7 +12,6 @@
 #include <QComboBox>
 #include <QGridLayout>
 #include <QTableWidget>
-#include <QTableWidgetItem>
 #include <QSignalMapper>
 #include <QList>
 #include <QStringList>
@@ -29,7 +28,7 @@ public:
 signals:
 
 public slots:
-    void    showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, QList<CrossTableRecord> &lstRows);
+    void    showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste);
 
 private slots:
     void    customizeButtons();                 // Abilitazione delle icone Bottoni in funzione della presenza dei moduli

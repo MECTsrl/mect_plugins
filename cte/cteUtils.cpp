@@ -216,7 +216,7 @@ void setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int n
     QBrush bCell(cSfondo, Qt::SolidPattern);
     setRowBackground(bCell, table->model(), nRow);
 }
-bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, bool fIgnoreAlarms)
+bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow)
 // Conversione da CT Record a record come Lista Stringhe per Interfaccia (Grid)
 // Da Record C a QStringList di valori per caricamento griglia
 {
@@ -230,8 +230,6 @@ bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, i
     szTemp.clear();
     listClear(lstRecValues, colTotals);
     // Recupero informazioni da Record CT
-    // Abilitazione riga
-    qDebug() << QString::fromAscii("recCT2List() - Parsing Row: %1") .arg(nRow);
     if (CTRecords[nRow].UsedEntry)  {
         // Priority
         if (CTRecords[nRow].Enable >= 0 && CTRecords[nRow].Enable < nNumPriority)  {
@@ -281,42 +279,40 @@ bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, i
         // Commento
         lstRecValues[colComment] = QString::fromAscii(CTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
         // Behavior
-        if (true)  {
-            // Allarme o Evento
-            if (CTRecords[nRow].usedInAlarmsEvents && CTRecords[nRow].Behavior >= behavior_alarm)  {
-                // Tipo Allarme-Evento
-                if (CTRecords[nRow].ALType == Alarm)
-                    lstRecValues[colBehavior] = lstBehavior[behavior_alarm];
-                else if (CTRecords[nRow].ALType == Event)
-                    lstRecValues[colBehavior] = lstBehavior[behavior_event];
-                // Operatore Logico
-                if (CTRecords[nRow].ALOperator >= 0 && CTRecords[nRow].ALOperator < oper_totals)
-                    lstRecValues[colCondition] = lstCondition[CTRecords[nRow].ALOperator];
-                else
-                    lstRecValues[colCondition] = szEMPTY;
-                // Source Var
-                lstRecValues[colSourceVar] = QString::fromAscii(CTRecords[nRow].ALSource);
-                // Compare Var or Value
-                szTemp = QString::fromAscii(CTRecords[nRow].ALCompareVar);
-                if (szTemp.isEmpty())
-                    lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
-                else
-                    lstRecValues[colCompare] = szTemp;
-                // Rising o Falling senza seconda parte
-                if (CTRecords[nRow].ALOperator == oper_rising || CTRecords[nRow].ALOperator == oper_falling)
-                    lstRecValues[colCompare] = szEMPTY;
-            }
-            else   {
-                // R/O o R/W
-                if (CTRecords[nRow].Behavior == behavior_readonly)
-                    lstRecValues[colBehavior] = lstBehavior[behavior_readonly];
-                else if (CTRecords[nRow].Behavior == behavior_readwrite)
-                    lstRecValues[colBehavior] = lstBehavior[behavior_readwrite];
-                // Source Var - Condition - Compare
-                lstRecValues[colSourceVar] = szEMPTY;
+        // Allarme o Evento
+        if (CTRecords[nRow].usedInAlarmsEvents && CTRecords[nRow].Behavior >= behavior_alarm)  {
+            // Tipo Allarme-Evento
+            if (CTRecords[nRow].ALType == Alarm)
+                lstRecValues[colBehavior] = lstBehavior[behavior_alarm];
+            else if (CTRecords[nRow].ALType == Event)
+                lstRecValues[colBehavior] = lstBehavior[behavior_event];
+            // Operatore Logico
+            if (CTRecords[nRow].ALOperator >= 0 && CTRecords[nRow].ALOperator < oper_totals)
+                lstRecValues[colCondition] = lstCondition[CTRecords[nRow].ALOperator];
+            else
                 lstRecValues[colCondition] = szEMPTY;
+            // Source Var
+            lstRecValues[colSourceVar] = QString::fromAscii(CTRecords[nRow].ALSource);
+            // Compare Var or Value
+            szTemp = QString::fromAscii(CTRecords[nRow].ALCompareVar);
+            if (szTemp.isEmpty())
+                lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
+            else
+                lstRecValues[colCompare] = szTemp;
+            // Rising o Falling senza seconda parte
+            if (CTRecords[nRow].ALOperator == oper_rising || CTRecords[nRow].ALOperator == oper_falling)
                 lstRecValues[colCompare] = szEMPTY;
-            }
+        }
+        else   {
+            // R/O o R/W
+            if (CTRecords[nRow].Behavior == behavior_readonly)
+                lstRecValues[colBehavior] = lstBehavior[behavior_readonly];
+            else if (CTRecords[nRow].Behavior == behavior_readwrite)
+                lstRecValues[colBehavior] = lstBehavior[behavior_readwrite];
+            // Source Var - Condition - Compare
+            lstRecValues[colSourceVar] = szEMPTY;
+            lstRecValues[colCondition] = szEMPTY;
+            lstRecValues[colCompare] = szEMPTY;
         }
     }
     qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
@@ -332,7 +328,7 @@ bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, int nRow)
     bool                fAdd = false;
 
     // Insert Items at Row, Col
-    for (nCol = 0; nCol < colTotals; nCol++)  {
+    for (nCol = 0; nCol < lstRecValues.count(); nCol++)  {
         szTemp = lstRecValues[nCol];
         tItem = table->item(nRow, nCol);
         // Allocazione Elemento se non già definito
@@ -356,8 +352,12 @@ bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, int nRow)
         // Flag Marcatore della riga
         // Aggiunta al Grid
         if (fAdd)  {
-            table->setItem(nRow, nCol, tItem);
+            qDebug() << QString::fromAscii("list2GridRow(): Added Cell @Row:<%1>-Col <%2> Value:[%3]))") .arg(nRow) .arg(nCol) .arg(szTemp);
         }
+        else  {
+            qDebug() << QString::fromAscii("list2GridRow(): Modified CEll @Row:<%1>-Col <%2> Value:[%3])") .arg(nRow) .arg(nCol) .arg(szTemp);
+        }
+        table->setItem(nRow, nCol, tItem);
     }
     return true;
 }

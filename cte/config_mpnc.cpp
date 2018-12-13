@@ -8,6 +8,8 @@
 #include <QColor>
 #include <QIcon>
 #include <QDebug>
+#include <QTableWidgetItem>
+#include <QHeaderView>
 
 const int nItemsPerGroup = 4;
 const int nTotalGroups = 5;
@@ -266,7 +268,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     m_nBaseRow = -1;
 }
 
-void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, QList<CrossTableRecord> &lstRows)
+void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
 {
     int         nCur = 0;
     QString     szTemp;
@@ -277,8 +279,6 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, QList<
     disableAndBlockSignals(cboSelector);
     cboSelector->clear();
     lstCapofila.clear();
-    lstCTUserRows.clear();
-    lstCTUserRows = lstRows;
     qDebug() << QString::fromAscii("showTestaNodi(): NBase: %1 - CT Rows: %2") .arg(nBaseRow) .arg(lstCTUserRows.count());
     if (nTesta < 0 || nTesta >= lstCapofilaTeste.count())  {
         for (nCur = 0; nCur < nTotalItems; nCur++)  {
@@ -520,36 +520,58 @@ void    Config_MPNC::groupItemRemove(int nGroup)
 void    Config_MPNC::filterVariables(int nGroup, int nItem)
 // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
 {
-    QStringList lstLineValues;
-    int         nRow = 0;
-    int         nDisplayRows = 0;
-    bool        fRes = false;
+    QStringList         lstLineValues;
+    QList<QStringList > lstTableRows;
+    int                 nRow = 0;
+    int                 nCol = 0;
+    bool                fRes = false;
+    QTableWidgetItem    *tItem = 0;
 
     qDebug() << QString::fromAscii("filterVariables(): Group: %1 - Name: %2 - Item: %3") .arg(nGroup) .arg(lstModuleName[nGroup]) .arg(nItem);
     // Preparazione tabella
     this->setCursor(Qt::WaitCursor);
+    tblCT->setVisible(false);
     tblCT->setEnabled(false);
     tblCT->clearSelection();
     tblCT->setRowCount(0);
+    tblCT->setColumnCount(0);
+    tblCT->clearContents();
     tblCT->clear();
-    tblCT->setColumnCount(colTotals);
-    // Ciclo di caricamento
+    tblCT->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+    lstTableRows.clear();
+    // Ciclo di Lettura
     for (nRow = m_nBaseRow; nRow < m_nBaseRow + nMPNC_Rows; nRow++)  {
         // Decodifica dei valori di CT e conversione in stringa
-        fRes = recCT2List(lstCTUserRows, lstLineValues, nRow);
+        fRes = recCT2List(lstCTRecords, lstLineValues, nRow);
         // Aggiunta alla Table
         if (fRes)  {
-            tblCT->insertRow(nRow);
-            list2GridRow(tblCT, lstLineValues, nRow);
-            nDisplayRows++;
+            qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colName]);
+            lstTableRows.append(lstLineValues);
         }
     }
-    if (nDisplayRows)  {
+    // Dimensionamento Tabella
+    tblCT->setRowCount(lstTableRows.count());
+    tblCT->setColumnCount(colTotals);
+    // Caricamento in Tabella
+    for (nRow = 0; nRow < lstTableRows.count(); nRow++)  {
+        list2GridRow(tblCT, lstTableRows[nRow], nRow);
+    }
+    // Header Tabella
+    for (nCol = 0; nCol < colTotals; nCol++)  {
+        QString  szColName = lstHeadCols[nCol];
+        tItem = new QTableWidgetItem(szColName);
+        tblCT->setHorizontalHeaderItem(nCol, tItem);
+    }
+    tblCT->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    if (nRow > 0)  {
         tblCT->setSelectionBehavior(QAbstractItemView::SelectRows);
         tblCT->setSelectionMode(QAbstractItemView::ExtendedSelection);
-        tblCT->setHorizontalHeaderLabels(lstHeadCols);
-
+        tblCT->setVisible(true);
+        tblCT->setEnabled(true);
+        tblCT->selectRow(0);
+        tblCT->update();
+        tblCT->setFocus();
     }
-    qDebug() << QString::fromAscii("Displayed Rows: %1") .arg(nDisplayRows);
+    qDebug() << QString::fromAscii("Displayed Rows: %1") .arg(nRow);
     this->setCursor(Qt::ArrowCursor);
 }

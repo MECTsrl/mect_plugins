@@ -38,9 +38,9 @@ extern QString     szColorSystem[2];
 
 
 void    initLists();                       // Init delle Liste globali
-void    setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int nPriority);  // Imposta il colore di sfondo di una riga
-bool    recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, bool fIgnoreAlarms = false);// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
-bool    list2GridRow(QTableWidget *table, QStringList &lstRecValues, int nRow);  // Inserimento o modifica elemento in Grid (valori -> GRID)
+void    setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int nPriority);   // Imposta il colore di sfondo di una riga
+bool    recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow);    // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
+bool    list2GridRow(QTableWidget *table, QStringList &lstRecValues, int nRow);                 // Inserimento o modifica elemento in Grid (valori -> GRID)
 
 
 #endif // CTEUTILS_H
