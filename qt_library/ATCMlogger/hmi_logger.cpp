@@ -34,6 +34,8 @@
 #include "alarms.h"
 #include "common.h"
 
+#include <QCoreApplication>
+
 Logger * logger = NULL;
 sem_t theLoggingSem;
 
@@ -460,7 +462,14 @@ bool Logger::logshot()
 {
     logger_shot = true;
     LOG_PRINT(verbose_e, "SHOT!\n");
-    return sem_post(&theLoggingSem) == 0;
+    if (sem_post(&theLoggingSem)) {
+        LOG_PRINT(error_e, "sem_post() failed\n");
+        return false;
+    }
+    while (logger_shot) {
+        QCoreApplication::processEvents();
+    }
+    return true;
 }
 
 bool Logger::logreset()
