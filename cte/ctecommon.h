@@ -2,6 +2,7 @@
 #define CTECOMMON_H
 #include <QChar>
 #include <QString>
+#include "parser.h"
 
 // Parametri generali della CT
 #define MAXBLOCKSIZE 64
@@ -26,6 +27,7 @@ const int nStartInputRegister = 300000;
 const int nMaxInputRegister = nStartInputRegister + nMax_Int16;
 const int nMaxRegister = 49999;
 const int nCompareDecimals = 4;
+
 // Priority
 const int nNumPriority = 4;
 const int nPriorityNone = 0;
@@ -105,6 +107,22 @@ enum colonne_e
     colTotals
 };
 
+enum colonne_MPNx  {
+    colMPNxRowNum = 0,
+    colMPNxPriority,
+    colMPNxUpdate,
+    colMPNxName,
+    colMPNxType,
+    colMPNxDecimal,
+    colMPNxNodeID,
+    colMPNxRegister,
+    colMPNxBlock,
+    colMPNxBlockSize,
+    colMPNxBehavior,
+    colMPNxComment,
+    colMPNxTotals
+};
+
 enum modbusserver_e
 {
     srvRTU0 = 0,
@@ -126,6 +144,9 @@ enum regions_e
     regTotals
 };
 
+struct  extendedCT : CrossTableRecord {
+    int     nGroup;
+};
 
 
 struct  MODBUS_Srv  {

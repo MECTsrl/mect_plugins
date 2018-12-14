@@ -26,6 +26,11 @@ QStringList lstRegions;                 // Aree della CT
 QStringList lstTipi;                    // Descrizione dei Tipi
 QStringList lstUpdateNames;             // Descrizione delle Priorità
 QStringList lstProtocol;                // Descrizione dei Protocolli
+QStringList lstMPNxCols;                // Header Colonne MPNx
+bool        isSerialPortEnabled;        // Vero se almeno una porta seriale è abilitata
+int         nPresentSerialPorts;        // Numero di porte Seriali utilizzabili a bordo
+TP_Config   panelConfig;                // Configurazione corrente del Target letta da Form mectSettings
+
 
 // Cross Table Records
 QList<CrossTableRecord> lstCTRecords;   // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE)
@@ -135,6 +140,20 @@ void initLists()
     lstHeadCols[colCompare] = QString::fromAscii("Compare");
     lstHeadNames[colCompare] = QString::fromAscii("Compare");
     lstHeadSizes[colCompare] = 20;
+    // Prompt della Griglia MPNx
+    listClear(lstMPNxCols, colMPNxTotals);
+    lstMPNxCols[colMPNxRowNum] = QString::fromAscii("Row");
+    lstMPNxCols[colMPNxPriority] = lstHeadCols[colPriority];
+    lstMPNxCols[colMPNxUpdate] = lstHeadCols[colUpdate];
+    lstMPNxCols[colMPNxName] = lstHeadCols[colName];
+    lstMPNxCols[colMPNxType] = lstHeadCols[colType];
+    lstMPNxCols[colMPNxDecimal] = lstHeadCols[colDecimal];
+    lstMPNxCols[colMPNxNodeID] = lstHeadCols[colNodeID];
+    lstMPNxCols[colMPNxRegister] = lstHeadCols[colRegister];
+    lstMPNxCols[colMPNxBlock] = lstHeadCols[colBlock];
+    lstMPNxCols[colMPNxBlockSize] = lstHeadCols[colBlockSize];
+    lstMPNxCols[colMPNxBehavior] = lstHeadCols[colBehavior];
+    lstMPNxCols[colMPNxComment] = lstHeadCols[colComment];
     // Regioni CT
     lstRegions.clear();
     for (nCol = 0; nCol < regTotals; nCol++)  {
@@ -174,8 +193,13 @@ void initLists()
     szColorNonRet[1] = QString::fromAscii("color: #FFFFDC");
     szColorSystem[0] = QString::fromAscii("color: #FFE3D7");
     szColorSystem[1] = QString::fromAscii("color: #FFF0E9");
+
     // Righe della CT
     lstCTRecords.clear();
+    // Porte Seriali
+    isSerialPortEnabled = false;        // Vero se almeno una porta seriale è abilitata
+    nPresentSerialPorts = 0;            // Numero di porte Seriali utilizzabili a bordo
+
 }
 void setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int nPriority)
 // Imposta il colore di sfondo di una riga
@@ -216,6 +240,60 @@ void setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int n
     QBrush bCell(cSfondo, Qt::SolidPattern);
     setRowBackground(bCell, table->model(), nRow);
 }
+bool recCT2MPNxList(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow)
+// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
+// Da Record C a QStringList di valori per caricamento griglia
+// Versione per MPNX Nodes
+{
+    QString     szTemp;
+
+    if (nRow < 0 || nRow >= CTRecords.count())  {
+        return false;
+    }
+    listClear(lstRecValues, colMPNxTotals);
+    // Row Number
+    szTemp = QString::number(nRow + 1);
+    lstRecValues[colMPNxRowNum] = szTemp;
+    // Recupero informazioni da Record CT
+    if (CTRecords[nRow].UsedEntry)  {
+        // Priority
+        if (CTRecords[nRow].Enable >= 0 && CTRecords[nRow].Enable < nNumPriority)  {
+            lstRecValues[colMPNxPriority] = lstPriority.at((int) CTRecords[nRow].Enable);
+        }
+        // Campo Update
+        if (CTRecords[nRow].Update >= 0 && CTRecords[nRow].Update < lstUpdateNames.count())
+            lstRecValues[colMPNxUpdate] = lstUpdateNames[CTRecords[nRow].Update];
+        // Campo Name
+        lstRecValues[colMPNxName] = QString::fromAscii(CTRecords[nRow].Tag);
+        // Campo Type
+        if (CTRecords[nRow].VarType >= BIT && CTRecords[nRow].VarType < TYPE_TOTALS)
+            lstRecValues[colMPNxType] = lstTipi[CTRecords[nRow].VarType];
+        // Campo Decimal
+        lstRecValues[colMPNxDecimal] = QString::number(CTRecords[nRow].Decimal);
+        // Node Id
+        lstRecValues[colMPNxNodeID] = QString::number(CTRecords[nRow].NodeId);
+        // Offeset Register
+        lstRecValues[colMPNxRegister] = QString::number(CTRecords[nRow].Offset);
+        // Block
+        lstRecValues[colMPNxBlock] = QString::number(CTRecords[nRow].Block);
+        // N.Registro
+        lstRecValues[colMPNxBlockSize] = QString::number(CTRecords[nRow].BlockSize);
+        // Behavior
+        // R/O o R/W
+        if (CTRecords[nRow].Behavior == behavior_readonly)
+            lstRecValues[colMPNxBehavior] = lstBehavior[behavior_readonly];
+        else if (CTRecords[nRow].Behavior == behavior_readwrite)
+            lstRecValues[colMPNxBehavior] = lstBehavior[behavior_readwrite];
+        // Commento
+        lstRecValues[colMPNxComment] = QString::fromAscii(CTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
+    }
+    //    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
+    // Return value
+    return true;
+
+
+}
+
 bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow)
 // Conversione da CT Record a record come Lista Stringhe per Interfaccia (Grid)
 // Da Record C a QStringList di valori per caricamento griglia
@@ -279,7 +357,7 @@ bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, i
         // Commento
         lstRecValues[colComment] = QString::fromAscii(CTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
         // Behavior
-        // Allarme o Evento
+        // Allarme o Evento (non MPNx)
         if (CTRecords[nRow].usedInAlarmsEvents && CTRecords[nRow].Behavior >= behavior_alarm)  {
             // Tipo Allarme-Evento
             if (CTRecords[nRow].ALType == Alarm)
@@ -315,11 +393,11 @@ bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, i
             lstRecValues[colCompare] = szEMPTY;
         }
     }
-    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
+    //    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
     // Return value
     return true;
 }
-bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, int nRow)
+bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, int nRow, bool fForceAlign)
 // Inserimento o modifica elemento in Grid (valori -> GRID)
 {
     int                 nCol = 0;
@@ -333,31 +411,68 @@ bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, int nRow)
         tItem = table->item(nRow, nCol);
         // Allocazione Elemento se non già definito
         if (tItem == NULL)  {
-            fAdd = true;
             tItem = new QTableWidgetItem(szTemp);
+            fAdd = true;
         }
         else  {
-            fAdd = false;
             tItem->setText(szTemp);
         }
         // Allineamento Celle
-        if (nCol == colName || nCol == colComment || nCol == colSourceVar || nCol == colCompare)
-            // Item Allineato a Sx
-            tItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        else
-            // Item Centrato in Cella
-            tItem->setTextAlignment(Qt::AlignCenter);
+        if (fForceAlign)  {
+            if (nCol == colName || nCol == colComment || nCol == colSourceVar || nCol == colCompare)
+                // Item Allineato a Sx
+                tItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+            else
+                // Item Centrato in Cella
+                tItem->setTextAlignment(Qt::AlignCenter);
+        }
         // Rende il valore non Editabile
         tItem->setFlags(tItem->flags() ^ Qt::ItemIsEditable);
-        // Flag Marcatore della riga
-        // Aggiunta al Grid
+        // Aggiorna il Grid
         if (fAdd)  {
-            qDebug() << QString::fromAscii("list2GridRow(): Added Cell @Row:<%1>-Col <%2> Value:[%3]))") .arg(nRow) .arg(nCol) .arg(szTemp);
+            table->setItem(nRow, nCol, tItem);
         }
-        else  {
-            qDebug() << QString::fromAscii("list2GridRow(): Modified CEll @Row:<%1>-Col <%2> Value:[%3])") .arg(nRow) .arg(nCol) .arg(szTemp);
-        }
-        table->setItem(nRow, nCol, tItem);
     }
     return true;
+}
+int     enableSerialPortCombo(QComboBox *cboBox)
+{
+    int nPorts = 0;
+
+    disableAndBlockSignals(cboBox);
+    // Port 0
+    if (panelConfig.ser0_Enabled)  {
+        enableComboItem(cboBox, 0);
+        nPorts++;
+    }
+    else  {
+        disableComboItem(cboBox, 0);
+    }
+    // Port 1
+    if (panelConfig.ser1_Enabled)  {
+        enableComboItem(cboBox, 1);
+        nPorts++;
+    }
+    else  {
+        disableComboItem(cboBox, 1);
+    }
+    // Port 2
+    if (panelConfig.ser2_Enabled)  {
+        enableComboItem(cboBox, 2);
+        nPorts++;
+    }
+    else  {
+        disableComboItem(cboBox, 2);
+    }
+    // Port 3
+    if (panelConfig.ser3_Enabled)  {
+        enableComboItem(cboBox, 3);
+        nPorts++;
+    }
+    else  {
+        disableComboItem(cboBox, 3);
+    }
+    enableAndUnlockSignals(cboBox);
+    // Return Value
+    return nPorts;
 }

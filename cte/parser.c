@@ -989,7 +989,6 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                 // directly afterwards using uint32_t values
                 // float fvalue = *(float *)&ALCrossTable[indx].ALCompareVal;
                 fvalue = ALCrossTable[indx].ALCompareVal;
-                int n;
 
                 switch (CrossTable[addr].VarType) {
                     case BIT:

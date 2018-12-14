@@ -162,7 +162,7 @@ ctedit::ctedit(QWidget *parent) :
     // Lista Modelli
     lstTargets.clear();
     initTargetList();
-    TargetConfig = lstTargets[AnyTPAC];
+    panelConfig = lstTargets[AnyTPAC];
     // Lista Messaggi di Errore
     lstErrorMessages.clear();
     for (nCol = 0; nCol < errCTTotals; nCol++)  {
@@ -575,7 +575,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
             nModel = AnyTPAC;
         }
         // Imposta configurazione corrente
-        TargetConfig = lstTargets[nModel];
+        panelConfig = lstTargets[nModel];
         // Se il modello non è stato trovato in template.pri oppure nella lista modelli definiti vale comunque AnyTPAC ma il salvataggio è disabilitato
         // (Viene ripulita la variabile m_szCurrentModel)
         if (nModel == AnyTPAC)  {
@@ -587,10 +587,10 @@ bool    ctedit::selectCTFile(QString szFileCT)
         m_isCtModified = false;
         m_fCutOrPaste = false;
         // Carica anche le impostazioni del file INI
-        mectSet->loadProjectFiles(m_szCurrentCTPath + szINIFILE, m_szCurrentProjectPath + szSLASH + m_szCurrentProjectName, m_szCurrentProjectPath + szSLASH, TargetConfig);
+        mectSet->loadProjectFiles(m_szCurrentCTPath + szINIFILE, m_szCurrentProjectPath + szSLASH + m_szCurrentProjectName, m_szCurrentProjectPath + szSLASH, panelConfig);
 //        qDebug() << tr("LoadProjectFiles: <%1> Done") .arg(m_szCurrentModel) ;
         // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
-        mectSet->getTargetConfig(TargetConfig);
+        mectSet->getTargetConfig(panelConfig);
 //        qDebug() << tr("getTargetConfig: <%1> Done") .arg(TargetConfig.modelName) ;
         // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
         enableProtocolsFromModel();
@@ -613,6 +613,9 @@ bool    ctedit::selectCTFile(QString szFileCT)
         }
         // Porta in primo piano il Tab delle Variabili
         ui->tabWidget->setCurrentIndex(TAB_CT);
+        // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
+        ui->tabWidget->setTabEnabled(TAB_MPNC, isSerialPortEnabled);
+        ui->tabWidget->setTabEnabled(TAB_MPNE, isSerialPortEnabled);
     }
     return fRes;
 }
@@ -1489,13 +1492,13 @@ void ctedit::enableFields()
             ui->txtComment->setEnabled(true);
         }
         // Abilitazione dei Decimal per Input Analogiche se abilitati
-        if (TargetConfig.analogIN > 0 && TargetConfig.analogINrowCT > 0)  {
-            if (m_nGridRow >= TargetConfig.analogINrowCT -1 && m_nGridRow < TargetConfig.analogINrowCT + TargetConfig.analogIN -1)
+        if (panelConfig.analogIN > 0 && panelConfig.analogINrowCT > 0)  {
+            if (m_nGridRow >= panelConfig.analogINrowCT -1 && m_nGridRow < panelConfig.analogINrowCT + panelConfig.analogIN -1)
                 fDecimal = true;
         }
         // Abilitazione dei Decimal per Output Analogiche se abilitati
-        if (TargetConfig.analogOUT > 0 && TargetConfig.analogOUTrowCT > 0)  {
-            if (m_nGridRow >= TargetConfig.analogOUTrowCT -1 && m_nGridRow < TargetConfig.analogOUTrowCT + TargetConfig.analogOUT -1)
+        if (panelConfig.analogOUT > 0 && panelConfig.analogOUTrowCT > 0)  {
+            if (m_nGridRow >= panelConfig.analogOUTrowCT -1 && m_nGridRow < panelConfig.analogOUTrowCT + panelConfig.analogOUT -1)
                 fDecimal = true;
         }
         ui->txtDecimal->setEnabled(fDecimal);
@@ -1874,11 +1877,11 @@ void ctedit::displayUserMenu(const QPoint &pos)
     gridMenu.addSeparator();
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale
     QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005/MPNC006 Modules"));
-    addMPNC006->setEnabled((TargetConfig.ser0_Enabled || TargetConfig.ser1_Enabled || TargetConfig.ser2_Enabled || TargetConfig.ser3_Enabled)
+    addMPNC006->setEnabled((isSerialPortEnabled)
                            && m_nGridRow < MIN_DIAG - 1);
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
     QAction *addTPLC050 = gridMenu.addAction(cIco, trUtf8("Paste TPLC050 Modules"));
-    addTPLC050->setVisible((TargetConfig.modelName.contains(szTPLC050))
+    addTPLC050->setVisible((panelConfig.modelName.contains(szTPLC050))
                            && m_nGridRow < MIN_DIAG - 1);
     addTPLC050->setEnabled(addTPLC050->isVisible());
     // Esecuzione del Menu
@@ -1913,7 +1916,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
     else if (actMenu == menuRow)  {
         gotoRow();
     }
-    // Add MPNC005  szTPLC050
+    // Add MPNC006  szTPLC050
     else if (actMenu == addMPNC006)  {
         addModelVars(szMPNC006, m_nGridRow);
     }
@@ -2781,9 +2784,28 @@ void ctedit::tabSelected(int nTab)
     // Ritorno a CT da Tab System, prudenzialmente aggiorna le info di configurazione
     if (nPrevTab == TAB_SYSTEM)  {
         // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
-        mectSet->getTargetConfig(TargetConfig);
+        mectSet->getTargetConfig(panelConfig);
         // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
         enableProtocolsFromModel();
+    }
+    // Ritorno a CT da Tab MPNC / MPNE
+    if (nPrevTab == TAB_MPNC) {
+        // Se qualcosa della configurazione è cambiato rilegge la CT dalla Lista
+        if (configMPNC->isUpdated())  {
+            int nOldRow = m_nGridRow;
+            ui->tblCT->selectionModel()->clearSelection();
+            lstUndo.append(lstCTRecords);
+            lstCTRecords = configMPNC->localCTRecords;
+            // Refresh Grid
+            ctable2Grid();
+            // Jump n+1
+            jumpToGridRow(nOldRow + 1, true);
+            jumpToGridRow(nOldRow, true);
+            m_isCtModified = true;
+        }
+    }
+    if (nPrevTab == TAB_MPNE)  {
+
     }
     // Entering Trends: Aggiornamento della lista di variabili e ripopolamento liste per Trends
     if (nTab == TAB_TREND) {
@@ -2845,42 +2867,26 @@ void    ctedit::enableProtocolsFromModel()
     // PLC abilitato per tutti i modelli
     lstBusEnabler[PLC] = true;
     // TCP e derivati abilitati per tutti i modelli (Perchè ethPorts è almeno 1)
-    if (TargetConfig.ethPorts > 0)  {
+    if (panelConfig.ethPorts > 0)  {
         lstBusEnabler[TCP] = true;
         lstBusEnabler[TCPRTU] = true;
         lstBusEnabler[TCP_SRV] = true;
         lstBusEnabler[TCPRTU_SRV] = true;
     }
     // Protocollo CAN abilitato solo per Modelli con Can
-    if (TargetConfig.can0_Enabled || TargetConfig.can1_Enabled)  {
+    if (panelConfig.can0_Enabled || panelConfig.can1_Enabled)  {
         lstBusEnabler[CANOPEN] = true;
     }
     // Protocolli Seriali
-    if (TargetConfig.ser0_Enabled || TargetConfig.ser1_Enabled || TargetConfig.ser2_Enabled || TargetConfig.ser3_Enabled)  {
+    isSerialPortEnabled = panelConfig.ser0_Enabled || panelConfig.ser1_Enabled || panelConfig.ser2_Enabled || panelConfig.ser3_Enabled;        // Vero se almeno una porta seriale è abilitata
+    nPresentSerialPorts = 0;            // Numero di porte Seriali utilizzabili a bordo
+    // Calcolo delle porte seriali presenti a bordo
+    if (isSerialPortEnabled)  {
         lstBusEnabler[RTU] = true;
         lstBusEnabler[MECT_PTC] = true;
         lstBusEnabler[RTU_SRV] = true;
         // Abilitazione delle entry nella Combo delle Porte
-        // Port 0
-        if (TargetConfig.ser0_Enabled)
-            enableComboItem(ui->cboPort, 0);
-        else
-            disableComboItem(ui->cboPort, 0);
-        // Port 1
-        if (TargetConfig.ser1_Enabled)
-            enableComboItem(ui->cboPort, 1);
-        else
-            disableComboItem(ui->cboPort, 1);
-        // Port 2
-        if (TargetConfig.ser2_Enabled)
-            enableComboItem(ui->cboPort, 2);
-        else
-            disableComboItem(ui->cboPort, 2);
-        // Port 3
-        if (TargetConfig.ser3_Enabled)
-            enableComboItem(ui->cboPort, 3);
-        else
-            disableComboItem(ui->cboPort, 3);
+        nPresentSerialPorts = enableSerialPortCombo(ui->cboPort);
     }
     // Spegne sulla Combo dei protocolli le voci non abilitate
     for (nCur = 0; nCur < lstProtocol.count(); nCur++)  {
@@ -3271,7 +3277,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         // Numero Porta non abilitata (o non presente) [check solo per parte utente della CT...]
         if ( (nRow < MAX_NONRETENTIVE) && (! isValidPort(nPort, nProtocol)))  {
             // Controllo disabilitato per TPCL050 su Protocollo RTU - Porta 3 - Nodo 1
-            if (! (TargetConfig.modelName.contains(szTPLC050) && nProtocol == RTU && nPort == 3 && nNodeID == 1))  {
+            if (! (panelConfig.modelName.contains(szTPLC050) && nProtocol == RTU && nPort == 3 && nNodeID == 1))  {
                 fillErrorMessage(nRow, colPort, errCTNoDevicePort, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
@@ -4306,25 +4312,25 @@ int ctedit::maxBlockSize(FieldbusType nProtocol, int nPort)
         case TCPRTU:
         case TCP_SRV:
         case TCPRTU_SRV:
-            nBlockSize = TargetConfig.tcp_BlockSize;
+            nBlockSize = panelConfig.tcp_BlockSize;
             break;
         case CANOPEN:
             if (nPort == 0)
-                nBlockSize = TargetConfig.can0_BlockSize;
+                nBlockSize = panelConfig.can0_BlockSize;
             else
-                nBlockSize = TargetConfig.can1_BlockSize;
+                nBlockSize = panelConfig.can1_BlockSize;
             break;
 
         default:
             // All Serial Protocols
             if (nPort == 0)
-                nBlockSize = TargetConfig.ser0_BlockSize;
+                nBlockSize = panelConfig.ser0_BlockSize;
             else if (nPort == 1)
-                nBlockSize = TargetConfig.ser1_BlockSize;
+                nBlockSize = panelConfig.ser1_BlockSize;
             else if (nPort == 2)
-                nBlockSize = TargetConfig.ser2_BlockSize;
+                nBlockSize = panelConfig.ser2_BlockSize;
             else if (nPort == 3)
-                nBlockSize = TargetConfig.ser3_BlockSize;
+                nBlockSize = panelConfig.ser3_BlockSize;
             break;
     }
     // return
@@ -5204,21 +5210,21 @@ void ctedit::getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
         case RTU:
         case RTU_SRV:
         case MECT_PTC:
-            if (TargetConfig.ser0_Enabled)  {
+            if (panelConfig.ser0_Enabled)  {
                 nPort = 0;
                 nTotal++;
             }
-            if (TargetConfig.ser1_Enabled)  {
+            if (panelConfig.ser1_Enabled)  {
                 if (nPort < 0)
                     nPort = 1;
                 nTotal++;
             }
-            if (TargetConfig.ser2_Enabled)  {
+            if (panelConfig.ser2_Enabled)  {
                 if (nPort < 0)
                     nPort = 2;
                 nTotal++;
             }
-            if (TargetConfig.ser3_Enabled)  {
+            if (panelConfig.ser3_Enabled)  {
                 if (nPort < 0)
                     nPort = 3;
                 nTotal++;
@@ -5229,18 +5235,18 @@ void ctedit::getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
         case TCPRTU:
         case TCP_SRV:
         case TCPRTU_SRV:
-            if (TargetConfig.ethPorts > 0)  {
+            if (panelConfig.ethPorts > 0)  {
                 nPort = szDEF_IP_PORT.toInt(0);
                 nTotal++;
             }
             break;
         // Protocollo CAN
         case CANOPEN:
-            if (TargetConfig.can0_Enabled)  {
+            if (panelConfig.can0_Enabled)  {
                 nPort = 0;
                 nTotal++;
             }
-            if (TargetConfig.can1_Enabled)  {
+            if (panelConfig.can1_Enabled)  {
                 if (nPort < 0)
                     nPort = 1;
                 nTotal++;
@@ -5327,7 +5333,7 @@ bool ctedit::isValidPort(int nPort, int nProtocol)
         case TCPRTU:
         case TCP_SRV:
         case TCPRTU_SRV:
-        if ((nPort > 0 && nPort <= nMax_Int16) && (TargetConfig.ethPorts > 0)) {
+        if ((nPort > 0 && nPort <= nMax_Int16) && (panelConfig.ethPorts > 0)) {
                 if (nPort != nPortFTPControl && nPort != nPortSFTP && nPort != nPortTELNET && nPort != nPortHTTP && nPort != nPortVNC)  {
                     fRes = true;
                 }
@@ -5337,9 +5343,9 @@ bool ctedit::isValidPort(int nPort, int nProtocol)
         case CANOPEN:
             if (nPort >= 0 && nPort <= nMaxCanPorts)  {
                 if (nPort == 0)
-                    fRes = TargetConfig.can0_Enabled;
+                    fRes = panelConfig.can0_Enabled;
                 else if (nPort == 1)
-                    fRes = TargetConfig.can1_Enabled;
+                    fRes = panelConfig.can1_Enabled;
             }
             break;
 
@@ -5347,10 +5353,10 @@ bool ctedit::isValidPort(int nPort, int nProtocol)
         case MECT_PTC:
         case RTU_SRV:
             if (nPort >= 0 && nPort <= nMaxSerialPorts)  {
-                if ((nPort == 0 && TargetConfig.ser0_Enabled) ||
-                    (nPort == 1 && TargetConfig.ser1_Enabled) ||
-                    (nPort == 2 && TargetConfig.ser2_Enabled) ||
-                    (nPort == 3 && TargetConfig.ser3_Enabled) )  {
+                if ((nPort == 0 && panelConfig.ser0_Enabled) ||
+                    (nPort == 1 && panelConfig.ser1_Enabled) ||
+                    (nPort == 2 && panelConfig.ser2_Enabled) ||
+                    (nPort == 3 && panelConfig.ser3_Enabled) )  {
                     fRes = true;
                 }
             }
@@ -5936,36 +5942,36 @@ bool ctedit::checkServersDevicesAndNodes()
                     case RTU:
                         szDeviceName.append(QString::number(theDevices[nDev].nPort));
                         if (theDevices[nDev].nPort == 0)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser0_BlockSize;
-                            theDevices[nDev].nSilence = TargetConfig.ser0_Silence;
-                            theDevices[nDev].nTimeOut = TargetConfig.ser0_TimeOut;
-                            theDevices[nDev].nBaudRate = TargetConfig.ser0_BaudRate;
-                            theDevices[nDev].nDataBits = TargetConfig.ser0_DataBits;
-                            theDevices[nDev].nStopBits = TargetConfig.ser0_StopBits;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.ser0_BlockSize;
+                            theDevices[nDev].nSilence = panelConfig.ser0_Silence;
+                            theDevices[nDev].nTimeOut = panelConfig.ser0_TimeOut;
+                            theDevices[nDev].nBaudRate = panelConfig.ser0_BaudRate;
+                            theDevices[nDev].nDataBits = panelConfig.ser0_DataBits;
+                            theDevices[nDev].nStopBits = panelConfig.ser0_StopBits;
                         }
                         else if (theDevices[nDev].nPort == 1)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser1_BlockSize;
-                            theDevices[nDev].nSilence = TargetConfig.ser1_Silence;
-                            theDevices[nDev].nTimeOut = TargetConfig.ser1_TimeOut;
-                            theDevices[nDev].nBaudRate = TargetConfig.ser1_BaudRate;
-                            theDevices[nDev].nDataBits = TargetConfig.ser1_DataBits;
-                            theDevices[nDev].nStopBits = TargetConfig.ser1_StopBits;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.ser1_BlockSize;
+                            theDevices[nDev].nSilence = panelConfig.ser1_Silence;
+                            theDevices[nDev].nTimeOut = panelConfig.ser1_TimeOut;
+                            theDevices[nDev].nBaudRate = panelConfig.ser1_BaudRate;
+                            theDevices[nDev].nDataBits = panelConfig.ser1_DataBits;
+                            theDevices[nDev].nStopBits = panelConfig.ser1_StopBits;
                         }
                         else if (theDevices[nDev].nPort == 2)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser2_BlockSize;
-                            theDevices[nDev].nSilence = TargetConfig.ser2_Silence;
-                            theDevices[nDev].nTimeOut = TargetConfig.ser2_TimeOut;
-                            theDevices[nDev].nBaudRate = TargetConfig.ser2_BaudRate;
-                            theDevices[nDev].nDataBits = TargetConfig.ser2_DataBits;
-                            theDevices[nDev].nStopBits = TargetConfig.ser2_StopBits;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.ser2_BlockSize;
+                            theDevices[nDev].nSilence = panelConfig.ser2_Silence;
+                            theDevices[nDev].nTimeOut = panelConfig.ser2_TimeOut;
+                            theDevices[nDev].nBaudRate = panelConfig.ser2_BaudRate;
+                            theDevices[nDev].nDataBits = panelConfig.ser2_DataBits;
+                            theDevices[nDev].nStopBits = panelConfig.ser2_StopBits;
                         }
                         else if (theDevices[nDev].nPort == 3)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser3_BlockSize;
-                            theDevices[nDev].nSilence = TargetConfig.ser3_Silence;
-                            theDevices[nDev].nTimeOut = TargetConfig.ser3_TimeOut;
-                            theDevices[nDev].nBaudRate = TargetConfig.ser3_BaudRate;
-                            theDevices[nDev].nDataBits = TargetConfig.ser3_DataBits;
-                            theDevices[nDev].nStopBits = TargetConfig.ser3_StopBits;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.ser3_BlockSize;
+                            theDevices[nDev].nSilence = panelConfig.ser3_Silence;
+                            theDevices[nDev].nTimeOut = panelConfig.ser3_TimeOut;
+                            theDevices[nDev].nBaudRate = panelConfig.ser3_BaudRate;
+                            theDevices[nDev].nDataBits = panelConfig.ser3_DataBits;
+                            theDevices[nDev].nStopBits = panelConfig.ser3_StopBits;
                         }
                         break;
                     case MECT_PTC:
@@ -5977,29 +5983,29 @@ bool ctedit::checkServersDevicesAndNodes()
                         szDeviceName.append(QString::number(theTcpDevicesNumber));
                         ++theTcpDevicesNumber;
                         theDevices[nDev].szIpAddress = szIpAddr;
-                        theDevices[nDev].nMaxBlockSize = TargetConfig.tcp_BlockSize;
-                        theDevices[nDev].nSilence = TargetConfig.tcp_Silence;
-                        theDevices[nDev].nTimeOut = TargetConfig.tcp_TimeOut;
+                        theDevices[nDev].nMaxBlockSize = panelConfig.tcp_BlockSize;
+                        theDevices[nDev].nSilence = panelConfig.tcp_Silence;
+                        theDevices[nDev].nTimeOut = panelConfig.tcp_TimeOut;
                         break;
                     case TCPRTU:
                         theDevices[nDev].szIpAddress = szIpAddr;
-                        theDevices[nDev].nMaxBlockSize = TargetConfig.tcp_BlockSize;
-                        theDevices[nDev].nSilence = TargetConfig.tcp_Silence;
-                        theDevices[nDev].nTimeOut = TargetConfig.tcp_TimeOut;
+                        theDevices[nDev].nMaxBlockSize = panelConfig.tcp_BlockSize;
+                        theDevices[nDev].nSilence = panelConfig.tcp_Silence;
+                        theDevices[nDev].nTimeOut = panelConfig.tcp_TimeOut;
                         break;
                     case CANOPEN:
                         szDeviceName.append(QString::number(theDevices[nDev].nPort));
                         if (theDevices[nDev].nPort == 0)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.can0_BlockSize;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.can0_BlockSize;
                             theDevices[nDev].nSilence = -1;
                             theDevices[nDev].nTimeOut = -1;
-                            theDevices[nDev].nBaudRate = TargetConfig.can0_BaudRate;
+                            theDevices[nDev].nBaudRate = panelConfig.can0_BaudRate;
                         }
                         else if (theDevices[nDev].nPort == 1)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.can1_BlockSize;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.can1_BlockSize;
                             theDevices[nDev].nSilence = -1;
                             theDevices[nDev].nTimeOut = -1;
-                            theDevices[nDev].nBaudRate = TargetConfig.can1_BaudRate;
+                            theDevices[nDev].nBaudRate = panelConfig.can1_BaudRate;
                         }
                         break;
                     case RTU_SRV:
@@ -6007,36 +6013,36 @@ bool ctedit::checkServersDevicesAndNodes()
                         szDeviceName.append(QString::number(theDevices[nDev].nPort));
                         theDevices[nDev].nServer = nSer; // searched before
                         if (theDevices[nDev].nPort == 0)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser0_BlockSize;
-                            theDevices[nDev].nSilence = TargetConfig.ser0_Silence;
-                            theDevices[nDev].nTimeOut = TargetConfig.ser0_TimeOut;
-                            theDevices[nDev].nBaudRate = TargetConfig.ser0_BaudRate;
-                            theDevices[nDev].nDataBits = TargetConfig.ser0_DataBits;
-                            theDevices[nDev].nStopBits = TargetConfig.ser0_StopBits;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.ser0_BlockSize;
+                            theDevices[nDev].nSilence = panelConfig.ser0_Silence;
+                            theDevices[nDev].nTimeOut = panelConfig.ser0_TimeOut;
+                            theDevices[nDev].nBaudRate = panelConfig.ser0_BaudRate;
+                            theDevices[nDev].nDataBits = panelConfig.ser0_DataBits;
+                            theDevices[nDev].nStopBits = panelConfig.ser0_StopBits;
                         }
                         else if (theDevices[nDev].nPort == 1)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser1_BlockSize;
-                            theDevices[nDev].nSilence = TargetConfig.ser1_Silence;
-                            theDevices[nDev].nTimeOut = TargetConfig.ser1_TimeOut;
-                            theDevices[nDev].nBaudRate = TargetConfig.ser1_BaudRate;
-                            theDevices[nDev].nDataBits = TargetConfig.ser1_DataBits;
-                            theDevices[nDev].nStopBits = TargetConfig.ser1_StopBits;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.ser1_BlockSize;
+                            theDevices[nDev].nSilence = panelConfig.ser1_Silence;
+                            theDevices[nDev].nTimeOut = panelConfig.ser1_TimeOut;
+                            theDevices[nDev].nBaudRate = panelConfig.ser1_BaudRate;
+                            theDevices[nDev].nDataBits = panelConfig.ser1_DataBits;
+                            theDevices[nDev].nStopBits = panelConfig.ser1_StopBits;
                         }
                         else if (theDevices[nDev].nPort == 2)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser2_BlockSize;
-                            theDevices[nDev].nSilence = TargetConfig.ser2_Silence;
-                            theDevices[nDev].nTimeOut = TargetConfig.ser2_TimeOut;
-                            theDevices[nDev].nBaudRate = TargetConfig.ser2_BaudRate;
-                            theDevices[nDev].nDataBits = TargetConfig.ser2_DataBits;
-                            theDevices[nDev].nStopBits = TargetConfig.ser2_StopBits;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.ser2_BlockSize;
+                            theDevices[nDev].nSilence = panelConfig.ser2_Silence;
+                            theDevices[nDev].nTimeOut = panelConfig.ser2_TimeOut;
+                            theDevices[nDev].nBaudRate = panelConfig.ser2_BaudRate;
+                            theDevices[nDev].nDataBits = panelConfig.ser2_DataBits;
+                            theDevices[nDev].nStopBits = panelConfig.ser2_StopBits;
                         }
                         else if (theDevices[nDev].nPort == 3)  {
-                            theDevices[nDev].nMaxBlockSize = TargetConfig.ser3_BlockSize;
-                            theDevices[nDev].nSilence = TargetConfig.ser3_Silence;
-                            theDevices[nDev].nTimeOut = TargetConfig.ser3_TimeOut;
-                            theDevices[nDev].nBaudRate = TargetConfig.ser3_BaudRate;
-                            theDevices[nDev].nDataBits = TargetConfig.ser3_DataBits;
-                            theDevices[nDev].nStopBits = TargetConfig.ser3_StopBits;
+                            theDevices[nDev].nMaxBlockSize = panelConfig.ser3_BlockSize;
+                            theDevices[nDev].nSilence = panelConfig.ser3_Silence;
+                            theDevices[nDev].nTimeOut = panelConfig.ser3_TimeOut;
+                            theDevices[nDev].nBaudRate = panelConfig.ser3_BaudRate;
+                            theDevices[nDev].nDataBits = panelConfig.ser3_DataBits;
+                            theDevices[nDev].nStopBits = panelConfig.ser3_StopBits;
                         }
                         break;
                     case TCP_SRV:
@@ -6044,9 +6050,9 @@ bool ctedit::checkServersDevicesAndNodes()
                         szDeviceName = QString::fromAscii("TCPS");
                         theDevices[nDev].szIpAddress = szIpAddr;
                         theDevices[nDev].nServer = nSer; // searched before
-                        theDevices[nDev].nMaxBlockSize = TargetConfig.tcp_BlockSize;
-                        theDevices[nDev].nSilence = TargetConfig.tcp_Silence;
-                        theDevices[nDev].nTimeOut = TargetConfig.tcp_TimeOut;
+                        theDevices[nDev].nMaxBlockSize = panelConfig.tcp_BlockSize;
+                        theDevices[nDev].nSilence = panelConfig.tcp_Silence;
+                        theDevices[nDev].nTimeOut = panelConfig.tcp_TimeOut;
                         break;
                     default:
                         ;
@@ -6389,11 +6395,11 @@ QTreeWidgetItem *ctedit::addPriority2Tree(QTreeWidgetItem *tParent, int nPriorit
     szName = priority2String(nPriority);
     // Read Period per Priorita
     if (nPriority == nPriorityHigh)
-        nPeriod = TargetConfig.readPeriod1;
+        nPeriod = panelConfig.readPeriod1;
     else if (nPriority == nPriorityMedium)
-        nPeriod = TargetConfig.readPeriod2;
+        nPeriod = panelConfig.readPeriod2;
     else if (nPriority == nPriorityLow)
-        nPeriod = TargetConfig.readPeriod3;
+        nPeriod = panelConfig.readPeriod3;
     else
         nPeriod = 0;
     szInfo = QString::fromAscii("Read Period: %1 ms") .arg(nPeriod, 10, 10);
@@ -6601,8 +6607,8 @@ addVariable:
     tRoot->setExpanded(true);
     szName = tr("Total Variables: %1\t") .arg(nUsedVariables);
     szName.append(tr("Used Devices: %1\t") .arg(theDevicesNumber));
-    szName.append(tr("Retries: %1\t") .arg(TargetConfig.retries));
-    szName.append(tr("Black List: %1\t") .arg(TargetConfig.blacklist));
+    szName.append(tr("Retries: %1\t") .arg(panelConfig.retries));
+    szName.append(tr("Black List: %1\t") .arg(panelConfig.blacklist));
     tRoot->setText(colTreeInfo, szName);
     tRoot->setToolTip(colTreeName, ui->lblModel->toolTip());
     // Seleziona l'item corrispondente alla riga corrente
@@ -6767,8 +6773,8 @@ void    ctedit::fillTimingsTree(int nCurRow)
     tRoot->setExpanded(true);
     szName = tr("Total Variables: %1\t") .arg(nUsedVariables);
     szName.append(tr("Used Devices: %1\t") .arg(theDevicesNumber));
-    szName.append(tr("Retries: %1\t") .arg(TargetConfig.retries));
-    szName.append(tr("Black List: %1\t") .arg(TargetConfig.blacklist));
+    szName.append(tr("Retries: %1\t") .arg(panelConfig.retries));
+    szName.append(tr("Black List: %1\t") .arg(panelConfig.blacklist));
     tRoot->setText(colTreeInfo, szName);
     tRoot->setToolTip(colTreeName, ui->lblModel->toolTip());
     // Salto alla riga corrispondente alla variabile selezionata in griglia CT
@@ -6796,6 +6802,7 @@ void    ctedit::showTabMPNC()
     lstMPNC.append(449);
     lstMPNC.append(699);
     m_nMPNC = 0;
+    configMPNC->localCTRecords = lstCTRecords;
     configMPNC->showTestaNodi(m_nMPNC, lstMPNC);
 }
 void    ctedit::showTabMPNE()

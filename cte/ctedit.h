@@ -195,7 +195,6 @@ private:
     CrossTableRecord        CrossTable[1 + DimCrossTable];	 // campi sono riempiti a partire dall'indice 1
 
     // System Configuration
-    TP_Config               TargetConfig;           // Configurazione corrente del Target letta da Form mectSettings
     QList<TP_Config>        lstTargets;             // Lista di tutti i Target definiti
     // Controllo e Gestione  Errori
     QList<int>              lstAllUpdates;          // Lista contenente tutti i tipi di Update (per filtro su Nomi variabili)

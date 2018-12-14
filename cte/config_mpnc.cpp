@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <QTableWidgetItem>
 #include <QHeaderView>
+#include <QFrame>
+#include <QIntValidator>
 
 const int nItemsPerGroup = 4;
 const int nTotalGroups = 5;
@@ -58,6 +60,10 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     mapModuleClicked = new QSignalMapper(this);         // Signal Mapper per Module Clicked
     lstModuleName.clear();
     lstSfondi.clear();
+    m_nPort = -1;
+    m_nNodeId = -1;
+    m_fUpdated = false;
+//    QFrame*         boxSeparator = 0;
     // Labels per Posizioni (A B C D)
     for (i = 0; i < nItemsPerGroup; i++)  {
         QChar chBase = QChar::fromAscii(65 + i);
@@ -97,6 +103,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szTemp.append(QString::fromAscii("QLabel { \n"));
     szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
     szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
+    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
     szTemp.append(QString::fromAscii("}"));
     lblBox = new QLabel(this);
     lblBox->setText(QString::fromAscii("Head:"));
@@ -105,6 +112,35 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     // Combo Selettore mpnc
     cboSelector = new QComboBox(this);
     mainGrid->addWidget(cboSelector, nRowSelector, nBaseAnIn, 1, nItemsPerGroup);
+    // Label per Protocollo
+    lblBox = new QLabel(this);
+    lblBox->setText(QString::fromAscii("Protocol:"));
+    lblBox->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowSelector, nBaseAnOut, 1, 2);
+    lblProtocol = new QLabel(this);
+    lblProtocol->setText(szEMPTY);
+    lblProtocol->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblProtocol, nRowSelector, nBaseAnOut + 2, 1, 2);
+    // Combo per Porta
+    lblBox = new QLabel(this);
+    lblBox->setText(QString::fromAscii("Port:"));
+    lblBox->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowSelector, nBaseDigIn, 1, 2);
+    cboPort = new QComboBox(this);
+    for (i = 0; i <= nMaxSerialPorts; i++)  {
+        cboPort->addItem(QString::number(i));
+    }
+    mainGrid->addWidget(cboPort, nRowSelector, nBaseDigIn + 2, 1, 2);
+    // TextBox per Node ID
+    lblBox = new QLabel(this);
+    lblBox->setText(QString::fromAscii("Node Id:"));
+    lblBox->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowSelector, nBaseDigOut, 1, 2);
+    txtNode = new QLineEdit(this);
+    txtNode->setStyleSheet(szTemp);
+    txtNode->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
+    txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
+    mainGrid->addWidget(txtNode, nRowSelector, nBaseDigOut + 2, 1, 2);
     // Label MPNC006
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
@@ -262,10 +298,30 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     connect(mapRemoveClicked, SIGNAL(mapped(int)), this, SLOT(groupItemRemove(int)));
     // Combo per cambio Modulo MPNC
     connect(cboSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(changeRootElement(int)));
+    // Combo per modulo Porta
+    connect(cboPort, SIGNAL(currentIndexChanged(int)), this, SLOT(on_changePort(int)));
+    // Text Box Editing Node Id
+    connect(txtNode, SIGNAL(editingFinished()), this, SLOT(on_changeNode()));
+    // Combo Cambio porta Modulo
+//    // Spacers tra Gruppo (solo 4 Items)
+//    szTemp.clear();
+//    szTemp.append(QString::fromAscii("  border: 1px solid red;\n"));
+//    szTemp.append(QString::fromAscii("  background-color: red;\n"));
+//    for (i = 0; i < nTotalGroups - 1; i++)  {
+//        boxSeparator = new QFrame(this);
+//        boxSeparator->setFrameShape(QFrame::VLine);
+//        boxSeparator->setStyleSheet(szTemp);
+//        mainGrid->addWidget(boxSeparator, nRowDesc, nBaseAnIn + (i * nItemsPerGroup), 2, 1);
+//    }
     // Init variabili di gestione
     m_nTesta = -1;
     lstCapofila.clear();
     m_nBaseRow = -1;
+}
+bool    Config_MPNC::isUpdated()
+// Ritorna vero se il contenuto dei nodi è stato modificato
+{
+    return m_fUpdated;
 }
 
 void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
@@ -274,12 +330,16 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
     QString     szTemp;
     int         nBaseRow = -1;
 
+    // Abilitazione delle entry nella Combo delle Porte
+    int nPorts = enableSerialPortCombo(cboPort);
     // Blocca la combo Selettore delle Teste
     // Ricarica i valori perchè potrebbero essere cambiati da giro precedente
     disableAndBlockSignals(cboSelector);
     cboSelector->clear();
     lstCapofila.clear();
-    qDebug() << QString::fromAscii("showTestaNodi(): NBase: %1 - CT Rows: %2") .arg(nBaseRow) .arg(lstCTUserRows.count());
+    m_fUpdated = false;
+    txtNode->setModified(false);
+    qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2") .arg(nTesta) .arg(lstCapofilaTeste.count());
     if (nTesta < 0 || nTesta >= lstCapofilaTeste.count())  {
         for (nCur = 0; nCur < nTotalItems; nCur++)  {
             lstModuleIsPresent[nCur] = false;
@@ -290,7 +350,7 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
     else  {
         lstCapofila = lstCapofilaTeste;
         for (nCur = 0; nCur < lstCapofila.count(); nCur++)  {
-            szTemp = QString::fromAscii("%1 - Row: %2") .arg(nCur + 1) .arg(lstCapofila[nCur]);
+            szTemp = QString::fromAscii("%1 - Row: %2") .arg(nCur + 1) .arg(lstCapofila[nCur] + 1);
             cboSelector->addItem(szTemp);
             if (nCur == nTesta)  {
                 cboSelector->setCurrentIndex(nCur);
@@ -300,12 +360,15 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
         nBaseRow = lstCapofila[nTesta];
     }
     // Aggiorna Le Icone dei Bottoni
-    qDebug() << QString::fromAscii("showTestaNodi(): NBase before getUsedModules()  %1") .arg(nBaseRow);
     getUsedModules(nBaseRow);
     customizeButtons();
     enableAndUnlockSignals(cboSelector);
     m_nTesta = nTesta;
     m_nBaseRow = nBaseRow;
+    if (m_nTesta >= 0 && m_nTesta < cboSelector->count())  {
+        changeRootElement(m_nTesta);
+    }
+    cboPort->setEnabled(nPorts > 1);
 }
 void    Config_MPNC::customizeButtons()
 // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
@@ -422,6 +485,28 @@ void    Config_MPNC::changeRootElement(int nItem)
         qDebug() << QString::fromAscii("changeRootElement(): Switching to Item: %1") .arg(nItem);
         m_nBaseRow = lstCapofila[nItem];
         m_nTesta = nItem;
+        // Determina il Protocollo, la Porta e il Nodo dell'elemento
+        if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count())  {
+            // Visualizzazione Protocollo
+            int nProtocol = localCTRecords[m_nBaseRow].Protocol;
+            if (nProtocol >= 0 && nProtocol < lstProtocol.count())
+                lblProtocol->setText(lstProtocol[nProtocol]);
+            else
+                lblProtocol->setText(szEMPTY);
+            // Scelta Porta Seriale
+            int nPort = localCTRecords[m_nBaseRow].Port;
+            m_nPort = -1;
+            if (nPort >= 0 && nPort <= nMaxSerialPorts)  {
+                m_nPort = nPort;
+            }
+            cboPort->setCurrentIndex(m_nPort);
+            // Node Id
+            int nNode = localCTRecords[m_nBaseRow].NodeId;
+            txtNode->setText(QString::number(nNode));
+            txtNode->setModified(false);
+            m_nNodeId = nNode;
+
+        }
     }
     else  {
         qDebug() << QString::fromAscii("changeRootElement(): Attempt to switch to wrong element: %1") .arg(nItem);
@@ -542,23 +627,23 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
     // Ciclo di Lettura
     for (nRow = m_nBaseRow; nRow < m_nBaseRow + nMPNC_Rows; nRow++)  {
         // Decodifica dei valori di CT e conversione in stringa
-        fRes = recCT2List(lstCTRecords, lstLineValues, nRow);
+        fRes = recCT2MPNxList(localCTRecords, lstLineValues, nRow);
         // Aggiunta alla Table
         if (fRes)  {
-            qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colName]);
+            qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colMPNxName]);
             lstTableRows.append(lstLineValues);
         }
     }
     // Dimensionamento Tabella
     tblCT->setRowCount(lstTableRows.count());
-    tblCT->setColumnCount(colTotals);
+    tblCT->setColumnCount(colMPNxTotals);
     // Caricamento in Tabella
     for (nRow = 0; nRow < lstTableRows.count(); nRow++)  {
         list2GridRow(tblCT, lstTableRows[nRow], nRow);
     }
     // Header Tabella
-    for (nCol = 0; nCol < colTotals; nCol++)  {
-        QString  szColName = lstHeadCols[nCol];
+    for (nCol = 0; nCol < lstMPNxCols.count(); nCol++)  {
+        QString  szColName = lstMPNxCols[nCol];
         tItem = new QTableWidgetItem(szColName);
         tblCT->setHorizontalHeaderItem(nCol, tItem);
     }
@@ -574,4 +659,53 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
     }
     qDebug() << QString::fromAscii("Displayed Rows: %1") .arg(nRow);
     this->setCursor(Qt::ArrowCursor);
+}
+void    Config_MPNC::on_changePort(int nPort)
+// Evento cambio Porta RTU
+{
+    qDebug() << QString::fromAscii("changePort(): New Port %1") .arg(nPort);
+    if (nPort != m_nPort)  {
+        m_szMsg = QString::fromAscii("Confirm Serial Port change from [%1] to [%2] ?") .arg(m_nPort) .arg(nPort);
+        if (queryUser(this, szMectTitle, m_szMsg))  {
+            // Ciclo per riassegnare la porta Seriale
+            int nRow = 0;
+            for (nRow = m_nBaseRow; nRow < m_nBaseRow + nTotalRows; nRow++)  {
+                if (nRow >= 0 && nRow < localCTRecords.count())  {
+                    localCTRecords[nRow].Port = nPort;
+                }
+            }
+            m_nPort = nPort;
+            m_fUpdated = true;
+        }
+        // Aggiorna numero di porta
+        disableAndBlockSignals(cboPort);
+        cboPort->setCurrentIndex(m_nPort);
+        enableAndUnlockSignals(cboPort);
+    }
+}
+void    Config_MPNC::on_changeNode()
+// Evento Cambio Nodo
+{
+    if (txtNode->isModified())  {
+        bool    fOk = false;
+        int nNode = txtNode->text().toInt(&fOk);
+        if (fOk && nNode != m_nNodeId)  {
+            m_szMsg = QString::fromAscii("Confirm Node ID change from [%1] to [%2] ?") .arg(m_nNodeId) .arg(nNode);
+            if (queryUser(this, szMectTitle, m_szMsg))  {
+                // Ciclo per riassegnare la porta Seriale
+                int nRow = 0;
+                for (nRow = m_nBaseRow; nRow < m_nBaseRow + nTotalRows; nRow++)  {
+                    if (nRow >= 0 && nRow < localCTRecords.count())  {
+                        localCTRecords[nRow].NodeId = nNode;
+                    }
+                }
+                m_nNodeId = nNode;
+                m_fUpdated = true;
+            }
+        }
+        // Aggiorna Numero di Nodo
+        disableAndBlockSignals(txtNode);
+        txtNode->setText(QString::number(m_nNodeId));
+        enableAndUnlockSignals(txtNode);
+    }
 }

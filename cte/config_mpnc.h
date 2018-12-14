@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QComboBox>
+#include <QLineEdit>
 #include <QGridLayout>
 #include <QTableWidget>
 #include <QSignalMapper>
@@ -23,12 +24,13 @@ class Config_MPNC : public QWidget
     Q_OBJECT
 public:
     explicit Config_MPNC(QWidget *parent = 0);
-
+    QList<CrossTableRecord> localCTRecords;
 
 signals:
 
 public slots:
     void    showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste);
+    bool    isUpdated();                                                // Ritorna vero se il contenuto dei nodi è stato modificato
 
 private slots:
     void    customizeButtons();                 // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
@@ -37,6 +39,8 @@ private slots:
     void    getUsedModules(int nRow);           // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
     void    changeRootElement(int nItem);       // Cambio di Item della Combo dei MPNC definiti
     void    filterVariables(int nGroup, int nItem); // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
+    void    on_changePort(int nPort);              // Evento cambio Porta RTU
+    void    on_changeNode();                    // Evento Cambio Nodo
 
 private:
     //---------------------------------------------------------------------
@@ -54,6 +58,9 @@ private:
     QGridLayout             *mainGrid;          // Main Grid LayOut
     QTableWidget            *tblCT;             // Table Widget per CT
     QComboBox               *cboSelector;       // Combo Box selettore MPNC
+    QLabel                  *lblProtocol;       // Label per Protocollo
+    QComboBox               *cboPort;           // Combo per selettore Porta
+    QLineEdit               *txtNode;           // Text Box per Node Id
     QList<QPushButton *>    lstRemove;          // Lista per i bottoni Remove Modules
     QList<QPushButton *>    lstPulsanti;        // Lista per i bottoni Moduli
     QList<bool>             lstModuleIsPresent; // Lista abilitazione moduli
@@ -66,9 +73,12 @@ private:
     QSignalMapper           *mapModuleClicked;  // Signal Mapper per Module Clicked
     QString                 m_szMsg;            // Messaggio di servizio
     // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema
+    bool                    m_fUpdated;         // Vero se le info della finestra sono cambiate
     int                     m_nTesta;           // Testa selezionata, -1 se non presente
     QList<int >             lstCapofila;        // # Riga della elemento capofila della Testa nEsima
     int                     m_nBaseRow;         // Base Row della riga corrente
+    int                     m_nPort;            // Numero porta assegnato al Device
+    int                     m_nNodeId;          // Numero porta assegnato al Device
     QList<CrossTableRecord> lstCTUserRows;      // Lista Record CT (Parte Utente)
 
 };
