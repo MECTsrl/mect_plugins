@@ -47,8 +47,10 @@ private:
     // Funzioni locali al modulo
     //---------------------------------------------------------------------
     int     getLastModuleUsed(int nGroup);      // Ricerca dell'ultimo modulo usato nel gruppo
-    int     rel2AbsModulePos(int nGroup, int nModule);  // Calcola la posizione assoluta del Modulo
-    void    abs2RelModulePos(int nAbs, int &nGroup, int &nModule);  // Calcola la posizione assoluta del Modulo
+    int     relative2AbsModulePos(int nGroup, int nModule);                 // Calcola la posizione assoluta del Modulo
+    void    abs2RelativeModulePos(int nAbs, int &nGroup, int &nModule);     // Calcola la posizione assoluta del Modulo
+    void    setGroupVars(int nGroup, int nModule, int16_t nPriority);         // Imposta la Priority per le variabili di Gruppo e Modulo
+
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
@@ -72,13 +74,15 @@ private:
     QSignalMapper           *mapRemoveClicked;  // Signal Mapper per Remove Module Clicked
     QSignalMapper           *mapModuleClicked;  // Signal Mapper per Module Clicked
     QString                 m_szMsg;            // Messaggio di servizio
-    // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema
+    // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema    
+    int                     m_nTotalRows;       // Elementi MPNC
     bool                    m_fUpdated;         // Vero se le info della finestra sono cambiate
     int                     m_nTesta;           // Testa selezionata, -1 se non presente
     QList<int >             lstCapofila;        // # Riga della elemento capofila della Testa nEsima
     int                     m_nBaseRow;         // Base Row della riga corrente
     int                     m_nPort;            // Numero porta assegnato al Device
     int                     m_nNodeId;          // Numero porta assegnato al Device
+    int16_t                 m_nRootPriority;    // Priorità complessiva del Nodo
     QList<CrossTableRecord> lstCTUserRows;      // Lista Record CT (Parte Utente)
 
 };

@@ -397,6 +397,8 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
     for (addr = 1; addr <= DimCrossTable; ++addr) {
         CrossTable[addr].Enable = 0;
         CrossTable[addr].UsedEntry = 0;
+        CrossTable[addr].Group = 0;
+        CrossTable[addr].Module = 0;
         CrossTable[addr].Update = FALSE;
         CrossTable[addr].Tag[0] = 0;
         CrossTable[addr].VarType = UNKNOWN;
@@ -449,6 +451,10 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
     for (addr = 1; addr <= DimCrossTable; ++ addr) {
         char row[LINESIZE], *p, *r;
 
+        // Logical grouping of variables, forced to 0
+        CrossTable[addr].Group = 0;
+        // Physical interface module, forced to 0
+        CrossTable[addr].Module = 0;
         // Situazione di file troncato e nessun carattere letto
         if (fgets(row, LINESIZE, xtable) == NULL) {
             CrossTable[addr].Error = 1;
@@ -1098,6 +1104,9 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
         }
         else
         {
+            // Group Value Ignored
+            // CrossTable[addr].Group;
+
             // Priority Column
             sprintf(token, "%1d;", CrossTable[addr].Enable);
             strcat(row, token);

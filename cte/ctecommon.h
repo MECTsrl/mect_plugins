@@ -79,6 +79,16 @@ const QString szFALSE = QString::fromAscii("0");
 const QString szMectTitle = QString::fromAscii("Mect Editor");
 const QString szPathIMG = QString::fromAscii(":/cteicons/img/");
 
+// Constanti per gestione XML di transito tra variabili e lettura Modello MPNx
+const QString szXMLCTENAME = QString::fromAscii("Mect_CTE");
+const QString szXMLCTEVERSION = QString::fromAscii("Version");
+const QString szXMLMODELTAG = QString::fromAscii("Model");
+const QString szXMLCTNUMROWS = QString::fromAscii("CT_Rows");
+const QString szXMLCTROW = QString::fromAscii("Crosstable_Row");
+const QString szXMLCTDESTROW = QString::fromAscii("DestRow");
+const QString szXMLCTSOURCEROW = QString::fromAscii("SourceRow");
+const QString szXMLExt = QString::fromAscii(".xml");
+
 // External Models
 const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
 const QString szMPNC006 = QString::fromAscii("MPNC006");
@@ -88,6 +98,8 @@ enum colonne_e
 {
     colPriority = 0,
     colUpdate,
+    colGroup,
+    colModule,
     colName,
     colType,
     colDecimal,
@@ -111,6 +123,8 @@ enum colonne_MPNx  {
     colMPNxRowNum = 0,
     colMPNxPriority,
     colMPNxUpdate,
+    colMPNxGroup,
+    colMPNxModule,
     colMPNxName,
     colMPNxType,
     colMPNxDecimal,
@@ -146,6 +160,7 @@ enum regions_e
 
 struct  extendedCT : CrossTableRecord {
     int     nGroup;
+    int     nModule;
 };
 
 
