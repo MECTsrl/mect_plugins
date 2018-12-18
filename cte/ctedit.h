@@ -156,7 +156,8 @@ private:
     bool    isSilenceOk(int nSilence_ms, int nBaudRate, double dblCharTime_ms);                     // Verifica che il tempo di silence specificato sia adeguato al BaudRate corrente
     int     searchBlock(int nBlock);                // Ricerca in theBlocks del blocco nBlock
     // Import dati in XML
-    bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows);
+    bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows); // Funzione per leggere da Buffer Clipboard o da una QString (caricata da file XML) delle righe di CT
+    bool    readModelVars(const QString szModelName, QList<QStringList > &lstModelVars);            // Lettura da XML delle variabili CT precaricate per modelli
     bool    addModelVars(const QString szModelName, int nRow);
     void    showTabMPNC();
     void    showTabMPNE();
