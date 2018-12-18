@@ -73,7 +73,7 @@ public:
 //        } else {
 //            return tDateTime.toString("yyyy/MM/dd");
 //        }
-        return tDateTime.toString("yyyy/MM/dd\n hh:mm:ss");
+        return tDateTime.toString("yyyy-MM-dd\n hh:mm:ss");
     }
     void setBaseDateTime(const QDateTime &base)
     {

@@ -32,11 +32,8 @@
 #include <time.h>
 
 #define OVERLOAD_SECONDS(Visible) (Visible * 12 / 10) // 20%
-#define DELTA_TIME_FACTOR  5 // 20%
 
-#define DELTA_VALUE_FACTOR 2
-
-#define DATE_TIME_FMT "yyyy/MM/dd HH:mm:ss"
+#define DATE_TIME_FMT "yyyy-MM-dd HH:mm:ss"
 
 #define DEFAULT_TREND QDate::currentDate().toString("yyyy_MM_dd.log").toAscii().data()
 
@@ -82,6 +79,66 @@ static int unzoom_actualVisibleWindowSec;
 
 static DateTimeScaleDraw * theDateTimeScaleDraw;
 static int max_sample_nb = MAX_SAMPLE_NB;
+
+static int datetime_ticks(char layout, int width, int height)
+{
+    int ticks;
+
+    if (layout == LANDSCAPE) {
+        // width -> horiz_ticks -> datetime side by side
+        if (width <= 320) { // 240 272 320
+            ticks = 2;
+        } else if (width <= 480) {
+            ticks = 5;
+        } else if (width <= 800) {
+            ticks = 10;
+        } else {
+            ticks = 10;
+        }
+    } else {
+        // height -> horiz_ticks -> datetime stacked
+        if (height <= 320) { // 240 272 320
+            ticks = 6;
+        } else if (height <= 480) {
+            ticks = 12;
+        } else if (height <= 800) {
+            ticks = 16;
+        } else {
+            ticks = 16;
+        }
+    }
+    return ticks;
+}
+
+static int values_ticks(char layout, int width, int height)
+{
+    int ticks;
+
+    if (layout == LANDSCAPE) {
+        // height -> vert_ticks -> values stacked
+        if (height <= 320) { // 240 272 320
+            ticks = 8;
+        } else if (height <= 480) {
+            ticks = 16;
+        } else if (height <= 800) {
+            ticks = 16;
+        } else {
+            ticks = 16;
+        }
+    } else {
+        // width -> vert_ticks -> values side by side
+        if (width <= 320) { // 240 272 320
+            ticks = 3;
+        } else if (width <= 480) {
+            ticks = 7;
+        } else if (width <= 800) {
+            ticks = 12;
+        } else {
+            ticks = 12;
+        }
+    }
+    return ticks;
+}
 
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
@@ -137,7 +194,7 @@ trend::trend(QWidget *parent) :
     d_picker->setStateMachine(new QwtPickerDragRectMachine());
     d_picker->setRubberBand(QwtPicker::CrossRubberBand);
     d_picker->setRubberBandPen(QColor(0,0,0));
-    d_picker->setTrackerPen(QColor(255,255,255));
+    d_picker->setTrackerPen(QColor(255,255,255,0)); // transparent
     d_picker->setTrackerMode(QwtPicker::ActiveOnly);
     d_picker->setEnabled(true);
     
@@ -409,7 +466,7 @@ void trend::updateData()
         if (incrementTimeDirection < 0)
             setOnline(false);
 
-        int increment = actualVisibleWindowSec / DELTA_TIME_FACTOR;
+        int increment = actualVisibleWindowSec / datetime_ticks(_layout_, this->width(), this->height());
         if (increment < LogPeriodSecF)
             increment = LogPeriodSecF;
 
@@ -427,7 +484,7 @@ void trend::updateData()
     {
         for (int i = 0; i < PEN_NB; i++)
         {
-            float delta = (pens[i].yMaxActual - pens[i].yMinActual) / DELTA_VALUE_FACTOR;
+            float delta = (pens[i].yMaxActual - pens[i].yMinActual) / values_ticks(_layout_, this->width(), this->height());
             pens[i].yMinActual += (delta * incrementValueDirection);
             pens[i].yMaxActual += (delta * incrementValueDirection);
         }
@@ -867,6 +924,9 @@ bool trend::Load(QDateTime begin, QDateTime end, int skip)
             break;
         }
 
+        // QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents, 500); // max 500 ms
+        QCoreApplication::processEvents();
+
         if ( logFileBegin <= begin || logFileBegin <= end )
         {
             if (lastLogFileName == logFileList.at(i))
@@ -1043,6 +1103,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
             ui->labelDate->setText(p); // HH:MM:SS
             ui->labelDate->setStyleSheet("color: rgb(0,0,255);");
             ui->labelDate->repaint();
+            QCoreApplication::processEvents();
         }
 
         // skip past and future samples
@@ -1175,51 +1236,8 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
               sfinal,
               TzeroLoaded.toString().toAscii().data()
               );
-    double horiz_ticks;
-    double vert_ticks;
-    if (_layout_ == LANDSCAPE) {
-        // width -> horiz_ticks -> datetime side by side
-        if (this->width() <= 320) { // 240 272 320
-            horiz_ticks = 2;;
-        } else if (this->width() <= 480) {
-            horiz_ticks = 5;
-        } else if (this->width() <= 800) {
-            horiz_ticks = 10;
-        } else {
-            horiz_ticks = 10;
-        }
-        // height -> vert_ticks -> values stacked
-        if (this->height() <= 320) { // 240 272 320
-            vert_ticks = 8;
-        } else if (this->height() <= 480) {
-            vert_ticks = 16;
-        } else if (this->height() <= 800) {
-            vert_ticks = 16;
-        } else {
-            vert_ticks = 16;
-        }
-    } else {
-        // width -> vert_ticks -> values side by side
-        if (this->width() <= 320) { // 240 272 320
-            vert_ticks = 3;
-        } else if (this->width() <= 480) {
-            vert_ticks = 7;
-        } else if (this->width() <= 800) {
-            vert_ticks = 12;
-        } else {
-            vert_ticks = 12;
-        }
-        // height -> horiz_ticks -> datetime stacked
-        if (this->height() <= 320) { // 240 272 320
-            horiz_ticks = 6;
-        } else if (this->height() <= 480) {
-            horiz_ticks = 12;
-        } else if (this->height() <= 800) {
-            horiz_ticks = 16;
-        } else {
-            horiz_ticks = 16;
-        }
-    }
+    double horiz_ticks = (double)datetime_ticks(_layout_, this->width(), this->height());
+    double vert_ticks = (double)values_ticks(_layout_, this->width(), this->height());
     double deltax = (sfinal - sinint) / horiz_ticks;
     for (int i = 0; i < (horiz_ticks + 1); i++)
     {
@@ -1557,15 +1575,15 @@ void trend::moved(const QPoint &pos)
     if (_layout_ == PORTRAIT)
     {
         y = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.x()), 'f', decimal);
-        datetime = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.y()))).toString("yyyy/MM/dd HH:mm:ss");
+        datetime = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.y()))).toString("yyyy-MM-dd HH:mm:ss");
     }
     else
     {
-        datetime = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.x()))).toString("yyyy/MM/dd HH:mm:ss");
+        datetime = TzeroLoaded.addSecs((int)(d_qwtplot->invTransform(QwtAxisId( timeAxisId, 0 ), pos.x()))).toString("yyyy-MM-dd HH:mm:ss");
         y = QString::number(d_qwtplot->invTransform(QwtAxisId( valueAxisId, actualPen ), pos.y()), 'f', decimal);
     }
     
-    ui->labelvalue->setText(datetime + "  " + y);
+    ui->labelvalue->setText(y + " @ " + datetime); // for watching the value on narrow displays
     ui->labelvalue->setStyleSheet(QString("border: 2px solid #%1;" "font: 14pt \"DejaVu Sans Mono\";").arg(pens[actualPen].color));
     ui->pushButtonPen->setVisible(false);
     ui->labelvalue->setVisible(true);
