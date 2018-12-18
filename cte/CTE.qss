@@ -18,7 +18,7 @@ QPushButton:enabled {
   border: 2px solid navy;
 }
 QPushButton:selected, QPushButton:hover { 
-  border: 2px solid teal;
+  border: 2px solid DarkOrange;
 }
 QPushButton:pressed { 
   border: 2px solid red;

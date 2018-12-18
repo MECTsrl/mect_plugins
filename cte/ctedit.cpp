@@ -2810,6 +2810,7 @@ void ctedit::tabSelected(int nTab)
             jumpToGridRow(nOldRow + 1, true);
             jumpToGridRow(nOldRow, true);
             m_isCtModified = true;
+            enableInterface();
         }
     }
     if (nPrevTab == TAB_MPNE)  {
@@ -4498,8 +4499,8 @@ void ctedit::on_txtName_editingFinished()
         if (! szVarName.isEmpty() && ! lstCTRecords[m_nGridRow].UsedEntry && m_nGridRow < MAX_NONRETENTIVE -1)  {
             // Solo se la riga è la prima di un blocco oppure ha un protocollo differente dalla precedente
             if ((m_nGridRow == 0) || (m_nGridRow > 0 && (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 || lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex())))  {
-                // Forza il livello di priorià a Medio
-                ui->cboPriority->setCurrentIndex(nPriorityMedium);
+                // Forza il livello di priorià a Alto
+                ui->cboPriority->setCurrentIndex(nPriorityHigh);
             }
             // Se il nome della variabile è cambiato rispetto al valore precedente
             if (szVarName != QString::fromAscii(lstCTRecords[m_nGridRow].Tag))  {

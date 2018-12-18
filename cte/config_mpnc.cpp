@@ -31,12 +31,14 @@ const int nRowGrid = 4;
 // Sfondi per Moduli
 const QString szFileAdd = szPathIMG + QString::fromAscii("Add_32.png");
 const QString szFileRemove = szPathIMG + QString::fromAscii("Remove_32.png");
+const QString szFileRename = szPathIMG + QString::fromAscii("Rename2.png");
 const QString szFileMPNC006 = szPathIMG + QString::fromAscii("MPNC006_R.png");
 const QString szFileMPNC030 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC035 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC020_01 = szPathIMG + QString::fromAscii("MPNC020_R.png");
 const QString szFileMPNC020_02 = szPathIMG + QString::fromAscii("MPNC020_R.png");
-
+// Prefisso per Nomi Variabili
+const QString szVarNamePrefix = QString::fromAscii("XX_");
 
 Config_MPNC::Config_MPNC(QWidget *parent) :
     QWidget(parent)
@@ -59,6 +61,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     m_nNodeId = -1;
     m_fUpdated = false;
     m_nRootPriority = nPriorityNone;
+    m_nAbsPos = 0;
     m_nTotalRows = lstMPNC006_Vars.count();             // Numero di Variabili da gestire
 //    QFrame*         boxSeparator = 0;
     // Labels per Posizioni (A B C D)
@@ -123,7 +126,9 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     lblBox->setText(QString::fromAscii("Port:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseDigIn, 1, 2);
+    QString szPortToolTip = QString::fromAscii("Change Serial Port");
     cboPort = new QComboBox(this);
+    cboPort->setToolTip(szPortToolTip);
     for (i = 0; i <= nMaxSerialPorts; i++)  {
         cboPort->addItem(QString::number(i));
     }
@@ -133,7 +138,9 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     lblBox->setText(QString::fromAscii("Node Id:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseDigOut, 1, 2);
+    QString szNodeToolTip = QString::fromAscii("Change Node ID");
     txtNode = new QLineEdit(this);
+    txtNode->setToolTip(szNodeToolTip);
     txtNode->setStyleSheet(szTemp);
     txtNode->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
@@ -200,7 +207,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szRemoveStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
     szRemoveStyle.append(QString::fromAscii("}\n"));
     szRemoveStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szRemoveStyle.append(QString::fromAscii("    border: 1px solid yellow;\n"));
+    szRemoveStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
     szRemoveStyle.append(QString::fromAscii("}\n"));
     szRemoveStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
     szRemoveStyle.append(QString::fromAscii("    border: 1px solid red;\n"));
@@ -215,12 +222,14 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szRemoveStyle.append(QString::fromAscii("  background-color: AliceBlue;\n"));
     szRemoveStyle.append(QString::fromAscii("  background-position: center  center;\n"));
     szRemoveStyle.append(QString::fromAscii("}"));
+    QString szRemoveToolTip = QString::fromAscii("Remove Module");
     // Bottoni per rimozione dei Moduli
     for (i = 0; i < nTotalGroups; i++)  {
         QPushButton *remove = new QPushButton(this);
         remove->setEnabled(false);
         remove->setFlat(true);
         remove->setVisible(true);
+        remove->setToolTip(szRemoveToolTip);
         remove->setStyleSheet(szRemoveStyle);
         mapRemoveClicked->setMapping(remove, int(i));
         connect(remove, SIGNAL(clicked()), mapRemoveClicked, SLOT(map()));
@@ -239,7 +248,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szModuleStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
     szModuleStyle.append(QString::fromAscii("}\n"));
     szModuleStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szModuleStyle.append(QString::fromAscii("    border: 1px solid yellow;\n"));
+    szModuleStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
     szModuleStyle.append(QString::fromAscii("}\n"));
     szModuleStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
     szModuleStyle.append(QString::fromAscii("    border: 1px solid red;\n"));
@@ -253,27 +262,72 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szModuleStyle.append(QString::fromAscii("  max-width: 40px;\n"));
     szModuleStyle.append(QString::fromAscii("  background-position: center  center;\n"));
     szModuleStyle.append(QString::fromAscii("}"));
+    QString szModuleToolTip = QString::fromAscii("Add/View Module");
     for (i = 0; i < nTotalItems; i++)  {
         QPushButton *module = new QPushButton(this);
         module->setEnabled(false);
         module->setFlat(true);
+        module->setToolTip(szModuleToolTip);
         module->setStyleSheet(szModuleStyle);
         mapModuleClicked->setMapping(module, int(i));
         connect(module, SIGNAL(clicked()), mapModuleClicked, SLOT(map()));
         mainGrid->addWidget(module, nRowButtons, i);
         lstPulsanti.append(module);
     }
-    // Horizontal Spacer per allineare finestra
+    // Molla Horizontal Spacer per allineare finestra
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Fixed);
     hSpacer->setAlignment(Qt::AlignHCenter);
     mainGrid->addItem(hSpacer, nRowButtons, nTotalItems);
+    // Bottone per Rename rows
+    szTemp.clear();;
+    szTemp.append(QString::fromAscii("QPushButton:disabled { \n"));
+    szTemp.append(QString::fromAscii("  border: 0px ;\n"));
+    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
+    szTemp.append(QString::fromAscii("  background-image: url("");\n"));
+    szTemp.append(QString::fromAscii("}\n"));
+    szTemp.append(QString::fromAscii("QPushButton:enabled { \n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
+    szTemp.append(QString::fromAscii("}\n"));
+    szTemp.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid DarkOrange ;\n"));
+    szTemp.append(QString::fromAscii("}\n"));
+    szTemp.append(QString::fromAscii("QPushButton:pressed { \n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid red;\n"));
+    szTemp.append(QString::fromAscii("}\n"));
+    szTemp.append(QString::fromAscii("QPushButton { \n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid blue;\n"));
+    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
+    szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
+    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
+    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
+    szTemp.append(QString::fromAscii("  background-position: center  center;\n"));
+    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
+    szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileRename));
+    szTemp.append(QString::fromAscii("}"));
+    QString szRenameToolTip = QString::fromAscii("Rename Rows");
+    cmdRename = new QPushButton(this);
+    cmdRename->setEnabled(true);
+    cmdRename->setFlat(true);
+    cmdRename->setToolTip(szRenameToolTip);
+    cmdRename->setStyleSheet(szTemp);
+    mainGrid->addWidget(cmdRename, nRowFlags, nBaseHead);
     // Label Gruppo (A..D)
     szTemp.clear();
+    szTemp.append(QString::fromAscii("QLabel:disabled {\n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid darkGray ;\n"));
+    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
+    szTemp.append(QString::fromAscii("  color: darkGray;\n"));
+    szTemp.append(QString::fromAscii("}\n"));
     szTemp.append(QString::fromAscii("QLabel { \n"));
     szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
     szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 20px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 20px;\n"));
+    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
+    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid blue;\n"));
+    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
+    szTemp.append(QString::fromAscii("  background-color: Cornflowerblue;\n"));
+    szTemp.append(QString::fromAscii("  color: DarkOrange;\n"));
     szTemp.append(QString::fromAscii("  font: 14px;\n"));
     szTemp.append(QString::fromAscii("}"));
     for (i = 0; i < nTotalItems - 1; i++)  {
@@ -281,8 +335,10 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
         lblBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         lblBox->setText(lstPosFlags[i % nItemsPerGroup]);
         lblBox->setFrameStyle(QFrame::Box | QFrame::Sunken);
+        lblBox->setEnabled(false);
         lblBox->setStyleSheet(szTemp);
         mainGrid->addWidget(lblBox, nRowFlags, nBaseAnIn + i);
+        lstPosMarker.append(lblBox);
     }
     // Grid per Editing
     tblCT = new QTableWidget(this);
@@ -299,6 +355,9 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     connect(cboPort, SIGNAL(currentIndexChanged(int)), this, SLOT(on_changePort(int)));
     // Text Box Editing Node Id
     connect(txtNode, SIGNAL(editingFinished()), this, SLOT(on_changeNode()));
+    // Bottone Rename CT
+    connect(cmdRename, SIGNAL(clicked()), this, SLOT(on_RenameVars()));
+
     // Combo Cambio porta Modulo
 //    // Spacers tra Gruppo (solo 4 Items)
 //    szTemp.clear();
@@ -314,6 +373,16 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     m_nTesta = -1;
     lstCapofila.clear();
     m_nBaseRow = -1;
+    m_fCanRenameVars = false;
+    m_nMaxVarName = 0;
+    for (i = 0; i < lstMPNC006_Vars.count(); i++)  {
+        int nLen = lstMPNC006_Vars[i][colName].length();
+        if (nLen > m_nMaxVarName)  {
+            m_nMaxVarName = nLen;
+        }
+    }
+    qDebug() << QString::fromAscii("Config_MPNC(): Max Len Var: %1") .arg(m_nMaxVarName);
+
 }
 bool    Config_MPNC::isUpdated()
 // Ritorna vero se il contenuto dei nodi è stato modificato
@@ -357,11 +426,10 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
         nBaseRow = lstCapofila[nTesta];
     }
     // Aggiorna Le Icone dei Bottoni
-    getUsedModules(nBaseRow);
-    customizeButtons();
     enableAndUnlockSignals(cboSelector);
     m_nTesta = nTesta;
     m_nBaseRow = nBaseRow;
+    // Visualizza i dati denna testa n-Esima
     if (m_nTesta >= 0 && m_nTesta < cboSelector->count())  {
         changeRootElement(m_nTesta);
     }
@@ -444,33 +512,45 @@ void    Config_MPNC::customizeButtons()
         prevIsEnabled = lstModuleIsPresent[nCur];
     }
 }
-void    Config_MPNC::getUsedModules(int nRow)
+void    Config_MPNC::getUsedModules(int nBaseRow)
 // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
 {
-    int nCur = 0;
+    int     nCur = 0;
+    int     nGroup = 0;
+    int     nModule = 0;
+    int     nRow = 0;
+    bool    okGroup = false;
+    bool    okModule = false;
+    bool    fUsed = false;
 
-    qDebug() << QString::fromAscii("getUsedModules(): Main Head Row: %1") .arg(nRow);
-    // Riga fuori Range
-    if (nRow < 1 || nRow > (MIN_DIAG - m_nTotalRows))  {
+    qDebug() << QString::fromAscii("getUsedModules(): Main Head Row: %1") .arg(nBaseRow);
+    // Reset dell'Array dei Moduli
+    for (nCur = 0; nCur < nTotalItems; nCur ++)  {
+        lstModuleIsPresent[nCur] = false;
+    }
+    // Controlla che la Riga di Base Modulo MPNC non sia fuori Range
+    if (nBaseRow > 0 &&  nBaseRow < (localCTRecords.count() - m_nTotalRows))  {
+        // Interpretare la configurazione dei nodi
         for (nCur = 0; nCur < nTotalItems; nCur ++)  {
-            lstModuleIsPresent[nCur] = false;
+            // Conversione da Posizione a Gruppo e Modulo
+            abs2RelativeModulePos(nCur, nGroup, nModule);
+            // Ricerca della prima riga definita per Gruppo e modulo
+            for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+                int     nVarGroup = lstMPNC006_Vars[nRow][colGroup].toInt(&okGroup);
+                int     nVarModule = lstMPNC006_Vars[nRow][colModule].toInt(&okModule);
+                // La riga appartiene al modulo che stiamo cercando
+                if (okGroup && okModule && nGroup == nVarGroup && nModule == nVarModule)  {
+                    fUsed = localCTRecords[nBaseRow + nRow].UsedEntry && localCTRecords[nBaseRow + nRow].Enable > nPriorityNone;
+                    lstModuleIsPresent[nCur] = fUsed;
+                    qDebug() << QString::fromAscii("getUsedModules(): Module: %1 is: %2") .arg(nCur) .arg(fUsed ? QString::fromAscii("YES") : QString::fromAscii("NO"));
+                    break;
+                }
+            }
         }
     }
     else  {
-        // Interpretare la configurazione dei nodi
-        for (nCur = 0; nCur < nTotalItems; nCur ++)  {
-            lstModuleIsPresent[nCur] = false;
-        }
-        // Presentazione farlocca degli Slot
-        if (! lstModuleIsPresent[nBaseHead])  {
-            lstModuleIsPresent[nBaseHead] = true;
-            lstModuleIsPresent[nBaseAnIn] = true;
-            lstModuleIsPresent[nBaseAnOut] = true;
-            lstModuleIsPresent[nBaseAnOut + 1] = true;
-            lstModuleIsPresent[nBaseDigIn] = true;
-            lstModuleIsPresent[nBaseDigIn + 1] = true;
-            lstModuleIsPresent[nBaseDigIn + 2] = true;
-        }
+        m_szMsg = QString::fromAscii("The Selected Module is Out of Range!");
+        notifyUser(this, szMectTitle, m_szMsg);
     }
 }
 void    Config_MPNC::changeRootElement(int nItem)
@@ -483,7 +563,7 @@ void    Config_MPNC::changeRootElement(int nItem)
         m_nBaseRow = lstCapofila[nItem];
         m_nTesta = nItem;
         // Determina il Protocollo, la Porta e il Nodo dell'elemento
-        if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count())  {
+        if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
             // Visualizzazione Protocollo
             int nProtocol = localCTRecords[m_nBaseRow].Protocol;
             if (nProtocol >= 0 && nProtocol < lstProtocol.count())
@@ -504,6 +584,8 @@ void    Config_MPNC::changeRootElement(int nItem)
             m_nNodeId = nNode;
             // Priorità del Gruppo
             m_nRootPriority = localCTRecords[m_nBaseRow].Enable;
+            // Abilitazione Rename delle Variabili
+            cmdRename->setEnabled(canRenameRows(m_nBaseRow));
         }
     }
     else  {
@@ -602,6 +684,7 @@ void    Config_MPNC::groupItemRemove(int nGroup)
             // Aggiornamento delle Variabili di CT relative all'oggetto
             setGroupVars(nGroup, nItem, nPriorityNone);
             // Refresh Bottoni
+            m_nAbsPos = 0;
             customizeButtons();
             // Refresh Root
             filterVariables(0, 0);
@@ -642,7 +725,7 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
             fRes = recCT2MPNxList(localCTRecords, lstLineValues, nRow + m_nBaseRow, lstMPNC006_Vars, nRow);
             // Aggiunta alla Table
             if (fRes)  {
-                qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colMPNxName]);
+                // qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colMPNxName]);
                 lstTableRows.append(lstLineValues);
                 lstRowPriority.append(localCTRecords[nRow + m_nBaseRow].Enable);
             }
@@ -669,8 +752,13 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
         tblCT->selectRow(0);
         tblCT->update();
         tblCT->setFocus();
-    }
+    }    
     qDebug() << QString::fromAscii("Displayed Rows: %1") .arg(nRow);
+    // Refresh delle Labels Marcatori del Gruppo/Item corrente
+    m_nAbsPos = relative2AbsModulePos(nGroup, nItem);
+    for (nRow = 0; nRow < lstPosMarker.count(); nRow++)  {
+        lstPosMarker[nRow]->setEnabled(nRow == (m_nAbsPos -1));
+    }
     this->setCursor(Qt::ArrowCursor);
 }
 void    Config_MPNC::on_changePort(int nPort)
@@ -694,6 +782,15 @@ void    Config_MPNC::on_changePort(int nPort)
         disableAndBlockSignals(cboPort);
         cboPort->setCurrentIndex(m_nPort);
         enableAndUnlockSignals(cboPort);
+        // Refresh interfaccia su nodo corrente
+        if (m_nAbsPos >= 0 && m_nAbsPos <= nTotalItems)  {
+            int nGroup = 0;
+            int nModule = 0;
+            abs2RelativeModulePos(m_nAbsPos, nGroup, nModule);
+            if ((nGroup >= 0 && nGroup < nTotalGroups) && (nModule >= 0 && nModule < nItemsPerGroup))  {
+                filterVariables(nGroup, nModule);
+            }
+        }
     }
 }
 void    Config_MPNC::on_changeNode()
@@ -720,6 +817,15 @@ void    Config_MPNC::on_changeNode()
         disableAndBlockSignals(txtNode);
         txtNode->setText(QString::number(m_nNodeId));
         enableAndUnlockSignals(txtNode);
+        // Refresh interfaccia su nodo corrente
+        if (m_nAbsPos >= 0 && m_nAbsPos <= nTotalItems)  {
+            int nGroup = 0;
+            int nModule = 0;
+            abs2RelativeModulePos(m_nAbsPos, nGroup, nModule);
+            if ((nGroup >= 0 && nGroup < nTotalGroups) && (nModule >= 0 && nModule < nItemsPerGroup))  {
+                filterVariables(nGroup, nModule);
+            }
+        }
     }
 }
 void    Config_MPNC::setGroupVars(int nGroup, int nModule, int16_t nPriority)
@@ -737,4 +843,43 @@ void    Config_MPNC::setGroupVars(int nGroup, int nModule, int16_t nPriority)
             m_fUpdated = true;
         }
     }
+}
+void    Config_MPNC::on_RenameVars()
+// Evento Rename Clicked
+{
+    bool        fOk = false;
+    QString     szNewSuffix = QInputDialog::getText(this, QString::fromAscii("New Var Prefix:"), QString::fromAscii("Enter new Variables Prefix to rename all Variables:"),
+                                                    QLineEdit::Normal, szVarNamePrefix, &fOk, Qt::Dialog);
+    if (fOk)  {
+        qDebug() << QString::fromAscii("on_RenameVars(): New Var Prefix: [%1]") .arg(szNewSuffix);
+    }
+}
+bool    Config_MPNC::canRenameRows(int nBaseRow)
+// Verifica se tutto il Device può essere rinominato
+{
+    QString     szBaseName(szEMPTY);
+    QString     szVarName(szEMPTY);
+
+    bool        fCanRename = true;
+    int         nRow = 0;
+
+    if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
+        for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+            // Recupera il nome della variabile
+            szBaseName = lstMPNC006_Vars[nRow][colName];
+            szBaseName = szBaseName.mid(szVarNamePrefix.length());
+            // qDebug() << QString::fromAscii("canRenameRows(): Base Name:%1") .arg(szBaseName);
+            szVarName = QString::fromAscii(localCTRecords[nBaseRow + nRow].Tag);
+            if (! szVarName.endsWith(szBaseName, Qt::CaseSensitive))  {
+                qDebug() << QString::fromAscii("canRenameRows(): Failed! Row:[%1] Var Name:[%2] Base Name:[%3]") .arg(nRow) .arg(szVarName) .arg(szBaseName);
+                fCanRename = false;
+                break;
+            }
+        }
+    }
+    else  {
+        fCanRename = false;
+    }
+    // Return Value
+    return fCanRename;
 }
