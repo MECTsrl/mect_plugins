@@ -11,6 +11,7 @@
 #include "item_selector.h"
 #include "trend_range.h"
 #include "ui_trend_range.h"
+#include "timepopup.h"
 
 #define DEFAULT_YMIN -1000
 #define DEFAULT_YMAX  1000
@@ -62,7 +63,7 @@ trend_range::trend_range(QWidget *parent) :
     //labelDataOra = ui->labelDataOra;
     /* connect the label that show the user name */
     //labelUserName = ui->labelUserName;
-    
+
     reload();
 }
 
@@ -76,21 +77,29 @@ void trend_range::reload()
 {
     /* initial time */
     ui->dateEdit->setDate(actualTzero.date());
+#if 0
     ui->spinBoxHoursIn->setValue(actualTzero.time().hour());
     ui->spinBoxMinutesIn->setValue(actualTzero.time().minute());
     ui->spinBoxSecondsIn->setValue(actualTzero.time().second());
-    
+#else
+    ui->pushButtonTime->setText(actualTzero.time().toString("HH:mm:ss"));
+#endif
+
     /* interval */
     QDateTime reference = QDateTime(QDate(0,0,0), QTime(0,0,0)).addSecs(actualVisibleWindowSec);
     ui->spinBoxDays->setMaximum(90);
+    ui->spinBoxDays->setValue(   reference.date().day() - 1);
+#if 0
     ui->spinBoxHours->setMaximum(23);
     ui->spinBoxMinutes->setMaximum(59);
     ui->spinBoxSeconds->setMaximum(59);
-    ui->spinBoxDays->setValue(   reference.date().day() - 1);
     ui->spinBoxHours->setValue(  reference.time().hour());
     ui->spinBoxMinutes->setValue(reference.time().minute());
     ui->spinBoxSeconds->setValue(reference.time().second());
-    
+#else
+    ui->pushButtonWidth->setText(reference.time().toString("HH:mm:ss"));
+#endif
+
     /* Y range */
     ui->doubleSpinBoxYmin->setValue(pens[actualPen].yMinActual);
     ui->doubleSpinBoxYmax->setValue(pens[actualPen].yMaxActual);
@@ -148,6 +157,35 @@ void trend_range::on_pushButtonBack_clicked()
     go_back();
 }
 
+void trend_range::on_pushButtonTime_clicked()
+{
+    TimePopup *timepop = new TimePopup(this->ui->pushButtonTime);
+
+    if (timepop) {
+        QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss"); // and not "HH:mm:ss"
+        timepop->setTime(t);
+        if (timepop->exec() == QDialog::Accepted) {
+            // ui->timeEdit->setTime(timepop->getTime());
+            ui->pushButtonTime->setText(timepop->getTime().toString("HH:mm:ss"));
+        }
+        delete timepop;
+    }
+}
+
+void trend_range::on_pushButtonWidth_clicked()
+{
+    TimePopup *timepop = new TimePopup(this->ui->pushButtonTime);
+
+    if (timepop) {
+        QTime t = QTime::fromString(ui->pushButtonWidth->text(), "hh:mm:ss"); // and not "HH:mm:ss"
+        timepop->setTime(t);
+        if (timepop->exec() == QDialog::Accepted) {
+            // ui->timeEdit->setTime(timepop->getTime());
+            ui->pushButtonWidth->setText(timepop->getTime().toString("HH:mm:ss"));
+        }
+        delete timepop;
+    }
+}
 
 /* save the actual log period */
 void trend_range::on_pushButtonOk_clicked()
@@ -156,29 +194,36 @@ void trend_range::on_pushButtonOk_clicked()
               actualVisibleWindowSec,
               actualTzero.toString("yy/MM/dd HH:mm:ss").toAscii().data()
               );
-    
+
     int tmpwindow =
+        #if 0
             ui->spinBoxSeconds->value() +
             ui->spinBoxMinutes->value() * 60 +
             ui->spinBoxHours->value() * 3600 +
+        #else
+            QTime(0,0,0).secsTo(QTime::fromString(ui->pushButtonWidth->text(), "hh:mm:ss")) +
+        #endif
             ui->spinBoxDays->value() * 3600 * 24;
-    
+
     if (actualVisibleWindowSec != tmpwindow)
     {
         actualVisibleWindowSec = tmpwindow;
     }
-    
+
     QDateTime tmpTzero = QDateTime(
                 ui->dateEdit->date(),
+#if 0
                 QTime(ui->spinBoxHoursIn->value(), ui->spinBoxMinutesIn->value(), ui->spinBoxSecondsIn->value())
+#else
+                QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss") // and not "HH:mm:ss"
+#endif
                 );
-    
     if (actualTzero != tmpTzero)
     {
         actualTzero = tmpTzero;
         _online_ = false;
     }
-    
+
     LOG_PRINT(verbose_e, "actualVisibleWindowSec %d actualTzero '%s'\n",
               actualVisibleWindowSec,
               actualTzero.toString("yy/MM/dd HH:mm:ss").toAscii().data()

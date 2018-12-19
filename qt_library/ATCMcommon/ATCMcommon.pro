@@ -21,6 +21,7 @@ LIBS += \
 -lATCMutility
 
 SOURCES += \
+timepopup.cpp \
 global_var.cpp \
 pagebrowser.cpp \
 screensaver.cpp \
@@ -29,6 +30,7 @@ screensaver.cpp \
 
 
 HEADERS += \
+timepopup.h \
 global_var.h \
 pagebrowser.h \
 screensaver.h \

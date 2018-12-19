@@ -34,38 +34,6 @@
 	font: 1000  12pt &quot;DejaVu Sans Mono&quot;;
  }
 
- QSpinBox {
-	font: 1000 12pt &quot;DejaVu Sans Mono&quot;;
-    padding-top: 20px;
-    padding-bottom: 20px;
- }
-
- QSpinBox::up-button {
-     subcontrol-origin: border;
-     subcontrol-position: top center;
-     height: 20px;
-     width: 40px;
- }
-
- QSpinBox::up-arrow {
-	image: url(:/libicons/img/Up.png);
-     width: 10px;
-     height: 10px;
- }
-
- QSpinBox::down-button {
-     subcontrol-origin: border;
-     subcontrol-position: bottom center;
-     height: 20px;
-     width: 40px;
-}
-
- QSpinBox::down-arrow {
- 	image: url(:/libicons/img/Down.png);
-     width: 10px;
-     height:10px;
- }
-
  QDoubleSpinBox {
 	font: 1000 12pt &quot;DejaVu Sans Mono&quot;;
  }
@@ -116,9 +84,6 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4"/>
-       </item>
-       <item>
         <widget class="QDateEdit" name="dateEdit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -142,13 +107,16 @@
           <enum>Qt::ClickFocus</enum>
          </property>
          <property name="styleSheet">
-          <string notr="true"> QLabel {
+          <string notr="true"> /*QLabel {
 	font: 1000  12pt &quot;DejaVu Sans Mono&quot;;
  }
 
- QSpinBox {
-	font: 1000 12pt &quot;DejaVu Sans Mono&quot;;
+ QPushButton#qt_calendar_yearbutton {
     width: 80px;
+}
+
+QSpinBox {
+	font: 1000 12pt &quot;DejaVu Sans Mono&quot;;
     padding-left: 20px;
     padding-right: 20px;
  }
@@ -178,7 +146,7 @@
      width: 10px;
      height:10px;
  }
-</string>
+*/</string>
          </property>
          <property name="displayFormat">
           <string>yyyy-MM-dd</string>
@@ -189,149 +157,29 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QSpinBox" name="spinBoxHoursIn">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>64</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>DejaVu Sans Mono</family>
-             <pointsize>12</pointsize>
-             <weight>99</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="wrapping">
-            <bool>true</bool>
-           </property>
-           <property name="frame">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="maximum">
-            <number>23</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="spinBoxMinutesIn">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>64</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>DejaVu Sans Mono</family>
-             <pointsize>12</pointsize>
-             <weight>99</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="wrapping">
-            <bool>true</bool>
-           </property>
-           <property name="frame">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="maximum">
-            <number>59</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="spinBoxSecondsIn">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>64</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>DejaVu Sans Mono</family>
-             <pointsize>12</pointsize>
-             <weight>99</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="wrapping">
-            <bool>true</bool>
-           </property>
-           <property name="frame">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="maximum">
-            <number>59</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+        <widget class="QPushButton" name="pushButtonTime">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>64</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>DejaVu Sans Mono</family>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>HH:MM:SS</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QSpinBox" name="spinBoxDays">
@@ -365,6 +213,41 @@
          <property name="focusPolicy">
           <enum>Qt::ClickFocus</enum>
          </property>
+         <property name="styleSheet">
+          <string notr="true">QSpinBox {
+	font: 1000 12pt &quot;DejaVu Sans Mono&quot;;
+    padding-top: 20px;
+    padding-bottom: 20px;
+ }
+
+ QSpinBox::up-button {
+     subcontrol-origin: border;
+     subcontrol-position: top center;
+     height: 20px;
+     width: 40px;
+ }
+
+ QSpinBox::up-arrow {
+	image: url(:/libicons/img/Up.png);
+     width: 10px;
+     height: 10px;
+ }
+
+ QSpinBox::down-button {
+     subcontrol-origin: border;
+     subcontrol-position: bottom center;
+     height: 20px;
+     width: 40px;
+}
+
+ QSpinBox::down-arrow {
+ 	image: url(:/libicons/img/Down.png);
+     width: 10px;
+     height:10px;
+ }
+
+</string>
+         </property>
          <property name="wrapping">
           <bool>true</bool>
          </property>
@@ -386,146 +269,29 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QSpinBox" name="spinBoxHours">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>64</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>DejaVu Sans Mono</family>
-             <pointsize>12</pointsize>
-             <weight>99</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="wrapping">
-            <bool>true</bool>
-           </property>
-           <property name="frame">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="maximum">
-            <number>23</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="spinBoxMinutes">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>64</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>DejaVu Sans Mono</family>
-             <pointsize>12</pointsize>
-             <weight>99</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="wrapping">
-            <bool>true</bool>
-           </property>
-           <property name="frame">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="maximum">
-            <number>59</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="spinBoxSeconds">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>64</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>DejaVu Sans Mono</family>
-             <pointsize>12</pointsize>
-             <weight>99</weight>
-             <italic>false</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="wrapping">
-            <bool>true</bool>
-           </property>
-           <property name="frame">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="maximum">
-            <number>59</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QPushButton" name="pushButtonWidth">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>64</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>DejaVu Sans Mono</family>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>HH:MM:SS</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

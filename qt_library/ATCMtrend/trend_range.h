@@ -31,10 +31,10 @@ private slots:
     void changeEvent(QEvent * event);
 #endif
     void on_pushButtonHome_clicked();
-
     void on_pushButtonBack_clicked();
-
     void on_pushButtonOk_clicked();
+    void on_pushButtonTime_clicked();
+    void on_pushButtonWidth_clicked();
 
 private:
     Ui::trend_range *ui;

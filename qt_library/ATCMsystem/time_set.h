@@ -36,6 +36,8 @@ private slots:
 
     void on_pushButtonBack_clicked();
 
+    void on_pushButtonTime_clicked();
+
 private:
     Ui::time_set *ui;
 };

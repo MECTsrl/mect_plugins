@@ -12,6 +12,8 @@
 #include "ui_time_set.h"
 #include <sys/time.h>
 
+#include "timepopup.h"
+
 /* this define set the window title */
 #define WINDOW_TITLE "DATA E ORA"
 /* this define set the window icon the file can have a path into resource file or into the file system */
@@ -72,8 +74,12 @@ void time_set::reload()
 {
     /* Load data and time 1*/
     ui->dateEdit->setDate(QDateTime::currentDateTime().date());
+#if 0
     ui->spinBoxOre->setValue(QDateTime::currentDateTime().time().hour());
     ui->spinBoxMinuti->setValue(QDateTime::currentDateTime().time().minute());
+#else
+    ui->pushButtonTime->setText(QTime::currentTime().toString("HH:mm:ss"));
+#endif
     showFullScreen();
 }
 
@@ -100,6 +106,21 @@ time_set::~time_set()
     delete ui;
 }
 
+
+void time_set::on_pushButtonTime_clicked()
+{
+    TimePopup *timepop = new TimePopup(this->ui->pushButtonTime);
+
+    if (timepop) {
+        QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss"); // and not "HH:mm:ss"
+        timepop->setTime(t);
+        if (timepop->exec() == QDialog::Accepted) {
+            // ui->timeEdit->setTime(timepop->getTime());
+            ui->pushButtonTime->setText(timepop->getTime().toString("HH:mm:ss"));
+        }
+        delete timepop;
+    }
+}
 
 /**
   * @brief save the actual date/time
@@ -128,9 +149,16 @@ void time_set::on_pushButtonOk_clicked()
     pt->tm_mon = ui->dateEdit->date().month() - 1;
     pt->tm_mday = ui->dateEdit->date().day();
 
+#if 0
     pt->tm_hour = ui->spinBoxOre->value();
     pt->tm_min = ui->spinBoxMinuti->value();
     pt->tm_sec = 0;
+#else
+    QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss");
+    pt->tm_hour = t.hour();
+    pt->tm_min = t.minute();
+    pt->tm_sec = t.second();
+#endif
 
     rc = gettimeofday(&temp, &timez);
     if (rc < 0) {
