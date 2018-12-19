@@ -71,23 +71,9 @@ time_set::time_set(QWidget *parent) :
 void time_set::reload()
 {
     /* Load data and time 1*/
-    time_t rt = 0;
-    struct tm *pt = NULL;
-    rt = time(NULL);
-    pt = localtime(&rt);
-    if (pt == NULL) {
-        fputs(__func__, stderr);
-        perror(": while getting local time");
-        fflush(stderr);
-
-        return;
-    }
-
-    ui->spinBoxAnno->setValue(pt->tm_year + 1900);
-    ui->spinBoxMese->setValue(pt->tm_mon + 1);
-    ui->spinBoxGiorno->setValue(pt->tm_mday);
-    ui->spinBoxOre->setValue(pt->tm_hour);
-    ui->spinBoxMinuti->setValue(pt->tm_min);
+    ui->dateEdit->setDate(QDateTime::currentDateTime().date());
+    ui->spinBoxOre->setValue(QDateTime::currentDateTime().time().hour());
+    ui->spinBoxMinuti->setValue(QDateTime::currentDateTime().time().minute());
     showFullScreen();
 }
 
@@ -121,6 +107,7 @@ time_set::~time_set()
 void time_set::on_pushButtonOk_clicked()
 {
     /* UPDATE THE SYSTEM CLOCK */
+
     time_t rt = 0;
     struct tm *pt = NULL;
     struct timezone timez;
@@ -137,9 +124,9 @@ void time_set::on_pushButtonOk_clicked()
         return;
     }
 
-    pt->tm_year = ui->spinBoxAnno->value() - 1900;
-    pt->tm_mon = ui->spinBoxMese->value() - 1;
-    pt->tm_mday = ui->spinBoxGiorno->value();
+    pt->tm_year = ui->dateEdit->date().year() - 1900;
+    pt->tm_mon = ui->dateEdit->date().month() - 1;
+    pt->tm_mday = ui->dateEdit->date().day();
 
     pt->tm_hour = ui->spinBoxOre->value();
     pt->tm_min = ui->spinBoxMinuti->value();
@@ -167,7 +154,6 @@ void time_set::on_pushButtonOk_clicked()
     }
 
     system("/sbin/hwclock -wu");        /* Update RTC from system */
-
 
 }
 

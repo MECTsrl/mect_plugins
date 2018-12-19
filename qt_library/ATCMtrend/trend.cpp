@@ -100,7 +100,7 @@ static int datetime_ticks(char layout, int width, int height)
         if (height <= 320) { // 240 272 320
             ticks = 6;
         } else if (height <= 480) {
-            ticks = 12;
+            ticks = 10;
         } else if (height <= 800) {
             ticks = 16;
         } else {
@@ -128,9 +128,9 @@ static int values_ticks(char layout, int width, int height)
     } else {
         // width -> vert_ticks -> values side by side
         if (width <= 320) { // 240 272 320
-            ticks = 3;
+            ticks = 2;
         } else if (width <= 480) {
-            ticks = 7;
+            ticks = 8;
         } else if (width <= 800) {
             ticks = 12;
         } else {
