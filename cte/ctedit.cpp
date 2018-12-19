@@ -451,14 +451,15 @@ ctedit::ctedit(QWidget *parent) :
     configMPNE = new Config_MPNE(ui->tabMPNE);
     vbMPNE->addWidget(configMPNE);
 
-    // Seleziona il primo Tab
+    // Abilitazione dei Tabs
     ui->tabWidget->setTabEnabled(TAB_CT, true);
     ui->tabWidget->setTabEnabled(TAB_SYSTEM, true);
     ui->tabWidget->setTabEnabled(TAB_TREND, true);
     ui->tabWidget->setTabEnabled(TAB_DEVICES, true);
     ui->tabWidget->setTabEnabled(TAB_TIMINGS, true);
     ui->tabWidget->setTabEnabled(TAB_MPNC, true);
-    ui->tabWidget->setTabEnabled(TAB_MPNE, true);
+    ui->tabWidget->setTabEnabled(TAB_MPNE, false);
+    ui->tabWidget->setTabEnabled(TAB_TEST, false);
     ui->tabWidget->setCurrentIndex(m_nCurTab);
 
     // Connessione Segnali - Slot
@@ -470,6 +471,8 @@ ctedit::ctedit(QWidget *parent) :
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabSelected(int)));
     connect(ui->deviceTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
     connect(ui->timingTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
+    // Tab MPNC
+    connect(configMPNC, SIGNAL(varClicked(int)), this, SLOT(return2GridRow(int)));
     // Timer per messaggi
     tmrMessage = new QTimer(this);
     tmrMessage->setInterval(0);
@@ -694,7 +697,7 @@ bool    ctedit::ctable2Grid()
     // Caricamento elementi
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Covert CT Record 2 User Values
-        fRes = recCT2List(lstCTRecords, lstFields, nCur);
+        fRes = recCT2FieldsValues(lstCTRecords, lstFields, nCur);
         // If Ok add row to Table View
         if (fRes)  {
             ui->tblCT->insertRow(nCur);
@@ -1279,189 +1282,7 @@ bool ctedit::grid2CTable()
             lstFields.append(szTemp);
         }
         // Covert back User Values 2 CT Record
-        fRes = list2CTrec(lstFields, nCur);
-    }
-    // Return Value
-    return fRes;
-}
-void ctedit::freeCTrec(int nRow)
-// Marca il Record della CT come inutilizzato
-{
-    if (nRow < 0 || nRow >= lstCTRecords.count())
-        return;
-    lstCTRecords[nRow].UsedEntry = 0;
-    lstCTRecords[nRow].Enable = 0;
-    lstCTRecords[nRow].Update = (UpdateType) 0;
-    strcpy(lstCTRecords[nRow].Tag, "");
-    lstCTRecords[nRow].VarType = (varTypes) 0;
-    lstCTRecords[nRow].Decimal = 0;
-    lstCTRecords[nRow].Protocol = (FieldbusType) 0;
-    lstCTRecords[nRow].IPAddress = 0;
-    lstCTRecords[nRow].Port = 0;
-    lstCTRecords[nRow].NodeId = 0;
-    lstCTRecords[nRow].InputReg = 0;
-    lstCTRecords[nRow].Group = 0;
-    lstCTRecords[nRow].Module = 0;
-    lstCTRecords[nRow].Offset = 0;
-    lstCTRecords[nRow].Block = 0;
-    lstCTRecords[nRow].BlockBase = 0;
-    lstCTRecords[nRow].Behavior = 0;
-    lstCTRecords[nRow].Counter = 0;
-    lstCTRecords[nRow].OldVal = 0;
-    lstCTRecords[nRow].Error = 0;
-    lstCTRecords[nRow].nDevice = 0xffff;
-    lstCTRecords[nRow].nNode = 0xffff;
-    lstCTRecords[nRow].nBlock = 0xffff;
-    lstCTRecords[nRow].usedInAlarmsEvents = FALSE;
-    lstCTRecords[nRow].ALType = -1;
-    strcpy(lstCTRecords[nRow].ALSource, "");
-    lstCTRecords[nRow].ALOperator = -1;
-    strcpy(lstCTRecords[nRow].ALCompareVar, "");
-    lstCTRecords[nRow].ALCompareVal = 0.0;
-    lstCTRecords[nRow].ALComparison = -1;
-    lstCTRecords[nRow].ALCompatible  = FALSE;
-    strcpy(lstCTRecords[nRow].Comment, "");
-}
-
-bool ctedit::list2CTrec(QStringList &lstRecValues, int nRow)
-// Conversione da Lista Valori di Interfaccia a CT Record (Form -> REC SINGOLO)
-// Scrive un Record letto da interfaccia direttamente in lista di Record C
-{
-    bool        fRes = true;
-    bool        fOk = false;
-    int         nPos = 0;
-    char        ip[MAX_IPADDR_LEN];
-
-    // Abilitazione riga (Nome Vuoto => Riga disabilitata)
-    if (lstRecValues[colName].isEmpty())  {
-        freeCTrec(nRow);
-    }
-    else  {
-        // Priority
-        nPos = lstPriority.indexOf(lstRecValues[colPriority]);
-        nPos = (nPos >= 0 && nPos < nNumPriority) ? nPos : 0;
-        lstCTRecords[nRow].Enable = (int16_t) nPos;
-        // Update
-        nPos = lstUpdateNames.indexOf(lstRecValues[colUpdate]);
-        nPos = (nPos >= 0 && nPos < lstUpdateNames.count()) ? nPos : 0;
-        lstCTRecords[nRow].Update = (UpdateType) nPos;
-        // Group (forzato per ora a 0)
-        lstCTRecords[nRow].Group = 0;
-        // Module (forzato per ora a 0)
-        lstCTRecords[nRow].Module = 0;
-        // Campo Name
-        strcpy(lstCTRecords[nRow].Tag, lstRecValues[colName].trimmed().toAscii().data());
-        // Campo Abilitazione record
-        if (strlen(lstCTRecords[nRow].Tag) > 0)
-            lstCTRecords[nRow].UsedEntry = 1;
-        else
-            lstCTRecords[nRow].UsedEntry = 0;
-        // Campo Type
-        nPos = lstTipi.indexOf(lstRecValues[colType]);
-        nPos = (nPos >= 0 && nPos < lstTipi.count()) ? nPos : 0;
-        lstCTRecords[nRow].VarType = (varTypes) nPos;
-        // Campo Decimal
-        nPos = lstRecValues[colDecimal].toInt(&fOk);
-        nPos = fOk ? nPos : 0;
-        lstCTRecords[nRow].Decimal = nPos;
-        // Protocol
-        nPos = lstProtocol.indexOf(lstRecValues[colProtocol]);
-        nPos = (nPos >= 0 && nPos < lstProtocol.count()) ? nPos : 0;
-        lstCTRecords[nRow].Protocol = (FieldbusType) nPos;
-        // IP Address (Significativo solo per Protocolli a base TCP)
-        if (lstCTRecords[nRow].Protocol == TCP || lstCTRecords[nRow].Protocol == TCPRTU ||
-                lstCTRecords[nRow].Protocol == TCP_SRV || lstCTRecords[nRow].Protocol ==TCPRTU_SRV)  {
-            strcpy(ip, lstRecValues[colIP].trimmed().toAscii().data());
-            nPos = str2ipaddr(ip);
-            lstCTRecords[nRow].IPAddress = (uint32_t) nPos;
-        }
-        else
-            lstCTRecords[nRow].IPAddress = (uint32_t) 0 ;
-        // Port
-        nPos = lstRecValues[colPort].toInt(&fOk);
-        nPos = fOk ? nPos : 0;
-        lstCTRecords[nRow].Port = nPos;
-        // Node Id
-        nPos = lstRecValues[colNodeID].toInt(&fOk);
-        nPos = fOk ? nPos : 0;
-        lstCTRecords[nRow].NodeId = nPos;
-        // Flag Input Register
-        lstCTRecords[nRow].InputReg = (lstRecValues[colInputReg] == szTRUE) ? 1 : 0;
-        // OffSet Register
-        nPos = lstRecValues[colRegister].toInt(&fOk);
-        nPos = fOk ? nPos : 0;
-        lstCTRecords[nRow].Offset = nPos;
-        // Block
-        nPos = lstRecValues[colBlock].toInt(&fOk);
-        nPos = fOk ? nPos : 0;
-        if (nPos == 0)  {
-            lstCTRecords[nRow].Block = nRow + 1;
-            lstCTRecords[nRow].BlockSize = 1;
-        }
-        else {
-            lstCTRecords[nRow].Block = nPos;
-            // N.Registro
-            nPos = lstRecValues[colBlockSize].toInt(&fOk);
-            nPos = fOk ? nPos : 1;
-            lstCTRecords[nRow].BlockSize = nPos;
-        }
-        // Commento
-        strncpy(lstCTRecords[nRow].Comment, lstRecValues[colComment].trimmed().toAscii().data(), MAX_COMMENT_LEN - 1);
-        // Clear all Variable - Event fields
-        lstCTRecords[nRow].usedInAlarmsEvents = FALSE;
-        lstCTRecords[nRow].ALType = -1;
-        strcpy(lstCTRecords[nRow].ALSource, szEMPTY.toAscii().data());
-        lstCTRecords[nRow].ALOperator = -1;
-        strcpy(lstCTRecords[nRow].ALCompareVar, szEMPTY.toAscii().data());
-        lstCTRecords[nRow].ALCompareVal = 0.0;
-        lstCTRecords[nRow].ALComparison = -1;
-        lstCTRecords[nRow].ALCompatible = 0;
-        // Behavior
-        nPos = lstBehavior.indexOf(lstRecValues[colBehavior]);
-        nPos = (nPos >= 0 && nPos < lstBehavior.count()) ? nPos : 0;
-        lstCTRecords[nRow].Behavior = nPos;
-        // Salvataggio dei valori di Allarme/Evento
-        if (nPos >= behavior_alarm)   {
-            // Flag isAlarm
-            lstCTRecords[nRow].usedInAlarmsEvents = TRUE;
-            // Type of Alarm or Event
-            if (nPos == behavior_alarm)
-                lstCTRecords[nRow].ALType = Alarm;
-            else
-                lstCTRecords[nRow].ALType = Event;
-            // Left Variable Name
-            strcpy(lstCTRecords[nRow].ALSource, lstRecValues[colSourceVar].trimmed().toAscii().data());
-            // Operator
-            nPos = lstCondition.indexOf(lstRecValues[colCondition]);
-            nPos = (nPos >= 0 && nPos < lstCondition.count()) ? nPos : -1;
-            lstCTRecords[nRow].ALOperator = nPos;
-            // Compare VAR - VAL
-            QString szCompare = lstRecValues[colCompare].trimmed();
-            if (szCompare.isEmpty())  {
-                strcpy(lstCTRecords[nRow].ALCompareVar, szEMPTY.toAscii().data());
-                lstCTRecords[nRow].ALCompareVal = 0.0;
-            }
-            else  {
-                // Decisione se il secondo lato dell'espressione sia una costante o un nome variabile
-                QChar cc = szCompare.at(0);
-                if (cc.isLetter())  {
-                    // Variable
-                    strcpy(lstCTRecords[nRow].ALCompareVar, szCompare.toAscii().data());
-                    lstCTRecords[nRow].ALCompareVal = 0.0;
-                }
-                else  {
-                    float fValue = 0;
-                    // Value
-                    strcpy(lstCTRecords[nRow].ALCompareVar, szEMPTY.toAscii().data());
-                    fValue = szCompare.toFloat(&fOk);
-                    fValue = fOk ? fValue : 0.0;
-                    lstCTRecords[nRow].ALCompareVal = fValue;
-                    // TODO: Fill correct values for Comparison and Compatible
-                    lstCTRecords[nRow].ALComparison = COMP_UNSIGNED;
-                    lstCTRecords[nRow].ALCompatible = 1;
-                }
-            }
-        }
+        fRes = fieldValues2CTrecList(lstFields, lstCTRecords, nCur);
     }
     // Return Value
     return fRes;
@@ -1603,7 +1424,7 @@ void ctedit::on_cboType_currentIndexChanged(int index)
     }
 }
 //void ctedit::on_chkInputRegister_clicked(bool checked)
-//// Cambio di Registro da Holding a Input Register e viceversa
+//Cambio di Registro da Holding a Input Register e viceversa
 //{
 //    bool    fOk = false;
 //    int     nVal = ui->txtRegister->text().toInt(&fOk);
@@ -1762,7 +1583,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
             // Imposta Sezione in cboSections
             setSectionArea(nRow);
             // Convert CT Record 2 User Values
-            fRes = recCT2List(lstCTRecords, lstFields, nRow);
+            fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
             if (fRes)
                 fRes = values2Iface(lstFields);
         }
@@ -1968,7 +1789,7 @@ int ctedit::copySelected(bool fClearSelection)
         if (nFirstRow < 0)
             nFirstRow = nRow;
         // Convert Record to Strings List
-        recCT2List(lstCTRecords, lstRecordFields, nRow);
+        recCT2FieldsValues(lstCTRecords, lstRecordFields, nRow);
         // Add Element to XML
         xmlBuffer.writeStartElement(szXMLCTROW);
         // Source Row
@@ -2121,7 +1942,7 @@ void ctedit::insertRows()
         // Insert New Recs
         for (nCur = 0; nCur < selection.count(); nCur++)  {
             lstCTRecords.insert(nFirstRow, emptyRecord);
-            freeCTrec(nFirstRow);
+            freeCTrec(lstCTRecords, nFirstRow);
             nInserted ++;
         }
         // Search the right place 2 remove extra records
@@ -2182,7 +2003,7 @@ void ctedit::emptySelected()
             nFirstRow = nRow;
         // Free Row
         if (nRow < MAX_NONRETENTIVE)  {
-            freeCTrec(nRow);
+            freeCTrec(lstCTRecords, nRow);
             nRemoved++;
         }
     }
@@ -2252,7 +2073,7 @@ void ctedit::removeSelected()
         // Insert empty Rec to readjust positions
         for (nCur = 0; nCur < nRemoved; nCur++)  {
             lstCTRecords.insert(nStart, emptyRecord);
-            freeCTrec(nStart);
+            freeCTrec(lstCTRecords, nStart);
         }
         // Refresh Grid
         ctable2Grid();
@@ -2790,34 +2611,36 @@ void ctedit::tabSelected(int nTab)
     int nPrevTab = m_nCurTab;
 
     // Ritorno a CT da Tab System, prudenzialmente aggiorna le info di configurazione
-    if (nPrevTab == TAB_SYSTEM)  {
-        // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
-        mectSet->getTargetConfig(panelConfig);
-        // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
-        enableProtocolsFromModel();
-    }
-    // Ritorno a CT da Tab MPNC / MPNE
-    if (nPrevTab == TAB_MPNC) {
-        // Se qualcosa della configurazione è cambiato rilegge la CT dalla Lista
-        if (configMPNC->isUpdated())  {
+    if (nTab == TAB_CT)  {
+        if (nPrevTab == TAB_SYSTEM)  {
+            // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
+            mectSet->getTargetConfig(panelConfig);
+            // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
+            enableProtocolsFromModel();
+        }
+        // Ritorno a CT da Tab MPNC / MPNE
+        else if (nPrevTab == TAB_MPNC) {
+            // Se qualcosa della configurazione è cambiato rilegge la CT dalla Lista
             int nOldRow = m_nGridRow;
-            ui->tblCT->selectionModel()->clearSelection();
-            lstUndo.append(lstCTRecords);
-            lstCTRecords = configMPNC->localCTRecords;
-            // Refresh Grid
-            ctable2Grid();
+            if (configMPNC->isUpdated())  {
+                ui->tblCT->selectionModel()->clearSelection();
+                lstUndo.append(lstCTRecords);
+                lstCTRecords = configMPNC->localCTRecords;
+                // Refresh Grid
+                ctable2Grid();
+                m_isCtModified = true;
+            }
             // Jump n+1
             jumpToGridRow(nOldRow + 1, true);
             jumpToGridRow(nOldRow, true);
-            m_isCtModified = true;
             enableInterface();
         }
-    }
-    if (nPrevTab == TAB_MPNE)  {
+        else if (nPrevTab == TAB_MPNE)  {
 
+        }
     }
     // Entering Trends: Aggiornamento della lista di variabili e ripopolamento liste per Trends
-    if (nTab == TAB_TREND) {
+    else if (nTab == TAB_TREND) {
         trendEdit->updateVarLists(lstLoggedVars);
         trendEdit->fillTrendsCombo(m_szCurrentCTPath);
     }
@@ -2975,7 +2798,7 @@ int ctedit::globalChecks()
                 lstUniqueVarNames.append(szTemp);
             }
             // Controlli specifici di Riga
-            fRecOk = recCT2List(lstCTRecords, lstFields, nRow);
+            fRecOk = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
             if (fRecOk)  {
                 nErrors += checkFormFields(nRow, lstFields, false);
             }
@@ -2996,37 +2819,6 @@ int ctedit::globalChecks()
         delete errWindow;
     }
     return nErrors;
-}
-bool ctedit::isValidVarName(QString szName)
-{
-    bool    fRes = true;
-    char    anyCh;
-    int     i = 0;
-
-    if (!szName.isEmpty())  {
-        // Controllo che la variabile non cominci con un carattere numerico
-        for (i = 0; i < szName.length(); i++)  {
-            anyCh = szName.at(i).toAscii();
-            // First Ch is Number
-            if (i == 0 && (anyCh <= '9' && anyCh >= '0'))  {
-                fRes = false;
-                break;
-            }
-            // Others char must be Digit, Printable Chars or '_'
-            if (! ((anyCh >= '0' && anyCh <= '9') ||
-                   (anyCh >= 'A' && anyCh <= 'Z') ||
-                   (anyCh >= 'a' && anyCh <= 'z') ||
-                   (anyCh == '_')))  {
-                fRes = false;
-                break;
-            }
-        }
-    }
-    else  {
-        fRes = false;
-    }
-    // Return value
-    return fRes;
 }
 int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal)
 // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
@@ -3601,9 +3393,9 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             // Pulizia Form Editing
             clearEntryForm();
             // Pulizia Record sottostante
-            freeCTrec(nRow);
+            freeCTrec(lstCTRecords, nRow);
             // Ricarica Record vuoto a griglia
-            fOk = recCT2List(lstCTRecords, lstValues, nRow);
+            fOk = recCT2FieldsValues(lstCTRecords, lstValues, nRow);
             fOk = list2GridRow(ui->tblCT, lstValues, lstHeadLeftCols, nRow);
             // Repaint Colori Grid
             if (fOk)  {
@@ -5293,7 +5085,7 @@ bool ctedit::updateRow(int nRow)
             lstUndo.append(lstCTRecords);
             qDebug() << "updateRow() - lstUndo added";
             // Salva Record
-            fIsSaved = list2CTrec(lstFields, nRow);
+            fIsSaved = fieldValues2CTrecList(lstFields, lstCTRecords, nRow);
             // Aggiorna Grid Utente per riga corrente
             if (fIsSaved)  {
                 fRes = list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nRow);
@@ -5434,7 +5226,7 @@ bool ctedit::querySave()
     // Return value
     return fRes;
 }
-bool ctedit::getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows)
+bool ctedit::getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList> &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows)
 // Funzione per leggere da Buffer Clipboard o da una QString (caricata da file XML) delle righe di CT
 {
     int             nBufferRows = 0;
@@ -5515,7 +5307,7 @@ bool ctedit::getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPas
     // Return value
     return fClipSourceOk;
 }
-bool ctedit::readModelVars(const QString szModelName, QList<QStringList > &lstModelVars)
+bool ctedit::readModelVars(const QString szModelName, QList<CrossTableRecord> &lstModelVars)
 {
     QString     szFileName = szModelName + szXMLExt;
     bool        fRes = false;
@@ -5536,7 +5328,18 @@ bool ctedit::readModelVars(const QString szModelName, QList<QStringList > &lstMo
         // Check Buffer Length
         if (!szXMLBuffer.isEmpty())  {
             // Load Rows from Buffer
-            fRes = getRowsFromXMLBuffer(szXMLBuffer, lstModelVars, lstSourceRows, lstDestRows);
+            QList<QStringList> lstModelFields;
+            fRes = getRowsFromXMLBuffer(szXMLBuffer, lstModelFields, lstSourceRows, lstDestRows);
+            // Conversione da Lista Campi a Record CT
+            if (fRes)  {
+                int nRow = 0;
+                for (nRow = 0; nRow < lstModelFields.count(); nRow++)  {
+                    CrossTableRecord ctRec;
+                    lstModelVars.append(ctRec);
+                    freeCTrec(lstModelVars, nRow);
+                    fieldValues2CTrecList(lstModelFields[nRow], lstModelVars, nRow);
+                }
+            }
         }
     }
     return fRes;
@@ -5623,7 +5426,7 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
         // Force Block address to Row Number
         lstRecords2Add[nPasted][colBlock] = QString::number(nDestRow + 1);
         // Paste element
-        list2CTrec(lstRecords2Add[nPasted], nDestRow);
+        fieldValues2CTrecList(lstRecords2Add[nPasted], lstCTRecords, nDestRow);
         // Force Block Size to Var Size
         if (lstCTRecords[nDestRow].Protocol ==  PLC)
             lstCTRecords[nDestRow].BlockSize = 1;
@@ -6134,7 +5937,7 @@ bool ctedit::checkServersDevicesAndNodes()
                          }
                     }
                 }
-            add_node:
+//            add_node:
                 if (nNod < theNodesNumber) {
                     lstCTRecords[nCur].nNode = nNod; // found
                 } else if (theNodesNumber >= nMAX_NODES) {
@@ -6843,10 +6646,18 @@ void    ctedit::fillTimingsTree(int nCurRow)
 void    ctedit::showTabMPNC()
 {
     lstMPNC.clear();
-    lstMPNC.append(199);
     lstMPNC.append(449);
     lstMPNC.append(699);
+    lstMPNC.append(199);
+    qSort(lstMPNC);
     m_nMPNC = 0;
+    // Ricerca della riga corrente nella dimensione dei Blocchi trovati
+    for (int nItem = 0; nItem < lstMPNC.count(); nItem++)  {
+        if (m_nGridRow >= lstMPNC[nItem] && m_nGridRow < lstMPNC[nItem] + lstMPNC006_Vars.count())  {
+            m_nMPNC = nItem;
+            break;
+        }
+    }
     configMPNC->localCTRecords = lstCTRecords;
     configMPNC->showTestaNodi(m_nMPNC, lstMPNC);
 }
@@ -6855,4 +6666,14 @@ void    ctedit::showTabMPNE()
     lstMPNE.clear();
     m_nMPNE = -1;
     configMPNE->showTestaNodi(m_nMPNE, lstMPNE);
+}
+void ctedit::return2GridRow(int nRow)
+// Ritorno da Tab MPNC - MPNE
+{
+    qDebug() << QString::fromAscii("return2GridRow: Selected Row: %1 - Previous Current Row: %2") .arg(nRow) .arg(m_nGridRow);
+    if (nRow > 0 && nRow <= DimCrossTable)  {
+        m_nGridRow = nRow - 1;
+    }
+    // Jump to CT Tab
+    ui->tabWidget->setCurrentIndex(TAB_CT);
 }

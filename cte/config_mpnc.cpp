@@ -38,7 +38,7 @@ const QString szFileMPNC035 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC020_01 = szPathIMG + QString::fromAscii("MPNC020_R.png");
 const QString szFileMPNC020_02 = szPathIMG + QString::fromAscii("MPNC020_R.png");
 // Prefisso per Nomi Variabili
-const QString szVarNamePrefix = QString::fromAscii("XX_");
+const QString szVarNamePrefix = QString::fromAscii("XX");
 
 Config_MPNC::Config_MPNC(QWidget *parent) :
     QWidget(parent)
@@ -59,6 +59,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     lstSfondi.clear();
     m_nPort = -1;
     m_nNodeId = -1;
+    m_nCurrentCTRow = -1;
     m_fUpdated = false;
     m_nRootPriority = nPriorityNone;
     m_nAbsPos = 0;
@@ -345,7 +346,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     externalLayOut->addLayout(mainGrid);
     externalLayOut->addWidget(tblCT);
     //-------------------------------------
-    // Collegamento del Mapper Bottoni
+    // Collegamento del Mapper Bottoni - Slot vari, etc
     //-------------------------------------
     connect(mapModuleClicked, SIGNAL(mapped(int)), this, SLOT(buttonClicked(int)));
     connect(mapRemoveClicked, SIGNAL(mapped(int)), this, SLOT(groupItemRemove(int)));
@@ -357,7 +358,10 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     connect(txtNode, SIGNAL(editingFinished()), this, SLOT(on_changeNode()));
     // Bottone Rename CT
     connect(cmdRename, SIGNAL(clicked()), this, SLOT(on_RenameVars()));
-
+    // Row Double Clicled
+    connect(tblCT, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onRowDoubleClicked(QModelIndex)));
+    // Row Clicled
+    connect(tblCT, SIGNAL(clicked(QModelIndex)), this, SLOT(onRowClicked(QModelIndex)));
     // Combo Cambio porta Modulo
 //    // Spacers tra Gruppo (solo 4 Items)
 //    szTemp.clear();
@@ -376,14 +380,21 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     m_fCanRenameVars = false;
     m_nMaxVarName = 0;
     for (i = 0; i < lstMPNC006_Vars.count(); i++)  {
-        int nLen = lstMPNC006_Vars[i][colName].length();
+        int nLen = strlen(lstMPNC006_Vars[i].Tag);
         if (nLen > m_nMaxVarName)  {
             m_nMaxVarName = nLen;
         }
     }
+    m_nMaxVarName -= szVarNamePrefix.length();
     qDebug() << QString::fromAscii("Config_MPNC(): Max Len Var: %1") .arg(m_nMaxVarName);
 
 }
+int     Config_MPNC::getCurrentRow()
+// Restituisce la riga correntemente selezionata
+{
+    return m_nCurrentCTRow;
+}
+
 bool    Config_MPNC::isUpdated()
 // Ritorna vero se il contenuto dei nodi è stato modificato
 {
@@ -404,6 +415,7 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
     cboSelector->clear();
     lstCapofila.clear();
     m_fUpdated = false;
+    m_nCurrentCTRow = -1;
     txtNode->setModified(false);
     qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2") .arg(nTesta) .arg(lstCapofilaTeste.count());
     if (nTesta < 0 || nTesta >= lstCapofilaTeste.count())  {
@@ -519,11 +531,9 @@ void    Config_MPNC::getUsedModules(int nBaseRow)
     int     nGroup = 0;
     int     nModule = 0;
     int     nRow = 0;
-    bool    okGroup = false;
-    bool    okModule = false;
     bool    fUsed = false;
 
-    qDebug() << QString::fromAscii("getUsedModules(): Main Head Row: %1") .arg(nBaseRow);
+    // qDebug() << QString::fromAscii("getUsedModules(): Main Head Row: %1") .arg(nBaseRow);
     // Reset dell'Array dei Moduli
     for (nCur = 0; nCur < nTotalItems; nCur ++)  {
         lstModuleIsPresent[nCur] = false;
@@ -536,13 +546,11 @@ void    Config_MPNC::getUsedModules(int nBaseRow)
             abs2RelativeModulePos(nCur, nGroup, nModule);
             // Ricerca della prima riga definita per Gruppo e modulo
             for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-                int     nVarGroup = lstMPNC006_Vars[nRow][colGroup].toInt(&okGroup);
-                int     nVarModule = lstMPNC006_Vars[nRow][colModule].toInt(&okModule);
                 // La riga appartiene al modulo che stiamo cercando
-                if (okGroup && okModule && nGroup == nVarGroup && nModule == nVarModule)  {
+                if (nGroup == lstMPNC006_Vars[nRow].Group && nModule == lstMPNC006_Vars[nRow].Module)  {
                     fUsed = localCTRecords[nBaseRow + nRow].UsedEntry && localCTRecords[nBaseRow + nRow].Enable > nPriorityNone;
                     lstModuleIsPresent[nCur] = fUsed;
-                    qDebug() << QString::fromAscii("getUsedModules(): Module: %1 is: %2") .arg(nCur) .arg(fUsed ? QString::fromAscii("YES") : QString::fromAscii("NO"));
+                    //  qDebug() << QString::fromAscii("getUsedModules(): Module: %1 is: %2") .arg(nCur) .arg(fUsed ? QString::fromAscii("YES") : QString::fromAscii("NO"));
                     break;
                 }
             }
@@ -557,13 +565,14 @@ void    Config_MPNC::changeRootElement(int nItem)
 // Cambio di Item della Combo dei MPNC definiti
 {
     m_nTesta = -1;
-    qDebug() << QString::fromAscii("changeRootElement(): Item: %1") .arg(nItem);
     if (nItem >= 0 && nItem < lstCapofila.count())  {
         qDebug() << QString::fromAscii("changeRootElement(): Switching to Item: %1") .arg(nItem);
         m_nBaseRow = lstCapofila[nItem];
         m_nTesta = nItem;
         // Determina il Protocollo, la Porta e il Nodo dell'elemento
         if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
+            disableAndBlockSignals(cboPort);
+            disableAndBlockSignals(txtNode);
             // Visualizzazione Protocollo
             int nProtocol = localCTRecords[m_nBaseRow].Protocol;
             if (nProtocol >= 0 && nProtocol < lstProtocol.count())
@@ -586,6 +595,8 @@ void    Config_MPNC::changeRootElement(int nItem)
             m_nRootPriority = localCTRecords[m_nBaseRow].Enable;
             // Abilitazione Rename delle Variabili
             cmdRename->setEnabled(canRenameRows(m_nBaseRow));
+            enableAndUnlockSignals(cboPort);
+            enableAndUnlockSignals(txtNode);
         }
     }
     else  {
@@ -609,7 +620,7 @@ int     Config_MPNC::relative2AbsModulePos(int nGroup, int nModule)
     else if (nGroup > 0 && nGroup < nTotalGroups && nModule >= 0 && nModule < nItemsPerGroup)  {
         nAbs = nBaseAnIn + ((nGroup - 1 )* nItemsPerGroup) + nModule;
     }
-    qDebug() << QString::fromAscii("relative2AbsModulePos(): Group: %1 Module: %2 Abs: %3") .arg(nGroup) .arg(nModule) .arg(nAbs);
+    // qDebug() << QString::fromAscii("relative2AbsModulePos(): Group: %1 Module: %2 Abs: %3") .arg(nGroup) .arg(nModule) .arg(nAbs);
     return nAbs;
 }
 void    Config_MPNC::abs2RelativeModulePos(int nAbs, int &nGroup, int &nModule)
@@ -622,7 +633,7 @@ void    Config_MPNC::abs2RelativeModulePos(int nAbs, int &nGroup, int &nModule)
         nGroup =  ((nAbs - 1) / nItemsPerGroup) + 1;
         nModule = ((nAbs - 1) % nItemsPerGroup);
     }
-    qDebug() << QString::fromAscii("abs2RelativeModulePos(): AbsPos: %1 Group: %2 Module: %3") .arg(nAbs) .arg(nGroup) .arg(nModule);
+    // qDebug() << QString::fromAscii("abs2RelativeModulePos(): AbsPos: %1 Group: %2 Module: %3") .arg(nAbs) .arg(nGroup) .arg(nModule);
 }
 
 int     Config_MPNC::getLastModuleUsed(int nGroup)
@@ -715,14 +726,11 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
     lstRowPriority.clear();
     // Ciclo di Lettura
     for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-        bool    okGroup, okModule;
-        int     nVarGroup = lstMPNC006_Vars[nRow][colGroup].toInt(&okGroup);
-        int     nVarModule = lstMPNC006_Vars[nRow][colModule].toInt(&okModule);
         // Confronto tra Variabile corrente e variabile paradigma in Modello (per nGroup == 0 vedi tutti)
         if ( (nGroup == 0 && nItem == 0)  ||
-             (okGroup && okModule && nGroup == nVarGroup && nItem == nVarModule))  {
+             (nGroup == lstMPNC006_Vars[nRow].Group && nItem == lstMPNC006_Vars[nRow].Module))  {
             // Decodifica dei valori di CT e conversione in stringa
-            fRes = recCT2MPNxList(localCTRecords, lstLineValues, nRow + m_nBaseRow, lstMPNC006_Vars, nRow);
+            fRes = recCT2MPNxFieldsValues(localCTRecords, lstLineValues, nRow + m_nBaseRow, lstMPNC006_Vars, nRow);
             // Aggiunta alla Table
             if (fRes)  {
                 // qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colMPNxName]);
@@ -746,7 +754,7 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
 //    tblCT->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     if (nRow > 0)  {
         tblCT->setSelectionBehavior(QAbstractItemView::SelectRows);
-        tblCT->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        tblCT->setSelectionMode(QAbstractItemView::SingleSelection);
         tblCT->setVisible(true);
         tblCT->setEnabled(true);
         tblCT->selectRow(0);
@@ -796,27 +804,32 @@ void    Config_MPNC::on_changePort(int nPort)
 void    Config_MPNC::on_changeNode()
 // Evento Cambio Nodo
 {
+    disableAndBlockSignals(txtNode);
     if (txtNode->isModified())  {
         bool    fOk = false;
-        int nNode = txtNode->text().toInt(&fOk);
-        if (fOk && nNode != m_nNodeId)  {
-            m_szMsg = QString::fromAscii("Confirm Node ID change from [%1] to [%2] ?") .arg(m_nNodeId) .arg(nNode);
-            if (queryUser(this, szMectTitle, m_szMsg))  {
-                // Ciclo per riassegnare la porta Seriale
-                int nRow = 0;
-                for (nRow = m_nBaseRow; nRow < m_nBaseRow + m_nTotalRows; nRow++)  {
-                    if (nRow >= 0 && nRow < localCTRecords.count())  {
-                        localCTRecords[nRow].NodeId = nNode;
+        QString szNewValue = txtNode->text().trimmed();
+        if (szNewValue != QString::number(m_nNodeId))  {
+            int nNode = szNewValue.toInt(&fOk);
+            if (fOk && nNode != m_nNodeId)  {
+                m_szMsg = QString::fromAscii("Confirm Node ID change from [%1] to [%2] ?") .arg(m_nNodeId) .arg(nNode);
+                if (queryUser(this, szMectTitle, m_szMsg))  {
+                    // Ciclo per riassegnare la porta Seriale
+                    int nRow = 0;
+                    for (nRow = m_nBaseRow; nRow < m_nBaseRow + m_nTotalRows; nRow++)  {
+                        if (nRow >= 0 && nRow < localCTRecords.count())  {
+                            localCTRecords[nRow].NodeId = nNode;
+                        }
                     }
+                    m_nNodeId = nNode;
+                    m_fUpdated = true;
                 }
-                m_nNodeId = nNode;
-                m_fUpdated = true;
             }
+            // Aggiorna Numero di Nodo
+            txtNode->setText(QString::number(m_nNodeId));
+            txtNode->setModified(false);
+            // Forza Repaint della Radice del Nodo
+            m_nAbsPos = 0;
         }
-        // Aggiorna Numero di Nodo
-        disableAndBlockSignals(txtNode);
-        txtNode->setText(QString::number(m_nNodeId));
-        enableAndUnlockSignals(txtNode);
         // Refresh interfaccia su nodo corrente
         if (m_nAbsPos >= 0 && m_nAbsPos <= nTotalItems)  {
             int nGroup = 0;
@@ -827,6 +840,7 @@ void    Config_MPNC::on_changeNode()
             }
         }
     }
+    enableAndUnlockSignals(txtNode);
 }
 void    Config_MPNC::setGroupVars(int nGroup, int nModule, int16_t nPriority)
 // Imposta la Priority per le variabili di Gruppo e Modulo
@@ -834,11 +848,8 @@ void    Config_MPNC::setGroupVars(int nGroup, int nModule, int16_t nPriority)
     int nRow = 0;
 
     for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-        bool    okGroup, okModule;
-        int     nVarGroup = lstMPNC006_Vars[nRow][colGroup].toInt(&okGroup);
-        int     nVarModule = lstMPNC006_Vars[nRow][colModule].toInt(&okModule);
         // Confronto tra Variabile corrente e variabile paradigma in Modello (per nGroup == 0 vedi tutti)
-        if (okGroup && okModule && nGroup == nVarGroup && nModule == nVarModule)  {
+        if (nGroup == lstMPNC006_Vars[nRow].Group && nModule == lstMPNC006_Vars[nRow].Module)  {
             localCTRecords[nRow + m_nBaseRow].Enable = nPriority;
             m_fUpdated = true;
         }
@@ -848,10 +859,46 @@ void    Config_MPNC::on_RenameVars()
 // Evento Rename Clicked
 {
     bool        fOk = false;
-    QString     szNewSuffix = QInputDialog::getText(this, QString::fromAscii("New Var Prefix:"), QString::fromAscii("Enter new Variables Prefix to rename all Variables:"),
+    QString     szNewPrefix = QInputDialog::getText(this, QString::fromAscii("New Var Prefix:"), QString::fromAscii("Enter new Variables Prefix to rename all Variables:"),
                                                     QLineEdit::Normal, szVarNamePrefix, &fOk, Qt::Dialog);
     if (fOk)  {
-        qDebug() << QString::fromAscii("on_RenameVars(): New Var Prefix: [%1]") .arg(szNewSuffix);
+        // Validazione del risultato
+        m_szMsg.clear();
+        szNewPrefix = szNewPrefix.trimmed();
+        qDebug() << QString::fromAscii("on_RenameVars(): New Var Prefix: [%1]") .arg(szNewPrefix);
+        // Controllo sulla lunghezza complessiva delle variabili rinominate
+        if (szNewPrefix.length() + m_nMaxVarName > MAX_IDNAME_LEN)  {
+            fOk = false;
+            m_szMsg.append(QString::fromAscii("The Prefix [%1] is Too Long.\nThe resulting length of the Variable Names exceeds the limit of [%2] characters\n")
+                    .arg(szNewPrefix) .arg(MAX_IDNAME_LEN));
+        }
+        // Prefisso Vuoto
+        if (szNewPrefix.isEmpty())  {
+            fOk = false;
+            m_szMsg.append(QString::fromAscii("The Prefix is Empty.\n"));
+        }
+        // Prefisso non valido
+        if (! isValidVarName(szNewPrefix))  {
+            fOk = false;
+            m_szMsg.append(QString::fromAscii("The prefix [%1] is not valid\nif used as the beginning of a variable name\n") .arg(szNewPrefix));
+        }
+        if (fOk)  {
+            // Controlli superati, procedere al rename delle variabili
+            QString szNewVarName(szEMPTY);
+            int     nVar = 0;
+            for (nVar = 0; nVar < m_nTotalRows; nVar++)  {
+                // Generazione del nuovo nome variabile
+                szNewVarName = QString::fromAscii(lstMPNC006_Vars[nVar].Tag);
+                szNewVarName = szNewVarName.mid(szVarNamePrefix.length());
+                szNewVarName.prepend(szNewPrefix);
+                strcpy(localCTRecords[m_nBaseRow + nVar].Tag, szNewVarName.toAscii().data());
+            }
+            m_fUpdated = true;
+            filterVariables(0, 0);
+        }
+        else {
+            warnUser(this, szMectTitle, m_szMsg);
+        }
     }
 }
 bool    Config_MPNC::canRenameRows(int nBaseRow)
@@ -866,7 +913,7 @@ bool    Config_MPNC::canRenameRows(int nBaseRow)
     if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
         for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
             // Recupera il nome della variabile
-            szBaseName = lstMPNC006_Vars[nRow][colName];
+            szBaseName = QString::fromAscii(lstMPNC006_Vars[nRow].Tag);
             szBaseName = szBaseName.mid(szVarNamePrefix.length());
             // qDebug() << QString::fromAscii("canRenameRows(): Base Name:%1") .arg(szBaseName);
             szVarName = QString::fromAscii(localCTRecords[nBaseRow + nRow].Tag);
@@ -882,4 +929,31 @@ bool    Config_MPNC::canRenameRows(int nBaseRow)
     }
     // Return Value
     return fCanRename;
+}
+void    Config_MPNC::onRowClicked(const QModelIndex &index)
+// Evento Row Clicked
+{
+    int nRow = index.row();
+
+    if (nRow >= 0)  {
+        QTableWidgetItem    *tItem = tblCT->item(nRow, colMPNxRowNum);
+        if (tItem != 0)  {
+            bool fOk = false;
+            nRow = tItem->text().toInt(&fOk);
+            if (fOk)  {
+                m_nCurrentCTRow = nRow;
+                qDebug() << QString::fromAscii("onRowClicked(): CT Row:[%1]") .arg(m_nCurrentCTRow);
+            }
+        }
+    }
+}
+void    Config_MPNC::onRowDoubleClicked(const QModelIndex &index)
+// Evento Row Double Clicked
+{
+    int nRow = index.row();
+
+    if (nRow >= 0 && m_nCurrentCTRow )  {
+        qDebug() << QString::fromAscii("onRowDoubleClicked(): CT Row:[%1]") .arg(m_nCurrentCTRow);
+        emit varClicked(m_nCurrentCTRow);
+    }
 }

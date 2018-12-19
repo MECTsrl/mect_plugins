@@ -41,9 +41,9 @@ TP_Config   panelConfig;                // Configurazione corrente del Target le
 
 // Cross Table Records
 QList<CrossTableRecord> lstCTRecords;   // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE)
-QList<QStringList > lstMPNC006_Vars;    // Lista delle Variabili MPNC006
-QList<QStringList > lstTPLC050_Vars;    // Lista delle Variabili TPLC050
-QList<QStringList > lstMPNE_Vars;       // Lista delle Variabili MPNE
+QList<CrossTableRecord> lstMPNC006_Vars;// Lista delle Variabili MPNC006
+QList<CrossTableRecord> lstTPLC050_Vars;// Lista delle Variabili TPLC050
+QList<CrossTableRecord> lstMPNE_Vars;   // Lista delle Variabili MPNE
 
 // Colori per sfondi grid
 QColor      colorRetentive[2];
@@ -284,7 +284,7 @@ void setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int n
     QBrush bCell(cSfondo, Qt::SolidPattern);
     setRowBackground(bCell, table->model(), nRow);
 }
-bool recCT2MPNxList(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, QList<QStringList> &lstModel, int nModelRow)
+bool recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, QList<CrossTableRecord> &lstModel, int nModelRow)
 // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
 // Da Record C a QStringList di valori per caricamento griglia
 // Versione per MPNX Nodes
@@ -308,9 +308,9 @@ bool recCT2MPNxList(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValue
         if (CTRecords[nRow].Update >= 0 && CTRecords[nRow].Update < lstUpdateNames.count())
             lstRecValues[colMPNxUpdate] = lstUpdateNames[CTRecords[nRow].Update];
         // Campo Group
-        lstRecValues[colMPNxGroup] = lstModel[nModelRow][colGroup];
+        lstRecValues[colMPNxGroup] = QString::number(lstModel[nModelRow].Group);
         // Campo Module
-        lstRecValues[colMPNxModule] = lstModel[nModelRow][colModule];
+        lstRecValues[colMPNxModule] = QString::number(lstModel[nModelRow].Module);
         // Campo Name
         lstRecValues[colMPNxName] = QString::fromAscii(CTRecords[nRow].Tag);
         // Campo Type
@@ -338,11 +338,9 @@ bool recCT2MPNxList(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValue
     //    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
     // Return value
     return true;
-
-
 }
 
-bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow)
+bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow)
 // Conversione da CT Record a record come Lista Stringhe per Interfaccia (Grid)
 // Da Record C a QStringList di valori per caricamento griglia
 {
@@ -474,6 +472,195 @@ bool recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, i
     // Return value
     return true;
 }
+void freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow)
+// Marca il Record della CT come inutilizzato
+{
+    if (nRow < 0 || nRow >= lstCTRecs.count())
+        return;
+    lstCTRecs[nRow].UsedEntry = 0;
+    lstCTRecs[nRow].Enable = 0;
+    lstCTRecs[nRow].Update = (UpdateType) 0;
+    strcpy(lstCTRecs[nRow].Tag, "");
+    lstCTRecs[nRow].VarType = (varTypes) 0;
+    lstCTRecs[nRow].Decimal = 0;
+    lstCTRecs[nRow].Protocol = (FieldbusType) 0;
+    lstCTRecs[nRow].IPAddress = 0;
+    lstCTRecs[nRow].Port = 0;
+    lstCTRecs[nRow].NodeId = 0;
+    lstCTRecs[nRow].InputReg = 0;
+    lstCTRecs[nRow].Group = 0;
+    lstCTRecs[nRow].Module = 0;
+    lstCTRecs[nRow].Offset = 0;
+    lstCTRecs[nRow].Block = 0;
+    lstCTRecs[nRow].BlockBase = 0;
+    lstCTRecs[nRow].Behavior = 0;
+    lstCTRecs[nRow].Counter = 0;
+    lstCTRecs[nRow].OldVal = 0;
+    lstCTRecs[nRow].Error = 0;
+    lstCTRecs[nRow].nDevice = 0xffff;
+    lstCTRecs[nRow].nNode = 0xffff;
+    lstCTRecs[nRow].nBlock = 0xffff;
+    lstCTRecs[nRow].usedInAlarmsEvents = FALSE;
+    lstCTRecs[nRow].ALType = -1;
+    strcpy(lstCTRecs[nRow].ALSource, "");
+    lstCTRecs[nRow].ALOperator = -1;
+    strcpy(lstCTRecs[nRow].ALCompareVar, "");
+    lstCTRecs[nRow].ALCompareVal = 0.0;
+    lstCTRecs[nRow].ALComparison = -1;
+    lstCTRecs[nRow].ALCompatible  = FALSE;
+    strcpy(lstCTRecs[nRow].Comment, "");
+}
+
+
+
+bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow)
+// Conversione da Lista Valori di Interfaccia a CT Record (Form -> REC SINGOLO)
+// Scrive un Record letto da interfaccia direttamente in lista di Record C
+{
+    bool        fRes = true;
+    bool        fOk = false;
+    int         nPos = 0;
+    char        ip[MAX_IPADDR_LEN];
+
+    // Abilitazione riga (Nome Vuoto => Riga disabilitata)
+    if (lstRecValues[colName].isEmpty())  {
+        freeCTrec(lstCTRecs, nRow);
+    }
+    else  {
+        // Priority
+        nPos = lstPriority.indexOf(lstRecValues[colPriority]);
+        nPos = (nPos >= 0 && nPos < nNumPriority) ? nPos : 0;
+        lstCTRecs[nRow].Enable = (int16_t) nPos;
+        // Update
+        nPos = lstUpdateNames.indexOf(lstRecValues[colUpdate]);
+        nPos = (nPos >= 0 && nPos < lstUpdateNames.count()) ? nPos : 0;
+        lstCTRecs[nRow].Update = (UpdateType) nPos;
+        // Group
+        nPos = lstRecValues[colGroup].toInt(&fOk);
+        nPos = fOk ? nPos : 0;
+        lstCTRecs[nRow].Group = nPos;
+        // Module
+        nPos = lstRecValues[colModule].toInt(&fOk);
+        nPos = fOk ? nPos : 0;
+        lstCTRecs[nRow].Module = nPos;
+        // Campo Name
+        strcpy(lstCTRecs[nRow].Tag, lstRecValues[colName].trimmed().toAscii().data());
+        // Campo Abilitazione record
+        if (strlen(lstCTRecs[nRow].Tag) > 0)
+            lstCTRecs[nRow].UsedEntry = 1;
+        else
+            lstCTRecs[nRow].UsedEntry = 0;
+        // Campo Type
+        nPos = lstTipi.indexOf(lstRecValues[colType]);
+        nPos = (nPos >= 0 && nPos < lstTipi.count()) ? nPos : 0;
+        lstCTRecs[nRow].VarType = (varTypes) nPos;
+        // Campo Decimal
+        nPos = lstRecValues[colDecimal].toInt(&fOk);
+        nPos = fOk ? nPos : 0;
+        lstCTRecs[nRow].Decimal = nPos;
+        // Protocol
+        nPos = lstProtocol.indexOf(lstRecValues[colProtocol]);
+        nPos = (nPos >= 0 && nPos < lstProtocol.count()) ? nPos : 0;
+        lstCTRecs[nRow].Protocol = (FieldbusType) nPos;
+        // IP Address (Significativo solo per Protocolli a base TCP)
+        if (lstCTRecs[nRow].Protocol == TCP || lstCTRecs[nRow].Protocol == TCPRTU ||
+                lstCTRecs[nRow].Protocol == TCP_SRV || lstCTRecs[nRow].Protocol ==TCPRTU_SRV)  {
+            strcpy(ip, lstRecValues[colIP].trimmed().toAscii().data());
+            nPos = str2ipaddr(ip);
+            lstCTRecs[nRow].IPAddress = (uint32_t) nPos;
+        }
+        else
+            lstCTRecs[nRow].IPAddress = (uint32_t) 0 ;
+        // Port
+        nPos = lstRecValues[colPort].toInt(&fOk);
+        nPos = fOk ? nPos : 0;
+        lstCTRecs[nRow].Port = nPos;
+        // Node Id
+        nPos = lstRecValues[colNodeID].toInt(&fOk);
+        nPos = fOk ? nPos : 0;
+        lstCTRecs[nRow].NodeId = nPos;
+        // Flag Input Register
+        lstCTRecs[nRow].InputReg = (lstRecValues[colInputReg] == szTRUE) ? 1 : 0;
+        // OffSet Register
+        nPos = lstRecValues[colRegister].toInt(&fOk);
+        nPos = fOk ? nPos : 0;
+        lstCTRecs[nRow].Offset = nPos;
+        // Block
+        nPos = lstRecValues[colBlock].toInt(&fOk);
+        nPos = fOk ? nPos : 0;
+        if (nPos == 0)  {
+            lstCTRecs[nRow].Block = nRow + 1;
+            lstCTRecs[nRow].BlockSize = 1;
+        }
+        else {
+            lstCTRecs[nRow].Block = nPos;
+            // N.Registro
+            nPos = lstRecValues[colBlockSize].toInt(&fOk);
+            nPos = fOk ? nPos : 1;
+            lstCTRecs[nRow].BlockSize = nPos;
+        }
+        // Commento
+        strncpy(lstCTRecs[nRow].Comment, lstRecValues[colComment].trimmed().toAscii().data(), MAX_COMMENT_LEN - 1);
+        // Clear all Variable - Event fields
+        lstCTRecs[nRow].usedInAlarmsEvents = FALSE;
+        lstCTRecs[nRow].ALType = -1;
+        strcpy(lstCTRecs[nRow].ALSource, szEMPTY.toAscii().data());
+        lstCTRecs[nRow].ALOperator = -1;
+        strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
+        lstCTRecs[nRow].ALCompareVal = 0.0;
+        lstCTRecs[nRow].ALComparison = -1;
+        lstCTRecs[nRow].ALCompatible = 0;
+        // Behavior
+        nPos = lstBehavior.indexOf(lstRecValues[colBehavior]);
+        nPos = (nPos >= 0 && nPos < lstBehavior.count()) ? nPos : 0;
+        lstCTRecs[nRow].Behavior = nPos;
+        // Salvataggio dei valori di Allarme/Evento
+        if (nPos >= behavior_alarm)   {
+            // Flag isAlarm
+            lstCTRecs[nRow].usedInAlarmsEvents = TRUE;
+            // Type of Alarm or Event
+            if (nPos == behavior_alarm)
+                lstCTRecs[nRow].ALType = Alarm;
+            else
+                lstCTRecs[nRow].ALType = Event;
+            // Left Variable Name
+            strcpy(lstCTRecs[nRow].ALSource, lstRecValues[colSourceVar].trimmed().toAscii().data());
+            // Operator
+            nPos = lstCondition.indexOf(lstRecValues[colCondition]);
+            nPos = (nPos >= 0 && nPos < lstCondition.count()) ? nPos : -1;
+            lstCTRecs[nRow].ALOperator = nPos;
+            // Compare VAR - VAL
+            QString szCompare = lstRecValues[colCompare].trimmed();
+            if (szCompare.isEmpty())  {
+                strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
+                lstCTRecs[nRow].ALCompareVal = 0.0;
+            }
+            else  {
+                // Decisione se il secondo lato dell'espressione sia una costante o un nome variabile
+                QChar cc = szCompare.at(0);
+                if (cc.isLetter())  {
+                    // Variable
+                    strcpy(lstCTRecs[nRow].ALCompareVar, szCompare.toAscii().data());
+                    lstCTRecs[nRow].ALCompareVal = 0.0;
+                }
+                else  {
+                    float fValue = 0;
+                    // Value
+                    strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
+                    fValue = szCompare.toFloat(&fOk);
+                    fValue = fOk ? fValue : 0.0;
+                    lstCTRecs[nRow].ALCompareVal = fValue;
+                    // TODO: Fill correct values for Comparison and Compatible
+                    lstCTRecs[nRow].ALComparison = COMP_UNSIGNED;
+                    lstCTRecs[nRow].ALCompatible = 1;
+                }
+            }
+        }
+    }
+    // Return Value
+    return fRes;
+}
+
 bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int> &lstLeftCols, int nRow)
 // Inserimento o modifica elemento in Grid (valori -> GRID)
 {
@@ -579,4 +766,54 @@ void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> 
     verticalHeader->setDefaultSectionSize(nColHeight);
     qDebug() << QString::fromAscii("setGridParams():    Col Height: %1") .arg(nColHeight);
 
+}
+bool    isValidVarName(QString szName)
+{
+    bool    fRes = true;
+    char    anyCh;
+    int     i = 0;
+
+    if (!szName.isEmpty())  {
+        // Controllo che la variabile non cominci con un carattere numerico
+        for (i = 0; i < szName.length(); i++)  {
+            anyCh = szName.at(i).toAscii();
+            // First Ch is Number
+            if (i == 0 && (anyCh <= '9' && anyCh >= '0'))  {
+                fRes = false;
+                break;
+            }
+            // Others char must be Digit, Printable Chars or '_'
+            if (! ((anyCh >= '0' && anyCh <= '9') ||
+                   (anyCh >= 'A' && anyCh <= 'Z') ||
+                   (anyCh >= 'a' && anyCh <= 'z') ||
+                   (anyCh == '_')))  {
+                fRes = false;
+                break;
+            }
+        }
+    }
+    else  {
+        fRes = false;
+    }
+    // Return value
+    return fRes;
+}
+bool    searchModules(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CTModel, QList<int> &lstRootRows)
+// Ricerca di un Modello in CT
+{
+    bool    fFound = false;
+    int     nProtocol = 0;
+    int     nBaseRow = 0;
+    int     nModelSize = CTModel.count();
+
+    lstRootRows.clear();
+    if (CTRecords.count() > 0 && CTModel.count() > 0 && CTRecords.count() >= nModelSize)  {
+        nProtocol = CTModel[0].Protocol;
+//        do while (nBaseRow < DimCrossTable - nModelSize)  {
+//            //
+//            nBaseRow++;
+//        }
+    }
+    // Return Value
+    return fFound;
 }

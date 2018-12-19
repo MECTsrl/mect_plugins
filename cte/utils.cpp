@@ -131,18 +131,18 @@ bool queryUser(QWidget * parent, const QString &szTitle, const QString &szQueryM
 void notifyUser(QWidget * parent, const QString &szTitle, const QString &szMessage)
 // Notifica all'Utente il messaggio con solo il tasto Ok
 {
-    QMessageBox::StandardButton ret = QMessageBox::Ok;
+//    QMessageBox::StandardButton ret = QMessageBox::Ok;
 
     // Prompt Message Box
-    ret = QMessageBox::information(parent, szTitle, szMessage);
+    QMessageBox::information(parent, szTitle, szMessage);
 }
 void warnUser(QWidget * parent, const QString &szTitle, const QString &szMessage)
 // Notifica all'Utente il messaggio con solo il tasto Ok e Icona Warning
 {
-    QMessageBox::StandardButton ret = QMessageBox::Ok;
+//    QMessageBox::StandardButton ret = QMessageBox::Ok;
 
     // Prompt Message Box
-    ret = QMessageBox::critical(parent, szTitle, szMessage);
+    QMessageBox::critical(parent, szTitle, szMessage);
 }
 
 QString num2Hex(int nValue, int nLen)

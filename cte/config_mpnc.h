@@ -27,21 +27,25 @@ public:
     QList<CrossTableRecord> localCTRecords;
 
 signals:
+    void    varClicked(int  nVarRow);
 
 public slots:
     void    showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste);
     bool    isUpdated();                                                // Ritorna vero se il contenuto dei nodi è stato modificato
+    int     getCurrentRow();                                            // Restituisce la riga correntemente selezionata
 
 private slots:
-    void    customizeButtons();                 // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
-    void    buttonClicked(int nButton);         // Gestore della pressione dei bottoni (Define Module)
-    void    groupItemRemove(int nGroup);        // Rimozione elemento da gruppo
-    void    getUsedModules(int nBaseRow);       // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
-    void    changeRootElement(int nItem);       // Cambio di Item della Combo dei MPNC definiti
-    void    filterVariables(int nGroup, int nItem); // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
-    void    on_changePort(int nPort);              // Evento cambio Porta RTU
-    void    on_changeNode();                    // Evento Cambio Nodo
-    void    on_RenameVars();                    // Evento Rename Clicked
+    void    customizeButtons();                             // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
+    void    buttonClicked(int nButton);                     // Gestore della pressione dei bottoni (Define Module)
+    void    groupItemRemove(int nGroup);                    // Rimozione elemento da gruppo
+    void    getUsedModules(int nBaseRow);                   // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
+    void    changeRootElement(int nItem);                   // Cambio di Item della Combo dei MPNC definiti
+    void    filterVariables(int nGroup, int nItem);         // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
+    void    on_changePort(int nPort);                       // Evento cambio Porta RTU
+    void    on_changeNode();                                // Evento Cambio Nodo
+    void    on_RenameVars();                                // Evento Rename Clicked
+    void    onRowClicked(const QModelIndex &index);         // Evento Row Clicked
+    void    onRowDoubleClicked(const QModelIndex &index);   // Evento Row Double Clicked
 
 private:
     //---------------------------------------------------------------------
@@ -78,6 +82,7 @@ private:
     QSignalMapper           *mapModuleClicked;  // Signal Mapper per Module Clicked
     QString                 m_szMsg;            // Messaggio di servizio
     // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema    
+    int                     m_nCurrentCTRow;    // Riga di CT correntemente selezionata
     int                     m_nAbsPos;          // Posizione correntemente visualizzata
     int                     m_nTotalRows;       // Elementi MPNC
     bool                    m_fUpdated;         // Vero se le info della finestra sono cambiate

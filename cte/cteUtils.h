@@ -35,9 +35,9 @@ extern TP_Config   panelConfig;         // Configurazione corrente del Target le
 
 // Cross Table Records
 extern QList<CrossTableRecord> lstCTRecords;    // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE)
-extern QList<QStringList > lstMPNC006_Vars;     // Lista delle Variabili MPNC006
-extern QList<QStringList > lstTPLC050_Vars;     // Lista delle Variabili TPLC050
-extern QList<QStringList > lstMPNE_Vars;        // Lista delle Variabili MPNE
+extern QList<CrossTableRecord> lstMPNC006_Vars; // Lista delle Variabili MPNC006
+extern QList<CrossTableRecord> lstTPLC050_Vars; // Lista delle Variabili TPLC050
+extern QList<CrossTableRecord> lstMPNE_Vars;    // Lista delle Variabili MPNE
 
 
 // Colori per sfondi grid
@@ -52,12 +52,17 @@ extern QString     szColorSystem[2];
 
 void    initLists();                       // Init delle Liste globali
 void    setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int nPriority, int nBaseOffset = 0);   // Imposta il colore di sfondo di una riga
-bool    recCT2MPNxList(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, QList<QStringList> &lstModel, int nModelRow);// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
-bool    recCT2List(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow);    // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
+bool    recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, QList<CrossTableRecord> &lstModel, int nModelRow);// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
+bool    recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow);        // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
+bool    fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow);     // Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
+void    freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow);                    // Marca il Record della CT come inutilizzato
+
 bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int> &lstLeftCols, int nRow);   // Inserimento o modifica elemento in Grid (valori -> GRID)
 
 int     enableSerialPortCombo(QComboBox *cboBox);
 void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> &lstHeadSizes, QAbstractItemView::SelectionMode nMode); // Imposta i parametri generali di visualizzazione Grid
 
+bool    isValidVarName(QString szName);                                                                 // Controllo del Nome Variabile
+bool    searchModules(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CTModel, QList<int> &lstRootRows);            // Ricerca di un Modello in CT
 
 #endif // CTEUTILS_H

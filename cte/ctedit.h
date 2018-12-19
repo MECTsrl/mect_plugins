@@ -84,7 +84,7 @@ private slots:
     void on_tblCT_doubleClicked(const QModelIndex &index);
     void on_txtName_editingFinished();              // Modificato nome della variabile
     void treeItemDoubleClicked(const QModelIndex &index);
-
+    void return2GridRow(int nRow);                  // Ritorno da Tab MPNC - MPNE
 
 private:
     //---------------------------------------------------------------------
@@ -92,11 +92,9 @@ private:
     //---------------------------------------------------------------------
     // Lettura e scrittura dati da e per strutture di appoggio
     bool    ctable2Grid();                          // Lettura di tutta la CT in Grid
-    bool    list2CTrec(QStringList &lstRecValues, int nRow);// Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
     bool    grid2CTable();                          // Dump di tutto il Grid in lista di CT Records
     bool    values2Iface(QStringList &lstRecValues);// Copia Lista Stringhe convertite da CT Record a Zona di Editing
     bool    iface2values(QStringList &lstRecValues);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
-    void    freeCTrec(int nRow);                    // Marca il Record della CT come inutilizzato
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
     void    initTargetList();                       // Init della lista dei Target definiti
     bool    updateRow(int nRow);                    // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
@@ -131,7 +129,6 @@ private:
     bool    checkVarsCompatibility(varTypes nTypeV1, int nDecV1, varTypes nTypeV2, int nDecV2);      // Controllo tra i due operandi di un Allarme
     int     globalChecks();                         // Controlli complessivi su tutta la CT
     bool    isFormEmpty();                          // Controllo Form Editing vuoto
-    bool    isValidVarName(QString szName);         // Controllo del Nome Variabile
     bool    isValidPort(int nPort, int nProtocol);  // Controllo di validità di un numero porta in funzione di Modello (da TargetConfig) e del Protocollo
     void    getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal);// Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
     void    fillErrorMessage(int nRow, int nCol, int nErrCode, QString szVarName, QString szValue, QChar severity, Err_CT *errCt);
@@ -156,8 +153,8 @@ private:
     bool    isSilenceOk(int nSilence_ms, int nBaudRate, double dblCharTime_ms);                     // Verifica che il tempo di silence specificato sia adeguato al BaudRate corrente
     int     searchBlock(int nBlock);                // Ricerca in theBlocks del blocco nBlock
     // Import dati in XML
-    bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList > &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows); // Funzione per leggere da Buffer Clipboard o da una QString (caricata da file XML) delle righe di CT
-    bool    readModelVars(const QString szModelName, QList<QStringList > &lstModelVars);            // Lettura da XML delle variabili CT precaricate per modelli
+    bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList> &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows); // Funzione per leggere da Buffer Clipboard o da una QString (caricata da file XML) delle righe di CT
+    bool    readModelVars(const QString szModelName, QList<CrossTableRecord> &lstModelVars);            // Lettura da XML delle variabili CT precaricate per modelli
     bool    addModelVars(const QString szModelName, int nRow);
     void    showTabMPNC();
     void    showTabMPNE();
