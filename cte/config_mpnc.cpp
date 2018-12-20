@@ -415,9 +415,9 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, int nC
     cboSelector->clear();
     lstCapofila.clear();
     m_fUpdated = false;
-    m_nCurrentCTRow = nCurRow;
+    m_nCurrentCTRow = nCurRow;          // Riporta il Numero riga corrente ottenuto da Grid Principale CT
     txtNode->setModified(false);
-    qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2") .arg(nTesta) .arg(lstCapofilaTeste.count());
+    qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2 - Riga Corrente: %3") .arg(nTesta) .arg(lstCapofilaTeste.count()) .arg(nCurRow);
     if (nTesta < 0 || nTesta >= lstCapofilaTeste.count())  {
         for (nCur = 0; nCur < nTotalItems; nCur++)  {
             lstModuleIsPresent[nCur] = false;
@@ -569,7 +569,6 @@ void    Config_MPNC::changeRootElement(int nItem)
 
     m_nTesta = -1;
     if (nItem >= 0 && nItem < lstCapofila.count())  {
-        qDebug() << QString::fromAscii("changeRootElement(): Switching to Item: %1 - Row: %2") .arg(nItem) .arg(m_nCurrentCTRow);
         m_nBaseRow = lstCapofila[nItem];
         m_nTesta = nItem;
         // Determina il Protocollo, la Porta e il Nodo dell'elemento
@@ -602,14 +601,23 @@ void    Config_MPNC::changeRootElement(int nItem)
             enableAndUnlockSignals(txtNode);
             // Aggiornamento lista moduli
             getUsedModules(m_nBaseRow);
-            // Ricerca della riga corrente di CT
-            if (m_nCurrentCTRow >= m_nBaseRow && m_nCurrentCTRow < m_nBaseRow + m_nMaxVarName)  {
-                // Se la riga corrente fa parte di un modulo utilizzato salta a quel modulo
-                if (localCTRecords[m_nCurrentCTRow].Enable > nPriorityNone)  {
-                    nGroup = lstMPNC006_Vars[m_nCurrentCTRow - m_nBaseRow].Group;
-                    nModule = lstMPNC006_Vars[m_nCurrentCTRow - m_nBaseRow].Module;
-                }
+            // Riga corrente non compresa nella definizione del modulo
+            if (m_nCurrentCTRow < m_nBaseRow || m_nCurrentCTRow > m_nBaseRow + m_nTotalRows)  {
+                qDebug() << QString::fromAscii("changeRootElement(): Forced current Row[%1] To Base Element [%2]") .arg(m_nCurrentCTRow) .arg(m_nBaseRow);
+                m_nCurrentCTRow = m_nBaseRow;
             }
+            // Ricerca del Gruppo/Modulo di appartenenza della riga di CT. Se il modulo è utilizzato salta al modulo
+            if (localCTRecords[m_nCurrentCTRow].Enable > nPriorityNone)  {
+                nGroup = lstMPNC006_Vars[m_nCurrentCTRow - m_nBaseRow].Group;
+                nModule = lstMPNC006_Vars[m_nCurrentCTRow - m_nBaseRow].Module;
+            }
+            int nABS = relative2AbsModulePos(nGroup, nModule);
+            if (! lstModuleIsPresent[nABS])  {
+                nGroup = 0;
+                nModule = 0;
+            }
+            qDebug() << QString::fromAscii("changeRootElement(): Switching to Item: %1 - Row: %2 - Group: %3 - Module: %4")
+                        .arg(nItem) .arg(m_nCurrentCTRow) .arg(nGroup) .arg(nModule);
             // Abilitazione interfaccia
             customizeButtons();
             filterVariables(nGroup, nModule);
@@ -749,7 +757,8 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
                 lstRowPriority.append(localCTRecords[nRow + m_nBaseRow].Enable);
                 // Riga da selezionare in Grid
                 if (nRow + m_nBaseRow == m_nCurrentCTRow)  {
-                    nCurrentRow = nRow;
+                    nCurrentRow = lstTableRows.count() - 1;
+                    qDebug() << QString::fromAscii("filterVariables(): Current Table Row: %1 - CT Row: %2") .arg(nCurrentRow) .arg(nRow + m_nBaseRow);
                 }
             }
         }
@@ -766,17 +775,22 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
     for (nRow = 0; nRow < lstTableRows.count(); nRow++)  {
         setRowColor(tblCT, nRow, 0, 1, lstRowPriority[nRow], m_nBaseRow);
     }
-//    tblCT->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-    if (nRow > 0)  {
+    // Ci sono elementi in griglia
+    if (lstTableRows.count() > 0)  {
         tblCT->setSelectionBehavior(QAbstractItemView::SelectRows);
         tblCT->setSelectionMode(QAbstractItemView::SingleSelection);
         tblCT->setVisible(true);
         tblCT->setEnabled(true);
+        if (nCurrentRow < 0 || nCurrentRow >= lstTableRows.count())  {
+            qDebug() << QString::fromAscii("filterVariables(): Table Row: %1 Forced to 0") .arg(nCurrentRow);
+            nCurrentRow = 0;
+        }
         tblCT->selectRow(nCurrentRow);
         tblCT->update();
         tblCT->setFocus();
     }    
-    qDebug() << QString::fromAscii("Displayed Rows: %1") .arg(nRow);
+    qDebug() << QString::fromAscii("filterVariables(): Displayed Rows: %1 - Current Relative: %2 - CT Row: %3")
+                .arg(nRow) .arg(nCurrentRow) .arg(m_nCurrentCTRow);
     // Refresh delle Labels Marcatori del Gruppo/Item corrente
     m_nAbsPos = relative2AbsModulePos(nGroup, nItem);
     for (nRow = 0; nRow < lstPosMarker.count(); nRow++)  {

@@ -764,7 +764,7 @@ void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> 
     QHeaderView *verticalHeader = table->verticalHeader();
     verticalHeader->setResizeMode(QHeaderView::Fixed);
     verticalHeader->setDefaultSectionSize(nColHeight);
-    qDebug() << QString::fromAscii("setGridParams():    Col Height: %1") .arg(nColHeight);
+    // qDebug() << QString::fromAscii("setGridParams():    Col Height: %1") .arg(nColHeight);
 
 }
 bool    isValidVarName(QString szName)
@@ -808,7 +808,7 @@ bool    searchModels(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord>
 
     lstRootRows.clear();
     if (CTRecords.count() > 0 && CTModel.count() > 0 && CTRecords.count() >= nModelSize)  {
-        while (nRow < DimCrossTable)  {
+        while (nRow < MIN_DIAG)  {
             if ( CTRecords[nRow].VarType == CTModel[nModelRow].VarType &&
                  CTRecords[nRow].Decimal == CTModel[nModelRow].Decimal &&
                  CTRecords[nRow].Protocol == CTModel[nModelRow].Protocol &&
