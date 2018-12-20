@@ -158,6 +158,14 @@ enum regions_e
     regTotals
 };
 
+enum showModes
+{
+    showHead = 0,
+    showUsed,
+    showAll,
+    showTotals
+};
+
 struct  extendedCT : CrossTableRecord {
     int     nGroup;
     int     nModule;

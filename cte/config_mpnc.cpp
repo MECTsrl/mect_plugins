@@ -37,8 +37,9 @@ const QString szFileMPNC030 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC035 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC020_01 = szPathIMG + QString::fromAscii("MPNC020_R.png");
 const QString szFileMPNC020_02 = szPathIMG + QString::fromAscii("MPNC020_R.png");
-// Prefisso per Nomi Variabili
-const QString szVarNamePrefix = QString::fromAscii("XX");
+const QString szFilterHead = szPathIMG + QString::fromAscii("ShowHead.png");
+const QString szFilterUsed = szPathIMG + QString::fromAscii("ShowUsed.png");
+const QString szFilterAll = szPathIMG + QString::fromAscii("ShowAll.png");
 
 Config_MPNC::Config_MPNC(QWidget *parent) :
     QWidget(parent)
@@ -64,6 +65,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     m_nRootPriority = nPriorityNone;
     m_nAbsPos = 0;
     m_nTotalRows = lstMPNC006_Vars.count();             // Numero di Variabili da gestire
+    m_nShowMode = showAll;
 //    QFrame*         boxSeparator = 0;
     // Labels per Posizioni (A B C D)
     for (i = 0; i < nItemsPerGroup; i++)  {
@@ -107,7 +109,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
     szTemp.append(QString::fromAscii("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Head:"));
+    lblBox->setText(QString::fromAscii("MPNC006:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseHead);
     // Combo Selettore mpnc
@@ -146,21 +148,40 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     txtNode->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
     mainGrid->addWidget(txtNode, nRowSelector, nBaseDigOut + 2, 1, 2);
-    // Label MPNC006
-    szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
+    // Bottone per Rename rows
+    szTemp.clear();;
+    szTemp.append(QString::fromAscii("QPushButton:disabled { \n"));
+    szTemp.append(QString::fromAscii("  border: 0px ;\n"));
+    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
+    szTemp.append(QString::fromAscii("  background-image: url("");\n"));
+    szTemp.append(QString::fromAscii("}\n"));
+    szTemp.append(QString::fromAscii("QPushButton:enabled { \n"));
     szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
+    szTemp.append(QString::fromAscii("}\n"));
+    szTemp.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid DarkOrange ;\n"));
+    szTemp.append(QString::fromAscii("}\n"));
+    szTemp.append(QString::fromAscii("QPushButton:pressed { \n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid red;\n"));
+    szTemp.append(QString::fromAscii("}\n"));
+    szTemp.append(QString::fromAscii("QPushButton { \n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid blue;\n"));
     szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szTemp.append(QString::fromAscii("  background-color: AliceBlue;\n"));
+    szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
     szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
     szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  font: 8px;\n"));
+    szTemp.append(QString::fromAscii("  background-position: center  center;\n"));
+    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
+    szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileRename));
     szTemp.append(QString::fromAscii("}"));
-    lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("MPNC006"));
-    lblBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    lblBox->setStyleSheet(szTemp);
-    mainGrid->addWidget(lblBox, nRowDesc, nBaseHead);
+    QString szRenameToolTip = QString::fromAscii("Rename Rows");
+    cmdRename = new QPushButton(this);
+    cmdRename->setEnabled(true);
+    cmdRename->setFlat(true);
+    cmdRename->setToolTip(szRenameToolTip);
+    cmdRename->setStyleSheet(szTemp);
+    mainGrid->addWidget(cmdRename, nRowDesc, nBaseHead);
     // Labels per i 4 gruppi
     // ANIN
     szTemp.clear();
@@ -224,8 +245,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szRemoveStyle.append(QString::fromAscii("  background-position: center  center;\n"));
     szRemoveStyle.append(QString::fromAscii("}"));
     QString szRemoveToolTip = QString::fromAscii("Remove Module");
-    // Bottoni per rimozione dei Moduli
-    for (i = 0; i < nTotalGroups; i++)  {
+    // Bottoni per rimozione dei Moduli (1..4)
+    for (i = 1; i < nTotalGroups; i++)  {
         QPushButton *remove = new QPushButton(this);
         remove->setEnabled(false);
         remove->setFlat(true);
@@ -279,40 +300,34 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Fixed);
     hSpacer->setAlignment(Qt::AlignHCenter);
     mainGrid->addItem(hSpacer, nRowButtons, nTotalItems);
-    // Bottone per Rename rows
-    szTemp.clear();;
-    szTemp.append(QString::fromAscii("QPushButton:disabled { \n"));
-    szTemp.append(QString::fromAscii("  border: 0px ;\n"));
-    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
-    szTemp.append(QString::fromAscii("  background-image: url("");\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid DarkOrange ;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid red;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  background-position: center  center;\n"));
-    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
-    szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileRename));
-    szTemp.append(QString::fromAscii("}"));
-    QString szRenameToolTip = QString::fromAscii("Rename Rows");
-    cmdRename = new QPushButton(this);
-    cmdRename->setEnabled(true);
-    cmdRename->setFlat(true);
-    cmdRename->setToolTip(szRenameToolTip);
-    cmdRename->setStyleSheet(szTemp);
-    mainGrid->addWidget(cmdRename, nRowFlags, nBaseHead);
+    // Bottone per Filtro su Testa Nodi
+    szFilterStyle.clear();;
+    szFilterStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
+    szFilterStyle.append(QString::fromAscii("  border: 1px solid navy;\n"));
+    szFilterStyle.append(QString::fromAscii("}\n"));
+    szFilterStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
+    szFilterStyle.append(QString::fromAscii("  border: 1px solid DarkOrange ;\n"));
+    szFilterStyle.append(QString::fromAscii("}\n"));
+    szFilterStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
+    szFilterStyle.append(QString::fromAscii("  border: 1px solid red;\n"));
+    szFilterStyle.append(QString::fromAscii("}\n"));
+    szFilterStyle.append(QString::fromAscii("QPushButton { \n"));
+    szFilterStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
+    szFilterStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
+    szFilterStyle.append(QString::fromAscii("  min-width: 40px;\n"));
+    szFilterStyle.append(QString::fromAscii("  max-width: 40px;\n"));
+    szFilterStyle.append(QString::fromAscii("  min-height: 36px;\n"));
+    szFilterStyle.append(QString::fromAscii("  max-height: 36px;\n"));
+    szFilterStyle.append(QString::fromAscii("  background-position: center  center;\n"));
+    szFilterStyle.append(QString::fromAscii("  background-color: transparent;\n"));
+    szFilterStyle.append(QString::fromAscii("}"));
+    QString szSwitchToolTip = QString::fromAscii("Head Only / Head + Used / All");
+    cmdFilter = new QPushButton(this);
+    cmdFilter->setEnabled(true);
+    cmdFilter->setFlat(true);
+    cmdFilter->setToolTip(szSwitchToolTip);
+    cmdFilter->setStyleSheet(szFilterStyle);
+    mainGrid->addWidget(cmdFilter, nRowFlags, nBaseHead);
     // Label Gruppo (A..D)
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel:disabled {\n"));
@@ -358,6 +373,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     connect(txtNode, SIGNAL(editingFinished()), this, SLOT(on_changeNode()));
     // Bottone Rename CT
     connect(cmdRename, SIGNAL(clicked()), this, SLOT(on_RenameVars()));
+    // Bottone Switch Mode
+    connect(cmdFilter, SIGNAL(clicked()), this, SLOT(changeFilter()));
     // Row Double Clicled
     connect(tblCT, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onRowDoubleClicked(QModelIndex)));
     // Row Clicled
@@ -378,15 +395,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     lstCapofila.clear();
     m_nBaseRow = -1;
     m_fCanRenameVars = false;
+    m_nMinVarName = 0;
     m_nMaxVarName = 0;
-    for (i = 0; i < lstMPNC006_Vars.count(); i++)  {
-        int nLen = strlen(lstMPNC006_Vars[i].Tag);
-        if (nLen > m_nMaxVarName)  {
-            m_nMaxVarName = nLen;
-        }
-    }
-    m_nMaxVarName -= szVarNamePrefix.length();
-    qDebug() << QString::fromAscii("Config_MPNC(): Max Len Var: %1") .arg(m_nMaxVarName);
 
 }
 int     Config_MPNC::getCurrentRow()
@@ -416,6 +426,7 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, int nC
     lstCapofila.clear();
     m_fUpdated = false;
     m_nCurrentCTRow = nCurRow;          // Riporta il Numero riga corrente ottenuto da Grid Principale CT
+    m_nShowMode = showAll;
     txtNode->setModified(false);
     qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2 - Riga Corrente: %3") .arg(nTesta) .arg(lstCapofilaTeste.count()) .arg(nCurRow);
     if (nTesta < 0 || nTesta >= lstCapofilaTeste.count())  {
@@ -459,19 +470,13 @@ void    Config_MPNC::customizeButtons()
 
     // Testa Nodi non presente, disabilito tutti i moduli
     prevIsEnabled = lstModuleIsPresent[nBaseHead];
-    // Abilitazione dei bottoni "Remove"
-    for (nCur = 0; nCur < nTotalGroups; nCur++)  {
+    // Abilitazione dei bottoni "Remove" 1..4
+    for (nCur = 1; nCur < nTotalGroups; nCur++)  {
         szNewStyle = szRemoveStyle.left(szRemoveStyle.length() - 1);
         curIsEnabled = false;
         szIcon.clear();
-        if (nCur == 0)  {
-            // Rimozione Base abilitata solo se nessun modulo è presente
-            curIsEnabled = ! (lstModuleIsPresent[nBaseAnIn] || lstModuleIsPresent[nBaseAnOut] || lstModuleIsPresent[nBaseDigIn] || lstModuleIsPresent[nBaseDigOut]);
-        }
-        else  {
-            // Se esiste almeno la base di quel gruppo abilita bottone Remove
-            curIsEnabled = lstModuleIsPresent[nBaseAnIn + ((nCur -1) * nItemsPerGroup)];
-        }
+        // Se esiste almeno la base di quel gruppo abilita bottone Remove
+        curIsEnabled = lstModuleIsPresent[nBaseAnIn + ((nCur -1) * nItemsPerGroup)];
         // Icona Remove
         szIcon = curIsEnabled ? szFileRemove : QString::fromAscii("");
         szIcon = QString::fromAscii("    qproperty-icon: url(%1); \n") .arg(szIcon);
@@ -480,10 +485,10 @@ void    Config_MPNC::customizeButtons()
         }
         szNewStyle.append(szIcon);
         // Abilitazione bottone Remove
-        lstRemove[nCur]->setEnabled(curIsEnabled);
+        lstRemove[nCur - 1]->setEnabled(curIsEnabled);
         // Cambio StyleSheet
         szNewStyle.append(QString::fromAscii("}"));
-        lstRemove[nCur]->setStyleSheet(szNewStyle);
+        lstRemove[nCur - 1]->setStyleSheet(szNewStyle);
     }
     for (nCur = 0; nCur < nTotalItems; nCur++)  {
         // Recupero dello Style generale per i bottoni
@@ -571,6 +576,8 @@ void    Config_MPNC::changeRootElement(int nItem)
     if (nItem >= 0 && nItem < lstCapofila.count())  {
         m_nBaseRow = lstCapofila[nItem];
         m_nTesta = nItem;
+        m_nShowMode = showAll;
+        setFilterButton(m_nShowMode);
         // Determina il Protocollo, la Porta e il Nodo dell'elemento
         if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
             disableAndBlockSignals(cboPort);
@@ -702,6 +709,10 @@ void    Config_MPNC::buttonClicked(int nButton)
 void    Config_MPNC::groupItemRemove(int nGroup)
 // Rimozione elemento da gruppo
 {
+    // Controllo Gruppo 1..4
+    if (nGroup <= 0 || nGroup >= nTotalGroups)
+        return;
+
     int nItem = getLastModuleUsed(nGroup);
 
     qDebug() << QString::fromAscii("groupItemRemove(): Group Clicked: %1 - Name: %2 - Pos: %3") .arg(nGroup) .arg(lstModuleName[nGroup]) .arg(nItem);
@@ -748,17 +759,40 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
         // Confronto tra Variabile corrente e variabile paradigma in Modello (per nGroup == 0 vedi tutti)
         if ( (nGroup == 0 && nItem == 0)  ||
              (nGroup == lstMPNC006_Vars[nRow].Group && nItem == lstMPNC006_Vars[nRow].Module))  {
-            // Decodifica dei valori di CT e conversione in stringa
-            fRes = recCT2MPNxFieldsValues(localCTRecords, lstLineValues, nRow + m_nBaseRow, lstMPNC006_Vars, nRow);
-            // Aggiunta alla Table
-            if (fRes)  {
-                // qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colMPNxName]);
-                lstTableRows.append(lstLineValues);
-                lstRowPriority.append(localCTRecords[nRow + m_nBaseRow].Enable);
-                // Riga da selezionare in Grid
-                if (nRow + m_nBaseRow == m_nCurrentCTRow)  {
-                    nCurrentRow = lstTableRows.count() - 1;
-                    qDebug() << QString::fromAscii("filterVariables(): Current Table Row: %1 - CT Row: %2") .arg(nCurrentRow) .arg(nRow + m_nBaseRow);
+            bool    fShow = true;
+            // Ulteriori selezioni per la Testa dei Nodi in funzione della modalità di visualizzazione
+            if (nGroup == 0 && nItem == 0)  {
+                switch (m_nShowMode)  {
+                    case showHead:
+                        // Visualizza solo elementi della Head (no Nodi)
+                        fShow = (nGroup == lstMPNC006_Vars[nRow].Group && nItem == lstMPNC006_Vars[nRow].Module);
+                        break;
+
+                    case showUsed:
+                        // Visualizza solo le variabili utilizzate
+                        fShow = localCTRecords[m_nBaseRow + nRow].Enable > nPriorityNone;
+                        break;
+
+                    case showAll:
+                    default:
+                        fShow = true;
+                        break;
+                }
+            }
+            // La riga deve essere visualizzata
+            if (fShow)  {
+                // Decodifica dei valori di CT e conversione in stringa
+                fRes = recCT2MPNxFieldsValues(localCTRecords, lstLineValues, nRow + m_nBaseRow, lstMPNC006_Vars, nRow);
+                // Aggiunta alla Table
+                if (fRes)  {
+                    // qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colMPNxName]);
+                    lstTableRows.append(lstLineValues);
+                    lstRowPriority.append(localCTRecords[nRow + m_nBaseRow].Enable);
+                    // Riga da selezionare in Grid
+                    if (nRow + m_nBaseRow == m_nCurrentCTRow)  {
+                        nCurrentRow = lstTableRows.count() - 1;
+                        qDebug() << QString::fromAscii("filterVariables(): Current Table Row: %1 - CT Row: %2") .arg(nCurrentRow) .arg(nRow + m_nBaseRow);
+                    }
                 }
             }
         }
@@ -789,8 +823,8 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
         tblCT->update();
         tblCT->setFocus();
     }    
-    qDebug() << QString::fromAscii("filterVariables(): Displayed Rows: %1 - Current Relative: %2 - CT Row: %3")
-                .arg(nRow) .arg(nCurrentRow) .arg(m_nCurrentCTRow);
+    qDebug() << QString::fromAscii("filterVariables(): Displayed Rows: %1 - Current Relative: %2 - CT Row: %3 - Show Mode: %4")
+                .arg(nRow) .arg(nCurrentRow) .arg(m_nCurrentCTRow) .arg(m_nShowMode);
     // Refresh delle Labels Marcatori del Gruppo/Item corrente
     m_nAbsPos = relative2AbsModulePos(nGroup, nItem);
     for (nRow = 0; nRow < lstPosMarker.count(); nRow++)  {
@@ -889,7 +923,7 @@ void    Config_MPNC::on_RenameVars()
 {
     bool        fOk = false;
     QString     szNewPrefix = QInputDialog::getText(this, QString::fromAscii("New Var Prefix:"), QString::fromAscii("Enter new Variables Prefix to rename all Variables:"),
-                                                    QLineEdit::Normal, szVarNamePrefix, &fOk, Qt::Dialog);
+                                                    QLineEdit::Normal, m_szVarNamePrefix, &fOk, Qt::Dialog);
     if (fOk)  {
         // Validazione del risultato
         m_szMsg.clear();
@@ -917,11 +951,12 @@ void    Config_MPNC::on_RenameVars()
             int     nVar = 0;
             for (nVar = 0; nVar < m_nTotalRows; nVar++)  {
                 // Generazione del nuovo nome variabile
-                szNewVarName = QString::fromAscii(lstMPNC006_Vars[nVar].Tag);
-                szNewVarName = szNewVarName.mid(szVarNamePrefix.length());
+                szNewVarName = QString::fromAscii(localCTRecords[m_nBaseRow + nVar].Tag);
+                szNewVarName = szNewVarName.mid(m_szVarNamePrefix.length());
                 szNewVarName.prepend(szNewPrefix);
                 strcpy(localCTRecords[m_nBaseRow + nVar].Tag, szNewVarName.toAscii().data());
             }
+            m_szVarNamePrefix = szNewPrefix;
             m_fUpdated = true;
             filterVariables(0, 0);
         }
@@ -933,29 +968,54 @@ void    Config_MPNC::on_RenameVars()
 bool    Config_MPNC::canRenameRows(int nBaseRow)
 // Verifica se tutto il Device può essere rinominato
 {
-    QString     szBaseName(szEMPTY);
     QString     szVarName(szEMPTY);
-
+    QStringList lstVarNames;
     bool        fCanRename = true;
     int         nRow = 0;
+    int         nCol = 0;
 
     if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
+        lstVarNames.clear();
+        m_nMinVarName = MAX_IDNAME_LEN;
+        m_nMaxVarName = 0;
+        m_szVarNamePrefix.clear();
+        // Determinazione Minima e Massima lunghezza del nome Variabile
         for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-            // Recupera il nome della variabile
-            szBaseName = QString::fromAscii(lstMPNC006_Vars[nRow].Tag);
-            szBaseName = szBaseName.mid(szVarNamePrefix.length());
-            // qDebug() << QString::fromAscii("canRenameRows(): Base Name:%1") .arg(szBaseName);
             szVarName = QString::fromAscii(localCTRecords[nBaseRow + nRow].Tag);
-            if (! szVarName.endsWith(szBaseName, Qt::CaseSensitive))  {
-                qDebug() << QString::fromAscii("canRenameRows(): Failed! Row:[%1] Var Name:[%2] Base Name:[%3]") .arg(nRow) .arg(szVarName) .arg(szBaseName);
-                fCanRename = false;
+            int nLen = szVarName.trimmed().length();
+            if (nLen > 0)  {
+                if (nLen > m_nMaxVarName) m_nMaxVarName = nLen;
+                if (nLen < m_nMinVarName) m_nMinVarName = nLen;
+                lstVarNames.append(szVarName);
+            }
+        }
+        // Ordinamento della lista di variabili
+        lstVarNames.sort();
+        QString szTemp;
+        bool    isEqual = true;
+        // Ciclo sulle Variabili ordinate
+        for (nCol = 1; nCol <= m_nMinVarName; nCol++)  {
+            // Take part of name from first variable
+            szTemp = lstVarNames[0].left(nCol);
+            for (nRow = 1; nRow < lstVarNames.count(); nRow++)  {
+                if (! lstVarNames.at(nRow).startsWith(szTemp))  {
+                    isEqual = false;
+                    break;
+                }
+            }
+            // Condizione di terminazione della scansione dei nomi
+            if (! isEqual)  {
+                m_szVarNamePrefix = szTemp.left(nCol - 1);
                 break;
             }
         }
+        // Condizione di Rename: Suffisso presente tra i nomi di Variabili
+        fCanRename = m_szVarNamePrefix.length() > 0;
     }
     else  {
         fCanRename = false;
     }
+    qDebug() << QString::fromAscii("canRenameRows(): Variables Prefix: [%1] Min Var: [%2] Max Var: [%3]") .arg(m_szVarNamePrefix) .arg(m_nMinVarName) .arg(m_nMaxVarName);
     // Return Value
     return fCanRename;
 }
@@ -985,4 +1045,42 @@ void    Config_MPNC::onRowDoubleClicked(const QModelIndex &index)
         qDebug() << QString::fromAscii("onRowDoubleClicked(): CT Row:[%1]") .arg(m_nCurrentCTRow);
         emit varClicked(m_nCurrentCTRow);
     }
+}
+void    Config_MPNC::changeFilter()
+// Cambio del filtro sui moduli
+{
+    int nNewMode = (++m_nShowMode) % showTotals;
+
+    m_nShowMode = nNewMode;
+    setFilterButton(m_nShowMode);
+    filterVariables(0, 0);
+}
+void    Config_MPNC::setFilterButton(int nNewMode)
+// Imposta il fondo del botton cmd
+{
+    QString szNewStyle = szFilterStyle.left(szFilterStyle.length() - 1);
+    QString szBackGround;
+    switch (nNewMode)  {
+        case showHead:
+            // Visualizza solo elementi della Head (no Nodi)
+            szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterHead);
+            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            break;
+
+        case showUsed:
+            // Visualizza solo le variabili utilizzate
+            szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterUsed);
+            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            break;
+
+        case showAll:
+        default:
+            nNewMode = showAll;
+            szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterAll);
+            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+    }
+    // Switch Mode
+    szNewStyle.append(szBackGround);
+    szNewStyle.append(QString::fromAscii("}"));
+    cmdFilter->setStyleSheet(szNewStyle);
 }

@@ -1708,6 +1708,21 @@ void ctedit::displayUserMenu(const QPoint &pos)
     addTPLC050->setVisible((panelConfig.modelName.contains(szTPLC050))
                            && m_nGridRow < MIN_DIAG - 1);
     addTPLC050->setEnabled(addTPLC050->isVisible());
+    // Menu Editing grafico MPNC
+    QAction *editMPNC = 0;
+    bool isMPNC = false;
+    for (int nModule = 0; nModule < lstMPNC.count(); nModule++)  {
+        int nBase = lstMPNC.at(nModule);
+        if (m_nGridRow >= nBase && m_nGridRow < nBase + lstMPNC006_Vars.count())  {
+            isMPNC = true;
+            break;
+        }
+    }
+    if (isSerialPortEnabled && m_nGridRow < MIN_DIAG - 1 && isMPNC)  {
+        cIco = QIcon(szPathIMG + QString::fromAscii("Card_32.png"));
+        gridMenu.addSeparator();
+        editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNC006"));
+    }
     // Esecuzione del Menu
     QAction *actMenu = gridMenu.exec(ui->tblCT->viewport()->mapToGlobal(pos));
     this->setCursor(Qt::WaitCursor);
@@ -1717,7 +1732,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
         insertRows();
     }
     // Cancella Righe
-    if (actMenu == emptyRows)  {
+    else if (actMenu == emptyRows)  {
         emptySelected();
     }
     // Rimozione righe
@@ -1747,6 +1762,10 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Add TPLC050
     else if (actMenu == addTPLC050)  {
         addModelVars(szTPLC050, m_nGridRow);
+    }
+    // Edit MPNC
+    else if (editMPNC != 0 && actMenu == editMPNC)  {
+        ui->tabWidget->setCurrentIndex(TAB_MPNC);
     }
     this->setCursor(Qt::ArrowCursor);
 

@@ -36,6 +36,7 @@ public slots:
 
 private slots:
     void    customizeButtons();                             // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
+    void    changeFilter();                                 // Cambio del filtro sui moduli
     void    buttonClicked(int nButton);                     // Gestore della pressione dei bottoni (Define Module)
     void    groupItemRemove(int nGroup);                    // Rimozione elemento da gruppo
     void    getUsedModules(int nBaseRow);                   // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
@@ -55,6 +56,7 @@ private:
     int     relative2AbsModulePos(int nGroup, int nModule);                 // Calcola la posizione assoluta del Modulo
     void    abs2RelativeModulePos(int nAbs, int &nGroup, int &nModule);     // Calcola la posizione assoluta del Modulo
     void    setGroupVars(int nGroup, int nModule, int16_t nPriority);       // Imposta la Priority per le variabili di Gruppo e Modulo
+    void    setFilterButton(int nNewMode);                                  // Imposta il fondo del botton cmd
     bool    canRenameRows(int nBaseRow);                                    // Verifica se tutto il Device può essere rinominato
     //---------------------------------------------------------------------
     // Variabili varie
@@ -66,6 +68,7 @@ private:
     QTableWidget            *tblCT;             // Table Widget per CT
     QComboBox               *cboSelector;       // Combo Box selettore MPNC
     QPushButton             *cmdRename;         // Push Button per Rename Rows
+    QPushButton             *cmdFilter;         // Push Button per Switch visualizzazione
     QLabel                  *lblProtocol;       // Label per Protocollo
     QComboBox               *cboPort;           // Combo per selettore Porta
     QLineEdit               *txtNode;           // Text Box per Node Id
@@ -75,24 +78,31 @@ private:
     QList<bool>             lstModuleIsPresent; // Lista abilitazione moduli
     QString                 szModuleStyle;      // Style di base dei Bottoni per i Moduli
     QString                 szRemoveStyle;      // Style di base dei Bottoni per Remove Modules
+    QString                 szFilterStyle;      // Style di base dei Bottone Switch View
     QStringList             lstSfondi;          // Lista dei nomi degli sfondi associati ai Bottoni
     QStringList             lstModuleName;      // Lista dei nomi dei moduli
     QStringList             lstPosFlags;           // Lista dei nomi delle Posizioni (A..D)
     QSignalMapper           *mapRemoveClicked;  // Signal Mapper per Remove Module Clicked
     QSignalMapper           *mapModuleClicked;  // Signal Mapper per Module Clicked
     QString                 m_szMsg;            // Messaggio di servizio
+    // Visualizzazione
+    int                     m_nShowMode;        // Modalità di visualizzazione corrente
     // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema    
     int                     m_nCurrentCTRow;    // Riga di CT correntemente selezionata
     int                     m_nAbsPos;          // Posizione correntemente visualizzata
     int                     m_nTotalRows;       // Elementi MPNC
     bool                    m_fUpdated;         // Vero se le info della finestra sono cambiate
     int                     m_nTesta;           // Testa selezionata, -1 se non presente
-    QList<int >             lstCapofila;        // # Riga della elemento capofila della Testa nEsima
-    int                     m_nBaseRow;         // Base Row della riga corrente
+    QList<int >             lstCapofila;        // Lista con # Riga delle Teste
+    // Parametri dell'Oggetto MPNC corrente
+    int                     m_nBaseRow;         // Base Row della riga corrente    
     int                     m_nPort;            // Numero porta assegnato al Device
     int                     m_nNodeId;          // Numero porta assegnato al Device
     int16_t                 m_nRootPriority;    // Priorità complessiva del Nodo
+    // Rename Variabili
     int                     m_nMaxVarName;      // Lunghezza massima di un nome di variabile in CT
+    int                     m_nMinVarName;      // Lunghezza minima di un nome di variabile in CT
+    QString                 m_szVarNamePrefix;  // Prefisso in comune per Nomi Variabili
     bool                    m_fCanRenameVars;   // Flag per abilitare funzione di Rinomina Nodi
 };
 
