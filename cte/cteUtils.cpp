@@ -798,22 +798,47 @@ bool    isValidVarName(QString szName)
     // Return value
     return fRes;
 }
-bool    searchModules(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CTModel, QList<int> &lstRootRows)
+bool    searchModels(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CTModel, QList<int> &lstRootRows)
 // Ricerca di un Modello in CT
 {
-    bool    fFound = false;
-    int     nProtocol = 0;
-    int     nBaseRow = 0;
+    int     nRow = 0;
+    int     nModelRow = 0;
+    int     nBaseRow = -1;
     int     nModelSize = CTModel.count();
 
     lstRootRows.clear();
     if (CTRecords.count() > 0 && CTModel.count() > 0 && CTRecords.count() >= nModelSize)  {
-        nProtocol = CTModel[0].Protocol;
-//        do while (nBaseRow < DimCrossTable - nModelSize)  {
-//            //
-//            nBaseRow++;
-//        }
+        while (nRow < DimCrossTable)  {
+            if ( CTRecords[nRow].VarType == CTModel[nModelRow].VarType &&
+                 CTRecords[nRow].Decimal == CTModel[nModelRow].Decimal &&
+                 CTRecords[nRow].Protocol == CTModel[nModelRow].Protocol &&
+                 CTRecords[nRow].Offset == CTModel[nModelRow].Offset &&
+                 CTRecords[nRow].Behavior == CTModel[nModelRow].Behavior
+                )  {
+                // Segna la base del modello
+                if (nModelRow == 0)  {
+                    nBaseRow = nRow;
+                }
+                // Passa alla riga successiva del modello
+                nModelRow++;
+                // Tutto il modello è Ok
+                if (nModelRow == nModelSize && nBaseRow >= 0)  {
+                    // Aggiunge base alla Lista delle Basi modello
+                    lstRootRows.append(nBaseRow);
+                    // Riporta all'inizio il confronto
+                    nModelRow = 0;
+                    qDebug() << QString::fromAscii("searchModels() - Model Found @ Row: %1") .arg(nBaseRow);
+                }
+            }
+            else  {
+                // Riporta all'inizio il confronto
+                nModelRow = 0;
+                nBaseRow = -1;
+            }
+            // Row Increment
+            nRow++;
+        }
     }
     // Return Value
-    return fFound;
+    return (lstRootRows.count() > 0);
 }

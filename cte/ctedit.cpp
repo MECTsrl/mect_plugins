@@ -629,9 +629,6 @@ bool    ctedit::selectCTFile(QString szFileCT)
         }
         // Porta in primo piano il Tab delle Variabili
         ui->tabWidget->setCurrentIndex(TAB_CT);
-        // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
-        ui->tabWidget->setTabEnabled(TAB_MPNC, isSerialPortEnabled);
-        ui->tabWidget->setTabEnabled(TAB_MPNE, isSerialPortEnabled);
     }
     return fRes;
 }
@@ -2681,6 +2678,18 @@ void ctedit::enableInterface()
     ui->fraCondition->setEnabled(true);
     ui->tblCT->setEnabled(true);
     m_fCutOrPaste = false;
+    // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
+    m_nMPNC = -1;
+    if (isSerialPortEnabled)  {
+        bool enableMPNC = searchModels(lstCTRecords, lstMPNC006_Vars, lstMPNC);
+        m_nMPNC = 0;
+        ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
+        ui->tabWidget->setTabEnabled(TAB_MPNE, false);
+    }
+    else {
+        ui->tabWidget->setTabEnabled(TAB_MPNC, false);
+        ui->tabWidget->setTabEnabled(TAB_MPNE, false);
+    }
 }
 void    ctedit::enableProtocolsFromModel()
 // Abilita i Protocolli in funzione della configurazione del Modello corrente (da TargetConfig)
@@ -6645,21 +6654,18 @@ void    ctedit::fillTimingsTree(int nCurRow)
 
 void    ctedit::showTabMPNC()
 {
-    lstMPNC.clear();
-    lstMPNC.append(449);
-    lstMPNC.append(699);
-    lstMPNC.append(199);
-    qSort(lstMPNC);
-    m_nMPNC = 0;
-    // Ricerca della riga corrente nella dimensione dei Blocchi trovati
-    for (int nItem = 0; nItem < lstMPNC.count(); nItem++)  {
-        if (m_nGridRow >= lstMPNC[nItem] && m_nGridRow < lstMPNC[nItem] + lstMPNC006_Vars.count())  {
-            m_nMPNC = nItem;
-            break;
+    if (lstMPNC.count() > 0)  {
+        m_nMPNC = 0;
+        // Ricerca della riga corrente nella dimensione dei Blocchi trovati
+        for (int nItem = 0; nItem < lstMPNC.count(); nItem++)  {
+            if (m_nGridRow >= lstMPNC[nItem] && m_nGridRow < lstMPNC[nItem] + lstMPNC006_Vars.count())  {
+                m_nMPNC = nItem;
+                break;
+            }
         }
+        configMPNC->localCTRecords = lstCTRecords;
+        configMPNC->showTestaNodi(m_nMPNC, lstMPNC, m_nGridRow);
     }
-    configMPNC->localCTRecords = lstCTRecords;
-    configMPNC->showTestaNodi(m_nMPNC, lstMPNC);
 }
 void    ctedit::showTabMPNE()
 {

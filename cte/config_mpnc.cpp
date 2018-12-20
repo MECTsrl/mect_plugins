@@ -401,7 +401,7 @@ bool    Config_MPNC::isUpdated()
     return m_fUpdated;
 }
 
-void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
+void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, int nCurRow)
 {
     int         nCur = 0;
     QString     szTemp;
@@ -415,7 +415,7 @@ void Config_MPNC::showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste)
     cboSelector->clear();
     lstCapofila.clear();
     m_fUpdated = false;
-    m_nCurrentCTRow = -1;
+    m_nCurrentCTRow = nCurRow;
     txtNode->setModified(false);
     qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2") .arg(nTesta) .arg(lstCapofilaTeste.count());
     if (nTesta < 0 || nTesta >= lstCapofilaTeste.count())  {
@@ -564,9 +564,12 @@ void    Config_MPNC::getUsedModules(int nBaseRow)
 void    Config_MPNC::changeRootElement(int nItem)
 // Cambio di Item della Combo dei MPNC definiti
 {
+    int     nGroup = 0;
+    int     nModule = 0;
+
     m_nTesta = -1;
     if (nItem >= 0 && nItem < lstCapofila.count())  {
-        qDebug() << QString::fromAscii("changeRootElement(): Switching to Item: %1") .arg(nItem);
+        qDebug() << QString::fromAscii("changeRootElement(): Switching to Item: %1 - Row: %2") .arg(nItem) .arg(m_nCurrentCTRow);
         m_nBaseRow = lstCapofila[nItem];
         m_nTesta = nItem;
         // Determina il Protocollo, la Porta e il Nodo dell'elemento
@@ -597,17 +600,24 @@ void    Config_MPNC::changeRootElement(int nItem)
             cmdRename->setEnabled(canRenameRows(m_nBaseRow));
             enableAndUnlockSignals(cboPort);
             enableAndUnlockSignals(txtNode);
+            // Aggiornamento lista moduli
+            getUsedModules(m_nBaseRow);
+            // Ricerca della riga corrente di CT
+            if (m_nCurrentCTRow >= m_nBaseRow && m_nCurrentCTRow < m_nBaseRow + m_nMaxVarName)  {
+                // Se la riga corrente fa parte di un modulo utilizzato salta a quel modulo
+                if (localCTRecords[m_nCurrentCTRow].Enable > nPriorityNone)  {
+                    nGroup = lstMPNC006_Vars[m_nCurrentCTRow - m_nBaseRow].Group;
+                    nModule = lstMPNC006_Vars[m_nCurrentCTRow - m_nBaseRow].Module;
+                }
+            }
+            // Abilitazione interfaccia
+            customizeButtons();
+            filterVariables(nGroup, nModule);
         }
     }
     else  {
         qDebug() << QString::fromAscii("changeRootElement(): Attempt to switch to wrong element: %1") .arg(nItem);
     }
-    // Aggiornamento lista moduli
-    getUsedModules(m_nBaseRow);
-    // Abilitazione interfaccia
-    customizeButtons();
-    filterVariables(0, 0);
-
 }
 int     Config_MPNC::relative2AbsModulePos(int nGroup, int nModule)
 // Calcola la posizione assoluta del Modulo
@@ -710,6 +720,7 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
     QList<QStringList > lstTableRows;
     QList<int16_t>      lstRowPriority;
     int                 nRow = 0;
+    int                 nCurrentRow = 0;
     bool                fRes = false;
 
     qDebug() << QString::fromAscii("filterVariables(): Group: %1 - Name: %2 - Item: %3") .arg(nGroup) .arg(lstModuleName[nGroup]) .arg(nItem);
@@ -736,6 +747,10 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
                 // qDebug() << QString::fromAscii("Variable: %1") .arg(lstLineValues[colMPNxName]);
                 lstTableRows.append(lstLineValues);
                 lstRowPriority.append(localCTRecords[nRow + m_nBaseRow].Enable);
+                // Riga da selezionare in Grid
+                if (nRow + m_nBaseRow == m_nCurrentCTRow)  {
+                    nCurrentRow = nRow;
+                }
             }
         }
     }
@@ -757,7 +772,7 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
         tblCT->setSelectionMode(QAbstractItemView::SingleSelection);
         tblCT->setVisible(true);
         tblCT->setEnabled(true);
-        tblCT->selectRow(0);
+        tblCT->selectRow(nCurrentRow);
         tblCT->update();
         tblCT->setFocus();
     }    

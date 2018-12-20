@@ -30,7 +30,7 @@ signals:
     void    varClicked(int  nVarRow);
 
 public slots:
-    void    showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste);
+    void    showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, int nCurRow);
     bool    isUpdated();                                                // Ritorna vero se il contenuto dei nodi è stato modificato
     int     getCurrentRow();                                            // Restituisce la riga correntemente selezionata
 

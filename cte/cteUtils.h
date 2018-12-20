@@ -62,7 +62,7 @@ bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int>
 int     enableSerialPortCombo(QComboBox *cboBox);
 void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> &lstHeadSizes, QAbstractItemView::SelectionMode nMode); // Imposta i parametri generali di visualizzazione Grid
 
-bool    isValidVarName(QString szName);                                                                 // Controllo del Nome Variabile
-bool    searchModules(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CTModel, QList<int> &lstRootRows);            // Ricerca di un Modello in CT
+bool    isValidVarName(QString szName);                                                                                     // Controllo del Nome Variabile
+bool    searchModels(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CTModel, QList<int> &lstRootRows);       // Ricerca di un Modello in CT
 
 #endif // CTEUTILS_H
