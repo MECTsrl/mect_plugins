@@ -175,7 +175,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
     szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileRename));
     szTemp.append(QString::fromAscii("}"));
-    QString szRenameToolTip = QString::fromAscii("Rename Rows");
+    QString szRenameToolTip = QString::fromAscii("Rename Variables");
     cmdRename = new QPushButton(this);
     cmdRename->setEnabled(true);
     cmdRename->setFlat(true);

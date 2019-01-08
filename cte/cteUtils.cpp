@@ -809,12 +809,25 @@ bool    searchModels(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord>
     lstRootRows.clear();
     if (CTRecords.count() > 0 && CTModel.count() > 0 && CTRecords.count() >= nModelSize)  {
         while (nRow < MIN_DIAG)  {
+            // Controllo di identità tra Variabili CT e modello
             if ( CTRecords[nRow].VarType == CTModel[nModelRow].VarType &&
-                 CTRecords[nRow].Decimal == CTModel[nModelRow].Decimal &&
+                 // CTRecords[nRow].Decimal == CTModel[nModelRow].Decimal &&
                  CTRecords[nRow].Protocol == CTModel[nModelRow].Protocol &&
                  CTRecords[nRow].Offset == CTModel[nModelRow].Offset &&
                  CTRecords[nRow].Behavior == CTModel[nModelRow].Behavior
                 )  {
+                // Il controllo del Numero Decimali è significativo solo nel caso dei vari Tipi Bit
+                if ((CTRecords[nRow].VarType == BIT ||
+                     CTRecords[nRow].VarType == BYTE_BIT ||
+                     CTRecords[nRow].VarType == WORD_BIT ||
+                     CTRecords[nRow].VarType == DWORD_BIT)  &&
+                    (CTRecords[nRow].Decimal != CTModel[nModelRow].Decimal)
+                    )  {
+                    // Abbandona il confronto perchè la maschera di Bit non è identica
+                    nModelRow = 0;
+                    nBaseRow = -1;
+                    goto nextRow;
+                }
                 // Segna la base del modello
                 if (nModelRow == 0)  {
                     nBaseRow = nRow;
@@ -835,7 +848,7 @@ bool    searchModels(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord>
                 nModelRow = 0;
                 nBaseRow = -1;
             }
-            // Row Increment
+        nextRow:        // Row Increment
             nRow++;
         }
     }
