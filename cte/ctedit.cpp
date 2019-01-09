@@ -4311,25 +4311,59 @@ void ctedit::on_txtName_editingFinished()
 // Modificato nome della variabile
 {
     QString szVarName;
+    QString szOldVarName;
+    int nRow = 0;
+    QTableWidgetItem    *tItem;
 
+    disableAndBlockSignals(ui->txtName);
     if (ui->txtName->isModified())  {
-        szVarName = ui->txtName->text();
+        ui->txtName->setModified(false);
+        szVarName = ui->txtName->text().trimmed();
+        szOldVarName = QString::fromAscii(lstCTRecords[m_nGridRow].Tag).trimmed();
+        qDebug() << QString::fromAscii("Variable Name Changed from [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(m_nGridRow);
         // Applicazione dei valori di default Priority nel caso di una riga vuota preceduta da una riga vuota o con protocollo differente
-        // Solo su variabili in area utente
-        if (! szVarName.isEmpty() && ! lstCTRecords[m_nGridRow].UsedEntry && m_nGridRow < MAX_NONRETENTIVE -1)  {
+        if (! szVarName.isEmpty() && ! lstCTRecords[m_nGridRow].UsedEntry)  {
             // Solo se la riga è la prima di un blocco oppure ha un protocollo differente dalla precedente
             if ((m_nGridRow == 0) || (m_nGridRow > 0 && (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 || lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex())))  {
                 // Forza il livello di priorià a Alto
                 ui->cboPriority->setCurrentIndex(nPriorityHigh);
             }
-            // Se il nome della variabile è cambiato rispetto al valore precedente
-            if (szVarName != QString::fromAscii(lstCTRecords[m_nGridRow].Tag))  {
-                // Ricarica le combo dei nomi variabili
-                fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates, true);
-                fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates, true);
-            }
         }
+        // Variabile già precedentemente utilizzata
+        else if (! szVarName.isEmpty() && lstCTRecords[m_nGridRow].UsedEntry)  {
+            // Se il nome della variabile è cambiato rispetto al valore precedente
+            if (szVarName != szOldVarName && (! szVarName.isEmpty()))  {
+                // Aggiorna il nome della variabile in CT
+                strcpy(lstCTRecords[m_nGridRow].Tag, szVarName.toAscii().data());
+                // Controlla che la variabile non sia presente nei valori SX e DX di un allarme
+                for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
+                    // Test solo per righe diverse dalla riga corrente e utilizzate
+                    if (nRow != m_nGridRow && lstCTRecords[nRow].UsedEntry)  {
+                        // Alarm Source Variable
+                        if (szOldVarName == QString::fromAscii(lstCTRecords[nRow].ALSource))  {
+                            strcpy(lstCTRecords[nRow].ALSource, szVarName.toAscii().data());
+                            // Aggiornamento diretto delle variabile in Grid
+                            tItem = ui->tblCT->item(nRow, colSourceVar);
+                            tItem->setText(szVarName);
+                            qDebug() << QString::fromAscii("Replaced Source Var [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(nRow);
+                        }
+                        // Alarm Compare Variable
+                        if (szOldVarName == QString::fromAscii(lstCTRecords[nRow].ALCompareVar))  {
+                            strcpy(lstCTRecords[nRow].ALCompareVar, szVarName.toAscii().data());
+                            // Aggiornamento diretto delle variabile in Grid
+                            tItem = ui->tblCT->item(nRow, colCompare);
+                            tItem->setText(szVarName);
+                            qDebug() << QString::fromAscii("Replaced Compare Var [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(nRow);
+                        }
+                    }
+                }
+            }
+        }        
+        // Ricarica le combo dei nomi variabili
+        fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates, true);
+        fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates, true);
     }
+    enableAndUnlockSignals(ui->txtName);
 }
 
 bool ctedit::checkCTFile(QString szSourceFile)
