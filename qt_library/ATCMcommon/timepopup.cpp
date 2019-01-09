@@ -25,7 +25,23 @@ TimePopup::TimePopup(QWidget *parent) :
   QDialog(parent, Qt::Popup)
 {
 
- move(mapFromParent(parent->pos()));
+  move(mapFromParent(parent->pos()));
+  int tmpPosX=parent->pos().x();
+  int tmpPosY=parent->pos().y();
+  QRect rec = QApplication::desktop()->screenGeometry();
+  int height = rec.height();
+  int width = rec.width();
+  if(parent->pos().x()+SIZE_X>width)
+    {
+      tmpPosX=width-SIZE_X;
+       move(tmpPosX,tmpPosY);
+
+    }
+  if(parent->pos().y()+SIZE_Y>height)
+    {
+      tmpPosY=height-SIZE_Y;
+      move(tmpPosX,tmpPosY);
+    }
 
   setSizeGripEnabled(false);
   resize(SIZE_X,SIZE_Y);
@@ -33,6 +49,11 @@ TimePopup::TimePopup(QWidget *parent) :
   widget->setGeometry(QRect(0,0, SIZE_X, SIZE_Y));
   widget->setWindowFlags(Qt::FramelessWindowHint);
 
+  //set background color
+  QPalette pal = palette();
+  pal.setColor(QPalette::Background, Qt::lightGray);
+  widget->setAutoFillBackground(true);
+  widget->setPalette(pal);
 
   verticalLayout = new QVBoxLayout(widget);
   verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
