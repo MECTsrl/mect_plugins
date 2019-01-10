@@ -4320,7 +4320,7 @@ void ctedit::on_txtName_editingFinished()
         ui->txtName->setModified(false);
         szVarName = ui->txtName->text().trimmed();
         szOldVarName = QString::fromAscii(lstCTRecords[m_nGridRow].Tag).trimmed();
-        qDebug() << QString::fromAscii("Variable Name Changed from [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(m_nGridRow);
+        // qDebug() << QString::fromAscii("Variable Name Changed from [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(m_nGridRow);
         // Applicazione dei valori di default Priority nel caso di una riga vuota preceduta da una riga vuota o con protocollo differente
         if (! szVarName.isEmpty() && ! lstCTRecords[m_nGridRow].UsedEntry)  {
             // Solo se la riga è la prima di un blocco oppure ha un protocollo differente dalla precedente
@@ -4333,7 +4333,9 @@ void ctedit::on_txtName_editingFinished()
         else if (! szVarName.isEmpty() && lstCTRecords[m_nGridRow].UsedEntry)  {
             // Se il nome della variabile è cambiato rispetto al valore precedente
             if (szVarName != szOldVarName && (! szVarName.isEmpty()))  {
-                // Aggiorna il nome della variabile in CT
+                // Forza inserimento in lista Undo (al limite ci saranno 2 entry in lista Undo se esistono anche altre modifiche sulla riga corrente)
+                lstUndo.append(lstCTRecords);
+                // Aggiorna il nome della variabile in CT (Inibisce l'aggiornamento della lista Undo)
                 strcpy(lstCTRecords[m_nGridRow].Tag, szVarName.toAscii().data());
                 // Controlla che la variabile non sia presente nei valori SX e DX di un allarme
                 for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
@@ -4345,7 +4347,7 @@ void ctedit::on_txtName_editingFinished()
                             // Aggiornamento diretto delle variabile in Grid
                             tItem = ui->tblCT->item(nRow, colSourceVar);
                             tItem->setText(szVarName);
-                            qDebug() << QString::fromAscii("Replaced Source Var [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(nRow);
+                            // qDebug() << QString::fromAscii("Replaced Source Var [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(nRow);
                         }
                         // Alarm Compare Variable
                         if (szOldVarName == QString::fromAscii(lstCTRecords[nRow].ALCompareVar))  {
@@ -4353,7 +4355,7 @@ void ctedit::on_txtName_editingFinished()
                             // Aggiornamento diretto delle variabile in Grid
                             tItem = ui->tblCT->item(nRow, colCompare);
                             tItem->setText(szVarName);
-                            qDebug() << QString::fromAscii("Replaced Compare Var [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(nRow);
+                            // qDebug() << QString::fromAscii("Replaced Compare Var [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(nRow);
                         }
                     }
                 }
