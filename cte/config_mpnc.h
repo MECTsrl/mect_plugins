@@ -25,14 +25,14 @@ class Config_MPNC : public QWidget
 public:
     explicit Config_MPNC(QWidget *parent = 0);
     QList<CrossTableRecord> localCTRecords;
+    bool    isUpdated();                                                // Ritorna vero se il contenuto dei nodi è stato modificato
+    int     getCurrentRow();                                            // Restituisce la riga correntemente selezionata
 
 signals:
     void    varClicked(int  nVarRow);
 
 public slots:
     void    showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, int nCurRow);
-    bool    isUpdated();                                                // Ritorna vero se il contenuto dei nodi è stato modificato
-    int     getCurrentRow();                                            // Restituisce la riga correntemente selezionata
 
 private slots:
     void    customizeButtons();                             // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
@@ -56,8 +56,8 @@ private:
     int     relative2AbsModulePos(int nGroup, int nModule);                 // Calcola la posizione assoluta del Modulo
     void    abs2RelativeModulePos(int nAbs, int &nGroup, int &nModule);     // Calcola la posizione assoluta del Modulo
     void    setGroupVars(int nGroup, int nModule, int16_t nPriority);       // Imposta la Priority per le variabili di Gruppo e Modulo
-    void    setFilterButton(int nNewMode);                                  // Imposta il fondo del botton cmd
     bool    canRenameRows(int nBaseRow);                                    // Verifica se tutto il Device può essere rinominato
+    void    setFilterButton(int nNewMode);                                  // Imposta il fondo del botton cmd
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------

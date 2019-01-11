@@ -232,7 +232,7 @@
       <enum>QTabWidget::East</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="tabCT">
       <property name="enabled">
@@ -2120,33 +2120,6 @@
             <property name="verticalSpacing">
              <number>0</number>
             </property>
-            <item row="1" column="15">
-             <widget class="QPushButton" name="btnPDout3">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string>C</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="0">
              <widget class="QPushButton" name="btnTesta">
               <property name="minimumSize">
@@ -2217,77 +2190,6 @@
               </property>
               <property name="styleSheet">
                <string notr="true">background-color: LightCyan </string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="16">
-             <widget class="QPushButton" name="btnPDout4">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string>D</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="13">
-             <widget class="QPushButton" name="btnDout1">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>140</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>140</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="14">
-             <widget class="QPushButton" name="btnDout2">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>140</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>140</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
               </property>
               <property name="text">
                <string/>
@@ -2668,60 +2570,6 @@ border-radius: 2px</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="13">
-             <widget class="QPushButton" name="btnPDout1">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string>A</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="14">
-             <widget class="QPushButton" name="btnPDout2">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string>B</string>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="11">
              <widget class="QPushButton" name="btnPDin3">
               <property name="minimumSize">
@@ -2933,60 +2781,6 @@ border-radius: 2px</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="14">
-             <widget class="QPushButton" name="btnMDout2">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>4</pointsize>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string>MPNC020_02</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="15">
-             <widget class="QPushButton" name="btnMDout3">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>4</pointsize>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string>MPNC020_02</string>
-              </property>
-             </widget>
-            </item>
             <item row="3" column="1">
              <widget class="QPushButton" name="btnMAin1">
               <property name="minimumSize">
@@ -3065,50 +2859,6 @@ border-radius: 2px</string>
               </property>
               <property name="text">
                <string>MPNC020_01</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="15">
-             <widget class="QPushButton" name="btnDout3">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>140</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>140</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="16">
-             <widget class="QPushButton" name="btnDout4">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>140</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>140</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string/>
               </property>
              </widget>
             </item>
@@ -3193,33 +2943,6 @@ border-radius: 2px</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="16">
-             <widget class="QPushButton" name="btnMDout4">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>4</pointsize>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string>MPNC020_02</string>
-              </property>
-             </widget>
-            </item>
             <item row="3" column="0">
              <widget class="QPushButton" name="btnHModel">
               <property name="minimumSize">
@@ -3247,7 +2970,7 @@ border-radius: 2px</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="18">
+            <item row="2" column="14">
              <spacer name="horizontalSpacer_11">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -3259,33 +2982,6 @@ border-radius: 2px</string>
                </size>
               </property>
              </spacer>
-            </item>
-            <item row="3" column="13">
-             <widget class="QPushButton" name="btnMDout1">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>4</pointsize>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: 	Orangered</string>
-              </property>
-              <property name="text">
-               <string>MPNC020_02</string>
-              </property>
-             </widget>
             </item>
             <item row="3" column="12">
              <widget class="QPushButton" name="btnMDin4">
@@ -3449,7 +3145,7 @@ border-radius: 2px</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="18">
+            <item row="0" column="14">
              <widget class="QLabel" name="label_2">
               <property name="text">
                <string>TextLabel</string>
@@ -3459,7 +3155,7 @@ border-radius: 2px</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="18">
+            <item row="1" column="14">
              <widget class="QLineEdit" name="lineEdit">
               <property name="text">
                <string>1234</string>
@@ -3467,6 +3163,48 @@ border-radius: 2px</string>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
+             </widget>
+            </item>
+            <item row="2" column="13">
+             <widget class="QFrame" name="frame">
+              <property name="minimumSize">
+               <size>
+                <width>111</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <widget class="QPushButton" name="pushButton">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>10</y>
+                 <width>90</width>
+                 <height>51</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>PushButton</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="pushButton_2">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>70</y>
+                 <width>90</width>
+                 <height>51</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>PushButton</string>
+               </property>
+              </widget>
              </widget>
             </item>
            </layout>

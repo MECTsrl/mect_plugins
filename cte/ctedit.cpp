@@ -458,7 +458,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->tabWidget->setTabEnabled(TAB_DEVICES, true);
     ui->tabWidget->setTabEnabled(TAB_TIMINGS, true);
     ui->tabWidget->setTabEnabled(TAB_MPNC, true);
-    ui->tabWidget->setTabEnabled(TAB_MPNE, false);
+    ui->tabWidget->setTabEnabled(TAB_MPNE, true);
     ui->tabWidget->setTabEnabled(TAB_TEST, false);
     ui->tabWidget->setCurrentIndex(m_nCurTab);
 
@@ -2701,9 +2701,10 @@ void ctedit::enableInterface()
     m_nMPNC = -1;
     if (isSerialPortEnabled)  {
         bool enableMPNC = searchModels(lstCTRecords, lstMPNC006_Vars, lstMPNC);
+        bool enableMPNE = true;
         m_nMPNC = 0;
         ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
-        ui->tabWidget->setTabEnabled(TAB_MPNE, false);
+        ui->tabWidget->setTabEnabled(TAB_MPNE, enableMPNE);
     }
     else {
         ui->tabWidget->setTabEnabled(TAB_MPNC, false);

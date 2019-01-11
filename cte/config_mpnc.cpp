@@ -13,6 +13,7 @@
 #include <QFrame>
 #include <QIntValidator>
 
+// Cardinalità Moduli - Gruppi
 const int nItemsPerGroup = 4;
 const int nTotalGroups = 5;
 const int nTotalItems = 17;
@@ -28,18 +29,21 @@ const int nRowDesc = 1;
 const int nRowButtons = 2;
 const int nRowFlags = 3;
 const int nRowGrid = 4;
-// Sfondi per Moduli
+// Sfondi Bottoni
 const QString szFileAdd = szPathIMG + QString::fromAscii("Add_32.png");
 const QString szFileRemove = szPathIMG + QString::fromAscii("Remove_32.png");
 const QString szFileRename = szPathIMG + QString::fromAscii("Rename2.png");
+// Sfondi per Moduli
 const QString szFileMPNC006 = szPathIMG + QString::fromAscii("MPNC006_R.png");
 const QString szFileMPNC030 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC035 = szPathIMG + QString::fromAscii("MPNC030_R.png");
 const QString szFileMPNC020_01 = szPathIMG + QString::fromAscii("MPNC020_R.png");
 const QString szFileMPNC020_02 = szPathIMG + QString::fromAscii("MPNC020_R.png");
+// Sfondi Filtro Visualizzazione
 const QString szFilterHead = szPathIMG + QString::fromAscii("ShowHead.png");
 const QString szFilterUsed = szPathIMG + QString::fromAscii("ShowUsed.png");
 const QString szFilterAll = szPathIMG + QString::fromAscii("ShowAll.png");
+
 
 Config_MPNC::Config_MPNC(QWidget *parent) :
     QWidget(parent)
@@ -50,14 +54,14 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
 
     // Progenitore del Controllo
     myParent = parent;
-    // Creazione del Layout principale del Form
+    // Creazione dei Layout del Form
     externalLayOut = new QVBoxLayout(this);             // Lay-Out Esterno del Frame
     mainGrid = new QGridLayout();
     mainGrid->setHorizontalSpacing(2);
+    // Signal Mapper per Moduli e Add
     mapRemoveClicked = new QSignalMapper(this);         // Signal Mapper per Remove Module Clicked
     mapModuleClicked = new QSignalMapper(this);         // Signal Mapper per Module Clicked
-    lstModuleName.clear();
-    lstSfondi.clear();
+    // Init valori Porte e flags
     m_nPort = -1;
     m_nNodeId = -1;
     m_nCurrentCTRow = -1;
@@ -73,6 +77,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
         lstPosFlags.append(QString(1, chBase));
     }
     // Lista degli Sfondi e dei Nomi associati ai Moduli
+    lstModuleName.clear();
+    lstSfondi.clear();
     // MPNC006
     lstSfondi.append(szFileMPNC006);
     lstModuleName.append(QString::fromAscii("MPNC006"));
