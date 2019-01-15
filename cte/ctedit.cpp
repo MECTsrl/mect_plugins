@@ -6762,9 +6762,18 @@ void    ctedit::showTabMPNC()
 }
 void    ctedit::showTabMPNE()
 {
-    lstMPNE.clear();
-    m_nMPNE = -1;
-    configMPNE->showTestaNodi(m_nMPNE, lstMPNE, m_nGridRow);
+    if (lstMPNE.count() > 0)  {
+        m_nMPNE = 0;
+        // Ricerca della riga corrente nella dimensione dei Blocchi trovati
+        for (int nItem = 0; nItem < lstMPNE.count(); nItem++)  {
+            if (m_nGridRow >= lstMPNE[nItem] && m_nGridRow < lstMPNE[nItem] + lstMPNE_Vars.count())  {
+                m_nMPNE = nItem;
+                break;
+            }
+        }
+        configMPNE->localCTRecords = lstCTRecords;
+        configMPNE->showTestaNodi(m_nMPNE, lstMPNE, m_nGridRow);
+    }
 }
 void ctedit::return2GridRow(int nRow)
 // Ritorno da Tab MPNC - MPNE

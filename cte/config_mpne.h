@@ -42,6 +42,7 @@ private slots:
     void    updateModule(int nPosition, int nFunction);
     void    changeFilter();                                 // Cambio del filtro sui moduli
     void    filterVariables(int nPosition, int nFunction);         // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
+    void    changeRootElement(int nItem);                   // Cambio di Item della Combo dei MPNC definiti
 
 private:
     //---------------------------------------------------------------------
@@ -70,6 +71,7 @@ private:
     QLineEdit               *txtNode;           // Text Box per Node Id
     QLabel                  *lblLeft;           // Label per Codice Left
     QLabel                  *lblRight;          // Label per Codice Right
+    QList<bool>             lstModuleIsPresent; // Lista abilitazione moduli
     QStringList             lstSfondi;          // Lista dei nomi degli sfondi associati ai Bottoni
     QStringList             lstModuleCode;      // Lista dei Codici dei Moduli
     QStringList             lstModuleName;      // Lista dei nomi dei moduli

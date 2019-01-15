@@ -18,6 +18,7 @@ const int nTotalModules = 6;
 const int nModuleBase = 0;
 const int nModuleLeft = 1;
 const int nModuleRight = 2;
+const int nTotalItems = 3;
 // Posizioni nel LayOut (Riga)
 const int nRowSelector = 0;
 const int nRowDesc = 1;
@@ -339,6 +340,8 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     //-------------------------------------
     connect(cboLeft, SIGNAL(currentIndexChanged(int)), this, SLOT(onLeftModuleChanged(int)));
     connect(cboRight, SIGNAL(currentIndexChanged(int)), this, SLOT(onRightModuleChanged(int)));
+    // Combo per cambio Modulo MPNC
+    connect(cboSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(changeRootElement(int)));
     // Bottone Switch Mode
     connect(cmdFilter, SIGNAL(clicked()), this, SLOT(changeFilter()));
     // Init variabili di gestione
@@ -348,6 +351,11 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     m_fCanRenameVars = false;
     m_nMinVarName = 0;
     m_nMaxVarName = 0;
+    // Flag Abilitazione dei Moduli (il modulo 0 è MPNC006)
+    lstModuleIsPresent.clear();
+    for (i = 0; i < nTotalItems; i++)  {
+        lstModuleIsPresent.append(false);
+    }
     // Filter
     m_nShowMode = showAll;
     setFilterButton(m_nShowMode);
@@ -368,12 +376,50 @@ bool    Config_MPNE::isUpdated()
 
 void Config_MPNE::showTestaNodi(int nTesta, QList<int> lstMPNE, int nCurRow)
 {
-    if (nTesta < 0)  {
+    int         nCur = 0;
+    QString     szTemp;
+    int         nBaseRow = -1;
 
+    // Abilitazione delle entry nella Combo delle Porte
+    int nPorts = enableSerialPortCombo(cboPort);
+    // Blocca la combo Selettore delle Teste
+    // Ricarica i valori perchè potrebbero essere cambiati da giro precedente
+    disableAndBlockSignals(cboSelector);
+    cboSelector->clear();
+    lstCapofila.clear();
+    m_fUpdated = false;
+    m_nCurrentCTRow = nCurRow;          // Riporta il Numero riga corrente ottenuto da Grid Principale CT
+    m_nShowMode = showAll;
+    txtNode->setModified(false);
+    qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2 - Riga Corrente: %3") .arg(nTesta) .arg(lstMPNE.count()) .arg(nCurRow);
+    if (nTesta < 0 || nTesta >= lstMPNE.count())  {
+        for (nCur = 0; nCur < nTotalItems; nCur++)  {
+            lstModuleIsPresent[nCur] = false;
+        }
+        nTesta = -1;
+        nBaseRow = -1;
     }
-    else {
-
+    else  {
+        lstCapofila = lstMPNE;
+        for (nCur = 0; nCur < lstCapofila.count(); nCur++)  {
+            szTemp = QString::fromAscii("%1 - Row: %2") .arg(nCur + 1) .arg(lstCapofila[nCur] + 1);
+            cboSelector->addItem(szTemp);
+            if (nCur == nTesta)  {
+                cboSelector->setCurrentIndex(nCur);
+            }
+        }
+        // Leggi le caratteristiche dei moduli presenti per la testa nTesta
+        nBaseRow = lstCapofila[nTesta];
     }
+    // Aggiorna Le Icone dei Bottoni
+    enableAndUnlockSignals(cboSelector);
+    m_nTesta = nTesta;
+    m_nBaseRow = nBaseRow;
+    // Visualizza i dati denna testa n-Esima
+    if (m_nTesta >= 0 && m_nTesta < cboSelector->count())  {
+        changeRootElement(m_nTesta);
+    }
+    cboPort->setEnabled(nPorts > 1);
 }
 void    Config_MPNE::onLeftModuleChanged(int nIndex)
 {
@@ -467,6 +513,12 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
 // Filtra le variabili specifiche del modulo identificato da Posizione e Funzione
 {
 
+}
+void    Config_MPNE::changeRootElement(int nItem)
+// Cambio di Item della Combo dei MPNC definiti
+{
+    int     nGroup = 0;
+    int     nModule = 0;
 }
 bool    Config_MPNE::eventFilter(QObject *obj, QEvent *event)
 // Gestore Event Handler
