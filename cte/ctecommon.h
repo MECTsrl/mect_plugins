@@ -92,6 +92,7 @@ const QString szXMLExt = QString::fromAscii(".xml");
 // External Models
 const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
 const QString szMPNC006 = QString::fromAscii("MPNC006");
+const QString szMPNE10 = QString::fromAscii("MPNE10");
 const QString szTPLC050 = QString::fromAscii("TPLC050");
 
 enum colonne_e

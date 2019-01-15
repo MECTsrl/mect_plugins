@@ -23,6 +23,7 @@ class Config_MPNE : public QWidget
     Q_OBJECT
 public:
     explicit Config_MPNE(QWidget *parent = 0);
+    QList<CrossTableRecord> localCTRecords;                             // Copia Locale dei Record CT
     bool    isUpdated();                                                // Ritorna vero se il contenuto dei nodi è stato modificato
     int     getCurrentRow();                                            // Restituisce la riga correntemente selezionata
 
@@ -33,7 +34,7 @@ protected:
      bool   eventFilter(QObject *obj, QEvent *event);        // Gestore Event Handler
 
 public slots:
-    void    showTestaNodi(int nTesta, QList<int> lstMPNE);
+    void    showTestaNodi(int nTesta, QList<int> lstMPNE, int nCurRow);
 
 private slots:
     void    onLeftModuleChanged(int nIndex);
@@ -72,6 +73,8 @@ private:
     QStringList             lstSfondi;          // Lista dei nomi degli sfondi associati ai Bottoni
     QStringList             lstModuleCode;      // Lista dei Codici dei Moduli
     QStringList             lstModuleName;      // Lista dei nomi dei moduli
+    QList<int>              lstModuleFunction;  // Lista delle Funzionalità dei Moduli
+    QList<int>              lstModuleLines;     // Lista delle Linee abilitate per i Moduli
     QFrame                  *fraMPNE;           // Frame con immagine MPNE
     QString                 szFrameStyle;       // Style per Frame MPNE
     QString                 szButtonStyle;      // Style di base dei Bottoni per Item

@@ -33,6 +33,12 @@ const int nColPort = 5;
 const int nColNode = 7;
 const int nColLast = 9;
 const int nItemWidth = 2;
+// Funzionalità della variabile (per discriminare i tipi di utilizzo del modulo)
+const int nUsageNone = 0;
+const int nUsageDigIn = 1;
+const int nUsageDigOut = 2;
+const int nUsageAnIO = 3;
+
 // Sfondi
 const QString szFileRename = szPathIMG + QString::fromAscii("Rename2.png");
 // Sfondi per Moduli
@@ -167,19 +173,39 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lstModuleName.clear();
     lstSfondi.clear();
     lstModuleCode.clear();
+    lstModuleFunction.clear();      // Lista delle Funzionalità dei Moduli
+    lstModuleLines.clear();         // Lista delle Linee abilitate per i Moduli
     // Descrizioni e sfondi dei Moduli
+    // Module 0 - No Module
     lstModuleName.append(QString::fromAscii("No Module"));
     lstSfondi.append(szFileMPNE00);
+    lstModuleFunction.append(nUsageNone);
+    lstModuleLines.append(0);
+    // Module 01 Dig IN
     lstModuleName.append(QString::fromAscii("8 Digital Input"));
     lstSfondi.append(szFileMPNE01);
+    lstModuleFunction.append(nUsageDigIn);
+    lstModuleLines.append(8);
+    // Module 02 Dig OUT
     lstModuleName.append(QString::fromAscii("8 Digital Output"));
     lstSfondi.append(szFileMPNE02);
+    lstModuleFunction.append(nUsageDigOut);
+    lstModuleLines.append(8);
+    // Module 03 Dig OUT with 4 Relays
     lstModuleName.append(QString::fromAscii("4 Digital Relays"));
     lstSfondi.append(szFileMPNE03);
+    lstModuleFunction.append(nUsageDigOut);
+    lstModuleLines.append(4);
+    // Module 04 Dig OUT with 8 Relays
     lstModuleName.append(QString::fromAscii("8 Digital Relays"));
     lstSfondi.append(szFileMPNE04);
-    lstModuleName.append(QString::fromAscii("2 Analog Input 1 Analog Output"));
+    lstModuleFunction.append(nUsageAnIO);
+    lstModuleLines.append(3);
+    // Module 05 2 AI + 1 AO
+    lstModuleName.append(QString::fromAscii("2 AI - 1 AO"));
     lstSfondi.append(szFileMPNE05);
+    lstModuleFunction.append(nUsageDigOut);
+    lstModuleLines.append(8);
     // Combo per Codici Modulo
     cboLeft = new QComboBox(this);
     cboRight = new QComboBox(this);
@@ -340,7 +366,7 @@ bool    Config_MPNE::isUpdated()
     return m_fUpdated;
 }
 
-void Config_MPNE::showTestaNodi(int nTesta, QList<int> lstMPNE)
+void Config_MPNE::showTestaNodi(int nTesta, QList<int> lstMPNE, int nCurRow)
 {
     if (nTesta < 0)  {
 

@@ -24,7 +24,7 @@ class Config_MPNC : public QWidget
     Q_OBJECT
 public:
     explicit Config_MPNC(QWidget *parent = 0);
-    QList<CrossTableRecord> localCTRecords;
+    QList<CrossTableRecord> localCTRecords;                             // Copia Locale dei Record CT
     bool    isUpdated();                                                // Ritorna vero se il contenuto dei nodi è stato modificato
     int     getCurrentRow();                                            // Restituisce la riga correntemente selezionata
 

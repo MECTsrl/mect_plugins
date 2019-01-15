@@ -169,7 +169,13 @@ ctedit::ctedit(QWidget *parent) :
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szTPLC050);
         lstTPLC050_Vars.clear();
     }
-    // TODO: Read MPNE Vars
+    // MPNE10
+    if (readModelVars(szMPNE10, lstMPNE_Vars))  {
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2") .arg(szMPNE10) .arg(lstMPNE_Vars.count());
+    }  else  {
+        qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE10);
+        lstMPNE_Vars.clear();
+    }
     //------------------------
     // Lista Modelli
     //------------------------
@@ -1703,25 +1709,47 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005/MPNC006 Modules"));
     addMPNC006->setEnabled((isSerialPortEnabled)
                            && m_nGridRow < MIN_DIAG - 1);
+    QAction *addMPNE10 = gridMenu.addAction(cIco, trUtf8("Paste MPNE1000 Module"));
+    addMPNE10->setEnabled((isSerialPortEnabled)
+                           && m_nGridRow < MIN_DIAG - 1);
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
     QAction *addTPLC050 = gridMenu.addAction(cIco, trUtf8("Paste TPLC050 Modules"));
     addTPLC050->setVisible((panelConfig.modelName.contains(szTPLC050))
                            && m_nGridRow < MIN_DIAG - 1);
     addTPLC050->setEnabled(addTPLC050->isVisible());
-    // Menu Editing grafico MPNC
+    // Menù Grafico per MPNC // MPNE
     QAction *editMPNC = 0;
-    bool isMPNC = false;
-    for (int nModule = 0; nModule < lstMPNC.count(); nModule++)  {
-        int nBase = lstMPNC.at(nModule);
-        if (m_nGridRow >= nBase && m_nGridRow < nBase + lstMPNC006_Vars.count())  {
-            isMPNC = true;
-            break;
+    QAction *editMPNE = 0;
+    if (isSerialPortEnabled)  {
+        // Menu Editing grafico MPNC (Abilitato se esistono Moduli definiti)
+        bool isMPNC = false;
+        int nModule = 0;
+        for (nModule = 0; nModule < lstMPNC.count(); nModule++)  {
+            int nBase = lstMPNC.at(nModule);
+            if (m_nGridRow >= nBase && m_nGridRow < nBase + lstMPNC006_Vars.count())  {
+                isMPNC = true;
+                break;
+            }
         }
-    }
-    if (isSerialPortEnabled && m_nGridRow < MIN_DIAG - 1 && isMPNC)  {
-        cIco = QIcon(szPathIMG + QString::fromAscii("Card_32.png"));
-        gridMenu.addSeparator();
-        editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNC006"));
+        if (m_nGridRow < MIN_DIAG - 1 && isMPNC)  {
+            cIco = QIcon(szPathIMG + QString::fromAscii("Card_32.png"));
+            gridMenu.addSeparator();
+            editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNC006"));
+        }
+        // Menù Grafico per MPNE (Abilitato se esistono Moduli definiti)
+        bool isMPNE = false;
+        for (nModule = 0; nModule < lstMPNE.count(); nModule++)  {
+            int nBase = lstMPNE.at(nModule);
+            if (m_nGridRow >= nBase && m_nGridRow < nBase + lstMPNE_Vars.count())  {
+                isMPNE = true;
+                break;
+            }
+        }
+        if (m_nGridRow < MIN_DIAG - 1 && isMPNE)  {
+            cIco = QIcon(szPathIMG + QString::fromAscii("Card_32.png"));
+            gridMenu.addSeparator();
+            editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE1000"));
+        }
     }
     // Esecuzione del Menu
     QAction *actMenu = gridMenu.exec(ui->tblCT->viewport()->mapToGlobal(pos));
@@ -1759,6 +1787,10 @@ void ctedit::displayUserMenu(const QPoint &pos)
     else if (actMenu == addMPNC006)  {
         addModelVars(szMPNC006, m_nGridRow);
     }
+    // Add MPNE10
+    else if (actMenu == addMPNE10)  {
+        addModelVars(szMPNE10, m_nGridRow);
+    }
     // Add TPLC050
     else if (actMenu == addTPLC050)  {
         addModelVars(szTPLC050, m_nGridRow);
@@ -1766,6 +1798,10 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Edit MPNC
     else if (editMPNC != 0 && actMenu == editMPNC)  {
         ui->tabWidget->setCurrentIndex(TAB_MPNC);
+    }
+    // Edit MPNE
+    else if (editMPNE != 0 && actMenu == editMPNE)  {
+        ui->tabWidget->setCurrentIndex(TAB_MPNE);
     }
     this->setCursor(Qt::ArrowCursor);
 
@@ -2701,8 +2737,9 @@ void ctedit::enableInterface()
     m_nMPNC = -1;
     if (isSerialPortEnabled)  {
         bool enableMPNC = searchModels(lstCTRecords, lstMPNC006_Vars, lstMPNC);
-        bool enableMPNE = true;
+        bool enableMPNE = searchModels(lstCTRecords, lstMPNE_Vars, lstMPNE);
         m_nMPNC = 0;
+        m_nMPNE = 0;
         ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
         ui->tabWidget->setTabEnabled(TAB_MPNE, enableMPNE);
     }
@@ -6727,7 +6764,7 @@ void    ctedit::showTabMPNE()
 {
     lstMPNE.clear();
     m_nMPNE = -1;
-    configMPNE->showTestaNodi(m_nMPNE, lstMPNE);
+    configMPNE->showTestaNodi(m_nMPNE, lstMPNE, m_nGridRow);
 }
 void ctedit::return2GridRow(int nRow)
 // Ritorno da Tab MPNC - MPNE
