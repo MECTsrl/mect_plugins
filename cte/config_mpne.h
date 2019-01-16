@@ -77,7 +77,8 @@ private:
     QStringList             lstModuleName;      // Lista dei nomi dei moduli
     QList<int>              lstModuleFunction;  // Lista delle Funzionalità dei Moduli
     QList<int>              lstModuleLines;     // Lista delle Linee abilitate per i Moduli
-    QFrame                  *fraMPNE;           // Frame con immagine MPNE
+    QFrame                  *fraMPNE_Left;      // Frame con immagine MPNE_L
+    QFrame                  *fraMPNE_Right;     // Frame con immagine MPNE_R
     QString                 szFrameStyle;       // Style per Frame MPNE
     QString                 szButtonStyle;      // Style di base dei Bottoni per Item
     QString                 szFilterStyle;      // Style di base dei Bottone Switch View

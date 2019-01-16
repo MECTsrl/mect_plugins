@@ -38,7 +38,8 @@
         <file>img/MPNE03.png</file>
         <file>img/MPNE04.png</file>
         <file>img/MPNE05.png</file>
-        <file>img/MPNE1001.png</file>
+        <file>img/MPNE01L.png</file>
+        <file>img/MPNE01R.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>

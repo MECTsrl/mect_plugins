@@ -1709,7 +1709,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005/MPNC006 Modules"));
     addMPNC006->setEnabled((isSerialPortEnabled)
                            && m_nGridRow < MIN_DIAG - 1);
-    QAction *addMPNE10 = gridMenu.addAction(cIco, trUtf8("Paste MPNE1000 Module"));
+    QAction *addMPNE10 = gridMenu.addAction(cIco, trUtf8("Paste MPNE10 Module"));
     addMPNE10->setEnabled((isSerialPortEnabled)
                            && m_nGridRow < MIN_DIAG - 1);
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
@@ -1748,7 +1748,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
         if (m_nGridRow < MIN_DIAG - 1 && isMPNE)  {
             cIco = QIcon(szPathIMG + QString::fromAscii("Card_32.png"));
             gridMenu.addSeparator();
-            editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE1000"));
+            editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE10"));
         }
     }
     // Esecuzione del Menu

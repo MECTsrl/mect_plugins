@@ -21,10 +21,11 @@ const int nModuleRight = 2;
 const int nTotalItems = 3;
 // Posizioni nel LayOut (Riga)
 const int nRowSelector = 0;
-const int nRowDesc = 1;
-const int nRowButtons = 2;
-const int nRowFlags = 3;
-const int nRowGrid = 4;
+const int nRowTags = 1;
+const int nRowCombo = 2;
+const int nRowButtons = 3;
+const int nRowFlags = 4;
+const int nRowGrid = 5;
 // Posizione nel LayOut (Colonna)
 const int nColBase = 0;
 const int nColLeft = 1;
@@ -43,7 +44,8 @@ const int nUsageAnIO = 3;
 // Sfondi
 const QString szFileRename = szPathIMG + QString::fromAscii("Rename2.png");
 // Sfondi per Moduli
-const QString szFileMPNE1001 = szPathIMG + QString::fromAscii("MPNE1001.png");
+const QString szFileMPNE10L = szPathIMG + QString::fromAscii("MPNE01L.png");
+const QString szFileMPNE10R = szPathIMG + QString::fromAscii("MPNE01R.png");
 const QString szFileMPNE00 = szEMPTY;
 const QString szFileMPNE01 = szPathIMG + QString::fromAscii("MPNE01.png");
 const QString szFileMPNE02 = szPathIMG + QString::fromAscii("MPNE02.png");
@@ -80,6 +82,46 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     m_nShowMode = showAll;
     cmdLeft = 0;
     cmdRight = 0;
+    // Lista degli Sfondi e dei Nomi associati ai Moduli
+    lstModuleName.clear();
+    lstSfondi.clear();
+    lstModuleCode.clear();
+    lstModuleFunction.clear();      // Lista delle Funzionalità dei Moduli
+    lstModuleLines.clear();         // Lista delle Linee abilitate per i Moduli
+    // Descrizioni e sfondi dei Moduli
+    // Module 0 - No Module
+    lstModuleName.append(QString::fromAscii("No Module"));
+    lstSfondi.append(szFileMPNE00);
+    lstModuleFunction.append(nUsageNone);
+    lstModuleLines.append(0);
+    // Module 01 Dig IN
+    lstModuleName.append(QString::fromAscii("8 Digital Input"));
+    lstSfondi.append(szFileMPNE01);
+    lstModuleFunction.append(nUsageDigIn);
+    lstModuleLines.append(8);
+    // Module 02 Dig OUT
+    lstModuleName.append(QString::fromAscii("8 Digital Output"));
+    lstSfondi.append(szFileMPNE02);
+    lstModuleFunction.append(nUsageDigOut);
+    lstModuleLines.append(8);
+    // Module 03 Dig OUT with 4 Relays
+    lstModuleName.append(QString::fromAscii("4 Digital Relays"));
+    lstSfondi.append(szFileMPNE03);
+    lstModuleFunction.append(nUsageDigOut);
+    lstModuleLines.append(4);
+    // Module 04 Dig OUT with 8 Relays
+    lstModuleName.append(QString::fromAscii("8 Digital Relays"));
+    lstSfondi.append(szFileMPNE04);
+    lstModuleFunction.append(nUsageAnIO);
+    lstModuleLines.append(3);
+    // Module 05 2 AI + 1 AO
+    lstModuleName.append(QString::fromAscii("2 AI - 1 AO"));
+    lstSfondi.append(szFileMPNE05);
+    lstModuleFunction.append(nUsageDigOut);
+    lstModuleLines.append(8);
+    //---------------------------
+    // nRowSelector
+    //---------------------------
     // Label per Combo Selettore
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
@@ -88,7 +130,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
     szTemp.append(QString::fromAscii("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("MPNE1001:"));
+    lblBox->setText(QString::fromAscii("MPNE10:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColBase);
     // Combo Selettore mpnc
@@ -136,6 +178,9 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     QSpacerItem *colSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Fixed);
     colSpacer->setAlignment(Qt::AlignHCenter);
     mainGrid->addItem(colSpacer, nRowSelector, nColLast);
+    //---------------------------
+    // nRowTags
+    //---------------------------
     // Bottone per Rename rows
     szTemp.clear();;
     szTemp.append(QString::fromAscii("QPushButton:disabled { \n"));
@@ -169,44 +214,24 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     cmdRename->setFlat(true);
     cmdRename->setToolTip(szRenameToolTip);
     cmdRename->setStyleSheet(szTemp);
-    mainGrid->addWidget(cmdRename, nRowDesc, nColBase);
-    // Lista degli Sfondi e dei Nomi associati ai Moduli
-    lstModuleName.clear();
-    lstSfondi.clear();
-    lstModuleCode.clear();
-    lstModuleFunction.clear();      // Lista delle Funzionalità dei Moduli
-    lstModuleLines.clear();         // Lista delle Linee abilitate per i Moduli
-    // Descrizioni e sfondi dei Moduli
-    // Module 0 - No Module
-    lstModuleName.append(QString::fromAscii("No Module"));
-    lstSfondi.append(szFileMPNE00);
-    lstModuleFunction.append(nUsageNone);
-    lstModuleLines.append(0);
-    // Module 01 Dig IN
-    lstModuleName.append(QString::fromAscii("8 Digital Input"));
-    lstSfondi.append(szFileMPNE01);
-    lstModuleFunction.append(nUsageDigIn);
-    lstModuleLines.append(8);
-    // Module 02 Dig OUT
-    lstModuleName.append(QString::fromAscii("8 Digital Output"));
-    lstSfondi.append(szFileMPNE02);
-    lstModuleFunction.append(nUsageDigOut);
-    lstModuleLines.append(8);
-    // Module 03 Dig OUT with 4 Relays
-    lstModuleName.append(QString::fromAscii("4 Digital Relays"));
-    lstSfondi.append(szFileMPNE03);
-    lstModuleFunction.append(nUsageDigOut);
-    lstModuleLines.append(4);
-    // Module 04 Dig OUT with 8 Relays
-    lstModuleName.append(QString::fromAscii("8 Digital Relays"));
-    lstSfondi.append(szFileMPNE04);
-    lstModuleFunction.append(nUsageAnIO);
-    lstModuleLines.append(3);
-    // Module 05 2 AI + 1 AO
-    lstModuleName.append(QString::fromAscii("2 AI - 1 AO"));
-    lstSfondi.append(szFileMPNE05);
-    lstModuleFunction.append(nUsageDigOut);
-    lstModuleLines.append(8);
+    mainGrid->addWidget(cmdRename, nRowTags, nColBase);
+    // Nomi dei Moduli SX e DX
+    szTemp.clear();
+    szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignBottom | AlignLeft';\n"));
+    szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
+    szTemp.append(QString::fromAscii("}"));
+    lblBox = new QLabel(this);
+    lblBox->setText(QString::fromAscii("Exp1:"));
+    lblBox->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowTags, nColLeft, 1, nItemWidth);
+    lblBox = new QLabel(this);
+    lblBox->setText(QString::fromAscii("Exp2:"));
+    lblBox->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowTags, nColRight, 1, nItemWidth);
+    //---------------------------
+    // nRowCombo
+    //---------------------------
     // Combo per Codici Modulo
     cboLeft = new QComboBox(this);
     cboRight = new QComboBox(this);
@@ -216,62 +241,11 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
         cboLeft->addItem(lstModuleName[i], szTemp);
         cboRight->addItem(lstModuleName[i], szTemp);
     }
-    mainGrid->addWidget(cboLeft, nRowDesc, nColLeft, 1, nItemWidth);
-    mainGrid->addWidget(cboRight, nRowDesc, nColRight, 1, nItemWidth);
-    // Frame di sfondo MPNE001
-    fraMPNE = new QFrame(this);
-    szFrameStyle.clear();
-    szFrameStyle.append(QString::fromAscii("QFrame { \n"));
-    szFrameStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szFrameStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szFrameStyle.append(QString::fromAscii("  min-width: 111px;\n"));
-    szFrameStyle.append(QString::fromAscii("  max-width: 111px;\n"));
-    szFrameStyle.append(QString::fromAscii("  min-height: 140px;\n"));
-    szFrameStyle.append(QString::fromAscii("  max-height: 140px;\n"));
-    szFrameStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szFrameStyle.append(QString::fromAscii("  background-color: transparent;\n"));
-    szFrameStyle.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileMPNE1001));
-    szFrameStyle.append(QString::fromAscii("}"));
-    fraMPNE->setStyleSheet(szFrameStyle);
-    mainGrid->addWidget(fraMPNE, nRowButtons, nColLeft, 1, 2 * nItemWidth);
-    fraMPNE->installEventFilter(this);
-    // Style per i due bottoni
-    szButtonStyle.clear();
-    szButtonStyle.append(QString::fromAscii("QPushButton:disabled { \n"));
-    szButtonStyle.append(QString::fromAscii("    border: 0px ;\n"));
-    szButtonStyle.append(QString::fromAscii("    background-color: transparent;\n"));
-    szButtonStyle.append(QString::fromAscii("    background-image: url("");\n"));
-    szButtonStyle.append(QString::fromAscii("}\n"));
-    szButtonStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szButtonStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
-    szButtonStyle.append(QString::fromAscii("}\n"));
-    szButtonStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szButtonStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
-    szButtonStyle.append(QString::fromAscii("}\n"));
-    szButtonStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szButtonStyle.append(QString::fromAscii("    border: 1px solid red;\n"));
-    szButtonStyle.append(QString::fromAscii("}\n"));
-    szButtonStyle.append(QString::fromAscii("QPushButton { \n"));
-    szButtonStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szButtonStyle.append(QString::fromAscii("  border-radius: 2px;\n"));
-    szButtonStyle.append(QString::fromAscii("  min-width: 52px;\n"));
-    szButtonStyle.append(QString::fromAscii("  max-width: 52px;\n"));
-    szButtonStyle.append(QString::fromAscii("  min-height: 118px;\n"));
-    szButtonStyle.append(QString::fromAscii("  max-height: 118px;\n"));
-    szButtonStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szButtonStyle.append(QString::fromAscii("}"));
-    // Bottone SX
-    cmdLeft = new QPushButton(fraMPNE);
-    cmdLeft->setStyleSheet(szButtonStyle);
-    cmdLeft->setGeometry(2, 10, 52,118);
-    cmdLeft->setFlat(true);
-    cmdLeft->setEnabled(false);
-    // Bottone DX
-    cmdRight = new QPushButton(fraMPNE);
-    cmdRight->setStyleSheet(szButtonStyle);
-    cmdRight->setGeometry(57, 10, 52,118);
-    cmdRight->setFlat(true);
-    cmdRight->setEnabled(true);
+    mainGrid->addWidget(cboLeft, nRowCombo, nColLeft, 1, nItemWidth);
+    mainGrid->addWidget(cboRight, nRowCombo, nColRight, 1, nItemWidth);
+    //---------------------------
+    // nRowButtons
+    //---------------------------
     // Bottone per Filtro su Testa Nodi
     szFilterStyle.clear();
     szFilterStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
@@ -299,8 +273,75 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     cmdFilter->setFlat(true);
     cmdFilter->setToolTip(szSwitchToolTip);
     cmdFilter->setStyleSheet(szFilterStyle);
-    mainGrid->addWidget(cmdFilter, nRowFlags, nColBase);
-    // Label per Codice SX
+    mainGrid->addWidget(cmdFilter, nRowButtons, nColBase);
+    // Frames di sfondo MPNE001
+    szFrameStyle.clear();
+    szFrameStyle.append(QString::fromAscii("QFrame { \n"));
+    szFrameStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
+    szFrameStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
+    szFrameStyle.append(QString::fromAscii("  min-width: 100px;\n"));
+    szFrameStyle.append(QString::fromAscii("  max-width: 100px;\n"));
+    szFrameStyle.append(QString::fromAscii("  min-height: 140px;\n"));
+    szFrameStyle.append(QString::fromAscii("  max-height: 140px;\n"));
+    szFrameStyle.append(QString::fromAscii("  background-position: center  center;\n"));
+    szFrameStyle.append(QString::fromAscii("  background-color: transparent;\n"));
+    // Frame Left
+    fraMPNE_Left = new QFrame(this);
+    szTemp = szFrameStyle;
+    szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileMPNE10L));
+    szTemp.append(QString::fromAscii("}"));
+    fraMPNE_Left->setStyleSheet(szTemp);
+    mainGrid->addWidget(fraMPNE_Left, nRowButtons, nColLeft);
+    fraMPNE_Left->installEventFilter(this);
+    // Frame Right
+    fraMPNE_Right = new QFrame(this);
+    szTemp = szFrameStyle;
+    szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileMPNE10R));
+    szTemp.append(QString::fromAscii("}"));
+    fraMPNE_Right->setStyleSheet(szTemp);
+    mainGrid->addWidget(fraMPNE_Right, nRowButtons, nColRight);
+    fraMPNE_Right->installEventFilter(this);
+    // Style per i due bottoni
+    szButtonStyle.clear();
+    szButtonStyle.append(QString::fromAscii("QPushButton:disabled { \n"));
+    szButtonStyle.append(QString::fromAscii("    border: 0px ;\n"));
+    szButtonStyle.append(QString::fromAscii("    background-color: transparent;\n"));
+    szButtonStyle.append(QString::fromAscii("    background-image: url("");\n"));
+    szButtonStyle.append(QString::fromAscii("}\n"));
+    szButtonStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
+    szButtonStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
+    szButtonStyle.append(QString::fromAscii("}\n"));
+    szButtonStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
+    szButtonStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
+    szButtonStyle.append(QString::fromAscii("}\n"));
+    szButtonStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
+    szButtonStyle.append(QString::fromAscii("    border: 1px solid red;\n"));
+    szButtonStyle.append(QString::fromAscii("}\n"));
+    szButtonStyle.append(QString::fromAscii("QPushButton { \n"));
+    szButtonStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
+    szButtonStyle.append(QString::fromAscii("  border-radius: 2px;\n"));
+    szButtonStyle.append(QString::fromAscii("  min-width: 60px;\n"));
+    szButtonStyle.append(QString::fromAscii("  max-width: 60px;\n"));
+    szButtonStyle.append(QString::fromAscii("  min-height: 96px;\n"));
+    szButtonStyle.append(QString::fromAscii("  max-height: 86px;\n"));
+    szButtonStyle.append(QString::fromAscii("  background-position: center  center;\n"));
+    szButtonStyle.append(QString::fromAscii("}"));
+    // Bottone SX
+    cmdLeft = new QPushButton(fraMPNE_Left);
+    cmdLeft->setStyleSheet(szButtonStyle);
+    cmdLeft->setGeometry(40, 16, 60, 96);
+    cmdLeft->setFlat(true);
+    cmdLeft->setEnabled(false);
+    // Bottone DX
+    cmdRight = new QPushButton(fraMPNE_Right);
+    cmdRight->setStyleSheet(szButtonStyle);
+    cmdRight->setGeometry(0, 16, 60, 96);
+    cmdRight->setFlat(true);
+    cmdRight->setEnabled(true);
+    //---------------------------
+    // nRowFlags
+    //---------------------------
+    // Label per Codice Base
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
     szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
@@ -309,28 +350,24 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
     szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
     szTemp.append(QString::fromAscii("}"));
+    lblBox = new QLabel(this);
+    lblBox ->setText(QString::fromAscii("01"));
+    lblBox ->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowFlags, nColBase);
+    // Label per Codice SX
     lblLeft = new QLabel(this);
     lblLeft->setText(QString(szEMPTY));
     lblLeft->setStyleSheet(szTemp);
     mainGrid->addWidget(lblLeft, nRowFlags, nColLeft, 1, nItemWidth);
     // Label per Codice DX
-    szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
     lblRight = new QLabel(this);
     lblRight->setText(QString(szEMPTY));
     lblRight->setStyleSheet(szTemp);
     mainGrid->addWidget(lblRight, nRowFlags, nColRight, 1, nItemWidth);
-
     // Molla Horizontal Spacer per allineare finestra
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Fixed);
     hSpacer->setAlignment(Qt::AlignHCenter);
-    mainGrid->addItem(hSpacer, nRowDesc, colPort, 3, nColLast - nColPort + 2);
+    mainGrid->addItem(hSpacer, nRowCombo, colPort, 3, nColLast - nColPort + 2);
     // Grid per Editing
     tblCT = new QTableWidget(this);
     externalLayOut->addLayout(mainGrid);
@@ -523,7 +560,8 @@ void    Config_MPNE::changeRootElement(int nItem)
 bool    Config_MPNE::eventFilter(QObject *obj, QEvent *event)
 // Gestore Event Handler
 {
-    if (obj == fraMPNE)  {
+    // Rilasciato mouse su aree visibili del Frame di base
+    if (obj == fraMPNE_Left || obj == fraMPNE_Right)  {
         if (event->type() == QEvent::MouseButtonRelease)  {
             qDebug() << QString::fromAscii("Mouse Release on Frame");
             return true;
