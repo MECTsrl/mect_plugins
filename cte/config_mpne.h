@@ -43,6 +43,7 @@ private slots:
     void    changeFilter();                                 // Cambio del filtro sui moduli
     void    filterVariables(int nPosition, int nFunction);         // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
     void    changeRootElement(int nItem);                   // Cambio di Item della Combo dei MPNC definiti
+    void    getUsedModules(int nBaseRow);                   // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
 
 private:
     //---------------------------------------------------------------------
@@ -50,6 +51,8 @@ private:
     //---------------------------------------------------------------------
     void    setFilterButton(int nNewMode);                                  // Imposta il fondo del botton cmd
     void    setGroupVars(int nGroup, int nModule, int16_t nPriority);       // Imposta la Priority per le variabili di Gruppo e Modulo
+    void    customizeButtons();                             // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
+    bool    canRenameRows(int nBaseRow);                                    // Verifica se tutto il Device può essere rinominato
 
     //---------------------------------------------------------------------
     // Variabili varie

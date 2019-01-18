@@ -580,6 +580,7 @@ void    Config_MPNC::changeRootElement(int nItem)
 
     m_nTesta = -1;
     if (nItem >= 0 && nItem < lstCapofila.count())  {
+        // Reperimento riga di base del Modulo selezionato
         m_nBaseRow = lstCapofila[nItem];
         m_nTesta = nItem;
         m_nShowMode = showAll;

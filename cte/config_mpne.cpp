@@ -35,6 +35,7 @@ const int nColPort = 5;
 const int nColNode = 7;
 const int nColLast = 9;
 const int nItemWidth = 2;
+const int nComboWidth = 93;
 // Funzionalità della variabile (per discriminare i tipi di utilizzo del modulo)
 const int nUsageNone = 0;
 const int nUsageDigIn = 1;
@@ -70,7 +71,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     // Creazione del Layout principale del Form
     externalLayOut = new QVBoxLayout(this);             // Lay-Out Esterno del Frame
     mainGrid = new QGridLayout();
-    mainGrid->setHorizontalSpacing(2);
+    mainGrid->setHorizontalSpacing(0);
     // Init valori Porte e flags
     m_nPort = -1;
     m_nNodeId = -1;
@@ -127,6 +128,8 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szTemp.append(QString::fromAscii("QLabel { \n"));
     szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
     szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
+    szTemp.append(QString::fromAscii("  min-width: 50px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 50px;\n"));
     szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
     szTemp.append(QString::fromAscii("}"));
     lblBox = new QLabel(this);
@@ -135,6 +138,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     mainGrid->addWidget(lblBox, nRowSelector, nColBase);
     // Combo Selettore mpnc
     cboSelector = new QComboBox(this);
+    cboSelector->setMaximumWidth(nComboWidth);
     mainGrid->addWidget(cboSelector, nRowSelector, nColLeft, 1, nItemWidth);
     // Label per Protocollo
     lblBox = new QLabel(this);
@@ -241,6 +245,8 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
         cboLeft->addItem(lstModuleName[i], szTemp);
         cboRight->addItem(lstModuleName[i], szTemp);
     }
+    cboLeft->setMaximumWidth(nComboWidth);
+    cboRight->setMaximumWidth(nComboWidth);
     mainGrid->addWidget(cboLeft, nRowCombo, nColLeft, 1, nItemWidth);
     mainGrid->addWidget(cboRight, nRowCombo, nColRight, 1, nItemWidth);
     //---------------------------
@@ -277,8 +283,8 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     // Frames di sfondo MPNE001
     szFrameStyle.clear();
     szFrameStyle.append(QString::fromAscii("QFrame { \n"));
-    szFrameStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szFrameStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
+//    szFrameStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
+//    szFrameStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
     szFrameStyle.append(QString::fromAscii("  min-width: 100px;\n"));
     szFrameStyle.append(QString::fromAscii("  max-width: 100px;\n"));
     szFrameStyle.append(QString::fromAscii("  min-height: 140px;\n"));
@@ -345,16 +351,29 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
     szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
+    szTemp.append(QString::fromAscii("  min-height: 24px;\n"));
+    szTemp.append(QString::fromAscii("  max-height: 24px;\n"));
+    szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
     szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
     szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
     szTemp.append(QString::fromAscii("}"));
     lblBox = new QLabel(this);
     lblBox ->setText(QString::fromAscii("01"));
     lblBox ->setStyleSheet(szTemp);
-    mainGrid->addWidget(lblBox, nRowFlags, nColBase);
+    mainGrid->addWidget(lblBox, nRowFlags, nColBase, 1, 1, Qt::AlignHCenter);
     // Label per Codice SX
+    szTemp.clear();
+    szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
+    szTemp.append(QString::fromAscii("  min-height: 22px;\n"));
+    szTemp.append(QString::fromAscii("  max-height: 22px;\n"));
+    szTemp.append(QString::fromAscii("  min-width: %1px;\n") .arg(nComboWidth));
+    szTemp.append(QString::fromAscii("  max-width: %1px;\n") .arg(nComboWidth));
+    szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
+    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QString::fromAscii("}"));
+
     lblLeft = new QLabel(this);
     lblLeft->setText(QString(szEMPTY));
     lblLeft->setStyleSheet(szTemp);
@@ -555,18 +574,182 @@ void    Config_MPNE::changeRootElement(int nItem)
 // Cambio di Item della Combo dei MPNC definiti
 {
     int     nGroup = 0;
-    int     nModule = 0;
+    int     nFunction = 0;
+    m_nTesta = -1;
+    if (nItem >= 0 && nItem < lstCapofila.count())  {
+        // Reperimento riga di base del Modulo selezionato
+        m_nBaseRow = lstCapofila[nItem];
+        m_nTesta = nItem;
+        m_nShowMode = showAll;
+        setFilterButton(m_nShowMode);
+        // Determina il Protocollo, la Porta e il Nodo dell'elemento
+        if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
+            disableAndBlockSignals(cboPort);
+            disableAndBlockSignals(txtNode);
+            // Visualizzazione Protocollo
+            int nProtocol = localCTRecords[m_nBaseRow].Protocol;
+            if (nProtocol >= 0 && nProtocol < lstProtocol.count())
+                lblProtocol->setText(lstProtocol[nProtocol]);
+            else
+                lblProtocol->setText(szEMPTY);
+            // Scelta Porta Seriale
+            int nPort = localCTRecords[m_nBaseRow].Port;
+            m_nPort = -1;
+            if (nPort >= 0 && nPort <= nMaxSerialPorts)  {
+                m_nPort = nPort;
+            }
+            cboPort->setCurrentIndex(m_nPort);
+            // Node Id
+            int nNode = localCTRecords[m_nBaseRow].NodeId;
+            txtNode->setText(QString::number(nNode));
+            txtNode->setModified(false);
+            m_nNodeId = nNode;
+            // Priorità del Gruppo
+            m_nRootPriority = localCTRecords[m_nBaseRow].Enable;
+            // Abilitazione Rename delle Variabili
+            cmdRename->setEnabled(canRenameRows(m_nBaseRow));
+            enableAndUnlockSignals(cboPort);
+            enableAndUnlockSignals(txtNode);
+            // Aggiornamento lista moduli
+            getUsedModules(m_nBaseRow);
+            // Riga corrente non compresa nella definizione del modulo
+            if (m_nCurrentCTRow < m_nBaseRow || m_nCurrentCTRow > m_nBaseRow + m_nTotalRows)  {
+                qDebug() << QString::fromAscii("changeRootElement(): Forced current Row[%1] To Base Element [%2]") .arg(m_nCurrentCTRow) .arg(m_nBaseRow);
+                m_nCurrentCTRow = m_nBaseRow;
+            }
+            // Abilitazione interfaccia
+            customizeButtons();
+            filterVariables(nGroup, nFunction);
+        }
+    }
+    else  {
+        qDebug() << QString::fromAscii("changeRootElement(): Attempt to switch to wrong element: %1") .arg(nItem);
+    }
+
 }
 bool    Config_MPNE::eventFilter(QObject *obj, QEvent *event)
 // Gestore Event Handler
 {
+    int nModule = 0;
+    int nFunction = 0;
+
     // Rilasciato mouse su aree visibili del Frame di base
     if (obj == fraMPNE_Left || obj == fraMPNE_Right)  {
         if (event->type() == QEvent::MouseButtonRelease)  {
-            qDebug() << QString::fromAscii("Mouse Release on Frame");
+            nModule = nModuleBase;
+            nFunction = nUsageNone;
+            qDebug() << QString::fromAscii("Mouse Release on Frame - Function: %1") .arg(nFunction);
             return true;
         }
     }
+    // Rilasciato mouse su Bottone SX
+    else if (obj== cmdLeft)  {
+        nModule = nModuleLeft;
+        nFunction = cboLeft->currentIndex();
+        qDebug() << QString::fromAscii("Mouse Release on Left Button - Function: %1") .arg(nFunction);
+        return true;
+    }
+    // Rilasciato mouse su Bottone DX
+    else if (obj== cmdRight)  {
+        nModule = nModuleRight;
+        nFunction = cboRight->currentIndex();
+        qDebug() << QString::fromAscii("Mouse Release on Right Button - Function: %1") .arg(nFunction);
+        return true;
+    }
     // Pass event to standard Event Handler
     return QObject::eventFilter(obj, event);
+}
+void    Config_MPNE::getUsedModules(int nBaseRow)
+// Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
+{
+    int     nCur = 0;
+    int     nGroup = 0;
+    int     nModule = 0;
+    int     nRow = 0;
+    bool    fUsed = false;
+
+    // qDebug() << QString::fromAscii("getUsedModules(): Main Head Row: %1") .arg(nBaseRow);
+    // Reset dell'Array dei Moduli
+    for (nCur = 0; nCur < nTotalItems; nCur ++)  {
+        lstModuleIsPresent[nCur] = false;
+    }
+    // Controlla che la Riga di Base Modulo MPNC non sia fuori Range
+    if (nBaseRow > 0 &&  nBaseRow < (localCTRecords.count() - m_nTotalRows))  {
+        // Interpretare la configurazione dei nodi
+        for (nCur = 0; nCur < nTotalItems; nCur ++)  {
+            // Ricerca della prima riga definita per Gruppo e modulo
+            for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+                // La riga appartiene al modulo che stiamo cercando
+                if (nGroup == lstMPNC006_Vars[nRow].Group && nModule == lstMPNC006_Vars[nRow].Module)  {
+                    fUsed = localCTRecords[nBaseRow + nRow].UsedEntry && localCTRecords[nBaseRow + nRow].Enable > nPriorityNone;
+                    lstModuleIsPresent[nCur] = fUsed;
+                    //  qDebug() << QString::fromAscii("getUsedModules(): Module: %1 is: %2") .arg(nCur) .arg(fUsed ? QString::fromAscii("YES") : QString::fromAscii("NO"));
+                    break;
+                }
+            }
+        }
+    }
+    else  {
+        m_szMsg = QString::fromAscii("The Selected Module is Out of Range!");
+        notifyUser(this, szMectTitle, m_szMsg);
+    }
+}
+bool    Config_MPNE::canRenameRows(int nBaseRow)
+// Verifica se tutto il Device può essere rinominato
+{
+    QString     szVarName(szEMPTY);
+    QStringList lstVarNames;
+    bool        fCanRename = true;
+    int         nRow = 0;
+    int         nCol = 0;
+
+    if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
+        lstVarNames.clear();
+        m_nMinVarName = MAX_IDNAME_LEN;
+        m_nMaxVarName = 0;
+        m_szVarNamePrefix.clear();
+        // Determinazione Minima e Massima lunghezza del nome Variabile
+        for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+            szVarName = QString::fromAscii(localCTRecords[nBaseRow + nRow].Tag);
+            int nLen = szVarName.trimmed().length();
+            if (nLen > 0)  {
+                if (nLen > m_nMaxVarName) m_nMaxVarName = nLen;
+                if (nLen < m_nMinVarName) m_nMinVarName = nLen;
+                lstVarNames.append(szVarName);
+            }
+        }
+        // Ordinamento della lista di variabili
+        lstVarNames.sort();
+        QString szTemp;
+        bool    isEqual = true;
+        // Ciclo sulle Variabili ordinate
+        for (nCol = 1; nCol <= m_nMinVarName; nCol++)  {
+            // Take part of name from first variable
+            szTemp = lstVarNames[0].left(nCol);
+            for (nRow = 1; nRow < lstVarNames.count(); nRow++)  {
+                if (! lstVarNames.at(nRow).startsWith(szTemp))  {
+                    isEqual = false;
+                    break;
+                }
+            }
+            // Condizione di terminazione della scansione dei nomi
+            if (! isEqual)  {
+                m_szVarNamePrefix = szTemp.left(nCol - 1);
+                break;
+            }
+        }
+        // Condizione di Rename: Suffisso presente tra i nomi di Variabili
+        fCanRename = m_szVarNamePrefix.length() > 0;
+    }
+    else  {
+        fCanRename = false;
+    }
+    qDebug() << QString::fromAscii("canRenameRows(): Variables Prefix: [%1] Min Var: [%2] Max Var: [%3]") .arg(m_szVarNamePrefix) .arg(m_nMinVarName) .arg(m_nMaxVarName);
+    // Return Value
+    return fCanRename;
+}
+void    Config_MPNE::customizeButtons()
+// Abilitazione delle icone Bottoni in funzione della presenza dei moduli
+{
+
 }
