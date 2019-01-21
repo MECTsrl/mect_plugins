@@ -39,6 +39,8 @@ public slots:
 private slots:
     void    onLeftModuleChanged(int nIndex);
     void    onRightModuleChanged(int nIndex);
+//    void    onLeftModuleClicked();
+//    void    onRightModuleClicked();
     void    updateModule(int nPosition, int nFunction);
     void    changeFilter();                                 // Cambio del filtro sui moduli
     void    filterVariables(int nPosition, int nFunction);         // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
@@ -65,8 +67,8 @@ private:
     QComboBox               *cboSelector;       // Combo Box selettore MPNC
     QPushButton             *cmdRename;         // Push Button per Rename Rows
     QPushButton             *cmdFilter;         // Push Button per Switch visualizzazione
-    QPushButton             *cmdLeft;           // Push Button per selezione modulo SX
-    QPushButton             *cmdRight;          // Push Button per selezione modulo DX
+    QLabel                  *lblModuleLeft;     // Label per selezione modulo SX
+    QLabel                  *lblModuleRight;    // Label per selezione modulo DX
     QLabel                  *lblProtocol;       // Label per Protocollo
     QComboBox               *cboPort;           // Combo per selettore Porta
     QComboBox               *cboLeft;           // Combo per modulo SX
@@ -74,7 +76,7 @@ private:
     QLineEdit               *txtNode;           // Text Box per Node Id
     QLabel                  *lblLeft;           // Label per Codice Left
     QLabel                  *lblRight;          // Label per Codice Right
-    QList<bool>             lstModuleIsPresent; // Lista abilitazione moduli
+    QList<int>              lstModuleUsage;     // Lista Utilizzo dei Moduli (0=Unused)
     QStringList             lstSfondi;          // Lista dei nomi degli sfondi associati ai Bottoni
     QStringList             lstModuleCode;      // Lista dei Codici dei Moduli
     QStringList             lstModuleName;      // Lista dei nomi dei moduli
@@ -83,7 +85,7 @@ private:
     QFrame                  *fraMPNE_Left;      // Frame con immagine MPNE_L
     QFrame                  *fraMPNE_Right;     // Frame con immagine MPNE_R
     QString                 szFrameStyle;       // Style per Frame MPNE
-    QString                 szButtonStyle;      // Style di base dei Bottoni per Item
+    QString                 szModuleStyle;      // Style di base dei Bottoni per Item
     QString                 szFilterStyle;      // Style di base dei Bottone Switch View
     QString                 m_szMsg;            // Messaggio di servizio
     // Visualizzazione

@@ -752,6 +752,9 @@ void    Config_MPNC::filterVariables(int nGroup, int nItem)
     qDebug() << QString::fromAscii("filterVariables(): Group: %1 - Name: %2 - Item: %3") .arg(nGroup) .arg(lstModuleName[nGroup]) .arg(nItem);
     // Preparazione tabella
     this->setCursor(Qt::WaitCursor);
+    lstLineValues.clear();
+    lstTableRows.clear();
+    lstRowPriority.clear();
     tblCT->setVisible(false);
     tblCT->setEnabled(false);
     tblCT->clearSelection();

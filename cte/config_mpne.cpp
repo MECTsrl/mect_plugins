@@ -81,8 +81,8 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     m_nAbsPos = 0;
     m_nTotalRows = lstMPNE_Vars.count();             // Numero di Variabili da gestire
     m_nShowMode = showAll;
-    cmdLeft = 0;
-    cmdRight = 0;
+    lblModuleLeft = 0;
+    lblModuleRight = 0;
     // Lista degli Sfondi e dei Nomi associati ai Moduli
     lstModuleName.clear();
     lstSfondi.clear();
@@ -308,42 +308,39 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     mainGrid->addWidget(fraMPNE_Right, nRowButtons, nColRight);
     fraMPNE_Right->installEventFilter(this);
     // Style per i due bottoni
-    szButtonStyle.clear();
-    szButtonStyle.append(QString::fromAscii("QPushButton:disabled { \n"));
-    szButtonStyle.append(QString::fromAscii("    border: 0px ;\n"));
-    szButtonStyle.append(QString::fromAscii("    background-color: transparent;\n"));
-    szButtonStyle.append(QString::fromAscii("    background-image: url("");\n"));
-    szButtonStyle.append(QString::fromAscii("}\n"));
-    szButtonStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szButtonStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
-    szButtonStyle.append(QString::fromAscii("}\n"));
-    szButtonStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szButtonStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
-    szButtonStyle.append(QString::fromAscii("}\n"));
-    szButtonStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szButtonStyle.append(QString::fromAscii("    border: 1px solid red;\n"));
-    szButtonStyle.append(QString::fromAscii("}\n"));
-    szButtonStyle.append(QString::fromAscii("QPushButton { \n"));
-    szButtonStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szButtonStyle.append(QString::fromAscii("  border-radius: 2px;\n"));
-    szButtonStyle.append(QString::fromAscii("  min-width: 60px;\n"));
-    szButtonStyle.append(QString::fromAscii("  max-width: 60px;\n"));
-    szButtonStyle.append(QString::fromAscii("  min-height: 96px;\n"));
-    szButtonStyle.append(QString::fromAscii("  max-height: 86px;\n"));
-    szButtonStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szButtonStyle.append(QString::fromAscii("}"));
+    szModuleStyle.clear();
+    szModuleStyle.append(QString::fromAscii("QLabel:disabled { \n"));
+    szModuleStyle.append(QString::fromAscii("    border: 0px ;\n"));
+    szModuleStyle.append(QString::fromAscii("    background-color: transparent;\n"));
+    szModuleStyle.append(QString::fromAscii("    background-image: url("");\n"));
+    szModuleStyle.append(QString::fromAscii("}\n"));
+    szModuleStyle.append(QString::fromAscii("QLabel:enabled { \n"));
+    szModuleStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
+    szModuleStyle.append(QString::fromAscii("}\n"));
+    szModuleStyle.append(QString::fromAscii("QLabel:selected, QLabel:hover {\n"));
+    szModuleStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
+    szModuleStyle.append(QString::fromAscii("}\n"));
+    szModuleStyle.append(QString::fromAscii("QLabel { \n"));
+    szModuleStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
+    szModuleStyle.append(QString::fromAscii("  border-radius: 2px;\n"));
+    szModuleStyle.append(QString::fromAscii("  min-width: 60px;\n"));
+    szModuleStyle.append(QString::fromAscii("  max-width: 60px;\n"));
+    szModuleStyle.append(QString::fromAscii("  min-height: 96px;\n"));
+    szModuleStyle.append(QString::fromAscii("  max-height: 86px;\n"));
+    szModuleStyle.append(QString::fromAscii("  background-position: center  center;\n"));
+    szModuleStyle.append(QString::fromAscii("}"));
     // Bottone SX
-    cmdLeft = new QPushButton(fraMPNE_Left);
-    cmdLeft->setStyleSheet(szButtonStyle);
-    cmdLeft->setGeometry(40, 16, 60, 96);
-    cmdLeft->setFlat(true);
-    cmdLeft->setEnabled(false);
+    lblModuleLeft = new QLabel(fraMPNE_Left);
+    lblModuleLeft->setStyleSheet(szModuleStyle);
+    lblModuleLeft->setGeometry(40, 15, 60, 96);
+    lblModuleLeft->setEnabled(false);
     // Bottone DX
-    cmdRight = new QPushButton(fraMPNE_Right);
-    cmdRight->setStyleSheet(szButtonStyle);
-    cmdRight->setGeometry(0, 16, 60, 96);
-    cmdRight->setFlat(true);
-    cmdRight->setEnabled(true);
+    lblModuleRight = new QLabel(fraMPNE_Right);
+    lblModuleRight->setStyleSheet(szModuleStyle);
+    lblModuleRight->setGeometry(0, 15, 60, 96);
+    lblModuleRight->setEnabled(false);
+    lblModuleLeft->installEventFilter(this);
+    lblModuleRight->installEventFilter(this);
     //---------------------------
     // nRowFlags
     //---------------------------
@@ -400,6 +397,9 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     connect(cboSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(changeRootElement(int)));
     // Bottone Switch Mode
     connect(cmdFilter, SIGNAL(clicked()), this, SLOT(changeFilter()));
+    // Bottoni SX e DC
+//    connect(lblModuleLeft, SIGNAL(clicked()), this, SLOT(onLeftModuleClicked()));
+//    connect(lblModuleRight, SIGNAL(clicked()), this, SLOT(onRightModuleClicked()));
     // Init variabili di gestione
     m_nTesta = -1;
     lstCapofila.clear();
@@ -408,9 +408,9 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     m_nMinVarName = 0;
     m_nMaxVarName = 0;
     // Flag Abilitazione dei Moduli (il modulo 0 è MPNC006)
-    lstModuleIsPresent.clear();
+    lstModuleUsage.clear();
     for (i = 0; i < nTotalItems; i++)  {
-        lstModuleIsPresent.append(false);
+        lstModuleUsage.append(nUsageNone);
     }
     // Filter
     m_nShowMode = showAll;
@@ -450,7 +450,7 @@ void Config_MPNE::showTestaNodi(int nTesta, QList<int> lstMPNE, int nCurRow)
     qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2 - Riga Corrente: %3") .arg(nTesta) .arg(lstMPNE.count()) .arg(nCurRow);
     if (nTesta < 0 || nTesta >= lstMPNE.count())  {
         for (nCur = 0; nCur < nTotalItems; nCur++)  {
-            lstModuleIsPresent[nCur] = false;
+            lstModuleUsage[nCur] = nUsageNone;
         }
         nTesta = -1;
         nBaseRow = -1;
@@ -485,26 +485,28 @@ void    Config_MPNE::onRightModuleChanged(int nIndex)
 {
     updateModule(nModuleRight, nIndex);
 }
+
 void    Config_MPNE::updateModule(int nPosition, int nFunction)
 {
     QLabel      *lblCode = 0;
-    QPushButton *btnModule = 0;
-    QString     szNewStyle = szButtonStyle.left(szButtonStyle.length() - 1);
+    QLabel      *lblModule = 0;
+    QString     szNewStyle = szModuleStyle.left(szModuleStyle.length() - 1);
+    int         nOldFunc = lstModuleUsage[nPosition];
 
     // Selezione dei corretti elementi di interfaccia
     switch  (nPosition)   {
         case nModuleLeft:
             lblCode = lblLeft;
-            btnModule = cmdLeft;
+            lblModule = lblModuleLeft;
             break;
         case nModuleRight:
             lblCode = lblRight;
-            btnModule = cmdRight;
+            lblModule = lblModuleRight;
             break;
         case nModuleBase:
         default:
             lblCode = 0;
-            btnModule = 0;
+            lblModule = 0;
             break;
     }
     // Aggiornamento della Label Codice
@@ -512,17 +514,25 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
         lblCode->setText(lstModuleCode[nFunction]);
     }
     // Aggiornamento dello Sfondo Bottone
-    if (btnModule != 0)  {
+    if (lblModule != 0)  {
+        if (nOldFunc != nFunction)  {
+            // Marca come non utilizzata la precedente funzione nelle variabili specifiche
+            // Marca come utilizzata la nuova funzione nelle variabili specifiche
+            // Aggiorna nuova funzione
+            lstModuleUsage[nPosition] = nFunction;
+        }
         if (nFunction == 0)  {
-            btnModule->setEnabled(false);
+            lblModule->setEnabled(false);
+            lblModule->lower();
         }
         else {
             QString szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(lstSfondi[nFunction]);
             szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
             szNewStyle.append(szBackGround);
             szNewStyle.append(QString::fromAscii("}"));
-            btnModule->setStyleSheet(szNewStyle);
-            btnModule->setEnabled(true);
+            lblModule->setStyleSheet(szNewStyle);
+            lblModule->setEnabled(true);
+            lblModule->raise();
         }
     }
 
@@ -564,11 +574,6 @@ void    Config_MPNE::setFilterButton(int nNewMode)
     szNewStyle.append(szBackGround);
     szNewStyle.append(QString::fromAscii("}"));
     cmdFilter->setStyleSheet(szNewStyle);
-}
-void    Config_MPNE::filterVariables(int nPosition, int nFunction)
-// Filtra le variabili specifiche del modulo identificato da Posizione e Funzione
-{
-
 }
 void    Config_MPNE::changeRootElement(int nItem)
 // Cambio di Item della Combo dei MPNC definiti
@@ -633,28 +638,40 @@ bool    Config_MPNE::eventFilter(QObject *obj, QEvent *event)
     int nModule = 0;
     int nFunction = 0;
 
-    // Rilasciato mouse su aree visibili del Frame di base
-    if (obj == fraMPNE_Left || obj == fraMPNE_Right)  {
-        if (event->type() == QEvent::MouseButtonRelease)  {
-            nModule = nModuleBase;
-            nFunction = nUsageNone;
-            qDebug() << QString::fromAscii("Mouse Release on Frame - Function: %1") .arg(nFunction);
+    // Gestione dell'evento Rilascio Mouse per Frame - Bottoni SX e DX
+    if (event->type() == QEvent::MouseButtonRelease)  {
+        // Rilasciato mouse su aree visibili del Frame di base
+        if (obj == fraMPNE_Left || obj == fraMPNE_Right)  {
+                nModule = nModuleBase;
+                nFunction = nUsageNone;
+                qDebug() << QString::fromAscii("Mouse Release on Frame - Function: %1") .arg(nFunction);
+                filterVariables(nModule, nFunction);
+                return true;
+        }
+        // Rilasciato mouse su Bottone SX
+        else if (obj== lblModuleLeft)  {
+            nModule = nModuleLeft;
+            nFunction = cboLeft->currentIndex();
+            // Modulo non usato, filtra su base
+            if (nFunction == nUsageNone)  {
+                nModule = nModuleBase;
+            }
+            filterVariables(nModule, nFunction);
+            qDebug() << QString::fromAscii("Mouse Release on Left Button - Function: %1") .arg(nFunction);
             return true;
         }
-    }
-    // Rilasciato mouse su Bottone SX
-    else if (obj== cmdLeft)  {
-        nModule = nModuleLeft;
-        nFunction = cboLeft->currentIndex();
-        qDebug() << QString::fromAscii("Mouse Release on Left Button - Function: %1") .arg(nFunction);
-        return true;
-    }
-    // Rilasciato mouse su Bottone DX
-    else if (obj== cmdRight)  {
-        nModule = nModuleRight;
-        nFunction = cboRight->currentIndex();
-        qDebug() << QString::fromAscii("Mouse Release on Right Button - Function: %1") .arg(nFunction);
-        return true;
+        // Rilasciato mouse su Bottone DX
+        else if (obj== lblModuleRight)  {
+            nModule = nModuleRight;
+            nFunction = cboRight->currentIndex();
+            // Modulo non usato, filtra su base
+            if (nFunction == nUsageNone)  {
+                nModule = nModuleBase;
+            }
+            filterVariables(nModule, nFunction);
+            qDebug() << QString::fromAscii("Mouse Release on Right Button - Function: %1") .arg(nFunction);
+            return true;
+        }
     }
     // Pass event to standard Event Handler
     return QObject::eventFilter(obj, event);
@@ -662,31 +679,35 @@ bool    Config_MPNE::eventFilter(QObject *obj, QEvent *event)
 void    Config_MPNE::getUsedModules(int nBaseRow)
 // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
 {
-    int     nCur = 0;
     int     nGroup = 0;
-    int     nModule = 0;
+    int     nFunction = 0;
     int     nRow = 0;
     bool    fUsed = false;
 
     // qDebug() << QString::fromAscii("getUsedModules(): Main Head Row: %1") .arg(nBaseRow);
     // Reset dell'Array dei Moduli
-    for (nCur = 0; nCur < nTotalItems; nCur ++)  {
-        lstModuleIsPresent[nCur] = false;
+    for (nGroup = 0; nGroup < nTotalItems; nGroup ++)  {
+        lstModuleUsage[nGroup] = nUsageNone;
     }
     // Controlla che la Riga di Base Modulo MPNC non sia fuori Range
     if (nBaseRow > 0 &&  nBaseRow < (localCTRecords.count() - m_nTotalRows))  {
-        // Interpretare la configurazione dei nodi
-        for (nCur = 0; nCur < nTotalItems; nCur ++)  {
-            // Ricerca della prima riga definita per Gruppo e modulo
+        // Ricerca della prima funzionalità definita per il Modulo (SX o DX)
+        for (nGroup = nModuleLeft; nGroup < nTotalItems; nGroup ++)  {
+            nFunction = nUsageNone;
+            // Ricerca della prima riga utilizzata del Modulo
             for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
                 // La riga appartiene al modulo che stiamo cercando
-                if (nGroup == lstMPNC006_Vars[nRow].Group && nModule == lstMPNC006_Vars[nRow].Module)  {
+                if (nGroup == lstMPNC006_Vars[nRow].Group)  {
                     fUsed = localCTRecords[nBaseRow + nRow].UsedEntry && localCTRecords[nBaseRow + nRow].Enable > nPriorityNone;
-                    lstModuleIsPresent[nCur] = fUsed;
-                    //  qDebug() << QString::fromAscii("getUsedModules(): Module: %1 is: %2") .arg(nCur) .arg(fUsed ? QString::fromAscii("YES") : QString::fromAscii("NO"));
+                    // Se la riga è utilizzata prende per buona la Funzione dal modello
+                    if (fUsed)  {
+                        nFunction = lstMPNC006_Vars[nRow].Module;
+                    }
                     break;
                 }
             }
+            lstModuleUsage[nGroup] = nFunction;
+            qDebug() << QString::fromAscii("getUsedModules(): Module: %1 Function: %2") .arg(nGroup) .arg(nFunction);
         }
     }
     else  {
@@ -749,7 +770,106 @@ bool    Config_MPNE::canRenameRows(int nBaseRow)
     return fCanRename;
 }
 void    Config_MPNE::customizeButtons()
-// Abilitazione delle icone Bottoni in funzione della presenza dei moduli
+// Abilitazione delle icone Bottoni in funzione della presenza dei moduli (Lettura della configurazione attuale Variabili-->Interfaccia)
 {
+    int     nGroup = nModuleLeft;
+    if (lstModuleFunction[nGroup] >= 0 && lstModuleFunction[nGroup] < cboLeft->count())  {
+        cboLeft->setCurrentIndex(lstModuleFunction[nGroup]);
+    }
+    nGroup = nModuleRight;
+    if (lstModuleFunction[nGroup] >= 0 && lstModuleFunction[nGroup] < cboRight->count())  {
+        cboRight->setCurrentIndex(lstModuleFunction[nGroup]);
+    }
+}
+void    Config_MPNE::filterVariables(int nPosition, int nFunction)
+// Filtra le variabili specifiche del modulo identificato da Posizione e Funzione
+{
+    QStringList         lstLineValues;
+    QList<QStringList > lstTableRows;
+    QList<int16_t>      lstRowPriority;
+    int                 nRow = 0;
+    int                 nCurrentRow = 0;
+    bool                fRes = false;
 
+    qDebug() << QString::fromAscii("filterVariables(): Filter Variables for Position: %1 Function: %2") .arg(nPosition) .arg(nFunction);
+    // Preparazione tabella
+    this->setCursor(Qt::WaitCursor);
+    lstLineValues.clear();
+    lstTableRows.clear();
+    lstRowPriority.clear();
+    tblCT->setVisible(false);
+    tblCT->setEnabled(false);
+    tblCT->clearSelection();
+    tblCT->setRowCount(0);
+    tblCT->setColumnCount(0);
+    tblCT->clearContents();
+    tblCT->clear();
+    // Ciclo di Lettura
+    for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+        if ( (nPosition == 0 && nFunction == 0)  ||
+             (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module))  {
+            bool    fShow = true;
+            if (nPosition == 0 && nFunction == 0)  {
+                switch (m_nShowMode)  {
+                    case showHead:
+                        // Visualizza solo elementi della Head (no Nodi)
+                        fShow = (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module);
+                        break;
+
+                    case showUsed:
+                        // Visualizza solo le variabili utilizzate
+                        fShow = localCTRecords[m_nBaseRow + nRow].Enable > nPriorityNone;
+
+                    break;
+                    case showAll:
+                    default:
+                        fShow = true;
+                        break;
+                }
+            }
+            // La riga deve essere visualizzata
+            if (fShow)  {
+                // Decodifica dei valori di CT e conversione in stringa
+                fRes = recCT2MPNxFieldsValues(localCTRecords, lstLineValues, nRow + m_nBaseRow, lstMPNE_Vars, nRow);
+                // Aggiunta alla Table
+                if (fRes)  {
+                    lstTableRows.append(lstLineValues);
+                    lstRowPriority.append(localCTRecords[nRow + m_nBaseRow].Enable);
+                    // Riga da selezionare in Grid
+                    if (nRow + m_nBaseRow == m_nCurrentCTRow)  {
+                        nCurrentRow = lstTableRows.count() - 1;
+                    }
+                }
+            }
+        }
+    }
+    // Dimensionamento Tabella
+    tblCT->setRowCount(lstTableRows.count());
+    tblCT->setColumnCount(colMPNxTotals);
+    // Caricamento in Tabella
+    for (nRow = 0; nRow < lstTableRows.count(); nRow++)  {
+        list2GridRow(tblCT, lstTableRows[nRow], lstMPNxHeadLeftCols, nRow);
+    }
+    setGridParams(tblCT, lstMPNxCols, lstMNPxHeadSizes, QAbstractItemView::SingleSelection);
+    // Colore di Sfondo
+    for (nRow = 0; nRow < lstTableRows.count(); nRow++)  {
+        setRowColor(tblCT, nRow, 0, 1, lstRowPriority[nRow], m_nBaseRow);
+    }
+    // Ci sono elementi in griglia
+    if (lstTableRows.count() > 0)  {
+        tblCT->setSelectionBehavior(QAbstractItemView::SelectRows);
+        tblCT->setSelectionMode(QAbstractItemView::SingleSelection);
+        tblCT->setVisible(true);
+        tblCT->setEnabled(true);
+        if (nCurrentRow < 0 || nCurrentRow >= lstTableRows.count())  {
+            qDebug() << QString::fromAscii("filterVariables(): Table Row: %1 Forced to 0") .arg(nCurrentRow);
+            nCurrentRow = 0;
+        }
+        tblCT->selectRow(nCurrentRow);
+        tblCT->update();
+        tblCT->setFocus();
+    }
+    qDebug() << QString::fromAscii("filterVariables(): Displayed Rows: %1 - Current Relative: %2 - CT Row: %3 - Show Mode: %4")
+                .arg(nRow) .arg(nCurrentRow) .arg(m_nCurrentCTRow) .arg(m_nShowMode);
+    this->setCursor(Qt::ArrowCursor);
 }

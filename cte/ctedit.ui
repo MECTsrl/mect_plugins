@@ -3205,6 +3205,8 @@ border-radius: 2px</string>
                 <string>PushButton</string>
                </property>
               </widget>
+              <zorder>pushButton_2</zorder>
+              <zorder>pushButton</zorder>
              </widget>
             </item>
            </layout>
