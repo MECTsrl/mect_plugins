@@ -12,8 +12,6 @@
 #include <QIntValidator>
 #include <QEvent>
 
-// Cardinalità tipi di Moduli
-const int nTotalModules = 6;
 // Posizioni dei Moduli
 const int nModuleBase = 0;
 const int nModuleLeft = 1;
@@ -41,6 +39,7 @@ const int nUsageNone = 0;
 const int nUsageDigIn = 1;
 const int nUsageDigOut = 2;
 const int nUsageAnIO = 3;
+const int nUsageMax = 4;
 
 // Sfondi
 const QString szFileRename = szPathIMG + QString::fromAscii("Rename2.png");
@@ -50,8 +49,8 @@ const QString szFileMPNE10R = szPathIMG + QString::fromAscii("MPNE01R.png");
 const QString szFileMPNE00 = szEMPTY;
 const QString szFileMPNE01 = szPathIMG + QString::fromAscii("MPNE01.png");
 const QString szFileMPNE02 = szPathIMG + QString::fromAscii("MPNE02.png");
-const QString szFileMPNE03 = szPathIMG + QString::fromAscii("MPNE03.png");
-const QString szFileMPNE04 = szPathIMG + QString::fromAscii("MPNE04.png");
+//const QString szFileMPNE03 = szPathIMG + QString::fromAscii("MPNE03.png");
+//const QString szFileMPNE04 = szPathIMG + QString::fromAscii("MPNE04.png");
 const QString szFileMPNE05 = szPathIMG + QString::fromAscii("MPNE05.png");
 // Sfondi Filtro Visualizzazione
 const QString szFilterHead = szPathIMG + QString::fromAscii("ShowHead.png");
@@ -88,38 +87,37 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lstSfondi.clear();
     lstModuleCode.clear();
     lstModuleFunction.clear();      // Lista delle Funzionalità dei Moduli
-    lstModuleLines.clear();         // Lista delle Linee abilitate per i Moduli
     // Descrizioni e sfondi dei Moduli
     // Module 0 - No Module
     lstModuleName.append(QString::fromAscii("No Module"));
     lstSfondi.append(szFileMPNE00);
     lstModuleFunction.append(nUsageNone);
-    lstModuleLines.append(0);
+    lstModuleCode.append(QString::fromAscii("00"));
     // Module 01 Dig IN
     lstModuleName.append(QString::fromAscii("8 Digital Input"));
     lstSfondi.append(szFileMPNE01);
     lstModuleFunction.append(nUsageDigIn);
-    lstModuleLines.append(8);
+    lstModuleCode.append(QString::fromAscii("01"));
     // Module 02 Dig OUT
     lstModuleName.append(QString::fromAscii("8 Digital Output"));
     lstSfondi.append(szFileMPNE02);
     lstModuleFunction.append(nUsageDigOut);
-    lstModuleLines.append(8);
-    // Module 03 Dig OUT with 4 Relays
-    lstModuleName.append(QString::fromAscii("4 Digital Relays"));
-    lstSfondi.append(szFileMPNE03);
-    lstModuleFunction.append(nUsageDigOut);
-    lstModuleLines.append(4);
-    // Module 04 Dig OUT with 8 Relays
-    lstModuleName.append(QString::fromAscii("8 Digital Relays"));
-    lstSfondi.append(szFileMPNE04);
-    lstModuleFunction.append(nUsageAnIO);
-    lstModuleLines.append(3);
+    lstModuleCode.append(QString::fromAscii("02-03-04"));
+//    // Module 03 Dig OUT with 4 Relays
+//    lstModuleName.append(QString::fromAscii("4 Digital Relays"));
+//    lstSfondi.append(szFileMPNE03);
+//    lstModuleFunction.append(nUsageDigOut);
+//    lstModuleLines.append(4);
+//    // Module 04 Dig OUT with 8 Relays
+//    lstModuleName.append(QString::fromAscii("8 Digital Relays"));
+//    lstSfondi.append(szFileMPNE04);
+//    lstModuleFunction.append(nUsageAnIO);
+//    lstModuleLines.append(3);
     // Module 05 2 AI + 1 AO
     lstModuleName.append(QString::fromAscii("2 AI - 1 AO"));
     lstSfondi.append(szFileMPNE05);
-    lstModuleFunction.append(nUsageDigOut);
-    lstModuleLines.append(8);
+    lstModuleFunction.append(nUsageAnIO);
+    lstModuleCode.append(QString::fromAscii("05"));
     //---------------------------
     // nRowSelector
     //---------------------------
@@ -239,9 +237,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     // Combo per Codici Modulo
     cboLeft = new QComboBox(this);
     cboRight = new QComboBox(this);
-    for (i= 0; i < nTotalModules; i++)  {
-        szTemp = int2PaddedString(i, 2, 10);
-        lstModuleCode.append(szTemp);
+    for (i= 0; i < nUsageMax; i++)  {
         cboLeft->addItem(lstModuleName[i], szTemp);
         cboRight->addItem(lstModuleName[i], szTemp);
     }
@@ -370,16 +366,39 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
     szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
     szTemp.append(QString::fromAscii("}"));
-
     lblLeft = new QLabel(this);
-    lblLeft->setText(QString(szEMPTY));
+    lblLeft->setText(lstModuleCode[nUsageNone]);
     lblLeft->setStyleSheet(szTemp);
     mainGrid->addWidget(lblLeft, nRowFlags, nColLeft, 1, nItemWidth);
     // Label per Codice DX
     lblRight = new QLabel(this);
-    lblRight->setText(QString(szEMPTY));
+    lblRight->setText(lstModuleCode[nUsageNone]);
     lblRight->setStyleSheet(szTemp);
     mainGrid->addWidget(lblRight, nRowFlags, nColRight, 1, nItemWidth);
+    // Label per Numero Righe selezionate
+    szTemp.clear();
+    szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  min-height: 22px;\n"));
+    szTemp.append(QString::fromAscii("  max-height: 22px;\n"));
+    szTemp.append(QString::fromAscii("  min-width: 50px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 50px;\n"));
+    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignLeft';\n"));
+    szTemp.append(QString::fromAscii("}"));
+    lblBox = new QLabel(this);
+    lblBox->setText(QString::fromAscii("Rows:"));
+    lblBox->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowFlags, nColPort);
+    szTemp.clear();
+    szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  min-height: 22px;\n"));
+    szTemp.append(QString::fromAscii("  max-height: 22px;\n"));
+    szTemp.append(QString::fromAscii("  min-width: 50px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 50px;\n"));
+    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignRight';\n"));
+    szTemp.append(QString::fromAscii("}"));
+    lblNRows = new QLabel(this);
+    lblNRows->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblNRows, nRowFlags, nColPort + 1);
     // Molla Horizontal Spacer per allineare finestra
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Fixed);
     hSpacer->setAlignment(Qt::AlignHCenter);
@@ -395,11 +414,18 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     connect(cboRight, SIGNAL(currentIndexChanged(int)), this, SLOT(onRightModuleChanged(int)));
     // Combo per cambio Modulo MPNC
     connect(cboSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(changeRootElement(int)));
+    // Combo per modulo Porta
+    connect(cboPort, SIGNAL(currentIndexChanged(int)), this, SLOT(on_changePort(int)));
+    // Text Box Editing Node Id
+    connect(txtNode, SIGNAL(editingFinished()), this, SLOT(on_changeNode()));
+    // Bottone Rename CT
+    connect(cmdRename, SIGNAL(clicked()), this, SLOT(on_RenameVars()));
     // Bottone Switch Mode
     connect(cmdFilter, SIGNAL(clicked()), this, SLOT(changeFilter()));
-    // Bottoni SX e DC
-//    connect(lblModuleLeft, SIGNAL(clicked()), this, SLOT(onLeftModuleClicked()));
-//    connect(lblModuleRight, SIGNAL(clicked()), this, SLOT(onRightModuleClicked()));
+    // Row Double Clicled
+    connect(tblCT, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onRowDoubleClicked(QModelIndex)));
+    // Row Clicled
+    connect(tblCT, SIGNAL(clicked(QModelIndex)), this, SLOT(onRowClicked(QModelIndex)));
     // Init variabili di gestione
     m_nTesta = -1;
     lstCapofila.clear();
@@ -415,8 +441,6 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     // Filter
     m_nShowMode = showAll;
     setFilterButton(m_nShowMode);
-    updateModule(nModuleLeft, 0);
-    updateModule(nModuleRight, 0);
 }
 int     Config_MPNE::getCurrentRow()
 // Restituisce la riga correntemente selezionata
@@ -491,8 +515,11 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
     QLabel      *lblCode = 0;
     QLabel      *lblModule = 0;
     QString     szNewStyle = szModuleStyle.left(szModuleStyle.length() - 1);
-    int         nOldFunc = lstModuleUsage[nPosition];
 
+    // Check Boundary
+    if (nPosition < nModuleBase || nPosition >=  nTotalItems || nFunction < nUsageNone || nFunction >= nUsageMax)
+        return;
+    int         nOldFunc = lstModuleUsage[nPosition];
     // Selezione dei corretti elementi di interfaccia
     switch  (nPosition)   {
         case nModuleLeft:
@@ -517,7 +544,9 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
     if (lblModule != 0)  {
         if (nOldFunc != nFunction)  {
             // Marca come non utilizzata la precedente funzione nelle variabili specifiche
+            setGroupVars(nPosition, nOldFunc, nPriorityNone);
             // Marca come utilizzata la nuova funzione nelle variabili specifiche
+            setGroupVars(nPosition, nFunction, m_nRootPriority);
             // Aggiorna nuova funzione
             lstModuleUsage[nPosition] = nFunction;
         }
@@ -535,7 +564,16 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
             lblModule->raise();
         }
     }
-
+    // In ogni caso applica il filtro ricevuto
+    qDebug() << QString::fromAscii("updateModule(): Position: %1 - Function: %2") .arg(nPosition) .arg(nFunction);
+    if (nFunction > nUsageNone)  {
+        // Filter Variables of a Group / Item
+        filterVariables(nPosition, nFunction);
+    }
+    else  {
+        // Filter Variables for Base
+        filterVariables(nModuleBase, nUsageNone);
+    }
 }
 void    Config_MPNE::changeFilter()
 // Cambio del filtro sui moduli
@@ -544,7 +582,8 @@ void    Config_MPNE::changeFilter()
 
     m_nShowMode = nNewMode;
     setFilterButton(m_nShowMode);
-    filterVariables(0, 0);
+    // Filter Variables for Base
+    filterVariables(nModuleBase, nUsageNone);
 }
 void    Config_MPNE::setFilterButton(int nNewMode)
 // Imposta il fondo del botton cmd
@@ -578,8 +617,6 @@ void    Config_MPNE::setFilterButton(int nNewMode)
 void    Config_MPNE::changeRootElement(int nItem)
 // Cambio di Item della Combo dei MPNC definiti
 {
-    int     nGroup = 0;
-    int     nFunction = 0;
     m_nTesta = -1;
     if (nItem >= 0 && nItem < lstCapofila.count())  {
         // Reperimento riga di base del Modulo selezionato
@@ -624,7 +661,8 @@ void    Config_MPNE::changeRootElement(int nItem)
             }
             // Abilitazione interfaccia
             customizeButtons();
-            filterVariables(nGroup, nFunction);
+            // Filter Variables for Base
+            filterVariables(nModuleBase, nUsageNone);
         }
     }
     else  {
@@ -635,17 +673,15 @@ void    Config_MPNE::changeRootElement(int nItem)
 bool    Config_MPNE::eventFilter(QObject *obj, QEvent *event)
 // Gestore Event Handler
 {
-    int nModule = 0;
-    int nFunction = 0;
+    int nModule = nModuleBase;
+    int nFunction = nUsageNone;
 
     // Gestione dell'evento Rilascio Mouse per Frame - Bottoni SX e DX
     if (event->type() == QEvent::MouseButtonRelease)  {
         // Rilasciato mouse su aree visibili del Frame di base
         if (obj == fraMPNE_Left || obj == fraMPNE_Right)  {
-                nModule = nModuleBase;
-                nFunction = nUsageNone;
                 qDebug() << QString::fromAscii("Mouse Release on Frame - Function: %1") .arg(nFunction);
-                filterVariables(nModule, nFunction);
+                filterVariables(nModuleBase, nUsageNone);
                 return true;
         }
         // Rilasciato mouse su Bottone SX
@@ -677,7 +713,7 @@ bool    Config_MPNE::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 void    Config_MPNE::getUsedModules(int nBaseRow)
-// Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
+// Calcola a partire dalla riga del Capofila il numero e le Funzioni dei Moduli utilizzati
 {
     int     nGroup = 0;
     int     nFunction = 0;
@@ -696,14 +732,16 @@ void    Config_MPNE::getUsedModules(int nBaseRow)
             nFunction = nUsageNone;
             // Ricerca della prima riga utilizzata del Modulo
             for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+                int nItem = nBaseRow + nRow;
                 // La riga appartiene al modulo che stiamo cercando
-                if (nGroup == lstMPNC006_Vars[nRow].Group)  {
-                    fUsed = localCTRecords[nBaseRow + nRow].UsedEntry && localCTRecords[nBaseRow + nRow].Enable > nPriorityNone;
+                if (nGroup == lstMPNE_Vars[nRow].Group)  {
+                    fUsed = localCTRecords[nItem].UsedEntry && localCTRecords[nItem].Enable > nPriorityNone;
                     // Se la riga è utilizzata prende per buona la Funzione dal modello
                     if (fUsed)  {
-                        nFunction = lstMPNC006_Vars[nRow].Module;
+                        qDebug() << QString::fromAscii("getUsedModules(): Row: %1 Used: %2 Priority: %3") .arg(nItem) .arg(localCTRecords[nItem].UsedEntry) .arg(localCTRecords[nItem].Enable);
+                        nFunction = lstMPNE_Vars[nRow].Module;
+                        break;
                     }
-                    break;
                 }
             }
             lstModuleUsage[nGroup] = nFunction;
@@ -715,6 +753,54 @@ void    Config_MPNE::getUsedModules(int nBaseRow)
         notifyUser(this, szMectTitle, m_szMsg);
     }
 }
+void    Config_MPNE::on_RenameVars()
+// Evento Rename Clicked
+{
+    bool        fOk = false;
+    QString     szNewPrefix = QInputDialog::getText(this, QString::fromAscii("New Var Prefix:"), QString::fromAscii("Enter new Variables Prefix to rename all Variables:"),
+                                                    QLineEdit::Normal, m_szVarNamePrefix, &fOk, Qt::Dialog);
+    if (fOk)  {
+        // Validazione del risultato
+        m_szMsg.clear();
+        szNewPrefix = szNewPrefix.trimmed();
+        qDebug() << QString::fromAscii("on_RenameVars(): New Var Prefix: [%1]") .arg(szNewPrefix);
+        // Controllo sulla lunghezza complessiva delle variabili rinominate
+        if (szNewPrefix.length() + m_nMaxVarName > MAX_IDNAME_LEN)  {
+            fOk = false;
+            m_szMsg.append(QString::fromAscii("The Prefix [%1] is Too Long.\nThe resulting length of the Variable Names exceeds the limit of [%2] characters\n")
+                    .arg(szNewPrefix) .arg(MAX_IDNAME_LEN));
+        }
+        // Prefisso Vuoto
+        if (szNewPrefix.isEmpty())  {
+            fOk = false;
+            m_szMsg.append(QString::fromAscii("The Prefix is Empty.\n"));
+        }
+        // Prefisso non valido
+        if (! isValidVarName(szNewPrefix))  {
+            fOk = false;
+            m_szMsg.append(QString::fromAscii("The prefix [%1] is not valid\nif used as the beginning of a variable name\n") .arg(szNewPrefix));
+        }
+        if (fOk)  {
+            // Controlli superati, procedere al rename delle variabili
+            QString szNewVarName(szEMPTY);
+            int     nVar = 0;
+            for (nVar = 0; nVar < m_nTotalRows; nVar++)  {
+                // Generazione del nuovo nome variabile
+                szNewVarName = QString::fromAscii(localCTRecords[m_nBaseRow + nVar].Tag);
+                szNewVarName = szNewVarName.mid(m_szVarNamePrefix.length());
+                szNewVarName.prepend(szNewPrefix);
+                strcpy(localCTRecords[m_nBaseRow + nVar].Tag, szNewVarName.toAscii().data());
+            }
+            m_szVarNamePrefix = szNewPrefix;
+            m_fUpdated = true;
+            filterVariables(nModuleBase, nUsageNone);
+        }
+        else {
+            warnUser(this, szMectTitle, m_szMsg);
+        }
+    }
+}
+
 bool    Config_MPNE::canRenameRows(int nBaseRow)
 // Verifica se tutto il Device può essere rinominato
 {
@@ -773,12 +859,14 @@ void    Config_MPNE::customizeButtons()
 // Abilitazione delle icone Bottoni in funzione della presenza dei moduli (Lettura della configurazione attuale Variabili-->Interfaccia)
 {
     int     nGroup = nModuleLeft;
-    if (lstModuleFunction[nGroup] >= 0 && lstModuleFunction[nGroup] < cboLeft->count())  {
-        cboLeft->setCurrentIndex(lstModuleFunction[nGroup]);
+    if (lstModuleUsage[nGroup] >= nUsageNone && lstModuleUsage[nGroup] < cboLeft->count())  {
+        qDebug() << QString::fromAscii("customizeButtons(): Left Module switched to Function: %1") .arg(lstModuleUsage[nGroup]);
+        cboLeft->setCurrentIndex(lstModuleUsage[nGroup]);
     }
     nGroup = nModuleRight;
-    if (lstModuleFunction[nGroup] >= 0 && lstModuleFunction[nGroup] < cboRight->count())  {
-        cboRight->setCurrentIndex(lstModuleFunction[nGroup]);
+    if (lstModuleUsage[nGroup] >= nUsageNone && lstModuleUsage[nGroup] < cboRight->count())  {
+        qDebug() << QString::fromAscii("customizeButtons(): Right Module switched to Function: %1") .arg(lstModuleUsage[nGroup]);
+        cboRight->setCurrentIndex(lstModuleUsage[nGroup]);
     }
 }
 void    Config_MPNE::filterVariables(int nPosition, int nFunction)
@@ -806,21 +894,21 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
     tblCT->clear();
     // Ciclo di Lettura
     for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-        if ( (nPosition == 0 && nFunction == 0)  ||
+        if ( (nPosition == nModuleBase && nFunction == nUsageNone)  ||
              (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module))  {
             bool    fShow = true;
-            if (nPosition == 0 && nFunction == 0)  {
+            // Ulteriori condizioni di filtraggio per
+            if (nPosition == nModuleBase && nFunction == nUsageNone)  {
                 switch (m_nShowMode)  {
                     case showHead:
                         // Visualizza solo elementi della Head (no Nodi)
-                        fShow = (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module);
+                        fShow = (lstMPNE_Vars[nRow].Group == nPosition);
                         break;
 
                     case showUsed:
-                        // Visualizza solo le variabili utilizzate
-                        fShow = localCTRecords[m_nBaseRow + nRow].Enable > nPriorityNone;
-
-                    break;
+                        // Visualizza solo le variabili utilizzate (Head + Nodi utilizzati)
+                        fShow = (lstMPNE_Vars[nRow].Group == nPosition || localCTRecords[m_nBaseRow + nRow].Enable > nPriorityNone);
+                        break;
                     case showAll:
                     default:
                         fShow = true;
@@ -869,7 +957,131 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
         tblCT->update();
         tblCT->setFocus();
     }
+    // Aggiornamento numero Elementi in Grid
+    lblNRows->setText(QString::number(lstTableRows.count()));
     qDebug() << QString::fromAscii("filterVariables(): Displayed Rows: %1 - Current Relative: %2 - CT Row: %3 - Show Mode: %4")
                 .arg(nRow) .arg(nCurrentRow) .arg(m_nCurrentCTRow) .arg(m_nShowMode);
     this->setCursor(Qt::ArrowCursor);
+}
+void    Config_MPNE::onRowClicked(const QModelIndex &index)
+// Evento Row Clicked
+{
+    int nRow = index.row();
+
+    if (nRow >= 0)  {
+        QTableWidgetItem    *tItem = tblCT->item(nRow, colMPNxRowNum);
+        if (tItem != 0)  {
+            bool fOk = false;
+            nRow = tItem->text().toInt(&fOk);
+            if (fOk)  {
+                m_nCurrentCTRow = nRow;
+                qDebug() << QString::fromAscii("onRowClicked(): CT Row:[%1]") .arg(m_nCurrentCTRow);
+            }
+        }
+    }
+}
+
+void    Config_MPNE::onRowDoubleClicked(const QModelIndex &index)
+// Evento Row Double Clicked
+{
+    int nRow = index.row();
+
+    if (nRow >= 0 && m_nCurrentCTRow )  {
+        qDebug() << QString::fromAscii("onRowDoubleClicked(): CT Row:[%1]") .arg(m_nCurrentCTRow);
+        emit varClicked(m_nCurrentCTRow);
+    }
+}
+
+void    Config_MPNE::setGroupVars(int nPosition, int nFunction, int16_t nPriority)
+// Imposta la Priority per le variabili di Posizione e Funzione
+{
+    int nRow = 0;
+    int nUpdated = 0;
+
+    for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+        // Confronto tra Variabile corrente e variabile paradigma in Modello (per nGroup == 0 vedi tutti)
+        if (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module)  {
+            localCTRecords[nRow + m_nBaseRow].Enable = nPriority;
+            nUpdated++;
+            m_fUpdated = true;
+        }
+    }
+    qDebug() << QString::fromAscii("setGroupVars(): [Base: %1 Position: %2 - Function: %3 - Priority: %4] Updated: %5") .arg(m_nBaseRow) .arg(nPosition) .arg(nFunction) .arg(nPriority) .arg(nUpdated);
+}
+void    Config_MPNE::on_changePort(int nPort)
+// Evento cambio Porta RTU
+{
+    qDebug() << QString::fromAscii("changePort(): New Port %1") .arg(nPort);
+    if (nPort != m_nPort)  {
+        m_szMsg = QString::fromAscii("Confirm Serial Port change from [%1] to [%2] ?") .arg(m_nPort) .arg(nPort);
+        if (queryUser(this, szMectTitle, m_szMsg))  {
+            // Ciclo per riassegnare la porta Seriale
+            int nRow = 0;
+            for (nRow = m_nBaseRow; nRow < m_nBaseRow + m_nTotalRows; nRow++)  {
+                if (nRow >= 0 && nRow < localCTRecords.count())  {
+                    localCTRecords[nRow].Port = nPort;
+                }
+            }
+            m_nPort = nPort;
+            m_fUpdated = true;
+        }
+        // Aggiorna numero di porta
+        disableAndBlockSignals(cboPort);
+        cboPort->setCurrentIndex(m_nPort);
+        enableAndUnlockSignals(cboPort);
+        // Refresh interfaccia su nodo corrente
+        if (m_nCurrentCTRow > 0 && m_nCurrentCTRow < localCTRecords.count())  {
+            int nPosition = nModuleBase;
+            int nFunction = nUsageNone;
+            int nRow = m_nCurrentCTRow - m_nBaseRow;
+            if (nRow >= 0 && nRow < m_nTotalRows)  {
+                nPosition = localCTRecords[nRow].Group;
+                nFunction = localCTRecords[nRow].Module;
+            }
+            filterVariables(nPosition, nFunction);
+        }
+    }
+}
+void    Config_MPNE::on_changeNode()
+// Evento Cambio Nodo
+{
+    disableAndBlockSignals(txtNode);
+    if (txtNode->isModified())  {
+        bool    fOk = false;
+        QString szNewValue = txtNode->text().trimmed();
+        if (szNewValue != QString::number(m_nNodeId))  {
+            int nNode = szNewValue.toInt(&fOk);
+            if (fOk && nNode != m_nNodeId)  {
+                m_szMsg = QString::fromAscii("Confirm Node ID change from [%1] to [%2] ?") .arg(m_nNodeId) .arg(nNode);
+                if (queryUser(this, szMectTitle, m_szMsg))  {
+                    // Ciclo per riassegnare la porta Seriale
+                    int nRow = 0;
+                    for (nRow = m_nBaseRow; nRow < m_nBaseRow + m_nTotalRows; nRow++)  {
+                        if (nRow >= 0 && nRow < localCTRecords.count())  {
+                            localCTRecords[nRow].NodeId = nNode;
+                        }
+                    }
+                    m_nNodeId = nNode;
+                    m_fUpdated = true;
+                }
+            }
+            // Aggiorna Numero di Nodo
+            txtNode->setText(QString::number(m_nNodeId));
+            txtNode->setModified(false);
+            // Forza Repaint della Radice del Nodo
+            m_nAbsPos = 0;
+        }
+        // Refresh interfaccia su nodo corrente
+        if (m_nCurrentCTRow > 0 && m_nCurrentCTRow < localCTRecords.count())  {
+            int nPosition = nModuleBase;
+            int nFunction = nUsageNone;
+            int nRow = m_nCurrentCTRow - m_nBaseRow;
+            if (nRow >= 0 && nRow < m_nTotalRows)  {
+                nPosition = localCTRecords[nRow].Group;
+                nFunction = localCTRecords[nRow].Module;
+            }
+            filterVariables(nPosition, nFunction);
+        }
+    }
+    enableAndUnlockSignals(txtNode);
 }

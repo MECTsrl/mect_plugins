@@ -479,6 +479,7 @@ ctedit::ctedit(QWidget *parent) :
     connect(ui->timingTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
     // Tab MPNC
     connect(configMPNC, SIGNAL(varClicked(int)), this, SLOT(return2GridRow(int)));
+    connect(configMPNE, SIGNAL(varClicked(int)), this, SLOT(return2GridRow(int)));
     // Timer per messaggi
     tmrMessage = new QTimer(this);
     tmrMessage->setInterval(0);
@@ -2688,7 +2689,20 @@ void ctedit::tabSelected(int nTab)
             enableInterface();
         }
         else if (nPrevTab == TAB_MPNE)  {
-
+            // Se qualcosa della configurazione è cambiato rilegge la CT dalla Lista
+            int nOldRow = m_nGridRow;
+            if (configMPNE->isUpdated())  {
+                ui->tblCT->selectionModel()->clearSelection();
+                lstUndo.append(lstCTRecords);
+                lstCTRecords = configMPNE->localCTRecords;
+                // Refresh Grid
+                ctable2Grid();
+                m_isCtModified = true;
+            }
+            // Jump n+1
+            jumpToGridRow(nOldRow + 1, true);
+            jumpToGridRow(nOldRow, true);
+            enableInterface();
         }
     }
     // Entering Trends: Aggiornamento della lista di variabili e ripopolamento liste per Trends

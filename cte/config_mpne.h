@@ -37,25 +37,29 @@ public slots:
     void    showTestaNodi(int nTesta, QList<int> lstMPNE, int nCurRow);
 
 private slots:
+    void    changeFilter();                                 // Cambio del filtro sui moduli
+    void    changeRootElement(int nItem);                   // Cambio di Item della Combo dei MPNC definiti
+    void    onRowClicked(const QModelIndex &index);         // Evento Row Clicked
+    void    onRowDoubleClicked(const QModelIndex &index);   // Evento Row Double Clicked
+    void    on_changePort(int nPort);                       // Evento cambio Porta RTU
+    void    on_changeNode();                                // Evento Cambio Nodo
+    void    on_RenameVars();                                // Evento Rename Clicked
+
     void    onLeftModuleChanged(int nIndex);
     void    onRightModuleChanged(int nIndex);
-//    void    onLeftModuleClicked();
-//    void    onRightModuleClicked();
-    void    updateModule(int nPosition, int nFunction);
-    void    changeFilter();                                 // Cambio del filtro sui moduli
-    void    filterVariables(int nPosition, int nFunction);         // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
-    void    changeRootElement(int nItem);                   // Cambio di Item della Combo dei MPNC definiti
-    void    getUsedModules(int nBaseRow);                   // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
 
 private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
     //---------------------------------------------------------------------
-    void    setFilterButton(int nNewMode);                                  // Imposta il fondo del botton cmd
-    void    setGroupVars(int nGroup, int nModule, int16_t nPriority);       // Imposta la Priority per le variabili di Gruppo e Modulo
+    void    getUsedModules(int nBaseRow);                   // Calcola a partire dalla riga del Capofila il numero e le Funzioni dei Moduli utilizzati
+    void    setFilterButton(int nNewMode);                  // Imposta il fondo del botton cmd
+    void    filterVariables(int nPosition, int nFunction);  // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
+    void    setGroupVars(int nPosition, int nFunction, int16_t nPriority);  // Imposta la Priority per le variabili di Posizione e Funzione
     void    customizeButtons();                             // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
-    bool    canRenameRows(int nBaseRow);                                    // Verifica se tutto il Device può essere rinominato
+    bool    canRenameRows(int nBaseRow);                    // Verifica se tutto il Device può essere rinominato
 
+    void    updateModule(int nPosition, int nFunction);
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
@@ -70,6 +74,7 @@ private:
     QLabel                  *lblModuleLeft;     // Label per selezione modulo SX
     QLabel                  *lblModuleRight;    // Label per selezione modulo DX
     QLabel                  *lblProtocol;       // Label per Protocollo
+    QLabel                  *lblNRows;          // Label per Numero Righe
     QComboBox               *cboPort;           // Combo per selettore Porta
     QComboBox               *cboLeft;           // Combo per modulo SX
     QComboBox               *cboRight;          // Combo per modulo DX
@@ -81,7 +86,6 @@ private:
     QStringList             lstModuleCode;      // Lista dei Codici dei Moduli
     QStringList             lstModuleName;      // Lista dei nomi dei moduli
     QList<int>              lstModuleFunction;  // Lista delle Funzionalità dei Moduli
-    QList<int>              lstModuleLines;     // Lista delle Linee abilitate per i Moduli
     QFrame                  *fraMPNE_Left;      // Frame con immagine MPNE_L
     QFrame                  *fraMPNE_Right;     // Frame con immagine MPNE_R
     QString                 szFrameStyle;       // Style per Frame MPNE
@@ -93,7 +97,7 @@ private:
     // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema
     int                     m_nCurrentCTRow;    // Riga di CT correntemente selezionata
     int                     m_nAbsPos;          // Posizione correntemente visualizzata
-    int                     m_nTotalRows;       // Elementi MPNC
+    int                     m_nTotalRows;       // Elementi MPNE
     bool                    m_fUpdated;         // Vero se le info della finestra sono cambiate
     int                     m_nTesta;           // Testa selezionata, -1 se non presente
     QList<int >             lstCapofila;        // Lista con # Riga delle Teste

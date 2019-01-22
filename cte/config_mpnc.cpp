@@ -536,7 +536,7 @@ void    Config_MPNC::customizeButtons()
     }
 }
 void    Config_MPNC::getUsedModules(int nBaseRow)
-// Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
+// Calcola a partire dalla riga del Capofila il numero di Moduli utilizzati
 {
     int     nCur = 0;
     int     nGroup = 0;

@@ -35,29 +35,31 @@ public slots:
     void    showTestaNodi(int nTesta, QList<int> &lstCapofilaTeste, int nCurRow);
 
 private slots:
-    void    customizeButtons();                             // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
     void    changeFilter();                                 // Cambio del filtro sui moduli
-    void    buttonClicked(int nButton);                     // Gestore della pressione dei bottoni (Define Module)
-    void    groupItemRemove(int nGroup);                    // Rimozione elemento da gruppo
-    void    getUsedModules(int nBaseRow);                   // Legge a partire dalla riga del Capofila il numero di Moduli utilizzati
     void    changeRootElement(int nItem);                   // Cambio di Item della Combo dei MPNC definiti
-    void    filterVariables(int nGroup, int nItem);         // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
+    void    onRowClicked(const QModelIndex &index);         // Evento Row Clicked
+    void    onRowDoubleClicked(const QModelIndex &index);   // Evento Row Double Clicked
     void    on_changePort(int nPort);                       // Evento cambio Porta RTU
     void    on_changeNode();                                // Evento Cambio Nodo
     void    on_RenameVars();                                // Evento Rename Clicked
-    void    onRowClicked(const QModelIndex &index);         // Evento Row Clicked
-    void    onRowDoubleClicked(const QModelIndex &index);   // Evento Row Double Clicked
+
+    void    buttonClicked(int nButton);                     // Gestore della pressione dei bottoni (Define Module)
+    void    groupItemRemove(int nGroup);                    // Rimozione elemento da gruppo
 
 private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
     //---------------------------------------------------------------------
-    int     getLastModuleUsed(int nGroup);      // Ricerca dell'ultimo modulo usato nel gruppo
-    int     relative2AbsModulePos(int nGroup, int nModule);                 // Calcola la posizione assoluta del Modulo
-    void    abs2RelativeModulePos(int nAbs, int &nGroup, int &nModule);     // Calcola la posizione assoluta del Modulo
+    void    getUsedModules(int nBaseRow);                   // Calcola a partire dalla riga del Capofila il numero di Moduli utilizzati
+    void    setFilterButton(int nNewMode);                  // Imposta il fondo del botton cmd
+    void    filterVariables(int nGroup, int nItem);         // Filtra le variabili specifiche del modulo identificato da Gruppo e Posizione
     void    setGroupVars(int nGroup, int nModule, int16_t nPriority);       // Imposta la Priority per le variabili di Gruppo e Modulo
-    bool    canRenameRows(int nBaseRow);                                    // Verifica se tutto il Device può essere rinominato
-    void    setFilterButton(int nNewMode);                                  // Imposta il fondo del botton cmd
+    void    customizeButtons();                             // Abilitazione delle icone Bottoni in funzione della presenza dei moduli
+    bool    canRenameRows(int nBaseRow);                    // Verifica se tutto il Device può essere rinominato
+
+    int     getLastModuleUsed(int nGroup);                  // Ricerca dell'ultimo modulo usato nel gruppo
+    int     relative2AbsModulePos(int nGroup, int nModule); // Calcola la posizione assoluta del Modulo
+    void    abs2RelativeModulePos(int nAbs, int &nGroup, int &nModule);     // Calcola la posizione assoluta del Modulo
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
