@@ -168,8 +168,6 @@ void initLists()
         lstMNPxHeadSizes.append(10);
         lstMPNxCols.append(szEMPTY);
     }
-    lstMPNxCols[colMPNxRowNum] = QString::fromAscii("Row");
-    lstMNPxHeadSizes[colMPNxRowNum] = 8;
     lstMPNxCols[colMPNxPriority] = lstHeadCols[colPriority];
     lstMNPxHeadSizes[colMPNxPriority] = lstHeadSizes[colPriority];
     lstMPNxCols[colMPNxUpdate] = lstHeadCols[colUpdate];
@@ -196,6 +194,8 @@ void initLists()
     lstMNPxHeadSizes[colMPNxBehavior] = lstHeadSizes[colBehavior];
     lstMPNxCols[colMPNxComment] = lstHeadCols[colComment];
     lstMNPxHeadSizes[colMPNxComment] = lstHeadSizes[colComment];
+    lstMPNxCols[colMPNxService] = QString::fromAscii("Service");
+    lstMNPxHeadSizes[colMPNxService] = 30;
     // Colonne allineate a SX nel Grid MPNx
     lstMPNxHeadLeftCols.clear();
     lstMPNxHeadLeftCols.append(colMPNxName);
@@ -289,15 +289,10 @@ bool recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lst
 // Da Record C a QStringList di valori per caricamento griglia
 // Versione per MPNX Nodes
 {
-    QString     szTemp;
-
     if (nRow < 0 || nRow >= CTRecords.count())  {
         return false;
     }
     listClear(lstRecValues, colMPNxTotals);
-    // Row Number
-    szTemp = QString::number(nRow + 1);
-    lstRecValues[colMPNxRowNum] = szTemp;
     // Recupero informazioni da Record CT
     if (CTRecords[nRow].UsedEntry)  {
         // Priority
@@ -334,6 +329,8 @@ bool recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lst
             lstRecValues[colMPNxBehavior] = lstBehavior[behavior_readwrite];
         // Commento
         lstRecValues[colMPNxComment] = QString::fromAscii(CTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
+        // Service
+        lstRecValues[colMPNxService] = szEMPTY;
     }
     //    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
     // Return value

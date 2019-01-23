@@ -873,6 +873,7 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
 // Filtra le variabili specifiche del modulo identificato da Posizione e Funzione
 {
     QStringList         lstLineValues;
+    QStringList         lstRowNumbers;
     QList<QStringList > lstTableRows;
     QList<int16_t>      lstRowPriority;
     int                 nRow = 0;
@@ -885,6 +886,7 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
     lstLineValues.clear();
     lstTableRows.clear();
     lstRowPriority.clear();
+    lstRowNumbers.clear();
     tblCT->setVisible(false);
     tblCT->setEnabled(false);
     tblCT->clearSelection();
@@ -923,6 +925,7 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
                 if (fRes)  {
                     lstTableRows.append(lstLineValues);
                     lstRowPriority.append(localCTRecords[nRow + m_nBaseRow].Enable);
+                    lstRowNumbers.append(QString::fromAscii("%1") .arg(nRow + m_nBaseRow + 1, 5, 10));
                     // Riga da selezionare in Grid
                     if (nRow + m_nBaseRow == m_nCurrentCTRow)  {
                         nCurrentRow = lstTableRows.count() - 1;
@@ -938,6 +941,7 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
     for (nRow = 0; nRow < lstTableRows.count(); nRow++)  {
         list2GridRow(tblCT, lstTableRows[nRow], lstMPNxHeadLeftCols, nRow);
     }
+    tblCT->setVerticalHeaderLabels(lstRowNumbers);
     setGridParams(tblCT, lstMPNxCols, lstMNPxHeadSizes, QAbstractItemView::SingleSelection);
     // Colore di Sfondo
     for (nRow = 0; nRow < lstTableRows.count(); nRow++)  {
@@ -945,6 +949,9 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
     }
     // Ci sono elementi in griglia
     if (lstTableRows.count() > 0)  {
+        tblCT->setColumnHidden(colMPNxGroup, true);
+        tblCT->setColumnHidden(colMPNxModule, true);
+        tblCT->setColumnHidden(colMPNxService, true);
         tblCT->setSelectionBehavior(QAbstractItemView::SelectRows);
         tblCT->setSelectionMode(QAbstractItemView::SingleSelection);
         tblCT->setVisible(true);
@@ -969,7 +976,8 @@ void    Config_MPNE::onRowClicked(const QModelIndex &index)
     int nRow = index.row();
 
     if (nRow >= 0)  {
-        QTableWidgetItem    *tItem = tblCT->item(nRow, colMPNxRowNum);
+        // Deduce il Numero di Riga assoluto in CT dal verticalHeader della griglia
+        QTableWidgetItem    *tItem = tblCT->verticalHeaderItem(nRow);
         if (tItem != 0)  {
             bool fOk = false;
             nRow = tItem->text().toInt(&fOk);

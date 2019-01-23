@@ -121,8 +121,7 @@ enum colonne_e
 };
 
 enum colonne_MPNx  {
-    colMPNxRowNum = 0,
-    colMPNxPriority,
+    colMPNxPriority = 0,
     colMPNxUpdate,
     colMPNxGroup,
     colMPNxModule,
@@ -135,6 +134,7 @@ enum colonne_MPNx  {
     colMPNxBlockSize,
     colMPNxBehavior,
     colMPNxComment,
+    colMPNxService,
     colMPNxTotals
 };
 

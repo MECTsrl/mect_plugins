@@ -683,11 +683,14 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
 bool    ctedit::ctable2Grid()
 // Lettura di tutta la CT in Grid
 {
-    bool        fRes = true;
-    int         nCur = 0;
-    QStringList lstFields;
+    bool            fRes = true;
+    int             nCur = 0;
+    QStringList     lstFields;
+    QStringList     lstRowNumbers;
+
 
     lstFields.clear();
+    lstRowNumbers.clear();
     lstUsedVarNames.clear();
     lstLoggedVars.clear();
     // Preparazione tabella
@@ -706,10 +709,12 @@ bool    ctedit::ctable2Grid()
         if (fRes)  {
             ui->tblCT->insertRow(nCur);
             fRes = list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nCur);
+            lstRowNumbers.append(QString::fromAscii("%1") .arg(nCur + 1, 5, 10));
         }
     }
     // qDebug() << QString::fromAscii("Loaded Rows: %1") .arg(nCur);
     // Impostazione parametri TableView
+    ui->tblCT->setVerticalHeaderLabels(lstRowNumbers);
     setGridParams(ui->tblCT, lstHeadCols, lstHeadSizes, QAbstractItemView::ExtendedSelection);
     // Nascondi Colonne Input Registers, Group, Module
     ui->tblCT->setColumnHidden(colInputReg, true);
