@@ -31,7 +31,8 @@ const int nColRight = 3;
 const int nColProtocol = 4;
 const int nColPort = 5;
 const int nColNode = 7;
-const int nColLast = 9;
+const int nColBaudRate = 9;
+const int nColLast = 11;
 const int nItemWidth = 2;
 const int nComboWidth = 93;
 // Funzionalità della variabile (per discriminare i tipi di utilizzo del modulo)
@@ -119,13 +120,13 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lstModuleFunction.append(nUsageAnIO);
     lstModuleCode.append(QString::fromAscii("05"));
     //---------------------------
-    // nRowSelector
+    // nRowSelector: Label e Combo selettore device, Protocollo, Porta, Node Id
     //---------------------------
     // Label per Combo Selettore
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
+    szTemp.append(QString::fromAscii("  min-height: 20px;\n"));
+    szTemp.append(QString::fromAscii("  max-height: 20px;\n"));
     szTemp.append(QString::fromAscii("  min-width: 50px;\n"));
     szTemp.append(QString::fromAscii("  max-width: 50px;\n"));
     szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
@@ -137,6 +138,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     // Combo Selettore mpnc
     cboSelector = new QComboBox(this);
     cboSelector->setMaximumWidth(nComboWidth);
+    cboSelector->setToolTip(QString::fromAscii("Select I/O Module"));
     mainGrid->addWidget(cboSelector, nRowSelector, nColLeft, 1, nItemWidth);
     // Label per Protocollo
     lblBox = new QLabel(this);
@@ -148,16 +150,22 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lblProtocol->setStyleSheet(szTemp);
     mainGrid->addWidget(lblProtocol, nRowSelector, nColRight + 1);
     // Combo per Porta
+    szTemp.clear();
+    szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  min-width: 65px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 65px;\n"));
+    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QString::fromAscii("}"));
     lblBox = new QLabel(this);
     lblBox->setText(QString::fromAscii("Port:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColPort);
-    QString szPortToolTip = QString::fromAscii("Change Serial Port");
     cboPort = new QComboBox(this);
-    cboPort->setToolTip(szPortToolTip);
+    cboPort->setToolTip(QString::fromAscii("Change Serial Port"));
     for (i = 0; i <= nMaxSerialPorts; i++)  {
         cboPort->addItem(QString::number(i));
     }
+    cboPort->setMaximumWidth(50);
     mainGrid->addWidget(cboPort, nRowSelector, nColPort + 1);
     // TextBox per Node ID
     lblBox = new QLabel(this);
@@ -166,22 +174,37 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     mainGrid->addWidget(lblBox, nRowSelector, nColNode);
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLineEdit { \n"));
-    szTemp.append(QString::fromAscii("  min-width: 60px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 60px;\n"));
+    szTemp.append(QString::fromAscii("  min-width: 65px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 65px;\n"));
     szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
     szTemp.append(QString::fromAscii("}"));
     txtNode = new QLineEdit(this);
     txtNode->setStyleSheet(szTemp);
-    QString szNodeToolTip = QString::fromAscii("Change Node ID");
-    txtNode->setToolTip(szNodeToolTip);
+    txtNode->setToolTip(QString::fromAscii("Change Node ID"));
     txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
+    txtNode->setMaximumWidth(40);
     mainGrid->addWidget(txtNode, nRowSelector, nColNode + 1);
+    // Baud Rate Seriale
+    szTemp.clear();
+    szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  min-width: 80px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 80px;\n"));
+    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QString::fromAscii("}"));
+    lblBox = new QLabel(this);
+    lblBox->setText(QString::fromAscii("Baud Rate:"));
+    lblBox->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowSelector, nColBaudRate);
+    lblBaudRate = new QLabel(this);
+    lblBaudRate->setText(QString::fromAscii("9600, N, 8, 1"));
+    lblBaudRate->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBaudRate, nRowSelector, nColBaudRate + 1);
     // Molla Horizontal Spacer per allineare finestra
     QSpacerItem *colSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Fixed);
     colSpacer->setAlignment(Qt::AlignHCenter);
     mainGrid->addItem(colSpacer, nRowSelector, nColLast);
     //---------------------------
-    // nRowTags
+    // nRowTags: Rename, Descrizione Moduli SX e DX
     //---------------------------
     // Bottone per Rename rows
     szTemp.clear();;
@@ -210,11 +233,10 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
     szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileRename));
     szTemp.append(QString::fromAscii("}"));
-    QString szRenameToolTip = QString::fromAscii("Rename Variables");
     cmdRename = new QPushButton(this);
     cmdRename->setEnabled(true);
     cmdRename->setFlat(true);
-    cmdRename->setToolTip(szRenameToolTip);
+    cmdRename->setToolTip(QString::fromAscii("Rename Variables"));
     cmdRename->setStyleSheet(szTemp);
     mainGrid->addWidget(cmdRename, nRowTags, nColBase);
     // Nomi dei Moduli SX e DX
@@ -232,7 +254,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowTags, nColRight, 1, nItemWidth);
     //---------------------------
-    // nRowCombo
+    // nRowCombo: Combo di Selezione dei moduli
     //---------------------------
     // Combo per Codici Modulo
     cboLeft = new QComboBox(this);
@@ -246,7 +268,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     mainGrid->addWidget(cboLeft, nRowCombo, nColLeft, 1, nItemWidth);
     mainGrid->addWidget(cboRight, nRowCombo, nColRight, 1, nItemWidth);
     //---------------------------
-    // nRowButtons
+    // nRowButtons: Frames dei Moduli e Bottoni
     //---------------------------
     // Bottone per Filtro su Testa Nodi
     szFilterStyle.clear();
@@ -269,11 +291,10 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szFilterStyle.append(QString::fromAscii("  background-position: center  center;\n"));
     szFilterStyle.append(QString::fromAscii("  background-color: transparent;\n"));
     szFilterStyle.append(QString::fromAscii("}"));
-    QString szSwitchToolTip = QString::fromAscii("Head Only / Head + Used / All");
     cmdFilter = new QPushButton(this);
     cmdFilter->setEnabled(true);
     cmdFilter->setFlat(true);
-    cmdFilter->setToolTip(szSwitchToolTip);
+    cmdFilter->setToolTip(QString::fromAscii("Head Only / Head + Used / All"));
     cmdFilter->setStyleSheet(szFilterStyle);
     mainGrid->addWidget(cmdFilter, nRowButtons, nColBase);
     // Frames di sfondo MPNE001
@@ -338,7 +359,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lblModuleLeft->installEventFilter(this);
     lblModuleRight->installEventFilter(this);
     //---------------------------
-    // nRowFlags
+    // nRowFlags: Codici di Ordine Base / Moduli
     //---------------------------
     // Label per Codice Base
     szTemp.clear();
@@ -641,6 +662,8 @@ void    Config_MPNE::changeRootElement(int nItem)
                 m_nPort = nPort;
             }
             cboPort->setCurrentIndex(m_nPort);
+            // Aggiornamento Baud Rate
+            lblBaudRate->setText(getSerialPortSpeed(m_nPort));
             // Node Id
             int nNode = localCTRecords[m_nBaseRow].NodeId;
             txtNode->setText(QString::number(nNode));
@@ -1035,8 +1058,10 @@ void    Config_MPNE::on_changePort(int nPort)
         }
         // Aggiorna numero di porta
         disableAndBlockSignals(cboPort);
-        cboPort->setCurrentIndex(m_nPort);
+        cboPort->setCurrentIndex(m_nPort);       
         enableAndUnlockSignals(cboPort);
+        // Aggiornamento Baud Rate
+        lblBaudRate->setText(getSerialPortSpeed(m_nPort));
         // Refresh interfaccia su nodo corrente
         if (m_nCurrentCTRow > 0 && m_nCurrentCTRow < localCTRecords.count())  {
             int nPosition = nModuleBase;

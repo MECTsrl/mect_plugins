@@ -74,6 +74,7 @@ private:
     QLabel                  *lblModuleLeft;     // Label per selezione modulo SX
     QLabel                  *lblModuleRight;    // Label per selezione modulo DX
     QLabel                  *lblProtocol;       // Label per Protocollo
+    QLabel                  *lblBaudRate;       // Label per Baud Rate
     QLabel                  *lblNRows;          // Label per Numero Righe
     QComboBox               *cboPort;           // Combo per selettore Porta
     QComboBox               *cboLeft;           // Combo per modulo SX

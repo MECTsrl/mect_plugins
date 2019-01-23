@@ -795,30 +795,30 @@ bool    isValidVarName(QString szName)
     // Return value
     return fRes;
 }
-bool    searchModels(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CTModel, QList<int> &lstRootRows)
-// Ricerca di un Modello in CT
+bool    searchIOModules(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CT_IOModule, QList<int> &lstRootRows)
+// Ricerca di un Modulo I/O in CT
 {
     int     nRow = 0;
     int     nModelRow = 0;
     int     nBaseRow = -1;
-    int     nModelSize = CTModel.count();
+    int     nModelSize = CT_IOModule.count();
 
     lstRootRows.clear();
-    if (CTRecords.count() > 0 && CTModel.count() > 0 && CTRecords.count() >= nModelSize)  {
+    if (CTRecords.count() > 0 && CT_IOModule.count() > 0 && CTRecords.count() >= nModelSize)  {
         while (nRow < MIN_DIAG)  {
             // Controllo di identità tra Variabili CT e modello
-            if ( CTRecords[nRow].VarType == CTModel[nModelRow].VarType &&
+            if ( CTRecords[nRow].VarType == CT_IOModule[nModelRow].VarType &&
                  // CTRecords[nRow].Decimal == CTModel[nModelRow].Decimal &&
-                 CTRecords[nRow].Protocol == CTModel[nModelRow].Protocol &&
-                 CTRecords[nRow].Offset == CTModel[nModelRow].Offset &&
-                 CTRecords[nRow].Behavior == CTModel[nModelRow].Behavior
+                 CTRecords[nRow].Protocol == CT_IOModule[nModelRow].Protocol &&
+                 CTRecords[nRow].Offset == CT_IOModule[nModelRow].Offset &&
+                 CTRecords[nRow].Behavior == CT_IOModule[nModelRow].Behavior
                 )  {
                 // Il controllo del Numero Decimali è significativo solo nel caso dei vari Tipi Bit
                 if ((CTRecords[nRow].VarType == BIT ||
                      CTRecords[nRow].VarType == BYTE_BIT ||
                      CTRecords[nRow].VarType == WORD_BIT ||
                      CTRecords[nRow].VarType == DWORD_BIT)  &&
-                    (CTRecords[nRow].Decimal != CTModel[nModelRow].Decimal)
+                    (CTRecords[nRow].Decimal != CT_IOModule[nModelRow].Decimal)
                     )  {
                     // Abbandona il confronto perchè la maschera di Bit non è identica
                     nModelRow = 0;
@@ -851,4 +851,47 @@ bool    searchModels(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord>
     }
     // Return Value
     return (lstRootRows.count() > 0);
+}
+QString     priority2String(int nPriority){
+    return (QString::fromAscii("Priority %1 - %2") .arg(nPriority) .arg(lstPriorityDesc[nPriority]));
+}
+QString getSerialPortSpeed(int nPort)
+// Restituisce in forma leggibile i parametri della porta seriale selezionata
+{
+    QString     szSpeed = QString::fromAscii("Disabled");
+
+    if (isSerialPortEnabled)  {
+        switch (nPort)  {
+            case 0:
+                if (panelConfig.ser0_Enabled)  {
+                    szSpeed = QString::fromAscii("%1,%2,%3,%4")
+                            .arg(panelConfig.ser0_BaudRate) .arg(panelConfig.ser0_Parity) .arg(panelConfig.ser0_DataBits) .arg(panelConfig.ser0_StopBits);
+                }
+                break;
+                ;
+            case 1:
+                if (panelConfig.ser1_Enabled)  {
+                    szSpeed = QString::fromAscii("%1,%2,%3,%4")
+                            .arg(panelConfig.ser1_BaudRate) .arg(panelConfig.ser1_Parity) .arg(panelConfig.ser1_DataBits) .arg(panelConfig.ser1_StopBits);
+                }
+                break;
+                ;
+            case 2:
+                if (panelConfig.ser2_Enabled)  {
+                    szSpeed = QString::fromAscii("%1,%2,%3,%4")
+                            .arg(panelConfig.ser2_BaudRate) .arg(panelConfig.ser2_Parity) .arg(panelConfig.ser2_DataBits) .arg(panelConfig.ser2_StopBits);
+                }
+                break;
+            case 3:
+                if (panelConfig.ser3_Enabled)  {
+                    szSpeed = QString::fromAscii("%1,%2,%3,%4")
+                            .arg(panelConfig.ser3_BaudRate) .arg(panelConfig.ser3_Parity) .arg(panelConfig.ser3_DataBits) .arg(panelConfig.ser3_StopBits);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    // Return value
+    return szSpeed;
 }

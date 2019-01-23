@@ -1754,7 +1754,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
         if (m_nGridRow < MIN_DIAG - 1 && isMPNE)  {
             cIco = QIcon(szPathIMG + QString::fromAscii("Card_32.png"));
             gridMenu.addSeparator();
-            editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE10"));
+            editMPNE = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE10"));
         }
     }
     // Esecuzione del Menu
@@ -2668,47 +2668,54 @@ void ctedit::tabSelected(int nTab)
 {
     int nPrevTab = m_nCurTab;
 
-    // Ritorno a CT da Tab System, prudenzialmente aggiorna le info di configurazione
+    //---------------------------------
+    // Gestione del Tab di Provenienza
+    //---------------------------------
+    if (nPrevTab == TAB_SYSTEM)  {
+        // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
+        mectSet->getTargetConfig(panelConfig);
+        // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
+        enableProtocolsFromModel();
+    }
+    // Ritorno a CT da Tab MPNC / MPNE
+    else if (nPrevTab == TAB_MPNC) {
+        // Se qualcosa della configurazione è cambiato rilegge la CT dalla Lista
+        int nOldRow = m_nGridRow;
+        if (configMPNC->isUpdated())  {
+            ui->tblCT->selectionModel()->clearSelection();
+            lstUndo.append(lstCTRecords);
+            lstCTRecords = configMPNC->localCTRecords;
+            // Refresh Grid
+            ctable2Grid();
+            m_isCtModified = true;
+        }
+        // Jump n+1
+        jumpToGridRow(nOldRow + 1, true);
+        jumpToGridRow(nOldRow, true);
+        enableInterface();
+    }
+    else if (nPrevTab == TAB_MPNE)  {
+        // Se qualcosa della configurazione è cambiato rilegge la CT dalla Lista
+        int nOldRow = m_nGridRow;
+        if (configMPNE->isUpdated())  {
+            ui->tblCT->selectionModel()->clearSelection();
+            lstUndo.append(lstCTRecords);
+            lstCTRecords = configMPNE->localCTRecords;
+            // Refresh Grid
+            ctable2Grid();
+            m_isCtModified = true;
+        }
+        // Jump n+1
+        jumpToGridRow(nOldRow + 1, true);
+        jumpToGridRow(nOldRow, true);
+        enableInterface();
+    }
+    //---------------------------------
+    // Gestione del Tab di Destinazione
+    //---------------------------------
+    // Ritorno a CT Editor Main Tab
     if (nTab == TAB_CT)  {
-        if (nPrevTab == TAB_SYSTEM)  {
-            // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
-            mectSet->getTargetConfig(panelConfig);
-            // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
-            enableProtocolsFromModel();
-        }
-        // Ritorno a CT da Tab MPNC / MPNE
-        else if (nPrevTab == TAB_MPNC) {
-            // Se qualcosa della configurazione è cambiato rilegge la CT dalla Lista
-            int nOldRow = m_nGridRow;
-            if (configMPNC->isUpdated())  {
-                ui->tblCT->selectionModel()->clearSelection();
-                lstUndo.append(lstCTRecords);
-                lstCTRecords = configMPNC->localCTRecords;
-                // Refresh Grid
-                ctable2Grid();
-                m_isCtModified = true;
-            }
-            // Jump n+1
-            jumpToGridRow(nOldRow + 1, true);
-            jumpToGridRow(nOldRow, true);
-            enableInterface();
-        }
-        else if (nPrevTab == TAB_MPNE)  {
-            // Se qualcosa della configurazione è cambiato rilegge la CT dalla Lista
-            int nOldRow = m_nGridRow;
-            if (configMPNE->isUpdated())  {
-                ui->tblCT->selectionModel()->clearSelection();
-                lstUndo.append(lstCTRecords);
-                lstCTRecords = configMPNE->localCTRecords;
-                // Refresh Grid
-                ctable2Grid();
-                m_isCtModified = true;
-            }
-            // Jump n+1
-            jumpToGridRow(nOldRow + 1, true);
-            jumpToGridRow(nOldRow, true);
-            enableInterface();
-        }
+        // Nulla di particolare
     }
     // Entering Trends: Aggiornamento della lista di variabili e ripopolamento liste per Trends
     else if (nTab == TAB_TREND) {
@@ -2717,11 +2724,19 @@ void ctedit::tabSelected(int nTab)
     }
     // Passaggio a tab DEVICES
     else if (nTab == TAB_DEVICES)  {
-        fillDeviceTree(m_nGridRow);
+        // Ricostruisce l'albero dei Devices
+        if (m_isCtModified || nPrevTab == TAB_SYSTEM || ui->deviceTree->columnCount() < colTreeTotals)  {
+            qDebug() << QString::fromAscii("Device Tree Columns: %1 - Rebuilded") .arg(ui->deviceTree->columnCount());
+            fillDeviceTree(m_nGridRow);
+        }
     }
     // Passaggio a tab TIMINGS
     else if (nTab == TAB_TIMINGS)  {
-        fillTimingsTree(m_nGridRow);
+        // Ricostruisce l'albero dei Timings
+        if (m_isCtModified || nPrevTab == TAB_SYSTEM || ui->timingTree->columnCount() < colTreeTotals)  {
+            qDebug() << QString::fromAscii("Timings Tree Columns: %1 - Rebuilded") .arg(ui->timingTree->columnCount());
+            fillTimingsTree(m_nGridRow);
+        }
     }
     else if (nTab == TAB_MPNC)  {
         showTabMPNC();
@@ -2755,8 +2770,8 @@ void ctedit::enableInterface()
     // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
     m_nMPNC = -1;
     if (isSerialPortEnabled)  {
-        bool enableMPNC = searchModels(lstCTRecords, lstMPNC006_Vars, lstMPNC);
-        bool enableMPNE = searchModels(lstCTRecords, lstMPNE_Vars, lstMPNE);
+        bool enableMPNC = searchIOModules(lstCTRecords, lstMPNC006_Vars, lstMPNC);
+        bool enableMPNE = searchIOModules(lstCTRecords, lstMPNE_Vars, lstMPNE);
         m_nMPNC = 0;
         m_nMPNE = 0;
         ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
@@ -5910,6 +5925,8 @@ bool ctedit::checkServersDevicesAndNodes()
                         break;
                     case RTU:
                         szDeviceName.append(QString::number(theDevices[nDev].nPort));
+                        // Aggiunge al Nome Device anche le info Baud Rate
+                        szDeviceName.append(QString::fromAscii("\t%1") .arg(getSerialPortSpeed(theDevices[nDev].nPort)));
                         if (theDevices[nDev].nPort == 0)  {
                             theDevices[nDev].nMaxBlockSize = panelConfig.ser0_BlockSize;
                             theDevices[nDev].nSilence = panelConfig.ser0_Silence;
@@ -5980,6 +5997,8 @@ bool ctedit::checkServersDevicesAndNodes()
                     case RTU_SRV:
                         szDeviceName = QString::fromAscii("RTU");
                         szDeviceName.append(QString::number(theDevices[nDev].nPort));
+                        // Aggiunge al Nome Device anche le info Baud Rate
+                        szDeviceName.append(QString::fromAscii("\t%1") .arg(getSerialPortSpeed(theDevices[nDev].nPort)));
                         theDevices[nDev].nServer = nSer; // searched before
                         if (theDevices[nDev].nPort == 0)  {
                             theDevices[nDev].nMaxBlockSize = panelConfig.ser0_BlockSize;
@@ -6070,7 +6089,6 @@ bool ctedit::checkServersDevicesAndNodes()
                     lstCTRecords[nCur].nNode = theNodesNumber++;
                     theNodes[nNod].nDevice = lstCTRecords[nCur].nDevice;
                     theNodes[nNod].nNodeId = lstCTRecords[nCur].NodeId;
-                    theNodes[nNod].szNodeName = QString::fromAscii("NODE_") + int2PaddedString(nNod+1, 2) + QString::fromAscii(", NODE_ID=") + QString::number(lstCTRecords[nCur].NodeId);
                     // Ricerca Variabile Diag
                     szDiagName = QString::fromAscii("NODE_") + int2PaddedString(nNod+1, 2);
                     szDiagName.append(QString::fromAscii("_STATUS"));
@@ -6078,6 +6096,21 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (nDiag >= 0)  {
                         theNodes[nNod].diagnosticAddr = nDiag + 1;
                         theNodes[nNod].diagnosticVarName = szDiagName;
+                    }
+                    theNodes[nNod].szNodeName = QString::fromAscii("%1 = %2 (%3)" ) .arg(lstHeadCols[colNodeID]) .arg(lstCTRecords[nCur].NodeId) .arg(szDiagName);
+                    // Ricerca la riga corrente nell'elenco dei marcatori MPNx
+                    int nPosMPNX = -1;
+                    if (lstMPNC.count() > 0)  {
+                        nPosMPNX = lstMPNC.indexOf(nCur);
+                        if (nPosMPNX >= 0)  {
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1") .arg(szMPNC006));
+                        }
+                    }
+                    if (lstMPNE.count() > 0)  {
+                        nPosMPNX = lstMPNE.indexOf(nCur);
+                        if (nPosMPNX >= 0)  {
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1") .arg(szMPNE10));
+                        }
                     }
                 }
                 theNodes[nNod].nVars++;
@@ -6183,9 +6216,6 @@ bool ctedit::checkServersDevicesAndNodes()
 //        qDebug() << szRow;
 //    }
     return fRes;
-}
-QString     ctedit::priority2String(int nPriority){
-    return (QString::fromAscii("Priority %1 - %2") .arg(nPriority) .arg(lstPriorityDesc[nPriority]));
 }
 
 QTreeWidgetItem *ctedit::addItem2Tree(QTreeWidgetItem *tParent, int nRole, const QString &szName, const QString &szInfo, const QString &szTimings, const QString &szToolTip)

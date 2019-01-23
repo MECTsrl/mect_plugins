@@ -212,6 +212,7 @@ struct  TP_Config {
     // Serial 0
     bool        ser0_Enabled;
     int         ser0_BaudRate;
+    QString     ser0_Parity;
     int         ser0_DataBits;
     int         ser0_StopBits;
     int         ser0_TimeOut;
@@ -220,6 +221,7 @@ struct  TP_Config {
     // Serial 1
     bool        ser1_Enabled;
     int         ser1_BaudRate;
+    QString     ser1_Parity;
     int         ser1_DataBits;
     int         ser1_StopBits;
     int         ser1_TimeOut;
@@ -228,6 +230,7 @@ struct  TP_Config {
     // Serial 2
     bool        ser2_Enabled;
     int         ser2_BaudRate;
+    QString     ser2_Parity;
     int         ser2_DataBits;
     int         ser2_StopBits;
     int         ser2_TimeOut;
@@ -236,6 +239,7 @@ struct  TP_Config {
     // Serial 3
     bool        ser3_Enabled;
     int         ser3_BaudRate;
+    QString     ser3_Parity;
     int         ser3_DataBits;
     int         ser3_StopBits;
     int         ser3_TimeOut;

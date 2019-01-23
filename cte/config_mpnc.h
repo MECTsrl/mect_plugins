@@ -72,6 +72,7 @@ private:
     QPushButton             *cmdRename;         // Push Button per Rename Rows
     QPushButton             *cmdFilter;         // Push Button per Switch visualizzazione
     QLabel                  *lblProtocol;       // Label per Protocollo
+    QLabel                  *lblBaudRate;       // Label per Baud Rate
     QComboBox               *cboPort;           // Combo per selettore Porta
     QLineEdit               *txtNode;           // Text Box per Node Id
     QList<QPushButton *>    lstRemove;          // Lista per i bottoni Remove Modules

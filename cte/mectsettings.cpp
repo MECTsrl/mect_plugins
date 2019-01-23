@@ -1150,6 +1150,7 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.ser0_Enabled = (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_0->currentText().toInt(&fOk);
     TargetConfig.ser0_BaudRate = fOk ? nVal : 0;
+    TargetConfig.ser0_Parity = ui->comboBox_Parity_SERIAL_PORT_0->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&fOk);
     TargetConfig.ser0_TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&fOk);
@@ -1164,6 +1165,7 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.ser1_Enabled = (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_1->currentText().toInt(&fOk);
     TargetConfig.ser1_BaudRate = fOk ? nVal : 0;
+    TargetConfig.ser1_Parity = ui->comboBox_Parity_SERIAL_PORT_1->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt(&fOk);
     TargetConfig.ser1_TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&fOk);
@@ -1178,6 +1180,7 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.ser2_Enabled = (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_2->currentText().toInt(&fOk);
     TargetConfig.ser2_BaudRate = fOk ? nVal : 0;
+    TargetConfig.ser2_Parity = ui->comboBox_Parity_SERIAL_PORT_2->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt(&fOk);
     TargetConfig.ser2_TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&fOk);
@@ -1192,6 +1195,7 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.ser3_Enabled = (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_3->currentText().toInt(&fOk);
     TargetConfig.ser3_BaudRate = fOk ? nVal : 0;
+    TargetConfig.ser3_Parity = ui->comboBox_Parity_SERIAL_PORT_3->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_3->text().toInt(&fOk);
     TargetConfig.ser3_TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_3->text().toInt(&fOk);

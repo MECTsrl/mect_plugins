@@ -23,6 +23,7 @@ const int nBaseAnIn = 1;
 const int nBaseAnOut = 5;
 const int nBaseDigIn = 9;
 const int nBaseDigOut = 13;
+const int nColBaudRate = 17;
 // Posizioni nel LayOut (Riga)
 const int nRowSelector = 0;
 const int nRowDesc = 1;
@@ -107,6 +108,9 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     for (i = 0; i < nTotalItems; i++)  {
         lstModuleIsPresent.append(false);
     }
+    //---------------------------
+    // nRowSelector: Label e Combo selettore device, Protocollo, Porta, Node Id, Baud Rate
+    //---------------------------
     // Label per Combo Selettore
     szTemp.clear();
     szTemp.append(QString::fromAscii("QLabel { \n"));
@@ -120,6 +124,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     mainGrid->addWidget(lblBox, nRowSelector, nBaseHead);
     // Combo Selettore mpnc
     cboSelector = new QComboBox(this);
+    cboSelector->setToolTip(QString::fromAscii("Select I/O Module"));
     mainGrid->addWidget(cboSelector, nRowSelector, nBaseAnIn, 1, nItemsPerGroup);
     // Label per Protocollo
     lblBox = new QLabel(this);
@@ -135,25 +140,42 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     lblBox->setText(QString::fromAscii("Port:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseDigIn, 1, 2);
-    QString szPortToolTip = QString::fromAscii("Change Serial Port");
     cboPort = new QComboBox(this);
-    cboPort->setToolTip(szPortToolTip);
+    cboPort->setToolTip(QString::fromAscii("Change Serial Port"));
     for (i = 0; i <= nMaxSerialPorts; i++)  {
         cboPort->addItem(QString::number(i));
     }
+    cboPort->setMaximumWidth(50);
     mainGrid->addWidget(cboPort, nRowSelector, nBaseDigIn + 2, 1, 2);
     // TextBox per Node ID
     lblBox = new QLabel(this);
     lblBox->setText(QString::fromAscii("Node Id:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseDigOut, 1, 2);
-    QString szNodeToolTip = QString::fromAscii("Change Node ID");
     txtNode = new QLineEdit(this);
-    txtNode->setToolTip(szNodeToolTip);
+    txtNode->setToolTip(QString::fromAscii("Change Node ID"));
     txtNode->setStyleSheet(szTemp);
     txtNode->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
     mainGrid->addWidget(txtNode, nRowSelector, nBaseDigOut + 2, 1, 2);
+    // Baud Rate Seriale
+    szTemp.clear();
+    szTemp.append(QString::fromAscii("QLabel { \n"));
+    szTemp.append(QString::fromAscii("  min-width: 80px;\n"));
+    szTemp.append(QString::fromAscii("  max-width: 80px;\n"));
+    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QString::fromAscii("}"));
+    lblBox = new QLabel(this);
+    lblBox->setText(QString::fromAscii("Baud Rate:"));
+    lblBox->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBox, nRowSelector, nColBaudRate);
+    lblBaudRate = new QLabel(this);
+    lblBaudRate->setText(QString::fromAscii("9600, N, 8, 1"));
+    lblBaudRate->setStyleSheet(szTemp);
+    mainGrid->addWidget(lblBaudRate, nRowSelector, nColBaudRate + 1);
+    //---------------------------
+    // nRowDesc: Bottone Rename, Gruppo, Remove
+    //---------------------------
     // Bottone per Rename rows
     szTemp.clear();;
     szTemp.append(QString::fromAscii("QPushButton:disabled { \n"));
@@ -264,6 +286,9 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
         mainGrid->addWidget(remove, nRowDesc, (nBaseHead) + (i * nItemsPerGroup));
         lstRemove.append(remove);
     }
+    //---------------------------
+    // nRowButtons: Pulsantiera Bottoni
+    //---------------------------
     //---------------------------------
     // Bottoni per la gestione del singolo Modulo
     //---------------------------------
@@ -305,7 +330,10 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     // Molla Horizontal Spacer per allineare finestra
     QSpacerItem *hSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Fixed);
     hSpacer->setAlignment(Qt::AlignHCenter);
-    mainGrid->addItem(hSpacer, nRowButtons, nTotalItems);
+    mainGrid->addItem(hSpacer, nRowButtons, nColBaudRate + 1);
+    //---------------------------
+    // nRowFlags: Bottone Filtro visualizzazione, Labels Gruppi Modulo
+    //---------------------------
     // Bottone per Filtro su Testa Nodi
     szFilterStyle.clear();;
     szFilterStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
@@ -327,11 +355,10 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szFilterStyle.append(QString::fromAscii("  background-position: center  center;\n"));
     szFilterStyle.append(QString::fromAscii("  background-color: transparent;\n"));
     szFilterStyle.append(QString::fromAscii("}"));
-    QString szSwitchToolTip = QString::fromAscii("Head Only / Head + Used / All");
     cmdFilter = new QPushButton(this);
     cmdFilter->setEnabled(true);
     cmdFilter->setFlat(true);
-    cmdFilter->setToolTip(szSwitchToolTip);
+    cmdFilter->setToolTip(QString::fromAscii("Head Only / Head + Used / All"));
     cmdFilter->setStyleSheet(szFilterStyle);
     mainGrid->addWidget(cmdFilter, nRowFlags, nBaseHead);
     // Label Gruppo (A..D)
@@ -600,6 +627,8 @@ void    Config_MPNC::changeRootElement(int nItem)
             m_nPort = -1;
             if (nPort >= 0 && nPort <= nMaxSerialPorts)  {
                 m_nPort = nPort;
+                // Aggiornamento Baud Rate
+                lblBaudRate->setText(getSerialPortSpeed(m_nPort));
             }
             cboPort->setCurrentIndex(m_nPort);
             // Node Id
@@ -700,14 +729,14 @@ void    Config_MPNC::buttonClicked(int nButton)
         nLastUsed = getLastModuleUsed(nGroup);
         // Premuto in modalità aggiunta ?
         if (nItem > nLastUsed)  {
-            m_szMsg = QString::fromAscii("Are you sure you want to Add a module [%1] at position [%2]?") .arg(lstModuleName[nGroup]) .arg(lstPosFlags[nItem]);
-            if (queryUser(this, szMectTitle, m_szMsg))  {
+//            m_szMsg = QString::fromAscii("Are you sure you want to Add a module [%1] at position [%2]?") .arg(lstModuleName[nGroup]) .arg(lstPosFlags[nItem]);
+//            if (queryUser(this, szMectTitle, m_szMsg))  {
                 lstModuleIsPresent[nButton] = true;
                 // Aggiornamento delle Variabili di CT relative all'oggetto
                 setGroupVars(nGroup, nItem, m_nRootPriority);
                 // Refresh Bottoni
                 customizeButtons();
-            }
+//            }
         }
     }
     // Filter Variables of a Group / Item
@@ -870,6 +899,8 @@ void    Config_MPNC::on_changePort(int nPort)
         disableAndBlockSignals(cboPort);
         cboPort->setCurrentIndex(m_nPort);
         enableAndUnlockSignals(cboPort);
+        // Aggiornamento Baud Rate
+        lblBaudRate->setText(getSerialPortSpeed(m_nPort));
         // Refresh interfaccia su nodo corrente
         if (m_nAbsPos >= 0 && m_nAbsPos <= nTotalItems)  {
             int nGroup = 0;
