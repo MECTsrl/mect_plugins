@@ -56,7 +56,7 @@ bool    recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &
 bool    recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow);        // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
 bool    fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow);     // Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
 void    freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow);                    // Marca il Record della CT come inutilizzato
-
+int     countLoggedVars(QList<CrossTableRecord> &CTRecords);                        // Conta il Numero delle Variabili CT che sono Loggate
 bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int> &lstLeftCols, int nRow);   // Inserimento o modifica elemento in Grid (valori -> GRID)
 
 int     enableSerialPortCombo(QComboBox *cboBox);

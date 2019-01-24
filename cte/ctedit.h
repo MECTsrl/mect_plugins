@@ -71,6 +71,7 @@ private slots:
     void on_cmdUndo_clicked();                      // Retrieve a CT Block from Undo List
     void on_cmdHideShow_toggled(bool checked);
     void on_cmdPLC_clicked();
+    void on_chkInputRegister_stateChanged(int state);   // Cambio di Stato della Checkbox Input Register
     void on_cboPriority_currentIndexChanged(int index);
     void on_cboUpdate_currentIndexChanged(int index);
     void on_cboType_currentIndexChanged(int index);
@@ -224,6 +225,8 @@ private:
     bool                    m_isCtModified;         // Flag dati modificato
     bool                    m_isConfModified;       // Flag Configurazione modificata
     bool                    m_isTrendModified;      // Flag Trend Modificato
+    bool                    m_rebuildDeviceTree;    // Flag Vero se l'albero dei Device deve essere ricostruito
+    bool                    m_rebuildTimingTree;    // Flag Vero se l'albero dei Device deve essere ricostruito
     bool                    m_fShowAllRows;         // Vero se sono visualizzate tutte le righe
     bool                    m_fCutOrPaste;          // Vero se è in corso un Cut or Paste
     bool                    m_fEmptyForm;           // Vero se il Form di Data Entry risulta vuoto

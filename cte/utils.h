@@ -43,6 +43,9 @@ const  char     cFloat = 102;           // Carattere f per formattazione Floatin
     void        setTableRowEnabled(QTableWidget * tTable, int nRow, bool fEnabled);              // Blocca/Sblocca completamente la Riga della Tabella
     void        setTableColEnabled(QTableWidget * tTable, int nCol, bool fEnabled);              // Blocca/Sblocca completamente la Colonna della Tabella
     bool        showFile(QString szFileName);                               // Utilizza i DeskTop Sevices per mostrare un File (es. PDF)
+    void        setCellBackground(const QBrush& backBrush, QAbstractItemModel* model, int nRow, int nCol, const bool fForceForeground = false, const QModelIndex &parent = QModelIndex());
+    void        setCellForeground(const QBrush& foreBrush, QAbstractItemModel* model, int nRow, int nCol, const QModelIndex &parent = QModelIndex());
+
     void        setRowBackground(const QBrush& brush, QAbstractItemModel* model, int row, const QModelIndex& parent = QModelIndex());
     void        doEvents();
     void        enableComboItem(QComboBox *Combo, int nItemIndex);          // Riabilita la voce nItemIndex della Combo

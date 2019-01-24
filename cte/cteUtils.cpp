@@ -657,6 +657,20 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
     // Return Value
     return fRes;
 }
+int     countLoggedVars(QList<CrossTableRecord> &CTRecords)
+// Conta il Numero delle Variabili CT che sono Loggate
+{
+    int     nLoggedVars = 0;
+    int     nRow = 0;
+
+    for (nRow = 0; nRow < CTRecords.count(); nRow++)  {
+        if (CTRecords[nRow].Update > Ptype)  {
+            nLoggedVars++;
+        }
+    }
+    // Return Value
+    return nLoggedVars;
+}
 
 bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int> &lstLeftCols, int nRow)
 // Inserimento o modifica elemento in Grid (valori -> GRID)

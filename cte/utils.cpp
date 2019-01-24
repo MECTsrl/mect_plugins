@@ -434,9 +434,45 @@ void setRowBackground(const QBrush& brush, QAbstractItemModel* model, int row, c
         if(parent.model() != model)
             return;
     }
-    for(int nCol=0; nCol < model->columnCount(parent); ++nCol)
+    for(int nCol=0; nCol < model->columnCount(parent); ++nCol)  {
         model->setData(model->index(row,nCol,parent),brush,Qt::BackgroundRole);
+    }
 }
+void setCellBackground(const QBrush& backBrush, QAbstractItemModel* model, int nRow, int nCol, bool fForceForeground, const QModelIndex &parent)
+{
+    // Controlli vari di coerenza di quanto passato come parametro
+    if (! model || nRow<0 || nCol < 0)
+        return;
+    if (nRow >= model->rowCount(parent) || nCol > model->columnCount(parent))
+        return;
+    if (parent.isValid()){
+        if(parent.model() != model)
+            return;
+    }
+    // Impostazione del valore
+    model->setData(model->index(nRow, nCol, parent),backBrush,Qt::BackgroundRole);
+    // Eventuale impostazione anche del colore di Foreground
+    if (fForceForeground)  {
+        QColor backColor = backBrush.color();
+        QColor foreColor = getIdealTextColor(backColor);
+        QBrush foreBrush(foreColor);
+        model->setData(model->index(nRow, nCol, parent),foreBrush,Qt::ForegroundRole);
+    }
+}
+void setCellForeground(const QBrush& foreBrush, QAbstractItemModel* model, int nRow, int nCol, const QModelIndex &parent)
+{
+    // Controlli vari di coerenza di quanto passato come parametro
+    if (! model || nRow<0 || nCol < 0)
+        return;
+    if (nRow >= model->rowCount(parent) || nCol > model->columnCount(parent))
+        return;
+    if (parent.isValid()){
+        if(parent.model() != model)
+            return;
+    }
+    model->setData(model->index(nRow, nCol, parent),foreBrush,Qt::ForegroundRole);
+}
+
 void doEvents()
 {
     QCoreApplication::processEvents();

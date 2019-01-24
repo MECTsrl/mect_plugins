@@ -69,7 +69,7 @@
 #define TAB_TIMINGS 4
 #define TAB_MPNC 5
 #define TAB_MPNE 6
-#define TAB_TEST 7
+#define TAB_LOG 7
 
 #undef  WORD_BIT
 
@@ -437,6 +437,8 @@ ctedit::ctedit(QWidget *parent) :
     m_isTrendModified = false;
     m_fShowAllRows = true;
     m_fCutOrPaste = false;
+    m_rebuildDeviceTree = true;    // Flag Vero se l'albero dei Device deve essere ricostruito
+    m_rebuildTimingTree = true;    // Flag Vero se l'albero dei Device deve essere ricostruito
     m_nCurTab = 0;
     m_vtAlarmVarType = UNKNOWN;
     m_nAlarmDecimals = -1;
@@ -465,7 +467,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->tabWidget->setTabEnabled(TAB_TIMINGS, true);
     ui->tabWidget->setTabEnabled(TAB_MPNC, true);
     ui->tabWidget->setTabEnabled(TAB_MPNE, true);
-    ui->tabWidget->setTabEnabled(TAB_TEST, false);
+    ui->tabWidget->setTabEnabled(TAB_LOG, true);
     ui->tabWidget->setCurrentIndex(m_nCurTab);
 
     // Connessione Segnali - Slot
@@ -669,6 +671,8 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
         // Load new records in Interface Grid
         if (fLoadGrid)  {
             fRes = ctable2Grid();
+            m_rebuildDeviceTree = true;
+            m_rebuildTimingTree = true;
         }
         else
             fRes = true;
@@ -687,12 +691,14 @@ bool    ctedit::ctable2Grid()
     int             nCur = 0;
     QStringList     lstFields;
     QStringList     lstRowNumbers;
+    QBrush          brushRed(Qt::SolidPattern);
 
 
     lstFields.clear();
     lstRowNumbers.clear();
     lstUsedVarNames.clear();
     lstLoggedVars.clear();
+    brushRed.setColor(Qt::red);
     // Preparazione tabella
     this->setCursor(Qt::WaitCursor);
     ui->tblCT->setEnabled(false);
@@ -709,7 +715,12 @@ bool    ctedit::ctable2Grid()
         if (fRes)  {
             ui->tblCT->insertRow(nCur);
             fRes = list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nCur);
+            // Imposta Numero Riga
             lstRowNumbers.append(QString::fromAscii("%1") .arg(nCur + 1, 5, 10));
+            // Evidenzia gli Input Registers in Rosso
+            if (lstFields[colInputReg] == szTRUE)  {
+                setCellForeground(brushRed, ui->tblCT->model(), nCur, colRegister);
+            }
         }
     }
     // qDebug() << QString::fromAscii("Loaded Rows: %1") .arg(nCur);
@@ -1110,6 +1121,8 @@ void ctedit::on_cmdBlocchi_clicked()
 {
     if (riassegnaBlocchi())  {
         m_isCtModified = true;
+        m_rebuildDeviceTree = true;
+        m_rebuildTimingTree = true;
     }
     // Refresh abilitazioni interfaccia
     enableInterface();
@@ -1265,6 +1278,8 @@ bool    ctedit::riassegnaBlocchi()
     }
     // Return value as reload CT
     fRes = ctable2Grid();
+    m_rebuildDeviceTree = true;
+    m_rebuildTimingTree = true;
     // qDebug() << "Reload finished";
     ui->cmdBlocchi->setEnabled(true);
     this->setCursor(Qt::ArrowCursor);
@@ -2017,6 +2032,8 @@ void ctedit::insertRows()
         // Refresh Grid
         ctable2Grid();
         m_isCtModified = true;
+        m_rebuildDeviceTree = true;
+        m_rebuildTimingTree = true;
     }
     else  {
         m_szMsg = QString::fromAscii("Too Many Rows selected, passed limit of User Variables!");
@@ -2071,6 +2088,8 @@ void ctedit::emptySelected()
     if (nRemoved)  {
         ctable2Grid();
         m_isCtModified = true;
+        m_rebuildDeviceTree = true;
+        m_rebuildTimingTree = true;
     }
     // Riposiziona alla riga corrente
     if (nRemoved > 0 && nFirstRow >= 0)  {
@@ -2136,6 +2155,8 @@ void ctedit::removeSelected()
         // Refresh Grid
         ctable2Grid();
         m_isCtModified = true;
+        m_rebuildDeviceTree = true;
+        m_rebuildTimingTree = true;
     }
     m_szMsg = QString::fromAscii("Rows Removed: %1") .arg(nRemoved);
     displayStatusMessage(m_szMsg);
@@ -2307,6 +2328,8 @@ void ctedit::on_cmdImport_clicked()
                         on_cmdUndo_clicked();
                     }
                     m_isCtModified = true;
+                    m_rebuildDeviceTree = true;
+                    m_rebuildTimingTree = true;
                 }
             }
         }
@@ -2660,6 +2683,8 @@ void ctedit::on_cmdUndo_clicked()
         ctable2Grid();
         // Force Marker to Updated
         m_isCtModified = true;
+        m_rebuildDeviceTree = true;
+        m_rebuildTimingTree = true;
         enableInterface();
     }
 }
@@ -2672,10 +2697,15 @@ void ctedit::tabSelected(int nTab)
     // Gestione del Tab di Provenienza
     //---------------------------------
     if (nPrevTab == TAB_SYSTEM)  {
-        // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
-        mectSet->getTargetConfig(panelConfig);
-        // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
-        enableProtocolsFromModel();
+        // Se la Configurazione è cambiata forza la propagazione della modifica
+        if (mectSet->isModified())  {
+            // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
+            mectSet->getTargetConfig(panelConfig);
+            // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
+            enableProtocolsFromModel();
+            m_rebuildDeviceTree = true;
+            m_rebuildTimingTree = true;
+        }
     }
     // Ritorno a CT da Tab MPNC / MPNE
     else if (nPrevTab == TAB_MPNC) {
@@ -2688,6 +2718,8 @@ void ctedit::tabSelected(int nTab)
             // Refresh Grid
             ctable2Grid();
             m_isCtModified = true;
+            m_rebuildDeviceTree = true;
+            m_rebuildTimingTree = true;
         }
         // Jump n+1
         jumpToGridRow(nOldRow + 1, true);
@@ -2704,6 +2736,8 @@ void ctedit::tabSelected(int nTab)
             // Refresh Grid
             ctable2Grid();
             m_isCtModified = true;
+            m_rebuildDeviceTree = true;
+            m_rebuildTimingTree = true;
         }
         // Jump n+1
         jumpToGridRow(nOldRow + 1, true);
@@ -2725,7 +2759,7 @@ void ctedit::tabSelected(int nTab)
     // Passaggio a tab DEVICES
     else if (nTab == TAB_DEVICES)  {
         // Ricostruisce l'albero dei Devices
-        if (m_isCtModified || nPrevTab == TAB_SYSTEM || ui->deviceTree->columnCount() < colTreeTotals)  {
+        if (m_isCtModified || nPrevTab == TAB_SYSTEM || m_rebuildDeviceTree)  {
             qDebug() << QString::fromAscii("Device Tree Columns: %1 - Rebuilded") .arg(ui->deviceTree->columnCount());
             fillDeviceTree(m_nGridRow);
         }
@@ -2733,7 +2767,7 @@ void ctedit::tabSelected(int nTab)
     // Passaggio a tab TIMINGS
     else if (nTab == TAB_TIMINGS)  {
         // Ricostruisce l'albero dei Timings
-        if (m_isCtModified || nPrevTab == TAB_SYSTEM || ui->timingTree->columnCount() < colTreeTotals)  {
+        if (m_isCtModified || nPrevTab == TAB_SYSTEM || m_rebuildTimingTree)  {
             qDebug() << QString::fromAscii("Timings Tree Columns: %1 - Rebuilded") .arg(ui->timingTree->columnCount());
             fillTimingsTree(m_nGridRow);
         }
@@ -2780,6 +2814,13 @@ void ctedit::enableInterface()
     else {
         ui->tabWidget->setTabEnabled(TAB_MPNC, false);
         ui->tabWidget->setTabEnabled(TAB_MPNE, false);
+    }
+    // Tab Logged Vars
+    if (countLoggedVars(lstCTRecords) > 0)  {
+        ui->tabWidget->setTabEnabled(TAB_LOG, true);
+    }
+    else  {
+        ui->tabWidget->setTabEnabled(TAB_LOG, false);
     }
 }
 void    ctedit::enableProtocolsFromModel()
@@ -4051,6 +4092,22 @@ void ctedit::on_cmdPLC_clicked()
 endStartPLC:
     return;
 }
+void ctedit::on_chkInputRegister_stateChanged(int state)
+// Cambio di Stato della Checkbox Input Register
+{
+    if (ui->chkInputRegister->isVisible() && ui->lblInputRegister->isVisible())  {
+        QString szStyle;
+
+        if (state == Qt::Checked)  {
+            szStyle = QString::fromAscii("color: Red");
+        }
+        else  {
+            szStyle = QString::fromAscii("color: Black");
+        }
+        ui->chkInputRegister->setStyleSheet(szStyle);
+        ui->lblInputRegister->setStyleSheet(szStyle);
+    }
+}
 
 bool ctedit::eventFilter(QObject *obj, QEvent *event)
 // Gestore Event Handler
@@ -5210,6 +5267,7 @@ bool ctedit::updateRow(int nRow)
     QStringList lstFields;
     int         nErrors = 0;
     bool        fIsSaved = false;
+    QBrush      brushInputReg(Qt::SolidPattern);
 
     if (! isFormEmpty() && isLineModified(nRow))  {
         // Valori da interfaccia a Lista Stringhe
@@ -5225,7 +5283,17 @@ bool ctedit::updateRow(int nRow)
             // Aggiorna Grid Utente per riga corrente
             if (fIsSaved)  {
                 fRes = list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nRow);
-                m_isCtModified = fIsSaved;
+                // Input Register
+                if (lstFields[colInputReg] == szTRUE) {
+                    brushInputReg.setColor(Qt::red);
+                }
+                else  {
+                    brushInputReg.setColor(Qt::black);
+                }
+                setCellForeground(brushInputReg, ui->tblCT->model(), nRow, colRegister);
+                m_isCtModified = true;
+                m_rebuildDeviceTree = true;
+                m_rebuildTimingTree = true;
                 // Repaint Colori
                 setRowsColor();
             }
@@ -5590,6 +5658,8 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
     m_nGridRow = nCur;
     ctable2Grid();
     m_isCtModified = true;
+    m_rebuildDeviceTree = true;
+    m_rebuildTimingTree = true;
     jumpToGridRow(nCur + 1, true);
     jumpToGridRow(nCur, true);
     // Return value
@@ -6103,13 +6173,13 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (lstMPNC.count() > 0)  {
                         nPosMPNX = lstMPNC.indexOf(nCur);
                         if (nPosMPNX >= 0)  {
-                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1") .arg(szMPNC006));
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1%2") .arg(szMPNC006) .arg(nPosMPNX + 1));
                         }
                     }
                     if (lstMPNE.count() > 0)  {
                         nPosMPNX = lstMPNE.indexOf(nCur);
                         if (nPosMPNX >= 0)  {
-                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1") .arg(szMPNE10));
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1%2") .arg(szMPNE10) .arg(nPosMPNX + 1));
                         }
                     }
                 }
@@ -6627,6 +6697,7 @@ addVariable:
     ui->deviceTree->header()->resizeSection(colTreeName, (ui->deviceTree->width() / 5) - 12);
     ui->deviceTree->header()->resizeSection(colTreeInfo, (ui->deviceTree->width() / 5) * 3 - 12);
     ui->deviceTree->header()->resizeSections(QHeaderView::Interactive);
+    m_rebuildDeviceTree = false;
 }
 void    ctedit::fillTimingsTree(int nCurRow)
 // Riempimento Albero delle variabili raggruppate per Priorità (Timings)
@@ -6792,6 +6863,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     ui->timingTree->header()->resizeSection(colTreeName, (ui->timingTree->width() / 5) - 12);
     ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 5) * 3 - 12);
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
+    m_rebuildTimingTree = false;
 }
 
 void    ctedit::showTabMPNC()
