@@ -97,23 +97,6 @@ const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plu
 #define STR(x) _STR(x)
 const QString szVERSION = QString::fromAscii(STR(ATCM_VERSION));
 
-enum colTree_e
-{
-    colTreeName = 0,
-    colTreeInfo,
-    colTreeTimings,
-    colTreeTotals
-};
-enum treeRoles
-{
-    treeRoot = 1000,
-    treeDevice,
-    treeNode,
-    treePriority,
-    treeBlock,
-    treeVariable
-};
-
 
 ctedit::ctedit(QWidget *parent) :
     QDialog(parent),
@@ -439,7 +422,6 @@ ctedit::ctedit(QWidget *parent) :
     m_fCutOrPaste = false;
     m_rebuildDeviceTree = true;    // Flag Vero se l'albero dei Device deve essere ricostruito
     m_rebuildTimingTree = true;    // Flag Vero se l'albero dei Device deve essere ricostruito
-    m_nCurTab = 0;
     m_vtAlarmVarType = UNKNOWN;
     m_nAlarmDecimals = -1;
     // Creazione del Tab per il System Editor
@@ -460,6 +442,7 @@ ctedit::ctedit(QWidget *parent) :
     vbMPNE->addWidget(configMPNE);
 
     // Abilitazione dei Tabs
+    m_nCurTab = TAB_CT;
     ui->tabWidget->setTabEnabled(TAB_CT, true);
     ui->tabWidget->setTabEnabled(TAB_SYSTEM, true);
     ui->tabWidget->setTabEnabled(TAB_TREND, true);
@@ -468,7 +451,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->tabWidget->setTabEnabled(TAB_MPNC, true);
     ui->tabWidget->setTabEnabled(TAB_MPNE, true);
     ui->tabWidget->setTabEnabled(TAB_LOG, true);
-    ui->tabWidget->setCurrentIndex(m_nCurTab);
+    ui->tabWidget->setCurrentIndex(TAB_CT);
 
     // Connessione Segnali - Slot
     ui->tblCT->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -479,6 +462,7 @@ ctedit::ctedit(QWidget *parent) :
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabSelected(int)));
     connect(ui->deviceTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
     connect(ui->timingTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
+    connect(ui->logTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
     // Tab MPNC
     connect(configMPNC, SIGNAL(varClicked(int)), this, SLOT(return2GridRow(int)));
     connect(configMPNE, SIGNAL(varClicked(int)), this, SLOT(return2GridRow(int)));
@@ -2692,7 +2676,7 @@ void ctedit::tabSelected(int nTab)
 // Change current Tab
 {
     int nPrevTab = m_nCurTab;
-
+    qDebug() << QString::fromAscii("tabSelected(): Previous Tab: %1 - New Tab: %2") .arg(nPrevTab) .arg(nTab);
     //---------------------------------
     // Gestione del Tab di Provenienza
     //---------------------------------
@@ -2778,6 +2762,10 @@ void ctedit::tabSelected(int nTab)
     else if (nTab == TAB_MPNE)  {
         showTabMPNE();
     }
+    else if (nTab == TAB_LOG)  {
+        qDebug() << QString::fromAscii("Log Tab Selected %1") .arg(ui->logTree->columnCount());
+        fillLogTree(m_nGridRow);
+    }
     // Set Current Tab
     m_nCurTab = nTab;
 }
@@ -2816,7 +2804,11 @@ void ctedit::enableInterface()
         ui->tabWidget->setTabEnabled(TAB_MPNE, false);
     }
     // Tab Logged Vars
-    if (countLoggedVars(lstCTRecords) > 0)  {
+    int nFast = 0;
+    int nSlow = 0;
+    int nVar = 0;
+    int nShot = 0;
+    if (countLoggedVars(lstCTRecords, nFast, nSlow, nVar, nShot) > 0)  {
         ui->tabWidget->setTabEnabled(TAB_LOG, true);
     }
     else  {
@@ -6302,18 +6294,20 @@ QTreeWidgetItem *ctedit::addItem2Tree(QTreeWidgetItem *tParent, int nRole, const
     return tItem;
 }
 
-QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow)
+QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow, int nLevel)
 // Aggiunge la variabile della riga nRow agganciandola al nodo tParent
 {
     QTreeWidgetItem *tVariable;
-    QString         szName(szEMPTY);
     QString         szInfo(szEMPTY);
-    QString         szTimings(szEMPTY);
+    QString         szTimings(szEMPTY);                         // Timing della variabile non riempito
     QString         szToolTip(szEMPTY);
     QColor          cSfondo = colorNonRetentive[0];
+    QStringList     lstVarFields;
 
-    // Nome Variabile
-    szName = QString::fromAscii(lstCTRecords[nRow].Tag);
+    // Retrieve Var Fields (MPNE version)
+    lstVarFields.clear();
+    recCT2FieldsValues(lstCTRecords, lstVarFields, nRow);
+
     // Tool Tip
     szToolTip.clear();
     if (lstCTRecords[nRow].Protocol != PLC)  {
@@ -6325,13 +6319,21 @@ QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow)
     szToolTip.append(QString::fromAscii("%1:\t%2\n") .arg(lstHeadCols[colUpdate]) .arg(lstUpdateNames[lstCTRecords[nRow].Update]));
     szToolTip.append(QString::fromAscii("%1:\t\t%2\n") .arg(lstHeadCols[colType]) .arg(lstTipi[lstCTRecords[nRow].VarType]));
     szToolTip.append(QString::fromAscii("%1:\t%2") .arg(lstHeadCols[colDecimal]) .arg(lstCTRecords[nRow].Decimal));
-    // Info Variable
+    // Colonna Info Variable
     szInfo.clear();
-    szInfo.append(QString::fromAscii("Row:\t%1\t") .arg(nRow + 1));
-    szInfo.append(QString::fromAscii("%1\t%2\t") .arg(lstHeadCols[colType]) .arg(lstTipi[lstCTRecords[nRow].VarType]));
-    szInfo.append(QString::fromAscii("%1:\t%2") .arg(lstHeadCols[colBehavior]) .arg(lstBehavior[lstCTRecords[nRow].Behavior]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colPriority]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colUpdate]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colType]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colDecimal]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colProtocol]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colPort]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colNodeID]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colRegister]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colBehavior]));
+    szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colComment]));
+    // Colonnna Timings Variabile NON RIEMPITA
     // Adding Variable Item to Tree
-    tVariable  = addItem2Tree(tParent, treeVariable, szName, szInfo, szTimings, szToolTip);
+    tVariable  = addItem2Tree(tParent, nLevel, lstVarFields[colName], szInfo, szTimings, szToolTip);
     // Numero riga per Double Click
     QVariant vRow = nRow;
     tVariable->setData(colTreeName, Qt::UserRole, vRow);
@@ -6543,6 +6545,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
     bool            isPLC = false;
 
     // Preparing Tree
+    ui->deviceTree->clear();
     lstTreeHeads.clear();
     lstTreeHeads
             << QString::fromAscii("Name")
@@ -6551,7 +6554,6 @@ void    ctedit::fillDeviceTree(int nCurRow)
         ;
     treeFont.setFixedPitch(true);
     ui->deviceTree->setFont(treeFont);
-    ui->deviceTree->clear();
     ui->deviceTree->setColumnCount(colTreeTotals);
     tRoot = new QTreeWidgetItem(ui->deviceTree, treeRoot);
     tRoot->setText(colTreeName, m_szCurrentModel);
@@ -6724,6 +6726,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     int             nBlockSize = -1;
 
     // Preparing Tree
+    ui->timingTree->clear();
     lstTreeHeads.clear();
     lstTreeHeads
             << QString::fromAscii("Name")
@@ -6732,7 +6735,6 @@ void    ctedit::fillTimingsTree(int nCurRow)
         ;
     treeFont.setFixedPitch(true);
     ui->timingTree->setFont(treeFont);
-    ui->timingTree->clear();
     ui->timingTree->setColumnCount(colTreeTotals);
     tRoot = new QTreeWidgetItem(ui->timingTree, treeRoot);
     tRoot->setText(colTreeName, m_szCurrentModel);
@@ -6864,6 +6866,127 @@ void    ctedit::fillTimingsTree(int nCurRow)
     ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 5) * 3 - 12);
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
     m_rebuildTimingTree = false;
+}
+void    ctedit::fillLogTree(int nCurRow)
+// Riempimento Albero delle variabili raggruppate per Log Period
+{
+    QTreeWidgetItem *tParent;
+    QTreeWidgetItem *tRoot;
+    QTreeWidgetItem *tNewVariable;
+    QTreeWidgetItem *tFast;
+    QTreeWidgetItem *tSlow;
+    QTreeWidgetItem *tOnVar;
+    QTreeWidgetItem *tOnShot;
+    QTreeWidgetItem *tCurrentVariable;
+    QString         szName;
+    QString         szInfo;
+    QString         szTimings;
+    QString         szToolTip;
+    QStringList     lstTreeHeads;
+//    QFont           treeFont = ui->deviceTree->font();
+    int             nRow = 0;
+    int             nLogLevel = Ptype;
+    int             nUsedVariables = 0;
+    int             nFast = 0;
+    int             nSlow = 0;
+    int             nVar = 0;
+    int             nShot = 0;
+
+    // Preparing Tree
+    ui->logTree->clear();
+    lstTreeHeads.clear();
+    lstTreeHeads.append(QString::fromAscii("Log Level"));
+    lstTreeHeads.append(QString::fromAscii("Variables"));
+    lstTreeHeads.append(szEMPTY);
+//    treeFont.setFixedPitch(true);
+//    ui->logTree->setFont(treeFont);
+    ui->logTree->setColumnCount(colTreeTotals);
+    tRoot = new QTreeWidgetItem(ui->logTree, treeRoot);
+    tRoot->setText(colTreeName, m_szCurrentModel);
+    tCurrentVariable = 0;
+    // Check Elements
+    if (countLoggedVars(lstCTRecords, nFast, nSlow, nVar, nShot) <= 0)  {
+        return;
+    }
+    // Crea i Nodi per i 4 Livelli di LOG
+    szTimings.clear();
+    szToolTip.clear();
+    tParent = 0;
+    tNewVariable = 0;
+    // Fast Log
+    szName = QString::fromAscii("F\tFast");
+    szInfo = QString::fromAscii("Fast Log Period: %1\tLogged Variables: %2") .arg(panelConfig.fastLogPeriod, 6, 10) .arg(nFast, 6, 10);
+    tFast = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
+    // Slow Log
+    szName = QString::fromAscii("S\tSlow");
+    szInfo = QString::fromAscii("Slow Log Period: %1\tLogged Variables: %2") .arg(panelConfig.slowLogPeriod, 6, 10) .arg(nSlow, 6, 10);
+    tSlow = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
+    // On Variation
+    szName = QString::fromAscii("V\tOn Variation");
+    szInfo = QString::fromAscii("\t\tLogged Variables: %1") .arg(nVar, 6, 10);
+    tOnVar = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
+    // On Shot
+    szName = QString::fromAscii("X\tOn Shot");
+    szInfo = QString::fromAscii("\t\tLogged Variables: %1") .arg(nShot, 6, 10);
+    tOnShot = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
+    // Variables Loop
+    for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
+        // Considera solo le Variabili che devono essere Loggate
+        if (lstCTRecords[nRow].UsedEntry > 0 && lstCTRecords[nRow].Enable > 0)  {
+            nUsedVariables++;
+            nLogLevel = lstCTRecords[nRow].Update;
+            tParent = 0;
+            // Ignora le variabili
+            if (nLogLevel > Ptype)  {
+                if (nLogLevel == Ftype)  {
+                    tParent = tFast;
+                }
+                else if (nLogLevel == Stype)  {
+                    tParent = tSlow;
+                }
+                else if (nLogLevel == Vtype)  {
+                    tParent = tOnVar;
+                }
+                else if (nLogLevel == Xtype)  {
+                    tParent = tOnShot;
+                }
+                // Add Variable
+                tNewVariable = 0;
+                if (tParent != 0)  {
+                    tNewVariable = addVariable2Tree(tParent, nRow, treeNode);
+                    // Seleziona la variabile se coincide con la riga corrente
+                    if (nCurRow >= 0 && nRow == nCurRow && tNewVariable != 0)  {
+                        tCurrentVariable = tNewVariable;
+                    }
+                }
+            }
+        }
+    }
+    // Aggiornamento delle Informazioni del Nodo Principale
+    tRoot->setExpanded(true);
+    szInfo = QString::fromAscii("Total Variables: %1\t") .arg(nUsedVariables, 6, 10);
+    szInfo.append(QString::fromAscii("Fast: %1\t") .arg(nFast, 6, 10));
+    szInfo.append(QString::fromAscii("Slow: %1\t") .arg(nSlow, 6, 10));
+    szInfo.append(QString::fromAscii("On Var: %1\t") .arg(nVar, 6, 10));
+    szInfo.append(QString::fromAscii("On Shot: %1\t") .arg(nShot, 6, 10));
+    tRoot->setText(colTreeInfo, szInfo);
+    tRoot->setToolTip(colTreeName, ui->lblModel->toolTip());
+    tRoot->setSelected(true);
+    // Seleziona l'item corrispondente alla riga corrente
+    // Salto alla riga corrispondente alla variabile selezionata in griglia CT
+//    if (tCurrentVariable != 0)  {
+//        tCurrentVariable->setSelected(true);
+//        ui->logTree->scrollToItem(tCurrentVariable, QAbstractItemView::PositionAtCenter);
+//    }
+//    else {
+//    }
+    // Tree Header
+    ui->logTree->setHeaderLabels(lstTreeHeads);
+    ui->logTree->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->logTree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->logTree->header()->resizeSection(colTreeName, (ui->logTree->width() / 5) - 12);
+    ui->logTree->header()->resizeSection(colTreeInfo, (ui->logTree->width() / 5) * 3 - 12);
+    ui->logTree->header()->resizeSections(QHeaderView::Interactive);
 }
 
 void    ctedit::showTabMPNC()

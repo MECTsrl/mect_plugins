@@ -287,7 +287,8 @@ void setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int n
 bool recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, QList<CrossTableRecord> &lstModel, int nModelRow)
 // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
 // Da Record C a QStringList di valori per caricamento griglia
-// Versione per MPNX Nodes
+// Versione per MPNX Nodes. La lista lstModel è NECESSARIA per recuperare le informazioni di Group e Model che sono presenti SOLO NEL MODELLO
+// e non salvate in file CSV della CT
 {
     if (nRow < 0 || nRow >= CTRecords.count())  {
         return false;
@@ -657,15 +658,30 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
     // Return Value
     return fRes;
 }
-int     countLoggedVars(QList<CrossTableRecord> &CTRecords)
+int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSlow, int &nOnVar, int &nOnShot)
 // Conta il Numero delle Variabili CT che sono Loggate
 {
     int     nLoggedVars = 0;
     int     nRow = 0;
+    int     nUpdate = 0;
+
+    nFast = 0;
+    nSlow = 0;
+    nOnVar = 0;
+    nOnShot = 0;
 
     for (nRow = 0; nRow < CTRecords.count(); nRow++)  {
-        if (CTRecords[nRow].Update > Ptype)  {
+        nUpdate = CTRecords[nRow].Update;
+        if (nUpdate > Ptype)  {
             nLoggedVars++;
+            if (nUpdate == Ftype)
+                nFast++;
+            else if (nUpdate == Stype)
+                nSlow++;
+            else if (nUpdate == Vtype)
+                nOnVar++;
+            else if (nUpdate == Xtype)
+                nOnShot++;
         }
     }
     // Return Value

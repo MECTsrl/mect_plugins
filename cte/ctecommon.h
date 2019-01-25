@@ -167,6 +167,23 @@ enum showModes
     showTotals
 };
 
+enum colTree_e
+{
+    colTreeName = 0,
+    colTreeInfo,
+    colTreeTimings,
+    colTreeTotals
+};
+enum treeRoles
+{
+    treeRoot = 1000,
+    treeDevice,
+    treeNode,
+    treePriority,
+    treeBlock,
+    treeVariable
+};
+
 struct  extendedCT : CrossTableRecord {
     int     nGroup;
     int     nModule;
