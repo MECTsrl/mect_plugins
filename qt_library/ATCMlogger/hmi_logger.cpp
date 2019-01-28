@@ -317,7 +317,7 @@ void Logger::run()
     {
         if (recompute_abstime) {
             recompute_abstime = false;
-            clock_gettime(CLOCK_MONOTONIC, &abstime);
+            clock_gettime(CLOCK_REALTIME, &abstime); // sem_timedwait
             abstime.tv_sec += _period_msec / 1000;
             abstime.tv_nsec += (_period_msec % 1000) * 1000 * 1000; // ms -> ns
             if (abstime.tv_nsec >= (1000*1000*1000)) {

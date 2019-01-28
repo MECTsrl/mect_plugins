@@ -115,7 +115,7 @@ void io_layer_comm::run()
     {
         if (recompute_abstime) {
             recompute_abstime = false;
-            clock_gettime(CLOCK_MONOTONIC, &abstime);
+            clock_gettime(CLOCK_MONOTONIC, &abstime); // pthread_cond_timedwait + pthread_condattr_setclock
             abstime.tv_sec += IOLAYER_PERIOD_ms / 1000;
             abstime.tv_nsec += (IOLAYER_PERIOD_ms % 1000) * 1000 * 1000; // ms -> ns
             if (abstime.tv_nsec >= (1000*1000*1000)) {
