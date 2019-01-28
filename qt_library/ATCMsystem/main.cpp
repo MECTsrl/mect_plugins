@@ -128,7 +128,10 @@ int main(int argc, char *argv[])
 
     pthread_mutex_init(&write_queue_mutex, NULL);
 
-    pthread_cond_init(&theWritingCondvar, NULL);
+    pthread_condattr_t attr;
+    pthread_condattr_init(&attr);
+    pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+    pthread_cond_init(&theWritingCondvar, &attr);
     pthread_mutex_init(&theWritingMutex, NULL);
 
     pthread_mutex_init(&alarmevents_list_mutex, NULL);

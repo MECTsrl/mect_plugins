@@ -39,7 +39,7 @@ void *automation_thread(void *arg)
 #endif
         pthread_cond_wait(&condvar, &mutex);
 #ifdef VERBOSE_DEBUG
-        clock_gettime(CLOCK_REALTIME, &now);
+        clock_gettime(CLOCK_MONOTONIC, &now);
         last_time_ms = now.tv_sec * 1000LL + now.tv_nsec / 1000000LL;
 #endif
         setup();
@@ -47,7 +47,7 @@ void *automation_thread(void *arg)
         {
             pthread_cond_wait(&condvar, &mutex);
 #ifdef VERBOSE_DEBUG
-            clock_gettime(CLOCK_REALTIME, &now);
+            clock_gettime(CLOCK_MONOTONIC, &now);
             actual_time_ms = now.tv_sec * 1000LL + now.tv_nsec / 1000000LL;
             elapsed_ms = actual_time_ms - last_time_ms;
             last_time_ms = actual_time_ms;
@@ -115,7 +115,7 @@ void io_layer_comm::run()
     {
         if (recompute_abstime) {
             recompute_abstime = false;
-            clock_gettime(CLOCK_REALTIME, &abstime);
+            clock_gettime(CLOCK_MONOTONIC, &abstime); // pthread_cond_timedwait + pthread_condattr_setclock
             abstime.tv_sec += IOLAYER_PERIOD_ms / 1000;
             abstime.tv_nsec += (IOLAYER_PERIOD_ms % 1000) * 1000 * 1000; // ms -> ns
             if (abstime.tv_nsec >= (1000*1000*1000)) {
