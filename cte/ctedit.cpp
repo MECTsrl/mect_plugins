@@ -618,6 +618,26 @@ bool    ctedit::selectCTFile(QString szFileCT)
         szFileTemplate.append(szTemplateFile);
         trendEdit->updateVarLists(lstLoggedVars);
         trendEdit->setTrendsParameters(m_szCurrentModel, m_szCurrentCTPath, szEMPTY, szFileTemplate);
+        // Caricamento del file da Template
+        if (! m_szTemplateCTFile.isEmpty())  {
+            if (loadCTFile(m_szTemplateCTFile, lstTemplateRecs, false))  {
+                // Confronto tra CT del Template e CT corrente
+                QList<int> lstDifferences;
+                int nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, false);
+                if (nDiff > 0)  {
+                    m_szMsg = QString::fromAscii("Found [%1] Differences between current Cross Table and Template Cross Table file\n\n[%2]\n\n") .arg(nDiff) .arg(m_szTemplateCTFile);
+                    for (nErr = 0; nErr < lstDifferences.count(); nErr++)  {
+                        int nPos = lstDifferences[nErr];
+                        m_szMsg.append(QString::fromAscii("Row: [%1]   Project: %2\t\tTemplate: %3\n") .arg(nPos + 1, 5, 10) .arg(QString::fromAscii(lstCTRecords[nPos].Tag))  .arg(QString::fromAscii(lstTemplateRecs[nPos].Tag)));
+                    }
+                    m_szMsg.append(QString::fromAscii("\nAlign Project to Template ?"));
+                    if (queryUser(this, szMectTitle, m_szMsg, false))  {
+                        nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, true);
+                        ctable2Grid();
+                    }
+                }
+            }
+        }
         // Abilita interfaccia
         enableInterface();
         // Controllo errori globali su Cross Table

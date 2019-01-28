@@ -472,8 +472,12 @@ void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
     }
     /* Edit the selected item */
     float value, min = 0, max = 0;
+    int nRow = ui->tableWidget->currentRow();
+    int ctIndex = testsIndexes[nRow];
+    int nDecimals = getVarDecimalByCtIndex(ctIndex);;
+
     numpad * dk;
-    dk = new numpad(&value, item->text().toFloat(), 3, min, max);
+    dk = new numpad(&value, item->text().toFloat(), nDecimals, min, max, false, this);
     dk->showFullScreen();
 
     if (dk->exec() == QDialog::Accepted)
@@ -485,13 +489,11 @@ void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
         else
         {
             char token[LINE_SIZE]="";
-            int ctIndex = testsIndexes[ui->tableWidget->currentRow()];
-            int decimal = getVarDecimalByCtIndex(ctIndex);
             int ivalue;
-            sprintf(token, "%.*f",decimal,value);
+            sprintf(token, "%.*f",nDecimals,value);
             ivalue = intFormattedVarByCtIndex(ctIndex, token);
-            testsTable[ui->tableWidget->currentColumn()][ui->tableWidget->currentRow()] = ivalue;
-            sprintf_fromValue(token, ctIndex, ivalue, decimal, 10);
+            testsTable[ui->tableWidget->currentColumn()][nRow] = ivalue;
+            sprintf_fromValue(token, ctIndex, ivalue, nDecimals, 10);
             item->setText(token);
         }
     }

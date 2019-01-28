@@ -41,6 +41,7 @@ TP_Config   panelConfig;                // Configurazione corrente del Target le
 
 // Cross Table Records
 QList<CrossTableRecord> lstCTRecords;   // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE)
+QList<CrossTableRecord> lstTemplateRecs; // Lista completa di Record da Template (per confronto con CT)
 QList<CrossTableRecord> lstMPNC006_Vars;// Lista delle Variabili MPNC006
 QList<CrossTableRecord> lstTPLC050_Vars;// Lista delle Variabili TPLC050
 QList<CrossTableRecord> lstMPNE_Vars;   // Lista delle Variabili MPNE
@@ -660,6 +661,43 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
     // Return Value
     return fRes;
 }
+int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTableRecord> &CTTemplate, TP_Config &configTP, QList<int> &lstDiff, bool forceDiff)
+// Confronta la CT del Progetto con quella di Template di modello
+{
+    int     nDifferences = 0;
+    int     nRow = 0;
+    int     nAnInStart = configTP.analogINrowCT;
+    int     nAnInEnd = nAnInStart + configTP.analogIN;
+    int     nAnOutStart = configTP.analogOUTrowCT;
+    int     nAnOutEnd = nAnOutStart + configTP.analogOUT;
+
+    // Confronta il numero di elementi
+    if (CTProject.count() != CTTemplate.count())  {
+        return -1;
+    }
+    lstDiff.clear();
+    for (nRow = MIN_DIAG - 1; nRow < CTProject.count(); nRow++)  {
+        // Variabile Template marcata come NON Usata --> ha la priorità il Template
+        if (CTTemplate[nRow].Enable == 0 && strlen(CTTemplate[nRow].Tag) > 0 && strlen(CTProject[nRow].Tag) > 0 && CTProject[nRow].Enable)  {
+            nDifferences++;
+            lstDiff.append(nRow);
+            if (forceDiff)  {
+                CTProject[nRow].Enable = 0;
+            }
+        }
+        // Variabile aggiunta in Template non in Project
+        if (CTTemplate[nRow].UsedEntry && ! CTProject[nRow].UsedEntry)  {
+            nDifferences++;
+            lstDiff.append(nRow);
+            if (forceDiff)  {
+                CTProject[nRow] = CTTemplate[nRow];
+            }
+        }
+        // Decimali di Ingressi Analogici
+    }
+    return nDifferences;
+}
+
 int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSlow, int &nOnVar, int &nOnShot)
 // Conta il Numero delle Variabili CT che sono Loggate
 {
