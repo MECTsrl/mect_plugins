@@ -88,6 +88,8 @@ const QString szPLCExt = QString::fromAscii(".4cp");
 const QString szPLCDir = QString::fromAscii("plc");
 const QString szINIFILE = QString::fromAscii("system.ini");
 const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
+// CrossTable originale del Modello corrente
+const QString szTemplateCTFile = QString::fromAscii("C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
 
 // Version Number
 #ifndef ATCM_VERSION
@@ -96,7 +98,6 @@ const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plu
 #define _STR(x) #x
 #define STR(x) _STR(x)
 const QString szVERSION = QString::fromAscii(STR(ATCM_VERSION));
-
 
 ctedit::ctedit(QWidget *parent) :
     QDialog(parent),
@@ -495,6 +496,7 @@ void    ctedit::setProjectPath(QString szProjectPath)
 {
     QDir        projectDir(szProjectPath);
     QString     szProjectName;
+    QString     szTemplates;
 
     if (projectDir.exists() && ! szProjectPath.isEmpty())  {
         projectDir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
@@ -525,6 +527,7 @@ void    ctedit::setProjectPath(QString szProjectPath)
         m_szCurrentProjectName.clear();
         m_szCurrentPLCPath.clear();
     }
+
     //qDebug() << "Project Path:" << m_szCurrentProjectPath;
     //qDebug() << "Project Name:" << m_szCurrentProjectName;
     //qDebug() << "PLC Path:" << m_szCurrentPLCPath;
@@ -562,6 +565,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
     m_szCurrentModel.clear();
     m_szCurrentCTPath.clear();
     m_szCurrentCTName.clear();
+    m_szTemplateCTFile.clear();
     // Load Ok, init default values
     if (fRes)  {
         QFileInfo fInfo(m_szCurrentCTFile);
@@ -579,6 +583,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
             ui->lblModel->setStyleSheet(QString::fromAscii("background-color: LightCyan"));
             ui->lblModel->setToolTip(getModelInfo(nModel));
             qDebug() << QString::fromAscii("selectCTFile: Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
+            m_szTemplateCTFile = QString(szTemplateCTFile) .arg(m_szCurrentModel);
         }
         else  {
             nModel = AnyTPAC;
@@ -592,9 +597,11 @@ bool    ctedit::selectCTFile(QString szFileCT)
             m_szMsg = QString::fromAscii("No Model Type Found in file: <%1>\nor Model Unknown: <%2>") .arg(szTemplateFile) .arg(m_szCurrentModel);
             warnUser(this, szMectTitle, m_szMsg);
             m_szCurrentModel.clear();
+            m_szTemplateCTFile.clear();
         }
         m_isCtModified = false;
         m_fCutOrPaste = false;
+        qDebug() << QString::fromAscii("Original Template File: %1") .arg(m_szTemplateCTFile);
         // Carica anche le impostazioni del file INI
         mectSet->loadProjectFiles(m_szCurrentCTPath + szINIFILE, m_szCurrentProjectPath + szSLASH + m_szCurrentProjectName, m_szCurrentProjectPath + szSLASH, panelConfig);
 //        qDebug() << QString::fromAscii("LoadProjectFiles: <%1> Done") .arg(m_szCurrentModel) ;
@@ -6304,21 +6311,17 @@ QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow, in
     QColor          cSfondo = colorNonRetentive[0];
     QStringList     lstVarFields;
 
-    // Retrieve Var Fields (MPNE version)
-    lstVarFields.clear();
+    // Retrieve Var Fields
+    // qDebug() << QString::fromAscii("addVariable2Tree(): Processing Row: %1") .arg(nRow);
     recCT2FieldsValues(lstCTRecords, lstVarFields, nRow);
 
     // Tool Tip
     szToolTip.clear();
+    szToolTip.append(QString::fromAscii("Row:\t%1\n") .arg(nRow + 1));
     if (lstCTRecords[nRow].Protocol != PLC)  {
         szToolTip.append(QString::fromAscii("Device:\t\t%1\n") .arg(theDevices[lstCTRecords[nRow].nDevice].szDeviceName));
         szToolTip.append(QString::fromAscii("%1:\t\t%2\n") .arg(lstHeadCols[colNodeID]) .arg(theNodes[lstCTRecords[nRow].nNode].szNodeName));
     }
-    szToolTip.append(QString::fromAscii("Row:\t%1\n") .arg(nRow + 1));
-    szToolTip.append(QString::fromAscii("%1:\t%2\n") .arg(lstHeadCols[colPriority]) .arg(lstCTRecords[nRow].Enable));
-    szToolTip.append(QString::fromAscii("%1:\t%2\n") .arg(lstHeadCols[colUpdate]) .arg(lstUpdateNames[lstCTRecords[nRow].Update]));
-    szToolTip.append(QString::fromAscii("%1:\t\t%2\n") .arg(lstHeadCols[colType]) .arg(lstTipi[lstCTRecords[nRow].VarType]));
-    szToolTip.append(QString::fromAscii("%1:\t%2") .arg(lstHeadCols[colDecimal]) .arg(lstCTRecords[nRow].Decimal));
     // Colonna Info Variable
     szInfo.clear();
     szInfo.append(QString::fromAscii("%1\t") .arg(lstVarFields[colPriority]));
@@ -6883,7 +6886,7 @@ void    ctedit::fillLogTree(int nCurRow)
     QString         szTimings;
     QString         szToolTip;
     QStringList     lstTreeHeads;
-//    QFont           treeFont = ui->deviceTree->font();
+    QFont           treeFont = ui->deviceTree->font();
     int             nRow = 0;
     int             nLogLevel = Ptype;
     int             nUsedVariables = 0;
@@ -6898,14 +6901,20 @@ void    ctedit::fillLogTree(int nCurRow)
     lstTreeHeads.append(QString::fromAscii("Log Level"));
     lstTreeHeads.append(QString::fromAscii("Variables"));
     lstTreeHeads.append(szEMPTY);
-//    treeFont.setFixedPitch(true);
-//    ui->logTree->setFont(treeFont);
+    treeFont.setFixedPitch(true);
+    ui->logTree->setFont(treeFont);
     ui->logTree->setColumnCount(colTreeTotals);
     tRoot = new QTreeWidgetItem(ui->logTree, treeRoot);
     tRoot->setText(colTreeName, m_szCurrentModel);
     tCurrentVariable = 0;
     // Check Elements
     if (countLoggedVars(lstCTRecords, nFast, nSlow, nVar, nShot) <= 0)  {
+        return;
+    }
+    // Rebuild Server-Device-Nodes structures
+    if (! checkServersDevicesAndNodes())  {
+        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QString::fromAscii("Devices"));
+        warnUser(this, szMectTitle, m_szMsg);
         return;
     }
     // Crea i Nodi per i 4 Livelli di LOG
@@ -6974,12 +6983,12 @@ void    ctedit::fillLogTree(int nCurRow)
     tRoot->setSelected(true);
     // Seleziona l'item corrispondente alla riga corrente
     // Salto alla riga corrispondente alla variabile selezionata in griglia CT
-//    if (tCurrentVariable != 0)  {
-//        tCurrentVariable->setSelected(true);
-//        ui->logTree->scrollToItem(tCurrentVariable, QAbstractItemView::PositionAtCenter);
-//    }
-//    else {
-//    }
+    if (tCurrentVariable != 0)  {
+        tCurrentVariable->setSelected(true);
+        ui->logTree->scrollToItem(tCurrentVariable, QAbstractItemView::PositionAtCenter);
+    }
+    else {
+    }
     // Tree Header
     ui->logTree->setHeaderLabels(lstTreeHeads);
     ui->logTree->setSelectionMode(QAbstractItemView::SingleSelection);

@@ -351,6 +351,7 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
     // Pulizia Buffers
     szTemp.clear();
     listClear(lstRecValues, colTotals);
+//    qDebug() << QString::fromAscii("recCT2FieldsValues(): Processing Row=[%1]") .arg(nRow);
     // Recupero informazioni da Record CT
     if (CTRecords[nRow].UsedEntry)  {
         // Priority
@@ -465,8 +466,9 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
             lstRecValues[colCondition] = szEMPTY;
             lstRecValues[colCompare] = szEMPTY;
         }
+//        qDebug() << QString::fromAscii("recCT2FieldsValues(): Row=[%1] - usedInAlarmsEvents=[%2] - Behavior=[%3]") .arg(nRow) .arg(CTRecords[nRow].usedInAlarmsEvents) .arg(CTRecords[nRow].Behavior);
     }
-    //    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
+    // qDebug() << QString::fromAscii("recCT2FieldsValues(): Processed Row=[%1]") .arg(nRow);
     // Return value
     return true;
 }
