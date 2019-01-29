@@ -40,6 +40,8 @@
         <file>img/MPNE05.png</file>
         <file>img/MPNE01L.png</file>
         <file>img/MPNE01R.png</file>
+        <file>img/Cancel_32.png</file>
+        <file>img/Done_32.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>

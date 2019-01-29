@@ -948,7 +948,7 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
                 if (fRes)  {
                     lstTableRows.append(lstLineValues);
                     lstRowPriority.append(localCTRecords[nRow + m_nBaseRow].Enable);
-                    lstRowNumbers.append(QString::fromAscii("%1") .arg(nRow + m_nBaseRow + 1, 5, 10));
+                    lstRowNumbers.append(QString::fromAscii("%1") .arg(nRow + m_nBaseRow + 1, nRowColWidth, 10));
                     // Riga da selezionare in Grid
                     if (nRow + m_nBaseRow == m_nCurrentCTRow)  {
                         nCurrentRow = lstTableRows.count() - 1;

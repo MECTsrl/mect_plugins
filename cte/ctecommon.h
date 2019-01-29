@@ -27,6 +27,7 @@ const int nStartInputRegister = 300000;
 const int nMaxInputRegister = nStartInputRegister + nMax_Int16;
 const int nMaxRegister = 49999;
 const int nCompareDecimals = 4;
+const int nRowColWidth = 5;
 
 // Priority
 const int nNumPriority = 4;
@@ -57,7 +58,7 @@ const int nPortVNC = 5900;
 const QChar   chDOUBLEQUOTE = QChar::fromAscii(34);
 const QChar   chSpace = QChar::fromAscii(20);
 const QChar   chBACKSLASH = QChar::fromAscii(92);
-const QChar   chX = QChar::fromLatin1(88);
+const QChar   chX = QChar::fromAscii(88);
 const QChar   chUNDERSCORE = QChar::fromAscii(95);
 const QChar   chZERO = QChar::fromAscii(48);
 const QChar   chOpenSQB = QChar::fromAscii(91);     // [

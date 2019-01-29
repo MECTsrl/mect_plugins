@@ -661,8 +661,8 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
     // Return Value
     return fRes;
 }
-int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTableRecord> &CTTemplate, TP_Config &configTP, QList<int> &lstDiff, bool forceDiff)
-// Confronta la CT del Progetto con quella di Template di modello
+int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTableRecord> &CTTemplate, TP_Config &configTP, QList<int> &lstDiff, QStringList &lstActions, bool forceDiff)
+// Confronta la CT del Progetto con quella di Template di modello aggiornato (Solo in Area di Sistema da 5000 a salire)
 {
     int     nDifferences = 0;
     int     nRow = 0;
@@ -675,20 +675,34 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
     if (CTProject.count() != CTTemplate.count())  {
         return -1;
     }
+    // Clear List
     lstDiff.clear();
+    lstActions.clear();
+    // Compare CT Area starting from 5000
     for (nRow = MIN_DIAG - 1; nRow < CTProject.count(); nRow++)  {
         // Variabile Template marcata come NON Usata --> ha la priorità il Template
         if (CTTemplate[nRow].Enable == 0 && strlen(CTTemplate[nRow].Tag) > 0 && strlen(CTProject[nRow].Tag) > 0 && CTProject[nRow].Enable)  {
             nDifferences++;
             lstDiff.append(nRow);
+            lstActions.append(QString::fromAscii("Variable switched OFF"));
             if (forceDiff)  {
                 CTProject[nRow].Enable = 0;
             }
         }
-        // Variabile aggiunta in Template non in Project
+        // Variabile Template con priorità differente --> ha la priorità il Template
+        if (CTTemplate[nRow].Enable > 0 && strlen(CTTemplate[nRow].Tag) > 0 && strlen(CTProject[nRow].Tag) > 0 && CTProject[nRow].Enable != CTTemplate[nRow].Enable )  {
+            nDifferences++;
+            lstDiff.append(nRow);
+            lstActions.append(QString::fromAscii("Forced Priority to %1") .arg(CTTemplate[nRow].Enable));
+            if (forceDiff)  {
+                CTProject[nRow].Enable = CTTemplate[nRow].Enable;
+            }
+        }
+        // Variabile aggiunta in Template ma non in Project
         if (CTTemplate[nRow].UsedEntry && ! CTProject[nRow].UsedEntry)  {
             nDifferences++;
             lstDiff.append(nRow);
+            lstActions.append(QString::fromAscii("New Variable added to Project"));
             if (forceDiff)  {
                 CTProject[nRow] = CTTemplate[nRow];
             }
@@ -812,7 +826,7 @@ void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> 
 {
     int         nColWidth = 0;
     int         nColHeight = 0;
-    int         nCor = 0;
+    int         nCol = 0;
 
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setSelectionMode(nMode);
@@ -820,11 +834,11 @@ void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> 
     // Larghezza fissa per alcune colonne
     QFontMetrics fm(table->font());
     QString szTemp;
-    for (nCor = 0; nCor < lstHeadCols.count(); nCor++)  {
-        szTemp.fill(chX, lstHeadSizes[nCor]);
+    for (nCol = 0; nCol < lstHeadCols.count(); nCol++)  {
+        szTemp.fill(chX, lstHeadSizes[nCol]);
         nColWidth = fm.width(szTemp) * 1.2;
         nColHeight = fm.height();
-        table->setColumnWidth(nCor, nColWidth);
+        table->setColumnWidth(nCol, nColWidth);
     }
     // Altezza Righe
     nColHeight = fm.height() * 2;

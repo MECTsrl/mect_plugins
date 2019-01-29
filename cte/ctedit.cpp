@@ -4,6 +4,7 @@
 #include "cteerrorlist.h"
 #include "stdlib.h"
 #include "cteUtils.h"
+#include "messagelist.h"
 
 #include <QFile>
 #include <QFileDialog>
@@ -623,16 +624,47 @@ bool    ctedit::selectCTFile(QString szFileCT)
             if (loadCTFile(m_szTemplateCTFile, lstTemplateRecs, false))  {
                 // Confronto tra CT del Template e CT corrente
                 QList<int> lstDifferences;
-                int nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, false);
+                QStringList lstActions;
+                int nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, lstActions, false);
                 if (nDiff > 0)  {
-                    m_szMsg = QString::fromAscii("Found [%1] Differences between current Cross Table and Template Cross Table file\n\n[%2]\n\n") .arg(nDiff) .arg(m_szTemplateCTFile);
+                    QStringList lstRow;
+                    QList<QStringList>  lstMessages;
+                    QList<int>  lstColSizes;
+                    // Preparing Header Row
+                    lstRow.append(QString::fromAscii("Row"));
+                    lstRow.append(QString::fromAscii("Project Variable"));
+                    lstRow.append(QString::fromAscii("Template Variable"));
+                    lstRow.append(QString::fromAscii("Action"));
+                    // Preparing Col Sizes
+                    lstColSizes.append(- nRowColWidth);
+                    lstColSizes.append(lstHeadSizes[colName]);
+                    lstColSizes.append(lstHeadSizes[colName]);
+                    lstColSizes.append(lstHeadSizes[colName]);
+                    // Adding Header Row
+                    lstMessages.append(lstRow);
+                    m_szMsg = QString::fromAscii("Found [%1] Differences between current Cross Table and Template Cross Table file\n\n[%2]\n\nAlign Project to Template ?")
+                            .arg(nDiff) .arg(m_szTemplateCTFile);
                     for (nErr = 0; nErr < lstDifferences.count(); nErr++)  {
                         int nPos = lstDifferences[nErr];
-                        m_szMsg.append(QString::fromAscii("Row: [%1]   Project: %2\t\tTemplate: %3\n") .arg(nPos + 1, 5, 10) .arg(QString::fromAscii(lstCTRecords[nPos].Tag))  .arg(QString::fromAscii(lstTemplateRecs[nPos].Tag)));
+                        QString szCTVar = QString::fromAscii(lstCTRecords[nPos].Tag).trimmed();
+                        QString szTemplVar = QString::fromAscii(lstTemplateRecs[nPos].Tag).trimmed();
+                        szCTVar = szCTVar.isEmpty() ? QString::fromAscii(" --- ") : szCTVar;
+                        szTemplVar = szTemplVar.isEmpty() ? QString::fromAscii(" --- ") : szTemplVar;
+                        // Formatting Row
+                        lstRow.clear();
+                        lstRow.append(QString::fromAscii("%1") .arg(nPos + 1, 5, 10));
+                        lstRow.append(szCTVar);
+                        lstRow.append(szTemplVar);
+                        lstRow.append(lstActions[nErr]);
+                        lstMessages.append(lstRow);
                     }
-                    m_szMsg.append(QString::fromAscii("\nAlign Project to Template ?"));
-                    if (queryUser(this, szMectTitle, m_szMsg, false))  {
-                        nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, true);
+                    // Query User
+                    messageList *resList = new messageList(szMectTitle, m_szMsg, lstMessages, lstColSizes);
+                    resList->setModal(true);
+                    int nResList = resList->exec();
+                    if (nResList == QDialog::Accepted)  {
+                        nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, lstActions, true);
+                        qDebug() << QString::fromAscii("Applied Differences from Template CT");
                         ctable2Grid();
                     }
                 }
@@ -6337,7 +6369,7 @@ QTreeWidgetItem *ctedit::addVariable2Tree(QTreeWidgetItem *tParent, int nRow, in
 
     // Tool Tip
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Row:\t%1\n") .arg(nRow + 1));
+    szToolTip.append(QString::fromAscii("Row:\t%1\n") .arg(nRow + 1, nRowColWidth, 10));
     if (lstCTRecords[nRow].Protocol != PLC)  {
         szToolTip.append(QString::fromAscii("Device:\t\t%1\n") .arg(theDevices[lstCTRecords[nRow].nDevice].szDeviceName));
         szToolTip.append(QString::fromAscii("%1:\t\t%2\n") .arg(lstHeadCols[colNodeID]) .arg(theNodes[lstCTRecords[nRow].nNode].szNodeName));
