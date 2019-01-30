@@ -13,9 +13,9 @@
 	</style>
 	</head>	
 	<body>
-		<h3 class="western">Reset degli allarmi</h3>
+		<h3 class="western">Acknowledge degli allarmi</h3>
 		<p class="western">Gli allarmi vengono gestiti dall&rsquo;utente secondo quanto descritto nel capitolo &ldquo;<font color="#0000ff"><u><a class="western" href="Funzionamento_allarmi.html">Funzionamento allarmi</a></u></font>&rdquo;</p>
-		<p class="western">Inserendo il seguente codice all&rsquo;interno della funzione &ldquo; <font color="#808000">void</font> loop(<font color="#808000">void</font>)&rdquo; della pagina &ldquo;automation.cpp&rdquo; &egrave; possibile resettare gli allarmi tramite un ATCMbutton oppure direttamente dal codice plc.</p>
+		<p class="western">Inserendo il seguente codice all&rsquo;interno della funzione &ldquo; <font color="#808000">void</font> loop(<font color="#808000">void</font>)&rdquo; della pagina &ldquo;automation.cpp&rdquo; &egrave; possibile dare l&rsquo;acknowledge degli allarmi tramite un ATCMbutton oppure direttamente dal codice plc.</p>
 		<pre class="western">
 		<font color="#808000">if</font> (Reset_alarms){
         pthread_mutex_lock(&alarmevents_list_mutex);
@@ -34,7 +34,14 @@
     }</pre>
 		
 		<p class="western"><strong>ATTENZIONE:</strong> la variabile &ldquo;Reset_alarms&rdquo; &egrave; una variabile della &ldquo;Crosstable&rdquo; (Type: BIT, Behavior: Read/Write).
-		
-		<br/>
+	<br/>
+	<br/>
+	<br/>
+		<h3 class="western">Reset degli allarmi</h3>
+		<p class="western">Per eliminare lo storico degli allarmi occorre fare un &ldquo;Go to slot...&rdquo; &#8594; &ldquo;clicked&rdquo; su un ATCMbutton (vedi sezione &ldquo;SINGOLA PAGINA&rdquo; nel capitolo &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI.html">Realizzazione di un&rsquo;automazione</a></u></font>&rdquo;) 
+		e inserire, all&rsquo;interno della funzione, il seguente codice: </p>
+		<p class="western">system("rm -rf /local/data/alarms/*.log");</p>
+		<p class="western">Vedi figura:</p>
+		<p class="western"><img src="Reset_allarmi_1.png" name="Immagine 30" align="bottom" width="379" height="74" border="0"/>
 	</body>
 </html>
