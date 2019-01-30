@@ -416,11 +416,11 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
         lstRecValues[colNodeID] = QString::number(CTRecords[nRow].NodeId);
         // Input Register
         lstRecValues[colInputReg] = (CTRecords[nRow].InputReg > 0) ? szTRUE : szFALSE;
-        // Offeset Register
+        // Offeset (Register)
         lstRecValues[colRegister] = QString::number(CTRecords[nRow].Offset);
         // Block
         lstRecValues[colBlock] = QString::number(CTRecords[nRow].Block);
-        // N.Registro
+        // Block Size
         lstRecValues[colBlockSize] = QString::number(CTRecords[nRow].BlockSize);
         // PLC forza tutto a Blank
         if (CTRecords[nRow].Protocol == PLC)  {
@@ -707,7 +707,38 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
                 CTProject[nRow] = CTTemplate[nRow];
             }
         }
-        // Decimali di Ingressi Analogici
+        // Blocco e Block Size
+        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry> 0  &&
+            (CTTemplate[nRow].Block != CTProject[nRow].Block || CTTemplate[nRow].BlockSize != CTProject[nRow].BlockSize))  {
+            nDifferences++;
+            lstDiff.append(nRow);
+            lstActions.append(QString::fromAscii("Changed Block or Block Size"));
+            if (forceDiff)  {
+                CTProject[nRow].Block = CTTemplate[nRow].Block;
+                CTProject[nRow].BlockSize = CTTemplate[nRow].BlockSize;
+            }
+        }
+        // Tipo
+        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry> 0  &&
+            CTTemplate[nRow].VarType != CTProject[nRow].VarType)   {
+            nDifferences++;
+            lstDiff.append(nRow);
+            lstActions.append(QString::fromAscii("Changed Type"));
+            if (forceDiff)  {
+                CTProject[nRow].VarType = CTTemplate[nRow].VarType;
+            }
+        }
+        // Decimali Cambiati
+        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry> 0  &&
+            (CTTemplate[nRow].Decimal != CTProject[nRow].Decimal &&
+             ! ((nRow >= nAnInStart && nRow <= nAnInEnd) ||  (nRow >= nAnOutStart && nRow <= nAnOutEnd))))  {
+            nDifferences++;
+            lstDiff.append(nRow);
+            lstActions.append(QString::fromAscii("Changed Decimals"));
+            if (forceDiff)  {
+                CTProject[nRow].Decimal = CTTemplate[nRow].Decimal;
+            }
+        }
     }
     return nDifferences;
 }
