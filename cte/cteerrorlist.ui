@@ -140,7 +140,7 @@
         </property>
         <property name="icon">
          <iconset resource="qtc.qrc">
-          <normaloff>:/cteicons/img/Log Out.png</normaloff>:/cteicons/img/Log Out.png</iconset>
+          <normaloff>:/cteicons/img/Log_Out.png</normaloff>:/cteicons/img/Log_Out.png</iconset>
         </property>
         <property name="iconSize">
          <size>

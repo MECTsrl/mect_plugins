@@ -1,5 +1,6 @@
 #include "messagelist.h"
 #include "ui_messagelist.h"
+#include "utils.h"
 
 #include <QTableWidgetItem>
 #include <QHeaderView>
@@ -9,7 +10,7 @@
 #include <QColor>
 #include <QBrush>
 
-messageList::messageList(const QString &szTitle, QString &szMessage, QList<QStringList> &lstTableRows, QList<int> colSizes,QWidget *parent) :
+messageList::messageList(const QString &szTitle, QString &szMessage, QList<QStringList> &lstTableRows, QList<int> colSizes, int  nButtons, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::messageList)
 {
@@ -21,6 +22,7 @@ messageList::messageList(const QString &szTitle, QString &szMessage, QList<QStri
     QBrush      bCell(cSfondo, Qt::SolidPattern);
 
     ui->setupUi(this);
+    ui->buttonBox->setStandardButtons((QDialogButtonBox::StandardButtons) nButtons);
     // Window Title
     this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint| Qt::CustomizeWindowHint);
     this->setWindowTitle(szTitle);
@@ -49,10 +51,13 @@ messageList::messageList(const QString &szTitle, QString &szMessage, QList<QStri
                         tItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
                     else
                         tItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                    // Rende il valore non Editabile
+                    tItem->setFlags(tItem->flags() ^ Qt::ItemIsEditable);
+                    // Aggiunge Item a Grid
                     ui->tblMessageList->setItem(nRow -1, nCol, tItem);
                 }
                 // Impostazione del colore di sfondo
-                // setRowBackground(bCell, ui->tblMessageList->model(), nRow - 1);
+                setRowBackground(bCell, ui->tblMessageList->model(), nRow - 1);
 
             }
         }
@@ -80,9 +85,17 @@ messageList::messageList(const QString &szTitle, QString &szMessage, QList<QStri
     // Selezione della prima riga se esiste
     if (ui->tblMessageList->rowCount() > 0)
         ui->tblMessageList->selectRow(0);
+
+    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(button_clicked(QAbstractButton *)));
 }
 
 messageList::~messageList()
 {
     delete ui;
+}
+
+void messageList::button_clicked(QAbstractButton* cmdButton)
+{
+    qDebug() << QString::fromAscii("messageList::button_clicked: %1") .arg(cmdButton->text());
+    // Add here filter on Buttons
 }

@@ -66,8 +66,16 @@
 {
 	dialogbuttonbox-buttons-have-icons: 1;
 	icon-size: 32px 32px;
-	dialog-ok-icon: url(:/cteicons/img/Done_32.png);
+	dialog-apply-icon: url(:/cteicons/img/Done_32.png);
 	dialog-cancel-icon: url(:/cteicons/img/Cancel_32.png);
+	dialog-close-icon: url(:/cteicons/img/Close_32.png);
+	dialog-discard-icon: url(:/cteicons/img/Undo.png);
+	dialog-no-icon: url(:/cteicons/img/Cancel_32.png);
+	dialog-ok-icon: url(:/cteicons/img/Done_32.png);
+	dialog-open-icon: url(:/cteicons/img/Open_32.png);
+	dialog-reset-icon: url(:/cteicons/img/Reset_32.png);
+	dialog-save-icon: url(:/cteicons/img/Save.png);
+	dialog-yes-icon: url(:/cteicons/img/Done_32.png);
 }
 </string>
      </property>
@@ -90,8 +98,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>470</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -106,8 +114,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>470</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

@@ -639,10 +639,10 @@ bool    ctedit::selectCTFile(QString szFileCT)
                     lstColSizes.append(- nRowColWidth);
                     lstColSizes.append(lstHeadSizes[colName]);
                     lstColSizes.append(lstHeadSizes[colName]);
-                    lstColSizes.append(lstHeadSizes[colName]);
+                    lstColSizes.append(lstHeadSizes[colName] * 2);
                     // Adding Header Row
                     lstMessages.append(lstRow);
-                    m_szMsg = QString::fromAscii("Found [%1] Differences between current Cross Table and Template Cross Table file\n\n[%2]\n\nAlign Project to Template ?")
+                    m_szMsg = QString::fromAscii("Found [%1] Differences between Project Cross Table and Template Cross Table file\n\n[%2]\n\nAlign Project to Template ?")
                             .arg(nDiff) .arg(m_szTemplateCTFile);
                     for (nErr = 0; nErr < lstDifferences.count(); nErr++)  {
                         int nPos = lstDifferences[nErr];
@@ -663,9 +663,11 @@ bool    ctedit::selectCTFile(QString szFileCT)
                     resList->setModal(true);
                     int nResList = resList->exec();
                     if (nResList == QDialog::Accepted)  {
+                        lstUndo.append(lstCTRecords);
                         nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, lstActions, true);
-                        qDebug() << QString::fromAscii("Applied Differences from Template CT");
+                        qDebug() << QString::fromAscii("Applied Differences to CT from Template");
                         ctable2Grid();
+                        saveCTFile();
                     }
                 }
             }

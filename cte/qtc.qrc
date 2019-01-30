@@ -18,7 +18,7 @@
         <file>img/edit-paste.png</file>
         <file>img/Goto.png</file>
         <file>img/Landscape.png</file>
-        <file>img/Log Out.png</file>
+        <file>img/Log_Out.png</file>
         <file>img/Portrait.png</file>
         <file>img/List-add.png</file>
         <file>img/Edit-trash.png</file>
@@ -42,6 +42,9 @@
         <file>img/MPNE01R.png</file>
         <file>img/Cancel_32.png</file>
         <file>img/Done_32.png</file>
+        <file>img/Open_32.png</file>
+        <file>img/Reset_32.png</file>
+        <file>img/Close_32.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>
