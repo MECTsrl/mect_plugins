@@ -126,8 +126,9 @@ private:
     QTreeWidgetItem *addBlock2Tree(QTreeWidgetItem *tParent, int nBlock, int nBlockSize);   // Aggiunge il blocco nBlock agganciandolo al nodo tParent. Ritorna oggetto
     // Gestione Controlli
     bool    checkCTFile(QString szSourceFile);      // Controllo validità file CT per Import
-    int     checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine = true);     // Controlli formali sulla riga a termine editing
-    bool    checkVarsCompatibility(varTypes nTypeV1, int nDecV1, varTypes nTypeV2, int nDecV2);      // Controllo tra i due operandi di un Allarme
+    int     checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine = true);                     // Controlli formali sulla riga a termine editing
+    bool    checkVarsCompatibility(varTypes nTypeV1, int nDecV1, varTypes nTypeV2, int nDecV2);             // Controllo tra i due operandi di un Allarme
+    int     checkRegister(int nCurRow, QList<int> &lstUsingRegister);  // Controllo delle variabili che utilizzano un Registro
     int     globalChecks();                         // Controlli complessivi su tutta la CT
     bool    isFormEmpty();                          // Controllo Form Editing vuoto
     bool    isValidPort(int nPort, int nProtocol);  // Controllo di validità di un numero porta in funzione di Modello (da TargetConfig) e del Protocollo
@@ -141,7 +142,7 @@ private:
     void    enableProtocolsFromModel();             // Abilita i Protocolli in funzione del Modello corrente (da TargetConfig)
     int     varSizeInBlock(int nVarType);
     int     maxBlockSize(enum FieldbusType nProtocol, int nPort);    // max block size from Protocol && Port
-    bool    isModbus(enum FieldbusType nProtocol);
+    bool    isModbus(int nProtocol);
     bool    isSameBitField(int nRow);
     bool    isBitField(enum varTypes nVarType);
     bool    isTooBigForBlock(int nRow, int nItemsInBlock, int nCurBlockSize);

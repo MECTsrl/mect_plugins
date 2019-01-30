@@ -193,6 +193,7 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNoNode] = trUtf8("Empty or Invalid Node Address");
     lstErrorMessages[errCTNoRegister] = trUtf8("Empty or Invalid Register Value");
     lstErrorMessages[errCTRegisterTooBig] = trUtf8("Register Number too big for TCP Server");
+    lstErrorMessages[errCTRegisterUsedTwice] = trUtf8("Register Number already used in Other Variables");
     lstErrorMessages[errCTInputOnlyModbusClient]  = trUtf8("Input Register allowed only on Modbus Client");
     lstErrorMessages[errCTModBusServerDuplicate] = trUtf8("Server Already present with different Port/Node");
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
@@ -2977,6 +2978,13 @@ int ctedit::globalChecks()
         serverModBus[nRow].nPort = -1;
         serverModBus[nRow].nodeId = -1;
     }
+    // Ricaricamento della liste Device-Nodi per i controlli di unicità registro
+    // Rebuild Server-Device-Nodes structures
+    if (! checkServersDevicesAndNodes())  {
+        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot continue checks !");
+        warnUser(this, szMectTitle, m_szMsg);
+        return 1;
+    }
     // Ciclo Globale su tutti gli Items di CT
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Controlla solo righe utilizzate
@@ -3094,12 +3102,13 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     int         nPos = -1;
     int         nPriority = -1;
     int         nType = -1;
+    int         nDecimals = 0;
     int         nUpdate = -1;
-    int         nVal = 0;
     int         nProtocol = -1;
     int         nPort = -1;
     int         nNodeID = -1;
     int         nRegister = -1;
+    uint32_t    ipNum = 0;
     bool        fOk = false;
     Err_CT      errCt;
     QString     szTemp;
@@ -3180,42 +3189,42 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     }
     else  {
         // Numero Decimali
-        nVal = szTemp.toInt(&fOk);
-        nVal = fOk ? nVal : 0;
+        nDecimals = szTemp.toInt(&fOk);
+        nDecimals = fOk ? nDecimals : 0;
         // Decimali a 0 per tipo Bit
-        if (nType == BIT && nVal > 0)  {
+        if (nType == BIT && nDecimals > 0)  {
             fillErrorMessage(nRow, colDecimal, errCTNoDecimalZero, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }
         else if (nType == BYTE_BIT) {
-            if (nVal < 1 or nVal > 8)  {
+            if (nDecimals < 1 or nDecimals > 8)  {
                 fillErrorMessage(nRow, colDecimal, errCTWrongDecimals, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
         }
         else if (nType == WORD_BIT) {
-            if (nVal < 1 or nVal > 16)  {
+            if (nDecimals < 1 or nDecimals > 16)  {
                 fillErrorMessage(nRow, colDecimal, errCTWrongDecimals, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
         }
         else if (nType == DWORD_BIT) {
-            if (nVal < 1 or nVal > 32)  {
+            if (nDecimals < 1 or nDecimals > 32)  {
                 fillErrorMessage(nRow, colDecimal, errCTWrongDecimals, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
         }
         // Numero Decimali > 4 ===> Variable (per tipi differenti da Bit in tutte le versioni possibili)
-        else if (nVal >= 4 && nType != BYTE_BIT && nType == WORD_BIT && nType == DWORD_BIT)  {
+        else if (nDecimals >= 4 && nType != BYTE_BIT && nType == WORD_BIT && nType == DWORD_BIT)  {
             // Controlla che il numero indicato punti ad una variabile del tipo necessario a contenere il numero di decimali
-            if (nVal > DimCrossTable || ! lstCTRecords[nVal - 1].Enable ||
-                    (lstCTRecords[nVal - 1].VarType != UINT8 &&  lstCTRecords[nVal - 1].VarType != UINT16 && lstCTRecords[nVal - 1].VarType != UINT16BA &&
-                     lstCTRecords[nVal - 1].VarType != UDINT &&  lstCTRecords[nVal - 1].VarType != UDINTDCBA && lstCTRecords[nVal - 1].VarType != UDINTCDAB &&
-                     lstCTRecords[nVal - 1].VarType != UDINTBADC ) )   {
+            if (nDecimals > DimCrossTable || ! lstCTRecords[nDecimals - 1].Enable ||
+                    (lstCTRecords[nDecimals - 1].VarType != UINT8 &&  lstCTRecords[nDecimals - 1].VarType != UINT16 && lstCTRecords[nDecimals - 1].VarType != UINT16BA &&
+                     lstCTRecords[nDecimals - 1].VarType != UDINT &&  lstCTRecords[nDecimals - 1].VarType != UDINTDCBA && lstCTRecords[nDecimals - 1].VarType != UDINTCDAB &&
+                     lstCTRecords[nDecimals - 1].VarType != UDINTBADC ) )   {
                 fillErrorMessage(nRow, colDecimal, errCTNoVarDecimals, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
@@ -3243,6 +3252,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     // Controllo Ip Address
     //---------------------------------------
     szIP = lstValues[colIP].trimmed();
+    ipNum = 0;
     if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
         if (szIP.isEmpty())  {
             fillErrorMessage(nRow, colIP, errCTNoIP, szVarName, szIP, chSeverityError, &errCt);
@@ -3250,7 +3260,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             nErrors++;
         }
         // IP Valido e diverso da 0 se non server
-        uint32_t ipNum = str2ipaddr(szIP.toAscii().data());
+        ipNum = str2ipaddr(szIP.toAscii().data());
         QHostAddress ipAddr;
         if ((ipNum == 0 && (nProtocol != TCP_SRV && nProtocol != TCPRTU_SRV)) || ! ipAddr.setAddress(szIP))  {
             fillErrorMessage(nRow, colIP, errCTBadIP, szVarName, szIP, chSeverityError, &errCt);
@@ -3445,6 +3455,22 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
                 ! ((nProtocol == RTU) ||
                    (nProtocol == TCPRTU)) )  {
                 fillErrorMessage(nRow, colRegister, errCTInputOnlyModbusClient, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
+            }
+        }
+        // Controllo Registro già utilizzato per ModBus
+        // Solo come controllo globale (prima di salvataggio)
+        if (! fSingleLine && isModbus(nProtocol))  {
+            QList<int> lstUsingRegister;
+            int nUsingRegister = checkRegister(nRow, lstUsingRegister);
+            if (nUsingRegister >= 0 && lstUsingRegister.count() > 0)  {
+                szTemp.clear();
+                int nDuplicate = 0;
+                for (nDuplicate = 0; nDuplicate < lstUsingRegister.count(); nDuplicate++)  {
+                    szTemp.append(QString::fromAscii("Row %1 ") .arg(lstUsingRegister[nDuplicate] + 1));
+                }
+                fillErrorMessage(nRow, colRegister, errCTRegisterUsedTwice, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
@@ -4355,7 +4381,7 @@ int ctedit::maxBlockSize(FieldbusType nProtocol, int nPort)
     // return
     return nBlockSize;
 }
-bool ctedit::isModbus(enum FieldbusType nProtocol)
+bool ctedit::isModbus(int nProtocol)
 {
     bool fModbus = false;
 
@@ -6226,13 +6252,13 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (lstMPNC.count() > 0)  {
                         nPosMPNX = lstMPNC.indexOf(nCur);
                         if (nPosMPNX >= 0)  {
-                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1%2") .arg(szMPNC006) .arg(nPosMPNX + 1));
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1 (%2)") .arg(szMPNC006) .arg(nPosMPNX + 1));
                         }
                     }
                     if (lstMPNE.count() > 0)  {
                         nPosMPNX = lstMPNE.indexOf(nCur);
                         if (nPosMPNX >= 0)  {
-                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1%2") .arg(szMPNE10) .arg(nPosMPNX + 1));
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1 (%2)") .arg(szMPNE10) .arg(nPosMPNX + 1));
                         }
                     }
                 }
@@ -7091,4 +7117,28 @@ void ctedit::return2GridRow(int nRow)
     }
     // Jump to CT Tab
     ui->tabWidget->setCurrentIndex(TAB_CT);
+}
+int     ctedit::checkRegister(int nCurRow, QList<int> &lstUsingRegister)
+// Controllo delle variabili che utilizzano un Registro
+{
+    int     nUsed  = 0;
+    int     nRow = 0;
+
+    lstUsingRegister.clear();
+    // Ciclo su tutte le Variabili di CT
+    for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
+        // Controlla le righe usate diverse dalla riga corrente
+        if (nRow != nCurRow && lstCTRecords[nRow].UsedEntry)  {
+            // Controllo se un Registro risulta già utilizzato in un altra variabile
+            if (lstCTRecords[nRow].nDevice == lstCTRecords[nCurRow].nDevice &&
+                lstCTRecords[nRow].nNode == lstCTRecords[nCurRow].nNode &&
+                lstCTRecords[nRow].Offset == lstCTRecords[nCurRow].Offset  &&
+                lstCTRecords[nRow].Decimal == lstCTRecords[nCurRow].Decimal)  {
+                nUsed++;
+                lstUsingRegister.append(nRow);
+            }
+        }
+    }
+    // Return Value
+    return nUsed;
 }
