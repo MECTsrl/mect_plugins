@@ -46,19 +46,22 @@ extern int active_password;
 
 #define ID_PLC_time         5390
 
-#define ID_PLC_buzzerOn     5397
 #define ID_PLC_Version      5394
+
+#define ID_PLC_buzzerOn     5397
+#define ID_PLC_PLC_Version  5398
+#define ID_PLC_HMI_Version  5399
+
+#define ID_PLC_UPTIME_s      5416
+#define ID_PLC_UPTIME_cs     5417
+#define ID_PLC_PRODUCT_ID    5420
+#define ID_PLC_SERIAL_NUMBER 5421
+#define ID_PLC_HMI_PAGE      5422
 
 #define ID_PLC_BEEP_VOLUME  5435
 #define ID_PLC_TOUCH_VOLUME 5436
 #define ID_PLC_ALARM_VOLUME 5437
 #define ID_PLC_BUZZER       5438
-#define ID_PLC_PLC_Version  5398
-#define ID_PLC_HMI_Version  5399
-
-#define ID_PLC_PRODUCT_ID    5420
-#define ID_PLC_SERIAL_NUMBER 5421
-#define ID_PLC_HMI_PAGE      5422
 
 extern int Buzzerfd;
 extern bool BuzzerTouch;

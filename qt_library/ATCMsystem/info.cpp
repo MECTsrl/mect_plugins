@@ -109,9 +109,22 @@ void info::refreshSystemTab()
 {
     FILE *fp = NULL;
     char buff[1024];
+    unsigned uvalue = 0;
 
     ui->sys_text->setPlainText("");
 
+    readFromDbQuick(ID_PLC_PRODUCT_ID, (int *)&uvalue);
+    ui->sys_text->appendPlainText(QString("PLC_PRODUCT_ID: 0x%1").arg(uvalue, 8, 16));
+    readFromDbQuick(ID_PLC_SERIAL_NUMBER, (int *)&uvalue);
+    ui->sys_text->appendPlainText(QString("PLC_SERIAL_NUMBER: %1").arg(uvalue));
+
+    ui->sys_text->appendPlainText(QString(""));
+    readFromDbQuick(ID_PLC_UPTIME_s, (int *)&uvalue);
+    ui->sys_text->appendPlainText(QString("PLC_PLC_UPTIME_s:  %1").arg(uvalue));
+    readFromDbQuick(ID_PLC_UPTIME_cs, (int *)&uvalue);
+    ui->sys_text->appendPlainText(QString("PLC_PLC_UPTIME_cs: %1").arg(uvalue));
+
+    ui->sys_text->appendPlainText(QString(""));
     fp = fopen(APP_CONFIG_SERIAL_FILE, "r");
     if (fp) {
     /*
@@ -127,6 +140,7 @@ void info::refreshSystemTab()
         ui->sys_text->appendPlainText("missing serial number");
     }
 
+    ui->sys_text->appendPlainText(QString(""));
     fp = fopen("/rootfs_version", "r");
     if (fp) {
     /*
