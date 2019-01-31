@@ -63,15 +63,23 @@ while ($line = <INFILE>)
 		{
 			# nothing to check
 		}
-                elsif ($model eq "TPAC1007_03" || $model eq "TPAC1007_04_AA" || $model eq "TPAC1007_04_AB" || $model eq "TPAC1007_04_AC" || $model eq "TPAC1007_LV")
-		{
-			if ($section eq "SERIAL_PORT_3" && $key eq "baudrate" && $value ne "225000")
-			{
-				print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '225000' instead of '" . $value . "'\n";
-				$retval = 1;
-			}
-		}
-		elsif ($model eq "TPAC1008_02_AA" || $model eq "TPAC1008_02_AB" || $model eq "TPAC1008_02_AC" || $model eq "TPAC1008_02_AD" || $model eq "TPAC1008_02_AE" || $model eq "TPAC1008_02_AF")
+                elsif ($model eq "TPAC1007_03" || $model eq "TPAC1007_04_AA" || $model eq "TPAC1007_04_AB" || $model eq "TPAC1007_04_AC")
+                {
+                        if ($section eq "SERIAL_PORT_3" && $key eq "baudrate" && $value ne "225000")
+                        {
+                                print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '225000' instead of '" . $value . "'\n";
+                                $retval = 1;
+                        }
+                }
+                elsif ($model eq "TPAC1007_LV")
+                {
+                        if ($section eq "SERIAL_PORT_3" && $key eq "baudrate" && $value ne "38400")
+                        {
+                                print "Error: for product '" . $model . "' in the section '" . $section . "' the parameter '" . $key . "' must be '38400' instead of '" . $value . "'\n";
+                                $retval = 1;
+                        }
+                }
+                elsif ($model eq "TPAC1008_02_AA" || $model eq "TPAC1008_02_AB" || $model eq "TPAC1008_02_AC" || $model eq "TPAC1008_02_AD" || $model eq "TPAC1008_02_AE" || $model eq "TPAC1008_02_AF")
 		{
 			if ($section eq "CANOPEN_0" && $key eq "baudrate" && $value ne "125000")
 			{
