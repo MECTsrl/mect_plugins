@@ -6,6 +6,7 @@
 #include <QProcess>
 #include <QFile>
 #include <QSettings>
+#include <QDebug>
 
 #include <errno.h>
 #include <pthread.h>
@@ -95,6 +96,62 @@ void page::refreshPage()
     emit varRefresh();
 }
 
+const char *pageNames[] =
+{
+    "page0", // unused
+    "alarms", "alarms_history", "recipe", "recipe_select", "store", "store_filter",
+    "data_manager", "display_settings", "display_test", "info", "item_selector", "menu", "net_conf", "options",
+    "system_ini", "time_set", "trend", "trend_option", "trend_range"
+
+    // dialogs:
+    //         "alphanumpad", "numpad", "qrcode",
+    // widgets:
+    //         "trend_other",
+};
+
+char *getPageName(int pagenum, char *buf)
+{
+    if (pagenum == 0 || buf == NULL)
+    {
+        return NULL; // no "page0"
+    }
+    else if (pagenum > 0)
+    {
+        sprintf(buf, "page%x", pagenum);
+        return buf;
+    }
+    else if ((-pagenum) < sizeof(pageNames)/sizeof(char *))
+    {
+        strcpy(buf, pageNames[(-pagenum)]);
+        return buf;
+    }
+    else
+        return NULL;
+}
+
+int getPageNumber(const char * pagename)
+{
+    int retval = 0;
+    unsigned n = 0;
+
+    if (sscanf(pagename, "page%x", &n) == 1)
+    {
+        retval = n;
+    }
+    else
+    {
+        for (unsigned i = 1; i < sizeof(pageNames)/sizeof(char *); ++i)
+        {
+            if (strcmp(pagename, pageNames[i]) == 0)
+            {
+                retval = 0 - i;
+                break;
+            }
+        }
+    }
+    return retval;
+}
+
 /**
  * @brief This is the updateData member. The operation written here, are executed every REFRESH_MS milliseconds.
  */
@@ -104,6 +161,25 @@ void page::updateData()
     {
         LOG_PRINT(warning_e, "page '%s' not visible but running.\n", this->windowTitle().toAscii().data());
         return;
+    }
+
+    int plc_hmi_page = 0;
+    readFromDbQuick(ID_PLC_HMI_PAGE, &plc_hmi_page);
+
+    if (plc_hmi_page != 0)
+    {
+        int current_page = getPageNb();
+
+        if (current_page != plc_hmi_page)
+        {
+            char buf[42];
+            char * s = getPageName(plc_hmi_page, buf);
+            if (s) {
+                goto_page(s);
+            } else {
+                doWrite(ID_PLC_HMI_PAGE, &current_page);
+            }
+        }
     }
 
 #ifdef ENABLE_ALARMS
@@ -241,7 +317,14 @@ bool page::hideAll(void)
 bool page::goto_page(const char * page_name, bool remember)
 {
     page * p = NULL;
-    
+    // QComboBox workaround
+    QList <QComboBox *>list;
+    QComboBox *qcb;
+    static QString qstr(" ");
+    int page_number;
+
+    // qDebug() << QString("goto_page(%1) ... ").arg(page_name);
+
     if (strcmp(page_name, "BACK") == 0)
     {
         return go_back();
@@ -252,20 +335,13 @@ bool page::goto_page(const char * page_name, bool remember)
     }
     if (strcmp(page_name, "page0") == 0)
     {
-        goto_page(StartPage, false);
+        return goto_page(StartPage, false);
     }
     
     LOG_PRINT(verbose_e, "page_name %s\n", page_name);
     
     refresh_timer->stop();
     LOG_PRINT(verbose_e, " %s TIMER STOP\n", this->windowTitle().toAscii().data());
-    
-    if (remember)
-    {
-        /* update history */
-        History.push(this->windowTitle());
-    }
-    
     
 #ifdef ENABLE_TREND
     /* destroy trend page */
@@ -293,7 +369,7 @@ bool page::goto_page(const char * page_name, bool remember)
             QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("The requested page '%1' doesn't exist.").arg(page_name));
             refresh_timer->start(REFRESH_MS);
             LOG_PRINT(verbose_e, " %s TIMER START\n", this->windowTitle().toAscii().data());
-            return false;
+            goto exit_failure;
         }
         ScreenHash.insert(page_name, p);
         LOG_PRINT(verbose_e,"CREATA NUOVA PAGINA %s\n", page_name);
@@ -310,14 +386,20 @@ bool page::goto_page(const char * page_name, bool remember)
     {
         QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible access to '%1': inappropriate privilegies.").arg(p->windowTitle()));
         LOG_PRINT(verbose_e,"active %d, protection %d\n", active_password, p->protection_level);
-        go_home();
-        return false;
+        goto exit_failure;
+    }
+
+    page_number = getPageNumber(page_name);
+    doWrite(ID_PLC_HMI_PAGE, &page_number);
+
+    if (remember)
+    {
+        /* update history */
+        History.push(this->windowTitle());
     }
     p->reload();
+
     // QComboBox workaround
-    QList <QComboBox *>list;
-    QComboBox *qcb;
-    static QString qstr(" ");
     list = p->findChildren<QComboBox *>();
     foreach (qcb, list)
     {
@@ -351,11 +433,19 @@ bool page::goto_page(const char * page_name, bool remember)
     hideAll();
     //hideOthers(p);
 
+
     p->refresh_timer->start(REFRESH_MS);
     LOG_PRINT(verbose_e, " %s TIMER START\n", p->windowTitle().toAscii().data());
     p->SHOW();
     LOG_PRINT(verbose_e, "New page '%s' (%s) is shown.\n", p->windowTitle().toAscii().data(), page_name );
+    // qDebug() << QString("... goto_page(%1) success PLC_HMI_PAGE=%2").arg(page_name).arg(page_number);
     return true;
+
+exit_failure:
+    int this_page = getPageNumber(this->windowTitle().toAscii().data());
+    doWrite(ID_PLC_HMI_PAGE, &this_page);
+    // qDebug() << QString("... goto_page(%1) failure PLC_HMI_PAGE=%2").arg(page_name).arg(this_page);
+    return false;
 }
 
 /**
@@ -878,7 +968,7 @@ void page::translateFontSize( QWidget *ui )
 
 int page::getPageNb()
 {
-    return atoh(this->windowTitle().right(strlen(PAGE_PREFIX)).toAscii().data());
+    return getPageNumber(this->windowTitle().toAscii().data());
 }
 
 bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir, QString basedir)

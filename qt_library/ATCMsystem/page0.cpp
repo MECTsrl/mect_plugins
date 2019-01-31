@@ -132,9 +132,10 @@ void page0::changePage()
     }
 
     /* go to the home page */
-    else if (goto_page(StartPage, false) == false && goto_page(STARTPAGE_DEF, false) == false && goto_page(HomePage, false) == false && goto_page(HOMEPAGE_DEF, false) == false )
+    else if (goto_page(StartPage, false) || goto_page(STARTPAGE_DEF, false) || goto_page(HomePage, false) || goto_page(HOMEPAGE_DEF, false))
     {
-        QMessageBox::critical(0,QApplication::trUtf8("Invalid Page"), QApplication::trUtf8("Cannot show any of Default pages '%1', '%2' and home pages '%3'. '%4'").arg(StartPage).arg(STARTPAGE_DEF).arg(HomePage).arg(HOMEPAGE_DEF));
+        this->hide();
     }
-    this->hide();
+    else
+        QMessageBox::critical(0,QApplication::trUtf8("Invalid Page"), QApplication::trUtf8("Cannot show any of Default pages '%1', '%2' and home pages '%3'. '%4'").arg(StartPage).arg(STARTPAGE_DEF).arg(HomePage).arg(HOMEPAGE_DEF));
 }

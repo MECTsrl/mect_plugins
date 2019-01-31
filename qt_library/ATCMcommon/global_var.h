@@ -56,6 +56,10 @@ extern int active_password;
 #define ID_PLC_PLC_Version  5398
 #define ID_PLC_HMI_Version  5399
 
+#define ID_PLC_PRODUCT_ID    5420
+#define ID_PLC_SERIAL_NUMBER 5421
+#define ID_PLC_HMI_PAGE      5422
+
 extern int Buzzerfd;
 extern bool BuzzerTouch;
 extern bool BuzzerAlarm;
