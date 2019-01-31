@@ -63,7 +63,7 @@ while ($line = <INFILE>)
 		{
 			# nothing to check
 		}
-		elsif ($model eq "TPAC1007_03" || $model eq "TPAC1007_04_AA" || $model eq "TPAC1007_04_AB" || $model eq "TPAC1007_04_AC")
+                elsif ($model eq "TPAC1007_03" || $model eq "TPAC1007_04_AA" || $model eq "TPAC1007_04_AB" || $model eq "TPAC1007_04_AC" || $model eq "TPAC1007_LV")
 		{
 			if ($section eq "SERIAL_PORT_3" && $key eq "baudrate" && $value ne "225000")
 			{
