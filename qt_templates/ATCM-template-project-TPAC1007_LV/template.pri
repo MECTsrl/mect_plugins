@@ -5,7 +5,7 @@
 # @section LICENSE
 # Copyright Mect s.r.l. 2013
 #
-# @brief Qmake project file for TP1007_04_AC
+# @brief Qmake project file for TP1007_04_LV
 #
 
 INSTALLS += target
