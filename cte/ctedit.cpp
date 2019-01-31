@@ -643,7 +643,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
                     lstColSizes.append(lstHeadSizes[colName] * 2);
                     // Adding Header Row
                     lstMessages.append(lstRow);
-                    m_szMsg = QString::fromAscii("Found [%1] Differences between Project Cross Table and Template Cross Table file\n\n[%2]\n\nAlign Project to Template ?")
+                    m_szMsg = QString::fromAscii("Found [%1] Differences between Project and Template Cross Table files\n\n[%2]\n\nAlign Project to Template ?")
                             .arg(nDiff) .arg(m_szTemplateCTFile);
                     for (nErr = 0; nErr < lstDifferences.count(); nErr++)  {
                         int nPos = lstDifferences[nErr];
