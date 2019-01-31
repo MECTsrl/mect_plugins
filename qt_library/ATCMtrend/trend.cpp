@@ -272,14 +272,15 @@ void trend::updateData()
         reloading = false;
         showStatus(trUtf8("Loading..."), false);
 
-        d_qwtplot->hide(); // setVisible(false);
-
         /* disable all buttons during loading */
         ui->pushButtonPan->setEnabled(false);
         popup->enableButtonUp(false);
         popup->enableButtonDown(false);
         popup->enableButtonLeft(false);
         popup->enableButtonRight(false);
+
+        d_qwtplot->hide(); // setVisible(false);
+        QCoreApplication::processEvents();
 
         if (_trend_data_reload_)
         {
@@ -291,7 +292,6 @@ void trend::updateData()
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotCurve);
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotScale);
             d_qwtplot->detachItems(QwtPlotItem::Rtti_PlotUserItem);
-
             if (strlen(_actual_trend_) == 0)
             {
                 force_back = true;
@@ -311,7 +311,6 @@ void trend::updateData()
         }
 
         // reset all        
-        d_qwtplot->show(); // setVisible(true);
         if (actualVisibleWindowSec == 0)
         {
             Tzero = QDateTime::currentDateTime().addSecs(-LogPeriodSecF);
@@ -389,6 +388,9 @@ void trend::updateData()
         }
         theDateTimeScaleDraw = new DateTimeScaleDraw(TzeroLoaded); // QDateTime::currentDateTime());
         d_qwtplot->setAxisScaleDraw(timeAxisId, theDateTimeScaleDraw);
+
+        QCoreApplication::processEvents();
+        d_qwtplot->show(); // setVisible(true);
 
         first_time = true;
     }
