@@ -146,6 +146,7 @@
 					<section title="Add libraries to the project" ref="Aggiungere_librerie_eng.html"/>
 					<section title="Project path" ref="Path_progetto_eng.html"/>
 					</section>
+				<section title="Synoptic (Local I/O)" ref="Sinottico_eng.html"/>
 				<section title="Device variables (Local I/O)" ref="Variabili_prodotto_eng.html">	
 				<section title="TPAC1006 / TPAC1008_02 models" ref="Modelli_tpac1006_100801_100802_eng.html"/>
 				<section title="TPAC1007 models" ref="Modelli_tpac1007_eng.html"/>
@@ -169,6 +170,39 @@
             <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
         </keywords>
         <files>
+			<file>Config_In_Analogici_5_12_tplc100_eng.html</file>
+			<file>Config_In_Analogici_1_4_tplc100_eng.html</file>
+			<file>Config_Encoder_tplc050_eng.html</file>
+			<file>Schema_TPLC050.png</file>
+			<file>Schema_TPLC050_eng.html</file>
+			<file>Schema_TPLC100.png</file>
+			<file>Schema_TPLC100_eng.html</file>
+			<file>Config_PTO_tpac100803AD_eng.html</file>
+			<file>Schema_TPAC100803AD_eng.html</file>
+			<file>Schema_TPAC100803AD.png</file>
+			<file>Config_Encoder_tpac100803AD_eng.html</file>
+			<file>Schema_TPAC100802AB_eng.html</file>
+			<file>Schema_TPAC100802AB.png</file>
+			<file>Schema_TPAC100802AD_eng.html</file>
+			<file>Schema_TPAC100802AD.png</file>
+			<file>Schema_TPAC100802AE_eng.html</file>
+			<file>Schema_TPAC100802AE.png</file>
+			<file>Schema_TPAC100802AF_eng.html</file>
+			<file>Schema_TPAC100802AF.png</file>
+			<file>Schema_TPAC100704AC_eng.html</file>
+			<file>Schema_TPAC100704AC.png</file>
+			<file>Schema_TPAC100704AB_eng.html</file>
+			<file>Schema_TPAC100704AB.png</file>
+			<file>Config_Encoder_tpac100802_eng.html</file>
+			<file>Schema_TPAC100802AA_eng.html</file>
+			<file>Schema_TPAC100802AA.png</file>
+			<file>Config_Encoder_tpac100704_eng.html</file>
+			<file>Config_Out_Analogici_generico_tpac100704_eng.html</file>
+			<file>Config_In_Analogici_generico_tpac100704_eng.html</file>
+			<file>Config_dir_In_Out_digitali_tpac100704_eng.html</file>
+			<file>Schema_TPAC100704AA_eng.html</file>
+			<file>Schema_TPAC100704AA.png</file>
+			<file>Sinottico_eng.html</file>
 			<file>Config_ingressi_uscite_tpac100803_eng.html</file>
 			<file>Modelli_tpac100803_eng.html</file>
 			<file>Reset_allarmi_1.png</file>
