@@ -65,7 +65,7 @@ int     enableSerialPortCombo(QComboBox *cboBox);
 void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> &lstHeadSizes, QAbstractItemView::SelectionMode nMode); // Imposta i parametri generali di visualizzazione Grid
 
 bool    isValidVarName(QString szName);                                                                                         // Controllo del Nome Variabile
-bool    searchIOModules(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CT_IOModule, QList<int> &lstRootRows);     // Ricerca di un Modulo I/O in CT
+bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CT_IOModule, QList<int> &lstRootRows);     // Ricerca di un Modulo I/O in CT
 QString priority2String(int nPriority);     // Formattazione stringa per nome priorità
 QString getSerialPortSpeed(int nPort);      // Restituisce in forma leggibile i parametri della porta seriale selezionata
 #endif // CTEUTILS_H

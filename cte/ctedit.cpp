@@ -1165,10 +1165,9 @@ bool ctedit::iface2values(QStringList &lstRecValues)
 
 void ctedit::on_cmdBlocchi_clicked()
 {
-    if (riassegnaBlocchi())  {
-        m_isCtModified = true;
-        m_rebuildDeviceTree = true;
-        m_rebuildTimingTree = true;
+    if (! riassegnaBlocchi())  {
+        m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
+        warnUser(this, szMectTitle, m_szMsg);
     }
     // Refresh abilitazioni interfaccia
     enableInterface();
@@ -1193,13 +1192,6 @@ void ctedit::saveCTFile()
         m_szMsg = QString::fromAscii("There are errors in Data. Save anyway?");
         if (! queryUser(this, szMectTitle, m_szMsg, false))
             return;
-    }
-    else  {
-        // Non ci sono errori, eseguo d'ufficio la rinumerazione blocchi
-        if (! riassegnaBlocchi())  {
-            m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
-            warnUser(this, szMectTitle, m_szMsg);
-        }
     }
     // Back-Up Copy of CT File
     fileBackUp(m_szCurrentCTFile);
@@ -1324,6 +1316,7 @@ bool    ctedit::riassegnaBlocchi()
     }
     // Return value as reload CT
     fRes = ctable2Grid();
+    m_isCtModified = true;
     m_rebuildDeviceTree = true;
     m_rebuildTimingTree = true;
     // qDebug() << "Reload finished";
@@ -2743,15 +2736,12 @@ void ctedit::tabSelected(int nTab)
     // Gestione del Tab di Provenienza
     //---------------------------------
     if (nPrevTab == TAB_SYSTEM)  {
-        // Se la Configurazione è cambiata forza la propagazione della modifica
-        if (mectSet->isModified())  {
-            // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
-            mectSet->getTargetConfig(panelConfig);
-            // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
-            enableProtocolsFromModel();
-            m_rebuildDeviceTree = true;
-            m_rebuildTimingTree = true;
-        }
+        // Rilegge all'indetro le info di configurazione eventualmente aggiornate da system.ini
+        mectSet->getTargetConfig(panelConfig);
+        // Aggiorna le abilitazioni dei protocolli in funzione delle porte abilitate
+        enableProtocolsFromModel();
+        m_rebuildDeviceTree = true;
+        m_rebuildTimingTree = true;
     }
     // Ritorno a CT da Tab MPNC / MPNE
     else if (nPrevTab == TAB_MPNC) {
@@ -2761,8 +2751,11 @@ void ctedit::tabSelected(int nTab)
             ui->tblCT->selectionModel()->clearSelection();
             lstUndo.append(lstCTRecords);
             lstCTRecords = configMPNC->localCTRecords;
-            // Refresh Grid
-            ctable2Grid();
+            // Rinumera Blocchi con i cambiamenti selezionati (e ricarica griglia)
+            if (! riassegnaBlocchi())  {
+                m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
+                warnUser(this, szMectTitle, m_szMsg);
+            }
             m_isCtModified = true;
             m_rebuildDeviceTree = true;
             m_rebuildTimingTree = true;
@@ -2779,8 +2772,11 @@ void ctedit::tabSelected(int nTab)
             ui->tblCT->selectionModel()->clearSelection();
             lstUndo.append(lstCTRecords);
             lstCTRecords = configMPNE->localCTRecords;
-            // Refresh Grid
-            ctable2Grid();
+            // Rinumera Blocchi con i cambiamenti selezionati (e ricarica griglia)
+            if (! riassegnaBlocchi())  {
+                m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
+                warnUser(this, szMectTitle, m_szMsg);
+            }
             m_isCtModified = true;
             m_rebuildDeviceTree = true;
             m_rebuildTimingTree = true;
@@ -2854,8 +2850,8 @@ void ctedit::enableInterface()
     // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
     m_nMPNC = -1;
     if (isSerialPortEnabled)  {
-        bool enableMPNC = searchIOModules(lstCTRecords, lstMPNC006_Vars, lstMPNC);
-        bool enableMPNE = searchIOModules(lstCTRecords, lstMPNE_Vars, lstMPNE);
+        bool enableMPNC = searchIOModules(szMPNC006, lstCTRecords, lstMPNC006_Vars, lstMPNC);
+        bool enableMPNE = searchIOModules(szMPNE10, lstCTRecords, lstMPNE_Vars, lstMPNE);
         m_nMPNC = 0;
         m_nMPNE = 0;
         ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
@@ -2972,23 +2968,27 @@ int ctedit::globalChecks()
     // Ripulitura lista errori
     lstCTErrors.clear();
     lstUniqueVarNames.clear();
+    // Ricaricamento della liste Device-Nodi per i controlli di unicità registro
+    // Rebuild Server-Device-Nodes structures
+    qDebug() << QString::fromAscii("globalChecks(): Starting");
+    if (! checkServersDevicesAndNodes())  {
+        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot continue checks !");
+        warnUser(this, szMectTitle, m_szMsg);
+        return 1;
+    }
+    qDebug() << QString::fromAscii("globalChecks(): checkServersDevicesAndNodes Done");
     // Ripulitura Array Server ModBus (1 per ogni Seriale + Protocolli TCP_SRV e TCPRTU_SRV
     for (nRow = 0; nRow < srvTotals; nRow++)  {
         serverModBus[nRow].nProtocol = -1;
         serverModBus[nRow].nPort = -1;
         serverModBus[nRow].nodeId = -1;
     }
-    // Ricaricamento della liste Device-Nodi per i controlli di unicità registro
-    // Rebuild Server-Device-Nodes structures
-    if (! checkServersDevicesAndNodes())  {
-        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot continue checks !");
-        warnUser(this, szMectTitle, m_szMsg);
-        return 1;
-    }
+    qDebug() << QString::fromAscii("globalChecks(): Clean Servers List Done");
     // Ciclo Globale su tutti gli Items di CT
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Controlla solo righe utilizzate
         if (lstCTRecords[nRow].Enable)  {
+            // qDebug() << QString::fromAscii("globalChecks(): Checking Row: %1") .arg(nRow);
             // Controllo univocità di nome
             szTemp = QString::fromAscii(lstCTRecords[nRow].Tag).trimmed();
             if (lstUniqueVarNames.contains(szTemp, Qt::CaseInsensitive))  {
@@ -3020,6 +3020,7 @@ int ctedit::globalChecks()
         }
         delete errWindow;
     }
+    qDebug() << QString::fromAscii("globalChecks(): Ended");
     return nErrors;
 }
 int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal)
@@ -5201,7 +5202,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].sdCards = 0;
     lstTargets[TPAC1008_03_AC].digitalIN = 24;
     lstTargets[TPAC1008_03_AC].digitalOUT = 16;
-    lstTargets[TPAC1008_03_AC].nEncoders = 1;
+    lstTargets[TPAC1008_03_AC].nEncoders = 5;
     lstTargets[TPAC1008_03_AC].analogIN = 4;
     lstTargets[TPAC1008_03_AC].analogINrowCT = 5325;
     lstTargets[TPAC1008_03_AC].analogOUT = 2;
@@ -5212,7 +5213,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].ser1_Enabled = false;
     lstTargets[TPAC1008_03_AC].ser2_Enabled = false;
     lstTargets[TPAC1008_03_AC].ser3_Enabled = true;
-    lstTargets[TPAC1008_03_AC].can1_Enabled = true;
+    lstTargets[TPAC1008_03_AC].can1_Enabled = false;
     // 28 TPAC1008_03_AD
     lstTargets[TPAC1008_03_AD].modelName =  QString::fromAscii(product_name[TPAC1008_03_AD]);
     lstTargets[TPAC1008_03_AD].displayWidth =  800;
@@ -5231,7 +5232,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AD].ser1_Enabled = false;
     lstTargets[TPAC1008_03_AD].ser2_Enabled = false;
     lstTargets[TPAC1008_03_AD].ser3_Enabled = true;
-    lstTargets[TPAC1008_03_AD].can1_Enabled = true;
+    lstTargets[TPAC1008_03_AD].can1_Enabled = false;
     // 29 TP1070_02_E
     lstTargets[TP1070_02_E].modelName =  QString::fromAscii(product_name[TP1070_02_E]);
     lstTargets[TP1070_02_E].displayWidth =  800;
@@ -5827,6 +5828,12 @@ bool ctedit::checkServersDevicesAndNodes()
     int         nDiag = 0;
     QString     szDiagName;
 
+
+    // Rinumerazione d'ufficio dei blocchi, poi utilizzato per il ricalcolo dei Server-Nodi...
+    if (! riassegnaBlocchi())  {
+        m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
+        warnUser(this, szMectTitle, m_szMsg);
+    }
     // Pulizia Strutture Dati
     theServersNumber = 0;
     theDevicesNumber = 0;

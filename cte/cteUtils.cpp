@@ -910,7 +910,7 @@ bool    isValidVarName(QString szName)
     // Return value
     return fRes;
 }
-bool    searchIOModules(QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CT_IOModule, QList<int> &lstRootRows)
+bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CT_IOModule, QList<int> &lstRootRows)
 // Ricerca di un Modulo I/O in CT
 {
     int     nRow = 0;
@@ -952,7 +952,7 @@ bool    searchIOModules(QList<CrossTableRecord> &CTRecords, QList<CrossTableReco
                     lstRootRows.append(nBaseRow);
                     // Riporta all'inizio il confronto
                     nModelRow = 0;
-                    qDebug() << QString::fromAscii("searchModels() - Model Found @ Row: %1") .arg(nBaseRow);
+                    qDebug() << QString::fromAscii("searchIOModules() - Model Found %1 @ Row: %2") .arg(szModule) .arg(nBaseRow);
                 }
             }
             else  {

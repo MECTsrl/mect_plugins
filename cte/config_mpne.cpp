@@ -564,18 +564,24 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
     // Aggiornamento dello Sfondo Bottone
     if (lblModule != 0)  {
         if (nOldFunc != nFunction)  {
-            // Marca come non utilizzata la precedente funzione nelle variabili specifiche
+            // Marca come non utilizzata la precedente funzione nelle variabili specifiche del modulo
             setGroupVars(nPosition, nOldFunc, nPriorityNone);
+            // Se le variabili della base erano utilizzate, spegne la funzione precedente anche nella base
+            if (nOldFunc > nUsageNone)  {
+                setGroupVars(nModuleBase, nOldFunc, nPriorityNone);
+            }
             // Marca come utilizzata la nuova funzione nelle variabili specifiche
             setGroupVars(nPosition, nFunction, m_nRootPriority);
             // Aggiorna nuova funzione
             lstModuleUsage[nPosition] = nFunction;
         }
-        if (nFunction == 0)  {
+        if (nFunction == nUsageNone)  {
+            // La nuova funzionalità è DISABLED, spegne immagine del Modulo
             lblModule->setEnabled(false);
             lblModule->lower();
         }
         else {
+            // Accende funzionalità del modulo
             QString szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(lstSfondi[nFunction]);
             szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
             szNewStyle.append(szBackGround);
@@ -583,6 +589,13 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
             lblModule->setStyleSheet(szNewStyle);
             lblModule->setEnabled(true);
             lblModule->raise();
+        }
+    }
+    // Accende le variabili della base per ogni funzione accessoria utilizzata a SX o DX
+    for (int nCurrentUsage = nUsageDigIn; nCurrentUsage < nUsageMax; nCurrentUsage++)  {
+        // Almeno uno dei moduli utilizza una funzionalità, abilita le variabili DELLA BASE per la funzionalità stessa
+        if (lstModuleUsage[nModuleLeft]  == nCurrentUsage || lstModuleUsage[nModuleRight] == nCurrentUsage)  {
+            setGroupVars(nModuleBase, nCurrentUsage, m_nRootPriority);
         }
     }
     // In ogni caso applica il filtro ricevuto
@@ -1030,8 +1043,8 @@ void    Config_MPNE::setGroupVars(int nPosition, int nFunction, int16_t nPriorit
     int nUpdated = 0;
 
     for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-        // Confronto tra Variabile corrente e variabile paradigma in Modello (per nGroup == 0 vedi tutti)
-        if (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module)  {
+        // Confronto tra Variabile corrente e variabile paradigma in Modello
+        if (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module) {
             localCTRecords[nRow + m_nBaseRow].Enable = nPriority;
             nUpdated++;
             m_fUpdated = true;
