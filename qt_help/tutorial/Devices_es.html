@@ -1,0 +1,62 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Devices</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Devices</h3>
+		<p class="western" style="margin-bottom: 0cm">La ventana &ldquo;Devices&rdquo; proporciona una vista topológica de las variables utilizadas en la Crosstable del proyecto.</p>
+		<p class="western"><img src="Devices_1.png" align="bottom" width="850" height="440" border="0"/></p>
+	<br/>
+
+	<p class="western" style="margin-bottom: 0cm">La interfaz es la siguiente:</p>
+	<p class="western"><img src="Devices_2.png" align="bottom" width="1565" height="960" border="0"/></p>
+		<p class="western">En la ventana hay 3 columnas: </p>
+		<ul>
+			<li/>
+			<p class="western"><strong>Name:</strong> Vista de estructura con la siguiente organización:</p>
+				<ul>
+				<li>
+				<p class="western">Panel &#8594; Device (interfaz de comunicación) &#8594; Node &#8594; Priority &#8594; Block &#8594; Variables.</p>
+				</ul>
+			<li/>	
+			<p class="western"><strong>Info:</strong> Información sobre el elemento del árbol:</p>
+			<ul>
+				<li>
+				<p class="western">Para el <strong>Panel</strong> resume el número de variables utilizadas en el proyecto, las interfaces utilizadas, los parámetros Retries y Blacklist (de &ldquo;<font color="#0000ff"><u><a class="western" href="System_Editor_es.html">System</a></u></font>&rdquo;).</p>
+				<li>
+				<p class="western">Para los <strong>Devices</strong> (interfaz) resume el número de variables relacionadas con el dispositivo, los parámetros Max Block Size, Timeout y Silence (de &ldquo;<font color="#0000ff"><u><a class="western" href="System_Editor_es.html">System</a></u></font>&rdquo;). 
+				Para las interfaces RTU se calcula el tiempo de silencio mínimo requerido por la velocidad de transmisión ajustada (en &ldquo;<font color="#0000ff"><u><a class="western" href="System_Editor_es.html">System</a></u></font>&rdquo;) 
+				y si este tiempo es suficiente (OK o too short).</p>
+				<li>
+				<p class="western">Para los <strong>Nodos</strong> el número de variables gestionadas por el nodo.</p>
+				<li>
+				<p class="western">Para los <strong>Bloques</strong> el número de variables en el bloque.</p>
+				<li>
+				<p class="western">Para cada <strong>Variable</strong> del bloque la Línea de la Crosstable, el Tipo y el Comportamiento (R/O, RW, etc).</p>
+				</ul>
+			<li/>
+			<p class="western"><strong>Timings:</strong> Información sobre los tiempos de lectura necesarios para la posición seleccionada (solo para elementos de tipo RTU):</p>
+				<ul>
+				<li>
+				<p class="western">Para los <strong>Devices</strong> el tiempo total necesario para leer todas las variables agrupadas también por prioridad.</p>
+				<li>
+				<p class="western">Para los <strong>Nodos</strong> el tiempo necesario para leer las variables del nodo agrupadas también por prioridad.</p>
+				<li>
+				<p class="western">Para cada nivel de <strong>Prioridad</strong>, el tiempo necesario para leer los bloques en ese nivel de prioridad.</p>
+				<li>
+				<p class="western">Para los <strong>Bloques</strong> el tiempo necesario para leer el bloque.</p>
+				</ul>
+		</ul> 
+		<br/>
+	</body>
+</html>

@@ -1,0 +1,36 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Utilisation du PWM</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Utilisation du PWM</h3>
+		<p class="western">Dans différents appareils, il est possible d'utiliser les sorties analogiques en PWM à une fréquence fixe de 250 Hz. La configuration peut
+		se faire directement depuis le PLC(API) ou par interface graphique.</p>
+	<p class="western">Pour configurer la sortie analogique (en utilisant le langage ST du PLC ), par exemple dans le TPAC1007_04_AC, procéder comme suit:</p>
+	<ol>
+		<li/>
+<p class="western">Configurer la sortie analogique en tension:  <strong>PLC_AnOutConf_1 :=  2;</strong></p>
+		<li/>
+<p class="western">Régler l'amplitude, par exemple 6V:  <strong>PLC_AnOut_1 :=  600;</strong></p>
+		<li/>
+<p class="western">Configurer la sortie analogique en PWM :  <strong>PLC_AnOutConf_1 :=  3;</strong></p>
+		<li/>
+<p class="western">Régler le rapport cyclique, par exemple 40% : <strong>PLC_AnOut_1 :=  40;</strong></p>
+	</ol>
+	<p class="western"><strong>Les points 3 et 4 doivent être effectués dans un deuxième temps de cycle de l'automate plc.</strong> Pour modifier la valeur 
+	du rapport cyclique, répéter l'étape 4.</p>
+	<p class="western"><strong>ATTENTION:</strong> si ce mécanisme est réalisé par HMI, des valeurs différentes doivent être entrées en raison de 
+	la représentation des 2 décimales de la sortie. A l'étape 2, vous mettrez 6 alors qu'à l'étape 4, vous mettrez la valeur 0,4. </p>
+	<br/>
+	</body>
+</html>

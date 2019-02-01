@@ -10,7 +10,7 @@
         <filterAttribute>myapp</filterAttribute>
         <filterAttribute>1.0</filterAttribute>
         <toc>
-            <section title="MectSuite Tutorial" ref="Home_Tutorial.html">
+            <section title="MectSuite Tutorial IT" ref="Home_Tutorial.html">
 				<section title="Introduzione" ref="Introduzione.html"/>
 				<section title="Aggiornamenti" ref="Aggiornamenti.html"/>
 				<section title="Convertire un progetto 2.0.13 in 3.x" ref="Convertire_progetto_2x.html"/>

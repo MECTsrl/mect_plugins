@@ -1,0 +1,74 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Crear un bloque de función</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Crear un bloque de función</h3>
+	<p class="western" style="margin-bottom: 0cm">Proceda del siguiente modo para crear un bloque de función, por ejemplo, para el lenguaje 
+	 <strong>Function Block Diagram (FBD)</strong>:</p>
+	<ul>
+		<li/>
+<p class="western" >Seleccione Class</p>
+		<li/>
+<p class="western">Seleccione <strong>Function Blocks</strong> en el árbol y pulse el botón derecho del 
+		ratón</p>
+		<li/>
+<p class="western">Seleccione y pulse <strong>Insert Function Block</strong></p>
+		<li/>
+<p class="western">En la ventana que aparece, seleccione <strong>Function Block Diagram FB</strong></p>
+		<li/> 
+<p class="western">Introduzca el nombre que desea dar al bloque de función (por ejemplo:
+		RegolazioneON_OFF)</p>
+		<li/>
+<p class="western" >Pulse <strong>OK</strong></p>
+	</ul>
+	<p class="western" ><img src="Creare_blocco_funzione_1.png" align="bottom" width="929" height="629" border="0"/></p>
+	
+	<p class="western">El bloque de función fue creado de esta manera, de hecho expandiendo la rama <strong>Function Blocks</strong>
+	del árbol de proyecto,vemos la rama.</p>
+	<p class="western">Para entrar en  el bloque de función, seleccione y haga doble clic en el nombre del bloque 
+	   de función. La ventana que aparece consta de dos zonas:</p>
+	<ul>
+		<li/>
+<p class="western" >Zona 1 para la definición de variables</p>
+		<li/>
+<p class="western">Zona 2 de Código</p>
+	</ul>
+	<p class="western"><img src="Creare_blocco_funzione_2.png" align="bottom" width="933" height="629" border="0"/></p>
+	
+	<p class="western">Como primer paso, hacer que el bloque de función vea las variables definidas en Crosstable. Para ello, 
+	sitúese con el ratón en la zona 1 (que cambia el color de fondo), inmediatamente después del nombre del 
+	bloque de función, e introduzca la escritura: <strong>#import &ldquo;Crosstable.gvl&rdquo;</strong> como puede ver en la figura.</p>
+	<p class="western"><img src="Creare_blocco_funzione_3.png" name="Immagine167" align="bottom" width="335" height="120" border="0"/>
+</p>
+	<p class="western">Se deben declarar las variables de entrada y salida (se hay algunas,añadir &ldquo;VAR_OUTPUT&rdquo; e
+	&ldquo;END_VAR&rdquo;). Por ejemplo, vea la siguiente imagen:</p>
+	<p class="western"><img src="Creare_blocco_funzione_4.png" name="Immagine168" align="bottom" width="243" height="208" border="0"/>
+</p>
+	<p class="western">Con este ejemplo, cuando arrastre el bloque de función al programa, tendrá 2 
+	entradas y 1 salida.</p>
+	<p class="western">Ahora vaya a la zona 2 para introducir el código de programa.</p>
+	<p class="western">Para insertar operadores seleccione el icono <strong>Insert Programming Unit</strong> donde  
+	aparecerá la ventana en la que puede elegir los operadores de la biblioteca. Seleccionando y arrastrando el operador necesario 
+	(por ejemplo, el operador ADD que suma dos variables), llévelo a la zona 2. 
+	</p>
+	<p class="western">Para conectar las variables al operador seleccione el icono, en este punto simplemente haga las conexiones 
+	como en un editor normal para diagramas de cableado. Para la inserción de variables ver el capítulo 
+	variables ver el capítulo &ldquo;<font color="#0000ff"><u><a class="western" href="Inserire_variabili_PLC_es.html">Insertar 
+	variables en programas FBD &ndash; LD &ndash; SFC</a></u></font>&rdquo;.</p>
+	
+	<p class="western" style="margin-bottom: 0cm"><img src="Creare_blocco_funzione_5.png" name="Immagine169" align="bottom" width="710" height="495" border="0"/></p>
+	
+		<br/>
+	</body>
+</html>

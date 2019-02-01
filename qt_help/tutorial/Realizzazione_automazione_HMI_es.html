@@ -1,0 +1,102 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Realización de una automatización</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+	<h3 class="western">Realización de una automatización</h3>
+	<p class="western">La realización de una automatización relacionada con los gráficos se puede hacer de dos maneras (incluso simultáneamente):</p>
+	<ul>
+		<li/>
+<p class="western">En entorno QT realizando algún código C++</p>
+		<li/>
+<p class="western">En el entorno ATCM Control a través de los 5 lenguajes comúnmente utilizados en los PLCs</p>
+	</ul>
+	<p class="western"><strong>En ambos casos, el intercambio entre la automatización y los gráficos se realiza a través de la Crosstable.</strong></p>
+	
+	<p class="western"><strong>Aunque en Qt no es necesario escribir código C++</strong>,&nbsp; es posible hacerlo, por ejemplo si se desea manipular 
+	directamente algunas variables del PLC desde la aplicación HMI.</p> <p class="western"><strong>NOTA:</strong> Esto se hace normalmente
+	en la propia aplicación de PLC</strong>.</p>
+	<p class="western">Las automatizaciones Qt se pueden hacer para todo el proyecto o para cada una de las páginas.</p>
+	<p class="western">Para escribir una variable desde C++ llamar a la función <strong>doWrite_</strong>NombreVariable(valor), donde NombreVariable es el nombre
+	de la variable presente en Crosstable y valor es el valor a escribir.</p>
+	<p class="western">Por ejemplo, para configurar en salida la primera E/S digital escribir:</p>
+	<p class="western">	<strong>doWrite_PLC_DigDir_1(1); </strong>	</p>
+	<p class="western">Para asignar a la primera salida analógica el producto de los valores de las dos primeras entradas analógicas se debe escribir:</p>
+	<p class="western"><strong>doWrite_PLC_AnOut_1(PLC_AnIn_1 * PLC_AnIn_2);</strong></p>
+	<br/>
+	<p class="western"><u><h3>PROYECTO COMPLETO</h3></u></p>
+	<p class="western">Puede escribir su propia aplicación usando sólo código C++; para ello  
+	necesita usar la página <strong>automation.cpp</strong> en Edit &#8594; Sources</p>
+	<p class="western"><img src="Realizzazione_automazione_HMI_1.png" align="bottom" width="550" height="286" border="0"/></p>
+	
+	<p class="western">Esta página está dividida en dos partes: setup() y loop()</p>
+	<p class="western">La función <strong>setup()</strong> se llama sólo al inicio de la aplicación, mientras que la función 
+	 <strong>loop()</strong> se llama cada 100ms, independientemente de la página mostrada.</p>
+	<br/>
+	<p class="western"><u><h3>PÁGINA ÚNICA</h3></u></p>
+	<p class="western">Para realizar una automatización en un entorno QT que sólo varía, por ejemplo, en una página, siga los tres 
+	pasos que se indican a continuación:</p>
+	<ol>
+		<li/>
+<p class="western">Establecer la acción que activa la automatización: un tiempo, un umbral alcanzado, la presión de un botón, etc...</p>
+		<li/>
+<p class="western">Atar la acción elegida al punto anterior con la función que incorporará los comandos de automatización.</p>
+		<li/>
+<p class="western">Rellene la función que implementará la automatización.</p>
+	</ol>
+	<p class="western">A continuación se muestra un ejemplo en el que se desea vincular la presión de un botón a la acción
+	de invertir una serie de 2 bits.</p>
+	<p class="western">En primer lugar hay que atar el botón a la función de automatización (en Qt conocido como ranura) 
+	a la acción de la presión (en Qt conocido como señal).</p>
+	<p class="western">Para ello, haga clic con el botón derecho del ratón sobre el botón y seleccione la opción 
+	&ldquo;go to slot&rdquo; " y seleccione de la lista mostrada la señal &ldquo;clicked&rdquo;. Aparecerá una ventana 
+	con una función de automatización vacía.</p>
+	
+	<p class="western"><img src="Realizzazione_automazione_HMI_2.png" name="Immagine156" align="left" width="148" height="159">
+  <br clear="left"/>
+</img>
+<img src="Realizzazione_automazione_HMI_3.png" name="Immagine155" align="left" width="332" height="140">
+  <br clear="left"/>
+</img></p>
+	
+	<p class="western">Si aparece la siguiente ventana:</p>
+	<p class="western"><img src="Realizzazione_automazione_HMI_4.png" name="Immagine157" align="bottom" width="305" height="100" border="0"/></p>
+	
+	<p class="western">Necesita hacer un &ldquo;Build All&rdquo; y luego cerrar el proyecto seleccionando File &#8594;
+	&ldquo;Close All Projects and Editors&rdquo;. Cuando se vuelve a abrir el proyecto, la ventana de error ya no debería aparecer.</p>
+	<pre class="western">/* this funcion will flip the actual value of DigOut01, DigOut02, DigOut03 and DigOut04 */</pre>
+	<pre class="western">void page01::on_atcmButton_5_clicked()</pre>
+	<pre class="western">{</pre>
+	<pre class="western">    <span lang="en-US">/***********</span></pre>
+	<pre class="western">    <span lang="en-US">* DigOut01 *</span></pre>
+	<pre class="western">    <span lang="en-US">************/</span></pre>
+	<pre class="western">    <span lang="en-US">/* flip the value */</span></pre>
+	<pre class="western">    <span lang="en-US">doWrite_DigOut01(!DigOut01);</span></pre>
+	<pre class="western">        <span lang="en-US">/***********</span></pre>
+	<pre class="western">    <span lang="en-US">* DigOut02 *</span></pre>
+	<pre class="western">    <span lang="en-US">************/</span></pre>
+	<pre class="western">    <span lang="en-US">/* flip the value */</span></pre>
+	<pre class="western">    <span lang="en-US">doWrite_DigOut02(!DigOut02);</span></pre>
+	<pre class="western">}</pre>
+	
+	<p class="western">Además, el código fuente puede ser asociado con cada página usando diferentes métodos:</p>
+	<ol>
+		<li/>
+<p class="western">en el método <strong>reload()</strong>, que sólo se llama cuando la página aparece en la pantalla;</p>
+		<li/>
+<p class="western">en el método <strong>updateData()</strong>, que se llama cada 500 ms cuando la página está visible;</p>
+	</ol>
+<p class="western"><img src="Realizzazione_automazione_HMI_5.png" align="bottom" width="803" height="412" border="0"/></p>
+	<br/>
+	</body>
+</html>

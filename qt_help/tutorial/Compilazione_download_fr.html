@@ -1,0 +1,54 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Compilation et téléchargement de l'application</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Compilation et téléchargement de l'application</h3>
+		<p class="western" >Une fois le programme terminé, il est nécessaire de compiler le projet pour vérifier l'absence d'erreurs dans 
+	    le code. Sélectionnez &ldquo;Build&rdquo; &#8594;	 &ldquo;Build All&rdquo; ou appuyer sur F7.</p>
+	
+	<p class="western" ><img src="Compilazione_download_1.png" name="Immagine182" align="bottom" width="415" height="358" border="0"/></p>
+	
+	<p class="western" >Une fois compilé, il est nécessaire d'envoyer le projet au panneau opérateur.</p>
+
+	<p class="western" >Pour transférer le projet nouvellement compilé dans le panneau, procédez comme suit:</p>
+	<ul>
+		<li/>
+<p class="western" >Sélectionnez l'onglet <strong>Target</strong> et cliquez avec le bouton droit de la souris sur 
+		&ldquo;TPAC= Resource{localhost}&rdquo;. Dans la fenêtre qui apparaît, sélectionnez <strong>Properties</strong>.</p>
+	</ul>
+	<p class="western"><img src="Compilazione_download_2.png" name="Immagine183" align="bottom" width="287" height="71" border="0"/></p>
+	
+	<ul>
+		<li/>
+<p class="western" >Définissez l'adresse IP du panneau dans la zone <strong>Control Address</strong> de
+		l'<strong>étiquette TCP/IP</strong>, puis cliquez sur OK (par défault : 192.168.5.211 comme pour les panneaux quand ils quittent l'usine)</p>
+		<li/>
+<p class="western" >Sélectionnez l'onglet <strong>Instance</strong> ou <strong>Target</strong> </p>
+		<li/>
+<p class="western" >Sélectionnez <strong>TPAC = Resource1 {localhost}</strong> et appuyez sur le bouton droit de la souris  
+		en sélectionnant <strong>Flash (and Download)</strong></p>
+	</ul>
+	<p class="western"><img src="Compilazione_download_3.png" name="Immagine 92" align="bottom" width="345" height="479" border="0"/></p>
+	<ul>
+		<li/>
+<p class="western" >A la fin du processus, le message
+		 <span lang="en-US">&ldquo;Download Finished&rdquo; </span>apparaît au bas de la fenêtre.Si une fenêtre d'erreur apparaît, essayez de nouveau de  
+		sélectionner &ldquo;<strong>Flash (and Download)</strong>&rdquo;.</p>
+		<li/>
+<p class="western">Si vous ne voulez pas déboguer, il est conseillé de vous déconnecter du panneau, pour ce faire sélectionnez
+		 <strong>TPAC = Resource1	{localhost}</strong> et appuyez sur le bouton droit de la souris, l'option <strong>Disconnect</strong></p>
+	</ul>
+	<br/>
+	</body>
+</html>

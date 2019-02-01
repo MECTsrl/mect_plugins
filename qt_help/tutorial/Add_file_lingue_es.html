@@ -1,0 +1,43 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Añadir un nuevo archivo de idiomas</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Añadir un nuevo archivo de idiomas</h3>
+	<p class="western">Para añadir un nuevo archivo de idioma es necesario:</p>
+	<ul>
+		<li/>
+<p class="western">Vaya al árbol del proyecto en la sección de idiomas.</p>
+	</ul>
+	<p class="western"><img src="Add_file_lingue_1.png" align="bottom" width="650" height="273" border="0"/></p>
+	<ul>
+		<li/> 
+<p class="western">Abra el archivo &ldquo;languages.pri&rdquo; y añada el nombre del archivo de traducción del idioma deseado
+		recordando que el archivo debe llamarse languages_*.ts donde se debe colocar el código del idioma deseado en lugar de * 
+	    (por ejemplo: fr &#8594; francés). Los códigos a utilizar son visibles en esta página web: <a href="http://wiki.freepascal.org/Language_Codes">wiki.freepascal.org/Language_Codes</a></p>
+		<li/>
+<p class="western"><strong>ATENCIÓN:</strong> entre el nombre de un fichero y el otro hay que insertar el símbolo &ldquo; \ &rdquo;.</p>
+		<li/>
+<p class="western">Compilar para crear el archivo de traducción en el sistema de archivos (creación de archivos: *.qm y *.ts).</p>
+		<li/>
+<p class="western">Vaya al árbol del proyecto en la sección &ldquo;common&rdquo; &#8594; &ldquo;Resources&rdquo;.</p>
+		<li/>
+<p class="western">Añada al archivo de recursos &ldquo;languages.qrc&rdquo; el correspondiente archivo *<strong>.qm</strong> creado 
+ al compilar el paso anterior.</p>
+		<li/>
+<p class="western">Guardar todos: File &#8594; Save &ldquo;resources.qrc&rdquo;.</p>
+	</ul>
+	<p class="western"><img src="Add_file_lingue_2.png" align="bottom" width="448" height="601" border="0"/></p>
+	<br/>
+	</body>
+</html>

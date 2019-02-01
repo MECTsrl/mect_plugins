@@ -1,0 +1,63 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Renommer un projet</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+	<h3 class="western">Renommer un projet</h3>
+	<p class="western">Pour renommer le dossier de projet créé avec QtCreator, vous devez suivre les étapes suivantes:</p>
+	<ol>
+		<li/>
+<p class="western">Assurez-vous que vous avez fermé le projet que vous souhaitez renommer.</p>
+		<li/>
+<p class="western">Renommez le dossier du projet (n'insérez pas de caractères spéciaux (sauf _) ni d'espaces.</p>
+		<li/>
+<p class="western">Supprimez le fichier avec l'extension  &ldquo;<strong>.pro.user</strong>&rdquo; du dossier du projet.</p>
+		<li/>
+<p class="western">Renommez le fichier avec l'extension  &ldquo;<strong>.pro</strong>&rdquo; avec le nom que vous avez choisi à l'étape 2.</p>
+		<li/>
+<p class="western">Renommez le fichier avec l'extension &ldquo;<strong>.pro.shared</strong>&rdquo; avec le nom que vous avez choisi à l'étape 2.</p>
+		<li/>
+<p class="western">Ouvrez le nouveau projet depuis QtCreator.</p>
+		<li/>
+<p class="western">Lorsque l'image suivante apparaît, appuyez sur le bouton  &ldquo;<strong>Configure Project</strong>&rdquo;.
+<img src="Rinominare_progetto_1.png" name="Immagine122" align="bottom" width="636" height="294" border="0"/></p>
+	</ol>
+	
+	<ol start="8">
+		<li/>
+<p class="western">Effectuez un &ldquo;Clean All&rdquo; et un &ldquo;Run qmake&rdquo;, voyez le chapitre &ldquo;<font color="#0000ff"><u><a class="western" href="Errori_compilazione_fr.html">Erreurs de compilation</a></u></font>&rdquo;</p>
+		<li/>
+<p class="western">Faites le &ldquo;Build&rdquo; du projet.</p>
+		<li/>
+<p class="western">Définissez les paramètres d'envoi du projet à l'appareil:
+	<ul>
+	<li/>
+<p class="western"><strong>Désactivez</strong>, sous la rubrique &ldquo;Upload files via SFTP&rdquo;, le flag &ldquo;<strong>Incremental deployment</strong>&rdquo;;</p>
+	</ul>
+	<p class="western"><img src="Trasferimento_applicazione_7.png" name="Immagine 62" align="bottom" width="699" height="329" border="0"/></p>
+	<ul>
+		<li/>
+<p class="western"><span lang="en-US">Cliquez sur &ldquo;Add Deploy Step&rdquo; et sélectionnez &ldquo;<strong>Run custom remote command</strong>&rdquo;</span></p>
+	</ul>
+<p class="western"><img src="Trasferimento_applicazione_8.png" name="Immagine 69" align="bottom" width="685" height="417" border="0"/></p>
+	<ul>
+		<li/>
+<p class="western">Écrivez &ldquo;<strong>stop</strong>&rdquo; (en minuscule) et déplacez le bloc &ldquo;Run custom remote command&rdquo; d'une position vers le haut, à l'aide de la flèche surlignée en jaune (appuyez sur Details).</p>
+	</ul>
+<p class="western"><img src="Trasferimento_applicazione_9.png" name="Immagine 107" align="bottom" width="699" height="63" border="0"/></p>
+<p class="western">Le résultat final doit être comme suit:</p>
+<p class="western"><img src="Trasferimento_applicazione_10.png" name="Immagine 108" align="bottom" width="700" height="361" border="0"/></p></p>
+	</ol>
+		<br/>
+	</body>
+</html>

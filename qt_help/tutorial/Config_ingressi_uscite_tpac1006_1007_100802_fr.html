@@ -1,0 +1,237 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Configuration des entrées/sorties TPAC1006, TPAC1007 et TPAC1008_02</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Configuration des entrées/sorties TPAC1006, TPAC1007 et TPAC1008_02</h3>		
+		<p class="western">Les configurations des lignes numériques et analogiques s'effectuent dans le programme dans la &ldquo;Task0_Init&rdquo; du logiciel plc(API).</p>
+		<br/>
+		<center>
+		<table width="700" cellpadding="4" cellspacing="0">
+			<col width="141">
+			<col width="282">
+			<col width="252">
+			<thead>
+				<tr valign="top">
+					<th width="141" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>Variable</strong></p>
+					</th>
+					<th width="282" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>TPAC1007_03 - TPAC1006 &ndash;</strong></p>
+						<p class="western"> <strong>TPAC1008_01 </strong>
+						</p>
+					</th>
+					<th width="252" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>TPAC1007_04_XY &ndash; TPAC1008_02_XY</strong></p>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>PLC_DigDir_1</strong></p>
+						<p class="western"><strong>PLC_DigDir_2</strong></p>
+						<p class="western"><strong>PLC_DigDir_3</strong></p>
+						<p class="western"><strong>PLC_DigDir_4</strong></p>
+						<p class="western"><strong>PLC_DigDir_5</strong></p>
+						<p class="western"><strong>PLC_DigDir_6</strong></p>
+						<p class="western"><strong>PLC_DigDir_7</strong></p>
+						<p class="western">   <strong>PLC_DigDir_8</strong></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>SEULEMENT pour TPAC1007_03</strong></p>
+						<p class="western">ConfiguraTion 8 E/S:</p>
+						<ul>
+							<li/>
+							<p class="western">0 entrée</p>
+							<li/>
+							<p class="western">1 sortie</p>
+						</ul>
+						<p class="western">Ex&deg;: ch3 = sortie</p>
+						<p class="western"><strong>PLC_DigDir_3 := 1;</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>SEULEMENT pour TPAC1007_04</strong></p>
+						<p class="western">Configuration 8 E/S:</p>
+						<ul>
+							<li/>
+							<p class="western">0 entrée</p>
+							<li/>
+							<p class="western">1 sortie</p>
+						</ul>
+						<p class="western">Ex&deg;: ch5 = entrée</span></p>
+						<p class="western"><strong>PLC_DigDir_5 := 0;</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"><strong>PLC_AnInConf_1</strong></p>
+						<p class="western"><strong>PLC_AnInConf_2</strong></p>
+						<p class="western"> <strong>PLC_AnInConf_3</strong></p>
+						<p class="western"><strong> PLC_AnInConf_4</strong></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configuration entrées analogiques:</p>
+						<ul>
+							<li/>
+							<p class="western">0 non configuré</p>
+							<li/>
+							<p class="western">1 courant</p>
+							<li/>
+							<p class="western">2 tension</p>
+							<li/>
+							<p class="western">3 TCJ (thermocouple de type J)</p>
+							<li/>
+							<p class="western">4 TCK (thermocouple de type K)</p>
+							<li/>
+							<p class="western">5 TCT (thermocouple de type T)</p>
+							<li/>
+							<p class="western"><span lang="en-US">6 </span>PT100E (résolution d'un degré) plage: -40 +800°C</p>
+							<li/>
+							<p class="western">7 <span lang="en-US">PT100R (résolution au dixième degré) plage: -40 +200°C</span></p>
+						</ul>
+						<p class="western">Ex&deg;: ch1 = TCT</p>
+						<p class="western"><strong>PLC_AnInConf_1 := 5;</strong></p>
+						<p class="western"><br/>
+
+						</p>
+						<p class="western"><strong>Pour TPAC1006 et TPAC1008 la variable de référence est: PLC_AnInConf avec configuration 
+						hexadécimale.</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configuration entrées analogiques:</p>
+						<ul>
+							<li/>
+							<p class="western">0 non configuré</p>
+							<li/>
+							<p class="western">1 courant</p>
+							<li/>
+							<p class="western">2 tension</p>
+							<li/>
+							<p class="western">3 TCJ (thermocouple de type J)</p>
+							<li/>
+							<p class="western">4 TCK (thermocouple de type K)</p>
+							<li/>
+							<p class="western">5 TCT (thermocouple de type T)</p>
+							<li/>
+							<p class="western"><span lang="en-US">6 </span>PT100E (résolution d'un degré) plage: -40 +800°C</p>
+							<li/>
+							<p class="western">7 <span lang="en-US">PT100R (résolution au dixième degré) plage: -40 +200°C</span></p>
+							<li/>
+							<p class="western">
+							8 TCS (thermocouple de type S)</p>
+							<li/>
+							<p class="western">
+							9 TCB (thermocouple de type B)</p>
+							<li/>
+							<p class="western">10 TCR (thermocouple de type R)</p>
+						</ul>
+						<p class="western"><span lang="en-US">Ex&deg;: ch2 = PT100E</span></p>
+						<p class="western"><strong>PLC_AnInConf_2 := 6;</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"> <strong>PLC_AnOutConf_1</strong></p>
+						<p class="western"> <strong>PLC_AnOutConf_2</strong></p>
+						<p class="western"><strong> PLC_AnOutConf_3</strong></p>
+						<p class="western"> <strong>PLC_AnOutConf_4</strong></p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configuration sorties analogiques:</p>
+						<ul>
+							<li/>
+						<p class="western">0 non configuré</p>
+							<li/>
+						<p class="western">1 courant</p>
+							<li/>
+						<p class="western">2 tension</p>
+						</ul>
+						<p class="western"><span lang="en-US">Ex&deg;: ch1= </span>non
+						configuré</p>
+						<p class="western"><strong>PLC_AnOutConf_1 := 0;</strong></p>
+						<p class="western"><br/>
+
+						</p>
+						<p class="western"><strong>Pour TPAC1006 et TPAC1008 la variable
+						de référence est : PLC_AnOutConf avec configuration 
+						hexadécimale.</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configuration sorties analogiques:</p>
+						<ul>
+							<li/>
+							<p class="western">0 non configuré</p>
+							<li/>
+							<p class="western">1 courant</p>
+							<li/>
+							<p class="western">2 tension</p>
+							<li/>
+							<p class="western">3 PWM</p>
+						</ul>
+						<p class="western"><span lang="en-US">Ex&deg;: ch2= </span>en
+						tension</p>
+						<p class="western"><strong>PLC_AnOutConf_2 := 2;</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"><strong> PLC_ EnableEnc</strong></p>
+						<p class="western">               ou</p>
+						<p class="western"><strong>PLC_ EncoderStart</strong></p>
+						<p class="western"><br/>
+
+						</p>
+					</td>
+					<td width="282"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Activation de l'encodeur:</p>
+						<ul>
+							<li/>
+							<p class="western">0 encodeur désactivé</p>
+							<li/>
+							<p class="western">1 encodeur bidirectionnel activé</p>
+							<li/>
+							<p class="western">2 compteur</p>
+						</ul>
+						<p class="western">Ex&deg;: Encoder = désactivé</p>
+						<p class="western"><strong>PLC_ EncoderStart :=  0;</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Activation de l'encodeur</p>
+						<ul>
+							<li/>
+							<p class="western">0 encodeur désactivé</p>
+							<li/>
+							<p class="western">1 encodeur bidirectionnel activé</p>
+							<li/>
+							<p class="western">2 compteur</p>
+						</ul>
+						<p class="western"><span lang="en-US">Es&deg;: Encodeur =
+						activé </span>
+						</p>
+						<p class="western"><strong>PLC_ EnableEnc :=  1; (x TPAC1008)</strong></p>
+						<p class="western"><strong>PLC_ EncoderStart :=  1; (x TPAC1007)</strong></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</center>	
+	<br/>	
+	<p class="western">Les variables <strong>PLC_time..</strong> sont gérées automatiquement et sont utilisées pour faire des graphiques temporels (ce sont des nombres
+	réels avec des unités en secondes et une résolution de 10 ms).</p>
+<br/>
+	</body>
+</html>

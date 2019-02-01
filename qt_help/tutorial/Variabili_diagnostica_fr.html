@@ -1,0 +1,146 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Variables de diagnostic</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Variables de diagnostic</h3>
+	<p class="western">A partir de la ligne 5000 de la table croisée, il y a les variables de diagnostic.</p>
+	<p class="western">Les bus de terrain sont: <strong>RTU0</strong>, <strong>RTU1</strong>, <strong>RTU3</strong>, <strong>CAN0</strong>, <strong>CAN1</strong>, <strong>TCPS</strong> (TCP_SRV), <strong>TCP0...TCP9</strong> (les 10 premiers TCP). Pour chaque bus de terrain, il y a 10 variables :</p>
+	<ul>
+		<li>
+		<p class="western"><strong>*_TYPE_PORT:</strong></p>
+			<ul>
+				<li>
+				<p class="western">Lo : numéro de port</p>
+				<li>
+				<p class="western">Hi : type de port:</p>
+					<ul>
+					<li>
+					<p class="western">0 = PLC;</p>
+					<li>
+					<p class="western">1 = RTU;</p>
+					<li>
+					<p class="western">2 = TCP;</p>
+					<li>
+					<p class="western">3 = TCPRTU;</p>
+					<li>
+					<p class="western">4 = CANOPEN;</p>
+					<li>
+					<p class="western">5 = MECT;</p>
+					<li>
+					<p class="western">6 = RTU_SRV;</p>
+					<li>
+					<p class="western">7 = TCP_SRV;</p>
+					<li>
+					<p class="western">8 = TCPRTU_SRV.</p>
+					</ul>
+			</ul>
+		<li>
+		<p class="western"><strong>*_BAUDRATE:</strong> indique la <u>vitesse de transmission</u> pour les protocoles RTU et CANopen. Indique l'<u>adresse IP</u> pour TCP.</p>
+		<li>
+		<p class="western"><strong>*_STATUS:</strong></p>
+			<ul>
+				<li>
+				<p class="western"><strong>Client:</strong></p>
+					<ul>
+						<li>
+						<p class="western">0 = Non initialisé;</p>
+						<li>
+						<p class="western">1 = Non connecté;</p>
+						<li>
+						<p class="western">2 = Connecté;</p>
+						<li>
+						<p class="western">3 = Connecté avec des erreurs;</p>
+						<li>
+						<p class="western">4 = Appareil en liste noire ;</p>
+						<li>
+						<p class="western">5 = Erreur dans la création du socket.</p>
+					</ul>
+				<li>
+				<p class="western"><strong>Server:</strong></p>
+					<ul>
+						<li>
+						<p class="western">0 = Initialisation;</p>
+						<li>
+						<p class="western">1 = Connecté;</p>
+						<li>
+						<p class="western">2 = Non initialisé;</p>
+						<li>
+						<p class="western">3 = Attente;</p>
+						<li>
+						<p class="western">4 = Exécution (traitement).</p>
+					</ul>	
+			</ul>
+		<li>
+		<p class="western"><strong>*_READS:</strong>; nombre de lectures du bus de terrain.</p>
+		<li>
+		<p class="western"><strong>*_WRITES:</strong> Nombre d'écritures provenant du bus de terrain.</p>
+		<li>
+		<p class="western"><strong>*_TIMEOUT:</strong> Nombre d'erreurs de délai d'attente (pas de réponse.</p>
+		<li>
+		<p class="western"><strong>*_COMM_ERRORS:</strong> Nombre d'erreurs de communication (checksum).</p>
+		<li>
+		<p class="western"><strong>*_LAST_ERROR:</strong> indique le type de la dernière erreur :</p>
+			<ul>
+				<li>
+				<p class="western">0 = Pas d'erreur;</p>
+				<li>
+				<p class="western">1 = Erreur de communication;</p>
+				<li>
+				<p class="western">2 = Erreur de délai d'attente;</p>
+				<li>
+				<p class="western">3 = Erreur de réinitialisation de la connexion.</p>
+			</ul>
+		<li>
+		<p class="western"><strong>*_WRITE_QUEUE:</strong> Nombre d'écritures en file d'attente dans le bus de terrain.</p>
+		<li>
+		<p class="western"><strong>*_BUS_LOAD:</strong> pourcentage de charge du bus de terrain (0 - 100%).</p>
+	</ul>
+	<br/>
+	<p class="western">A partir de la ligne 5172, il y a les variables de diagnostic relatives aux <strong>nœuds</strong>. Pour chaque nœud il y a 2 variables:</p>
+	<ul>
+		<li>
+		<p class="western"><strong>NODE_*_DEV_NODE:</strong></p>
+			<ul>
+				<li>
+				<p class="western">Lo : indique le numéro du nœud (Node ID) à l'intérieur du Crosstable (à partir de 1);</p>
+				<li>
+				<p class="western">Hi : indique le numéro de l'appareil (Protocole + Adresse IP + Port + Node ID) dans le Crosstable (à partir de 0).</p>
+			</ul>	
+		<li>		
+		<p class="western"><strong>NODE_*_STATUS:</strong></p>
+			<ul>
+				<li>
+				<p class="western">0 = Pas de nœuds;</p>
+				<li>
+				<p class="western">1 =Nœud OK;</p>
+				<li>
+				<p class="western">2 = Délai d'attente;</p>
+				<li>
+				<p class="western">3 = Liste noire;</p>
+				<li>
+				<p class="western">4 = Non connecté.</p>
+				<li>
+				<p class="western">5 = Nœud désactivé.</p>
+				<p class="western">Le nœud doit être activé ou désactivé par l'IHM. </p>
+				<ul>
+					<li>
+					<p class="western">Nœud désactivé: doWrite_NODE_xx_STATUS(0)</p>
+					<li>
+					<p class="western">Nœud activé: doWrite_NODE_xx_STATUS(1)</p>
+				</ul>
+			</ul>
+	</ul>	
+	<br/>
+	</body>
+</html>

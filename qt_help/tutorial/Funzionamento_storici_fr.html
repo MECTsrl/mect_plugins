@@ -1,0 +1,64 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Fonctionnement de l'historique</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Fonctionnement de l'historique</h3>
+		<p class="western">Le panneau stocke toutes les grandeurs relatives aux variables <strong>Crosstable</strong> qui ont dans le champ &ldquo;<strong>Update</strong>&rdquo;
+	mis à la valeur:</p>
+	<ul>
+		<li/>
+<p class="western"><strong>S:</strong> : La variable est toujours mise à jour et stockée lentement avec un temps &ldquo;Slow Log Period&rdquo;
+		(paramètre System Editor);</p>
+		<li/>
+<p class="western"><strong>F:</strong> comme &ldquo;S&rdquo; mais rapidement et avec un temps &ldquo;Fast Log Period&rdquo; (paramètre System
+		Editor);</p>
+		<li/>
+<p class="western"><strong>V:</strong> la variable n'est acquise et historisée que lorsqu'il y a un changement;</p>
+		<li/>
+<p class="western"><strong>X:</strong> La variable est historisée lorsqu'elle est appelée par la fonction logShot().</p>
+	</ul>
+	<p class="western">L'historique généré est journalier et unique pour toutes les quantités activées pour cette fonction
+	Cependant, il est possible de définir une série d'&ldquo;historiques partiels&rdquo;  pour lesquels l'affichage du panneau est disponible. 
+	</p>
+	<p class="western">Pour afficher la page d'historique, sélectionnez MENU &#8594; DATA &#8594; STORE, vous pouvez aussi utiliser un 
+	 <strong>ATCMbutton</strong> en mode changement de page et entrer dans la propriété &ldquo;<strong>pageName</strong>&rdquo; le mot &ldquo;<strong>nom de 
+	fichier</strong>&rdquo; sans extension. Où &ldquo;nom de fichier&rdquo; sera un fichier.csv qui devrait commencer par &ldquo;<strong>store</strong>&rdquo;.</p>
+	<p lang="it-IT" class="western"><img src="Funzionamento_storici_1.png" name="Immagine 30" align="bottom" width="322" height="182" border="0"/>
+</p>
+	<p class="western">Le nouveau fichier doit être téléchargé dans l'appareil via l'interface Web
+	web, voir chapitre &ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web_fr.html">Fonctionnement de l'interface Web</a></u></font>&rdquo;.
+	Si vous le souhaitez, vous pouvez spécifier un sous-ensemble des variables historisées en écrivant un fichier de configuration 
+	(store1.csv) de cette manière:</p>
+	<p class="western"><strong>date</strong></p>
+	<p class="western"><strong>time</strong></p>
+	<p class="western"><strong><i>TPLC_IN_3</i></strong></p>
+	<p class="western"><strong><i>TPLC_IN_AN_2</i></strong></p>
+	
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Funzionamento_storici_2.png" name="Immagine212" align="bottom" width="360" height="203" border="0"/>
+</p>
+	
+	<p class="western">Le bouton  
+	<img src="Funzionamento_storici_3.png" name="Immagine213" align="bottom" width="24" height="26" border="0"/>
+
+	permet le filtrage dans le temps des historiens tandis que le bouton
+	<img src="Funzionamento_storici_4.png" name="Immagine214" align="bottom" width="24" height="24" border="0"/>
+,
+	qui sera activé lors de l'insertion d'une clé USB, vous permettra de télécharger des données sur une clé USB.</p>
+	<p class="western"><strong>REMARQUE:</strong> Le mécanisme de log peut être démarré, arrêté et forcé à volonté en utilisant les fonctions
+	<strong>logStart()</strong>, <strong>logStop()</strong> et <strong>logShot()</strong>. 	</p>
+	<p class="western">La fonction <strong>logReset()</strong> supprime tous les logs sur l'appareil. Ces fonctions seront mises dans le code 
+	désiré comme indiqué dans le chapitre &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI_fr.html">Réalisation d'une automatisation</a></u></font>&rdquo;.</p>
+	<br/>
+	</body>
+</html>

@@ -1,0 +1,66 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Ouvrir le logiciel PLC</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Ouvrir le logiciel PLC</h3>
+	<p class="western">Le logiciel API(PLC) est lancé via le bouton <img src="Funzionalita_Crosstable_Editor_8.png" align="bottom" width="65" height="46" border="0"/> de la Crosstable.</p>
+	<p class="western"><img src="Aprire_software_PLC_1.png" align="bottom" width="800" height="414" border="0"/></p>
+	
+	<p class="western"><strong>Les variables présentes dans la Crosstable correspondent à celles du logiciel du PLC</strong>. La mise à jour de la liste des variables peut se faire de 3 façons:</p>
+	<ul>
+		<li/>
+		<p class="western">En appuyant sur le bouton <img src="Funzionalita_Crosstable_Editor_7.png" align="bottom" width="66" height="46" border="0"/> de la Crosstable</p>
+		<li/>
+		<p class="western">En faisant le Build de la partie HMI: <img src="Compilazione_1.png" name="Immagine148" align="bottom" width="35" height="36" border="0"/></p>
+		<li/>
+		<p class="western">En faisant le Deploy de la partie HMI: <img src="Aprire_software_PLC_2.png" align="bottom" width="41" height="41" border="0"/></p>
+	</ul>
+	<p class="western"><u>Dans l'environnement ATCMControl, il y aura les variables de la Crosstable qui ont été importées dans le projet PLC.</u></p>
+	<p class="western"><img src="Aprire_software_PLC_3.png" align="bottom" width="880" height="844" border="0"/></p>
+	<ul>
+			<li/>
+		<p class="western">En étendant &ldquo;Configuration&rdquo; et	&ldquo;Resource1&rdquo; on trouve les fichiers &ldquo;<strong>Crosstable.gvl</strong>&rdquo;, &ldquo;<strong>Resource1.gvl</strong>&rdquo;  et les diverses  <strong>Tasks</strong>. </p>
+	</ul>
+	<p class="western"><img src="Aprire_software_PLC_4.png" align="bottom" width="310" height="346" border="0"/></p>
+	
+	<p class="western">le fichier <strong>Crosstable.gvl</strong> est le fichier qui contient toutes les <strong>variables globales d'échange entre HMI et PLC</strong>. Ce fichier ne doit être utilisé qu'en lecture pour connaître les noms des variables et ne doit jamais être modifié. </p>
+	<p class="western">Dans le fichier <strong>Resource1.gvl</strong> toutes <strong>les variables globales du PLC</strong> sont déclarées. Dans ce fichier, vous pouvez insérer des variables dont l'environnement HMI n'a pas besoin. </p>
+	<p class="western">il y'a 6 <strong>Tasks</strong> qui ont <strong>des fonctionnalités</strong> et des temps de cycle différents:</p>
+	<ul>
+		<ul>
+			<li/>
+<p class="western">Task0_Init: ne s'exécute qu'au démarrage de l'API (PLC) et a donc une priorité
+			absolue. Habituellement utilisé pour initialiser les variables.</p>
+			<li/>
+<p class="western">Task1_Alarms: : a la priorité sur toutes les autres tâches. Il démarre lorsque l'alarme est déclenchée et que le 
+			 programme inséré dans la tâche n'est exécuté qu'une seule fois. Le Task1_Alarms redémarre à chaque nouvelle condition d'alarme.</p>
+			<li/>
+<p class="western">Task2_Events: : a la priorité sur toutes les autres tâches sauf Task1_Alarms. Il démarre lorsque l'événement est déclenché
+             et que le programme inséré dans la tâche n'est exécuté qu'une seule fois. Le Task2_Events redémarre à chaque nouvelle condition d'événement.</p>
+			<li/>
+<p class="western">Task3_Fast_10ms: cette tâche est exécutée toutes les 10ms.</p>
+			<li/>
+<p class="western">Task4_Normal_100ms: cette tâche est exécutée toutes les 100ms.</p>
+			<li/>
+<p class="western">Task5_Slow_1000ms: cette tâche est exécutée toutes les 1000ms.</p>
+		</ul>
+	</ul>
+	<p class="western"><strong>REMARQUE:</strong> Il est conseillé d'utiliser <strong>Task4_Normal_100ms</strong> pour la plupart des applications. 
+	</p> 
+	<p class="western">Dans chaque Task,il y'a au moins un programme, par exemple si vous étendez le Task5_Slow_1000ms 
+	vous trouverez le programme Slow_Inst1 où vous pouvez implémenter, dans ce cas dans le langage ST, une partie de votre application. De cette façon,  
+	il est possible d'écrire du code à l'intérieur des programmes présents dans chaque tâche. </p>
+	<br/>
+	</body>
+</html>

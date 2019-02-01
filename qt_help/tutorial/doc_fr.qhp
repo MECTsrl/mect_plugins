@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+    <namespace>Mect_Documentation_fr</namespace>
+    <virtualFolder>doc</virtualFolder>
+    <customFilter name="MECT">
+        <filterAttribute>myapp</filterAttribute>
+        <filterAttribute>1.0</filterAttribute>
+    </customFilter>
+    <filterSection>
+        <filterAttribute>myapp</filterAttribute>
+        <filterAttribute>1.0</filterAttribute>
+        <toc>
+            <section title="MectSuite Tutorial FR" ref="Home_Tutorial.html">
+				<section title="Introduction" ref="Introduzione_fr.html"/>
+				<section title="Mise à jour" ref="Aggiornamenti_fr.html"/>
+				<section title="Convertir un projet 2.0.13 en version 3.x" ref="Convertire_progetto_2x_fr.html"/>
+				<section title="Opérations préliminaires" ref="Operazioni_preliminari_fr.html">
+					<section title="Connexion locale" ref="Connetivita_locale_fr.html"/>
+					<section title="Connexion à distance (sMily)" ref="Connetivita_fr.html">
+					<section title="Installation d'OpenVPN" ref="Installazione_OpenVPN_fr.html"/>
+						</section>
+				</section>
+				<section title="Création d'un nouveau projet" ref="Creazione_progetto_fr.html"/>
+				<section title="Ouvrir un projet" ref="Aprire_progetto_fr.html"/>
+				<section title="Renommer un projet" ref="Rinominare_progetto_fr.html"/>
+				<section title="IHM" ref="HMI_fr.html">
+					<section title="Éditeur de Crosstable" ref="Crosstable_Editor_fr.html">
+						<section title="Description de la Crosstable" ref="Descrizione_Crosstable_fr.html">
+							<section title="Mise à jour de type H" ref="Variabili_H_fr.html"/>
+							<section title="Mise à jour de type  S / F / V / X" ref="Variabili_S_fr.html"/>
+							</section>
+						<section title="Foncionnalité Crosstable Editor" ref="Funzionalita_Crosstable_Editor_fr.html"/>
+						</section>
+					<section title="Éditeur système" ref="System_Editor_fr.html"/>
+					<section title="Trends" ref="Trends_fr.html">
+						<section title="Editeur de Trends" ref="Trends_Editor_fr.html">
+							<section title="Description Trends" ref="Descrizione_Trends_fr.html"/>
+							<section title="Fonctionnalité de l'éditeur de trends" ref="Funzionalita_Trends_fr.html"/>
+							</section>
+						<section title="Affichage d'un trend" ref="Visualizzazione_trend_fr.html"/>
+						<section title="Modification et création d'un trend" ref="Modifica_trend_fr.html"/>
+						</section>
+					<section title="Devices" ref="Devices_fr.html"/>
+					<section title="Timings" ref="Timings_fr.html"/>
+					<section title="Structure de projet vide" ref="Struttura_progetto_fr.html"/>
+					<section title="Pages de librairie" ref="Pagine_libreria_fr.html"/>					
+					<section title="Ajouter une page" ref="Aggiungere_pagina_fr.html"/>
+					<section title="Supprimer une page" ref="Rimuovere_pagina_fr.html"/>
+					<section title="Renommer une page" ref="Rinominare_pagina_fr.html"/>										
+					<section title="Ajouter des images / polices" ref="Aggiungere_immagine_font_fr.html"/>
+					<section title="Personnaliser l'arrière-plan d'une page" ref="Personalizzare_sfondo_pagina_fr.html"/>
+					<section title="Ajouter des éléments graphiques" ref="Aggiungere_elementi_grafici_fr.html"/>
+					<section title="Association entre la variable et l'element grafique" ref="Associazione_variabile_oggetto_fr.html"/>
+					<section title="Fonctionnement des mots de passe" ref="Funzionamento_password_fr.html">
+						<section title="Définition des mots de passe" ref="Impostazione_password_fr.html"/>
+						</section>
+					<section title="DescriptionATCMPlugin" ref="Descrizione_ATCM_plugin_fr.html">
+						<section title="ATCMbutton" ref="ATCMbutton_fr.html">	
+							<section title="Changer une page" ref="Cambio_pagina_fr.html"/>
+							<section title="Variable de commutation" ref="Variabile_toggle_fr.html"/>	
+							<section title="Fonction implémentée par l'utilisateur" ref="Funzione_implementata_utente_fr.html">	
+								<section title="Supprimer un objet implémenté par une fonction" ref="Eliminare_implementazione_fr.html"/>	
+								</section>
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_fr.html"/>	
+							</section>
+						<section title="ATCMcombobox" ref="ATCMcombobox_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_combo_fr.html"/>						
+							</section>	
+						<section title="ATCMspinbox" ref="ATCMspinbox_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_spinbox_fr.html"/>	
+							</section>
+						<section title="ATCMlabel" ref="ATCMlabel_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_label_fr.html"/>	
+							</section>
+						<section title="ATCMprogressbar" ref="ATCMprogressbar_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_progressbar_fr.html"/>	
+							</section>
+						<section title="ATCMslider" ref="ATCMslider_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_slider_fr.html"/>	
+							</section>
+						<section title="ATCMled" ref="ATCMled_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_led_fr.html"/>	
+							</section>	
+						<section title="ATCManimation" ref="ATCManimation_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_animation_fr.html"/>	
+							</section>	
+						<section title="ATCMdate" ref="ATCMdate_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_date_fr.html"/>	
+							</section>	
+						<section title="ATCMtime" ref="ATCMtime_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_time_fr.html"/>	
+							</section>
+						<section title="ATCMgraph" ref="ATCMgraph_fr.html">
+							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_graph_fr.html"/>	
+							</section>		
+						</section>	
+					<section title="Compiler et installer un projet" ref="Compilazione_installazione_fr.html">	
+						<section title="Compilation" ref="Compilazione_fr.html"/>
+						<section title="Erreurs de compilation" ref="Errori_compilazione_fr.html"/>
+						<section title="Transfert de l'application vers l'appareil" ref="Trasferimento_applicazione_fr.html"/>
+						<section title="Transférer l'application à l'appareil en DEBUG" ref="Trasferimento_applicazione_debug_fr.html"/>						
+						</section>
+					<section title="Réalisation d'une automatisation" ref="Realizzazione_automazione_HMI_fr.html"/>	
+					<section title="Fonctionnement des recettes" ref="Funzionamento_ricette_fr.html"/>
+					<section title="Fonctionnement de l'historique" ref="Funzionamento_storici_fr.html"/>
+					<section title="Fonctionnement des alarmes" ref="Funzionamento_allarmi_fr.html">	
+						<section title="Page alarms" ref="Pagina_alarms_fr.html"/>
+						<section title="Page alarms_history" ref="Pagina_alarms_history_fr.html"/>
+						</section>						
+					<section title="Polices" ref="Fonts_fr.html"/>
+					<section title="Traduction des langues" ref="Traduzione_lingue_fr.html">	
+						<section title="Ajouter un nouveau fichier de langues" ref="Add_file_lingue_fr.html"/>
+						<section title="Utilisation de Qt Linguist" ref="Qt_Linguist_fr.html"/>
+						<section title="Sélectionner la langue depuis l'appareil" ref="Selezione_lingua_fr.html"/>
+						</section>	
+					<section title="Fonctionnement de l'interface Web" ref="Interfaccia_web_fr.html"/>	
+					<section title="Modifier le mot de passe du système" ref="Cambio_password_sistema_fr.html"/>
+					<section title="Annexe" ref="Appendice_fr.html">
+						<section title="Réinitialisation des alarmes" ref="Reset_allarmi_fr.html"/>
+						<section title="Modification du rétroéclairage via la fonction HMI" ref="Backlight_HMI_fr.html"/>
+						<section title="Utilisation du convertisseur USB/RS232 dans l'IHM" ref="Convertitore_232_fr.html"/>
+						<section title="Accès aux bases de données MySQL/SQLite" ref="Database_fr.html"/>
+						<section title="Insérer une fenêtre popup" ref="Popup_fr.html"/>
+						<section title="Utilisation du PWM" ref="PWM_fr.html"/>
+						</section>
+				</section>	
+				<section title="PLC(API)" ref="PLC_fr.html">
+					<section title="Ouvrir le logiciel PLC" ref="Aprire_software_PLC_fr.html"/>	
+					<section title="Modifier/Ajouter une tâche" ref="Modificare_Task_fr.html"/>
+					<section title="Utiliser un programme" ref="Utilizzare_un_programma_fr.html">
+						<section title="Ajouter un programme" ref="Aggiungere_un_programma_fr.html"/>						
+						</section>
+					<section title="Insérer un programme dans une Tâche" ref="Inserimento_programma_Task_fr.html"/>
+					<section title="Créer un bloc function" ref="Creare_blocco_funzione_fr.html"/>
+					<section title="Help de ATCMcontrol" ref="Help_ATCMcontrol_fr.html"/>
+					<section title="Syntaxe du langage ST" ref="Sintassi_ST_fr.html"/>
+					<section title="Insérer des variables dans les programmes ST" ref="Inserire_variabili_PLC_ST_fr.html"/>
+					<section title="Insérer des variables dans les programmes FBD - LD - SFC" ref="Inserire_variabili_PLC_fr.html"/>
+					<section title="Utiliser un bloc function" ref="Usare_blocco_funzione_fr.html"/>
+					<section title="Utiliser une fonction" ref="Usare_funzione_fr.html"/>
+					<section title="Importation d'un bloc fonction / d'une fonction" ref="Importare_funzione_fr.html"/>
+					<section title="Compilation et téléchargement de l'application" ref="Compilazione_download_fr.html">
+						<section title="Erreur dans le transfert PLC" ref="Errore_PLC_fr.html"/>
+						</section>
+					<section title="Débogage PLC" ref="Debug_PLC_fr.html"/>
+					<section title="Ajouter des librairies au projet" ref="Aggiungere_librerie_fr.html"/>
+					<section title="Chemin du projet" ref="Path_progetto_fr.html"/>
+					</section>
+				<section title="Variables de produit (Local I/O))" ref="Variabili_prodotto_fr.html">	
+				<section title="Modèles TPAC1006 / TPAC1008_02" ref="Modelli_tpac1006_100801_100802_fr.html"/>
+				<section title="Modèles TPAC1007" ref="Modelli_tpac1007_fr.html"/>
+				<section title="Modèles TPLC050 / TPLC100" ref="Modelli_tplc050_100_fr.html"/>
+					</section>
+				<section title="Configuration des entrées/sorties" ref="Config_ingressi_uscite_fr.html">	
+				<section title="Configuration des entrées/sorties TPAC1006, TPAC1007 et TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802_fr.html"/>
+				<section title="Configuration des entrées/sorties TPLC050 et TPLC100" ref="Config_ingressi_uscite_tplc050_100_fr.html"/>
+					</section>				
+				<section title="Variables de diagnostic" ref="Variabili_diagnostica_fr.html"/>
+				<section title="Insertion de la carte micro SD" ref="SD_card_fr.html"/>
+				<section title="Activation VNC" ref="VNC_fr.html"/>	
+				<section title="Configuration CAN" ref="Can_fr.html"/>		
+            </section>
+        </toc>
+        <keywords>
+            <keyword name="foo" id="MyApplication::foo" ref="doc_eng.html#foo"/>
+            <keyword name="bar" ref="doc_eng.html#bar"/>
+            <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
+        </keywords>
+        <files>
+			<file>Config_ingressi_uscite_tplc050_100_fr.html</file>
+			<file>Config_ingressi_uscite_tpac1006_1007_100802_fr.html</file>
+			<file>Modelli_tplc050_100_fr.html</file>
+			<file>Modelli_tpac1007_fr.html</file>
+			<file>Modelli_tpac1006_100801_100802_fr.html</file>
+			<file>Timings_fr.html</file>
+			<file>Timings_1.png</file>
+			<file>Timings_2.png</file>
+			<file>Devices_fr.html</file>
+			<file>Devices_1.png</file>
+			<file>Devices_2.png</file>
+			<file>Connetivita_locale_fr.html</file>
+			<file>PWM_fr.html</file>
+			<file>Reset_allarmi_fr.html</file>
+			<file>Cambio_password_sistema_fr.html</file>
+			<file>Cambio_password_sistema_1.png</file>
+			<file>convertire_progetto_2x_1.png</file>
+			<file>Installazione_OpenVPN_fr.html</file>
+			<file>Installazione_OpenVPN_1.png</file>
+			<file>Convertire_progetto_2x_fr.html</file>
+			<file>Path_progetto_fr.html</file>
+			<file>Path_progetto_1.png</file>
+			<file>Funzionalita_Trends_1.png</file>
+			<file>Funzionalita_Trends_2.png</file>
+			<file>Funzionalita_Trends_3.png</file>
+			<file>Variabili_diagnostica_fr.html</file>
+			<file>Funzionalita_Crosstable_Editor_2.png</file>
+			<file>Funzionalita_Crosstable_Editor_3.png</file>
+			<file>Funzionalita_Crosstable_Editor_4.png</file>
+			<file>Funzionalita_Crosstable_Editor_5.png</file>
+			<file>Funzionalita_Crosstable_Editor_6.png</file>
+			<file>Funzionalita_Crosstable_Editor_7.png</file>
+			<file>Funzionalita_Crosstable_Editor_8.png</file>
+			<file>Funzionalita_Crosstable_Editor_9.png</file>
+			<file>Variabili_S_fr.html</file>
+			<file>Variabili_H_fr.html</file>
+			<file>Popup_fr.html</file>
+			<file>Popup_1.png</file>
+			<file>Database_fr.html</file>
+			<file>Convertitore_232_fr.html</file>
+			<file>Convertitore_232_1.png</file>
+			<file>Backlight_HMI_fr.html</file>
+			<file>Appendice_fr.html</file>
+			<file>Interfaccia_web_fr.html</file>
+			<file>Can_fr.html</file>
+			<file>Connetivita_fr.html</file>
+			<file>VNC_fr.html</file>
+			<file>SD_card_fr.html</file>
+			<file>SD_card_1.png</file>
+			<file>Selezione_lingua_fr.html</file>
+			<file>Selezione_lingua_1.png</file>
+			<file>Selezione_lingua_2.png</file>
+			<file>Selezione_lingua_3.png</file>
+			<file>Selezione_lingua_4.png</file>
+			<file>Qt_Linguist_fr.html</file>
+			<file>Qt_Linguist_1.png</file>
+			<file>Qt_Linguist_2.png</file>
+			<file>Qt_Linguist_3.png</file>
+			<file>Qt_Linguist_4.png</file>
+			<file>Qt_Linguist_5.png</file>
+			<file>Add_file_lingue_fr.html</file>
+			<file>Add_file_lingue_1.png</file>
+			<file>Add_file_lingue_2.png</file>
+			<file>Traduzione_lingue_fr.html</file>
+			<file>Traduzione_lingue_1.png</file>
+			<file>Traduzione_lingue_2.png</file>
+			<file>Fonts_fr.html</file>
+			<file>Fonts_1.png</file>
+			<file>Variabili_prodotto_fr.html</file>
+			<file>Config_ingressi_uscite_fr.html</file>
+			<file>Pagina_alarms_history_fr.html</file>
+			<file>Pagina_alarms_history_1.png</file>	
+			<file>Pagina_alarms_history_2.png</file>	
+			<file>Pagina_alarms_fr.html</file>
+			<file>Pagina_alarms_1.png</file>
+			<file>Pagina_alarms_2.png</file>
+			<file>Pagina_alarms_3.png</file>
+			<file>Pagina_alarms_4.png</file>
+			<file>Pagina_alarms_5.png</file>
+			<file>Funzionamento_allarmi_fr.html</file>
+			<file>Funzionamento_storici_fr.html</file>
+			<file>Funzionamento_storici_1.png</file>
+			<file>Funzionamento_storici_2.png</file>
+			<file>Funzionamento_storici_3.png</file>
+			<file>Funzionamento_storici_4.png</file>
+			<file>Funzionamento_ricette_fr.html</file>
+			<file>Funzionamento_ricette_1.png</file>
+			<file>Funzionamento_ricette_2.gif</file>
+			<file>Funzionamento_ricette_3.png</file>
+			<file>Funzionamento_ricette_4.gif</file>
+			<file>Funzionamento_ricette_5.gif</file>
+			<file>Funzionamento_ricette_6.gif</file>
+			<file>Funzionamento_ricette_7.gif</file>
+			<file>Funzionamento_ricette_8.png</file>
+			<file>Funzionamento_ricette_9.png</file>
+			<file>Funzionamento_ricette_10.png</file>
+			<file>Modifica_trend_fr.html</file>
+			<file>Visualizzazione_trend_fr.html</file>
+			<file>Visualizzazione_trend_1.png</file>
+			<file>Visualizzazione_trend_2.png</file>
+			<file>Visualizzazione_trend_3.png</file>
+			<file>Visualizzazione_trend_4.png</file>
+			<file>Visualizzazione_trend_5.png</file>
+			<file>Visualizzazione_trend_6.png</file>
+			<file>Visualizzazione_trend_7.png</file>
+			<file>Visualizzazione_trend_8.png</file>
+			<file>Visualizzazione_trend_9.png</file>
+			<file>Visualizzazione_trend_10.png</file>
+			<file>Visualizzazione_trend_11.png</file>
+			<file>Visualizzazione_trend_12.png</file>
+			<file>Visualizzazione_trend_13.png</file>
+			<file>Visualizzazione_trend_14.png</file>
+			<file>Visualizzazione_trend_15.png</file>
+			<file>Visualizzazione_trend_16.png</file>
+			<file>Visualizzazione_trend_17.png</file>
+			<file>Visualizzazione_trend_18.png</file>
+			<file>Visualizzazione_trend_19.png</file>
+			<file>Visualizzazione_trend_20.png</file>
+			<file>Visualizzazione_trend_21.png</file>
+			<file>Visualizzazione_trend_22.png</file>
+			<file>Visualizzazione_trend_23.png</file>
+			<file>Visualizzazione_trend_24.png</file>
+			<file>Visualizzazione_trend_25.png</file>
+			<file>Visualizzazione_trend_26.png</file>
+			<file>Trends_fr.html</file>
+			<file>Aggiungere_librerie_fr.html</file>
+			<file>Aggiungere_librerie_1.png</file>
+			<file>Debug_PLC_fr.html</file>
+			<file>Debug_PLC_1.png</file>
+			<file>Errore_PLC_fr.html</file>
+			<file>Compilazione_download_fr.html</file>
+			<file>Compilazione_download_1.png</file>
+			<file>Compilazione_download_2.png</file>
+			<file>Compilazione_download_3.png</file>
+			<file>Importare_funzione_fr.html</file>
+			<file>Importare_funzione_1.png</file>
+			<file>Importare_funzione_2.png</file>
+			<file>Usare_funzione_fr.html</file>
+			<file>Usare_funzione_1.png</file>
+			<file>Usare_funzione_2.png</file>
+			<file>Usare_blocco_funzione_fr.html</file>
+			<file>Usare_blocco_funzione_1.png</file>
+			<file>Usare_blocco_funzione_2.png</file>
+			<file>Usare_blocco_funzione_3.png</file>
+			<file>Usare_blocco_funzione_4.png</file>
+			<file>Sintassi_ST_fr.html</file>
+			<file>Sintassi_ST_1.png</file>
+			<file>Sintassi_ST_2.png</file>
+			<file>Inserire_variabili_PLC_ST_fr.html</file>
+			<file>Inserire_variabili_PLC_ST_1.png</file>
+			<file>Inserire_variabili_PLC_ST_2.png</file>
+			<file>Inserire_variabili_PLC_ST_3.png</file>
+			<file>Inserire_variabili_PLC_fr.html</file>
+			<file>Inserire_variabili_PLC_1.png</file>
+			<file>Inserire_variabili_PLC_2.png</file>
+			<file>Inserire_variabili_PLC_3.png</file>
+			<file>Help_ATCMcontrol_fr.html</file>
+			<file>Help_ATCMcontrol_1.png</file>
+			<file>Help_ATCMcontrol_2.png</file>
+			<file>Creare_blocco_funzione_fr.html</file>
+			<file>Creare_blocco_funzione_1.png</file>
+			<file>Creare_blocco_funzione_2.png</file>
+			<file>Creare_blocco_funzione_3.png</file>
+			<file>Creare_blocco_funzione_4.png</file>
+			<file>Creare_blocco_funzione_5.png</file>
+			<file>Inserimento_programma_Task_fr.html</file>
+			<file>Inserimento_programma_Task_1.png</file>
+			<file>Aggiungere_un_programma_fr.html</file>
+			<file>Aggiungere_un_programma_1.png</file>
+			<file>Utilizzare_un_programma_fr.html</file>
+			<file>Utilizzare_un_programma_1.png</file>
+			<file>Modificare_Task_fr.html</file>
+			<file>Aprire_software_PLC_fr.html</file>
+			<file>Aprire_software_PLC_1.png</file>
+			<file>Aprire_software_PLC_2.png</file>
+			<file>Aprire_software_PLC_3.png</file>
+			<file>Aprire_software_PLC_4.png</file>
+			<file>PLC_fr.html</file>
+			<file>Realizzazione_automazione_HMI_fr.html</file>
+			<file>Realizzazione_automazione_HMI_1.png</file>
+			<file>Realizzazione_automazione_HMI_2.png</file>
+			<file>Realizzazione_automazione_HMI_3.png</file>
+			<file>Realizzazione_automazione_HMI_4.png</file>
+			<file>Realizzazione_automazione_HMI_5.png</file>
+			<file>Trasferimento_applicazione_debug_fr.html</file>
+			<file>Trasferimento_applicazione_debug_1.png</file>
+			<file>Trasferimento_applicazione_fr.html</file>
+			<file>Trasferimento_applicazione_1.png</file>
+			<file>Trasferimento_applicazione_2.png</file>
+			<file>Trasferimento_applicazione_5.png</file>
+			<file>Trasferimento_applicazione_6.png</file>
+			<file>Trasferimento_applicazione_7.png</file>
+			<file>Trasferimento_applicazione_8.png</file>
+			<file>Trasferimento_applicazione_9.png</file>
+			<file>Trasferimento_applicazione_10.png</file>
+			<file>Errori_compilazione_fr.html</file>
+			<file>Errori_compilazione_1.png</file>
+			<file>Errori_compilazione_2.png</file>
+			<file>Errori_compilazione_3.png</file>
+			<file>Errori_compilazione_4.png</file>
+			<file>Compilazione_fr.html</file>
+			<file>Compilazione_1.png</file>
+			<file>Compilazione_2.png</file>
+			<file>Compilazione_installazione_fr.html</file>
+			<file>ATCMgraph_fr.html</file>
+			<file>ATCMgraph_1.png</file>
+			<file>Aspetto_funzionalita_graph_fr.html</file>
+			<file>ATCMtime_fr.html</file>
+			<file>Aspetto_funzionalita_time_fr.html</file>
+			<file>Aspetto_funzionalita_time_1.png</file>
+			<file>ATCMdate_fr.html</file>
+			<file>Aspetto_funzionalita_date_fr.html</file>
+			<file>Aspetto_funzionalita_date_1.png</file>
+			<file>ATCManimation_fr.html</file>
+			<file>ATCManimation_1.png</file>
+			<file>Aspetto_funzionalita_animation_fr.html</file>
+			<file>Aspetto_funzionalita_animation_1.png</file>
+			<file>ATCMled_fr.html</file>
+			<file>ATCMled_1.png</file>
+			<file>Aspetto_funzionalita_led_fr.html</file>
+			<file>Aspetto_funzionalita_led_1.png</file>
+			<file>Aspetto_funzionalita_slider_fr.html</file>
+			<file>Aspetto_funzionalita_slider_1.png</file>
+			<file>Aspetto_funzionalita_slider_2.png</file>
+			<file>ATCMslider_fr.html</file>
+			<file>ATCMslider_1.png</file>
+			<file>Aspetto_funzionalita_progressbar_fr.html</file>
+			<file>Aspetto_funzionalita_progressbar_1.png</file>
+			<file>ATCMprogressbar_fr.html</file>
+			<file>ATCMprogressbar_1.png</file>
+			<file>Aspetto_funzionalita_label_fr.html</file>
+			<file>Aspetto_funzionalita_label_1.png</file>
+			<file>ATCMlabel_fr.html</file>
+			<file>ATCMlabel_1.png</file>
+			<file>Aspetto_funzionalita_spinbox_fr.html</file>
+			<file>Aspetto_funzionalita_spinbox_1.png</file>
+			<file>ATCMspinbox_fr.html</file>
+			<file>ATCMspinbox_1.png</file>
+			<file>Aspetto_funzionalita_combo_fr.html</file>
+			<file>Aspetto_funzionalita_combo_1.png</file>
+			<file>ATCMcombobox_fr.html</file>
+			<file>ATCMcombobox_1.png</file>
+			<file>Aspetto_funzionalita_fr.html</file>
+			<file>Aspetto_funzionalita_1.png</file>
+			<file>Aspetto_funzionalita_2.png</file>
+			<file>Eliminare_implementazione_fr.html</file>
+			<file>Funzione_implementata_utente_fr.html</file>
+			<file>Funzione_implementata_utente_1.png</file>
+			<file>Variabile_toggle_fr.html</file>
+			<file>Variabile_toggle_1.png</file>
+			<file>Cambio_pagina_fr.html</file>
+			<file>ATCMbutton_fr.html</file>
+			<file>Descrizione_ATCM_plugin_fr.html</file>
+            <file>Home_Tutorial.html</file>
+			<file>Home.png</file>
+			<file>Introduzione_fr.html</file>
+			<file>Introduzione_1.png</file>
+			<file>Aggiornamenti_fr.html</file>
+			<file>Operazioni_preliminari_fr.html</file>
+			<file>HMI_fr.html</file>
+			<file>Crosstable_Editor_fr.html</file>	
+			<file>Crosstable_Editor_1.png</file>
+			<file>Crosstable_Editor_2.png</file>
+			<file>Descrizione_Crosstable_fr.html</file>
+			<file>Descrizione_Crosstable_1.png</file>
+			<file>Funzionalita_Crosstable_Editor_fr.html</file>
+			<file>Funzionalita_Crosstable_Editor_1.png</file>
+			<file>System_Editor_fr.html</file>
+			<file>System_Editor_1.png</file>
+			<file>System_Editor_2.png</file>
+			<file>Trends_Editor_fr.html</file>
+			<file>Trends_Editor_1.png</file>
+			<file>Trends_Editor_2.png</file>
+			<file>Descrizione_Trends_fr.html</file>
+			<file>Funzionalita_Trends_fr.html</file>
+			<file>Struttura_progetto_fr.html</file>
+			<file>Pagine_libreria_fr.html</file>
+			<file>Creazione_progetto_fr.html</file>
+			<file>Creazione_progetto_1.png</file>
+			<file>Creazione_progetto_2.png</file>
+			<file>Creazione_progetto_3.png</file>
+			<file>Creazione_progetto_4.png</file>
+			<file>Creazione_progetto_5.png</file>
+			<file>Creazione_progetto_6.png</file>
+			<file>Aggiungere_pagina_fr.html</file>	
+			<file>Aggiungere_pagina_1.png</file>
+			<file>Aggiungere_pagina_2.png</file>
+			<file>Aggiungere_pagina_3.png</file>
+			<file>Aggiungere_pagina_4.png</file>
+			<file>Rimuovere_pagina_fr.html</file>
+			<file>Rimuovere_pagina_1.png</file>
+			<file>Rimuovere_pagina_2.png</file>
+			<file>Rimuovere_pagina_3.png</file>
+			<file>Rimuovere_pagina_4.png</file>
+			<file>Rinominare_pagina_fr.html</file>
+			<file>Rinominare_pagina_1.png</file>
+			<file>Rinominare_progetto_fr.html</file>
+			<file>Rinominare_progetto_1.png</file>
+			<file>Aprire_progetto_fr.html</file>
+			<file>Aprire_progetto_1.png</file>
+			<file>Aggiungere_immagine_font_fr.html</file>
+			<file>Aggiungere_immagine_font_1.png</file>
+			<file>Personalizzare_sfondo_pagina_fr.html</file>
+			<file>Personalizzare_sfondo_pagina_0.png</file>
+			<file>Aggiungere_elementi_grafici_fr.html</file>
+			<file>Aggiungere_elementi_grafici_1.png</file>
+			<file>Associazione_variabile_oggetto_fr.html</file>
+			<file>Associazione_variabile_oggetto_1.png</file>
+			<file>Funzionamento_password_fr.html</file>
+			<file>Funzionamento_password_1.png</file>
+			<file>Funzionamento_password_2.png</file>
+			<file>Impostazione_password_fr.html</file>
+										
+	    </files>
+    </filterSection>
+</QtHelpProject>

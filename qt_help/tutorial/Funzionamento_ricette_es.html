@@ -1,0 +1,108 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Funcionamiento recetas</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Funcionamiento recetas</h3>
+		<p class="western">Las recetas sólo pueden derivar de las recetas preexistentes en el dispositivo de destino. Las nuevas familias de recetas 
+	pueden ser creadas por PC y luego cargadas en el dispositivo de destino a través de la interfaz web descrita en el párrafo 
+	dedicado a ello o ser transferidas directamente desde el proyecto.</p>
+<p class="western">Las recetas son simples archivos de texto en formato.csv donde cada línea especifica la variable y el valor a asociar.</p>
+	<p class="western">Por ejemplo, para crear una receta que fije la salida TPLC_OUT_1 a 0 y la salida TPLC_OUT_2 a 1 en el <strong>primer paso</strong> 
+	y la salida TPLC_OUT_1 a 1 y la salida TPLC_OUT_2 a 0 en el <strong>segundo paso</strong>, escriba:</p>
+	
+	<p class="western">TPLC_OUT_1; 0; 1</p>
+	<p class="western">TPLC_OUT_2; 1; 0</p>
+	
+	<p class="western">Puede añadir tantos pasos (columnas) como desee.</p>
+	
+	<p class="western"><strong>ATENCIÓN:</strong> Utilice el signo &ldquo;;&rdquo; como separador.</p>
+	
+	<p class="western">Para cargar una receta o una familia de recetas en el equipo, es necesario &ldquo;<strong>comprimir</strong>&rdquo; 
+	el archivo/carpeta y transferirlo al equipo a través de la <strong>interfaz web</strong> (ver capítulo &ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web_es.html">Funcionamiento de la interfaz web</a></u></font>&rdquo;) ") o directamente con el <strong>proyecto</strong>.</p>
+	<p class="western"><strong>ATENCIÓN:</strong> El nombre del archivo de receta no debe contener espacios.</p>
+
+	<p class="western">En este último caso, se deben seguir estos pasos:</p>
+	<ul>
+	<li/>
+	<p class="western">A partir de &ldquo;explorar recursos&rdquo; crear la carpeta &ldquo;<strong>recipe</strong>&rdquo; dentro del proyecto.</p>
+	<p class="western"><img src="Funzionamento_ricette_8.png" name="Immagine 331" align="bottom" width="261" height="287" border="0"/></p>
+	<li/>
+	<p class="western">Inserte los archivos.csv de las recetas en el interior.</p>
+	<li/>
+	<p class="western">Haga clic con el botón derecho del ratón en <strong>&ldquo;Add Exising Files..&rdquo;</strong> y seleccione las recetas que desea cargar.</p>
+	<p class="western"><img src="Funzionamento_ricette_9.png" name="Immagine 332" align="bottom" width="536" height="445" border="0"/></p>
+	<li/>
+	<p class="western">Abra el archivo con la extensión &ldquo;<strong>.pro</strong>&rdquo;</p>
+	<p class="western"><img src="Funzionamento_ricette_10.png" name="Immagine 333" align="bottom" width="866" height="467" border="0"/></p>
+	<li/>
+	<p class="western">Introduzca el siguiente código y sustituya los nombres de las recetas por los suyos propios:</p>
+	<pre class="western">recipe.files = recipe/<i>Water_Pressure</i>.csv  recipe/<i>Regulator_tank</i>.csv</pre>
+	<pre class="western">recipe.path = /local/data/recipe</pre>
+	<br/>
+
+	<pre class="western"><font color="#003f80">INSTALLS</font> += \</pre>
+	<pre class="western">	recipe</pre>
+	</ul>
+	<br/>
+	<h4 class="western">En el dispositivo</h4>
+	<p class="western">La visualización/carga/tratamiento de las recetas se ha dividido en dos pasos:</p>
+	<ol>
+		<li/>
+<p class="western">Seleccionar la receta a visualizar</p>
+	</ol>
+	<ol start="2">
+		<li/>
+<p class="western">Visualizar / cargar / modificar la receta seleccionada</p>
+	</ol>
+	
+	<p class="western">Para utilizar la página de recetas, utilice un <strong>ATCMbutton</strong> en el modo de cambio de página y como &ldquo;<strong>pageName</strong>&rdquo;
+	utilice &ldquo;<strong>recipe_select</strong>&rdquo;.</font></p>
+	<p class="western">Desde esta ventana puede navegar entre las familias de recetas y las recetas que les pertenecen.</p>
+	<p class="western">	<img src="Funzionamento_ricette_1.png" name="Immagine211" align="bottom" width="446" height="253" border="0"/></p>
+	
+	<p class="western">Una vez que haya seleccionado la receta deseada, pulse el botón si desea guardar la receta o la familia de 
+	recetas en el USB (<span lang="it-IT"><img src="Funzionamento_ricette_2.gif" name="Immagine 71" align="bottom" width="24" height="24" border="0"/>
+</span>)
+	o seleccione la receta para cambiar a la pantalla de la página de la receta actual.</font></p>
+	
+	<p class="western">Los archivos de recetas son archivos.csv que constan de dos columnas:</p>
+	<ol>
+	<li/>
+	<p class="western">Nombre de la variable</p>
+	<li/>
+	<p class="western">Valor de la variable</p>
+	</ol>
+	<p lang="it-IT" style="margin-top: 0.18cm; margin-bottom: 0.18cm; orphans: 2; widows: 2">
+	<img src="Funzionamento_ricette_3.png" name="Immagine 33" align="bottom" width="393" height="222" border="0"/></p>
+	
+	<p class="western">Una vez visualizada una receta de cocción, puede hacer lo siguiente:</p>
+	<ul>
+		<li/>
+<p class="western">Cambiar el valor de una variable: seleccionar el valor.</p>
+	</ul>
+	<ul>
+		<li/>
+<p class="western">Leer los valores actuales de las variables que componen la receta (en cualquier instrumento conectado): pulsando el botón 
+	Read (<span lang="it-IT"><img src="Funzionamento_ricette_5.gif" name="Immagine 67" align="bottom" width="24" height="24" border="0"/>
+</span>).</p>
+		<li/>
+<p class="western">Escriba en los dispositivos los valores mostrados en la receta pulsando el botón Load (<span lang="it-IT"><img src="Funzionamento_ricette_7.gif" name="Immagine 66" align="bottom" width="24" height="24" border="0"/>
+</span>).</p>
+	</ul>
+	<p class="western">Guarde la receta actual:
+	pulse el botón Save (<span lang="it-IT"><img src="Funzionamento_ricette_6.gif" name="Immagine 65" align="bottom" width="24" height="24" border="0"/>
+</span>) y escriba el nombre deseado.</p>
+	<br/>
+	</body>
+</html>

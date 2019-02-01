@@ -1,0 +1,47 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Réinitialisation des alarmes</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Reconnaître des alarmes</h3>
+		<p class="western">Les alarmes sont gérées par l'utilisateur comme décrit dans le chapitre &ldquo;<font color="#0000ff"><u><a class="western" href="Funzionamento_allarmi_fr.html">Fonctionnement des alarmes</a></u></font>&rdquo;</p>
+		<p class="western">En entrant le code suivant dans la fonction &ldquo; <font color="#808000">void</font> loop(<font color="#808000">void</font>)&rdquo; de la page &ldquo;automation.cpp&rdquo; il est possible de reconnaître les alarmes par un bouton ATCM ou directement depuis le code plc.</p>
+		<pre class="western">
+		<font color="#808000">if</font> (Reset_alarms){
+        pthread_mutex_lock(&alarmevents_list_mutex);
+        {
+            <font color="#808000">for</font> (<font color="#808000">int</font> i = 0; i < _active_alarms_events_.count(); i++)
+            {
+                <font color="#808000">if</font> (! _active_alarms_events_.at(i)->isack)
+                {
+                    _active_alarms_events_.at(i)->ack = QDateTime::currentDateTime();
+                    _active_alarms_events_.at(i)->isack = <font color="#808000">true</font>;
+                }
+            }
+        }
+        pthread_mutex_unlock(&alarmevents_list_mutex);
+        doWrite_Reset_alarms(<font color="#808000">false</font>);
+    }</pre>
+		
+		<p class="western"><strong>ATTENTION:</strong> la variable &ldquo;Reset_alarms&rdquo; est une variable de la &ldquo;Crosstable&rdquo; (Type: BIT, Behavior: Read/Write).
+		<br/>
+		<br/>
+		<br/>
+			<h3 class="western">Réinitialisation des alarmes</h3>
+			<p class="western">Pour supprimer l'historique des alarmes, vous devez effectuer un &ldquo;Go to slot...&rdquo; &#8594; &ldquo;clicked&rdquo; sur un ATCMbutton (voir la section &ldquo;PAGE UNIQUE&rdquo; du chapitre  &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI_fr.html">Réalisation d'une automatisation</a></u></font>&rdquo;) 
+			et insérer, dans la fonction, le code suivant: </p>
+			<p class="western">system("rm -rf /local/data/alarms/*.log");</p>
+			<p class="western">Voir figure:</p>
+			<p class="western"><img src="Reset_allarmi_1.png" name="Immagine 30" align="bottom" width="379" height="74" border="0"/>
+	</body>
+</html>
