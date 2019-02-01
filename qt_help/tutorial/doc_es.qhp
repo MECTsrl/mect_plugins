@@ -146,13 +146,16 @@
 					<section title="Añadir bibliotecas al proyecto" ref="Aggiungere_librerie_es.html"/>
 					<section title="Ruta del proyecto" ref="Path_progetto_es.html"/>
 					</section>
+				<section title="Sinóptico (E/S locales)" ref="Sinottico_es.html"/>	
 				<section title="Variables de producto (E/S locales)" ref="Variabili_prodotto_es.html">	
 				<section title="Modelos TPAC1006 / TPAC1008_02" ref="Modelli_tpac1006_100801_100802_es.html"/>
 				<section title="Modelos TPAC1007" ref="Modelli_tpac1007_es.html"/>
+				<section title="Modelos TPAC1008_03" ref="Modelli_tpac100803_es.html"/>
 				<section title="Modelos TPLC050 / TPLC100" ref="Modelli_tplc050_100_es.html"/>
 					</section>
 				<section title="Configuración de entradas/salidas" ref="Config_ingressi_uscite_es.html">	
 				<section title="Configuración de entradas/salidas TPAC1006, TPAC1007 y TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802_es.html"/>
+				<section title="Configuración de entradas/salidas TPAC1008_03" ref="Config_ingressi_uscite_tpac100803_es.html"/>
 				<section title="Configuración de entradas/salidas TPLC050 y TPLC100" ref="Config_ingressi_uscite_tplc050_100_es.html"/>
 					</section>				
 				<section title="Variables de diagnóstico" ref="Variabili_diagnostica_es.html"/>
@@ -167,6 +170,42 @@
             <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
         </keywords>
         <files>
+			<file>Config_In_Analogici_5_12_tplc100_es.html</file>
+			<file>Config_In_Analogici_1_4_tplc100_es.html</file>
+			<file>Config_Encoder_tplc050_es.html</file>
+			<file>Schema_TPLC050.png</file>
+			<file>Schema_TPLC050_es.html</file>
+			<file>Schema_TPLC100.png</file>
+			<file>Schema_TPLC100_es.html</file>
+			<file>Config_PTO_tpac100803AD_es.html</file>
+			<file>Schema_TPAC100803AD_es.html</file>
+			<file>Schema_TPAC100803AD.png</file>
+			<file>Config_Encoder_tpac100803AD_es.html</file>
+			<file>Schema_TPAC100802AB_es.html</file>
+			<file>Schema_TPAC100802AB.png</file>
+			<file>Schema_TPAC100802AD_es.html</file>
+			<file>Schema_TPAC100802AD.png</file>
+			<file>Schema_TPAC100802AE_es.html</file>
+			<file>Schema_TPAC100802AE.png</file>
+			<file>Schema_TPAC100802AF_es.html</file>
+			<file>Schema_TPAC100802AF.png</file>
+			<file>Schema_TPAC100704AC_es.html</file>
+			<file>Schema_TPAC100704AC.png</file>
+			<file>Schema_TPAC100704AB_es.html</file>
+			<file>Schema_TPAC100704AB.png</file>
+			<file>Config_Encoder_tpac100802_es.html</file>
+			<file>Schema_TPAC100802AA_es.html</file>
+			<file>Schema_TPAC100802AA.png</file>
+			<file>Config_Encoder_tpac100704_es.html</file>
+			<file>Config_Out_Analogici_generico_tpac100704_es.html</file>
+			<file>Config_In_Analogici_generico_tpac100704_es.html</file>
+			<file>Config_dir_In_Out_digitali_tpac100704_es.html</file>
+			<file>Schema_TPAC100704AA_es.html</file>
+			<file>Schema_TPAC100704AA.png</file>
+			<file>Sinottico_es.html</file>
+			<file>Config_ingressi_uscite_tpac100803_es.html</file>
+			<file>Modelli_tpac100803_es.html</file>
+			<file>Reset_allarmi_1.png</file>
 			<file>Config_ingressi_uscite_tplc050_100_es.html</file>
 			<file>Config_ingressi_uscite_tpac1006_1007_100802_es.html</file>
 			<file>Modelli_tplc050_100_es.html</file>
