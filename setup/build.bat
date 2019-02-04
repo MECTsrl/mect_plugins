@@ -1,7 +1,7 @@
 @echo off
 
 rem memento cte/cte.pro:ATCM_VERSION (cte/CTE.pluginspec)
-SET REV=3.1.7
+SET REV=3.1.8
 SET REVISION="%REV%"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
@@ -30,6 +30,8 @@ echo MectSuite Tutorial help files
 mkdir %OUT_DIR%\Qt485\desktop\doc\qch  >> %ErrorLog%
 c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc.qch  >> %ErrorLog%
 c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_eng.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_eng.qch  >> %ErrorLog%	
+c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_fr.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_fr.qch  >> %ErrorLog%	
+c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_es.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_es.qch  >> %ErrorLog%	
 
 rem -----------------------------------------------------------------------------
 echo QtCreator designer plugins (distclean + qmake + make + install + distclean)
