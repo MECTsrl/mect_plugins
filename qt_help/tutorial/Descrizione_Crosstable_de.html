@@ -1,0 +1,194 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Beschreibung des Crosstable</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Beschreibung des Crosstable</h3>
+		<p class="western">Die Crosstable ist in Abschnitte unterteilt, von denen einige für den Benutzer zugänglich sind und andere mit den Gerätevariablen blockiert und vorkompiliert sind.</p>
+		<p class="western">Abschnitt &ldquo;Retentive&rdquo;, verlieren die Variablen in diesem Abschnitt ihren Wert nicht, wenn das Mect Gerät aus- und wieder eingeschaltet wird.</p> 
+		<p class="western">Abschnitt &ldquo;Non Retentive&rdquo;, großer Abschnitt für alle Variablen Ihres Projekts, die nach dem Ausschalten des Geräts nicht &ldquo;erinnert&rdquo; werden müssen.</p> 
+		<p class="western">Die Abschnitte &ldquo;Diagnostic&rdquo;, &ldquo;Local I/O&rdquo; e &ldquo;System&rdquo; können vom Benutzer teilweise modifiziert werden und können in Ihren Projekten verwendet werden, sie ermöglichen nicht nur das Verschieben von I/Os, 
+		sondern auch wichtige Informationen über den internen Betrieb des Mect Gerätes zu liefern.
+.</p>
+		<br/>
+		<center>
+		<table width="675" cellpadding="7" cellspacing="0">
+			<col width="76">
+			<col width="568">
+			<tr>
+				<td width="76" height="4" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western"><strong>Feld</strong></p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm" align ="center">
+					<p class="western"><strong>Beschreibung</strong></p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Priority</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Ermöglicht den Datenaustausch mit entfernten Geräten.</p>
+					<p class="western">- 0: Nicht aktiviert;</p>
+					<p class="western">- 1: aktiviert mit hoher Priorität; vorzugsweise für Variablen mit &ldquo;<strong>TCP</strong>&rdquo; Protokoll</p>
+					<p class="western">- 2: Aktiviert mit mittlerer Priorität; vorzugsweise für Variablen mit &ldquo;<strong>RTU</strong>&rdquo; Protokoll</p>
+					<p class="western">- 3: Aktiviert mit niedriger Priorität. Vorzugsweise für Variablen mit &ldquo;<strong>TCP</strong>&rdquo; Protokoll</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Update</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Definiert den Typ des Datenaustauschs, der mit entfernten Geräten aktiviert wird.</p>
+					<p class="western">-H: Die Variable wird nur aktualisiert, wenn sie auf der aktuellen Seite angezeigt wird;</p>
+					<p class="western">-P: Die Variable wird immer aktualisiert;</p>
+					<p class="western">-S: Die Variable wird immer aktualisiert und gespeichert langsam mit einer Zeit &ldquo;Slow Log Period&rdquo;
+					(Parameter Systemeditor);</p>
+					<p class="western">-F: wie &ldquo;S&rdquo; aber schnell und mit einer Zeit  &ldquo;Fast Log Period&rdquo; 
+					(Parameter Systemeditor);</p>
+					<p class="western">-V: Die Variable wird nur bei einer Änderung erfasst und historisiert;</p>
+					<p class="western">-X: Die Variable wird beim Aufruf durch die logShot() Funktion historisiert.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Var.Name</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Name der Variablen. Er darf nicht mehr als 30 Zeichen lang sein.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Type</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Es werden folgende Typen definiert:</p>
+					<p class="western">-BIT: boolesch;</p>
+					<p class="western">-BYTE: Byte;</p>
+					<p class="western">-BYTE_BIT: wählt ein BIT innerhalb eines Bytes aus;</p>
+					<p class="western">-WORD_BIT: wählt ein BIT innerhalb eines Wortes (16bit) aus;</p>
+					<p class="western">-DWORD_BIT: wählt einen BIT innerhalb eines Doppelwortes (32 Bit) aus;</p>
+					<p class="western">-UINT: : 16-Bit-Ganzzahl ohne Vorzeichen;</p>
+					<p class="western">-UINTBA: 16-Bit-Ganzzahl ohne Vorzeichen mit invertierten Bytes;</p>
+					<p class="western">-INT:  16-Bit-Ganzzahl mit Vorzeichen;</p>
+					<p class="western">-INTBA: 16-Bit-Ganzzahl mit Vorzeichen mit invertierten Bytes;</p>
+					<p class="western">-UDINT: 32-Bit-Ganzzahl ohne Vorzeichen;</p>
+					<p class="western">-UDINT....: 32-Bit-Ganzzahl ohne Vorzeichen mit invertierten Bytes;</p>
+					<p class="western">-DINT: 32-Bit-Ganzzahl mit Vorzeichen;</p>
+					<p class="western">-DINT....: 32-Bit-Ganzzahl mit Vorzeichen mit invertierten Bytes;</p>
+					<p class="western">-REAL: reelle;</p>
+					<p class="western">-REAL...: reelle mit invertierten Bytes.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Decimal</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Bei Ganzzahl- oder Reellevariablen gibt es die Anzahl der Dezimalstellen nach dem Komma an, mit dem die 
+					Variable dargestellt wird. Wenn die Variable vom Typ BYTE_BIT ist, zeigt WORD_BIT oder DWORD_BIT die 
+					Position des Bits von 1 an.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Protocol</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Gibt das Protokoll an, mit dem die Variable ausgetauscht wird:</p>
+					<p class="western">-PLC: Austauschvariable zwischen SPS und HMI</p>
+					<p class="western">-RTU: Variable, die auf einem entfernten Gerät auf Modbus RTU vorhanden ist</p>
+					<p class="western">-TCP: Variable, die auf einem entfernten Gerät über Modbus TCP vorhanden ist</p>
+					<p class="western">-TCPRTU: Variable, die auf einem entfernten Gerät am Modbus TCPRTU vorhanden ist</p>
+					<p class="western">-CANOPEN: Variable, die auf einem entfernten CANopen-Gerät vorhanden ist</p>
+					<p class="western">-RTU_SRV: Variable, die auf eine Anforderung eines RTU-Modbus-Masters reagiert</p>
+					<p class="western">-TCP_SRV: Variable, die auf eine Anforderung eines Modbus-TCP-Masters reagiert</p>
+					<p class="western">-TCPRTU_SRV: Variable, die auf eine Anforderung eines Modbus TCPRTU-Masters reagiert</p>
+					<p class="western">-MECT: Variable für das MECT-Protokoll</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">IP Address</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">IP-Adresse für Modbus TCP und TCPRTU, z.B.: 192.168.0.42</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Port</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Im Falle von NON PLC Variablen zeigt an, welchen Kommunikationsanschluss zu verwenden ist: Der 
+					Kommunikationsanschluss hängt von dem verwendeten Gerät ab.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Node ID</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Adresse des entfernten Geräteknotens. Im Falle der Adresse 0 ist das Schreiben Broadcast-Typ.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Register</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Modbus-Adresse des Registers, auf das zugegriffen werden soll.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Block</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Adresse des ersten Blockregisters. Bei Registern, die Teil eines Blocks sind, muss der Messwert
+					zusammengeführt werden.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Comment</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Wird als Kommentarfeld für die Variable verwendet. Sie wird vom System nicht verwendet.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Behavior</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Definiert, ob die Variable vom Typ &ldquo;lesen&rdquo;, &ldquo;lesen/schreiben&rdquo;,
+					&ldquo;alarm&rdquo; oder &ldquo;event&rdquo; ist.</p>
+				</td>
+			</tr>
+			<tr>
+				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
+					<p class="western">Blk Size</p>
+				</td>
+				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
+					<p class="western">Anzahl der Register im Block, maximal 64 Register.</p>
+				</td>
+			</tr>
+		</table>
+	</center>
+	
+	<br/>
+	</body>
+</html>

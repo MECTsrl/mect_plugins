@@ -1,0 +1,96 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Funktionalität Crosstable Editor</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	
+	<body>
+		<h3 class="western">Funktionalität Crosstable Editor</h3>
+		<ul>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><strong>Goto Section:</strong> ermöglicht die Navigation innerhalb des Crosstable.</p>
+			<ul>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm"><strong>Retentive</strong> [1 - 192]: ]: Variablen, die ihren Wert behalten, wenn das Gerät ausgeschaltet wird;</p>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm"><strong>Not Retentive</strong> [193 - 4999]: Variablen, die ihren Wert verlieren, wenn das Gerät ausgeschaltet wird;</p>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm"><strong>Diagnostic</strong> [5000 - 5299]: Diagnosevariablen. Sie werden bei der Kommunikation mit einem anderen Protokoll als der &ldquo;PLC&rdquo; verwendet. Weitere Informationen finden Sie im Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Variabili_diagnostica_de.html">Diagnosevariablen</a></u></font>&rdquo;</p>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm"><strong>Local I/O</strong> [5300 - 5389]: Eingangs- und Ausgangsvariablen des Geräts. Diese Variablen können umbenannt und modifiziert werden (in einigen Teilen), um mehr Flexibilität beim Schreiben der Anwendung zu ermöglichen. Weitere Informationen finden Sie im Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Variabili_prodotto_de.html">Produktvariablen</a></u></font>&rdquo;;	</p>
+			<li/>
+			<p class="western" style="margin-bottom: 0cm"><strong>System</strong> [5390 - 5472]: Systemvariablen. Weitere Informationen finden Sie im Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Variabili_prodotto_de.html">Produktvariablen</a></u></font>&rdquo;.</p>
+			</ul>
+		</ul>
+	
+	<ul>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><img src="Funzionalita_Crosstable_Editor_2.png" align="bottom" width="62" height="46" border="0"/>: ermöglicht es Ihnen, die leeren Zeilen des Crosstable zu erweitern oder zu komprimieren.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><img src="Funzionalita_Crosstable_Editor_3.png" align="bottom" width="64" height="46" border="0"/>: ermöglicht die Suche nach einer Variablen innerhalb des Crosstable.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><img src="Funzionalita_Crosstable_Editor_4.png" align="bottom" width="64" height="47" border="0"/>: ermöglicht das Hochladen der &ldquo;Crosstable.csv&rdquo; , die sich in einem anderen Projekt befindet. <u>Die importierte Datei überschreibt die aktuelle Datei zum Zeitpunkt des Speicherns.</u>.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><img src="Funzionalita_Crosstable_Editor_5.png" align="bottom" width="65" height="46" border="0"/>: ermöglicht es Ihnen, die zuletzt durchgeführte Aktion abzubrechen und zur vorherigen Konfiguration zurückzukehren.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><img src="Funzionalita_Crosstable_Editor_6.png" align="bottom" width="64" height="46" border="0"/>: ermöglicht es Ihnen, die aktuellen Einstellungen zu speichern. Wenn Sie eine Änderung vornehmen, erscheint der Rand der Schaltfläche in rot, ansonsten ist sie grün.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><img src="Funzionalita_Crosstable_Editor_7.png" align="bottom" width="66" height="46" border="0"/>: überprüft die Richtigkeit der Tabelle.</p>
+		<li/>
+		<p class="western" style="margin-bottom: 0cm"><img src="Funzionalita_Crosstable_Editor_8.png" align="bottom" width="65" height="46" border="0"/>: Startet das SPS-Programm. Wenn im Crosstable keine Fehler vorhanden sind, können Sie die SPS-Software öffnen. Weitere Informationen finden Sie im Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Aprire_software_PLC_de.html">Die SPS-Software Öffnen</a></u></font>&rdquo;.</p>
+	</ul>
+	<p class="western">Durch Drücken der rechten Maustaste auf der Tabelle können Sie einige Operationen durchführen: </p>
+	<p class="western"> <img src="Funzionalita_Crosstable_Editor_9.png" align="bottom" width="239" height="167" border="0"/></p>
+	<ul>
+		<li/>
+		<p class="western"><strong>Goto Line:</strong>  Wählt direkt die gewünschte Linie aus</p>
+		<li/>
+			<p class="western"><strong>Insert Blank Rows:</strong> : Fügt eine leere Zeile ein. </p>
+		<li/>
+			<p class="western"><strong>Clear Rows:</strong> : Löscht den Inhalt der ausgewählten Zeile.</p>
+		<li/>
+		<p class="western" ><strong>Delete Rows:</strong> Löscht eine oder mehrere ausgewählte Zeilen.</p>
+		<li/>
+		<p class="western"><strong>Copy Rows:</strong> Kopiert eine oder mehrere ausgewählte Zeilen.</p>
+		<li/>
+		<p class="western"><strong>Cut Rows:</strong> Schneidet eine oder mehrere ausgewählte Linien aus.</p>
+		<li/>
+		<p class="western"><strong>Paste Rows:</strong> Fügt eine oder mehrere ausgewählte Zeilen ein.</p>
+		<li/>
+		<p class="western"><strong>Paste MPNC005 / MPNC006 Modules:</strong> alle Variablen, die mit Remote-Modellen (MPNC005 und  
+		MPNC006) und den angeschlossenen Modulen (MPNC020 / MPNC030 / MPNC035)verknüpft sind, einfügen.</p>
+		<li/>
+		<p class="western"><strong>Paste TPLC050 Modules:</strong> alle Variablen, die mit Remote-Modellen (MPNC020 / MPNC030 / MPNC035) verknüpft sind, einfügen.</p>
+	</ul>
+		
+<br/>
+	<p class="western"><strong>ALLARM / EREIGNIS Variablen:</strong> </p>
+	<p class="western">Wenn wir eine Variable als Alarm/Ereignis verwenden wollen, müssen wir sie im Feld &ldquo;Behavior&rdquo; angeben,
+	aber es ist nur möglich, wenn:</p>
+	<ul>
+		<li/>
+		<p class="western">Das Feld &ldquo;Priority&rdquo; unterscheidet sich von &ldquo;0&rdquo;;</p>
+		<li/>
+		<p class="western">Das Feld &ldquo;Update&rdquo; unterscheidet sich von &ldquo;H&rdquo;;</p>
+		<li/>
+		<p class="western">Das Feld &ldquo;Type&rdquo; ist gleich &ldquo;BIT&rdquo;;</p>
+	</ul>
+	<p class="western">Mit diesen Einstellungen können Sie die Alarm-/Ereignisbedingung auswählen.</p>
+	<p class="western"> 
+	<img src="Funzionalita_Crosstable_Editor_1.png" name="Immagine112" align="bottom" width="900" height="71" border="0"/>
+</p>
+	<p class="western">Die im Dropdown-Menü vorhandenen Variablen sind alle im Crosstable vorhanden, einschließlich der des Systems,
+	mit Ausnahme der Variablen, die im Feld &ldquo;Update&rdquo; den Wert &ldquo;H&rdquo; und im Feld &ldquo;Priority&rdquo;
+	den Wert &ldquo;0&rdquo; haben.</p>
+	<br/>
+	</body>
+</html>

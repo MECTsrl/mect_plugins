@@ -1,0 +1,380 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Funktionsweise der Webschnittstelle</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Funktionsweise der Webschnittstelle</h3>
+		<p class="western">Das Bedienfeld ist mit einem Webserver ausgestattet, der den Zugriff mit dem Browser auf eine Reihe von 
+	WEBseiten ermöglicht, über die Sie einige Panel-Einstellungen überprüfen oder Upload- und Download-Vorgänge durchführen können.</p>
+	<p class="western">Die im Panel eingestellte IP-Adresse kann im HMI über die <strong>Info</strong>-Seite eingesehen werden, die über das 
+	Hauptmenü der Demo-Anwendung erreichbar ist.</p>
+	<p class="western">Um die Webschnittstelle zu verwenden, geben Sie die IP-Adresse des Panels in die URL-Leiste des von Ihnen 
+	verwendeten Browsers ein.</p>
+	<p class="western">Für den Zugriff auf die WEB-Schnittstelle ist ein Passwort erforderlich. Passwörter bestimmen die 
+	Zugriffsberechtigungen auf die Funktionalitäten der Webschnittstelle. Die Standardwerte sind wie folgt eingestellt</p>
+	<ul>
+		<li/>
+<p class="western">User : 111111</p>
+		<li/>
+<p class="western">SuperUser: 222222</p>
+		<li/>
+<p class="western">Admin: 1357924680</p>
+	</ul>
+	<p class="western">Die nach dem eingegebenen Passwort verfügbaren Funktionen der WEB-Schnittstelle sind in der folgenden 
+	Tabelle dargestellt:</p>
+	<table width="668" cellpadding="4" cellspacing="0">
+		<col width="158">
+		<col width="158">
+		<col width="158">
+		<col width="161">
+		<tr valign="top">
+			<td rowspan="2" width="158" style="border: none; padding: 0cm">
+				<p class="western">FUNKTIONALITÄT</p>
+			</td>
+			<td colspan="3" width="494" style="border: none; padding: 0cm">
+				<p class="western">ZUGRIFFSEBENE</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">               USER</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">       SUPERUSER</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">             ADMIN</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Manage Logs</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Manage Trend</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Manage Alarms</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Manage Recipes</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">LAN config</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Date and Time</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Display Settings</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Manage Configuration</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Manage Password</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Update Firmware</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western"><br/>
+
+				</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">	x	</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western">Reset Passwords</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western"><br/>
+
+				</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western"><br/>
+
+				</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western">x</p>
+			</td>
+		</tr>
+		<tr valign="top">
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western"><br/>
+
+				</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western"><br/>
+
+				</p>
+			</td>
+			<td width="158" style="border: none; padding: 0cm">
+				<p class="western"><br/>
+
+				</p>
+			</td>
+			<td width="161" style="border: none; padding: 0cm">
+				<p class="western"><br/>
+
+				</p>
+			</td>
+		</tr>
+	</table>
+	<h4 class="western"><u>Logs</u></h4>
+	<p class="western">Die Seite Logs startet die Komponente der Webschnittstelle, die für die Verwaltung von Historien vorgesehen ist.
+	 Es gibt drei Arten von Operationen, die an Historien durchgeführt werden können: die <strong>Aktualisierung</strong> der Definitionen von Teilhistorien und  
+	auf der Seite &ldquo;Manage Logs&rdquo; das <strong>Herunterladen</strong> und <strong>Löschen</strong> von Teil- und Gesamthistorien.</p>
+	<h4 class="western">Update LOG</h4>
+	<p class="western" >Die Update-Funktion für die Definitionen der Teilhistorie aktualisiert die Liste der verfügbaren Teilhistorien 
+	auf dem Panel. Die Definitionen der hochzuladenden Historie müssen Dateien im CSV-Format sein und die Datei muss mit dem Präfix 
+	 &ldquo;store&rdquo; beginnen: 
+	</p>
+	<p  class="western" ><strong>Datum</strong></p>
+	<p class="western" ><strong>Uhrzeit</strong></p>
+	<p  class="western" ><strong>VARIABLE 1</strong></p>
+	<p  class="western" ><strong>&hellip;</strong></p>
+	<p  class="western"><strong>VARIABLE N</strong></p>
+	<p class="western">Die Schnittstelle lädt jeweils eine CSV-Datei hoch, so dass Sie zum Hochladen mehrerer Definitionen 
+	mehrere Updates durchführen müssen.</p>
+	<h4 class="western">Downolad LOGS</h4>
+	<p class="western">Über das Web-Interface können Sie die Protokolle auf folgende Weise herunterladen:</p>
+	<ul>
+		<li/>
+<p class="western">Total /Partiell: Auswahl des Protokolls(log) &ldquo;Total&rdquo; oder eines der vorhandenen Teile, ohne Eingabe eines 
+		Eingabe eines Wertes in die Felder für das Datum, alle auf dem Panel vorhandenen Protokolle werden heruntergeladen.</p>
+		<li/>
+<p class="western">Total Tag /Partiell Tag:	Wenn Sie das Protokoll &ldquo;Total&rdquo; oder eines der aktuellen Partials-Protokolle auswählen und 
+		einen Wert in das Feld &ldquo;Initial Date&rdquo; eingeben, wird das Protokoll für den angegebenen Tag heruntergeladen.</p>
+		<li/>
+<p class="western">Tägliche Total in einem Zeitintervall /Tägliche Partials in einem Zeitintervall: Wenn Sie die 
+		 &ldquo;Total&rdquo; oder eines der aktuellen Partials-Protokolle auswählen und einen Wert in die Felder &ldquo;initial Date&rdquo; und &ldquo;FinalDate&rdquo;
+		eingeben, werden die auf dem Panel gespeicherten Tagesprotokolle in dem durch die angegebenen Daten festgelegten Zeitintervall heruntergeladen.</p>
+		<li/>
+<p class="western">Total einzigartig in einem Zeitintervall/Partiell einzigartig in einem Zeitintervall: Wenn Sie das Protokoll 
+		&ldquo;Total&rdquo; oder eines der aktuellen Partials auswählen und alle Informationen über das Zeitintervall &ldquo;Initial
+		Date&rdquo; &ldquo;Initial Time&rdquo; &ldquo;Final Date&rdquo; und &ldquo;Final Time&rdquo; " eingeben, wird eine einzige Protokolldatei heruntergeladen
+		, die alle im angegebenen Zeitintervall historisierten Daten enthält.</p>
+	</ul>
+	<h4 class="western">Delete LOGS</h4>
+	<p class="western">Das Web-Interface ermöglicht das Löschen:</p>
+	<ul>
+		<li/>
+<p class="western">die Definition von Teilprotokollen: Die Löschung erfolgt durch Auswahl der zu löschenden Teilprotokolle 
+    ohne Eingabe eines Zeitparameters.</p>
+		<li/>
+<p class="western">alle im System vorhandenen Protokolle: Der Abbruch erfolgt durch Auswahl des Protokolls &ldquo;Total&rdquo;
+		ohne Eingabe eines Zeitparameters.</p>
+		<li/>
+<p class="western">das Protokoll eines bestimmten Tages: Um das Protokoll eines bestimmten Tages zu löschen, wählen Sie 
+		das total protokoll und geben Sie im Feld &ldquo;Initial Date&rdquo; den Tag ein, für den Sie die Protokolle löschen möchten.</p>
+	</ul>
+	<p class="western">Die Felder &ldquo;Initial Time&rdquo;, &ldquo;Final	Date&rdquo; e &ldquo;Final Time&rdquo; müssen leer bleiben.</p>
+	<ul>
+		<li/>
+<p class="western">Protokolle, die sich auf ein Zeitintervall beziehen: Um Protokolle zwischen zwei Daten zu löschen, wählen 
+		Sie als Protokollart &ldquo;Total&rdquo; und stellen Sie die Daten &ldquo;Initial Date&rdquo;	und &ldquo;Final Date&rdquo; ein. Die Felder  &ldquo;Initial Time&rdquo; und
+		&ldquo;Final Time&rdquo; müssen leer bleiben.</p>
+	</ul>
+	<p class="western"><strong>HINWEIS:</strong> Bei Teilprotokollen ist es nicht möglich, Stornierungen vorzunehmen, die sich entweder auf einen 
+	Tag oder auf ein Zeitintervall beziehen, da Teilprotokolle aus den Gesamtprotokollen nur dann erzeugt 
+	werden, wenn der Benutzer den Download anfordert.</p>
+	<h4 class="western"><u>Trend</u></h4>
+	<p class="western">Die Trend-Seite startet den Interface-Bereich, der dem Trendmanagement gewidmet ist. Es gibt vier Arten 
+	von Operationen, die mit Trends durchgeführt werden können: <strong>das Update</strong>, der <strong>Download von Screenshots</strong> und auf der Seite &ldquo;Manage Trend&rdquo; der <strong>download</strong> und
+	das <strong>Löschen</strong>.</p>
+	<h4 class="western">Update 	</h4>
+	<p class="western">Die Aktualisierungsfunktion der Trendfamilie aktualisiert die Liste der auf dem Panel verfügbaren 
+	Trendfamilien. Die hochzuladenden Trendfamilien müssen in einem Archiv im Zip-Format komprimiert 
+	werden. Das Archiv besteht aus einer Liste von Dateien, die jeweils eine Art Trend beschreiben.</p>
+	<h4 class="western">Manage trend</h4>
+	<p class="western">Nachdem Sie die Trends gemäß der angegebenen Struktur hochgeladen haben, können Sie auf der Seite Manage Trend 
+	durch die Ordner navigieren, die die Trendfamilien selbst enthalten. Es ist möglich, eine Trendfamilie oder eine Reihe von Familien mit 
+	Mehrfachauswahl herunterzuladen oder zu löschen.
+	</p>
+	<h4 class="western"><u>Alarms</u></h4>
+	<p class="western">Die Seite Alarme startet die Web-Interface-Komponente für das Alarmmanagement.
+	<br/>
+Es gibt zwei Arten von Operationen, die für die Alarme durchgeführt werden können: Herunterladen und Löschen der Protokolle auf dem Bedienfeld.</p>
+	<h4 class="western"><u>Recipes</u></h4>
+	<p class="western">Auf der Seite Rezepte wird der Schnittstellenbereich für die Verwaltung von Rezepten gestartet. </p>
+	<p class="western">Es gibt drei Arten von Operationen, die an den Rezepten durchgeführt werden können: <strong>das Update</strong> und auf der Seite &ldquo;Manage
+	Recipes&rdquo;das <strong>Herunterladen</strong> und <strong>Löschen</strong>.</p>   
+	<h4 class="western">Update  </h4>
+	<p class="western">Die Funktion zum Aktualisieren von Rezepten aktualisiert die Liste der auf dem Bedienfeld verfügbaren 
+	Rezepte. Die hochzuladenden Rezepte müssen in einem Archiv im Zip-Format komprimiert werden. Das Archiv ist in Ordnern organisiert, von 
+	denen jeder einer Art von Rezept entspricht, und innerhalb jedes Ordners gibt es die verschiedenen Implementierungen einer Art von Rezept.</p>
+	<p class="western">Wenn wir zum Beispiel davon ausgehen, dass wir zwei Familien von Rezepten haben, eine zum Kühlen und 
+	eine zum Heizen innerhalb des Archivs, das die Rezepte enthält, werden wir die folgende Organisation haben:</p>
+	<p class="western">&#9500;&#9472;&#9472; cool</p>
+	<p class="western">&#9474; &#9500;&#9472;&#9472; cool_10</p>
+	<p class="western">&#9474; &#9500;&#9472;&#9472; cool_20</p>
+	<p class="western">&#9474; &#9492;&#9472;&#9472; cool_30</p>
+	<p class="western"><br/>
+<br/>
+
+	</p>
+	<p class="western">&#9492;&#9472;&#9472; hot</p>
+	<p class="western">    &#9500;&#9472;&#9472; hot_100</p>
+	<p class="western">    &#9500;&#9472;&#9472; hot_150</p>
+	<p class="western">    &#9500;&#9472;&#9472; hot_200</p>
+	<p class="western">    &#9492;&#9472;&#9472; hot_50</p>
+	<h4 class="western">Manage recipes</h4>
+	<p class="western">Nachdem Sie die Rezepte gemäß der angegebenen Struktur hochgeladen haben, können Sie auf der Seite Manage recipes durch die 
+	Ordner navigieren, die die Rezepte selbst enthalten. Es ist möglich, Rezepte  für die gesamte Rezeptfamilie herunterzuladen oder zu löschen, indem
+	Sie die Familie auswählen entweder für ein einzelnes Rezept, das zu einer Familie gehört, oder für
+	mehrere Rezepte, die zu derselben Familie gehören. </p>
+	<h4 class="western"><u>LAN Config</u></h4>
+	<p class="western">Auf dieser Seite können Sie die Netzwerkeigenschaften des Panels einstellen. Das Panel unterstützt nur 
+	eine statische Netzwerkkonfiguration, für die Sie die IP-Adresse, die Netzwerkmaske (NM), das Standard-Gateway (GW) und die DNS-Server (DNS1 und DNS2) 
+	definieren können.</p>
+	<h4 class="western"><u>Date and Time</u></h4>
+	<p class="western">Die Seite &ldquo;Date and Time&rdquo; erkennt automatisch das Datum und die Uhrzeit des PCs, auf dem der 
+	Browser läuft, der sich mit dem Panel verbindet, und ermöglicht es Ihnen, die auf dem Panel selbst erfassten Werte einzustellen .</p>
+	
+	<h4 class="western"><u>Display Settings</u></h4>
+	<p class="western">Auf der Seite Display Settings können Sie die folgenden Funktionen ändern:</p>
+	<ul>
+		<li/>
+<p class="western">Helligkeit der Anzeige: Es ist möglich, einen Helligkeitswert zwischen 0 und 100 
+   entsprechend der minimal und maximal zulässigen Helligkeit einzustellen.</p>
+		<li/>
+<p class="western">Bildschirmschoner: Sie können die Ausfallzeit der Anzeige einstellen, nach der Bildschirmschoner des 
+		Systems aktiviert wird. Der Sollwert muss in Sekunden angegeben werden. Ein Wert von 0 deaktiviert den Bildschirmschoner.</p>
+		<li/>
+<p class="western">Touch Calibration: Sie können den Vorgang zum Kalibrieren des dem Display zugeordneten Touchscreens 
+		starten. Die Kalibrierung unterbricht die Ausführung der normalerweise auf dem Bedienfeld aktiven HMI-und SPS-Software und erfordert, dass der 
+		Benutzer die auf dem Display markierten Punkte berührt. Nach Abschluss der Kalibrierung startet die HMI- und SPS-Software automatisch wieder. </p>
+	</ul>
+	<h4 class="western"><u>Manage Configuration</u></h4>
+	<p class="western">Ermöglicht es dem Benutzer, den Splash-Screen (splash.png) zu aktualisieren, der beim Start 
+	der HMI-Anwendung angezeigt werden kann.</p>
+	<h4 class="western"><u>Manage Password</u></h4>
+	<p class="western">PErmöglicht es dem Benutzer, der sich mit dem Passwort &ldquo;<i>User</i>&rdquo;  oder
+	&ldquo;<i>Super User</i>&rdquo; an der Benutzeroberfläche angemeldet hat, nur sein Passwort zu ändern. Das der Ebene &ldquo;<i>Admin</i>&rdquo; zugeordnete
+	Passwort kann nicht geändert werden. <strong>HINWEIS:</strong> Diese Passwörter unterscheiden sich von den in der HMI-Anwendung verwendeten Passwörtern.</p>
+	<h4 class="western"><u>Reset Passwords</u></h4> 
+
+	<p class="western">Die Funktion Passwörter zurücksetzen stellt die Passwörter der WEB-Schnittstelle auf den oben angegebenen Standardwert 
+	zurück. Sie ist nur für den Benutzer &ldquo;<i>Admin</i>&rdquo; zugänglich.</p>
+	<br/>
+	</body>
+</html>

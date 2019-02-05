@@ -1,0 +1,66 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Öffnen der SPS-software</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Öffnen der SPS-software</h3>
+	<p class="western">Die PLC-Software wird über die Schaltfläche <img src="Funzionalita_Crosstable_Editor_8.png" align="bottom" width="65" height="46" border="0"/> von Crosstable gestartet.</p>
+	<p class="western"><img src="Aprire_software_PLC_1.png" align="bottom" width="800" height="414" border="0"/></p>
+	
+	<p class="western"><strong>Die in der Crosstable vorhandenen Variablen entsprechen denen der SPS-Software</strong>. Die Aktualisierung der Liste der Variablen kann auf 3 Arten erfolgen:</p>
+	<ul>
+		<li/>
+		<p class="western">Drücken der Taste <img src="Funzionalita_Crosstable_Editor_7.png" align="bottom" width="66" height="46" border="0"/> der Crosstable</p>
+		<li/>
+		<p class="western">Build vom HMI-Teil: <img src="Compilazione_1.png" name="Immagine148" align="bottom" width="35" height="36" border="0"/></p>
+		<li/>
+		<p class="western">Deploy vom HMI-Teil: <img src="Aprire_software_PLC_2.png" align="bottom" width="41" height="41" border="0"/></p>
+	</ul>
+	<p class="western"><u>In der ATCMControl-Umgebung befinden sich die Crosstable-Variablen, die in das SPS-Projekt importiert wurden.</u></p>
+	<p class="western"><img src="Aprire_software_PLC_3.png" align="bottom" width="880" height="844" border="0"/></p>
+	<ul>
+			<li/>
+		<p class="western">Bei der Erweiterung von &ldquo;Configuration&rdquo; und	&ldquo;Resource1&rdquo; finden wir die Dateien &ldquo;<strong>Crosstable.gvl</strong>&rdquo;, &ldquo;<strong>Resource1.gvl</strong>&rdquo;  und verschiedene <strong>Task</strong>. </p>
+	</ul>
+	<p class="western"><img src="Aprire_software_PLC_4.png" align="bottom" width="310" height="346" border="0"/></p>
+	
+	<p class="western">Die Datei <strong>Crosstable.gvl</strong> ist die Datei, die alle <strong>globalen Variablen des Austauschs zwischen HMI und SPS</strong> enthält. Diese Datei sollte nur zum Lesen verwendet werden, um die Namen der Variablen zu kennen, und sollte niemals geändert werden. </p>
+	<p class="western">In der Datei <strong>Resource1.gvl</strong> werden alle <strong>globalen Variablen der SPS</strong> deklariert. In diese Datei können Sie Variablen einfügen, die von der HMI-Umgebung nicht benötigt werden. </p>
+	<p class="western">Es gibt 6  <strong>Task</strong>, die unterschiedliche <strong>Funktionalitäten</strong> und Zykluszeiten haben:</p>
+	<ul> 
+		<ul>
+			<li/>
+<p class="western">Task0_Init: Läuft nur beim Start der SPS und hat somit absolute Priorität. Wird in der Regel zur 
+			Initialisierung von Variablen verwendet.</p>
+			<li/>
+<p class="western">Task1_Alarms: hat Vorrang vor allen anderen task. Sie beginnt, wenn der Alarm ausgelöst wird und das in die 
+			Aufgabe eingegebene Programm nur einmal ausgeführt wird. Task1_Alarms wird neu gestartet, wenn jede neue Alarmbedingung eintritt.</p>
+			<li/>
+<p class="western">Task2_Events: hat Vorrang vor allen anderen task außer dem Task1_Alarms. Sie beginnt, wenn das Ereignis 
+			ausgelöst wird und das in die Aufgabe eingefügte Programm nur einmal ausgeführt wird. Task2_Events wird neu gestartet, wenn jede neue Ereignisbedingung eintritt.</p>
+			<li/>
+<p class="western">Task3_Fast_10ms: diese Task läuft alle 10ms.</p>
+			<li/>
+<p class="western">Task4_Normal_100ms: diese Task läuft alle 100ms.</p>
+			<li/>
+<p class="western">Task5_Slow_1000ms: diese Task läuft alle 1000ms</p>
+		</ul>
+	</ul>
+	<p class="western"><strong>HINWEIS:</strong> es ist ratsam <strong>Task4_Normal_100ms</strong> für die meisten Anwendungen zu verwenden. 
+	</p> 
+	<p class="western">Innerhalb jeder Task gibt es mindestens ein Programm, z.B. wenn Sie die Task5_Slow_1000ms 
+	erweitern, finden Sie das Slow_Inst1-Programm, wo Sie, in diesem Fall in der ST-Sprache, einen Teil Ihrer Anwendung implementieren können. 
+	Auf diese Weise ist es möglich, Code in die Programme zu schreiben, die in jeder Task vorhanden sind. </p>
+	<br/>
+	</body>
+</html>

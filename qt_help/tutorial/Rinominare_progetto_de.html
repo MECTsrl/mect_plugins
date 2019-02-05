@@ -1,0 +1,63 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Ein Projekt umbenennen</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+	<h3 class="western">Ein Projekt umbenennen</h3>
+	<p class="western">Um den mit QtCreator erstellten Projektordner umzubenennen, müssen Sie die folgenden Schritte ausführen:</p>
+	<ol>
+		<li/>
+<p class="western">Stellen Sie sicher, dass Sie das Projekt, das Sie umbenennen möchten, geschlossen haben.</p>
+		<li/>
+<p class="western">Benennen Sie den Projektordner um (fügen Sie keine Sonderzeichen (außer _) oder Leerzeichen ein).</p>
+		<li/>
+<p class="western">Löschen Sie die Datei mit der Erweiterung &ldquo;<strong>.pro.user</strong>&rdquo; aus dem Projektordner.</p>
+		<li/>
+<p class="western">Benennen Sie die Datei mit der Erweiterung &ldquo;<strong>.pro</strong>&rdquo; mit dem Namen, den Sie in Schritt 2 ausgewählt haben, um.</p>
+		<li/>
+<p class="western">Benennen Sie die Datei mit der Erweiterung &ldquo;<strong>.pro.shared</strong>&rdquo; mit dem Namen, den Sie in Schritt 2 ausgewählt haben, um.</p>
+		<li/>
+<p class="western">Öffnen Sie das neue Projekt von QtCreator.</p>
+		<li/>
+<p class="western">Wenn das folgende Bild erscheint, drücken Sie die Taste &ldquo;<strong>Configure Project</strong>&rdquo;.
+<img src="Rinominare_progetto_1.png" name="Immagine122" align="bottom" width="636" height="294" border="0"/></p>
+	</ol>
+	
+	<ol start="8">
+		<li/>
+<p class="western">Führen Sie einen &ldquo;Clean All&rdquo; und einen &ldquo;Run qmake&rdquo; aus, siehen Sie Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Errori_compilazione.html">Kompilierungsfehler</a></u></font>&rdquo;</p>
+		<li/>
+<p class="western">Machen Sie das &ldquo;Build&rdquo; des Projekts.</p>
+		<li/>
+<p class="western">Legen Sie die Parameter für das Senden des Projekts an das Gerät fest:
+	<ul>
+	<li/>
+<p class="western"><strong>Deaktivieren Sie </strong>, unter der Überschrift &ldquo;Upload files via SFTP&rdquo;, das flag &ldquo;<strong>Incremental deployment</strong>&rdquo;;</p>
+	</ul>
+	<p class="western"><img src="Trasferimento_applicazione_7.png" name="Immagine 62" align="bottom" width="699" height="329" border="0"/></p>
+	<ul>
+		<li/>
+<p class="western"><span lang="en-US">Klicken Sie auf &ldquo;Add Deploy Step&rdquo; und Wählen Sie &ldquo;<strong>Run custom remote command</strong>&rdquo;</span></p>
+	</ul>
+<p class="western"><img src="Trasferimento_applicazione_8.png" name="Immagine 69" align="bottom" width="685" height="417" border="0"/></p>
+	<ul>
+		<li/>
+<p class="western">Schreiben Sie &ldquo;<strong>stop</strong>&rdquo; (alles Kleinbuchstaben) und verschieben Sie den &ldquo;Run custom remote command&rdquo; Block um eine Position nach oben, Verwenden Sie den gelb markierten Pfeil (drücken Sie Details).</p>
+	</ul>
+<p class="western"><img src="Trasferimento_applicazione_9.png" name="Immagine 107" align="bottom" width="699" height="63" border="0"/></p>
+<p class="western">Das Endergebnis muss wie folgt sein:</p>
+<p class="western"><img src="Trasferimento_applicazione_10.png" name="Immagine 108" align="bottom" width="700" height="361" border="0"/></p></p>
+	</ol>
+		<br/>
+	</body>
+</html>

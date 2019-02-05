@@ -1,0 +1,47 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Alarme zurücksetzen</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Alarme anerkennen</h3>
+		<p class="western">Die Alarme werden vom Benutzer wie im Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Funzionamento_allarmi_de.html">Alarmfunktion</a></u></font>&rdquo; beschrieben verwaltet.</p>
+		<p class="western">Durch Eingabe des folgenden Codes in die Funktion &ldquo; <font color="#808000">void</font> loop(<font color="#808000">void</font>)&rdquo; der Seite &ldquo;automation.cpp&rdquo; ist es möglich, die Alarme über eine ATCM-Taste oder direkt aus dem SPS-Code anerkennen.</p>
+		<pre class="western">
+		<font color="#808000">if</font> (Reset_alarms){
+        pthread_mutex_lock(&alarmevents_list_mutex);
+        {
+            <font color="#808000">for</font> (<font color="#808000">int</font> i = 0; i < _active_alarms_events_.count(); i++)
+            {
+                <font color="#808000">if</font> (! _active_alarms_events_.at(i)->isack)
+                {
+                    _active_alarms_events_.at(i)->ack = QDateTime::currentDateTime();
+                    _active_alarms_events_.at(i)->isack = <font color="#808000">true</font>;
+                }
+            }
+        }
+        pthread_mutex_unlock(&alarmevents_list_mutex);
+        doWrite_Reset_alarms(<font color="#808000">false</font>);
+    }</pre>
+		
+		<p class="western"><strong>ACHTUNG:</strong> Die Variable &ldquo;Reset_alarms&rdquo; ist eine Variable des &ldquo;Crosstable&rdquo; (Type: BIT, Behavior: Read/Write).
+		<br/>
+		<br/>
+		<br/>
+			<h3 class="western">Alarme zurücksetzen</h3>
+			<p class="western">Um die Alarmhistorie zu löschen, müssen Sie &ldquo;Go to slot...&rdquo; &#8594; &ldquo;clicked&rdquo; auf einer ATCMbutton machen (siehen Sie Abschnit &ldquo;EINSEITIGE SEITE&rdquo; im Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI_de.html">Realisierung einer Automatisierung</a></u></font>&rdquo;) 
+			und innerhalb der Funktion den folgenden Code einfügen: </p>
+			<p class="western">system("rm -rf /local/data/alarms/*.log");</p>
+			<p class="western">Siehen Sie Abbildung:</p>
+			<p class="western"><img src="Reset_allarmi_1.png" name="Immagine 30" align="bottom" width="379" height="74" border="0"/>
+	</body>
+</html>

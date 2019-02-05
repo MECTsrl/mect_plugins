@@ -159,6 +159,7 @@
 				<section title="TPLC050 and TPLC100 Inputs / outputs configuration" ref="Config_ingressi_uscite_tplc050_100_eng.html"/>
 					</section>				
 				<section title="Diagnostic variables" ref="Variabili_diagnostica_eng.html"/>
+				<section title="Enable / disable Modbus RTU-TCP node" ref="Abilitazione_disabilitazione_nodo_eng.html"/>
 				<section title="Micro SD card insertion" ref="SD_card_eng.html"/>
 				<section title="VNC activation" ref="VNC_eng.html"/>	
 				<section title="CAN configuration" ref="Can_eng.html"/>		
@@ -170,6 +171,8 @@
             <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
         </keywords>
         <files>
+			<file>Abilitazione_disabilitazione_nodo.png</file>
+			<file>Abilitazione_disabilitazione_nodo_eng.html</file>
 			<file>Config_In_Analogici_5_12_tplc100_eng.html</file>
 			<file>Config_In_Analogici_1_4_tplc100_eng.html</file>
 			<file>Config_Encoder_tplc050_eng.html</file>

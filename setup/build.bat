@@ -8,7 +8,7 @@ SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\mect_plugins"
 SET PATH=%PATH%;C:\Qt485\desktop\mingw32\bin\
 
-SET TARGET_LIST=TP1043_01_A TP1043_01_B TP1043_02_A TP1043_02_B TP1057_01_A TP1057_01_B TP1070_01_A TP1070_01_B TP1070_01_C TP1070_02_E TPAC1005 TPAC1006 TPAC1007_03 TPAC1007_04_AA TPAC1007_04_AB TPAC1007_04_AC TPAC1008_01 TPAC1008_02_AA TPAC1008_02_AB TPAC1008_02_AD TPAC1008_02_AE TPAC1008_02_AF TPAC1008_03_AC TPAC1008_03_AD TPLC050_01_AA TPLC100_01_AA TPLC100_01_AB
+SET TARGET_LIST=TP1043_01_A TP1043_01_B TP1043_02_A TP1043_02_B TP1057_01_A TP1057_01_B TP1070_01_A TP1070_01_B TP1070_01_C TP1070_02_E TPAC1005 TPAC1006 TPAC1007_03 TPAC1007_04_AA TPAC1007_04_AB TPAC1007_04_AC TPAC1007_LV TPAC1008_01 TPAC1008_02_AA TPAC1008_02_AB TPAC1008_02_AD TPAC1008_02_AE TPAC1008_02_AF TPAC1008_03_AC TPAC1008_03_AD TPLC050_01_AA TPLC100_01_AA TPLC100_01_AB
 
 echo.
 echo ----------------------------------------
@@ -32,6 +32,7 @@ c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc.qhp -o %OUT_DIR%
 c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_eng.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_eng.qch  >> %ErrorLog%	
 c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_fr.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_fr.qch  >> %ErrorLog%	
 c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_es.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_es.qch  >> %ErrorLog%	
+c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_de.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_de.qch  >> %ErrorLog%	
 
 rem -----------------------------------------------------------------------------
 echo QtCreator designer plugins (distclean + qmake + make + install + distclean)

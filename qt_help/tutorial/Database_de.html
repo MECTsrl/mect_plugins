@@ -1,0 +1,85 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Zugriff auf MySQL/SQLite-Datenbanken</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Zugriff auf MySQL/SQLite-Datenbanken</h3>
+		<p class="western" >Um auf MySQL/SQLite-Datenbanken zuzugreifen, fügen Sie Folgendes zur Projektdatei(.pro) hinzu</p>
+<pre class="western" >&nbsp;&nbsp;&nbsp;QT += sql</pre>
+<pre class="western" >&nbsp;&nbsp;&nbsp;QTPLUGIN += qsqlite</pre>
+<p class="western">Geben Sie folgenden Code ein, z.B. in der Datei automation.cpp (Fehlerprüfungen fehlen):</p>
+	
+	<pre class="western" >
+	&nbsp;&nbsp;#include &lt;QtSql&gt 
+	&nbsp;&nbsp;#include &lt;QSqlDatabase&gt 
+	&nbsp;&nbsp;#include &lt;QDebug&gt
+	&nbsp;&nbsp;#include &lt;QSqlQuery&gt	</pre>
+	<pre class="western" >
+	&nbsp;&nbsp;QSqlDatabase db; //Database object</pre>
+
+<p class="western">Innerhalb des setup()</p>
+<pre class="western" >
+	&nbsp;&nbsp;db = QSqlDatabase::addDatabase(&quot;QSQLITE&quot;, &quot;ConnectionName&quot;);
+    db.setDatabaseName(&quot;/local/flash/root/test.sqlite&quot;);
+    if (!db.open()) {
+        qDebug() << QString(&quot;Error occurred opening the database. %1&quot;) .arg(db.databaseName());
+        qDebug() << QString(&quot;%1.&quot;)  .arg(db.lastError().text());
+    }
+    else  {
+        qDebug() << QString(&quot;Data base %1 Opened&quot;) .arg(db.databaseName());
+    }
+</pre>
+<p class="western">Der erste Parameter von addDatabase sagt, welcher Treiber verwendet werden soll (in diesem Fall der SQLite-Treiber), der zweite gibt der Verbindung einen Namen, und er wird verwendet, um mehr als eine DB gleichzeitig zu öffnen.</p>
+
+
+<p class="western">Innerhalb des loop()</p>
+<pre class="western" >{
+&nbsp;&nbsp;&nbsp;QString testo = &quot;SELECT * FROM TABELLA_X&quot; ;
+&nbsp;&nbsp;&nbsp;QSqlQuery query(testo, db); 
+&nbsp;&nbsp;&nbsp;testo += &quot;\n&quot;;
+&nbsp;&nbsp;&nbsp; if (!query.exec()) { 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;testo += QString(&quot;Open error [%1]&quot;).arg(db.lastError().text());
+&nbsp;&nbsp;&nbsp; } else { 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int n = 0; n &lt; query.record().count(); n++)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;testo += query.record().fieldName(n) + &quot; - &quot;; 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;testo += &quot;\n&quot;;
+	
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while(query.next()) { 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int n = 0; n &lt; query.record().count(); n++) 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;testo += query.value(n).toString() + &quot; | &quot;;
+	
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;testo += &quot;\n&quot;;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} 
+&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;query.finish(); 
+&nbsp;&nbsp;&nbsp;// 
+}</pre>
+<p class="western" >Im Code sollten Sie die Datei schließen, bzw. der Öffnungscode der DB sollte nur bei Bedarf ausgeführt werden und die Datei sollte unmittelbar danach in einer solchen Reihenfolge geschlossen werden.</p>
+<pre class="western" >
+// Closing DB 
+    if (db.isOpen())
+        db.close();</pre>
+	<p class="western" >Zusätzlich müssen Sie einen Ordner auf dem TPAC &ldquo;sqldrivers&rdquo; hinzufügen, der die symbolischen Links zu den DB-Interface-Plugins enthält:</p>
+	<pre class="western" >
+	mkdir sqldrivers
+	cd sqldrivers
+	ln –s /usr/lib/libsqlite* ./
+	ln –s /usr/lib/libqsqlite* ./
+	cd</pre>
+	<br/>
+	</body>
+</html>

@@ -1,0 +1,38 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Einfügen eines Popup-Fensters</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Einfügen eines Popup-Fensters</h3>
+	<p class="western">Es ist möglich, dem Drücken einer ATCM-Taste die Visualisierung eines Popup-Fensters zuassoziieren. Dieses 
+	Fenster kann beispielsweise ein Symbol für &ldquo;Information&rdquo;, &ldquo;Warnung&rdquo;
+	oder &ldquo;critische&rdquo; Meldung enthalten.</p>
+	<p class="western" >Folgen Sie dem Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Funzione_implementata_utente_de.html">
+	Vom Benutzer implementierte Funktion</a></u></font>&rdquo; und geben Sie den folgenden Code ein:</p>
+	
+	<pre class="western" >QMessageBox::information(this,trUtf8(&ldquo;USB error&rdquo;), trUtf8(&ldquo;Cannot mount the usb key&rdquo;));</pre>
+	
+	<p class="western" >In diesem Fall wird beim Drücken der Taste ein 
+	Fenster mit dem Symbol &ldquo;Information&rdquo; angezeigt.</p>
+	<p class="western" ><img src="Popup_1.png" name="Immagine236" align="bottom" width="269" height="143" border="0"/></p>
+	<p class="western" >Im Beispiel entspricht USB <i>error</i> dem Titel, während das Schreiben <i>Cannot
+	mount the usb key</i> die Nachricht ist.</p>
+	
+	<p class="western" >Um das Symbol &ldquo;Warnung&rdquo; anzuzeigen, schreiben Sie:</p>
+	<pre class="western" >QMessageBox::warning(this,trUtf8(&ldquo;USB	error&rdquo;), trUtf8(&ldquo;Cannot mount the usb key&rdquo;));</pre>
+	
+	<p class="western">Um das Symbol für die &ldquo;kritische&rdquo; Nachricht anzuzeigen, schreiben Sie:</p>
+	<pre class="western" >QMessageBox::critical(this,trUtf8(&ldquo;USB	error&rdquo;), trUtf8(&ldquo;Cannot mount the usb key&rdquo;));</pre>
+	<br/>
+	</body>
+</html>

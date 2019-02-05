@@ -158,7 +158,8 @@
 				<section title="Configuration des entrées/sorties TPAC1008_03" ref="Config_ingressi_uscite_tpac100803_fr.html"/>
 				<section title="Configuration des entrées/sorties TPLC050 et TPLC100" ref="Config_ingressi_uscite_tplc050_100_fr.html"/>
 					</section>				
-				<section title="Variables de diagnostic" ref="Variabili_diagnostica_fr.html"/>
+				<section title="Activer / désactiver un noeud Modbus RTU-TCP" ref="Variabili_diagnostica_fr.html"/>
+				<section title="Habilitar / deshabilitar nodo Modbus RTU-TCP" ref="Abilitazione_disabilitazione_nodo_fr.html"/>
 				<section title="Insertion de la carte micro SD" ref="SD_card_fr.html"/>
 				<section title="Activation VNC" ref="VNC_fr.html"/>	
 				<section title="Configuration CAN" ref="Can_fr.html"/>		
@@ -170,6 +171,8 @@
             <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
         </keywords>
         <files>
+			<file>Abilitazione_disabilitazione_nodo.png</file>
+			<file>Abilitazione_disabilitazione_nodo_fr.html</file>
 			<file>Config_In_Analogici_5_12_tplc100_fr.html</file>
 			<file>Config_In_Analogici_1_4_tplc100_fr.html</file>
 			<file>Config_Encoder_tplc050_fr.html</file>
