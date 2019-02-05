@@ -31,6 +31,7 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QString>
+#include <QLatin1String>
 #include <QtPlugin>
 #include <QDebug>
 #include <QAction>
@@ -55,7 +56,7 @@ public:
         setWidget(ctEditor);
         setContext(Core::Context("CTE.MainView"));
         setDisplayName(tr("MectSuite"));
-        setIcon(QIcon(szPathIMG + QString::fromAscii("Go to.png")));
+        setIcon(QIcon(szPathIMG + QLatin1String("Go to.png")));
         setPriority(0);
         setId("CTE.CTEMode");
         setContextHelpId(QString());
@@ -91,7 +92,7 @@ CTEPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     Q_UNUSED(arguments)
     Q_UNUSED(errorMessage)
 
-    QResource::registerResource(QString::fromAscii("./qtc.qrc"));
+    QResource::registerResource(QLatin1String("./qtc.qrc"));
 
     // Create a unique context for our own view, that will be used for the
     // menu entry later.
@@ -200,7 +201,7 @@ CTEPlugin::enableIfCT(ProjectExplorer::Project* p)
         return;
     }
     // Building Cross Table File Name
-    szFileCT = pd + QString::fromAscii("/") + QString::fromAscii(Constants::CT_PROJ_REL_PATH) + QString::fromAscii("/") + QString::fromAscii(Constants::CT_FILE_NAME);
+    szFileCT = pd + QLatin1String("/") + QLatin1String(Constants::CT_PROJ_REL_PATH) + QLatin1String("/") + QLatin1String(Constants::CT_FILE_NAME);
     qDebug()  << "Checking File: " << szFileCT;
     qDebug()  << "Project File Path; " << pd;
     // Any cross table in the project?

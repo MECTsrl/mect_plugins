@@ -19,6 +19,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QChar>
+#include <QLatin1String>
 #include <QLatin1Char>
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -42,7 +43,7 @@ QString szSpace(int nSpaces)
 QString     bool2String(bool logicalValue)
 // Ritorna Yes/No in funzione di logicalValue
 {
-    return (logicalValue ? QString::fromAscii("Yes") : QString::fromAscii("No"));
+    return (logicalValue ? QLatin1String("Yes") : QLatin1String("No"));
 }
 
 void splitFileName(const QString &fileName, QString &szPath, QString &szFile, QString &szSuffisso)
@@ -97,7 +98,7 @@ bool fileBackUp(const QString &szFile)
     bool    fRes = false;
 
     if (fileExists(szFile))  {
-        szFileDest.append(QString::fromAscii(".bak"));
+        szFileDest.append(QLatin1String(".bak"));
         QFile   destFile(szFileDest);
         // Elimina eventuale copia precedente del file
         if (destFile.exists())
@@ -315,7 +316,7 @@ void listClear(QStringList &lstRecValues, int nCols)
     int nCol = 0;
     lstRecValues.clear();
     for (nCol = 0; nCol < nCols; nCol++)  {
-        lstRecValues.append(QString::fromAscii(""));
+        lstRecValues.append(QLatin1String(""));
     }
 }
 

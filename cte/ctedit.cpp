@@ -12,6 +12,7 @@
 #include <QTableWidgetItem>
 #include <QModelIndexList>
 #include <QString>
+#include <QLatin1String>
 #include <QRect>
 #include <QMessageBox>
 #include <QRegExp>
@@ -75,22 +76,22 @@
 #undef  WORD_BIT
 
 
-const QString szDEF_IP_PORT = QString::fromAscii("502");
-const QString szCT_FILE_NAME = QString::fromAscii("Crosstable.csv");
-const QString szEMPTY_IP = QString::fromAscii("0.0.0.0");
-const QString szCrossCompier = QString::fromAscii("ctc");
-const QString szTemplateFile = QString::fromAscii("template.pri");
-const QString szEnvFile = QString::fromAscii("EnvVars.txt");
-const QString szPLCEnvVar = QString::fromAscii("PLCUNIXINSTPATH");
-const QString szProExt = QString::fromAscii(".pro");
-const QString szPLCFILE = QString::fromAscii("plc");
-// const QString szPLCExt = QString::fromAscii(".txt");
-const QString szPLCExt = QString::fromAscii(".4cp");
-const QString szPLCDir = QString::fromAscii("plc");
-const QString szINIFILE = QString::fromAscii("system.ini");
-const QString szFileQSS = QString::fromAscii("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
+const QString szDEF_IP_PORT = QLatin1String("502");
+const QString szCT_FILE_NAME = QLatin1String("Crosstable.csv");
+const QString szEMPTY_IP = QLatin1String("0.0.0.0");
+const QString szCrossCompier = QLatin1String("ctc");
+const QString szTemplateFile = QLatin1String("template.pri");
+const QString szEnvFile = QLatin1String("EnvVars.txt");
+const QString szPLCEnvVar = QLatin1String("PLCUNIXINSTPATH");
+const QString szProExt = QLatin1String(".pro");
+const QString szPLCFILE = QLatin1String("plc");
+// const QString szPLCExt = QLatin1String(".txt");
+const QString szPLCExt = QLatin1String(".4cp");
+const QString szPLCDir = QLatin1String("plc");
+const QString szINIFILE = QLatin1String("system.ini");
+const QString szFileQSS = QLatin1String("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
 // CrossTable originale del Modello corrente
-const QString szTemplateCTFile = QString::fromAscii("C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
+const QString szTemplateCTFile = QLatin1String("C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
 
 // Version Number
 #ifndef ATCM_VERSION
@@ -98,7 +99,7 @@ const QString szTemplateCTFile = QString::fromAscii("C:/Qt485/desktop/share/qtcr
 #endif
 #define _STR(x) #x
 #define STR(x) _STR(x)
-const QString szVERSION = QString::fromAscii(STR(ATCM_VERSION));
+const QString szVERSION = QLatin1String(STR(ATCM_VERSION));
 
 ctedit::ctedit(QWidget *parent) :
     QDialog(parent),
@@ -235,7 +236,7 @@ ctedit::ctedit(QWidget *parent) :
     // Lista Prodotti
     lstProductNames.clear();
     for (nCol = AnyTPAC; nCol < MODEL_TOTALS; nCol++)  {
-        lstProductNames.append(QString::fromAscii(product_name[nCol]));
+        lstProductNames.append(QLatin1String(product_name[nCol]));
     }
     // Caricamento delle varie Combos
     // Combo delle Porte Seriali
@@ -252,60 +253,60 @@ ctedit::ctedit(QWidget *parent) :
     ui->cboSections->blockSignals(oldState);
     // Combo Priority
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Enabling the exchange of data with remote devices:\n"));
-    szToolTip.append(QString::fromAscii("0 - Disabled\n"));
-    szToolTip.append(QString::fromAscii("1 - Enabled High Priority\n"));
-    szToolTip.append(QString::fromAscii("2 - Enabled Medium Priority\n"));
-    szToolTip.append(QString::fromAscii("3 - Enabled Low Priority"));
+    szToolTip.append(QLatin1String("Enabling the exchange of data with remote devices:\n"));
+    szToolTip.append(QLatin1String("0 - Disabled\n"));
+    szToolTip.append(QLatin1String("1 - Enabled High Priority\n"));
+    szToolTip.append(QLatin1String("2 - Enabled Medium Priority\n"));
+    szToolTip.append(QLatin1String("3 - Enabled Low Priority"));
     for  (nCol = 0; nCol < nNumPriority; nCol++)   {
         ui->cboPriority->addItem(lstPriority[nCol], lstPriority[nCol]);
     }
     ui->cboPriority->setToolTip(szToolTip);
     // Combo Update
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("PLC Refresh Rate:\n"));
-    szToolTip.append(QString::fromAscii("H - Only in current page\n"));
-    szToolTip.append(QString::fromAscii("P - Permanent\n"));
-    szToolTip.append(QString::fromAscii("S - Permanent Slow Logging\n"));
-    szToolTip.append(QString::fromAscii("F - Permanent Fast Logging\n"));
-    szToolTip.append(QString::fromAscii("V - Permanent Logging if Changed\n"));
-    szToolTip.append(QString::fromAscii("X - Permanent Logging on Shot"));
+    szToolTip.append(QLatin1String("PLC Refresh Rate:\n"));
+    szToolTip.append(QLatin1String("H - Only in current page\n"));
+    szToolTip.append(QLatin1String("P - Permanent\n"));
+    szToolTip.append(QLatin1String("S - Permanent Slow Logging\n"));
+    szToolTip.append(QLatin1String("F - Permanent Fast Logging\n"));
+    szToolTip.append(QLatin1String("V - Permanent Logging if Changed\n"));
+    szToolTip.append(QLatin1String("X - Permanent Logging on Shot"));
     for  (nCol=0; nCol<lstUpdateNames.count(); nCol++)   {
         ui->cboUpdate->addItem(lstUpdateNames[nCol], lstUpdateNames[nCol]);
     }
     ui->cboUpdate->setToolTip(szToolTip);
     // ToolTip nome variabile
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Name of the variable to be used in HMI:\n"));
-    szToolTip.append(QString::fromAscii("Must follow C++ variable naming conventions"));
+    szToolTip.append(QLatin1String("Name of the variable to be used in HMI:\n"));
+    szToolTip.append(QLatin1String("Must follow C++ variable naming conventions"));
     ui->txtName->setToolTip(szToolTip);
     // Combo TipoCrossTable
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Variable Data Type"));
+    szToolTip.append(QLatin1String("Variable Data Type"));
     for  (nCol=0; nCol<lstTipi.count(); nCol++)   {
         ui->cboType->addItem(lstTipi[nCol], lstTipi[nCol]);
     }
     ui->cboType->setToolTip(szToolTip);
     // Decimals
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Number of decimal places to display data if from 0 to 4,\n"));
-    szToolTip.append(QString::fromAscii("otherwise is the position of the variable that contains the number of decimal places\n"));
-    szToolTip.append(QString::fromAscii("In the case of BIT variables, it is the position of the bit as low as 1"));
+    szToolTip.append(QLatin1String("Number of decimal places to display data if from 0 to 4,\n"));
+    szToolTip.append(QLatin1String("otherwise is the position of the variable that contains the number of decimal places\n"));
+    szToolTip.append(QLatin1String("In the case of BIT variables, it is the position of the bit as low as 1"));
     ui->txtDecimal->setToolTip(szToolTip);
     // Combo Tipo Bus
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Protocol with the remote device"));
+    szToolTip.append(QLatin1String("Protocol with the remote device"));
     for  (nCol=0; nCol<lstProtocol.count(); nCol++)   {
         ui->cboProtocol->addItem(lstProtocol[nCol], lstProtocol[nCol]);
     }
     ui->cboProtocol->setToolTip(szToolTip);
     // Indirizzo IP
     szToolTip.clear();    // Lista Priorità
-    szToolTip.append(QString::fromAscii("IP address for TCP, TCP_RTU, TCP_SRV, TCPRTU SRV like 192.168.0.42"));
+    szToolTip.append(QLatin1String("IP address for TCP, TCP_RTU, TCP_SRV, TCPRTU SRV like 192.168.0.42"));
     ui->txtIP->setToolTip(szToolTip);
     // Porta di comunicazione
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("TCP Communication Port, e.g. 502") );
+    szToolTip.append(QLatin1String("TCP Communication Port, e.g. 502") );
     ui->txtPort->setToolTip(szToolTip);
     // Combo Porta seriale
     szToolTip.clear();
@@ -313,34 +314,34 @@ ctedit::ctedit(QWidget *parent) :
     ui->cboPort->setToolTip(szToolTip);
     // Indirizzo nodo remoto
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Remode Node Address 0..255\n"));
-    szToolTip.append(QString::fromAscii("\tFor RTU 1..247\n"));
-    szToolTip.append(QString::fromAscii("\tFor TCP 0 or 255"));
+    szToolTip.append(QLatin1String("Remode Node Address 0..255\n"));
+    szToolTip.append(QLatin1String("\tFor RTU 1..247\n"));
+    szToolTip.append(QLatin1String("\tFor TCP 0 or 255"));
     ui->txtNode->setToolTip(szToolTip);
     // Check Input Register
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("For Modbus Client:\n"));
-    szToolTip.append(QString::fromAscii("Check to mark as INPUT REGISTER\n"));
-    szToolTip.append(QString::fromAscii("instead of HOLDING REGISTER\n"));
+    szToolTip.append(QLatin1String("For Modbus Client:\n"));
+    szToolTip.append(QLatin1String("Check to mark as INPUT REGISTER\n"));
+    szToolTip.append(QLatin1String("instead of HOLDING REGISTER\n"));
     ui->chkInputRegister->setToolTip(szToolTip);
     // Register
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("For Modbus:\n"));
-    szToolTip.append(QString::fromAscii("ADR=[0..65535]\n\n"));
-    szToolTip.append(QString::fromAscii("For Modbus Server: (RTU_SRV, TCP_SRV or TCPRTU_SRV):\n"));
-    szToolTip.append(QString::fromAscii("ADR=[0..4095]"));
+    szToolTip.append(QLatin1String("For Modbus:\n"));
+    szToolTip.append(QLatin1String("ADR=[0..65535]\n\n"));
+    szToolTip.append(QLatin1String("For Modbus Server: (RTU_SRV, TCP_SRV or TCPRTU_SRV):\n"));
+    szToolTip.append(QLatin1String("ADR=[0..4095]"));
     ui->txtRegister->setToolTip(szToolTip);
     // Block
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Address of the first register of the block"));
+    szToolTip.append(QLatin1String("Address of the first register of the block"));
     ui->txtBlock->setToolTip(szToolTip);
     // Block size
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Number of registers in the block"));
+    szToolTip.append(QLatin1String("Number of registers in the block"));
     ui->txtBlockSize->setToolTip(szToolTip);
     // Combo Behavior
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Variable behavior: Reading, Reading and Writing, Alarm, Event"));
+    szToolTip.append(QLatin1String("Variable behavior: Reading, Reading and Writing, Alarm, Event"));
     for  (nCol=0; nCol<lstBehavior.count(); nCol++)   {
         ui->cboBehavior->addItem(lstBehavior[nCol], lstBehavior[nCol]);
     }
@@ -392,7 +393,7 @@ ctedit::ctedit(QWidget *parent) :
     QRegExp regExprIP(szExp);
     ui->txtIP->setValidator(new QRegExpValidator(regExprIP, this));
     // Validator per Nome variabile e Comment
-    QString szNameExp = QString::fromAscii("\\w+");
+    QString szNameExp = QLatin1String("\\w+");
     QRegExp regExprName(szNameExp);
     ui->txtName->setValidator(new QRegExpValidator(regExprName, this));
     ui->txtName->setMaxLength(MAX_IDNAME_LEN);
@@ -415,8 +416,8 @@ ctedit::ctedit(QWidget *parent) :
     // Model Name
     ui->lblModel->setText(szEMPTY);
     // Stringhe generiche per gestione dei formati di Data e ora
-    m_szFormatDate = QString::fromAscii("yyyy.MM.dd");
-    m_szFormatTime = QString::fromAscii("hh:mm:ss");
+    m_szFormatDate = QLatin1String("yyyy.MM.dd");
+    m_szFormatTime = QLatin1String("hh:mm:ss");
     // Variabili di stato globale dell'editor
     m_isCtModified = false;
     m_isConfModified = false;
@@ -503,7 +504,7 @@ void    ctedit::setProjectPath(QString szProjectPath)
     if (projectDir.exists() && ! szProjectPath.isEmpty())  {
         projectDir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
         QStringList filesList;
-        filesList.append(QString::fromAscii("*.pro"));
+        filesList.append(QLatin1String("*.pro"));
         QStringList lstFile = projectDir.entryList(filesList);
 
         if (lstFile.count() > 0)  {
@@ -547,7 +548,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         szFile = szFileCT;
     }
     else {
-        szFile = QFileDialog::getOpenFileName(this, QString::fromAscii("Open Crosstable File"), szFileCT, QString::fromAscii("Crosstable File (%1)") .arg(szCT_FILE_NAME));
+        szFile = QFileDialog::getOpenFileName(this, QLatin1String("Open Crosstable File"), szFileCT, QString::fromAscii("Crosstable File (%1)") .arg(szCT_FILE_NAME));
     }
     // Tries to Open CT File
     if (! szFile.isEmpty())   {
@@ -582,7 +583,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
             // nModel = lstProductNames.indexOf(m_szCurrentModel);
             // qDebug() << QString::fromAscii("Model in List: %1") .arg(nModel);
             nModel = searchModelInList(m_szCurrentModel);
-            ui->lblModel->setStyleSheet(QString::fromAscii("background-color: LightCyan"));
+            ui->lblModel->setStyleSheet(QLatin1String("background-color: LightCyan"));
             ui->lblModel->setToolTip(getModelInfo(nModel));
             qDebug() << QString::fromAscii("selectCTFile: Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
             m_szTemplateCTFile = QString(szTemplateCTFile) .arg(m_szCurrentModel);
@@ -595,7 +596,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         // Se il modello non è stato trovato in template.pri oppure nella lista modelli definiti vale comunque AnyTPAC ma il salvataggio è disabilitato
         // (Viene ripulita la variabile m_szCurrentModel)
         if (nModel == AnyTPAC)  {
-            ui->lblModel->setStyleSheet(QString::fromAscii("background-color: Red"));
+            ui->lblModel->setStyleSheet(QLatin1String("background-color: Red"));
             m_szMsg = QString::fromAscii("No Model Type Found in file: <%1>\nor Model Unknown: <%2>") .arg(szTemplateFile) .arg(m_szCurrentModel);
             warnUser(this, szMectTitle, m_szMsg);
             m_szCurrentModel.clear();
@@ -632,10 +633,10 @@ bool    ctedit::selectCTFile(QString szFileCT)
                     QList<QStringList>  lstMessages;
                     QList<int>  lstColSizes;
                     // Preparing Header Row
-                    lstRow.append(QString::fromAscii("Row"));
-                    lstRow.append(QString::fromAscii("Project Variable"));
-                    lstRow.append(QString::fromAscii("Template Variable"));
-                    lstRow.append(QString::fromAscii("Action"));
+                    lstRow.append(QLatin1String("Row"));
+                    lstRow.append(QLatin1String("Project Variable"));
+                    lstRow.append(QLatin1String("Template Variable"));
+                    lstRow.append(QLatin1String("Action"));
                     // Preparing Col Sizes
                     lstColSizes.append(- nRowColWidth);
                     lstColSizes.append(lstHeadSizes[colName]);
@@ -643,14 +644,14 @@ bool    ctedit::selectCTFile(QString szFileCT)
                     lstColSizes.append(lstHeadSizes[colName] * 2);
                     // Adding Header Row
                     lstMessages.append(lstRow);
-                    m_szMsg = QString::fromAscii("Found [%1] Differences between Project and Template Cross Table files\n\n[%2]\n\nAlign Project to Template ?")
-                            .arg(nDiff) .arg(m_szTemplateCTFile);
+                    m_szMsg = QString::fromAscii("Found [%1] Differences between Project and [%2] Template Cross Table file\n\nAlign Project to Template ?")
+                            .arg(nDiff) .arg(m_szCurrentModel);
                     for (nErr = 0; nErr < lstDifferences.count(); nErr++)  {
                         int nPos = lstDifferences[nErr];
                         QString szCTVar = QString::fromAscii(lstCTRecords[nPos].Tag).trimmed();
                         QString szTemplVar = QString::fromAscii(lstTemplateRecs[nPos].Tag).trimmed();
-                        szCTVar = szCTVar.isEmpty() ? QString::fromAscii(" --- ") : szCTVar;
-                        szTemplVar = szTemplVar.isEmpty() ? QString::fromAscii(" --- ") : szTemplVar;
+                        szCTVar = szCTVar.isEmpty() ? QLatin1String(" --- ") : szCTVar;
+                        szTemplVar = szTemplVar.isEmpty() ? QLatin1String(" --- ") : szTemplVar;
                         // Formatting Row
                         lstRow.clear();
                         lstRow.append(QString::fromAscii("%1") .arg(nPos + 1, 5, 10));
@@ -666,7 +667,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
                     if (nResList == QDialog::Accepted)  {
                         lstUndo.append(lstCTRecords);
                         nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, lstActions, true);
-                        qDebug() << QString::fromAscii("Applied Differences to CT from Template");
+                        qDebug() << QLatin1String("Applied Differences to CT from Template");
                         ctable2Grid();
                         saveCTFile();
                     }
@@ -752,7 +753,7 @@ bool    ctedit::ctable2Grid()
     ui->tblCT->setRowCount(0);
     ui->tblCT->clear();
     ui->tblCT->setColumnCount(colTotals);
-    qDebug() << QString::fromAscii("ctable2Gid()");
+    qDebug() << QLatin1String("ctable2Gid()");
     // Caricamento elementi
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Covert CT Record 2 User Values
@@ -793,7 +794,7 @@ bool    ctedit::ctable2Grid()
 
     }
     else  {
-        qDebug() << QString::fromAscii("Error Loading Rows");
+        qDebug() << QLatin1String("Error Loading Rows");
     }
     // Return value
     this->setCursor(Qt::ArrowCursor);
@@ -806,11 +807,11 @@ void ctedit::on_cmdHideShow_toggled(bool checked)
     // Titolo del Bottone
     if (checked)  {
         m_fShowAllRows = true;
-        // ui->cmdHideShow->setText(QString::fromAscii("Hide"));
+        // ui->cmdHideShow->setText(QLatin1String("Hide"));
     }
     else  {
         m_fShowAllRows = false;
-        // ui->cmdHideShow->setText(QString::fromAscii("Show"));
+        // ui->cmdHideShow->setText(QLatin1String("Show"));
     }
     // Show-Hide Rows
     showAllRows(m_fShowAllRows);
@@ -1079,7 +1080,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
         szTemp = ui->cboPort->currentText();
     else
         szTemp = ui->txtPort->text();
-//    qDebug() << QString::fromAscii("Port: ") << szTemp;
+//    qDebug() << QLatin1String("Port: ") << szTemp;
 
     lstRecValues[colPort] = szTemp.trimmed();
     // Node ID
@@ -1166,7 +1167,7 @@ bool ctedit::iface2values(QStringList &lstRecValues)
 void ctedit::on_cmdBlocchi_clicked()
 {
     if (! riassegnaBlocchi())  {
-        m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
+        m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
         warnUser(this, szMectTitle, m_szMsg);
     }
     // Refresh abilitazioni interfaccia
@@ -1189,7 +1190,7 @@ void ctedit::saveCTFile()
     nErr = globalChecks();
     if (nErr)  {
         // Ci sono errori, salvo comunque ?
-        m_szMsg = QString::fromAscii("There are errors in Data. Save anyway?");
+        m_szMsg = QLatin1String("There are errors in Data. Save anyway?");
         if (! queryUser(this, szMectTitle, m_szMsg, false))
             return;
     }
@@ -1720,46 +1721,46 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QMenu gridMenu(this);
     // Items del Menu contestuale
     // Renum Blocks
-    //cIco = QIcon(szPathIMG + QString::fromAscii("Blocks.png"));
+    //cIco = QIcon(szPathIMG + QLatin1String("Blocks.png"));
     //QAction *menuBlocks = gridMenu.addAction(cIco, trUtf8("Renum Blocks"));
     //menuBlocks->setEnabled(true);
     // Goto Line
-    cIco = QIcon(szPathIMG + QString::fromAscii("Goto.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("Goto.png"));
     QAction *menuRow = gridMenu.addAction(cIco, trUtf8("Goto Line\t\t(Ctrl+L)"));
     menuRow->setEnabled(true);
     // Sep0
     gridMenu.addSeparator();
     // Inserisci righe
-    cIco = QIcon(szPathIMG + QString::fromAscii("List-add.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("List-add.png"));
     QAction *insRows = gridMenu.addAction(cIco, trUtf8("Insert Blank Rows\t\t(Ins)"));
     insRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // insRows->setShortcut(Qt::Key_Insert);
 
     // Cancella righe
-    cIco = QIcon(szPathIMG + QString::fromAscii("Edit-clear.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("Edit-clear.png"));
     QAction *emptyRows = gridMenu.addAction(cIco, trUtf8("Clear Rows\t\t(Del)"));
     emptyRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // emptyRows->setShortcut(Qt::Key_Delete);
     // Elimina righe
-    cIco = QIcon(szPathIMG + QString::fromAscii("Edit-trash.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("Edit-trash.png"));
     QAction *remRows = gridMenu.addAction(cIco, trUtf8("Delete Rows"));
     remRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // Sep1
     gridMenu.addSeparator();
     // Copia righe (Sempre permesso)
-    cIco = QIcon(szPathIMG + QString::fromAscii("Copy.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("Copy.png"));
     QAction *copyRows = gridMenu.addAction(cIco, trUtf8("Copy Rows\t\t(Ctrl+C)"));
     copyRows->setEnabled(selection.count() > 0);
     // copyRows->setShortcut(Qt::Key_Copy);
     // Taglia righe
-    cIco = QIcon(szPathIMG + QString::fromAscii("Cut.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("Cut.png"));
     QAction *cutRows = gridMenu.addAction(cIco, trUtf8("Cut Rows\t\t(Ctrl+X)"));
     cutRows->setEnabled(selection.count() > 0 && m_nGridRow < MIN_DIAG - 1);
     // cutRows->setShortcut(Qt::Key_Cut);
     // Sep 2
     gridMenu.addSeparator();
     // Paste Rows
-    cIco = QIcon(szPathIMG + QString::fromAscii("edit-paste.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("edit-paste.png"));
     QAction *pasteRows = gridMenu.addAction(cIco, trUtf8("Paste Rows\t\t(Ctrl+V)"));
     pasteRows->setEnabled(fClipSourceOk && m_nGridRow < MIN_DIAG - 1);
     // pasteRows->setShortcut(Qt::Key_Paste);
@@ -1792,7 +1793,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
             }
         }
         if (m_nGridRow < MIN_DIAG - 1 && isMPNC)  {
-            cIco = QIcon(szPathIMG + QString::fromAscii("Card_32.png"));
+            cIco = QIcon(szPathIMG + QLatin1String("Card_32.png"));
             gridMenu.addSeparator();
             editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNC006"));
         }
@@ -1806,7 +1807,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
             }
         }
         if (m_nGridRow < MIN_DIAG - 1 && isMPNE)  {
-            cIco = QIcon(szPathIMG + QString::fromAscii("Card_32.png"));
+            cIco = QIcon(szPathIMG + QLatin1String("Card_32.png"));
             gridMenu.addSeparator();
             editMPNE = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE10"));
         }
@@ -1963,16 +1964,16 @@ void ctedit::pasteSelected()
     // No Records copied
     fUsed = false;
     if (! fClipSourceOk)  {
-        m_szMsg = QString::fromAscii("Can't Copy as Copy Buffer is Empty or Invalid");
+        m_szMsg = QLatin1String("Can't Copy as Copy Buffer is Empty or Invalid");
         fUsed = true;
     }
     // Paste in System Area
     else if (m_nGridRow >= MAX_NONRETENTIVE - 1)  {
-        m_szMsg = QString::fromAscii("Can't paste rows in System Area");
+        m_szMsg = QLatin1String("Can't paste rows in System Area");
         fUsed = true;
     }
     else if(m_nGridRow + lstPastedRecords.count() > MAX_NONRETENTIVE - 1)  {
-        m_szMsg = QString::fromAscii("Pasted Rows could overlap to System Area");
+        m_szMsg = QLatin1String("Pasted Rows could overlap to System Area");
         fUsed = true;
     }
     // Error detected
@@ -1995,7 +1996,7 @@ void ctedit::pasteSelected()
             }
             // Query confirm of used if any row is used
             if (fUsed)  {
-                m_szMsg = QString::fromAscii("Some of destination rows may be used. Paste anyway ?");
+                m_szMsg = QLatin1String("Some of destination rows may be used. Paste anyway ?");
                 fUsed = ! queryUser(this, szMectTitle, m_szMsg);
             }
             // No row used or overwrite confirmed
@@ -2004,7 +2005,7 @@ void ctedit::pasteSelected()
             }
         }
         else  {
-            m_szMsg = QString::fromAscii("The Copy Buffer Excedes System Variables Limit. Rows not copied");
+            m_szMsg = QLatin1String("The Copy Buffer Excedes System Variables Limit. Rows not copied");
             warnUser(this, szMectTitle, m_szMsg);
         }
         m_szMsg = QString::fromAscii("Rows Pasted: %1") .arg(nPasted);
@@ -2075,7 +2076,7 @@ void ctedit::insertRows()
         m_rebuildTimingTree = true;
     }
     else  {
-        m_szMsg = QString::fromAscii("Too Many Rows selected, passed limit of User Variables!");
+        m_szMsg = QLatin1String("Too Many Rows selected, passed limit of User Variables!");
         displayStatusMessage(m_szMsg);
         selection.clear();
         return;
@@ -2099,7 +2100,7 @@ void ctedit::emptySelected()
 
     // Check Modif. and append data to Undo List
     if (selection.isEmpty() || m_nGridRow >= MIN_DIAG - 1)  {
-        m_szMsg = QString::fromAscii("Can't remove rows in System Area");
+        m_szMsg = QLatin1String("Can't remove rows in System Area");
         displayStatusMessage(m_szMsg);
         selection.clear();
         return;
@@ -2155,7 +2156,7 @@ void ctedit::removeSelected()
 
     // Check Modif. and append data to Undo List
     if (selection.isEmpty() || m_nGridRow >= MIN_DIAG - 1)  {
-        m_szMsg = QString::fromAscii("Can't remove rows in System Area");
+        m_szMsg = QLatin1String("Can't remove rows in System Area");
         displayStatusMessage(m_szMsg);
         selection.clear();
         return;
@@ -2210,7 +2211,7 @@ void ctedit::cutSelected()
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
 
     if (m_nGridRow >= MIN_DIAG - 1)  {
-        m_szMsg = QString::fromAscii("Can't remove rows in System Area");
+        m_szMsg = QLatin1String("Can't remove rows in System Area");
         selection.clear();
         displayStatusMessage(m_szMsg);
         return;
@@ -2327,7 +2328,7 @@ void ctedit::on_cmdImport_clicked()
     int     nTotal = 0;
     bool    fRes = false;
 
-    szSourceFile = QFileDialog::getOpenFileName(this, QString::fromAscii("Import From Crosstable File"), m_szCurrentCTFile, QString::fromAscii("Crosstable File (%1)") .arg(szCT_FILE_NAME));
+    szSourceFile = QFileDialog::getOpenFileName(this, QLatin1String("Import From Crosstable File"), m_szCurrentCTFile, QString::fromAscii("Crosstable File (%1)") .arg(szCT_FILE_NAME));
     if (! szSourceFile.isEmpty())  {
         if (checkCTFile(szSourceFile))  {
             szMsg = QString::fromAscii("Rows from %1 to %2 will be overwritten !!\nDo you want to continue?") .arg(MIN_RETENTIVE) .arg(MAX_NONRETENTIVE);
@@ -2362,7 +2363,7 @@ void ctedit::on_cmdImport_clicked()
                     }
                     else {
                         szMsg = QString::fromAscii("Error Loading Crosstable from file:\n%1") .arg(szSourceFile);
-                        szMsg.append(QString::fromAscii("\nOriginal Content Reloaded"));
+                        szMsg.append(QLatin1String("\nOriginal Content Reloaded"));
                         warnUser(this, szMectTitle, szMsg);
                         on_cmdUndo_clicked();
                     }
@@ -2468,7 +2469,7 @@ void ctedit::gotoRow()
     // if (checkFormFields(m_nGridRow, lstFields, true) > 0)
     //     return;
     // Input Dialog per Numero riga
-    int nRow = QInputDialog::getInt(this, QString::fromAscii("Row to Jump To"),
+    int nRow = QInputDialog::getInt(this, QLatin1String("Row to Jump To"),
                                  QString::fromAscii("Enter Row Number to Jump to:"), m_nGridRow + 1, 1, DimCrossTable, 1, &fOk);
     if (fOk)  {
         nRow--;
@@ -2497,12 +2498,12 @@ void ctedit::on_cmdSearch_clicked()
     QString szText;
 
     szText.clear();
-    szText = QInputDialog::getItem(this, QString::fromAscii("Variable Name"),
-                                            QString::fromAscii("Enter Variable Name:"), lstUsedVarNames, 0, true, &fOk, Qt::Dialog);
+    szText = QInputDialog::getItem(this, QLatin1String("Variable Name"),
+                                            QLatin1String("Enter Variable Name:"), lstUsedVarNames, 0, true, &fOk, Qt::Dialog);
     if (fOk)  {
         // Ricerca sequenziale della stringa
         for (nRow = 0; nRow < lstCTRecords.count(); nRow++)    {
-            QString szVarName = QString::fromAscii(lstCTRecords[nRow].Tag);
+            QString szVarName = QLatin1String(lstCTRecords[nRow].Tag);
             if (QString::compare(szText, szVarName, Qt::CaseSensitive) == 0)  {
                 break;
             }
@@ -2551,20 +2552,20 @@ void ctedit::on_cmdCompile_clicked()
     szFileName.prepend(szSLASH);
     szFileName.prepend(m_szCurrentPLCPath);
     szTemp = szFileName;
-    szTemp.prepend(QString::fromAscii("-g"));
+    szTemp.prepend(QLatin1String("-g"));
     lstArguments.append(szTemp);
     fileBackUp(szFileName);
     // Parametro 3: -i Nome del file .h (Forced LowerCase)
     szFileName = QString::fromAscii("%1.h") .arg(m_szCurrentCTName.toLower());
     szTemp = szFileName;
-    szTemp.prepend(QString::fromAscii("-i"));
+    szTemp.prepend(QLatin1String("-i"));
     lstArguments.append(szTemp);
     szFileName.prepend(m_szCurrentCTPath);
     fileBackUp(szFileName);
     // Parametro 4: -s Nome del file .h (Forced LowerCase)
     szFileName = QString::fromAscii("%1.cpp") .arg(m_szCurrentCTName.toLower());
     szTemp = szFileName;
-    szTemp.prepend(QString::fromAscii("-s"));
+    szTemp.prepend(QLatin1String("-s"));
     lstArguments.append(szTemp);
     szFileName.prepend(m_szCurrentCTPath);
     fileBackUp(szFileName);
@@ -2574,14 +2575,14 @@ void ctedit::on_cmdCompile_clicked()
     // qDebug() << szCommand << lstArguments;
     procCompile.start(szCommand, lstArguments);
     if (!procCompile.waitForStarted())  {
-        m_szMsg = QString::fromAscii("Error Starting Crosstable Compiler!\n");
+        m_szMsg = QLatin1String("Error Starting Crosstable Compiler!\n");
         m_szMsg.append(szCommand);
         warnUser(this, szMectTitle, m_szMsg);
         goto exit_compile;
     }
     // Attesa termine comando
     if (!procCompile.waitForFinished())  {
-        m_szMsg = QString::fromAscii("Error Running Crosstable Compiler!\n");
+        m_szMsg = QLatin1String("Error Running Crosstable Compiler!\n");
         m_szMsg.append(szCommand);
         warnUser(this, szMectTitle, m_szMsg);
         goto exit_compile;
@@ -2591,13 +2592,13 @@ void ctedit::on_cmdCompile_clicked()
     nExitCode = procCompile.exitCode();
     if (nExitCode != 0)  {
         m_szMsg = QString::fromAscii("Exit Code of Crosstable Compiler: %1\n") .arg(nExitCode);
-        szCompErr = QString::fromAscii(baCompErr.data());
+        szCompErr = QLatin1String(baCompErr.data());
         m_szMsg.append(szCompErr);
         warnUser(this, szMectTitle, m_szMsg);
         // TODO: Analisi errore del Cross Compiler
     }
     else {
-        m_szMsg = QString::fromAscii("Crosstable Correctly Compiled");
+        m_szMsg = QLatin1String("Crosstable Correctly Compiled");
         notifyUser(this, szMectTitle, m_szMsg);
     }
 
@@ -2628,9 +2629,9 @@ QString ctedit::getModelName()
             szLine = templateFile.readLine();
             szLine = szLine.trimmed();
             // Search TYPE string in Line
-            if (szLine.startsWith(QString::fromAscii("TYPE"), Qt::CaseSensitive))  {
+            if (szLine.startsWith(QLatin1String("TYPE"), Qt::CaseSensitive))  {
                 // qDebug() << QString::fromAscii("Model Line: %1") .arg(szLine);
-                nPos = szLine.indexOf(QString::fromAscii("="));
+                nPos = szLine.indexOf(QLatin1String("="));
                 if (nPos > 0)  {
                     szModel = szLine.mid(nPos + 1).trimmed();
                     szModel.remove(szDOUBLEQUOTE);
@@ -2753,7 +2754,7 @@ void ctedit::tabSelected(int nTab)
             lstCTRecords = configMPNC->localCTRecords;
             // Rinumera Blocchi con i cambiamenti selezionati (e ricarica griglia)
             if (! riassegnaBlocchi())  {
-                m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
+                m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
                 warnUser(this, szMectTitle, m_szMsg);
             }
             m_isCtModified = true;
@@ -2774,7 +2775,7 @@ void ctedit::tabSelected(int nTab)
             lstCTRecords = configMPNE->localCTRecords;
             // Rinumera Blocchi con i cambiamenti selezionati (e ricarica griglia)
             if (! riassegnaBlocchi())  {
-                m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
+                m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
                 warnUser(this, szMectTitle, m_szMsg);
             }
             m_isCtModified = true;
@@ -2838,10 +2839,10 @@ void ctedit::enableInterface()
     // Salva sempre abilitato, bordo green se non ci sono salvataggi pendenti
     ui->cmdSave->setEnabled(! m_szCurrentModel.isEmpty());
     if (m_isCtModified)  {
-        ui->cmdSave->setStyleSheet(QString::fromAscii("border: 2px solid red;"));
+        ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid red;"));
     }
     else  {
-        ui->cmdSave->setStyleSheet(QString::fromAscii("border: 2px solid green;"));
+        ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid green;"));
     }
     ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
     ui->fraCondition->setEnabled(true);
@@ -2970,20 +2971,20 @@ int ctedit::globalChecks()
     lstUniqueVarNames.clear();
     // Ricaricamento della liste Device-Nodi per i controlli di unicità registro
     // Rebuild Server-Device-Nodes structures
-    qDebug() << QString::fromAscii("globalChecks(): Starting");
+    qDebug() << QLatin1String("globalChecks(): Starting");
     if (! checkServersDevicesAndNodes())  {
-        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot continue checks !");
+        m_szMsg = QLatin1String("Error checking Device and Nodes structure, cannot continue checks !");
         warnUser(this, szMectTitle, m_szMsg);
         return 1;
     }
-    qDebug() << QString::fromAscii("globalChecks(): checkServersDevicesAndNodes Done");
+    qDebug() << QLatin1String("globalChecks(): checkServersDevicesAndNodes Done");
     // Ripulitura Array Server ModBus (1 per ogni Seriale + Protocolli TCP_SRV e TCPRTU_SRV
     for (nRow = 0; nRow < srvTotals; nRow++)  {
         serverModBus[nRow].nProtocol = -1;
         serverModBus[nRow].nPort = -1;
         serverModBus[nRow].nodeId = -1;
     }
-    qDebug() << QString::fromAscii("globalChecks(): Clean Servers List Done");
+    qDebug() << QLatin1String("globalChecks(): Clean Servers List Done");
     // Ciclo Globale su tutti gli Items di CT
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Controlla solo righe utilizzate
@@ -3020,7 +3021,7 @@ int ctedit::globalChecks()
         }
         delete errWindow;
     }
-    qDebug() << QString::fromAscii("globalChecks(): Ended");
+    qDebug() << QLatin1String("globalChecks(): Ended");
     return nErrors;
 }
 int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal)
@@ -3058,7 +3059,7 @@ int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &
             }
             // If Var is defined and of a correct type, insert in list
             if (f2Add && fUpdateOk)  {
-                lstVars.append(QString::fromAscii(lstCTRecords[nRow].Tag));
+                lstVars.append(QLatin1String(lstCTRecords[nRow].Tag));
             }
         }
     }
@@ -3164,7 +3165,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     }
     // Controllo Lunghezza (si può sfiorare solo in lettura da file)
     if (szVarName.length() > MAX_IDNAME_LEN)  {
-        szTemp = QString::fromAscii("Name Lenght Exceedes: ") + QString::number(MAX_IDNAME_LEN) + QString::fromAscii(" chars. Will be truncated");
+        szTemp = QLatin1String("Name Lenght Exceedes: ") + QString::number(MAX_IDNAME_LEN) + QLatin1String(" chars. Will be truncated");
         fillErrorMessage(nRow, colName, errCTNameTooLong, szVarName, szTemp, chSeverityWarning, &errCt);
         lstCTErrors.append(errCt);
         nErrors++;
@@ -3341,14 +3342,14 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         /*
         // Per RTU valori 0..247
         else if (nProtocol == RTU && nNodeID > nMaxRTUNodeID)  {
-            szTemp = QString::fromAscii("Port: ") + lstValues[colPort] + QString::fromAscii("Must be from 0 to ") + QString::number(nMaxRTUNodeID);
+            szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String("Must be from 0 to ") + QString::number(nMaxRTUNodeID);
             fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }
         // Per TCP sono ammessi solo i valori 0 o 255
         else if (nProtocol == TCP && (nNodeID > 0 || nNodeID < nMaxNodeID))  {
-            szTemp = QString::fromAscii("Port: ") + lstValues[colPort] + QString::fromAscii("Must be from 0 or ") + QString::number(nMaxNodeID);
+            szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String("Must be from 0 or ") + QString::number(nMaxNodeID);
             fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
@@ -3369,14 +3370,14 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         else  {
             // Controllo su Porta
             if (serverModBus[srvTCP].nPort != nPort)  {
-                szTemp = QString::fromAscii("Port: ") + lstValues[colPort] + QString::fromAscii(" Vs TCP Server Port: ") + QString::number(serverModBus[srvTCP].nPort);
+                szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String(" Vs TCP Server Port: ") + QString::number(serverModBus[srvTCP].nPort);
                 fillErrorMessage(nRow, colPort, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
             // Controllo su Node ID
             if (serverModBus[srvTCP].nodeId != nNodeID)  {
-                szTemp = QString::fromAscii("Node Id: ") + lstValues[colNodeID] + QString::fromAscii(" Vs TCP Server Node Id: ") + QString::number(serverModBus[srvTCP].nodeId);
+                szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs TCP Server Node Id: ") + QString::number(serverModBus[srvTCP].nodeId);
                 fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
@@ -3394,14 +3395,14 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         else  {
             // Controllo su Porta
             if (serverModBus[srvTCPRTU].nPort != nPort)  {
-                szTemp = QString::fromAscii("Port: ") + lstValues[colPort] + QString::fromAscii(" Vs TCP_RTU Server Port: ") + QString::number(serverModBus[srvTCPRTU].nPort);
+                szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String(" Vs TCP_RTU Server Port: ") + QString::number(serverModBus[srvTCPRTU].nPort);
                 fillErrorMessage(nRow, colPort, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
             // Controllo su Node ID
             if (serverModBus[srvTCPRTU].nodeId != nNodeID)  {
-                szTemp = QString::fromAscii("Node Id: ") + lstValues[colNodeID] + QString::fromAscii(" Vs TCP_RTU Server Node Id: ") + QString::number(serverModBus[srvTCPRTU].nodeId);
+                szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs TCP_RTU Server Node Id: ") + QString::number(serverModBus[srvTCPRTU].nodeId);
                 fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
@@ -3421,7 +3422,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             else {
                 // Controllo su Node ID
                 if (serverModBus[nPort].nodeId != nNodeID)  {
-                    szTemp = QString::fromAscii("Node Id: ") + lstValues[colNodeID] + QString::fromAscii(" Vs RTU Server Node Id: ") + QString::number(serverModBus[nPort].nodeId);
+                    szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs RTU Server Node Id: ") + QString::number(serverModBus[nPort].nodeId);
                     fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
                     lstCTErrors.append(errCt);
                     nErrors++;
@@ -3651,13 +3652,13 @@ void ctedit::on_cboVariable1_currentIndexChanged(int index)
             m_vtAlarmVarType = lstCTRecords[nRow].VarType;
             // Recupera il # decimali della variabile
             nDecimals = lstCTRecords[nRow].Decimal;
-            // qDebug() << "Row First Variable in Alarm (Row - Name - nType - Type):" << nRow << szVarName << m_vtAlarmVarType << QString::fromAscii(varTypeName[m_vtAlarmVarType]);
-            QString szVar1Type = QString::fromAscii(varTypeNameExtended[m_vtAlarmVarType]);
-            szVar1Type.prepend(QString::fromAscii("["));
-            szVar1Type.append(QString::fromAscii("]"));
-            szVar1Type.append(QString::fromAscii(" - [Dec: "));
+            // qDebug() << "Row First Variable in Alarm (Row - Name - nType - Type):" << nRow << szVarName << m_vtAlarmVarType << QLatin1String(varTypeName[m_vtAlarmVarType]);
+            QString szVar1Type = QLatin1String(varTypeNameExtended[m_vtAlarmVarType]);
+            szVar1Type.prepend(QLatin1String("["));
+            szVar1Type.append(QLatin1String("]"));
+            szVar1Type.append(QLatin1String(" - [Dec: "));
             szVar1Type.append(QString::number(nDecimals));
-            szVar1Type.append(QString::fromAscii("]"));
+            szVar1Type.append(QLatin1String("]"));
             ui->lblTypeVar1->setText(szVar1Type);
             // Disabilita le voci per Rising and falling
             if (m_vtAlarmVarType == BIT || m_vtAlarmVarType == BYTE_BIT || m_vtAlarmVarType == WORD_BIT || m_vtAlarmVarType == DWORD_BIT)  {
@@ -4052,7 +4053,7 @@ void ctedit::on_cboUpdate_currentIndexChanged(int index)
         return;
     // Per variabili di tipo H spegne la possibilità di essere un allarme
     if (index == Htype)  {
-        // qDebug() << QString::fromAscii("Clear Alarm");
+        // qDebug() << QLatin1String("Clear Alarm");
         // Se la variabile era allarme ripulisce la selezione
         if (ui->cboBehavior->currentIndex() >= behavior_alarm)
             ui->cboBehavior->setCurrentIndex(-1);
@@ -4110,7 +4111,7 @@ void ctedit::on_cmdPLC_clicked()
     if (! szPathPLCApplication.isEmpty())  {
         // qDebug() << QString::fromAscii("Env. %1 Variable: <%2>") .arg(szPLCEnvVar) .arg(szPathPLCApplication);
         // To be modified with specifics of PLC Application
-        szTemp = QString::fromAscii("%1");
+        szTemp = QLatin1String("%1");
         // Remove %1
         szPathPLCApplication.remove(szTemp, Qt::CaseInsensitive);
         // Remove doublequote
@@ -4179,10 +4180,10 @@ void ctedit::on_chkInputRegister_stateChanged(int state)
         QString szStyle;
 
         if (state == Qt::Checked)  {
-            szStyle = QString::fromAscii("color: Red");
+            szStyle = QLatin1String("color: Red");
         }
         else  {
-            szStyle = QString::fromAscii("color: Black");
+            szStyle = QLatin1String("color: Black");
         }
         ui->chkInputRegister->setStyleSheet(szStyle);
         ui->lblInputRegister->setStyleSheet(szStyle);
@@ -4214,7 +4215,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         // Save su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Save)) {
             if (m_nCurTab == TAB_CT)  {
-                // qDebug() << QString::fromAscii("Save");
+                // qDebug() << QLatin1String("Save");
                 if (m_isCtModified)
                     on_cmdSave_clicked();
                 return true;
@@ -4223,7 +4224,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         // Find su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Find)) {
             if (m_nCurTab == TAB_CT)  {
-                // qDebug() << QString::fromAscii("Find");
+                // qDebug() << QLatin1String("Find");
                 on_cmdSearch_clicked();
                 return true;
             }
@@ -4231,7 +4232,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         // Undo su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Undo)) {
             if (m_nCurTab == TAB_CT)  {
-                // qDebug() << QString::fromAscii("Undo");
+                // qDebug() << QLatin1String("Undo");
                 if (! lstUndo.isEmpty())
                     on_cmdUndo_clicked();
                 return true;
@@ -4239,7 +4240,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         }
         // Goto Line su Tab CrossTable Editor
         if (keyEvent->key() == Qt::Key_L && nPrevKey == Qt::Key_Control)  {
-            // qDebug() << QString::fromAscii("CTRL-L");
+            // qDebug() << QLatin1String("CTRL-L");
             if (m_nCurTab == TAB_CT)  {
                 gotoRow();
                 return true;
@@ -4254,7 +4255,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                     jumpToGridRow(nextRow, false);
 //                    bool fRowOk = false;
 //                    // Enter su Editing Form
-//                    // qDebug() << QString::fromAscii("Enter in Form");
+//                    // qDebug() << QLatin1String("Enter in Form");
 //                    if (! isFormEmpty() && isLineModified(m_nGridRow)) {
 //                        fRowOk = updateRow(m_nGridRow);
 //                        if (fRowOk)  {
@@ -4274,7 +4275,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 }
                 else if (obj == ui->tblCT)  {
                     // Enter su Grid
-                    // qDebug() << QString::fromAscii("Enter in Grid");
+                    // qDebug() << QLatin1String("Enter in Grid");
                     // Salto a riga successiva
                     jumpToGridRow(findNextVisibleRow(m_nGridRow), false);
                     return true;
@@ -4287,7 +4288,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         if (obj == ui->tblCT)  {
             // Tasto Insert
             if (keyEvent->key() == Qt::Key_Insert) {
-                // qDebug() << QString::fromAscii("Insert");
+                // qDebug() << QLatin1String("Insert");
                 insertRows();
                 return true;
             }
@@ -4312,7 +4313,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
         }
-        // qDebug() << QString::fromAscii("Pressed Key Value") << keyEvent->key();
+        // qDebug() << QLatin1String("Pressed Key Value") << keyEvent->key();
         nPrevKey = keyEvent->key();
     }
     // Pass event to standard Event Handler
@@ -4551,7 +4552,7 @@ void ctedit::on_txtName_editingFinished()
                     // Test solo per righe diverse dalla riga corrente e utilizzate
                     if (nRow != m_nGridRow && lstCTRecords[nRow].UsedEntry)  {
                         // Alarm Source Variable
-                        if (szOldVarName == QString::fromAscii(lstCTRecords[nRow].ALSource))  {
+                        if (szOldVarName == QLatin1String(lstCTRecords[nRow].ALSource))  {
                             strcpy(lstCTRecords[nRow].ALSource, szVarName.toAscii().data());
                             // Aggiornamento diretto delle variabile in Grid
                             tItem = ui->tblCT->item(nRow, colSourceVar);
@@ -4559,7 +4560,7 @@ void ctedit::on_txtName_editingFinished()
                             // qDebug() << QString::fromAscii("Replaced Source Var [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(nRow);
                         }
                         // Alarm Compare Variable
-                        if (szOldVarName == QString::fromAscii(lstCTRecords[nRow].ALCompareVar))  {
+                        if (szOldVarName == QLatin1String(lstCTRecords[nRow].ALCompareVar))  {
                             strcpy(lstCTRecords[nRow].ALCompareVar, szVarName.toAscii().data());
                             // Aggiornamento diretto delle variabile in Grid
                             tItem = ui->tblCT->item(nRow, colCompare);
@@ -4700,9 +4701,9 @@ void ctedit::initTargetList()
     }
     // Customizzazione dei modelli
     //00 AnyTPAC = 0
-    lstTargets[AnyTPAC].modelName =  QString::fromAscii(product_name[AnyTPAC]);
+    lstTargets[AnyTPAC].modelName =  QLatin1String(product_name[AnyTPAC]);
     //01 TP1043_01_A
-    lstTargets[TP1043_01_A].modelName =  QString::fromAscii(product_name[TP1043_01_A]);
+    lstTargets[TP1043_01_A].modelName =  QLatin1String(product_name[TP1043_01_A]);
     lstTargets[TP1043_01_A].displayWidth =  480;
     lstTargets[TP1043_01_A].displayHeight = 272;
     lstTargets[TP1043_01_A].sdCards = 1;
@@ -4721,7 +4722,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_A].ser3_Enabled = false;
     lstTargets[TP1043_01_A].can1_Enabled = false;
     // 02 TP1043_01_B
-    lstTargets[TP1043_01_B].modelName =  QString::fromAscii(product_name[TP1043_01_B]);
+    lstTargets[TP1043_01_B].modelName =  QLatin1String(product_name[TP1043_01_B]);
     lstTargets[TP1043_01_B].displayWidth =  480;
     lstTargets[TP1043_01_B].displayHeight = 272;
     lstTargets[TP1043_01_B].sdCards = 1;
@@ -4740,7 +4741,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_B].ser3_Enabled = false;
     lstTargets[TP1043_01_B].can1_Enabled = true;
     //03 TP1043_02_A
-    lstTargets[TP1043_02_A].modelName =  QString::fromAscii(product_name[TP1043_02_A]);
+    lstTargets[TP1043_02_A].modelName =  QLatin1String(product_name[TP1043_02_A]);
     lstTargets[TP1043_02_A].displayWidth =  480;
     lstTargets[TP1043_02_A].displayHeight = 272;
     lstTargets[TP1043_02_A].sdCards = 1;
@@ -4759,7 +4760,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_A].ser3_Enabled = false;
     lstTargets[TP1043_02_A].can1_Enabled = false;
     // 04 TP1043_02_B
-    lstTargets[TP1043_02_B].modelName =  QString::fromAscii(product_name[TP1043_02_B]);
+    lstTargets[TP1043_02_B].modelName =  QLatin1String(product_name[TP1043_02_B]);
     lstTargets[TP1043_02_B].displayWidth =  480;
     lstTargets[TP1043_02_B].displayHeight = 272;
     lstTargets[TP1043_02_B].sdCards = 1;
@@ -4778,7 +4779,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_B].ser3_Enabled = false;
     lstTargets[TP1043_02_B].can1_Enabled = true;
     // 05 TP1057_01_A
-    lstTargets[TP1057_01_A].modelName =  QString::fromAscii(product_name[TP1057_01_A]);
+    lstTargets[TP1057_01_A].modelName =  QLatin1String(product_name[TP1057_01_A]);
     lstTargets[TP1057_01_A].displayWidth =  320;
     lstTargets[TP1057_01_A].displayHeight = 240;
     lstTargets[TP1057_01_A].sdCards = 0;
@@ -4797,7 +4798,7 @@ void ctedit::initTargetList()
     lstTargets[TP1057_01_A].ser3_Enabled = true;
     lstTargets[TP1057_01_A].can1_Enabled = false;
     // 06 TP1057_01_B
-    lstTargets[TP1057_01_B].modelName =  QString::fromAscii(product_name[TP1057_01_B]);
+    lstTargets[TP1057_01_B].modelName =  QLatin1String(product_name[TP1057_01_B]);
     lstTargets[TP1057_01_B].displayWidth =  320;
     lstTargets[TP1057_01_B].displayHeight = 240;
     lstTargets[TP1057_01_B].sdCards = 0;
@@ -4816,7 +4817,7 @@ void ctedit::initTargetList()
     lstTargets[TP1057_01_B].ser3_Enabled = true;
     lstTargets[TP1057_01_B].can1_Enabled = true;
     // 07 TP1070_01_A
-    lstTargets[TP1070_01_A].modelName =  QString::fromAscii(product_name[TP1070_01_A]);
+    lstTargets[TP1070_01_A].modelName =  QLatin1String(product_name[TP1070_01_A]);
     lstTargets[TP1070_01_A].displayWidth =  800;
     lstTargets[TP1070_01_A].displayHeight = 480;
     lstTargets[TP1070_01_A].sdCards = 0;
@@ -4835,7 +4836,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_A].ser3_Enabled = true;
     lstTargets[TP1070_01_A].can1_Enabled = false;
     // 08 TP1070_01_B
-    lstTargets[TP1070_01_B].modelName =  QString::fromAscii(product_name[TP1070_01_B]);
+    lstTargets[TP1070_01_B].modelName =  QLatin1String(product_name[TP1070_01_B]);
     lstTargets[TP1070_01_B].displayWidth =  800;
     lstTargets[TP1070_01_B].displayHeight = 480;
     lstTargets[TP1070_01_B].sdCards = 0;
@@ -4854,7 +4855,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_B].ser3_Enabled = true;
     lstTargets[TP1070_01_B].can1_Enabled = true;
     // 09 TP1070_01_C
-    lstTargets[TP1070_01_C].modelName =  QString::fromAscii(product_name[TP1070_01_C]);
+    lstTargets[TP1070_01_C].modelName =  QLatin1String(product_name[TP1070_01_C]);
     lstTargets[TP1070_01_C].displayWidth =  800;
     lstTargets[TP1070_01_C].displayHeight = 480;
     lstTargets[TP1070_01_C].sdCards = 0;
@@ -4873,7 +4874,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_C].ser3_Enabled = true;
     lstTargets[TP1070_01_C].can1_Enabled = false;
     // 10 TPAC1005
-    lstTargets[TPAC1005].modelName =  QString::fromAscii(product_name[TPAC1005]);
+    lstTargets[TPAC1005].modelName =  QLatin1String(product_name[TPAC1005]);
     lstTargets[TPAC1005].displayWidth =  480;
     lstTargets[TPAC1005].displayHeight = 272;
     lstTargets[TPAC1005].sdCards = 0;
@@ -4892,7 +4893,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1005].ser3_Enabled = false;
     lstTargets[TPAC1005].can1_Enabled = true;
     // 11 TPAC1006
-    lstTargets[TPAC1006].modelName =  QString::fromAscii(product_name[TPAC1006]);
+    lstTargets[TPAC1006].modelName =  QLatin1String(product_name[TPAC1006]);
     lstTargets[TPAC1006].displayWidth =  320;
     lstTargets[TPAC1006].displayHeight = 240;
     lstTargets[TPAC1006].sdCards = 0;
@@ -4911,7 +4912,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1006].ser3_Enabled = true;
     lstTargets[TPAC1006].can1_Enabled = true;
     // 12 TPAC1007_03
-    lstTargets[TPAC1007_03].modelName =  QString::fromAscii(product_name[TPAC1007_03]);
+    lstTargets[TPAC1007_03].modelName =  QLatin1String(product_name[TPAC1007_03]);
     lstTargets[TPAC1007_03].displayWidth =  480;
     lstTargets[TPAC1007_03].displayHeight = 272;
     lstTargets[TPAC1007_03].sdCards = 1;
@@ -4930,7 +4931,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_03].ser3_Enabled = false;
     lstTargets[TPAC1007_03].can1_Enabled = false;
     // 13 TPAC1007_04_AA
-    lstTargets[TPAC1007_04_AA].modelName =  QString::fromAscii(product_name[TPAC1007_04_AA]);
+    lstTargets[TPAC1007_04_AA].modelName =  QLatin1String(product_name[TPAC1007_04_AA]);
     lstTargets[TPAC1007_04_AA].displayWidth =  480;
     lstTargets[TPAC1007_04_AA].displayHeight = 272;
     lstTargets[TPAC1007_04_AA].sdCards = 1;
@@ -4949,7 +4950,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AA].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AA].can1_Enabled = false;
     // 14 TPAC1007_04_AB
-    lstTargets[TPAC1007_04_AB].modelName =  QString::fromAscii(product_name[TPAC1007_04_AB]);
+    lstTargets[TPAC1007_04_AB].modelName =  QLatin1String(product_name[TPAC1007_04_AB]);
     lstTargets[TPAC1007_04_AB].displayWidth =  480;
     lstTargets[TPAC1007_04_AB].displayHeight = 272;
     lstTargets[TPAC1007_04_AB].sdCards = 1;
@@ -4968,7 +4969,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AB].can1_Enabled = false;
     // 15 TPAC1007_04_AC
-    lstTargets[TPAC1007_04_AC].modelName =  QString::fromAscii(product_name[TPAC1007_04_AC]);
+    lstTargets[TPAC1007_04_AC].modelName =  QLatin1String(product_name[TPAC1007_04_AC]);
     lstTargets[TPAC1007_04_AC].displayWidth =  480;
     lstTargets[TPAC1007_04_AC].displayHeight = 272;
     lstTargets[TPAC1007_04_AC].sdCards = 1;
@@ -4987,7 +4988,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AC].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AC].can1_Enabled = false;
     // 16 TPAC1007_LV
-    lstTargets[TPAC1007_LV].modelName =  QString::fromAscii(product_name[TPAC1007_LV]);
+    lstTargets[TPAC1007_LV].modelName =  QLatin1String(product_name[TPAC1007_LV]);
     lstTargets[TPAC1007_LV].displayWidth =  480;
     lstTargets[TPAC1007_LV].displayHeight = 272;
     lstTargets[TPAC1007_LV].sdCards = 0;
@@ -5006,7 +5007,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_LV].ser3_Enabled = true;
     lstTargets[TPAC1007_LV].can1_Enabled = false;
     // 17 TPAC1008_01
-    lstTargets[TPAC1008_01].modelName =  QString::fromAscii(product_name[TPAC1008_01]);
+    lstTargets[TPAC1008_01].modelName =  QLatin1String(product_name[TPAC1008_01]);
     lstTargets[TPAC1008_01].displayWidth =  800;
     lstTargets[TPAC1008_01].displayHeight = 480;
     lstTargets[TPAC1008_01].sdCards = 0;
@@ -5025,7 +5026,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_01].ser3_Enabled = true;
     lstTargets[TPAC1008_01].can1_Enabled = true;
     // 18 TPAC1008_02_AA
-    lstTargets[TPAC1008_02_AA].modelName =  QString::fromAscii(product_name[TPAC1008_02_AA]);
+    lstTargets[TPAC1008_02_AA].modelName =  QLatin1String(product_name[TPAC1008_02_AA]);
     lstTargets[TPAC1008_02_AA].displayWidth =  800;
     lstTargets[TPAC1008_02_AA].displayHeight = 480;
     lstTargets[TPAC1008_02_AA].sdCards = 0;
@@ -5044,7 +5045,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AA].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AA].can1_Enabled = true;
     // 19 TPAC1008_02_AB
-    lstTargets[TPAC1008_02_AB].modelName =  QString::fromAscii(product_name[TPAC1008_02_AB]);
+    lstTargets[TPAC1008_02_AB].modelName =  QLatin1String(product_name[TPAC1008_02_AB]);
     lstTargets[TPAC1008_02_AB].displayWidth =  800;
     lstTargets[TPAC1008_02_AB].displayHeight = 480;
     lstTargets[TPAC1008_02_AB].sdCards = 0;
@@ -5063,7 +5064,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AB].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AB].can1_Enabled = false;
     // 20 TPAC1008_02_AD
-    lstTargets[TPAC1008_02_AD].modelName =  QString::fromAscii(product_name[TPAC1008_02_AD]);
+    lstTargets[TPAC1008_02_AD].modelName =  QLatin1String(product_name[TPAC1008_02_AD]);
     lstTargets[TPAC1008_02_AD].displayWidth =  800;
     lstTargets[TPAC1008_02_AD].displayHeight = 480;
     lstTargets[TPAC1008_02_AD].sdCards = 0;
@@ -5082,7 +5083,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AD].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AD].can1_Enabled = false;
     // 21 TPAC1008_02_AE
-    lstTargets[TPAC1008_02_AE].modelName =  QString::fromAscii(product_name[TPAC1008_02_AE]);
+    lstTargets[TPAC1008_02_AE].modelName =  QLatin1String(product_name[TPAC1008_02_AE]);
     lstTargets[TPAC1008_02_AE].displayWidth =  800;
     lstTargets[TPAC1008_02_AE].displayHeight = 480;
     lstTargets[TPAC1008_02_AE].sdCards = 0;
@@ -5101,7 +5102,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AE].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AE].can1_Enabled = false;
     // 22 TPAC1008_02_AF
-    lstTargets[TPAC1008_02_AF].modelName =  QString::fromAscii(product_name[TPAC1008_02_AF]);
+    lstTargets[TPAC1008_02_AF].modelName =  QLatin1String(product_name[TPAC1008_02_AF]);
     lstTargets[TPAC1008_02_AF].displayWidth =  800;
     lstTargets[TPAC1008_02_AF].displayHeight = 480;
     lstTargets[TPAC1008_02_AF].sdCards = 0;
@@ -5120,7 +5121,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AF].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AF].can1_Enabled = false;
     // 23 TPLC050_01_AA
-    lstTargets[TPLC050_01_AA].modelName =  QString::fromAscii(product_name[TPLC050_01_AA]);
+    lstTargets[TPLC050_01_AA].modelName =  QLatin1String(product_name[TPLC050_01_AA]);
     lstTargets[TPLC050_01_AA].displayWidth =  -1;
     lstTargets[TPLC050_01_AA].displayHeight = -1;
     lstTargets[TPLC050_01_AA].sdCards = 0;
@@ -5138,7 +5139,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].ser3_Enabled = false;
     lstTargets[TPLC050_01_AA].can1_Enabled = false;
     // 24 TPLC050_01_AB
-    lstTargets[TPLC050_01_AB].modelName =  QString::fromAscii(product_name[TPLC050_01_AB]);
+    lstTargets[TPLC050_01_AB].modelName =  QLatin1String(product_name[TPLC050_01_AB]);
     lstTargets[TPLC050_01_AB].displayWidth =  -1;
     lstTargets[TPLC050_01_AB].displayHeight = -1;
     lstTargets[TPLC050_01_AB].sdCards = 1;
@@ -5156,7 +5157,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AB].ser3_Enabled = false;
     lstTargets[TPLC050_01_AB].can1_Enabled = false;
     // 25 TPLC100_01_AA
-    lstTargets[TPLC100_01_AA].modelName =  QString::fromAscii(product_name[TPLC100_01_AA]);
+    lstTargets[TPLC100_01_AA].modelName =  QLatin1String(product_name[TPLC100_01_AA]);
     lstTargets[TPLC100_01_AA].displayWidth =  -1;
     lstTargets[TPLC100_01_AA].displayHeight = -1;
     lstTargets[TPLC100_01_AA].usbPorts = 2;
@@ -5176,7 +5177,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].ser3_Enabled = false;
     lstTargets[TPLC100_01_AA].can1_Enabled = true;
     // 26 TPLC100_01_AB
-    lstTargets[TPLC100_01_AB].modelName =  QString::fromAscii(product_name[TPLC100_01_AB]);
+    lstTargets[TPLC100_01_AB].modelName =  QLatin1String(product_name[TPLC100_01_AB]);
     lstTargets[TPLC100_01_AB].displayWidth =  -1;
     lstTargets[TPLC100_01_AB].displayHeight = -1;
     lstTargets[TPLC100_01_AB].usbPorts = 2;
@@ -5196,7 +5197,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].ser3_Enabled = true;
     lstTargets[TPLC100_01_AB].can1_Enabled = false;
     // 27 TPAC1008_03_AC
-    lstTargets[TPAC1008_03_AC].modelName =  QString::fromAscii(product_name[TPAC1008_03_AC]);
+    lstTargets[TPAC1008_03_AC].modelName =  QLatin1String(product_name[TPAC1008_03_AC]);
     lstTargets[TPAC1008_03_AC].displayWidth =  800;
     lstTargets[TPAC1008_03_AC].displayHeight = 480;
     lstTargets[TPAC1008_03_AC].sdCards = 0;
@@ -5215,7 +5216,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].ser3_Enabled = true;
     lstTargets[TPAC1008_03_AC].can1_Enabled = false;
     // 28 TPAC1008_03_AD
-    lstTargets[TPAC1008_03_AD].modelName =  QString::fromAscii(product_name[TPAC1008_03_AD]);
+    lstTargets[TPAC1008_03_AD].modelName =  QLatin1String(product_name[TPAC1008_03_AD]);
     lstTargets[TPAC1008_03_AD].displayWidth =  800;
     lstTargets[TPAC1008_03_AD].displayHeight = 480;
     lstTargets[TPAC1008_03_AD].sdCards = 0;
@@ -5234,7 +5235,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AD].ser3_Enabled = true;
     lstTargets[TPAC1008_03_AD].can1_Enabled = false;
     // 29 TP1070_02_E
-    lstTargets[TP1070_02_E].modelName =  QString::fromAscii(product_name[TP1070_02_E]);
+    lstTargets[TP1070_02_E].modelName =  QLatin1String(product_name[TP1070_02_E]);
     lstTargets[TP1070_02_E].displayWidth =  800;
     lstTargets[TP1070_02_E].displayHeight = 480;
     lstTargets[TP1070_02_E].sdCards = 0;
@@ -5273,7 +5274,7 @@ int ctedit::searchModelInList(QString szModel)
     // Valori di Default se la ricerca non ha trovato nulla
     if (nModel < 0 || nCur >= lstTargets.count())  {
         nModel = AnyTPAC;
-        qDebug() << QString::fromAscii("searchModelInList: Model Code Forced to AnyTPAC");
+        qDebug() << QLatin1String("searchModelInList: Model Code Forced to AnyTPAC");
     }
     // qDebug() << QString::fromAscii("searchModelInList: Model Code <%1> Model No <%2>") .arg(TargetConfig.modelName) .arg(nModel);
     // Return value
@@ -5608,7 +5609,7 @@ bool ctedit::readModelVars(const QString szModelName, QList<CrossTableRecord> &l
     if (fileXML.exists())  {
         // Lettura One-Shot del file XML
         fileXML.open(QIODevice::ReadOnly | QIODevice::Text);
-        szXMLBuffer = QString::fromAscii(fileXML.readAll().data());
+        szXMLBuffer = QLatin1String(fileXML.readAll().data());
         // Check Buffer Length
         if (!szXMLBuffer.isEmpty())  {
             // Load Rows from Buffer
@@ -5645,7 +5646,7 @@ bool ctedit::addModelVars(const QString szModelName, int nRow)
 
     if (fileXML.exists())  {
         fileXML.open(QIODevice::ReadOnly | QIODevice::Text);
-        szXMLBuffer = QString::fromAscii(fileXML.readAll().data());
+        szXMLBuffer = QLatin1String(fileXML.readAll().data());
         // Check Buffer Length
         if (!szXMLBuffer.isEmpty())  {
             // Load Rows from Buffer
@@ -5662,7 +5663,7 @@ bool ctedit::addModelVars(const QString szModelName, int nRow)
                     }
                     // Query confirm of used if any row is used
                     if (fUsed)  {
-                        m_szMsg = QString::fromAscii("Some of destination rows may be used. Paste anyway ?");
+                        m_szMsg = QLatin1String("Some of destination rows may be used. Paste anyway ?");
                         fUsed = ! queryUser(this, szMectTitle, m_szMsg);
                     }
                     if (! fUsed)  {
@@ -5671,7 +5672,7 @@ bool ctedit::addModelVars(const QString szModelName, int nRow)
                     }
                 }
                 else  {
-                    m_szMsg = QString::fromAscii("Pasted Rows could overlap to System Area");
+                    m_szMsg = QLatin1String("Pasted Rows could overlap to System Area");
                 }
             }
             else {
@@ -5831,7 +5832,7 @@ bool ctedit::checkServersDevicesAndNodes()
 
     // Rinumerazione d'ufficio dei blocchi, poi utilizzato per il ricalcolo dei Server-Nodi...
     if (! riassegnaBlocchi())  {
-        m_szMsg = QString::fromAscii("Found Errors in Reassigning Blocks");
+        m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
         warnUser(this, szMectTitle, m_szMsg);
     }
     // Pulizia Strutture Dati
@@ -5943,7 +5944,7 @@ bool ctedit::checkServersDevicesAndNodes()
                             char str2[MAX_IPADDR_LEN];
                             ipaddr2str(theServers[nSer].IPAddress, str1);
                             ipaddr2str(lstCTRecords[nCur].IPAddress, str2);
-                            qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'IP Address' %3 (should be %4)") .arg(nCur) .arg(QString::fromAscii(str2)) .arg(QString::fromAscii(str1));
+                            qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'IP Address' %3 (should be %4)") .arg(nCur) .arg(QLatin1String(str2)) .arg(QLatin1String(str1));
                         }
                         if (theServers[nSer].NodeId != lstCTRecords[nCur].NodeId) {
                             qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'Node ID' %3 (should be %4)") .arg(nCur) .arg(lstCTRecords[nCur].NodeId) .arg(theServers[nSer].NodeId);
@@ -5964,7 +5965,7 @@ bool ctedit::checkServersDevicesAndNodes()
                             char str2[MAX_IPADDR_LEN];
                             ipaddr2str(theServers[nSer].IPAddress, str1);
                             ipaddr2str(lstCTRecords[nCur].IPAddress, str2);
-                            qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'IP Address' %3 (should be %4)") .arg(nCur) .arg(QString::fromAscii(str2)) .arg(QString::fromAscii(str1));
+                            qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'IP Address' %3 (should be %4)") .arg(nCur) .arg(QLatin1String(str2)) .arg(QLatin1String(str1));
                         }
                         if (theServers[nSer].nPort != lstCTRecords[nCur].Port) {
                             qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): WARNING in variable %2 wrong 'Port' %3 (should be %4)") .arg(nCur) .arg(lstCTRecords[nCur].Port) .arg(theServers[nSer].nPort);
@@ -5980,7 +5981,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     theServers[nSer].nVars++;
                     // ok already present
                 } else if (theServersNumber >= nMAX_SERVERS) {
-                    qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): ERROR: too many Servers");
+                    qDebug() << QLatin1String("checkServersDevicesAndNodes(): ERROR: too many Servers");
                     fRes = false;
                 } else {
                     // new server entry
@@ -5992,7 +5993,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (theServers[nSer].nProtocol == TCP_SRV || theServers[nSer].nProtocol == TCPRTU_SRV)  {
                         char str1[MAX_IPADDR_LEN];
                         ipaddr2str(theServers[nSer].IPAddress, str1);
-                        theServers[nSer].szIpAddress = QString::fromAscii(str1);
+                        theServers[nSer].szIpAddress = QLatin1String(str1);
                     }
                     theServers[nSer].nVars++;
                     theServers[nSer].NodeId = lstCTRecords[nCur].NodeId;
@@ -6057,7 +6058,7 @@ bool ctedit::checkServersDevicesAndNodes()
                 } else if (theDevicesNumber >= nMAX_DEVICES) {
                     // Too many Devices
                     lstCTRecords[nCur].nDevice = 0xffff; // FIXME: error
-                    qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): ERROR: too many Servers");
+                    qDebug() << QLatin1String("checkServersDevicesAndNodes(): ERROR: too many Servers");
                     fRes = false;
                 } else {
                     QString szDeviceName;
@@ -6071,7 +6072,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     theDevices[nDev].nVars++;
                     char str1[MAX_IPADDR_LEN];
                     ipaddr2str(lstCTRecords[nCur].IPAddress, str1);
-                    szIpAddr = QString::fromAscii(str1);
+                    szIpAddr = QLatin1String(str1);
                     szDeviceName = lstProtocol[theDevices[nDev].nProtocol];
                     // Check Device Protocol
                     switch (theDevices[nDev].nProtocol) {
@@ -6151,7 +6152,7 @@ bool ctedit::checkServersDevicesAndNodes()
                         }
                         break;
                     case RTU_SRV:
-                        szDeviceName = QString::fromAscii("RTU");
+                        szDeviceName = QLatin1String("RTU");
                         szDeviceName.append(QString::number(theDevices[nDev].nPort));
                         // Aggiunge al Nome Device anche le info Baud Rate
                         szDeviceName.append(QString::fromAscii("\t%1") .arg(getSerialPortSpeed(theDevices[nDev].nPort)));
@@ -6191,7 +6192,7 @@ bool ctedit::checkServersDevicesAndNodes()
                         break;
                     case TCP_SRV:
                     case TCPRTU_SRV:
-                        szDeviceName = QString::fromAscii("TCPS");
+                        szDeviceName = QLatin1String("TCPS");
                         theDevices[nDev].szIpAddress = szIpAddr;
                         theDevices[nDev].nServer = nSer; // searched before
                         theDevices[nDev].nMaxBlockSize = panelConfig.tcp_BlockSize;
@@ -6204,7 +6205,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     theDevices[nDev].szDeviceName = szDeviceName;
                     // Ricerca Variabile Diagnostica
                     szDiagName = szDeviceName;
-                    szDiagName.append(QString::fromAscii("_STATUS"));
+                    szDiagName.append(QLatin1String("_STATUS"));
                     nDiag = varName2Row(szDiagName, lstCTRecords);
                     if (nDiag >= 0)  {
                         theDevices[nDev].diagnosticAddr = nDiag + 1;
@@ -6238,7 +6239,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     lstCTRecords[nCur].nNode = nNod; // found
                 } else if (theNodesNumber >= nMAX_NODES) {
                     lstCTRecords[nCur].nNode = 0xffff;
-                    qDebug() << QString::fromAscii("checkServersDevicesAndNodes(): ERROR: too many Nodes");
+                    qDebug() << QLatin1String("checkServersDevicesAndNodes(): ERROR: too many Nodes");
                     fRes = false;
                 } else {
                     // new node entry
@@ -6246,8 +6247,8 @@ bool ctedit::checkServersDevicesAndNodes()
                     theNodes[nNod].nDevice = lstCTRecords[nCur].nDevice;
                     theNodes[nNod].nNodeId = lstCTRecords[nCur].NodeId;
                     // Ricerca Variabile Diag
-                    szDiagName = QString::fromAscii("NODE_") + int2PaddedString(nNod+1, 2);
-                    szDiagName.append(QString::fromAscii("_STATUS"));
+                    szDiagName = QLatin1String("NODE_") + int2PaddedString(nNod+1, 2);
+                    szDiagName.append(QLatin1String("_STATUS"));
                     nDiag = varName2Row(szDiagName, lstCTRecords);
                     if (nDiag >= 0)  {
                         theNodes[nNod].diagnosticAddr = nDiag + 1;
@@ -6471,18 +6472,18 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         if (theDevices[nDevice].nTimeOut >= 0)
             szInfo.append(QString::fromAscii("TimeOut: %1 ms \t") .arg(theDevices[nDevice].nTimeOut, 6, 10));
         else
-            szInfo.append(QString::fromAscii("\t\t"));
+            szInfo.append(QLatin1String("\t\t"));
         // Silence
         if (theDevices[nDevice].nSilence >= 0)
             szInfo.append(QString::fromAscii("Silence: %1 ms \t") .arg(theDevices[nDevice].nSilence, 6, 10));
         else
-            szInfo.append(QString::fromAscii("\t\t"));
+            szInfo.append(QLatin1String("\t\t"));
         if (nProtocol == RTU || nProtocol == RTU_SRV)  {
             szInfo.append(QString::fromAscii("Min.Silence: %1 ms \t") .arg(theDevices[nDevice].dMinSilence));
             if ((double) theDevices[nDevice].nSilence >= theDevices[nDevice].dMinSilence)
-                szInfo.append(QString::fromAscii("OK\t"));
+                szInfo.append(QLatin1String("OK\t"));
             else
-                szInfo.append(QString::fromAscii("Too Short\t"));
+                szInfo.append(QLatin1String("Too Short\t"));
             // Total Read Time
             // szInfo.append(QString::fromAscii("Dev.Read Time: %1 ms\t").arg(theDevices[nDevice].nDeviceReadTime, 6, 10));
         }
@@ -6498,7 +6499,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         szToolTip.append(QString::fromAscii("Diag Variable Name:\t%1") .arg(theDevices[nDevice].diagnosticVarName, -60));
     }
     else  {
-        szName = QString::fromAscii("UNDEFINED");
+        szName = QLatin1String("UNDEFINED");
     }
     // Device Total Read Time
     if (nProtocol == RTU || nProtocol == RTU_SRV)  {
@@ -6536,7 +6537,7 @@ QTreeWidgetItem *ctedit::addNode2Tree(QTreeWidgetItem *tParent, int nNode)
         szToolTip.append(QString::fromAscii("Diag Variable Name:\t%1") .arg(theNodes[nNode].diagnosticVarName, -20));
     }
     else  {
-        szName = QString::fromAscii("UNDEFINED");
+        szName = QLatin1String("UNDEFINED");
     }
     // Adding Node Item to Tree
     tCurrentNode = addItem2Tree(tParent, treeNode, szName, szInfo, szTimings, szToolTip);
@@ -6638,9 +6639,9 @@ void    ctedit::fillDeviceTree(int nCurRow)
     ui->deviceTree->clear();
     lstTreeHeads.clear();
     lstTreeHeads
-            << QString::fromAscii("Name")
-            << QString::fromAscii("Info")
-            << QString::fromAscii("Timings")
+            << QLatin1String("Name")
+            << QLatin1String("Info")
+            << QLatin1String("Timings")
         ;
     treeFont.setFixedPitch(true);
     ui->deviceTree->setFont(treeFont);
@@ -6650,7 +6651,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
     tCurrentVariable = 0;
     // Build Server-Device-Nodes structures
     if (! checkServersDevicesAndNodes())  {
-        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QString::fromAscii("Devices"));
+        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QLatin1String("Devices"));
         warnUser(this, szMectTitle, m_szMsg);
         return;
     }
@@ -6677,7 +6678,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
                     szName = theDevices[nDevice].szDeviceName;
                 }
                 else  {
-                    szName = QString::fromAscii("UNDEFINED");
+                    szName = QLatin1String("UNDEFINED");
                 }
             }
             // Ricerca del Device in Tree
@@ -6701,7 +6702,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
                 szName = theNodes[nNode].szNodeName;
             }
             else  {
-                szName = QString::fromAscii("UNDEFINED");
+                szName = QLatin1String("UNDEFINED");
             }
             // Ricerca del Node in Tree
             tCurrentNode = searchTreeChild(tCurrentDevice, colTreeName, szName);
@@ -6742,7 +6743,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
             //----------------------------
             // Block Name
             //----------------------------
-            szName = QString::fromAscii("Block_") + int2PaddedString(nBlock, 2, 10);
+            szName = QLatin1String("Block_") + int2PaddedString(nBlock, 2, 10);
             // Ricerca del Block in Tree
             tCurrentBlock = searchTreeChild(tCurrentPriority, colTreeName, szName);
             // Adding Block
@@ -6819,9 +6820,9 @@ void    ctedit::fillTimingsTree(int nCurRow)
     ui->timingTree->clear();
     lstTreeHeads.clear();
     lstTreeHeads
-            << QString::fromAscii("Name")
-            << QString::fromAscii("Info")
-            << QString::fromAscii("Timings")
+            << QLatin1String("Name")
+            << QLatin1String("Info")
+            << QLatin1String("Timings")
         ;
     treeFont.setFixedPitch(true);
     ui->timingTree->setFont(treeFont);
@@ -6830,7 +6831,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     tRoot->setText(colTreeName, m_szCurrentModel);
     tCurrentVariable = 0;
     if (! checkServersDevicesAndNodes())  {
-        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QString::fromAscii("Timings"));
+        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QLatin1String("Timings"));
         warnUser(this, szMectTitle, m_szMsg);
         return;
     }
@@ -6888,7 +6889,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
                         szName = theNodes[nNode].szNodeName;
                     }
                     else  {
-                        szName = QString::fromAscii("UNDEFINED");
+                        szName = QLatin1String("UNDEFINED");
                     }
                     // Ricerca del Node in Tree
                     tCurrentNode = searchTreeChild(tCurrentPriority, colTreeName, szName);
@@ -6905,7 +6906,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
                     //----------------------------
                     // Block Name
                     //----------------------------
-                    szName = QString::fromAscii("Block_") + int2PaddedString(nBlock, 2, 10);
+                    szName = QLatin1String("Block_") + int2PaddedString(nBlock, 2, 10);
                     // Ricerca del Block in Tree
                     tCurrentBlock = searchTreeChild(tCurrentNode, colTreeName, szName);
                     // Adding Block
@@ -6985,8 +6986,8 @@ void    ctedit::fillLogTree(int nCurRow)
     // Preparing Tree
     ui->logTree->clear();
     lstTreeHeads.clear();
-    lstTreeHeads.append(QString::fromAscii("Log Level"));
-    lstTreeHeads.append(QString::fromAscii("Variables"));
+    lstTreeHeads.append(QLatin1String("Log Level"));
+    lstTreeHeads.append(QLatin1String("Variables"));
     lstTreeHeads.append(szEMPTY);
     treeFont.setFixedPitch(true);
     ui->logTree->setFont(treeFont);
@@ -7000,7 +7001,7 @@ void    ctedit::fillLogTree(int nCurRow)
     }
     // Rebuild Server-Device-Nodes structures
     if (! checkServersDevicesAndNodes())  {
-        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QString::fromAscii("Devices"));
+        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QLatin1String("Devices"));
         warnUser(this, szMectTitle, m_szMsg);
         return;
     }
@@ -7010,19 +7011,19 @@ void    ctedit::fillLogTree(int nCurRow)
     tParent = 0;
     tNewVariable = 0;
     // Fast Log
-    szName = QString::fromAscii("F\tFast");
+    szName = QLatin1String("F\tFast");
     szInfo = QString::fromAscii("Fast Log Period: %1\tLogged Variables: %2") .arg(panelConfig.fastLogPeriod, 6, 10) .arg(nFast, 6, 10);
     tFast = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
     // Slow Log
-    szName = QString::fromAscii("S\tSlow");
+    szName = QLatin1String("S\tSlow");
     szInfo = QString::fromAscii("Slow Log Period: %1\tLogged Variables: %2") .arg(panelConfig.slowLogPeriod, 6, 10) .arg(nSlow, 6, 10);
     tSlow = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
     // On Variation
-    szName = QString::fromAscii("V\tOn Variation");
+    szName = QLatin1String("V\tOn Variation");
     szInfo = QString::fromAscii("\t\tLogged Variables: %1") .arg(nVar, 6, 10);
     tOnVar = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
     // On Shot
-    szName = QString::fromAscii("X\tOn Shot");
+    szName = QLatin1String("X\tOn Shot");
     szInfo = QString::fromAscii("\t\tLogged Variables: %1") .arg(nShot, 6, 10);
     tOnShot = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
     // Variables Loop

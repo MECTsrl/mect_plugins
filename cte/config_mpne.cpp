@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 #include <QSpacerItem>
 #include <QColor>
+#include <QLatin1String>
 #include <QIcon>
 #include <QDebug>
 #include <QTableWidgetItem>
@@ -43,20 +44,20 @@ const int nUsageAnIO = 3;
 const int nUsageMax = 4;
 
 // Sfondi
-const QString szFileRename = szPathIMG + QString::fromAscii("Rename2.png");
+const QString szFileRename = szPathIMG + QLatin1String("Rename2.png");
 // Sfondi per Moduli
-const QString szFileMPNE10L = szPathIMG + QString::fromAscii("MPNE01L.png");
-const QString szFileMPNE10R = szPathIMG + QString::fromAscii("MPNE01R.png");
+const QString szFileMPNE10L = szPathIMG + QLatin1String("MPNE01L.png");
+const QString szFileMPNE10R = szPathIMG + QLatin1String("MPNE01R.png");
 const QString szFileMPNE00 = szEMPTY;
-const QString szFileMPNE01 = szPathIMG + QString::fromAscii("MPNE01.png");
-const QString szFileMPNE02 = szPathIMG + QString::fromAscii("MPNE02.png");
-//const QString szFileMPNE03 = szPathIMG + QString::fromAscii("MPNE03.png");
-//const QString szFileMPNE04 = szPathIMG + QString::fromAscii("MPNE04.png");
-const QString szFileMPNE05 = szPathIMG + QString::fromAscii("MPNE05.png");
+const QString szFileMPNE01 = szPathIMG + QLatin1String("MPNE01.png");
+const QString szFileMPNE02 = szPathIMG + QLatin1String("MPNE02.png");
+//const QString szFileMPNE03 = szPathIMG + QLatin1String("MPNE03.png");
+//const QString szFileMPNE04 = szPathIMG + QLatin1String("MPNE04.png");
+const QString szFileMPNE05 = szPathIMG + QLatin1String("MPNE05.png");
 // Sfondi Filtro Visualizzazione
-const QString szFilterHead = szPathIMG + QString::fromAscii("ShowHead.png");
-const QString szFilterUsed = szPathIMG + QString::fromAscii("ShowUsed.png");
-const QString szFilterAll = szPathIMG + QString::fromAscii("ShowAll.png");
+const QString szFilterHead = szPathIMG + QLatin1String("ShowHead.png");
+const QString szFilterUsed = szPathIMG + QLatin1String("ShowUsed.png");
+const QString szFilterAll = szPathIMG + QLatin1String("ShowAll.png");
 
 
 Config_MPNE::Config_MPNE(QWidget *parent) :
@@ -90,59 +91,59 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lstModuleFunction.clear();      // Lista delle Funzionalità dei Moduli
     // Descrizioni e sfondi dei Moduli
     // Module 0 - No Module
-    lstModuleName.append(QString::fromAscii("No Module"));
+    lstModuleName.append(QLatin1String("No Module"));
     lstSfondi.append(szFileMPNE00);
     lstModuleFunction.append(nUsageNone);
-    lstModuleCode.append(QString::fromAscii("00"));
+    lstModuleCode.append(QLatin1String("00"));
     // Module 01 Dig IN
-    lstModuleName.append(QString::fromAscii("8 Digital Input"));
+    lstModuleName.append(QLatin1String("8 Digital Input"));
     lstSfondi.append(szFileMPNE01);
     lstModuleFunction.append(nUsageDigIn);
-    lstModuleCode.append(QString::fromAscii("01"));
+    lstModuleCode.append(QLatin1String("01"));
     // Module 02 Dig OUT
-    lstModuleName.append(QString::fromAscii("8 Digital Output"));
+    lstModuleName.append(QLatin1String("8 Digital Output"));
     lstSfondi.append(szFileMPNE02);
     lstModuleFunction.append(nUsageDigOut);
-    lstModuleCode.append(QString::fromAscii("02-03-04"));
+    lstModuleCode.append(QLatin1String("02-03-04"));
 //    // Module 03 Dig OUT with 4 Relays
-//    lstModuleName.append(QString::fromAscii("4 Digital Relays"));
+//    lstModuleName.append(QLatin1String("4 Digital Relays"));
 //    lstSfondi.append(szFileMPNE03);
 //    lstModuleFunction.append(nUsageDigOut);
 //    lstModuleLines.append(4);
 //    // Module 04 Dig OUT with 8 Relays
-//    lstModuleName.append(QString::fromAscii("8 Digital Relays"));
+//    lstModuleName.append(QLatin1String("8 Digital Relays"));
 //    lstSfondi.append(szFileMPNE04);
 //    lstModuleFunction.append(nUsageAnIO);
 //    lstModuleLines.append(3);
     // Module 05 2 AI + 1 AO
-    lstModuleName.append(QString::fromAscii("2 AI - 1 AO"));
+    lstModuleName.append(QLatin1String("2 AI - 1 AO"));
     lstSfondi.append(szFileMPNE05);
     lstModuleFunction.append(nUsageAnIO);
-    lstModuleCode.append(QString::fromAscii("05"));
+    lstModuleCode.append(QLatin1String("05"));
     //---------------------------
     // nRowSelector: Label e Combo selettore device, Protocollo, Porta, Node Id
     //---------------------------
     // Label per Combo Selettore
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-height: 20px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 20px;\n"));
-    szTemp.append(QString::fromAscii("  min-width: 50px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 50px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  min-height: 20px;\n"));
+    szTemp.append(QLatin1String("  max-height: 20px;\n"));
+    szTemp.append(QLatin1String("  min-width: 50px;\n"));
+    szTemp.append(QLatin1String("  max-width: 50px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("MPNE10:"));
+    lblBox->setText(QLatin1String("MPNE10:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColBase);
     // Combo Selettore mpnc
     cboSelector = new QComboBox(this);
     cboSelector->setMaximumWidth(nComboWidth);
-    cboSelector->setToolTip(QString::fromAscii("Select I/O Module"));
+    cboSelector->setToolTip(QLatin1String("Select I/O Module"));
     mainGrid->addWidget(cboSelector, nRowSelector, nColLeft, 1, nItemWidth);
     // Label per Protocollo
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Protocol:"));
+    lblBox->setText(QLatin1String("Protocol:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColRight);
     lblProtocol = new QLabel(this);
@@ -151,17 +152,17 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     mainGrid->addWidget(lblProtocol, nRowSelector, nColRight + 1);
     // Combo per Porta
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-width: 65px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 65px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  min-width: 65px;\n"));
+    szTemp.append(QLatin1String("  max-width: 65px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Port:"));
+    lblBox->setText(QLatin1String("Port:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColPort);
     cboPort = new QComboBox(this);
-    cboPort->setToolTip(QString::fromAscii("Change Serial Port"));
+    cboPort->setToolTip(QLatin1String("Change Serial Port"));
     for (i = 0; i <= nMaxSerialPorts; i++)  {
         cboPort->addItem(QString::number(i));
     }
@@ -169,34 +170,34 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     mainGrid->addWidget(cboPort, nRowSelector, nColPort + 1);
     // TextBox per Node ID
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Node Id:"));
+    lblBox->setText(QLatin1String("Node Id:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColNode);
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLineEdit { \n"));
-    szTemp.append(QString::fromAscii("  min-width: 65px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 65px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLineEdit { \n"));
+    szTemp.append(QLatin1String("  min-width: 65px;\n"));
+    szTemp.append(QLatin1String("  max-width: 65px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("}"));
     txtNode = new QLineEdit(this);
     txtNode->setStyleSheet(szTemp);
-    txtNode->setToolTip(QString::fromAscii("Change Node ID"));
+    txtNode->setToolTip(QLatin1String("Change Node ID"));
     txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
     txtNode->setMaximumWidth(40);
     mainGrid->addWidget(txtNode, nRowSelector, nColNode + 1);
     // Baud Rate Seriale
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-width: 80px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 80px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  min-width: 80px;\n"));
+    szTemp.append(QLatin1String("  max-width: 80px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Baud Rate:"));
+    lblBox->setText(QLatin1String("Baud Rate:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColBaudRate);
     lblBaudRate = new QLabel(this);
-    lblBaudRate->setText(QString::fromAscii("9600, N, 8, 1"));
+    lblBaudRate->setText(QLatin1String("9600, N, 8, 1"));
     lblBaudRate->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBaudRate, nRowSelector, nColBaudRate + 1);
     // Molla Horizontal Spacer per allineare finestra
@@ -208,49 +209,49 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     //---------------------------
     // Bottone per Rename rows
     szTemp.clear();;
-    szTemp.append(QString::fromAscii("QPushButton:disabled { \n"));
-    szTemp.append(QString::fromAscii("  border: 0px ;\n"));
-    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
-    szTemp.append(QString::fromAscii("  background-image: url("");\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid DarkOrange ;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid red;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  background-position: center  center;\n"));
-    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
+    szTemp.append(QLatin1String("QPushButton:disabled { \n"));
+    szTemp.append(QLatin1String("  border: 0px ;\n"));
+    szTemp.append(QLatin1String("  background-color: transparent;\n"));
+    szTemp.append(QLatin1String("  background-image: url("");\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QPushButton:enabled { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid navy;\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QPushButton:selected, QPushButton:hover {\n"));
+    szTemp.append(QLatin1String("  border: 1px solid DarkOrange ;\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QPushButton:pressed { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid red;\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QPushButton { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid blue;\n"));
+    szTemp.append(QLatin1String("  border-radius: 4px;\n"));
+    szTemp.append(QLatin1String("  min-width: 40px;\n"));
+    szTemp.append(QLatin1String("  max-width: 40px;\n"));
+    szTemp.append(QLatin1String("  min-height: 36px;\n"));
+    szTemp.append(QLatin1String("  max-height: 36px;\n"));
+    szTemp.append(QLatin1String("  background-position: center  center;\n"));
+    szTemp.append(QLatin1String("  background-color: transparent;\n"));
     szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileRename));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("}"));
     cmdRename = new QPushButton(this);
     cmdRename->setEnabled(true);
     cmdRename->setFlat(true);
-    cmdRename->setToolTip(QString::fromAscii("Rename Variables"));
+    cmdRename->setToolTip(QLatin1String("Rename Variables"));
     cmdRename->setStyleSheet(szTemp);
     mainGrid->addWidget(cmdRename, nRowTags, nColBase);
     // Nomi dei Moduli SX e DX
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignBottom | AlignLeft';\n"));
-    szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignBottom | AlignLeft';\n"));
+    szTemp.append(QLatin1String("  font-size: 18px;\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Exp1:"));
+    lblBox->setText(QLatin1String("Exp1:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowTags, nColLeft, 1, nItemWidth);
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Exp2:"));
+    lblBox->setText(QLatin1String("Exp2:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowTags, nColRight, 1, nItemWidth);
     //---------------------------
@@ -272,47 +273,47 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     //---------------------------
     // Bottone per Filtro su Testa Nodi
     szFilterStyle.clear();
-    szFilterStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szFilterStyle.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szFilterStyle.append(QString::fromAscii("}\n"));
-    szFilterStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szFilterStyle.append(QString::fromAscii("  border: 1px solid DarkOrange ;\n"));
-    szFilterStyle.append(QString::fromAscii("}\n"));
-    szFilterStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szFilterStyle.append(QString::fromAscii("  border: 1px solid red;\n"));
-    szFilterStyle.append(QString::fromAscii("}\n"));
-    szFilterStyle.append(QString::fromAscii("QPushButton { \n"));
-    szFilterStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szFilterStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szFilterStyle.append(QString::fromAscii("  min-width: 40px;\n"));
-    szFilterStyle.append(QString::fromAscii("  max-width: 40px;\n"));
-    szFilterStyle.append(QString::fromAscii("  min-height: 36px;\n"));
-    szFilterStyle.append(QString::fromAscii("  max-height: 36px;\n"));
-    szFilterStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szFilterStyle.append(QString::fromAscii("  background-color: transparent;\n"));
-    szFilterStyle.append(QString::fromAscii("}"));
+    szFilterStyle.append(QLatin1String("QPushButton:enabled { \n"));
+    szFilterStyle.append(QLatin1String("  border: 1px solid navy;\n"));
+    szFilterStyle.append(QLatin1String("}\n"));
+    szFilterStyle.append(QLatin1String("QPushButton:selected, QPushButton:hover {\n"));
+    szFilterStyle.append(QLatin1String("  border: 1px solid DarkOrange ;\n"));
+    szFilterStyle.append(QLatin1String("}\n"));
+    szFilterStyle.append(QLatin1String("QPushButton:pressed { \n"));
+    szFilterStyle.append(QLatin1String("  border: 1px solid red;\n"));
+    szFilterStyle.append(QLatin1String("}\n"));
+    szFilterStyle.append(QLatin1String("QPushButton { \n"));
+    szFilterStyle.append(QLatin1String("  border: 1px solid blue;\n"));
+    szFilterStyle.append(QLatin1String("  border-radius: 4px;\n"));
+    szFilterStyle.append(QLatin1String("  min-width: 40px;\n"));
+    szFilterStyle.append(QLatin1String("  max-width: 40px;\n"));
+    szFilterStyle.append(QLatin1String("  min-height: 36px;\n"));
+    szFilterStyle.append(QLatin1String("  max-height: 36px;\n"));
+    szFilterStyle.append(QLatin1String("  background-position: center  center;\n"));
+    szFilterStyle.append(QLatin1String("  background-color: transparent;\n"));
+    szFilterStyle.append(QLatin1String("}"));
     cmdFilter = new QPushButton(this);
     cmdFilter->setEnabled(true);
     cmdFilter->setFlat(true);
-    cmdFilter->setToolTip(QString::fromAscii("Head Only / Head + Used / All"));
+    cmdFilter->setToolTip(QLatin1String("Head Only / Head + Used / All"));
     cmdFilter->setStyleSheet(szFilterStyle);
     mainGrid->addWidget(cmdFilter, nRowButtons, nColBase);
     // Frames di sfondo MPNE001
     szFrameStyle.clear();
-    szFrameStyle.append(QString::fromAscii("QFrame { \n"));
-//    szFrameStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-//    szFrameStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szFrameStyle.append(QString::fromAscii("  min-width: 100px;\n"));
-    szFrameStyle.append(QString::fromAscii("  max-width: 100px;\n"));
-    szFrameStyle.append(QString::fromAscii("  min-height: 140px;\n"));
-    szFrameStyle.append(QString::fromAscii("  max-height: 140px;\n"));
-    szFrameStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szFrameStyle.append(QString::fromAscii("  background-color: transparent;\n"));
+    szFrameStyle.append(QLatin1String("QFrame { \n"));
+//    szFrameStyle.append(QLatin1String("  border: 1px solid blue;\n"));
+//    szFrameStyle.append(QLatin1String("  border-radius: 4px;\n"));
+    szFrameStyle.append(QLatin1String("  min-width: 100px;\n"));
+    szFrameStyle.append(QLatin1String("  max-width: 100px;\n"));
+    szFrameStyle.append(QLatin1String("  min-height: 140px;\n"));
+    szFrameStyle.append(QLatin1String("  max-height: 140px;\n"));
+    szFrameStyle.append(QLatin1String("  background-position: center  center;\n"));
+    szFrameStyle.append(QLatin1String("  background-color: transparent;\n"));
     // Frame Left
     fraMPNE_Left = new QFrame(this);
     szTemp = szFrameStyle;
     szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileMPNE10L));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("}"));
     fraMPNE_Left->setStyleSheet(szTemp);
     mainGrid->addWidget(fraMPNE_Left, nRowButtons, nColLeft);
     fraMPNE_Left->installEventFilter(this);
@@ -320,32 +321,32 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     fraMPNE_Right = new QFrame(this);
     szTemp = szFrameStyle;
     szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileMPNE10R));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("}"));
     fraMPNE_Right->setStyleSheet(szTemp);
     mainGrid->addWidget(fraMPNE_Right, nRowButtons, nColRight);
     fraMPNE_Right->installEventFilter(this);
     // Style per i due bottoni
     szModuleStyle.clear();
-    szModuleStyle.append(QString::fromAscii("QLabel:disabled { \n"));
-    szModuleStyle.append(QString::fromAscii("    border: 0px ;\n"));
-    szModuleStyle.append(QString::fromAscii("    background-color: transparent;\n"));
-    szModuleStyle.append(QString::fromAscii("    background-image: url("");\n"));
-    szModuleStyle.append(QString::fromAscii("}\n"));
-    szModuleStyle.append(QString::fromAscii("QLabel:enabled { \n"));
-    szModuleStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
-    szModuleStyle.append(QString::fromAscii("}\n"));
-    szModuleStyle.append(QString::fromAscii("QLabel:selected, QLabel:hover {\n"));
-    szModuleStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
-    szModuleStyle.append(QString::fromAscii("}\n"));
-    szModuleStyle.append(QString::fromAscii("QLabel { \n"));
-    szModuleStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szModuleStyle.append(QString::fromAscii("  border-radius: 2px;\n"));
-    szModuleStyle.append(QString::fromAscii("  min-width: 60px;\n"));
-    szModuleStyle.append(QString::fromAscii("  max-width: 60px;\n"));
-    szModuleStyle.append(QString::fromAscii("  min-height: 96px;\n"));
-    szModuleStyle.append(QString::fromAscii("  max-height: 86px;\n"));
-    szModuleStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szModuleStyle.append(QString::fromAscii("}"));
+    szModuleStyle.append(QLatin1String("QLabel:disabled { \n"));
+    szModuleStyle.append(QLatin1String("    border: 0px ;\n"));
+    szModuleStyle.append(QLatin1String("    background-color: transparent;\n"));
+    szModuleStyle.append(QLatin1String("    background-image: url("");\n"));
+    szModuleStyle.append(QLatin1String("}\n"));
+    szModuleStyle.append(QLatin1String("QLabel:enabled { \n"));
+    szModuleStyle.append(QLatin1String("    border: 1px solid navy;\n"));
+    szModuleStyle.append(QLatin1String("}\n"));
+    szModuleStyle.append(QLatin1String("QLabel:selected, QLabel:hover {\n"));
+    szModuleStyle.append(QLatin1String("    border: 1px solid DarkOrange ;\n"));
+    szModuleStyle.append(QLatin1String("}\n"));
+    szModuleStyle.append(QLatin1String("QLabel { \n"));
+    szModuleStyle.append(QLatin1String("  border: 1px solid blue;\n"));
+    szModuleStyle.append(QLatin1String("  border-radius: 2px;\n"));
+    szModuleStyle.append(QLatin1String("  min-width: 60px;\n"));
+    szModuleStyle.append(QLatin1String("  max-width: 60px;\n"));
+    szModuleStyle.append(QLatin1String("  min-height: 96px;\n"));
+    szModuleStyle.append(QLatin1String("  max-height: 86px;\n"));
+    szModuleStyle.append(QLatin1String("  background-position: center  center;\n"));
+    szModuleStyle.append(QLatin1String("}"));
     // Bottone SX
     lblModuleLeft = new QLabel(fraMPNE_Left);
     lblModuleLeft->setStyleSheet(szModuleStyle);
@@ -363,30 +364,30 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     //---------------------------
     // Label per Codice Base
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 24px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 24px;\n"));
-    szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid navy;\n"));
+    szTemp.append(QLatin1String("  min-height: 24px;\n"));
+    szTemp.append(QLatin1String("  max-height: 24px;\n"));
+    szTemp.append(QLatin1String("  min-width: 40px;\n"));
+    szTemp.append(QLatin1String("  max-width: 40px;\n"));
+    szTemp.append(QLatin1String("  font-size: 18px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox ->setText(QString::fromAscii("01"));
+    lblBox ->setText(QLatin1String("01"));
     lblBox ->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowFlags, nColBase, 1, 1, Qt::AlignHCenter);
     // Label per Codice SX
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 22px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 22px;\n"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid navy;\n"));
+    szTemp.append(QLatin1String("  min-height: 22px;\n"));
+    szTemp.append(QLatin1String("  max-height: 22px;\n"));
     szTemp.append(QString::fromAscii("  min-width: %1px;\n") .arg(nComboWidth));
     szTemp.append(QString::fromAscii("  max-width: %1px;\n") .arg(nComboWidth));
-    szTemp.append(QString::fromAscii("  font-size: 18px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("  font-size: 18px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("}"));
     lblLeft = new QLabel(this);
     lblLeft->setText(lstModuleCode[nUsageNone]);
     lblLeft->setStyleSheet(szTemp);
@@ -398,25 +399,25 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     mainGrid->addWidget(lblRight, nRowFlags, nColRight, 1, nItemWidth);
     // Label per Numero Righe selezionate
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-height: 22px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 22px;\n"));
-    szTemp.append(QString::fromAscii("  min-width: 50px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 50px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignLeft';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  min-height: 22px;\n"));
+    szTemp.append(QLatin1String("  max-height: 22px;\n"));
+    szTemp.append(QLatin1String("  min-width: 50px;\n"));
+    szTemp.append(QLatin1String("  max-width: 50px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignLeft';\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Rows:"));
+    lblBox->setText(QLatin1String("Rows:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowFlags, nColPort);
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-height: 22px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 22px;\n"));
-    szTemp.append(QString::fromAscii("  min-width: 50px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 50px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignRight';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  min-height: 22px;\n"));
+    szTemp.append(QLatin1String("  max-height: 22px;\n"));
+    szTemp.append(QLatin1String("  min-width: 50px;\n"));
+    szTemp.append(QLatin1String("  max-width: 50px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignRight';\n"));
+    szTemp.append(QLatin1String("}"));
     lblNRows = new QLabel(this);
     lblNRows->setStyleSheet(szTemp);
     mainGrid->addWidget(lblNRows, nRowFlags, nColPort + 1);
@@ -583,9 +584,9 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
         else {
             // Accende funzionalità del modulo
             QString szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(lstSfondi[nFunction]);
-            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            szBackGround.append(QLatin1String("    background-color: transparent;\n"));
             szNewStyle.append(szBackGround);
-            szNewStyle.append(QString::fromAscii("}"));
+            szNewStyle.append(QLatin1String("}"));
             lblModule->setStyleSheet(szNewStyle);
             lblModule->setEnabled(true);
             lblModule->raise();
@@ -628,24 +629,24 @@ void    Config_MPNE::setFilterButton(int nNewMode)
         case showHead:
             // Visualizza solo elementi della Head (no Nodi)
             szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterHead);
-            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            szBackGround.append(QLatin1String("    background-color: transparent;\n"));
             break;
 
         case showUsed:
             // Visualizza solo le variabili utilizzate
             szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterUsed);
-            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            szBackGround.append(QLatin1String("    background-color: transparent;\n"));
             break;
 
         case showAll:
         default:
             nNewMode = showAll;
             szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterAll);
-            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            szBackGround.append(QLatin1String("    background-color: transparent;\n"));
     }
     // Switch Mode
     szNewStyle.append(szBackGround);
-    szNewStyle.append(QString::fromAscii("}"));
+    szNewStyle.append(QLatin1String("}"));
     cmdFilter->setStyleSheet(szNewStyle);
 }
 void    Config_MPNE::changeRootElement(int nItem)
@@ -785,7 +786,7 @@ void    Config_MPNE::getUsedModules(int nBaseRow)
         }
     }
     else  {
-        m_szMsg = QString::fromAscii("The Selected Module is Out of Range!");
+        m_szMsg = QLatin1String("The Selected Module is Out of Range!");
         notifyUser(this, szMectTitle, m_szMsg);
     }
 }
@@ -793,7 +794,7 @@ void    Config_MPNE::on_RenameVars()
 // Evento Rename Clicked
 {
     bool        fOk = false;
-    QString     szNewPrefix = QInputDialog::getText(this, QString::fromAscii("New Var Prefix:"), QString::fromAscii("Enter new Variables Prefix to rename all Variables:"),
+    QString     szNewPrefix = QInputDialog::getText(this, QLatin1String("New Var Prefix:"), QLatin1String("Enter new Variables Prefix to rename all Variables:"),
                                                     QLineEdit::Normal, m_szVarNamePrefix, &fOk, Qt::Dialog);
     if (fOk)  {
         // Validazione del risultato
@@ -809,7 +810,7 @@ void    Config_MPNE::on_RenameVars()
         // Prefisso Vuoto
         if (szNewPrefix.isEmpty())  {
             fOk = false;
-            m_szMsg.append(QString::fromAscii("The Prefix is Empty.\n"));
+            m_szMsg.append(QLatin1String("The Prefix is Empty.\n"));
         }
         // Prefisso non valido
         if (! isValidVarName(szNewPrefix))  {
@@ -822,7 +823,7 @@ void    Config_MPNE::on_RenameVars()
             int     nVar = 0;
             for (nVar = 0; nVar < m_nTotalRows; nVar++)  {
                 // Generazione del nuovo nome variabile
-                szNewVarName = QString::fromAscii(localCTRecords[m_nBaseRow + nVar].Tag);
+                szNewVarName = QLatin1String(localCTRecords[m_nBaseRow + nVar].Tag);
                 szNewVarName = szNewVarName.mid(m_szVarNamePrefix.length());
                 szNewVarName.prepend(szNewPrefix);
                 strcpy(localCTRecords[m_nBaseRow + nVar].Tag, szNewVarName.toAscii().data());
@@ -853,7 +854,7 @@ bool    Config_MPNE::canRenameRows(int nBaseRow)
         m_szVarNamePrefix.clear();
         // Determinazione Minima e Massima lunghezza del nome Variabile
         for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-            szVarName = QString::fromAscii(localCTRecords[nBaseRow + nRow].Tag);
+            szVarName = QLatin1String(localCTRecords[nBaseRow + nRow].Tag);
             int nLen = szVarName.trimmed().length();
             if (nLen > 0)  {
                 if (nLen > m_nMaxVarName) m_nMaxVarName = nLen;

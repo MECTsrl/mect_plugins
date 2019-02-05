@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QFont>
 #include <QFontMetrics>
+#include <QLatin1String>
 
 cteErrorList::cteErrorList(QWidget *parent, bool fSingleLine) :
     QDialog(parent),
@@ -17,24 +18,24 @@ cteErrorList::cteErrorList(QWidget *parent, bool fSingleLine) :
     lstCols.clear();
     lstSizes.clear();
     for (nCol = colErrSeverity ; nCol < colErrTotals; nCol++)  {
-        lstCols.append(QString::fromAscii(""));
+        lstCols.append(szEMPTY);
         lstSizes.append(10);
     }
     // Riempimento liste
     // Titoli colonne  colSeverity
-    lstCols[colErrSeverity] = trUtf8("Level");
+    lstCols[colErrSeverity] = QLatin1String("Level");
     lstSizes[colErrSeverity] = 8;
-    lstCols[colErrRow] = trUtf8("Row");
+    lstCols[colErrRow] = QLatin1String("Row");
     lstSizes[colErrRow] = 8;
-    lstCols[colErrColumn] = trUtf8("Column");
+    lstCols[colErrColumn] = QLatin1String("Column");
     lstSizes[colErrColumn] = 8;
-    lstCols[colErrVarName] = trUtf8("Variable Name");
+    lstCols[colErrVarName] = QLatin1String("Variable Name");
     lstSizes[colErrVarName] = 20;
-    lstCols[colErrValue] = trUtf8("Value");
+    lstCols[colErrValue] = QLatin1String("Value");
     lstSizes[colErrValue] = 20;
-    lstCols[colErrCodeErr] = trUtf8("Error Code");
+    lstCols[colErrCodeErr] = QLatin1String("Error Code");
     lstSizes[colErrCodeErr] = 10;
-    lstCols[colErrMsgErr] = trUtf8("Error Message");
+    lstCols[colErrMsgErr] = QLatin1String("Error Message");
     lstSizes[colErrMsgErr] = 35;
     // Impostazione parametri TableView
     ui->tblErrors->setSelectionBehavior(QAbstractItemView::SelectRows);

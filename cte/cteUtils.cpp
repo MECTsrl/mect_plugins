@@ -7,6 +7,7 @@
 #include <QColor>
 #include <QBrush>
 #include <QString>
+#include <QLatin1String>
 #include <QList>
 #include <QStringList>
 #include <QTableWidget>
@@ -68,23 +69,23 @@ void initLists()
     }
     lstPriorityDesc.clear();
     lstPriorityDesc
-        << QString::fromAscii("None")
-        << QString::fromAscii("High")
-        << QString::fromAscii("Medium")
-        << QString::fromAscii("Low")
+        << QLatin1String("None")
+        << QLatin1String("High")
+        << QLatin1String("Medium")
+        << QLatin1String("Low")
         ;
     // Lista Significati (da mantenere allineata con enum behaviors in parser.h)
     lstBehavior.clear();
     lstBehavior
-            << QString::fromAscii("Read/Only  (%I)")
-            << QString::fromAscii("Read/Write (%Q)")
-            << QString::fromAscii("Alarm")
-            << QString::fromAscii("Event")
+            << QLatin1String("Read/Only  (%I)")
+            << QLatin1String("Read/Write (%Q)")
+            << QLatin1String("Alarm")
+            << QLatin1String("Event")
         ;
     // Lista condizioni di Allarme / Eventi
     lstCondition.clear();
     for (nCol = 0; nCol < oper_totals; nCol++)  {
-        lstCondition.append(QString::fromAscii(logic_operators[nCol]));
+        lstCondition.append(QLatin1String(logic_operators[nCol]));
     }
     // Titoli colonne
     lstHeadCols.clear();
@@ -96,65 +97,65 @@ void initLists()
         lstHeadSizes.append(10);
     }
 
-    lstHeadCols[colPriority] = QString::fromAscii("Priority");
-    lstHeadNames[colPriority] = QString::fromAscii("Priority");
+    lstHeadCols[colPriority] = QLatin1String("Priority");
+    lstHeadNames[colPriority] = QLatin1String("Priority");
     lstHeadSizes[colPriority] = 8;
-    lstHeadCols[colUpdate] = QString::fromAscii("Update");
-    lstHeadNames[colUpdate] = QString::fromAscii("Update");
+    lstHeadCols[colUpdate] = QLatin1String("Update");
+    lstHeadNames[colUpdate] = QLatin1String("Update");
     lstHeadSizes[colUpdate] = 8;
-    lstHeadCols[colGroup] = QString::fromAscii("Group");
-    lstHeadNames[colGroup] = QString::fromAscii("Group");
+    lstHeadCols[colGroup] = QLatin1String("Group");
+    lstHeadNames[colGroup] = QLatin1String("Group");
     lstHeadSizes[colGroup] = 8;
-    lstHeadCols[colModule] = QString::fromAscii("Module");
-    lstHeadNames[colModule] = QString::fromAscii("Module");
+    lstHeadCols[colModule] = QLatin1String("Module");
+    lstHeadNames[colModule] = QLatin1String("Module");
     lstHeadSizes[colModule] = 8;
-    lstHeadCols[colName] = QString::fromAscii("Var.Name");
-    lstHeadNames[colName] = QString::fromAscii("Var_Name");
+    lstHeadCols[colName] = QLatin1String("Var.Name");
+    lstHeadNames[colName] = QLatin1String("Var_Name");
     lstHeadSizes[colName] = 20;
-    lstHeadCols[colType] = QString::fromAscii("Type");
-    lstHeadNames[colType] = QString::fromAscii("Type");
+    lstHeadCols[colType] = QLatin1String("Type");
+    lstHeadNames[colType] = QLatin1String("Type");
     lstHeadSizes[colType] = 10;
-    lstHeadCols[colDecimal] = QString::fromAscii("Decimal");
-    lstHeadNames[colDecimal] = QString::fromAscii("Decimal");
+    lstHeadCols[colDecimal] = QLatin1String("Decimal");
+    lstHeadNames[colDecimal] = QLatin1String("Decimal");
     lstHeadSizes[colDecimal] = 8;
-    lstHeadCols[colProtocol] = QString::fromAscii("Protocol");
-    lstHeadNames[colProtocol] = QString::fromAscii("Protocol");
+    lstHeadCols[colProtocol] = QLatin1String("Protocol");
+    lstHeadNames[colProtocol] = QLatin1String("Protocol");
     lstHeadSizes[colProtocol] = 10;
-    lstHeadCols[colIP] = QString::fromAscii("IP Address");
-    lstHeadNames[colIP] = QString::fromAscii("IP_Address");
+    lstHeadCols[colIP] = QLatin1String("IP Address");
+    lstHeadNames[colIP] = QLatin1String("IP_Address");
     lstHeadSizes[colIP] = 18;
-    lstHeadCols[colPort] = QString::fromAscii("Port");
-    lstHeadNames[colPort] = QString::fromAscii("Port");
+    lstHeadCols[colPort] = QLatin1String("Port");
+    lstHeadNames[colPort] = QLatin1String("Port");
     lstHeadSizes[colPort] = 8;
-    lstHeadCols[colNodeID] = QString::fromAscii("Node ID");
-    lstHeadNames[colNodeID] = QString::fromAscii("Node_ID");
+    lstHeadCols[colNodeID] = QLatin1String("Node ID");
+    lstHeadNames[colNodeID] = QLatin1String("Node_ID");
     lstHeadSizes[colNodeID] = 8;
-    lstHeadCols[colInputReg] = QString::fromAscii("I/R");
-    lstHeadNames[colInputReg] = QString::fromAscii("I_R");
+    lstHeadCols[colInputReg] = QLatin1String("I/R");
+    lstHeadNames[colInputReg] = QLatin1String("I_R");
     lstHeadSizes[colInputReg] = 8;
-    lstHeadCols[colRegister] = QString::fromAscii("Register");
-    lstHeadNames[colRegister] = QString::fromAscii("Register");
+    lstHeadCols[colRegister] = QLatin1String("Register");
+    lstHeadNames[colRegister] = QLatin1String("Register");
     lstHeadSizes[colRegister] = 8;
-    lstHeadCols[colBlock] = QString::fromAscii("Block");
-    lstHeadNames[colBlock] = QString::fromAscii("Block");
+    lstHeadCols[colBlock] = QLatin1String("Block");
+    lstHeadNames[colBlock] = QLatin1String("Block");
     lstHeadSizes[colBlock] = 8;
-    lstHeadCols[colBlockSize] = QString::fromAscii("Blk Size");
-    lstHeadNames[colBlockSize] = QString::fromAscii("Blk_Size");
+    lstHeadCols[colBlockSize] = QLatin1String("Blk Size");
+    lstHeadNames[colBlockSize] = QLatin1String("Blk_Size");
     lstHeadSizes[colBlockSize] = 8;
-    lstHeadCols[colComment] = QString::fromAscii("Comment");
-    lstHeadNames[colComment] = QString::fromAscii("Comment");
+    lstHeadCols[colComment] = QLatin1String("Comment");
+    lstHeadNames[colComment] = QLatin1String("Comment");
     lstHeadSizes[colComment] = 20;
-    lstHeadCols[colBehavior] = QString::fromAscii("Behavior");
-    lstHeadNames[colBehavior] = QString::fromAscii("Behavior");
+    lstHeadCols[colBehavior] = QLatin1String("Behavior");
+    lstHeadNames[colBehavior] = QLatin1String("Behavior");
     lstHeadSizes[colBehavior] = 16;
-    lstHeadCols[colSourceVar] = QString::fromAscii("Source");
-    lstHeadNames[colSourceVar] = QString::fromAscii("Source");
+    lstHeadCols[colSourceVar] = QLatin1String("Source");
+    lstHeadNames[colSourceVar] = QLatin1String("Source");
     lstHeadSizes[colSourceVar] = 20;
-    lstHeadCols[colCondition] = QString::fromAscii("Condition");
-    lstHeadNames[colCondition] = QString::fromAscii("Condition");
+    lstHeadCols[colCondition] = QLatin1String("Condition");
+    lstHeadNames[colCondition] = QLatin1String("Condition");
     lstHeadSizes[colCondition] = 10;
-    lstHeadCols[colCompare] = QString::fromAscii("Compare");
-    lstHeadNames[colCompare] = QString::fromAscii("Compare");
+    lstHeadCols[colCompare] = QLatin1String("Compare");
+    lstHeadNames[colCompare] = QLatin1String("Compare");
     lstHeadSizes[colCompare] = 20;
     // Colonne allineate a SX nel Grid
     lstHeadLeftCols.clear();
@@ -195,7 +196,7 @@ void initLists()
     lstMNPxHeadSizes[colMPNxBehavior] = lstHeadSizes[colBehavior];
     lstMPNxCols[colMPNxComment] = lstHeadCols[colComment];
     lstMNPxHeadSizes[colMPNxComment] = lstHeadSizes[colComment];
-    lstMPNxCols[colMPNxService] = QString::fromAscii("Service");
+    lstMPNxCols[colMPNxService] = QLatin1String("Service");
     lstMNPxHeadSizes[colMPNxService] = 30;
     // Colonne allineate a SX nel Grid MPNx
     lstMPNxHeadLeftCols.clear();
@@ -206,25 +207,25 @@ void initLists()
     for (nCol = 0; nCol < regTotals; nCol++)  {
         lstRegions.append(szEMPTY);
     }
-    lstRegions[regRetentive]    = QString::fromAscii("Retentive\t[1 -  192]");
-    lstRegions[regNonRetentive] = QString::fromAscii("Non Retentive\t[193 - 4999]");
-    lstRegions[regDiagnostic]   = QString::fromAscii("Diagnostic\t[5000 - 5299]");
-    lstRegions[regLocalIO]      = QString::fromAscii("Local I/O\t[5300 - 5389]");
-    lstRegions[regSystem]       = QString::fromAscii("System\t[5390 - 5472]");
+    lstRegions[regRetentive]    = QLatin1String("Retentive\t[1 -  192]");
+    lstRegions[regNonRetentive] = QLatin1String("Non Retentive\t[193 - 4999]");
+    lstRegions[regDiagnostic]   = QLatin1String("Diagnostic\t[5000 - 5299]");
+    lstRegions[regLocalIO]      = QLatin1String("Local I/O\t[5300 - 5389]");
+    lstRegions[regSystem]       = QLatin1String("System\t[5390 - 5472]");
     // Descrizione Tipi Variabili
     lstTipi.clear();
     for (nCol = 0; nCol < TYPE_TOTALS - 1; nCol++)  {
-        lstTipi.append(QString::fromAscii(varTypeNameExtended[nCol]));
+        lstTipi.append(QLatin1String(varTypeNameExtended[nCol]));
     }
     // Lista Update
     lstUpdateNames.clear();
     for (nCol = Htype; nCol < UPDATE_TOTALS; nCol++)  {
-        lstUpdateNames.append(QString::fromAscii(updateTypeName[nCol]));
+        lstUpdateNames.append(QLatin1String(updateTypeName[nCol]));
     }
     // Lista Protocolli
     lstProtocol.clear();
     for (nCol = PLC; nCol < FIELDBUS_TOTAL; nCol++)  {
-        lstProtocol.append(QString::fromAscii(fieldbusName[nCol]));
+        lstProtocol.append(QLatin1String(fieldbusName[nCol]));
     }
     // Costanti per i colori di sfondo
     colorRetentive[0] = QColor(170,255,255,255);           // Azzurro Dark
@@ -234,12 +235,12 @@ void initLists()
     colorSystem[0] = QColor(255,227,215,255);              // Rosa Dark
     colorSystem[1] = QColor(255,240,233,255);              // Rosa
     colorGray = QColor(200,200,200,255);                   // Gray
-    szColorRet[0] = QString::fromAscii("color: #AAFFFF");
-    szColorRet[1] = QString::fromAscii("color: #D2FFFF");
-    szColorNonRet[0] = QString::fromAscii("color: #FFFFBE");
-    szColorNonRet[1] = QString::fromAscii("color: #FFFFDC");
-    szColorSystem[0] = QString::fromAscii("color: #FFE3D7");
-    szColorSystem[1] = QString::fromAscii("color: #FFF0E9");
+    szColorRet[0] = QLatin1String("color: #AAFFFF");
+    szColorRet[1] = QLatin1String("color: #D2FFFF");
+    szColorNonRet[0] = QLatin1String("color: #FFFFBE");
+    szColorNonRet[1] = QLatin1String("color: #FFFFDC");
+    szColorSystem[0] = QLatin1String("color: #FFE3D7");
+    szColorSystem[1] = QLatin1String("color: #FFF0E9");
 
     // Righe della CT
     lstCTRecords.clear();
@@ -309,7 +310,7 @@ bool recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lst
         // Campo Module
         lstRecValues[colMPNxModule] = QString::number(lstModel[nModelRow].Module);
         // Campo Name
-        lstRecValues[colMPNxName] = QString::fromAscii(CTRecords[nRow].Tag);
+        lstRecValues[colMPNxName] = QLatin1String(CTRecords[nRow].Tag);
         // Campo Type
         if (CTRecords[nRow].VarType >= BIT && CTRecords[nRow].VarType < TYPE_TOTALS)
             lstRecValues[colMPNxType] = lstTipi[CTRecords[nRow].VarType];
@@ -330,11 +331,11 @@ bool recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lst
         else if (CTRecords[nRow].Behavior == behavior_readwrite)
             lstRecValues[colMPNxBehavior] = lstBehavior[behavior_readwrite];
         // Commento
-        lstRecValues[colMPNxComment] = QString::fromAscii(CTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
+        lstRecValues[colMPNxComment] = QString(QLatin1String(CTRecords[nRow].Comment)).trimmed().left(MAX_COMMENT_LEN - 1);
         // Service
         lstRecValues[colMPNxService] = szEMPTY;
     }
-    //    qDebug() << QString::fromAscii("recCT2List() - Parsed Row: %1") .arg(nRow);
+    //    qDebug() << QLatin1String("recCT2List() - Parsed Row: %1") .arg(nRow);
     // Return value
     return true;
 }
@@ -352,7 +353,7 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
     // Pulizia Buffers
     szTemp.clear();
     listClear(lstRecValues, colTotals);
-//    qDebug() << QString::fromAscii("recCT2FieldsValues(): Processing Row=[%1]") .arg(nRow);
+//    qDebug() << QLatin1String("recCT2FieldsValues(): Processing Row=[%1]") .arg(nRow);
     // Recupero informazioni da Record CT
     if (CTRecords[nRow].UsedEntry)  {
         // Priority
@@ -384,7 +385,7 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
             lstRecValues[colModule] = szZERO;
         }
         // Campo Name
-        lstRecValues[colName] = QString::fromAscii(CTRecords[nRow].Tag);
+        lstRecValues[colName] = QLatin1String(CTRecords[nRow].Tag);
         // Campo Type
         if (CTRecords[nRow].VarType >= BIT && CTRecords[nRow].VarType < TYPE_TOTALS)  {
             lstRecValues[colType] = lstTipi[CTRecords[nRow].VarType];
@@ -405,7 +406,7 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
         if (CTRecords[nRow].Protocol == TCP || CTRecords[nRow].Protocol == TCPRTU ||
                 CTRecords[nRow].Protocol == TCP_SRV || CTRecords[nRow].Protocol ==TCPRTU_SRV)  {
             ipaddr2str(CTRecords[nRow].IPAddress, ip);
-            szTemp = QString::fromAscii(ip);
+            szTemp = QLatin1String(ip);
         }
         else
             szTemp = szEMPTY;
@@ -445,9 +446,9 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
             else
                 lstRecValues[colCondition] = szEMPTY;
             // Source Var
-            lstRecValues[colSourceVar] = QString::fromAscii(CTRecords[nRow].ALSource);
+            lstRecValues[colSourceVar] = QLatin1String(CTRecords[nRow].ALSource);
             // Compare Var or Value
-            szTemp = QString::fromAscii(CTRecords[nRow].ALCompareVar);
+            szTemp = QLatin1String(CTRecords[nRow].ALCompareVar);
             if (szTemp.isEmpty())
                 lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
             else
@@ -467,9 +468,9 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
             lstRecValues[colCondition] = szEMPTY;
             lstRecValues[colCompare] = szEMPTY;
         }
-//        qDebug() << QString::fromAscii("recCT2FieldsValues(): Row=[%1] - usedInAlarmsEvents=[%2] - Behavior=[%3]") .arg(nRow) .arg(CTRecords[nRow].usedInAlarmsEvents) .arg(CTRecords[nRow].Behavior);
+//        qDebug() << QLatin1String("recCT2FieldsValues(): Row=[%1] - usedInAlarmsEvents=[%2] - Behavior=[%3]") .arg(nRow) .arg(CTRecords[nRow].usedInAlarmsEvents) .arg(CTRecords[nRow].Behavior);
     }
-    // qDebug() << QString::fromAscii("recCT2FieldsValues(): Processed Row=[%1]") .arg(nRow);
+    // qDebug() << QLatin1String("recCT2FieldsValues(): Processed Row=[%1]") .arg(nRow);
     // Return value
     return true;
 }
@@ -684,7 +685,7 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
         if (CTTemplate[nRow].Enable == 0 && strlen(CTTemplate[nRow].Tag) > 0 && strlen(CTProject[nRow].Tag) > 0 && CTProject[nRow].Enable)  {
             nDifferences++;
             lstDiff.append(nRow);
-            lstActions.append(QString::fromAscii("Variable switched OFF"));
+            lstActions.append(QLatin1String("Variable switched OFF"));
             if (forceDiff)  {
                 CTProject[nRow].Enable = 0;
             }
@@ -702,41 +703,52 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
         if (CTTemplate[nRow].UsedEntry && ! CTProject[nRow].UsedEntry)  {
             nDifferences++;
             lstDiff.append(nRow);
-            lstActions.append(QString::fromAscii("New Variable added to Project"));
+            lstActions.append(QLatin1String("New Variable added to Project"));
             if (forceDiff)  {
                 CTProject[nRow] = CTTemplate[nRow];
             }
         }
         // Blocco e Block Size
-        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry> 0  &&
+        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry  &&
             (CTTemplate[nRow].Block != CTProject[nRow].Block || CTTemplate[nRow].BlockSize != CTProject[nRow].BlockSize))  {
             nDifferences++;
             lstDiff.append(nRow);
-            lstActions.append(QString::fromAscii("Changed Block or Block Size"));
+            lstActions.append(QLatin1String("Changed Block or Block Size"));
             if (forceDiff)  {
                 CTProject[nRow].Block = CTTemplate[nRow].Block;
                 CTProject[nRow].BlockSize = CTTemplate[nRow].BlockSize;
             }
         }
         // Tipo
-        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry> 0  &&
+        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
             CTTemplate[nRow].VarType != CTProject[nRow].VarType)   {
             nDifferences++;
             lstDiff.append(nRow);
-            lstActions.append(QString::fromAscii("Changed Type"));
+            lstActions.append(QLatin1String("Changed Type"));
             if (forceDiff)  {
                 CTProject[nRow].VarType = CTTemplate[nRow].VarType;
             }
         }
         // Decimali Cambiati
-        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry> 0  &&
+        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
             (CTTemplate[nRow].Decimal != CTProject[nRow].Decimal &&
              ! ((nRow >= nAnInStart && nRow <= nAnInEnd) ||  (nRow >= nAnOutStart && nRow <= nAnOutEnd))))  {
             nDifferences++;
             lstDiff.append(nRow);
-            lstActions.append(QString::fromAscii("Changed Decimals"));
+            lstActions.append(QLatin1String("Changed Decimals"));
             if (forceDiff)  {
                 CTProject[nRow].Decimal = CTTemplate[nRow].Decimal;
+            }
+        }
+        // Nuovo Commento
+        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
+            strlen(CTTemplate[nRow].Comment) > 0 &&
+            strlen(CTProject[nRow].Comment) == 0)  {
+            nDifferences++;
+            lstDiff.append(nRow);
+            lstActions.append(QString::fromAscii("Added Comment: %1") .arg(QLatin1String(CTTemplate[nRow].Comment)));
+            if (forceDiff)  {
+                strcpy(CTProject[nRow].Comment, CTTemplate[nRow].Comment);
             }
         }
     }
@@ -876,7 +888,7 @@ void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> 
     QHeaderView *verticalHeader = table->verticalHeader();
     verticalHeader->setResizeMode(QHeaderView::Fixed);
     verticalHeader->setDefaultSectionSize(nColHeight);
-    // qDebug() << QString::fromAscii("setGridParams():    Col Height: %1") .arg(nColHeight);
+    // qDebug() << QLatin1String("setGridParams():    Col Height: %1") .arg(nColHeight);
 
 }
 bool    isValidVarName(QString szName)
@@ -973,7 +985,7 @@ QString     priority2String(int nPriority){
 QString getSerialPortSpeed(int nPort)
 // Restituisce in forma leggibile i parametri della porta seriale selezionata
 {
-    QString     szSpeed = QString::fromAscii("Disabled");
+    QString     szSpeed = QLatin1String("Disabled");
 
     if (isSerialPortEnabled)  {
         switch (nPort)  {

@@ -4,6 +4,7 @@
 
 #include <QTableWidgetItem>
 #include <QHeaderView>
+#include <QLatin1String>
 #include <QFont>
 #include <QFontMetrics>
 #include <QChar>

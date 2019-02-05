@@ -11,6 +11,7 @@
 #include <QTableWidgetItem>
 #include <QHeaderView>
 #include <QFrame>
+#include <QLatin1String>
 #include <QIntValidator>
 
 // Cardinalità Moduli - Gruppi
@@ -31,19 +32,19 @@ const int nRowButtons = 2;
 const int nRowFlags = 3;
 const int nRowGrid = 4;
 // Sfondi Bottoni
-const QString szFileAdd = szPathIMG + QString::fromAscii("Add_32.png");
-const QString szFileRemove = szPathIMG + QString::fromAscii("Remove_32.png");
-const QString szFileRename = szPathIMG + QString::fromAscii("Rename2.png");
+const QString szFileAdd = szPathIMG + QLatin1String("Add_32.png");
+const QString szFileRemove = szPathIMG + QLatin1String("Remove_32.png");
+const QString szFileRename = szPathIMG + QLatin1String("Rename2.png");
 // Sfondi per Moduli
-const QString szFileMPNC006 = szPathIMG + QString::fromAscii("MPNC006_R.png");
-const QString szFileMPNC030 = szPathIMG + QString::fromAscii("MPNC030_R.png");
-const QString szFileMPNC035 = szPathIMG + QString::fromAscii("MPNC030_R.png");
-const QString szFileMPNC020_01 = szPathIMG + QString::fromAscii("MPNC020_R.png");
-const QString szFileMPNC020_02 = szPathIMG + QString::fromAscii("MPNC020_R.png");
+const QString szFileMPNC006 = szPathIMG + QLatin1String("MPNC006_R.png");
+const QString szFileMPNC030 = szPathIMG + QLatin1String("MPNC030_R.png");
+const QString szFileMPNC035 = szPathIMG + QLatin1String("MPNC030_R.png");
+const QString szFileMPNC020_01 = szPathIMG + QLatin1String("MPNC020_R.png");
+const QString szFileMPNC020_02 = szPathIMG + QLatin1String("MPNC020_R.png");
 // Sfondi Filtro Visualizzazione
-const QString szFilterHead = szPathIMG + QString::fromAscii("ShowHead.png");
-const QString szFilterUsed = szPathIMG + QString::fromAscii("ShowUsed.png");
-const QString szFilterAll = szPathIMG + QString::fromAscii("ShowAll.png");
+const QString szFilterHead = szPathIMG + QLatin1String("ShowHead.png");
+const QString szFilterUsed = szPathIMG + QLatin1String("ShowUsed.png");
+const QString szFilterAll = szPathIMG + QLatin1String("ShowAll.png");
 
 
 Config_MPNC::Config_MPNC(QWidget *parent) :
@@ -82,27 +83,27 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     lstSfondi.clear();
     // MPNC006
     lstSfondi.append(szFileMPNC006);
-    lstModuleName.append(QString::fromAscii("MPNC006"));
+    lstModuleName.append(QLatin1String("MPNC006"));
     // MPNC030
     for (i = 0; i < nItemsPerGroup; i ++)  {
         lstSfondi.append(szFileMPNC030);
     }
-    lstModuleName.append(QString::fromAscii("MPNC030"));
+    lstModuleName.append(QLatin1String("MPNC030"));
     // MPNC035
     for (i = 0; i < nItemsPerGroup; i ++)  {
         lstSfondi.append(szFileMPNC035);
     }
-    lstModuleName.append(QString::fromAscii("MPNC035"));
+    lstModuleName.append(QLatin1String("MPNC035"));
     // MPNC020_01
     for (i = 0; i < nItemsPerGroup; i ++)  {
         lstSfondi.append(szFileMPNC020_01);
     }
-    lstModuleName.append(QString::fromAscii("MPNC020_01"));
+    lstModuleName.append(QLatin1String("MPNC020_01"));
     // MPNC020_02
     for (i = 0; i < nItemsPerGroup; i ++)  {
         lstSfondi.append(szFileMPNC020_02);
     }
-    lstModuleName.append(QString::fromAscii("MPNC020_02"));
+    lstModuleName.append(QLatin1String("MPNC020_02"));
     // Flag Abilitazione dei Moduli (il modulo 0 è MPNC006)
     lstModuleIsPresent.clear();
     for (i = 0; i < nTotalItems; i++)  {
@@ -113,22 +114,22 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     //---------------------------
     // Label per Combo Selettore
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  min-height: 36px;\n"));
+    szTemp.append(QLatin1String("  max-height: 36px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("MPNC006:"));
+    lblBox->setText(QLatin1String("MPNC006:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseHead);
     // Combo Selettore mpnc
     cboSelector = new QComboBox(this);
-    cboSelector->setToolTip(QString::fromAscii("Select I/O Module"));
+    cboSelector->setToolTip(QLatin1String("Select I/O Module"));
     mainGrid->addWidget(cboSelector, nRowSelector, nBaseAnIn, 1, nItemsPerGroup);
     // Label per Protocollo
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Protocol:"));
+    lblBox->setText(QLatin1String("Protocol:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseAnOut, 1, 2);
     lblProtocol = new QLabel(this);
@@ -137,11 +138,11 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     mainGrid->addWidget(lblProtocol, nRowSelector, nBaseAnOut + 2, 1, 2);
     // Combo per Porta
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Port:"));
+    lblBox->setText(QLatin1String("Port:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseDigIn, 1, 2);
     cboPort = new QComboBox(this);
-    cboPort->setToolTip(QString::fromAscii("Change Serial Port"));
+    cboPort->setToolTip(QLatin1String("Change Serial Port"));
     for (i = 0; i <= nMaxSerialPorts; i++)  {
         cboPort->addItem(QString::number(i));
     }
@@ -149,28 +150,28 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     mainGrid->addWidget(cboPort, nRowSelector, nBaseDigIn + 2, 1, 2);
     // TextBox per Node ID
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Node Id:"));
+    lblBox->setText(QLatin1String("Node Id:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nBaseDigOut, 1, 2);
     txtNode = new QLineEdit(this);
-    txtNode->setToolTip(QString::fromAscii("Change Node ID"));
+    txtNode->setToolTip(QLatin1String("Change Node ID"));
     txtNode->setStyleSheet(szTemp);
     txtNode->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
     txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
     mainGrid->addWidget(txtNode, nRowSelector, nBaseDigOut + 2, 1, 2);
     // Baud Rate Seriale
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-width: 80px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 80px;\n"));
-    szTemp.append(QString::fromAscii("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  min-width: 80px;\n"));
+    szTemp.append(QLatin1String("  max-width: 80px;\n"));
+    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox->setText(QString::fromAscii("Baud Rate:"));
+    lblBox->setText(QLatin1String("Baud Rate:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColBaudRate);
     lblBaudRate = new QLabel(this);
-    lblBaudRate->setText(QString::fromAscii("9600, N, 8, 1"));
+    lblBaudRate->setText(QLatin1String("9600, N, 8, 1"));
     lblBaudRate->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBaudRate, nRowSelector, nColBaudRate + 1);
     //---------------------------
@@ -178,32 +179,32 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     //---------------------------
     // Bottone per Rename rows
     szTemp.clear();;
-    szTemp.append(QString::fromAscii("QPushButton:disabled { \n"));
-    szTemp.append(QString::fromAscii("  border: 0px ;\n"));
-    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
-    szTemp.append(QString::fromAscii("  background-image: url("");\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid DarkOrange ;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid red;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QPushButton { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  background-position: center  center;\n"));
-    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
+    szTemp.append(QLatin1String("QPushButton:disabled { \n"));
+    szTemp.append(QLatin1String("  border: 0px ;\n"));
+    szTemp.append(QLatin1String("  background-color: transparent;\n"));
+    szTemp.append(QLatin1String("  background-image: url("");\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QPushButton:enabled { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid navy;\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QPushButton:selected, QPushButton:hover {\n"));
+    szTemp.append(QLatin1String("  border: 1px solid DarkOrange ;\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QPushButton:pressed { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid red;\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QPushButton { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid blue;\n"));
+    szTemp.append(QLatin1String("  border-radius: 4px;\n"));
+    szTemp.append(QLatin1String("  min-width: 40px;\n"));
+    szTemp.append(QLatin1String("  max-width: 40px;\n"));
+    szTemp.append(QLatin1String("  min-height: 36px;\n"));
+    szTemp.append(QLatin1String("  max-height: 36px;\n"));
+    szTemp.append(QLatin1String("  background-position: center  center;\n"));
+    szTemp.append(QLatin1String("  background-color: transparent;\n"));
     szTemp.append(QString::fromAscii("  background-image: url(%1);\n")  .arg(szFileRename));
-    szTemp.append(QString::fromAscii("}"));
-    QString szRenameToolTip = QString::fromAscii("Rename Variables");
+    szTemp.append(QLatin1String("}"));
+    QString szRenameToolTip = QLatin1String("Rename Variables");
     cmdRename = new QPushButton(this);
     cmdRename->setEnabled(true);
     cmdRename->setFlat(true);
@@ -213,66 +214,66 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     // Labels per i 4 gruppi
     // ANIN
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szTemp.append(QString::fromAscii("  background-color: AliceBlue;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  font: 14px;\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  border: 1px solid navy;\n"));
+    szTemp.append(QLatin1String("  border-radius: 4px;\n"));
+    szTemp.append(QLatin1String("  background-color: AliceBlue;\n"));
+    szTemp.append(QLatin1String("  min-height: 36px;\n"));
+    szTemp.append(QLatin1String("  max-height: 36px;\n"));
+    szTemp.append(QLatin1String("  font: 14px;\n"));
+    szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
     lblBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    lblBox->setText(QString::fromAscii("MPNC030\n4 Analog Input"));
+    lblBox->setText(QLatin1String("MPNC030\n4 Analog Input"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowDesc, nBaseAnIn, 1, nItemsPerGroup);
     // ANOUT
     lblBox = new QLabel(this);
     lblBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    lblBox->setText(QString::fromAscii("MPNC035\n4 Analog Output"));
+    lblBox->setText(QLatin1String("MPNC035\n4 Analog Output"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowDesc, nBaseAnOut, 1, nItemsPerGroup);
     // DIGIN
     lblBox = new QLabel(this);
     lblBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    lblBox->setText(QString::fromAscii("MPNC020 01\n16 Digital Input"));
+    lblBox->setText(QLatin1String("MPNC020 01\n16 Digital Input"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowDesc, nBaseDigIn, 1, nItemsPerGroup);
     // DIGOUT
     lblBox = new QLabel(this);
     lblBox->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    lblBox->setText(QString::fromAscii("MPNC020 02\n16 Digital Output"));
+    lblBox->setText(QLatin1String("MPNC020 02\n16 Digital Output"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowDesc, nBaseDigOut, 1, nItemsPerGroup);
     //---------------------------------
     // Bottoni per eliminazione Moduli o MPNC006
     //---------------------------------
     szRemoveStyle.clear();
-    szRemoveStyle.append(QString::fromAscii("QPushButton:disabled { \n"));
-    szRemoveStyle.append(QString::fromAscii("    border: 0px ;\n"));
-    szRemoveStyle.append(QString::fromAscii("    background-color: transparent;\n"));
-    szRemoveStyle.append(QString::fromAscii("    background-image: url("");\n"));
-    szRemoveStyle.append(QString::fromAscii("}\n"));
-    szRemoveStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szRemoveStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
-    szRemoveStyle.append(QString::fromAscii("}\n"));
-    szRemoveStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szRemoveStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
-    szRemoveStyle.append(QString::fromAscii("}\n"));
-    szRemoveStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szRemoveStyle.append(QString::fromAscii("    border: 1px solid red;\n"));
-    szRemoveStyle.append(QString::fromAscii("}\n"));
-    szRemoveStyle.append(QString::fromAscii("QPushButton { \n"));
-    szRemoveStyle.append(QString::fromAscii("  border: 0px solid blue;\n"));
-    szRemoveStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szRemoveStyle.append(QString::fromAscii("  min-height: 36px;\n"));
-    szRemoveStyle.append(QString::fromAscii("  max-height: 36px;\n"));
-    szRemoveStyle.append(QString::fromAscii("  min-width: 40px;\n"));
-    szRemoveStyle.append(QString::fromAscii("  max-width: 40px;\n"));
-    szRemoveStyle.append(QString::fromAscii("  background-color: AliceBlue;\n"));
-    szRemoveStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szRemoveStyle.append(QString::fromAscii("}"));
-    QString szRemoveToolTip = QString::fromAscii("Remove Module");
+    szRemoveStyle.append(QLatin1String("QPushButton:disabled { \n"));
+    szRemoveStyle.append(QLatin1String("    border: 0px ;\n"));
+    szRemoveStyle.append(QLatin1String("    background-color: transparent;\n"));
+    szRemoveStyle.append(QLatin1String("    background-image: url("");\n"));
+    szRemoveStyle.append(QLatin1String("}\n"));
+    szRemoveStyle.append(QLatin1String("QPushButton:enabled { \n"));
+    szRemoveStyle.append(QLatin1String("    border: 1px solid navy;\n"));
+    szRemoveStyle.append(QLatin1String("}\n"));
+    szRemoveStyle.append(QLatin1String("QPushButton:selected, QPushButton:hover {\n"));
+    szRemoveStyle.append(QLatin1String("    border: 1px solid DarkOrange ;\n"));
+    szRemoveStyle.append(QLatin1String("}\n"));
+    szRemoveStyle.append(QLatin1String("QPushButton:pressed { \n"));
+    szRemoveStyle.append(QLatin1String("    border: 1px solid red;\n"));
+    szRemoveStyle.append(QLatin1String("}\n"));
+    szRemoveStyle.append(QLatin1String("QPushButton { \n"));
+    szRemoveStyle.append(QLatin1String("  border: 0px solid blue;\n"));
+    szRemoveStyle.append(QLatin1String("  border-radius: 4px;\n"));
+    szRemoveStyle.append(QLatin1String("  min-height: 36px;\n"));
+    szRemoveStyle.append(QLatin1String("  max-height: 36px;\n"));
+    szRemoveStyle.append(QLatin1String("  min-width: 40px;\n"));
+    szRemoveStyle.append(QLatin1String("  max-width: 40px;\n"));
+    szRemoveStyle.append(QLatin1String("  background-color: AliceBlue;\n"));
+    szRemoveStyle.append(QLatin1String("  background-position: center  center;\n"));
+    szRemoveStyle.append(QLatin1String("}"));
+    QString szRemoveToolTip = QLatin1String("Remove Module");
     // Bottoni per rimozione dei Moduli (1..4)
     for (i = 1; i < nTotalGroups; i++)  {
         QPushButton *remove = new QPushButton(this);
@@ -294,28 +295,28 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     //---------------------------------
     // StyleSheet di base per ogni bottone
     szModuleStyle.clear();
-    szModuleStyle.append(QString::fromAscii("QPushButton:disabled { \n"));
-    szModuleStyle.append(QString::fromAscii("    border: 1px solid darkGray;\n"));
-    szModuleStyle.append(QString::fromAscii("}\n"));
-    szModuleStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szModuleStyle.append(QString::fromAscii("    border: 1px solid navy;\n"));
-    szModuleStyle.append(QString::fromAscii("}\n"));
-    szModuleStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szModuleStyle.append(QString::fromAscii("    border: 1px solid DarkOrange ;\n"));
-    szModuleStyle.append(QString::fromAscii("}\n"));
-    szModuleStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szModuleStyle.append(QString::fromAscii("    border: 1px solid red;\n"));
-    szModuleStyle.append(QString::fromAscii("}\n"));
-    szModuleStyle.append(QString::fromAscii("QPushButton { \n"));
-    szModuleStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szModuleStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szModuleStyle.append(QString::fromAscii("  min-height: 140px;\n"));
-    szModuleStyle.append(QString::fromAscii("  max-height: 140px;\n"));
-    szModuleStyle.append(QString::fromAscii("  min-width: 40px;\n"));
-    szModuleStyle.append(QString::fromAscii("  max-width: 40px;\n"));
-    szModuleStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szModuleStyle.append(QString::fromAscii("}"));
-    QString szModuleToolTip = QString::fromAscii("Add/View Module");
+    szModuleStyle.append(QLatin1String("QPushButton:disabled { \n"));
+    szModuleStyle.append(QLatin1String("    border: 1px solid darkGray;\n"));
+    szModuleStyle.append(QLatin1String("}\n"));
+    szModuleStyle.append(QLatin1String("QPushButton:enabled { \n"));
+    szModuleStyle.append(QLatin1String("    border: 1px solid navy;\n"));
+    szModuleStyle.append(QLatin1String("}\n"));
+    szModuleStyle.append(QLatin1String("QPushButton:selected, QPushButton:hover {\n"));
+    szModuleStyle.append(QLatin1String("    border: 1px solid DarkOrange ;\n"));
+    szModuleStyle.append(QLatin1String("}\n"));
+    szModuleStyle.append(QLatin1String("QPushButton:pressed { \n"));
+    szModuleStyle.append(QLatin1String("    border: 1px solid red;\n"));
+    szModuleStyle.append(QLatin1String("}\n"));
+    szModuleStyle.append(QLatin1String("QPushButton { \n"));
+    szModuleStyle.append(QLatin1String("  border: 1px solid blue;\n"));
+    szModuleStyle.append(QLatin1String("  border-radius: 4px;\n"));
+    szModuleStyle.append(QLatin1String("  min-height: 140px;\n"));
+    szModuleStyle.append(QLatin1String("  max-height: 140px;\n"));
+    szModuleStyle.append(QLatin1String("  min-width: 40px;\n"));
+    szModuleStyle.append(QLatin1String("  max-width: 40px;\n"));
+    szModuleStyle.append(QLatin1String("  background-position: center  center;\n"));
+    szModuleStyle.append(QLatin1String("}"));
+    QString szModuleToolTip = QLatin1String("Add/View Module");
     for (i = 0; i < nTotalItems; i++)  {
         QPushButton *module = new QPushButton(this);
         module->setEnabled(false);
@@ -336,49 +337,49 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     //---------------------------
     // Bottone per Filtro su Testa Nodi
     szFilterStyle.clear();;
-    szFilterStyle.append(QString::fromAscii("QPushButton:enabled { \n"));
-    szFilterStyle.append(QString::fromAscii("  border: 1px solid navy;\n"));
-    szFilterStyle.append(QString::fromAscii("}\n"));
-    szFilterStyle.append(QString::fromAscii("QPushButton:selected, QPushButton:hover {\n"));
-    szFilterStyle.append(QString::fromAscii("  border: 1px solid DarkOrange ;\n"));
-    szFilterStyle.append(QString::fromAscii("}\n"));
-    szFilterStyle.append(QString::fromAscii("QPushButton:pressed { \n"));
-    szFilterStyle.append(QString::fromAscii("  border: 1px solid red;\n"));
-    szFilterStyle.append(QString::fromAscii("}\n"));
-    szFilterStyle.append(QString::fromAscii("QPushButton { \n"));
-    szFilterStyle.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szFilterStyle.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szFilterStyle.append(QString::fromAscii("  min-width: 40px;\n"));
-    szFilterStyle.append(QString::fromAscii("  max-width: 40px;\n"));
-    szFilterStyle.append(QString::fromAscii("  min-height: 36px;\n"));
-    szFilterStyle.append(QString::fromAscii("  max-height: 36px;\n"));
-    szFilterStyle.append(QString::fromAscii("  background-position: center  center;\n"));
-    szFilterStyle.append(QString::fromAscii("  background-color: transparent;\n"));
-    szFilterStyle.append(QString::fromAscii("}"));
+    szFilterStyle.append(QLatin1String("QPushButton:enabled { \n"));
+    szFilterStyle.append(QLatin1String("  border: 1px solid navy;\n"));
+    szFilterStyle.append(QLatin1String("}\n"));
+    szFilterStyle.append(QLatin1String("QPushButton:selected, QPushButton:hover {\n"));
+    szFilterStyle.append(QLatin1String("  border: 1px solid DarkOrange ;\n"));
+    szFilterStyle.append(QLatin1String("}\n"));
+    szFilterStyle.append(QLatin1String("QPushButton:pressed { \n"));
+    szFilterStyle.append(QLatin1String("  border: 1px solid red;\n"));
+    szFilterStyle.append(QLatin1String("}\n"));
+    szFilterStyle.append(QLatin1String("QPushButton { \n"));
+    szFilterStyle.append(QLatin1String("  border: 1px solid blue;\n"));
+    szFilterStyle.append(QLatin1String("  border-radius: 4px;\n"));
+    szFilterStyle.append(QLatin1String("  min-width: 40px;\n"));
+    szFilterStyle.append(QLatin1String("  max-width: 40px;\n"));
+    szFilterStyle.append(QLatin1String("  min-height: 36px;\n"));
+    szFilterStyle.append(QLatin1String("  max-height: 36px;\n"));
+    szFilterStyle.append(QLatin1String("  background-position: center  center;\n"));
+    szFilterStyle.append(QLatin1String("  background-color: transparent;\n"));
+    szFilterStyle.append(QLatin1String("}"));
     cmdFilter = new QPushButton(this);
     cmdFilter->setEnabled(true);
     cmdFilter->setFlat(true);
-    cmdFilter->setToolTip(QString::fromAscii("Head Only / Head + Used / All"));
+    cmdFilter->setToolTip(QLatin1String("Head Only / Head + Used / All"));
     cmdFilter->setStyleSheet(szFilterStyle);
     mainGrid->addWidget(cmdFilter, nRowFlags, nBaseHead);
     // Label Gruppo (A..D)
     szTemp.clear();
-    szTemp.append(QString::fromAscii("QLabel:disabled {\n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid darkGray ;\n"));
-    szTemp.append(QString::fromAscii("  background-color: transparent;\n"));
-    szTemp.append(QString::fromAscii("  color: darkGray;\n"));
-    szTemp.append(QString::fromAscii("}\n"));
-    szTemp.append(QString::fromAscii("QLabel { \n"));
-    szTemp.append(QString::fromAscii("  min-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  max-width: 40px;\n"));
-    szTemp.append(QString::fromAscii("  min-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  max-height: 36px;\n"));
-    szTemp.append(QString::fromAscii("  border: 1px solid blue;\n"));
-    szTemp.append(QString::fromAscii("  border-radius: 4px;\n"));
-    szTemp.append(QString::fromAscii("  background-color: Cornflowerblue;\n"));
-    szTemp.append(QString::fromAscii("  color: DarkOrange;\n"));
-    szTemp.append(QString::fromAscii("  font: 14px;\n"));
-    szTemp.append(QString::fromAscii("}"));
+    szTemp.append(QLatin1String("QLabel:disabled {\n"));
+    szTemp.append(QLatin1String("  border: 1px solid darkGray ;\n"));
+    szTemp.append(QLatin1String("  background-color: transparent;\n"));
+    szTemp.append(QLatin1String("  color: darkGray;\n"));
+    szTemp.append(QLatin1String("}\n"));
+    szTemp.append(QLatin1String("QLabel { \n"));
+    szTemp.append(QLatin1String("  min-width: 40px;\n"));
+    szTemp.append(QLatin1String("  max-width: 40px;\n"));
+    szTemp.append(QLatin1String("  min-height: 36px;\n"));
+    szTemp.append(QLatin1String("  max-height: 36px;\n"));
+    szTemp.append(QLatin1String("  border: 1px solid blue;\n"));
+    szTemp.append(QLatin1String("  border-radius: 4px;\n"));
+    szTemp.append(QLatin1String("  background-color: Cornflowerblue;\n"));
+    szTemp.append(QLatin1String("  color: DarkOrange;\n"));
+    szTemp.append(QLatin1String("  font: 14px;\n"));
+    szTemp.append(QLatin1String("}"));
     for (i = 0; i < nTotalItems - 1; i++)  {
         lblBox = new QLabel(this);
         lblBox->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -415,8 +416,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     // Combo Cambio porta Modulo
 //    // Spacers tra Gruppo (solo 4 Items)
 //    szTemp.clear();
-//    szTemp.append(QString::fromAscii("  border: 1px solid red;\n"));
-//    szTemp.append(QString::fromAscii("  background-color: red;\n"));
+//    szTemp.append(QLatin1String("  border: 1px solid red;\n"));
+//    szTemp.append(QLatin1String("  background-color: red;\n"));
 //    for (i = 0; i < nTotalGroups - 1; i++)  {
 //        boxSeparator = new QFrame(this);
 //        boxSeparator->setFrameShape(QFrame::VLine);
@@ -511,16 +512,16 @@ void    Config_MPNC::customizeButtons()
         // Se esiste almeno la base di quel gruppo abilita bottone Remove
         curIsEnabled = lstModuleIsPresent[nBaseAnIn + ((nCur -1) * nItemsPerGroup)];
         // Icona Remove
-        szIcon = curIsEnabled ? szFileRemove : QString::fromAscii("");
+        szIcon = curIsEnabled ? szFileRemove : szEMPTY;
         szIcon = QString::fromAscii("    qproperty-icon: url(%1); \n") .arg(szIcon);
         if (! szIcon.isEmpty())  {
-            szIcon.append(QString::fromAscii("    background-color: Cornflowerblue;\n"));
+            szIcon.append(QLatin1String("    background-color: Cornflowerblue;\n"));
         }
         szNewStyle.append(szIcon);
         // Abilitazione bottone Remove
         lstRemove[nCur - 1]->setEnabled(curIsEnabled);
         // Cambio StyleSheet
-        szNewStyle.append(QString::fromAscii("}"));
+        szNewStyle.append(QLatin1String("}"));
         lstRemove[nCur - 1]->setStyleSheet(szNewStyle);
     }
     for (nCur = 0; nCur < nTotalItems; nCur++)  {
@@ -539,7 +540,7 @@ void    Config_MPNC::customizeButtons()
         // Se il modulo è abilitato si imposta lo sfondo tipico del Device associato
         if (lstModuleIsPresent[nCur])  {
             szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(lstSfondi[nCur]);
-            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            szBackGround.append(QLatin1String("    background-color: transparent;\n"));
         }
         else  {
             if (curIsEnabled)  {
@@ -547,13 +548,13 @@ void    Config_MPNC::customizeButtons()
             }
         }
         szIcon = QString::fromAscii("    qproperty-icon: url(%1); \n") .arg(szIcon);
-        szIcon.append(QString::fromAscii("    background-color: Cornflowerblue;\n"));
+        szIcon.append(QLatin1String("    background-color: Cornflowerblue;\n"));
         szNewStyle.append(szIcon);
         if (! szBackGround.isEmpty())  {
             szNewStyle.append(szBackGround);
         }
         // Cambio StyleSheet
-        szNewStyle.append(QString::fromAscii("}"));
+        szNewStyle.append(QLatin1String("}"));
         lstPulsanti[nCur]->setStyleSheet(szNewStyle);
         // Abilitazione
         lstPulsanti[nCur]->setEnabled(curIsEnabled);
@@ -588,14 +589,14 @@ void    Config_MPNC::getUsedModules(int nBaseRow)
                 if (nGroup == lstMPNC006_Vars[nRow].Group && nModule == lstMPNC006_Vars[nRow].Module)  {
                     fUsed = localCTRecords[nBaseRow + nRow].UsedEntry && localCTRecords[nBaseRow + nRow].Enable > nPriorityNone;
                     lstModuleIsPresent[nCur] = fUsed;
-                    //  qDebug() << QString::fromAscii("getUsedModules(): Module: %1 is: %2") .arg(nCur) .arg(fUsed ? QString::fromAscii("YES") : QString::fromAscii("NO"));
+                    //  qDebug() << QString::fromAscii("getUsedModules(): Module: %1 is: %2") .arg(nCur) .arg(fUsed ? QLatin1String("YES") : QLatin1String("NO"));
                     break;
                 }
             }
         }
     }
     else  {
-        m_szMsg = QString::fromAscii("The Selected Module is Out of Range!");
+        m_szMsg = QLatin1String("The Selected Module is Out of Range!");
         notifyUser(this, szMectTitle, m_szMsg);
     }
 }
@@ -970,7 +971,7 @@ void    Config_MPNC::on_RenameVars()
 // Evento Rename Clicked
 {
     bool        fOk = false;
-    QString     szNewPrefix = QInputDialog::getText(this, QString::fromAscii("New Var Prefix:"), QString::fromAscii("Enter new Variables Prefix to rename all Variables:"),
+    QString     szNewPrefix = QInputDialog::getText(this, QLatin1String("New Var Prefix:"), QLatin1String("Enter new Variables Prefix to rename all Variables:"),
                                                     QLineEdit::Normal, m_szVarNamePrefix, &fOk, Qt::Dialog);
     if (fOk)  {
         // Validazione del risultato
@@ -986,7 +987,7 @@ void    Config_MPNC::on_RenameVars()
         // Prefisso Vuoto
         if (szNewPrefix.isEmpty())  {
             fOk = false;
-            m_szMsg.append(QString::fromAscii("The Prefix is Empty.\n"));
+            m_szMsg.append(QLatin1String("The Prefix is Empty.\n"));
         }
         // Prefisso non valido
         if (! isValidVarName(szNewPrefix))  {
@@ -999,7 +1000,7 @@ void    Config_MPNC::on_RenameVars()
             int     nVar = 0;
             for (nVar = 0; nVar < m_nTotalRows; nVar++)  {
                 // Generazione del nuovo nome variabile
-                szNewVarName = QString::fromAscii(localCTRecords[m_nBaseRow + nVar].Tag);
+                szNewVarName = QLatin1String(localCTRecords[m_nBaseRow + nVar].Tag);
                 szNewVarName = szNewVarName.mid(m_szVarNamePrefix.length());
                 szNewVarName.prepend(szNewPrefix);
                 strcpy(localCTRecords[m_nBaseRow + nVar].Tag, szNewVarName.toAscii().data());
@@ -1029,7 +1030,7 @@ bool    Config_MPNC::canRenameRows(int nBaseRow)
         m_szVarNamePrefix.clear();
         // Determinazione Minima e Massima lunghezza del nome Variabile
         for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-            szVarName = QString::fromAscii(localCTRecords[nBaseRow + nRow].Tag);
+            szVarName = QLatin1String(localCTRecords[nBaseRow + nRow].Tag);
             int nLen = szVarName.trimmed().length();
             if (nLen > 0)  {
                 if (nLen > m_nMaxVarName) m_nMaxVarName = nLen;
@@ -1113,23 +1114,23 @@ void    Config_MPNC::setFilterButton(int nNewMode)
         case showHead:
             // Visualizza solo elementi della Head (no Nodi)
             szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterHead);
-            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            szBackGround.append(QLatin1String("    background-color: transparent;\n"));
             break;
 
         case showUsed:
             // Visualizza solo le variabili utilizzate
             szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterUsed);
-            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            szBackGround.append(QLatin1String("    background-color: transparent;\n"));
             break;
 
         case showAll:
         default:
             nNewMode = showAll;
             szBackGround = QString::fromAscii("    background-image: url(%1);\n")  .arg(szFilterAll);
-            szBackGround.append(QString::fromAscii("    background-color: transparent;\n"));
+            szBackGround.append(QLatin1String("    background-color: transparent;\n"));
     }
     // Switch Mode
     szNewStyle.append(szBackGround);
-    szNewStyle.append(QString::fromAscii("}"));
+    szNewStyle.append(QLatin1String("}"));
     cmdFilter->setStyleSheet(szNewStyle);
 }

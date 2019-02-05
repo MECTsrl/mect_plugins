@@ -3,6 +3,7 @@
 #include "utils.h"
 
 #include <QColor>
+#include <QLatin1String>
 #include <QColorDialog>
 #include <QPalette>
 #include <QIcon>
@@ -29,14 +30,14 @@ const int nTrk4 = 4;
 
 
 
-const QString szTREND1FILE = QString::fromAscii("trend1.csv");
-const QString szTRENDMASK =  QString::fromAscii("trend*.csv");
-const QString szDEFCOLOR = QString::fromAscii("palegreen");
-const QString szPORTRAIT = QString::fromAscii("P");
-const QString szLANDSCAPE = QString::fromAscii("L");
-const QString szTrendRelPath = QString::fromAscii("config/");
-const QString szTrendSection = QString::fromAscii("customtrend.files");
-const QString szTrendExt = QString::fromAscii(".csv");
+const QString szTREND1FILE = QLatin1String("trend1.csv");
+const QString szTRENDMASK =  QLatin1String("trend*.csv");
+const QString szDEFCOLOR = QLatin1String("palegreen");
+const QString szPORTRAIT = QLatin1String("P");
+const QString szLANDSCAPE = QLatin1String("L");
+const QString szTrendRelPath = QLatin1String("config/");
+const QString szTrendSection = QLatin1String("customtrend.files");
+const QString szTrendExt = QLatin1String(".csv");
 
 enum trendFields
 {   nTrendVisible = 0,
@@ -60,9 +61,9 @@ TrendEditor::TrendEditor(QWidget *parent) :
     // Combo Orientation
     mapOrientation.insert(szPORTRAIT, trUtf8("Portrait"));
     mapOrientation.insert(szLANDSCAPE, trUtf8("Landscape"));
-    cIco = QIcon(szPathIMG + QString::fromAscii("Portrait.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("Portrait.png"));
     ui->cboOrientation->addItem(cIco, mapOrientation.value(szPORTRAIT), szPORTRAIT);
-    cIco = QIcon(szPathIMG + QString::fromAscii("Landscape.png"));
+    cIco = QIcon(szPathIMG + QLatin1String("Landscape.png"));
     ui->cboOrientation->addItem(cIco, mapOrientation.value(szLANDSCAPE), szLANDSCAPE);
     ui->cboOrientation->setCurrentIndex(-1);
     // Validators
