@@ -627,6 +627,8 @@ bool    ctedit::selectCTFile(QString szFileCT)
                 // Confronto tra CT del Template e CT corrente
                 QList<int> lstDifferences;
                 QStringList lstActions;
+                // Clessidra
+                this->setCursor(Qt::WaitCursor);
                 int nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, lstActions, false);
                 if (nDiff > 0)  {
                     QStringList lstRow;
@@ -660,16 +662,26 @@ bool    ctedit::selectCTFile(QString szFileCT)
                         lstRow.append(lstActions[nErr]);
                         lstMessages.append(lstRow);
                     }
+                    // Cursore Normale
+                    this->setCursor(Qt::ArrowCursor);
+                    // Repaint
+                    doEvents();
                     // Query User
                     messageList *resList = new messageList(szMectTitle, m_szMsg, lstMessages, lstColSizes);
                     resList->setModal(true);
                     int nResList = resList->exec();
                     if (nResList == QDialog::Accepted)  {
+                        // Clessidra
+                        this->setCursor(Qt::WaitCursor);
+                        doEvents();
                         lstUndo.append(lstCTRecords);
                         nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, lstActions, true);
                         qDebug() << QLatin1String("Applied Differences to CT from Template");
                         ctable2Grid();
                         saveCTFile();
+                        // Cursore Normale
+                        this->setCursor(Qt::ArrowCursor);
+
                     }
                 }
             }

@@ -681,7 +681,9 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
     lstActions.clear();
     // Compare CT Area starting from 5000
     for (nRow = MIN_DIAG - 1; nRow < CTProject.count(); nRow++)  {
-        // Variabile Template marcata come NON Usata --> ha la priorità il Template
+        // Repaint
+        doEvents();
+        // Variabile Template marcata come NON Usata --> ha la priorità il Template Variabile utente disabilitata
         if (CTTemplate[nRow].Enable == 0 && strlen(CTTemplate[nRow].Tag) > 0 && strlen(CTProject[nRow].Tag) > 0 && CTProject[nRow].Enable)  {
             nDifferences++;
             lstDiff.append(nRow);
@@ -729,7 +731,7 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
                 CTProject[nRow].VarType = CTTemplate[nRow].VarType;
             }
         }
-        // Decimali Cambiati
+        // Decimali Cambiati (Salvo analogiche)
         if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
             (CTTemplate[nRow].Decimal != CTProject[nRow].Decimal &&
              ! ((nRow >= nAnInStart && nRow <= nAnInEnd) ||  (nRow >= nAnOutStart && nRow <= nAnOutEnd))))  {
@@ -740,7 +742,7 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
                 CTProject[nRow].Decimal = CTTemplate[nRow].Decimal;
             }
         }
-        // Nuovo Commento
+        // Commento solo in Template ---> Copiato in Progetto
         if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
             strlen(CTTemplate[nRow].Comment) > 0 &&
             strlen(CTProject[nRow].Comment) == 0)  {
