@@ -5265,6 +5265,25 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_E].ser2_Enabled = false;
     lstTargets[TP1070_02_E].ser3_Enabled = true;
     lstTargets[TP1070_02_E].can1_Enabled = false;
+    // 30 TP1070_02_F
+    lstTargets[TP1070_02_F].modelName =  QLatin1String(product_name[TP1070_02_F]);
+    lstTargets[TP1070_02_F].displayWidth =  800;
+    lstTargets[TP1070_02_F].displayHeight = 480;
+    lstTargets[TP1070_02_F].sdCards = 0;
+    lstTargets[TP1070_02_F].digitalIN = 0;
+    lstTargets[TP1070_02_F].digitalOUT = 0;
+    lstTargets[TP1070_02_F].nEncoders = 0;
+    lstTargets[TP1070_02_F].analogIN = 0;
+    lstTargets[TP1070_02_F].analogINrowCT = -1;
+    lstTargets[TP1070_02_F].analogOUT = 0;
+    lstTargets[TP1070_02_F].analogOUTrowCT = -1;
+    lstTargets[TP1070_02_F].tAmbient = false;
+    lstTargets[TP1070_02_F].rpmPorts = 0;
+    lstTargets[TP1070_02_F].ser0_Enabled = true;
+    lstTargets[TP1070_02_F].ser1_Enabled = false;
+    lstTargets[TP1070_02_F].ser2_Enabled = false;
+    lstTargets[TP1070_02_F].ser3_Enabled = false;
+    lstTargets[TP1070_02_F].can1_Enabled = false;
     // Ciclo di verifica caricamento modelli:
     for (nModel = 0; nModel < MODEL_TOTALS; nModel++)  {
         qDebug() << QString::fromLatin1("Model: %1 - Model Name: %2") .arg(QString::number(nModel)) .arg(lstTargets[nModel].modelName);
