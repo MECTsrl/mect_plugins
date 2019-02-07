@@ -96,6 +96,16 @@ ATCM-template-project-TP1070_02_E/config/trend1.csv \
 ATCM-template-project-TP1070_02_E/console.png \
 ATCM-template-project-TP1070_02_E/template.pri \
 ATCM-template-project-TP1070_02_E/wizard.xml \
+ATCM-template-project-TP1070_02_F/automation.cpp \
+ATCM-template-project-TP1070_02_F/config/Crosstable.csv \
+ATCM-template-project-TP1070_02_F/config/crosstable.cpp \
+ATCM-template-project-TP1070_02_F/config/crosstable.h \
+ATCM-template-project-TP1070_02_F/config/splash.png \
+ATCM-template-project-TP1070_02_F/config/system.ini \
+ATCM-template-project-TP1070_02_F/config/trend1.csv \
+ATCM-template-project-TP1070_02_F/console.png \
+ATCM-template-project-TP1070_02_F/template.pri \
+ATCM-template-project-TP1070_02_F/wizard.xml \
 ATCM-template-project-TPAC1005/config/Crosstable.csv \
 ATCM-template-project-TPAC1005/config/crosstable.cpp \
 ATCM-template-project-TPAC1005/config/crosstable.h \
