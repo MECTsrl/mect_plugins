@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="qtc.qrc">
+    <normaloff>:/cteicons/img/Logo_Mect.png</normaloff>:/cteicons/img/Logo_Mect.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
@@ -41,8 +45,14 @@
         <property name="text">
          <string/>
         </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
         <property name="alignment">
          <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -89,7 +99,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="qtc.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

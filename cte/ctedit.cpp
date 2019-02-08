@@ -5,6 +5,7 @@
 #include "stdlib.h"
 #include "cteUtils.h"
 #include "messagelist.h"
+#include "queryPortNode.h"
 
 #include <QFile>
 #include <QFileDialog>
@@ -76,7 +77,6 @@
 #undef  WORD_BIT
 
 
-const QString szDEF_IP_PORT = QLatin1String("502");
 const QString szCT_FILE_NAME = QLatin1String("Crosstable.csv");
 const QString szEMPTY_IP = QLatin1String("0.0.0.0");
 const QString szCrossCompier = QLatin1String("ctc");
@@ -143,21 +143,24 @@ ctedit::ctedit(QWidget *parent) :
     lstMPNE_Vars.clear();
     // MPNC006
     if (readModelVars(szMPNC006, lstMPNC006_Vars))  {
-        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2") .arg(szMPNC006) .arg(lstMPNC006_Vars.count());
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
+                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMNPxHeadSizes[colMPNxName]) .arg(lstMNPxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNC006);
         lstMPNC006_Vars.clear();
     }
     // TPLC050
     if (readModelVars(szTPLC050, lstTPLC050_Vars))  {
-        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2") .arg(szTPLC050) .arg(lstTPLC050_Vars.count());
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
+                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMNPxHeadSizes[colMPNxName]) .arg(lstMNPxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szTPLC050);
         lstTPLC050_Vars.clear();
     }
     // MPNE10
     if (readModelVars(szMPNE10, lstMPNE_Vars))  {
-        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2") .arg(szMPNE10) .arg(lstMPNE_Vars.count());
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
+                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMNPxHeadSizes[colMPNxName]) .arg(lstMNPxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE10);
         lstMPNE_Vars.clear();
@@ -695,6 +698,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
             m_szMsg = QString::fromAscii("Found Errors Loading CrossTable file: %1\n Total Erros: %2") .arg(szFileCT) .arg(nErr);
             warnUser(this, szMectTitle, m_szMsg);
         }
+        m_isCtModified = false;
         // Porta in primo piano il Tab delle Variabili
         ui->tabWidget->setCurrentIndex(TAB_CT);
     }
@@ -1711,6 +1715,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QList<QStringList > lstPastedRecords;
     QList<int>      lstDestRows;
     QList<int>      lstSourceRows;
+    QLatin1String   szModuleMessage("Enter the RTU port and node ID for the device [%1].\n You can later change these settings in the configuration form");
 
 
 
@@ -1781,14 +1786,14 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale
     QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005/MPNC006 Modules"));
     addMPNC006->setEnabled((isSerialPortEnabled)
-                           && m_nGridRow < MIN_DIAG - 1);
+                           && (m_nGridRow + lstMPNC006_Vars.count()) < MIN_DIAG - 1);
     QAction *addMPNE10 = gridMenu.addAction(cIco, trUtf8("Paste MPNE10 Module"));
     addMPNE10->setEnabled((isSerialPortEnabled)
-                           && m_nGridRow < MIN_DIAG - 1);
+                          && (m_nGridRow + lstMPNE_Vars.count()) < MIN_DIAG - 1);
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
     QAction *addTPLC050 = gridMenu.addAction(cIco, trUtf8("Paste TPLC050 Modules"));
     addTPLC050->setVisible((panelConfig.modelName.contains(szTPLC050))
-                           && m_nGridRow < MIN_DIAG - 1);
+                           && (m_nGridRow + lstTPLC050_Vars.count()) < MIN_DIAG - 1);
     addTPLC050->setEnabled(addTPLC050->isVisible());
     // Menù Grafico per MPNC // MPNE
     QAction *editMPNC = 0;
@@ -1858,15 +1863,59 @@ void ctedit::displayUserMenu(const QPoint &pos)
     }
     // Add MPNC006
     else if (actMenu == addMPNC006)  {
-        addModelVars(szMPNC006, m_nGridRow);
+        // Controllo dell'area di destinazione
+        if (checkFreeArea(nRow, lstMPNC006_Vars.count()))  {
+            // Richiesta Porta e Nodo di destinazione
+            int nPort = -1;
+            int nNode = -1;
+            QString szMsg = QString(szModuleMessage) .arg(szMPNC006);
+            queryPortNode *qryPort = new queryPortNode(szMectTitle, szMsg, this);
+            qryPort->setModal(true);
+            int nResPort = qryPort->exec();
+            if (nResPort == QDialog::Accepted)  {
+                qryPort->getPortNode(nPort, nNode);
+                addModelVars(szMPNC006, m_nGridRow, nPort, nNode);
+                ui->tabWidget->setCurrentIndex(TAB_MPNC);
+            }
+            delete qryPort;
+        }
     }
     // Add MPNE10
     else if (actMenu == addMPNE10)  {
-        addModelVars(szMPNE10, m_nGridRow);
+        // Controllo dell'area di destinazione
+        if (checkFreeArea(nRow, lstMPNE_Vars.count()))  {
+            // Richiesta Porta e Nodo di destinazione
+            int nPort = -1;
+            int nNode = -1;
+            QString szMsg = QString(szModuleMessage) .arg(szMPNE10);
+            queryPortNode *qryPort = new queryPortNode(szMectTitle, szMsg, this);
+            qryPort->setModal(true);
+            int nResPort = qryPort->exec();
+            if (nResPort == QDialog::Accepted)  {
+                qryPort->getPortNode(nPort, nNode);
+                addModelVars(szMPNE10, m_nGridRow, nPort, nNode);
+                ui->tabWidget->setCurrentIndex(TAB_MPNE);
+            }
+            delete qryPort;
+        }
     }
     // Add TPLC050
     else if (actMenu == addTPLC050)  {
-        addModelVars(szTPLC050, m_nGridRow);
+        // Controllo dell'area di destinazione
+        if (checkFreeArea(nRow, lstTPLC050_Vars.count()))  {
+            // Richiesta Porta e Nodo di destinazione
+            int nPort = -1;
+            int nNode = -1;
+            QString szMsg = QString(szModuleMessage) .arg(szTPLC050);
+            queryPortNode *qryPort = new queryPortNode(szMectTitle, szMsg, this);
+            qryPort->setModal(true);
+            int nResPort = qryPort->exec();
+            if (nResPort == QDialog::Accepted)  {
+                qryPort->getPortNode(nPort, nNode);
+                addModelVars(szTPLC050, m_nGridRow, nPort, nNode);
+            }
+            delete qryPort;
+        }
     }
     // Edit MPNC
     else if (editMPNC != 0 && actMenu == editMPNC)  {
@@ -1979,42 +2028,16 @@ void ctedit::pasteSelected()
         m_szMsg = QLatin1String("Can't Copy as Copy Buffer is Empty or Invalid");
         fUsed = true;
     }
-    // Paste in System Area
-    else if (m_nGridRow >= MAX_NONRETENTIVE - 1)  {
-        m_szMsg = QLatin1String("Can't paste rows in System Area");
-        fUsed = true;
-    }
-    else if(m_nGridRow + lstPastedRecords.count() > MAX_NONRETENTIVE - 1)  {
-        m_szMsg = QLatin1String("Pasted Rows could overlap to System Area");
-        fUsed = true;
-    }
-    // Error detected
-    if (fUsed)  {
-        displayStatusMessage(m_szMsg);
-        selection.clear();
+    // Controllo area di destinazione
+    if (! checkFreeArea(nRow, lstPastedRecords.count()))  {
         return;
     }
-    m_fCutOrPaste = true;
+
     // Paste Rows
     qDebug() << QString::fromAscii("Pasted Rows Count: %1") .arg(lstPastedRecords.count());
     if (fClipSourceOk)  {
         if (nRow + lstPastedRecords.count() < MAX_NONRETENTIVE)  {
-            // Verifica che la destinazione delle righe sia libera
-            for (nCur = nRow; nCur < nRow + lstPastedRecords.count(); nCur++)  {
-                if (lstCTRecords[nCur].UsedEntry)  {
-                    fUsed = true;
-                    break;
-                }
-            }
-            // Query confirm of used if any row is used
-            if (fUsed)  {
-                m_szMsg = QLatin1String("Some of destination rows may be used. Paste anyway ?");
-                fUsed = ! queryUser(this, szMectTitle, m_szMsg);
-            }
-            // No row used or overwrite confirmed
-            if (! fUsed)  {
-                nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows);
-            }
+            nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows);
         }
         else  {
             m_szMsg = QLatin1String("The Copy Buffer Excedes System Variables Limit. Rows not copied");
@@ -2551,8 +2574,11 @@ void ctedit::on_cmdCompile_clicked()
     int         nExitCode = 0;
 
     // Controllo presenza di Errori
-    if (globalChecks())
+    int         nErr = globalChecks();
+    m_isCtModified = false;
+    if (nErr)  {
         return;
+    }
     // CT Compiler Full Path
     szCommand.append(szSLASH);
     szCommand.append(szCrossCompier);
@@ -2769,7 +2795,6 @@ void ctedit::tabSelected(int nTab)
                 m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
                 warnUser(this, szMectTitle, m_szMsg);
             }
-            m_isCtModified = true;
             m_rebuildDeviceTree = true;
             m_rebuildTimingTree = true;
         }
@@ -2790,7 +2815,6 @@ void ctedit::tabSelected(int nTab)
                 m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
                 warnUser(this, szMectTitle, m_szMsg);
             }
-            m_isCtModified = true;
             m_rebuildDeviceTree = true;
             m_rebuildTimingTree = true;
         }
@@ -5311,67 +5335,6 @@ int ctedit::searchModelInList(QString szModel)
     // Return value
     return nModel;
 }
-void ctedit::getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
-// Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
-// Ritorna -1 se il protocollo non è disponibile sul modello o tutte le porte sono disabilitate
-{
-
-    nPort = -1;
-    nTotal = 0;
-
-    switch (nProtocol) {
-        // Protocolli Seriali
-        case RTU:
-        case RTU_SRV:
-        case MECT_PTC:
-            if (panelConfig.ser0_Enabled)  {
-                nPort = 0;
-                nTotal++;
-            }
-            if (panelConfig.ser1_Enabled)  {
-                if (nPort < 0)
-                    nPort = 1;
-                nTotal++;
-            }
-            if (panelConfig.ser2_Enabled)  {
-                if (nPort < 0)
-                    nPort = 2;
-                nTotal++;
-            }
-            if (panelConfig.ser3_Enabled)  {
-                if (nPort < 0)
-                    nPort = 3;
-                nTotal++;
-            }
-            break;
-        // Protocolli TCP
-        case TCP:
-        case TCPRTU:
-        case TCP_SRV:
-        case TCPRTU_SRV:
-            if (panelConfig.ethPorts > 0)  {
-                nPort = szDEF_IP_PORT.toInt(0);
-                nTotal++;
-            }
-            break;
-        // Protocollo CAN
-        case CANOPEN:
-            if (panelConfig.can0_Enabled)  {
-                nPort = 0;
-                nTotal++;
-            }
-            if (panelConfig.can1_Enabled)  {
-                if (nPort < 0)
-                    nPort = 1;
-                nTotal++;
-            }
-            break;
-        default:
-            nPort = 0;
-            nTotal = 1;
-            break;
-    }
-}
 bool ctedit::updateRow(int nRow)
 // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
 {
@@ -5654,14 +5617,51 @@ bool ctedit::readModelVars(const QString szModelName, QList<CrossTableRecord> &l
                     lstModelVars.append(ctRec);
                     freeCTrec(lstModelVars, nRow);
                     fieldValues2CTrecList(lstModelFields[nRow], lstModelVars, nRow);
+                    // Aggiorna la larghezza della colonna VarName
+                    lstMNPxHeadSizes[colMPNxName];
+                    if (lstModelFields[nRow][colName].length() > lstMNPxHeadSizes[colMPNxName])  {
+                        lstMNPxHeadSizes[colMPNxName] = lstModelFields[nRow][colName].length();
+                    }
+                    // Aggiorna la larghezza della colonna commento
+                    if (lstModelFields[nRow][colComment].length() > lstMNPxHeadSizes[colMPNxComment])  {
+                        lstMNPxHeadSizes[colMPNxComment] = lstModelFields[nRow][colComment].length();
+                    }
                 }
             }
         }
     }
     return fRes;
 }
+bool ctedit::checkFreeArea(int nStartRow, int nRows)
+// Controlla che l'area di destinazione per inserire variabili sia sufficientemente capiente
+{
+    int         nCur = 0;
+    int         nUsed = 0;
+    bool        fRes = false;
 
-bool ctedit::addModelVars(const QString szModelName, int nRow)
+    if (nStartRow + nRows > MIN_DIAG - 1)  {
+        m_szMsg = QLatin1String("Pasted Rows could overlap to System Area");
+        warnUser(this, szMectTitle, m_szMsg);
+    }
+    else  {
+        for (nCur = nStartRow; nCur < nStartRow + nRows; nCur++)  {
+            if (lstCTRecords[nCur].UsedEntry)  {
+                nUsed++;
+            }
+        }
+        // Almeno riga usata nel mezzo, chiedi conferma
+        if (nUsed)  {
+            m_szMsg = QString::fromAscii("%1 of destination rows may be used. Paste anyway ?") .arg(nUsed);
+            fRes = queryUser(this, szMectTitle, m_szMsg);
+        }
+        else  {
+            fRes = true;
+        }
+    }
+    return fRes;
+}
+
+bool ctedit::addModelVars(const QString szModelName, int nRow, int nPort, int nNode)
 {
     QString     szFileName = szModelName + szXMLExt;
     bool fRes = false;
@@ -5672,39 +5672,26 @@ bool ctedit::addModelVars(const QString szModelName, int nRow)
     QList<int>  lstDestRows;
     int         nCur = 0;
     int         nAdded = 0;
-    bool        fUsed = false;
     bool        checkRTUPort = (szModelName != szTPLC050);
 
     if (fileXML.exists())  {
         fileXML.open(QIODevice::ReadOnly | QIODevice::Text);
         szXMLBuffer = QLatin1String(fileXML.readAll().data());
         // Check Buffer Length
-        if (!szXMLBuffer.isEmpty())  {
+        if (! szXMLBuffer.isEmpty())  {
             // Load Rows from Buffer
             fRes = getRowsFromXMLBuffer(szXMLBuffer, lstModelRows, lstSourceRows, lstDestRows);
             if (fRes)  {
-                // Paste Rows in Current position
-                if (nRow + lstModelRows.count() < MIN_DIAG - 1)  {
-                    // Check free destination area
-                    for (nCur = nRow; nCur < nRow + lstModelRows.count(); nCur++)  {
-                        if (lstCTRecords[nCur].UsedEntry)  {
-                            fUsed = true;
-                            break;
-                        }
-                    }
-                    // Query confirm of used if any row is used
-                    if (fUsed)  {
-                        m_szMsg = QLatin1String("Some of destination rows may be used. Paste anyway ?");
-                        fUsed = ! queryUser(this, szMectTitle, m_szMsg);
-                    }
-                    if (! fUsed)  {
-                        nAdded = addRowsToCT(nRow, lstModelRows, lstDestRows, checkRTUPort);
-                        m_szMsg = QString::fromAscii("Added %1 Rows for Model: %2") .arg(nAdded) .arg(szModelName);
-                    }
+                // Sostituzione di Porta e Nodo con quelli scelti da utente
+                QString szPort = QString::number(nPort);
+                QString szNode = QString::number(nNode);
+                for (nCur = 0; nCur < lstModelRows.count(); nCur++)  {
+                    lstModelRows[nCur][colPort] = szPort;
+                    lstModelRows[nCur][colNodeID] = szNode;
                 }
-                else  {
-                    m_szMsg = QLatin1String("Pasted Rows could overlap to System Area");
-                }
+                // Aggiunta righe in blocco a CT
+                nAdded = addRowsToCT(nRow, lstModelRows, lstDestRows, checkRTUPort);
+                m_szMsg = QString::fromAscii("Added %1 Rows for Model: %2") .arg(nAdded) .arg(szModelName);
             }
             else {
                 m_szMsg = QString::fromAscii("Error reading Variable File for Model: %1") .arg(szModelName);
@@ -5862,10 +5849,11 @@ bool ctedit::checkServersDevicesAndNodes()
 
 
     // Rinumerazione d'ufficio dei blocchi, poi utilizzato per il ricalcolo dei Server-Nodi...
-    if (! riassegnaBlocchi())  {
-        m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
-        warnUser(this, szMectTitle, m_szMsg);
-    }
+    // TO BE CHECKED....
+//    if (! riassegnaBlocchi())  {
+//        m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
+//        warnUser(this, szMectTitle, m_szMsg);
+//    }
     // Pulizia Strutture Dati
     theServersNumber = 0;
     theDevicesNumber = 0;
@@ -6291,13 +6279,13 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (lstMPNC.count() > 0)  {
                         nPosMPNX = lstMPNC.indexOf(nCur);
                         if (nPosMPNX >= 0)  {
-                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1 (%2)") .arg(szMPNC006) .arg(nPosMPNX + 1));
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("  %1 (%2)") .arg(szMPNC006) .arg(nPosMPNX + 1));
                         }
                     }
                     if (lstMPNE.count() > 0)  {
                         nPosMPNX = lstMPNE.indexOf(nCur);
                         if (nPosMPNX >= 0)  {
-                            theNodes[nNod].szNodeName.append(QString::fromAscii("\t %1 (%2)") .arg(szMPNE10) .arg(nPosMPNX + 1));
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("  %1 (%2)") .arg(szMPNE10) .arg(nPosMPNX + 1));
                         }
                     }
                 }
@@ -6770,7 +6758,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
                     tCurrentPriority->setText(colTreeTimings, szTimings);
                 }
             }
-            tCurrentPriority->setExpanded(true);
+            tCurrentPriority->setExpanded(false);
             //----------------------------
             // Block Name
             //----------------------------
@@ -6933,7 +6921,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
                             tCurrentNode->setText(colTreeTimings, szTimings);
                         }
                     }
-                    tCurrentNode->setExpanded(true);
+                    tCurrentNode->setExpanded(nRow == nCurRow);
                     //----------------------------
                     // Block Name
                     //----------------------------
@@ -6975,7 +6963,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     if (tCurrentVariable != 0)  {
 //        qDebug() << QString::fromAscii("fillTimingsTree(): Selected: %1") .arg(tCurrentVariable->text(colTreeName));
         tCurrentVariable->setSelected(true);
-        ui->deviceTree->scrollToItem(tCurrentVariable, QAbstractItemView::PositionAtCenter);
+        ui->deviceTree->scrollToItem(tCurrentVariable, QAbstractItemView::EnsureVisible);
     }
     else {
         tRoot->setSelected(true);

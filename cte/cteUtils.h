@@ -61,6 +61,8 @@ int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSl
 int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTableRecord> &CTTemplate, TP_Config &configTP, QList<int> &lstDiff, QStringList &lstActions, bool forceDiff);
 bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int> &lstLeftCols, int nRow);   // Inserimento o modifica elemento in Grid (valori -> GRID)
 
+void    getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal);// Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
+
 int     enableSerialPortCombo(QComboBox *cboBox);
 void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> &lstHeadSizes, QAbstractItemView::SelectionMode nMode); // Imposta i parametri generali di visualizzazione Grid
 

@@ -144,7 +144,7 @@ void initLists()
     lstHeadSizes[colBlockSize] = 8;
     lstHeadCols[colComment] = QLatin1String("Comment");
     lstHeadNames[colComment] = QLatin1String("Comment");
-    lstHeadSizes[colComment] = 20;
+    lstHeadSizes[colComment] = 25;
     lstHeadCols[colBehavior] = QLatin1String("Behavior");
     lstHeadNames[colBehavior] = QLatin1String("Behavior");
     lstHeadSizes[colBehavior] = 16;
@@ -663,7 +663,7 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
     return fRes;
 }
 int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTableRecord> &CTTemplate, TP_Config &configTP, QList<int> &lstDiff, QStringList &lstActions, bool forceDiff)
-// Confronta la CT del Progetto con quella di Template di modello aggiornato (Solo in Area di Sistema da 5000 a salire)
+// Confronta la CT del Progetto con quella di Template di modello aggiornato (Solo in Area di Sistema da 5000 a salire, tranne che per TPAC1008_03)
 {
     int     nDifferences = 0;
     int     nRow = 0;
@@ -679,8 +679,13 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
     // Clear List
     lstDiff.clear();
     lstActions.clear();
+    int nStart = MIN_DIAG - 1;
     // Compare CT Area starting from 5000
-    for (nRow = MIN_DIAG - 1; nRow < CTProject.count(); nRow++)  {
+    if (configTP.modelName == QLatin1String(product_name[TPAC1008_03_AC]) ||
+        configTP.modelName == QLatin1String(product_name[TPAC1008_03_AD]))  {
+        nStart = 4500;
+    }
+    for (nRow = nStart; nRow < CTProject.count(); nRow++)  {
         // Repaint
         doEvents();
         // Variabile Template marcata come NON Usata --> ha la priorità il Template Variabile utente disabilitata
@@ -825,6 +830,68 @@ bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int>
     }
     return true;
 }
+void getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
+// Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
+// Ritorna -1 se il protocollo non è disponibile sul modello o tutte le porte sono disabilitate
+{
+
+    nPort = -1;
+    nTotal = 0;
+
+    switch (nProtocol) {
+        // Protocolli Seriali
+        case RTU:
+        case RTU_SRV:
+        case MECT_PTC:
+            if (panelConfig.ser0_Enabled)  {
+                nPort = 0;
+                nTotal++;
+            }
+            if (panelConfig.ser1_Enabled)  {
+                if (nPort < 0)
+                    nPort = 1;
+                nTotal++;
+            }
+            if (panelConfig.ser2_Enabled)  {
+                if (nPort < 0)
+                    nPort = 2;
+                nTotal++;
+            }
+            if (panelConfig.ser3_Enabled)  {
+                if (nPort < 0)
+                    nPort = 3;
+                nTotal++;
+            }
+            break;
+        // Protocolli TCP
+        case TCP:
+        case TCPRTU:
+        case TCP_SRV:
+        case TCPRTU_SRV:
+            if (panelConfig.ethPorts > 0)  {
+                nPort = szDEF_IP_PORT.toInt(0);
+                nTotal++;
+            }
+            break;
+        // Protocollo CAN
+        case CANOPEN:
+            if (panelConfig.can0_Enabled)  {
+                nPort = 0;
+                nTotal++;
+            }
+            if (panelConfig.can1_Enabled)  {
+                if (nPort < 0)
+                    nPort = 1;
+                nTotal++;
+            }
+            break;
+        default:
+            nPort = 0;
+            nTotal = 1;
+            break;
+    }
+}
+
 int     enableSerialPortCombo(QComboBox *cboBox)
 {
     int nPorts = 0;

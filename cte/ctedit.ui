@@ -624,7 +624,7 @@
                </font>
               </property>
               <property name="toolTip">
-               <string>Save changes</string>
+               <string>Save user changes   </string>
               </property>
               <property name="text">
                <string/>

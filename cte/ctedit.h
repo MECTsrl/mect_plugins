@@ -132,7 +132,6 @@ private:
     int     globalChecks();                         // Controlli complessivi su tutta la CT
     bool    isFormEmpty();                          // Controllo Form Editing vuoto
     bool    isValidPort(int nPort, int nProtocol);  // Controllo di validità di un numero porta in funzione di Modello (da TargetConfig) e del Protocollo
-    void    getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal);// Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
     void    fillErrorMessage(int nRow, int nCol, int nErrCode, QString szVarName, QString szValue, QChar severity, Err_CT *errCt);
     // Gestione Configurazione Progetto
     QString getModelName();                         // Lettura del file template.pri per determinare il modello di TPAC
@@ -157,7 +156,9 @@ private:
     // Import dati in XML
     bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList> &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows); // Funzione per leggere da Buffer Clipboard o da una QString (caricata da file XML) delle righe di CT
     bool    readModelVars(const QString szModelName, QList<CrossTableRecord> &lstModelVars);            // Lettura da XML delle variabili CT precaricate per modelli
-    bool    addModelVars(const QString szModelName, int nRow);
+    bool    checkFreeArea(int nStartRow, int nRows);                                                // Controlla che l'area di destinazione per inserire variabili sia sufficientemente capiente
+
+    bool    addModelVars(const QString szModelName, int nRow, int nPort, int nNode);
     void    showTabMPNC();
     void    showTabMPNE();
     //---------------------------------------------------------------------

@@ -12,6 +12,7 @@
 
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QFontMetrics>
 #include <unistd.h>
 
 #include "main.h"
@@ -189,7 +190,7 @@ void recipe::updateData()
     }
     else if (state == 4)  {
         // AutoResize Columns
-        ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+        ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Interactive);
         // Selection mode of items
         ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
         ui->tableWidget->resizeColumnsToContents();
@@ -549,7 +550,7 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
 #ifdef ENABLE_DESCR
     ui->labelStatus->setText(QString("%1/%2").arg(familyName).arg(recipeName));
 #endif
-
+    int     nColSize = 0;
     /* reset the current colum/row */
     current_row = 0;
     current_column = 0;
@@ -590,6 +591,10 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
                 tItem = new QTableWidgetItem(QString(buf));
             else
                 tItem->setText(QString(buf));
+            // Calcolo della Larghezza massima cella
+            if (strlen(buf) > nColSize)  {
+                nColSize = strlen(buf);
+            }
             // Set Item in cell
             ui->tableWidget->setItem(varIndex, stepIndex, tItem);
             // ui->tableWidget->setItem(varIndex, stepIndex + 1, new QTableWidgetItem(QString(buf)));
@@ -600,6 +605,15 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
     // Table Headers
     ui->tableWidget->setVerticalHeaderLabels(lstRowNames);
     ui->tableWidget->setHorizontalHeaderLabels(lstColNames);
-
+    // Impostazione della Larghezza della Colonna
+    // Larghezza fissa per alcune colonne
+    nColSize = nColSize > 5 ? nColSize : 5;
+    QFontMetrics fm(ui->tableWidget->font());
+    QString szTemp;
+    szTemp.fill('X', nColSize);
+    int nColWidth = fm.width(szTemp) * 1.2;
+    for (int nCol = 0; nCol < lstColNames.count(); nCol++)  {
+        ui->tableWidget->setColumnWidth(nCol, nColWidth);
+    }
     return true;
 }

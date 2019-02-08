@@ -13,7 +13,8 @@ HEADERS += \
     config_mpnc.h \
     config_mpne.h \
     cteUtils.h \
-    messagelist.h
+    messagelist.h \
+    queryportnode.h
 
 SOURCES += \
     cteplugin.cpp \
@@ -26,14 +27,16 @@ SOURCES += \
     config_mpnc.cpp \
     config_mpne.cpp \
     cteUtils.cpp \
-    messagelist.cpp
+    messagelist.cpp \
+    queryportnode.cpp
 
 FORMS += \
     ctedit.ui \  
     cteerrorlist.ui \
     mectsettings.ui \
     trendeditor.ui \
-    messagelist.ui
+    messagelist.ui \
+    queryportnode.ui
 
 #DESTDIR = C:/Qt485/desktop//lib/qtcreator/plugins/QtProject
 DESTDIR = destdir

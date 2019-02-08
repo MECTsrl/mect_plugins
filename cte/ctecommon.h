@@ -66,6 +66,7 @@ const QChar   chCloseSQB = QChar::fromAscii(93);    // ]
 
 
 // String Costants
+const QString szDEF_IP_PORT = QLatin1String("502");
 const QString szEMPTY = QString::fromAscii("");
 const QString szDOUBLEQUOTE = QString(1, chDOUBLEQUOTE);
 const QString szUNDERSCORE = QString(1, chUNDERSCORE);
