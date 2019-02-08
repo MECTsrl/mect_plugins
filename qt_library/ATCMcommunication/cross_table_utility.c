@@ -97,7 +97,7 @@ static write_queue_elem_t * queue_head = NULL, * queue_tail = NULL;
 size_t fillSyncroArea(void)
 {
     FILE * fp;
-    int elem_nb = 1;
+    int elem_nb = 1, n;
     char line[LINE_SIZE];
     char * p = NULL, * r = NULL;
     int bytebitperblock = 0;
@@ -122,6 +122,13 @@ size_t fillSyncroArea(void)
     memset (pIOSyncroAreaO, 0x0, SYNCRO_DB_SIZE_ELEM);
     memset (pIODataAreaI, 0x0, STATUS_BASE_BYTE + DB_SIZE_BYTE);
     memset (pIODataAreaO, 0x0, STATUS_BASE_BYTE + DB_SIZE_BYTE);
+
+    // workaround for theValue() when using old Crosstables
+
+    for (n = 1; n <= DB_SIZE_ELEM; ++n)
+    {
+        varNameArray[n].type = udint_abcd_e;
+    }
 
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {

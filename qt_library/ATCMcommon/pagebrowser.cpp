@@ -1368,14 +1368,14 @@ bool page::create_next_page(page ** p, const char * t)
             return false;
         }
     }
-    /* it is a ordinary pages */
+    /* it is an ordinary page */
     else
     {
-        int pageNb = atoh(&(t[strlen(PAGE_PREFIX)]));
+        int pageNb = getPageNumber(t);
 
         if (create_page_nb(p, pageNb)!= 0)
         {
-            LOG_PRINT(warning_e, "cannot create ordinary page %d (%s)\n", pageNb, t);
+            LOG_PRINT(error_e, "cannot create ordinary page %d=0x%x (%s)\n", pageNb, pageNb, t);
             return false;
         }
     }
