@@ -10,6 +10,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QProcess>
+#include <QCoreApplication>
 
 #include "page0.h"
 #include "app_logprint.h"
@@ -115,6 +116,7 @@ void page0::changePage()
                 LOG_PRINT(error_e,"Cannot create page '%s'\n", userPageList.at(pageIndex).toAscii().data());
             }
             ui->progressBar->setValue(pageIndex + 1);
+            QCoreApplication::processEvents();
         }
     }
 
