@@ -87,7 +87,7 @@
 						<section title="ATCMdate" ref="ATCMdate_de.html">
 							<section title="Aussehen und Funktionalität" ref="Aspetto_funzionalita_date_de.html"/>	
 							</section>	
-						<section title="ATCMtime" ref="ATCMtime_eng.html">
+						<section title="ATCMtime" ref="ATCMtime_de.html">
 							<section title="Aussehen und Funktionalität" ref="Aspetto_funzionalita_time_de.html"/>	
 							</section>
 						<section title="ATCMgraph" ref="ATCMgraph_de.html">
@@ -146,7 +146,7 @@
 					<section title="Bibliotheken zum Projekt hinzufügen" ref="Aggiungere_librerie_de.html"/>
 					<section title="Projektpfad" ref="Path_progetto_de.html"/>
 					</section>
-				<section title="Synoptik (Lokale E / A)" ref="Sinottico_de.html">	
+				<section title="Synoptik (Lokale E/A)" ref="Sinottico_de.html"/>	
 				<section title="Produktvariablen (Lokale E/A)" ref="Variabili_prodotto_de.html">	
 				<section title="Modelle TPAC1006 / TPAC1008_02" ref="Modelli_tpac1006_100801_100802_de.html"/>
 				<section title="Modelle TPAC1007" ref="Modelli_tpac1007_de.html"/>
@@ -166,9 +166,9 @@
             </section>
         </toc>
         <keywords>
-            <keyword name="foo" id="MyApplication::foo" ref="doc_eng.html#foo"/>
-            <keyword name="bar" ref="doc_eng.html#bar"/>
-            <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
+            <keyword name="foo" id="MyApplication::foo" ref="doc_de.html#foo"/>
+            <keyword name="bar" ref="doc_de.html#bar"/>
+            <keyword id="MyApplication::foobar" ref="doc_de.html#foobar"/>
         </keywords>
         <files>
 			<file>Abilitazione_disabilitazione_nodo.png</file>

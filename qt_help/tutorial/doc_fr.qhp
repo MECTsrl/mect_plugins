@@ -166,9 +166,9 @@
             </section>
         </toc>
         <keywords>
-            <keyword name="foo" id="MyApplication::foo" ref="doc_eng.html#foo"/>
-            <keyword name="bar" ref="doc_eng.html#bar"/>
-            <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
+            <keyword name="foo" id="MyApplication::foo" ref="doc_fr.html#foo"/>
+            <keyword name="bar" ref="doc_fr.html#bar"/>
+            <keyword id="MyApplication::foobar" ref="doc_fr.html#foobar"/>
         </keywords>
         <files>
 			<file>Abilitazione_disabilitazione_nodo.png</file>
