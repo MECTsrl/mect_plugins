@@ -190,7 +190,7 @@ void TimePopup::setUpTableMinutes()
     tabMinWidget->setGeometry(QRect(0, 0, SIZE_TAB_X, SIZE_TAB_Y));
 
 
-    QWidget *TabTime[3];
+    QWidget *TabTime[4];
     for(int tabNumber=0;tabNumber<4;tabNumber++)
     {
         TabTime[tabNumber] = new QWidget(TabMin);
@@ -216,7 +216,7 @@ void TimePopup::setUpTableSeconds()
     tabSecWidget=new QTabWidget(TabSec);
     tabSecWidget->setGeometry(QRect(0, 0, SIZE_TAB_X, SIZE_TAB_Y));
 
-    QWidget *TabTime[3];
+    QWidget *TabTime[4];
     for(int tabNumber=0;tabNumber<4;tabNumber++)
     {
         TabTime[tabNumber] = new QWidget(TabSec);
