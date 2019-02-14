@@ -1202,6 +1202,11 @@ void ctedit::saveCTFile()
     int     nProtocol = 0;
     int     nCurRow = m_nGridRow;
 
+    // Rinumerazione Blocchi
+    if (! riassegnaBlocchi())  {
+        m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
+        warnUser(this, szMectTitle, m_szMsg);
+    }
     // Controllo errori
     nErr = globalChecks();
     if (nErr)  {
@@ -2571,6 +2576,11 @@ void ctedit::on_cmdCompile_clicked()
     QProcess    procCompile;
     int         nExitCode = 0;
 
+    // Rinumerazione Blocchi
+    if (! riassegnaBlocchi())  {
+        m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
+        warnUser(this, szMectTitle, m_szMsg);
+    }
     // Controllo presenza di Errori
     int         nErr = globalChecks();
     m_isCtModified = false;
