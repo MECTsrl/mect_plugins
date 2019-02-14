@@ -667,9 +667,9 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
 {
     int     nDifferences = 0;
     int     nRow = 0;
-    int     nAnInStart = configTP.analogINrowCT;
+    int     nAnInStart = configTP.analogINrowCT - 1;
     int     nAnInEnd = nAnInStart + configTP.analogIN;
-    int     nAnOutStart = configTP.analogOUTrowCT;
+    int     nAnOutStart = configTP.analogOUTrowCT - 1;
     int     nAnOutEnd = nAnOutStart + configTP.analogOUT;
 
     // Confronta il numero di elementi

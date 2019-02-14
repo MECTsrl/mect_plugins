@@ -682,13 +682,13 @@ bool    ctedit::selectCTFile(QString szFileCT)
                         qDebug() << QLatin1String("Applied Differences to CT from Template");
                         ctable2Grid();
                         saveCTFile();
-                        // Cursore Normale
-                        this->setCursor(Qt::ArrowCursor);
 
                     }
                 }
             }
         }
+        // Cursore Normale
+        this->setCursor(Qt::ArrowCursor);
         // Abilita interfaccia
         enableInterface();
         // Controllo errori globali su Cross Table
@@ -1831,7 +1831,6 @@ void ctedit::displayUserMenu(const QPoint &pos)
     }
     // Esecuzione del Menu
     QAction *actMenu = gridMenu.exec(ui->tblCT->viewport()->mapToGlobal(pos));
-    this->setCursor(Qt::WaitCursor);
     // Controllo dell'Azione selezionata
     // Inserimento righe
     if (actMenu == insRows)  {
@@ -1925,7 +1924,6 @@ void ctedit::displayUserMenu(const QPoint &pos)
     else if (editMPNE != 0 && actMenu == editMPNE)  {
         ui->tabWidget->setCurrentIndex(TAB_MPNE);
     }
-    this->setCursor(Qt::ArrowCursor);
 
 }
 int ctedit::copySelected(bool fClearSelection)
@@ -2829,6 +2827,7 @@ void ctedit::tabSelected(int nTab)
     // Ritorno a CT Editor Main Tab
     if (nTab == TAB_CT)  {
         // Nulla di particolare
+        this->setCursor(Qt::ArrowCursor);
     }
     // Entering Trends: Aggiornamento della lista di variabili e ripopolamento liste per Trends
     else if (nTab == TAB_TREND) {
@@ -5242,7 +5241,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].nEncoders = 5;
     lstTargets[TPAC1008_03_AC].analogIN = 4;
     lstTargets[TPAC1008_03_AC].analogINrowCT = 5325;
-    lstTargets[TPAC1008_03_AC].analogOUT = 2;
+    lstTargets[TPAC1008_03_AC].analogOUT = 4;
     lstTargets[TPAC1008_03_AC].analogOUTrowCT = 5347;
     lstTargets[TPAC1008_03_AC].tAmbient = true;
     lstTargets[TPAC1008_03_AC].rpmPorts = 1;
