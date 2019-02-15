@@ -36,11 +36,11 @@ const QString szFileAdd = szPathIMG + QLatin1String("Add_32.png");
 const QString szFileRemove = szPathIMG + QLatin1String("Remove_32.png");
 const QString szFileRename = szPathIMG + QLatin1String("Rename2.png");
 // Sfondi per Moduli
-const QString szFileMPNC006 = szPathIMG + QLatin1String("MPNC006_R.png");
-const QString szFileMPNC030 = szPathIMG + QLatin1String("MPNC030_R.png");
-const QString szFileMPNC035 = szPathIMG + QLatin1String("MPNC030_R.png");
-const QString szFileMPNC020_01 = szPathIMG + QLatin1String("MPNC020_R.png");
-const QString szFileMPNC020_02 = szPathIMG + QLatin1String("MPNC020_R.png");
+const QString szFileMPNC006 = szPathIMG + QLatin1String("MPNC006.png");
+const QString szFileMPNC030 = szPathIMG + QLatin1String("MPNC030.png");
+const QString szFileMPNC035 = szPathIMG + QLatin1String("MPNC035.png");
+const QString szFileMPNC020_01 = szPathIMG + QLatin1String("MPNC02001.png");
+const QString szFileMPNC020_02 = szPathIMG + QLatin1String("MPNC02002.png");
 // Sfondi Filtro Visualizzazione
 const QString szFilterHead = szPathIMG + QLatin1String("ShowHead.png");
 const QString szFilterUsed = szPathIMG + QLatin1String("ShowUsed.png");

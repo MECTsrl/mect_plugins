@@ -4082,7 +4082,7 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
             // Protocol
             ui->cboProtocol->setCurrentIndex(PLC);
             // Behavior
-            ui->cboBehavior->setCurrentIndex(behavior_readonly);
+            ui->cboBehavior->setCurrentIndex(behavior_readwrite);
         }
         // Block && Block Size (invisibili....)
         if (ui->txtBlock->text().trimmed().isEmpty())  {

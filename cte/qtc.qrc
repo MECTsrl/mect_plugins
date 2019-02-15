@@ -24,9 +24,6 @@
         <file>img/Edit-trash.png</file>
         <file>img/Mect_small.png</file>
         <file>img/Add_32.png</file>
-        <file>img/MPNC006_R.png</file>
-        <file>img/MPNC020_R.png</file>
-        <file>img/MPNC030_R.png</file>
         <file>img/Remove_32.png</file>
         <file>img/Rename2.png</file>
         <file>img/Card_32.png</file>
@@ -35,8 +32,6 @@
         <file>img/ShowUsed.png</file>
         <file>img/MPNE01.png</file>
         <file>img/MPNE02.png</file>
-        <file>img/MPNE03.png</file>
-        <file>img/MPNE04.png</file>
         <file>img/MPNE05.png</file>
         <file>img/MPNE01L.png</file>
         <file>img/MPNE01R.png</file>
@@ -45,6 +40,11 @@
         <file>img/Open_32.png</file>
         <file>img/Reset_32.png</file>
         <file>img/Close_32.png</file>
+        <file>img/MPNC006.png</file>
+        <file>img/MPNC030.png</file>
+        <file>img/MPNC035.png</file>
+        <file>img/MPNC02001.png</file>
+        <file>img/MPNC02002.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>
