@@ -42,6 +42,9 @@
 						</section>
 					<section title="Devices" ref="Devices.html"/>	
 					<section title="Timings" ref="Timings.html"/>
+					<section title="MPNC Editor" ref="MPNC_Editor.html"/>
+					<section title="MPNE Editor" ref="MPNE_Editor.html"/>
+					<section title="Log" ref="Log.html"/>
 					<section title="Struttura progetto vuoto" ref="Struttura_progetto.html"/>
 					<section title="Pagine di libreria" ref="Pagine_libreria.html"/>
 					<section title="Aggiungere una pagina" ref="Aggiungere_pagina.html"/>
@@ -95,11 +98,11 @@
 							</section>		
 						</section>	
 					<section title="Compilazione e installazione di un progetto" ref="Compilazione_installazione.html">	
-						<section title="Compilazione" ref="Compilazione.html"/>
-						<section title="Errori di compilazione" ref="Errori_compilazione.html"/>
+						<section title="Compilazione" ref="Compilazione.html"/>						
 						<section title="Trasferimento dell'applicazione sul dispositivo" ref="Trasferimento_applicazione.html"/>
 						<section title="Trasferimento dell'applicazione sul dispositivo in DEBUG" ref="Trasferimento_applicazione_debug.html"/>						
 						</section>
+					<section title="Errori di compilazione" ref="Errori_compilazione.html"/>	
 					<section title="Realizzazione di un'automazione" ref="Realizzazione_automazione_HMI.html"/>	
 					<section title="Funzionamento ricette" ref="Funzionamento_ricette.html"/>
 					<section title="Funzionamento storici" ref="Funzionamento_storici.html"/>
@@ -171,6 +174,28 @@
             <keyword id="MyApplication::foobar" ref="doc.html#foobar"/>
         </keywords>
         <files>
+			<file>Config_Filtro_In_Analogici_tpac100802.html</file>
+			<file>Config_Filtro_In_Analogici_tplc050.html</file>
+			<file>Config_Filtro_In_Analogici_tpac100704.html</file>
+			<file>Log_1.png</file>
+			<file>Log_2.png</file>
+			<file>MPNE_Editor_1.png</file>
+			<file>MPNE_Editor_2.png</file>
+			<file>MPNE_Editor_3.png</file>
+			<file>MPNE_Editor_4.png</file>
+			<file>MPNC_Editor_1.png</file>
+			<file>MPNC_Editor_2.png</file>
+			<file>MPNC_Editor_3.png</file>
+			<file>MPNC_Editor_4.png</file>
+			<file>MPNC_Editor_5.png</file>
+			<file>MPNC_Editor_6.png</file>
+			<file>MPNC_Editor_7.png</file>
+			<file>MPNC_Editor_8.png</file>
+			<file>MPNC_Editor_9.png</file>
+			<file>MPNC_Editor_10.png</file>
+			<file>MPNC_Editor.html</file>
+			<file>MPNE_Editor.html</file>
+			<file>Log.html</file>
 			<file>Abilitazione_disabilitazione_nodo.png</file>
 			<file>Abilitazione_disabilitazione_nodo.html</file>
 			<file>Config_In_Analogici_5_12_tplc100.html</file>

@@ -1,0 +1,59 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Éditeur MPNE</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Éditeur MPNE</h3>
+		<p class="western" style="margin-bottom: 0cm">Le <strong>configurateur des modules à distance</strong> est un outil graphique utile pour définir la configuration du système d'automatisation et, une fois le modéle de PLC ou  
+		de panneau opérateur Mect défini, il permet la configuration des nœuds distants &ldquo;<strong>MPNE</strong>&rdquo; et de leurs variables utiles à l'application.</p>
+		<p class="western">L'éditeur graphique du nœud distant MPNE n'est visible que si au moins un module de la famille MPNE a été inséré dans le projet. </p>
+		<p class="western"><img src="MPNE_Editor_1.png" align="bottom" width="850" height="386" border="0"/></p>
+	<br/>
+
+	<p class="western">Pour insérer un module, appuyez sur le bouton droit de la souris dans une ligne de la Crosstable et sélectionnez &ldquo;<strong>Paste MPNE10 Module</strong>&rdquo;. </p>
+	<p class="western"><img src="MPNE_Editor_2.png" align="bottom" width="251" height="191" border="0"/></p>
+	<br/>
+	<p class="western">Dans la fenêtre suivante, vous pouvez définir l'adresse du nœud que vous utilisez. Si le dispositif Mect dispose de plusieurs ports RTU, le système vous permet d'associer le port au nœud.
+	<p class="western"><img src="MPNE_Editor_3.png" align="bottom" width="267" height="213" border="0"/></p>
+	<br/>
+	<p class="western" style="margin-bottom: 0cm">L'interface est la suivante:</p>
+	<p class="western"><img src="MPNE_Editor_4.png" align="bottom" width="642" height="298" border="0"/></p>
+	<br/>	
+		<p class="western">Dans le champ “<strong>Model</strong>” apparaît le code du PLC(API) ou du panneau opérateur Mect.</p>
+		<p class="western">Dans le champ “<strong>MPNE10</strong>” vous pouvez sélectionner le nœud à utiliser pour la configuration du système. Le choix sera multiple si plusieurs nœuds distants sont combinés au même PLC ou panneau opérateur Mect.</p>
+		<p class="western">Le champ “<strong>Port</strong>” est activé lorsque le modèle de PLC ou panneau opérateur Mect possède plus d'un port série 485 et permet de choisir le port avec lequel connecter le noeud distant.</p>
+		<p class="western">Le champ “<strong>Node Id</strong>” est l'adresse du noeud distant et peut être défini par l'utilisateur.</p>
+		<p class="western">Le bouton carré <img src="MPNC_Editor_5.png" align="bottom" width="46" height="42" border="0"/> permet de renommer les variables associées aux modules en changeant le préfixe “MPNE_” attribué par défaut par le système et identique pour tous les modules.</p>
+		<p class="western">Le champ “<strong>Exp1</strong>” définit la configuration du module d'extension n°1 entre: “no Module, 8 Digital Input, 8 Digital Output, 2 AI – 1 AO”. </p>
+		<p class="western">Le champ “<strong>Exp2</strong>” définit la configuration du module d'extension n°2 entre: “no Module, 8 Digital Input, 8 Digital Output, 2 AI – 1 AO”. </p>
+		<p class="western"><u>Remarque</u>: Dans l'éditeur graphique, les modules de sortie avec 4 ou 8 relais du module MPNE ne sont pas inclus dans les choix car ils sont équivalents à l'extension “8 Digital Output”.</p>
+		<br/>
+		<p class="western">Le bouton three-state <img src="MPNC_Editor_8.png" align="bottom" width="48" height="43" border="0"/> vous permet de filtrer les variables de la liste et il est composé de trois parties: une grise foncée, une grise claire et une bleu.
+							Selon l'état, différentes variables sont affichées:</p>
+			<ul>
+				<li/>
+				<p class="western"><img src="MPNC_Editor_9.png" align="bottom" width="46" height="42" border="0"/> Le bouton lorsque seulement le gris foncé est activé affiche les variables de la carte de base UNIQUEMENT.</p>
+				<li/>
+				<p class="western"><img src="MPNC_Editor_10.png" align="bottom" width="46" height="42" border="0"/> Le bouton gris foncé et gris clair activés affiche les variables de la carte de base et les variables des autres modules d'extension utilisés dans le système.</p>
+				<li/>
+				<p class="western"><img src="MPNC_Editor_8.png" align="bottom" width="48" height="43" border="0"/> Le bouton avec le gris foncé, le gris clair et le bleu clair activés affiche les variables de la carte de base, les variables des autres modules d'extension utilisés et 
+				les variables non encore associées à une extension, mais qui pourraient être utilisées dans le système.</p>
+			</ul> 	
+		<br/>
+		<p class="western">Lorsqu'un nouveau module est inséré, les variables des modules insérés sont automatiquement activées et affichées dans le tableau ci-dessous.  
+							Pour visualiser les variables associées aux autres modules, utilisez le bouton three-state <img src="MPNC_Editor_10.png" align="bottom" width="46" height="42" border="0"/> .</p>
+		<p class="western">En cliquant sur l'un des modules insérés dans le système, seules les variables du module sélectionné sont affichées dans le tableau.</p>
+		<p class="western"><strong>Le tableau est en mode READ-ONLY</strong>. En cliquant sur la variable désirée, vous pouvez accéder directement à l'éditeur de la Crosstable où vous pouvez modifier les données.</p>
+		<br/>
+	</body>
+</html>

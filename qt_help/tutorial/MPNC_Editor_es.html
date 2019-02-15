@@ -1,0 +1,63 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Editor de MPNC</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Editor de MPNC</h3>
+		<p class="western" style="margin-bottom: 0cm">El <strong>configurador de módulos remotos</strong> es una herramienta gráfica útil para definir la configuración del sistema de automatización y, una vez definido el modelo de PLC o  
+		Panel de Operador Mect, permite la configuración de los nodos remotos &ldquo;<strong>MPNC</strong>&rdquo; y sus variables útiles para la aplicación.</p>
+		<p class="western">El editor gráfico de los nodos remotos MPNC sólo es visible si se ha insertado al menos un módulo de la familia MPNC en el proyecto. </p>
+		<p class="western"><img src="MPNC_Editor_1.png" align="bottom" width="850" height="386" border="0"/></p>
+	<br/>
+
+	<p class="western">Para insertar un módulo, pulse el botón derecho del ratón en una fila de la Crosstable y seleccione &ldquo;<strong>Paste MPNC005/MPNC006 Modules</strong>&rdquo;. </p>
+	<p class="western"><img src="MPNC_Editor_2.png" align="bottom" width="251" height="191" border="0"/></p>
+	<br/>
+	<p class="western">En la siguiente ventana se puede definir la dirección del nodo que se está utilizando. Si el dispositivo Mect tiene varios puertos RTU disponibles, el sistema le permite asociar el puerto al nodo.
+	Estos ajustes también se pueden modificar retroactivamente en el editor gráfico.
+	</p>
+	<p class="western"><img src="MPNC_Editor_3.png" align="bottom" width="267" height="216" border="0"/></p>
+	<br/>
+	<p class="western" style="margin-bottom: 0cm">La interfaz es la siguiente:</p>
+	<p class="western"><img src="MPNC_Editor_4.png" align="bottom" width="642" height="298" border="0"/></p>
+	<br/>	
+		<p class="western">En el campo “<strong>Model</strong>” aparece el código del PLC o del Panel de operador Mect.</p>
+		<p class="western">En el campo “<strong>MPNC006</strong>” se puede seleccionar el nodo a utilizar para la configuración del sistema. La opción será múltiple si el mismo PLC o panel de operador Mect se combina con varios nodos remotos.</p>
+		<p class="western">El campo “<strong>Port</strong>” se habilita cuando el modelo de PLC o Panel de Operador Mect tiene más de un puerto serie 485 y permite elegir el puerto con el que conectar el nodo remoto.</p>
+		<p class="western">El campo “<strong>Node Id</strong>” es la dirección del nodo remoto y puede ser definido por el usuario.</p>
+		<p class="western">El botón cuadrado <img src="MPNC_Editor_5.png" align="bottom" width="46" height="42" border="0"/> permite renombrar las variables asociadas a los módulos cambiando el prefijo “MPNC_” asignado por defecto por el sistema y el mismo para todos los módulos.</p>
+		<p class="western">El primer módulo a la izquierda en el editor gráfico es el acoplador de bus MPNC006. A la derecha del MPNC006 se encuentran los módulos de entradas y salidas analógicas y digitales de la serie MPNC. El número máximo de nodos por modelo es de 4.</p>
+		<p class="western">Los módulos se pueden insertar en la configuración haciendo clic en el icono “<strong>+</strong>” presente en el esquema. </p>
+		<p class="western"><img src="MPNC_Editor_6.png" align="bottom" width="711" height="240" border="0"/></p>
+		<p class="western">Los módulos se pueden remover en la configuración haciendo clic en el icono “<strong>-</strong>” presente en el esquema. </p>
+		<p class="western"><img src="MPNC_Editor_7.png" align="bottom" width="710" height="43" border="0"/></p>
+		<br/>
+		<p class="western">El botón de three-states <img src="MPNC_Editor_8.png" align="bottom" width="48" height="43" border="0"/> permite filtrar las variables de la lista y se compone de tres partes: una gris oscura, una gris clara y una azul.
+							Dependiendo del estado, se visualizan diferentes variables:</p>
+			<ul>
+				<li/>
+				<p class="western"><img src="MPNC_Editor_9.png" align="bottom" width="46" height="42" border="0"/> El botón sólo con el gris oscuro activado muestra las variables del módulo MPNC006 ÚNICAMENTE.</p>
+				<li/>
+				<p class="western"><img src="MPNC_Editor_10.png" align="bottom" width="46" height="42" border="0"/> El botón con los colores gris oscuro y gris claro activado muestra las variables del módulo MPNC006 y las variables de los demás módulos de expansión utilizados en el sistema.</p>
+				<li/>
+				<p class="western"><img src="MPNC_Editor_8.png" align="bottom" width="48" height="43" border="0"/>  El botón con el gris oscuro, gris claro y azul claro activado muestra las variables del módulo MPNC006, las variables de los otros módulos de expansión en uso y 
+				las variables aún no asociadas a ninguna expansión, pero que podrían ser utilizadas en el sistema.</p>
+			</ul> 	
+		<br/>
+		<p class="western">Cuando se inserta un nuevo módulo, las variables de los módulos insertados se activan automáticamente y se muestran en la siguiente tabla.  
+							Para ver las variables asociadas a los otros módulos, utilice el botón de three-states <img src="MPNC_Editor_10.png" align="bottom" width="46" height="42" border="0"/> .</p>
+		<p class="western">Haciendo clic en uno de los módulos insertados en el sistema, sólo se muestran en la tabla las variables del módulo seleccionado.</p>
+		<p class="western"><strong>La tabla está en modo READ-ONLY</strong>. Haciendo clic en la variable deseada se puede acceder directamente al editor de Crosstable donde se pueden modificar los datos. </p>
+		<br/>
+	</body>
+</html>
