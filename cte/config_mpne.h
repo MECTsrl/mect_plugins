@@ -85,6 +85,8 @@ private:
     QList<int>              lstModuleUsage;     // Lista Utilizzo dei Moduli (0=Unused)
     QStringList             lstSfondi;          // Lista dei nomi degli sfondi associati ai Bottoni
     QStringList             lstModuleCode;      // Lista dei Codici dei Moduli
+    QStringList             lstModuleColor;     // Lista dei Colori dei Moduli
+    QList<QColor>           lstBackColor;
     QStringList             lstModuleName;      // Lista dei nomi dei moduli
     QList<int>              lstModuleFunction;  // Lista delle Funzionalità dei Moduli
     QFrame                  *fraMPNE_Left;      // Frame con immagine MPNE_L
@@ -92,6 +94,7 @@ private:
     QString                 szFrameStyle;       // Style per Frame MPNE
     QString                 szModuleStyle;      // Style di base dei Bottoni per Item
     QString                 szFilterStyle;      // Style di base dei Bottone Switch View
+    QString                 szCodeStyle;        // Style di base del codice modulo
     QString                 m_szMsg;            // Messaggio di servizio
     // Visualizzazione
     int                     m_nShowMode;        // Modalità di visualizzazione corrente

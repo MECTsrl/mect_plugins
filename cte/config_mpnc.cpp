@@ -37,10 +37,19 @@ const QString szFileRemove = szPathIMG + QLatin1String("Remove_32.png");
 const QString szFileRename = szPathIMG + QLatin1String("Rename2.png");
 // Sfondi per Moduli
 const QString szFileMPNC006 = szPathIMG + QLatin1String("MPNC006.png");
+const QString szBack006 = QLatin1String("  background-color: rbg(195,195,195);\n");
+// Analog Input
 const QString szFileMPNC030 = szPathIMG + QLatin1String("MPNC030.png");
+const QString szBack030 = QLatin1String("  background-color: rbg(255,242,0);\n");
+// Analog Out
 const QString szFileMPNC035 = szPathIMG + QLatin1String("MPNC035.png");
+const QString szBack035 = QLatin1String("  background-color: rbg(153,217,234);\n");
+// Digital IN
 const QString szFileMPNC020_01 = szPathIMG + QLatin1String("MPNC02001.png");
+const QString szBack020_01 = QLatin1String("  background-color: rbg(181,230,29);\n");
+// Digital OUT
 const QString szFileMPNC020_02 = szPathIMG + QLatin1String("MPNC02002.png");
+const QString szBack020_02 = QLatin1String("  background-color: rbg(255,201,14);\n");
 // Sfondi Filtro Visualizzazione
 const QString szFilterHead = szPathIMG + QLatin1String("ShowHead.png");
 const QString szFilterUsed = szPathIMG + QLatin1String("ShowUsed.png");
@@ -81,27 +90,33 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     // Lista degli Sfondi e dei Nomi associati ai Moduli
     lstModuleName.clear();
     lstSfondi.clear();
+    lstBackGround.clear();
     // MPNC006
     lstSfondi.append(szFileMPNC006);
     lstModuleName.append(QLatin1String("MPNC006"));
+    lstBackGround.append(szBack006);
     // MPNC030
     for (i = 0; i < nItemsPerGroup; i ++)  {
         lstSfondi.append(szFileMPNC030);
+        lstBackGround.append(szBack030);
     }
     lstModuleName.append(QLatin1String("MPNC030"));
     // MPNC035
     for (i = 0; i < nItemsPerGroup; i ++)  {
         lstSfondi.append(szFileMPNC035);
+        lstBackGround.append(szBack035);
     }
     lstModuleName.append(QLatin1String("MPNC035"));
     // MPNC020_01
     for (i = 0; i < nItemsPerGroup; i ++)  {
         lstSfondi.append(szFileMPNC020_01);
+        lstBackGround.append(szBack020_01);
     }
     lstModuleName.append(QLatin1String("MPNC020_01"));
     // MPNC020_02
     for (i = 0; i < nItemsPerGroup; i ++)  {
         lstSfondi.append(szFileMPNC020_02);
+        lstBackGround.append(szBack020_02);
     }
     lstModuleName.append(QLatin1String("MPNC020_02"));
     // Flag Abilitazione dei Moduli (il modulo 0 è MPNC006)
@@ -282,6 +297,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
         remove->setVisible(true);
         remove->setToolTip(szRemoveToolTip);
         remove->setStyleSheet(szRemoveStyle);
+//        remove->raise();
         mapRemoveClicked->setMapping(remove, int(i));
         connect(remove, SIGNAL(clicked()), mapRemoveClicked, SLOT(map()));
         mainGrid->addWidget(remove, nRowDesc, (nBaseHead) + (i * nItemsPerGroup));
@@ -366,8 +382,8 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     szTemp.clear();
     szTemp.append(QLatin1String("QLabel:disabled {\n"));
     szTemp.append(QLatin1String("  border: 1px solid darkGray ;\n"));
-    szTemp.append(QLatin1String("  background-color: transparent;\n"));
     szTemp.append(QLatin1String("  color: darkGray;\n"));
+    szTemp.append(QLatin1String("  background-color: AliceBlue;\n"));
     szTemp.append(QLatin1String("}\n"));
     szTemp.append(QLatin1String("QLabel { \n"));
     szTemp.append(QLatin1String("  min-width: 40px;\n"));

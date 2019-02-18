@@ -89,22 +89,29 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lstSfondi.clear();
     lstModuleCode.clear();
     lstModuleFunction.clear();      // Lista delle Funzionalità dei Moduli
+    lstModuleColor.clear();
     // Descrizioni e sfondi dei Moduli
     // Module 0 - No Module
     lstModuleName.append(QLatin1String("No Module"));
     lstSfondi.append(szFileMPNE00);
     lstModuleFunction.append(nUsageNone);
     lstModuleCode.append(QLatin1String("00"));
+    lstModuleColor.append(QLatin1String("  background-color: transparent;\n"));
+    lstBackColor.append(QColor(125,125,125));
     // Module 01 Dig IN
     lstModuleName.append(QLatin1String("8 Digital Input"));
     lstSfondi.append(szFileMPNE01);
     lstModuleFunction.append(nUsageDigIn);
     lstModuleCode.append(QLatin1String("01"));
+    lstModuleColor.append(QLatin1String("  background-color: rbg(181,230,29);\n"));
+    lstBackColor.append(QColor(181,230,29));
     // Module 02 Dig OUT
     lstModuleName.append(QLatin1String("8 Digital Output"));
     lstSfondi.append(szFileMPNE02);
     lstModuleFunction.append(nUsageDigOut);
     lstModuleCode.append(QLatin1String("02-03-04"));
+    lstModuleColor.append(QLatin1String("  background-color: rbg(255,79,79);\n"));
+    lstBackColor.append(QColor(255,79,79));
 //    // Module 03 Dig OUT with 4 Relays
 //    lstModuleName.append(QLatin1String("4 Digital Relays"));
 //    lstSfondi.append(szFileMPNE03);
@@ -120,6 +127,8 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lstSfondi.append(szFileMPNE05);
     lstModuleFunction.append(nUsageAnIO);
     lstModuleCode.append(QLatin1String("05"));
+    lstModuleColor.append(QLatin1String("  background-color: rbg(255,242,0);\n"));
+    lstBackColor.append(QColor(255,242,0));
     //---------------------------
     // nRowSelector: Label e Combo selettore device, Protocollo, Porta, Node Id
     //---------------------------
@@ -366,36 +375,40 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szTemp.clear();
     szTemp.append(QLatin1String("QLabel { \n"));
     szTemp.append(QLatin1String("  border: 1px solid navy;\n"));
-    szTemp.append(QLatin1String("  min-height: 24px;\n"));
-    szTemp.append(QLatin1String("  max-height: 24px;\n"));
+    szTemp.append(QLatin1String("  min-height: 22px;\n"));
+    szTemp.append(QLatin1String("  max-height: 22px;\n"));
     szTemp.append(QLatin1String("  min-width: 40px;\n"));
     szTemp.append(QLatin1String("  max-width: 40px;\n"));
     szTemp.append(QLatin1String("  font-size: 18px;\n"));
     szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szTemp.append(QLatin1String("  background-color: AliceBlue;\n"));
     szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
     lblBox ->setText(QLatin1String("01"));
     lblBox ->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowFlags, nColBase, 1, 1, Qt::AlignHCenter);
-    // Label per Codice SX
-    szTemp.clear();
-    szTemp.append(QLatin1String("QLabel { \n"));
-    szTemp.append(QLatin1String("  border: 1px solid navy;\n"));
-    szTemp.append(QLatin1String("  min-height: 22px;\n"));
-    szTemp.append(QLatin1String("  max-height: 22px;\n"));
-    szTemp.append(QString::fromAscii("  min-width: %1px;\n") .arg(nComboWidth));
-    szTemp.append(QString::fromAscii("  max-width: %1px;\n") .arg(nComboWidth));
-    szTemp.append(QLatin1String("  font-size: 18px;\n"));
-    szTemp.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
-    szTemp.append(QLatin1String("}"));
+    // Label per Codice SX - DX
+    szCodeStyle.clear();
+    szCodeStyle.append(QLatin1String("QLabel { \n"));
+    szCodeStyle.append(QLatin1String("  border: 1px solid navy;\n"));
+    szCodeStyle.append(QLatin1String("  min-height: 22px;\n"));
+    szCodeStyle.append(QLatin1String("  max-height: 22px;\n"));
+    szCodeStyle.append(QString::fromAscii("  min-width: %1px;\n") .arg(nComboWidth));
+    szCodeStyle.append(QString::fromAscii("  max-width: %1px;\n") .arg(nComboWidth));
+    szCodeStyle.append(QLatin1String("  font-size: 18px;\n"));
+    szCodeStyle.append(QLatin1String("  qproperty-alignment: 'AlignVCenter | AlignHCenter';\n"));
+    szCodeStyle.append(QLatin1String("  background-color: AliceBlue;\n"));
+    szCodeStyle.append(QLatin1String("}"));
     lblLeft = new QLabel(this);
+    lblLeft->setAutoFillBackground(true);
     lblLeft->setText(lstModuleCode[nUsageNone]);
-    lblLeft->setStyleSheet(szTemp);
+    lblLeft->setStyleSheet(szCodeStyle);
     mainGrid->addWidget(lblLeft, nRowFlags, nColLeft, 1, nItemWidth);
     // Label per Codice DX
     lblRight = new QLabel(this);
+    lblRight->setAutoFillBackground(true);
     lblRight->setText(lstModuleCode[nUsageNone]);
-    lblRight->setStyleSheet(szTemp);
+    lblRight->setStyleSheet(szCodeStyle);
     mainGrid->addWidget(lblRight, nRowFlags, nColRight, 1, nItemWidth);
     // Label per Numero Righe selezionate
     szTemp.clear();
@@ -537,6 +550,7 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
     QLabel      *lblCode = 0;
     QLabel      *lblModule = 0;
     QString     szNewStyle = szModuleStyle.left(szModuleStyle.length() - 1);
+    QString     szLabelSyle = szCodeStyle.left(szCodeStyle.length() - 1);
 
     // Check Boundary
     if (nPosition < nModuleBase || nPosition >=  nTotalItems || nFunction < nUsageNone || nFunction >= nUsageMax)
@@ -591,6 +605,15 @@ void    Config_MPNE::updateModule(int nPosition, int nFunction)
             lblModule->setEnabled(true);
             lblModule->raise();
         }
+    }
+    if (lblCode != 0)  {
+//        szLabelSyle.append(lstModuleColor[nFunction]);
+//        szLabelSyle.append(QLatin1String("};\n"));
+//        lblCode->setStyleSheet(szLabelSyle);
+//        QPalette palette = lblCode->palette();
+//        palette.setColor(lblCode->backgroundRole(), lstBackColor[nFunction]);
+//        palette.setColor(lblCode->foregroundRole(), Qt::black);
+//        lblCode->setPalette(palette);
     }
     // Accende le variabili della base per ogni funzione accessoria utilizzata a SX o DX
     for (int nCurrentUsage = nUsageDigIn; nCurrentUsage < nUsageMax; nCurrentUsage++)  {

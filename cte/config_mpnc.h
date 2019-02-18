@@ -83,6 +83,7 @@ private:
     QString                 szRemoveStyle;      // Style di base dei Bottoni per Remove Modules
     QString                 szFilterStyle;      // Style di base dei Bottone Switch View
     QStringList             lstSfondi;          // Lista dei nomi degli sfondi associati ai Bottoni
+    QStringList             lstBackGround;      // Lista dei colori di Background associati ai Bottoni
     QStringList             lstModuleName;      // Lista dei nomi dei moduli
     QStringList             lstPosFlags;           // Lista dei nomi delle Posizioni (A..D)
     QSignalMapper           *mapRemoveClicked;  // Signal Mapper per Remove Module Clicked
