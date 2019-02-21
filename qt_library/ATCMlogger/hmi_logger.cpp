@@ -460,13 +460,18 @@ bool Logger::logstop()
 
 bool Logger::logshot()
 {
+    if (!logger_start) {
+        logger_shot = false;
+        return false;
+    }
     logger_shot = true;
     LOG_PRINT(verbose_e, "SHOT!\n");
     if (sem_post(&theLoggingSem)) {
         LOG_PRINT(error_e, "sem_post() failed\n");
+        logger_shot = false;
         return false;
     }
-    while (logger_shot) {
+    while (logger_start && logger_shot) {
         QCoreApplication::processEvents();
     }
     return true;
