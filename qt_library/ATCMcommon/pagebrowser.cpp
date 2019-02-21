@@ -168,9 +168,9 @@ void page::updateData()
 
     if (plc_hmi_page != 0)
     {
-        int current_page = getPageNb();
+        int current_page = getPageNb(); // returns 0 if qdialog (numpad & c)
 
-        if (current_page != plc_hmi_page)
+        if (current_page && (current_page != plc_hmi_page))
         {
             char buf[42];
             char * s = getPageName(plc_hmi_page, buf);
