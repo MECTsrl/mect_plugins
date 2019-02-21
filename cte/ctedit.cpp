@@ -4266,6 +4266,17 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 return true;
             }
         }
+        // F2 Rename Variable
+        if (keyEvent->key() == Qt::Key_F2)  {
+            if (m_nCurTab == TAB_CT)  {
+                if (lstCTRecords[m_nGridRow].UsedEntry)  {
+                    qDebug() << QLatin1String("F2: Rename Var");
+                    ui->txtName->selectAll();
+                    ui->txtName->setFocus();
+                    return true;
+                }
+            }
+        }
         // Find su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Find)) {
             if (m_nCurTab == TAB_CT)  {
