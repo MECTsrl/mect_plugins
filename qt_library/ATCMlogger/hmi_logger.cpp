@@ -402,13 +402,13 @@ void Logger::run()
         /* if the logger is started */
         if (logger_start)
         {
-            if (logger_shot == false)
+            if (logger_shot)
             {
-                variation = checkVariation();
+                variation = false;
             }
             else
             {
-                variation = false;
+                variation = checkVariation();
             }
             /* if there is something to dump */
             if (
@@ -435,6 +435,7 @@ void Logger::run()
         else
         {
             closeStorageFile();
+            logger_shot = false;
         }
 #endif
     }
