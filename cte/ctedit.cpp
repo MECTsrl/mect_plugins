@@ -197,7 +197,7 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNoNode] = trUtf8("Empty or Invalid Node Address");
     lstErrorMessages[errCTNoRegister] = trUtf8("Empty or Invalid Register Value");
     lstErrorMessages[errCTRegisterTooBig] = trUtf8("Register Number too big for TCP Server");
-    lstErrorMessages[errCTRegisterUsedTwice] = trUtf8("Register Number already used in Other Variables");
+    lstErrorMessages[errCTRegisterUsedTwice] = trUtf8("Register Number or Bit Position (Decimal) already used in Other Variables");
     lstErrorMessages[errCTInputOnlyModbusClient]  = trUtf8("Input Register allowed only on Modbus Client");
     lstErrorMessages[errCTModBusServerDuplicate] = trUtf8("Server Already present with different Port/Node");
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
@@ -4245,15 +4245,22 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 
-//        // Tasto ESC (Intercettato per le Combo Box)
-//        if (keyEvent->key() == Qt::Key_Escape) {
-//            // Clear item for Combos
-//            if (obj->metaObject()->className() == "QComboBox")  {
-//                QComboBox *cb = qobject_cast<QComboBox*>(obj);
-//                cb->setCurrentIndex(-1);
-//                return true;
-//            }
-//        }
+        // Tasto ESC (Intercettato per le Combo Box)
+        if (keyEvent->key() == Qt::Key_Escape) {
+            qDebug() << QLatin1String("ESC: Abort Editing");
+            if (m_nCurTab == TAB_CT)  {
+                // Abort Editing on current Row
+                if (lstCTRecords[m_nGridRow].UsedEntry)  {
+                    // Convert CT Record 2 User Values
+                    QStringList lstFields;
+                    bool fRes = recCT2FieldsValues(lstCTRecords, lstFields, m_nGridRow);
+                    if (fRes)  {
+                        fRes = values2Iface(lstFields);
+                    }
+                }
+                return true;
+            }
+        }
         //-------------------------------------------------
         // Sequenze valide per tutto il Tab CrossTable Editor
         //-------------------------------------------------
@@ -4269,6 +4276,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         // F2 Rename Variable
         if (keyEvent->key() == Qt::Key_F2)  {
             if (m_nCurTab == TAB_CT)  {
+                // Edit Var Name on Used Row
                 if (lstCTRecords[m_nGridRow].UsedEntry)  {
                     qDebug() << QLatin1String("F2: Rename Var");
                     ui->txtName->selectAll();
