@@ -841,12 +841,19 @@ int readFromDb(int ctIndex, void * value)
         LOG_PRINT(verbose_e, "FLOAT: %f\n", *((float*)value));
         break;
     case byte_e:
+        *((BYTE*)value) = pIODataAreaI[byte_nb];
+        LOG_PRINT(verbose_e, "BYTE: %d\n", *((BYTE*)value));
+        break;
     case bit_e:
     case bytebit_e:
     case wordbit_e:
     case dwordbit_e:
-        *((BYTE*)value) = pIODataAreaI[byte_nb];
-        LOG_PRINT(verbose_e, "BYTE/BIT: %d\n", *((BYTE*)value));
+        if (pIODataAreaI[byte_nb]) {
+            *((int *)value) = 1;
+        } else {
+            *((int *)value) = 0;
+        }
+        LOG_PRINT(verbose_e, "...BIT: %d\n", *((int *)value));
         break;
     default:
         LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
