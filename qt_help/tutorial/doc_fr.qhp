@@ -161,8 +161,8 @@
 				<section title="Configuration des entrées/sorties TPAC1008_03" ref="Config_ingressi_uscite_tpac100803_fr.html"/>
 				<section title="Configuration des entrées/sorties TPLC050 et TPLC100" ref="Config_ingressi_uscite_tplc050_100_fr.html"/>
 					</section>				
-				<section title="Activer / désactiver un noeud Modbus RTU-TCP" ref="Variabili_diagnostica_fr.html"/>
-				<section title="Habilitar / deshabilitar nodo Modbus RTU-TCP" ref="Abilitazione_disabilitazione_nodo_fr.html"/>
+				<section title="Variables de diagnostic" ref="Variabili_diagnostica_fr.html"/>
+				<section title="Activer / désactiver un noeud Modbus RTU-TCP" ref="Abilitazione_disabilitazione_nodo_fr.html"/>
 				<section title="Insertion de la carte micro SD" ref="SD_card_fr.html"/>
 				<section title="Activation VNC" ref="VNC_fr.html"/>	
 				<section title="Configuration CAN" ref="Can_fr.html"/>		
