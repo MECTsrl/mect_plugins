@@ -54,6 +54,7 @@
 #include <QXmlStreamAttributes>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include <QtAlgorithms>
 #include <math.h>
 
 
@@ -382,6 +383,8 @@ ctedit::ctedit(QWidget *parent) :
     theNodesNumber = 0;
     thePlcVarsNumber = 0;
     theBlocksNumber = 0;
+    m_fMultiSelect = false;
+    lstSelectedRows.clear();
     // Validator per Interi
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
     ui->txtPort->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
@@ -719,6 +722,8 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     this->setCursor(Qt::WaitCursor);
     // Reset Show Flag && Current Row Index
     m_fShowAllRows = true;
+    m_fMultiSelect = false;
+    lstSelectedRows.clear();
     m_nGridRow = -1;
     // Opening File
     nRes = LoadXTable(szFileCT.toAscii().data(), &CrossTable[0], &nTotalRows);
@@ -764,12 +769,12 @@ bool    ctedit::ctable2Grid()
     brushRed.setColor(Qt::red);
     // Preparazione tabella
     this->setCursor(Qt::WaitCursor);
+    disableAndBlockSignals(ui->tblCT);
     ui->tblCT->setEnabled(false);
     ui->tblCT->clearSelection();
     ui->tblCT->setRowCount(0);
     ui->tblCT->clear();
     ui->tblCT->setColumnCount(colTotals);
-    qDebug() << QLatin1String("ctable2Gid()");
     // Caricamento elementi
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Covert CT Record 2 User Values
@@ -813,7 +818,9 @@ bool    ctedit::ctable2Grid()
         qDebug() << QLatin1String("Error Loading Rows");
     }
     // Return value
+    enableAndUnlockSignals(ui->tblCT);
     this->setCursor(Qt::ArrowCursor);
+    qDebug("ctable2Grid(): Result %d", fRes);
     return fRes;
 }
 
@@ -1054,9 +1061,11 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     lstRecValues[colGroup] = szZERO;
     // Gruppo, per ora forzato a 0
     lstRecValues[colModule] = szZERO;
-    // Name
-    szTemp = ui->txtName->text().trimmed();
-    lstRecValues[colName] = szTemp;
+    // Name (No per MultiSelect)
+    if (! m_fMultiSelect)  {
+        szTemp = ui->txtName->text().trimmed();
+        lstRecValues[colName] = szTemp;
+    }
     // Update Used and Logged Variable List
     if (! szTemp.isEmpty())  {
         // Aggiorna la lista delle variabili utilizzate
@@ -1105,9 +1114,11 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     // Input Register
     szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
     lstRecValues[colInputReg] = szTemp.trimmed();
-    // Register
-    szTemp = ui->txtRegister->text();
-    lstRecValues[colRegister] = szTemp.trimmed();
+    // Register  (No per MultiSelect)
+    if (! m_fMultiSelect)  {
+        szTemp = ui->txtRegister->text();
+        lstRecValues[colRegister] = szTemp.trimmed();
+    }
     // Block
     szTemp = ui->txtBlock->text();
     lstRecValues[colBlock] = szTemp.trimmed();
@@ -1121,44 +1132,46 @@ bool ctedit::iface2values(QStringList &lstRecValues)
     lstRecValues[colSourceVar] = szEMPTY;
     lstRecValues[colCondition] = szEMPTY;
     lstRecValues[colCompare] = szEMPTY;
-    // Behavior
-    nPos = ui->cboBehavior->currentIndex();
-    if (nPos >= 0 && nPos < lstBehavior.count())
-        szTemp = ui->cboBehavior->itemText(nPos);
-    else
-        szTemp = szEMPTY;
-    lstRecValues[colBehavior] = szTemp.trimmed();
-    // Gestione Allarmi/Eventi (Se necessario)
-    if (nPos >= behavior_alarm)  {
-        // Source Var
-        nPos = ui->cboVariable1->currentIndex();
-        if (nPos >= 0 && nPos < ui->cboVariable1->count())
-            szTemp = ui->cboVariable1->itemText(nPos);
+    // Behavior  (No per MultiSelect)
+    if (! m_fMultiSelect)  {
+        nPos = ui->cboBehavior->currentIndex();
+        if (nPos >= 0 && nPos < lstBehavior.count())
+            szTemp = ui->cboBehavior->itemText(nPos);
         else
             szTemp = szEMPTY;
-        // qDebug() << "Variable Var1 Pos: " << nPos;
-        lstRecValues[colSourceVar] = szTemp;
-        // Operator
-        nPos = ui->cboCondition->currentIndex();
-        if (nPos >= 0 && nPos < ui->cboCondition->count())
-            szTemp = lstCondition[nPos];
-        else
-            szTemp = szEMPTY;
-        lstRecValues[colCondition] = szTemp;
-        // Fixed Value or Variable name
-        if (ui->optFixedVal->isChecked())  {
-            // Save Fixed Value
-            szTemp = ui->txtFixedValue->text().trimmed();
-        }
-        else  {
-            // Save Variable Name
-            nPos = ui->cboVariable2->currentIndex();
-            if (nPos >= 0 && nPos < ui->cboVariable2->count())
-                szTemp = ui->cboVariable2->itemText(nPos);
+        lstRecValues[colBehavior] = szTemp.trimmed();
+        // Gestione Allarmi/Eventi (Se necessario)
+        if (nPos >= behavior_alarm)  {
+            // Source Var
+            nPos = ui->cboVariable1->currentIndex();
+            if (nPos >= 0 && nPos < ui->cboVariable1->count())
+                szTemp = ui->cboVariable1->itemText(nPos);
             else
                 szTemp = szEMPTY;
+            // qDebug() << "Variable Var1 Pos: " << nPos;
+            lstRecValues[colSourceVar] = szTemp;
+            // Operator
+            nPos = ui->cboCondition->currentIndex();
+            if (nPos >= 0 && nPos < ui->cboCondition->count())
+                szTemp = lstCondition[nPos];
+            else
+                szTemp = szEMPTY;
+            lstRecValues[colCondition] = szTemp;
+            // Fixed Value or Variable name
+            if (ui->optFixedVal->isChecked())  {
+                // Save Fixed Value
+                szTemp = ui->txtFixedValue->text().trimmed();
+            }
+            else  {
+                // Save Variable Name
+                nPos = ui->cboVariable2->currentIndex();
+                if (nPos >= 0 && nPos < ui->cboVariable2->count())
+                    szTemp = ui->cboVariable2->itemText(nPos);
+                else
+                    szTemp = szEMPTY;
+            }
+            lstRecValues[colCompare] = szTemp;
         }
-        lstRecValues[colCompare] = szTemp;
     }
     // Finalizzazione controlli su protocolli
     // Protocollo PLC tutto abblencato
@@ -1367,7 +1380,7 @@ bool ctedit::grid2CTable()
             lstFields.append(szTemp);
         }
         // Covert back User Values 2 CT Record
-        fRes = fieldValues2CTrecList(lstFields, lstCTRecords, nCur);
+        fRes = fieldValues2CTrecList(lstFields, lstCTRecords, nCur, false);
     }
     // Return Value
     return fRes;
@@ -1400,7 +1413,7 @@ void ctedit::enableFields()
         if (nProtocol != -1)  {
 //            ui->cboPriority->setEnabled(true);
             ui->cboUpdate->setEnabled(true);
-            ui->txtName->setEnabled(true);
+            ui->txtName->setEnabled(! m_fMultiSelect);
             ui->txtComment->setEnabled(true);
         }
         // Abilitazione dei Decimal per Input Analogiche se abilitati
@@ -1419,12 +1432,12 @@ void ctedit::enableFields()
         // Campi comuni
         ui->cboPriority->setEnabled(true);
         ui->cboUpdate->setEnabled(true);
-        ui->txtName->setEnabled(true);
+        ui->txtName->setEnabled(! m_fMultiSelect);  // Nome abilitato solo se no selezione multipla
         ui->cboType->setEnabled(true);
         ui->txtDecimal->setEnabled(true);
         ui->cboProtocol->setEnabled(true);
         ui->txtComment->setEnabled(true);
-        ui->cboBehavior->setEnabled(true);
+        ui->cboBehavior->setEnabled(! m_fMultiSelect);
         // Abilitazione dei campi in funzione del Tipo
         // Tipo BIT -> Blocca decimali
         if (ui->cboType->currentIndex()  == BIT)  {
@@ -1442,7 +1455,7 @@ void ctedit::enableFields()
         // Abilitazione dei campi se non PLC
         if (nProtocol != PLC)  {
             ui->txtNode->setEnabled(true);
-            ui->txtRegister->setEnabled(true);
+            ui->txtRegister->setEnabled(! m_fMultiSelect);
             // IP abilitato solo per protocolli Client TCP, TCPRTU
             if (nProtocol == TCP || nProtocol == TCPRTU)  {
                 ui->txtIP->setEnabled(true);
@@ -1470,7 +1483,9 @@ void ctedit::enableFields()
             ui->txtPort->setVisible(true);
         }
         // Visibilità Check Box Input Regs per protocolli RTU - TCP - TCPRTU
-        if (nProtocol == RTU || nProtocol == TCPRTU)  {
+        if (nProtocol == RTU || nProtocol == RTU_SRV ||
+            nProtocol == TCP || nProtocol == TCPRTU  ||
+            nProtocol == TCP_SRV)  {
             ui->lblInputRegister->setVisible(true);
             ui->chkInputRegister->setVisible(true);
             ui->chkInputRegister->setEnabled(true);
@@ -1612,50 +1627,89 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
 // Slot attivato ad ogni cambio di riga in Table CT
 {
     int         nRow = -1;
+    int         nItem = -1;
     QStringList lstFields;
     bool        fRes = true;
     // Recupera righe selezionate
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
 
+    if (ui->tblCT->rowCount() == 0)  {
+        return;
+    }
+    qDebug("tableCTItemChanged(): Rows: %d Selected Items: %d Deselected Items: %d", ui->tblCT->rowCount(), selected.count(), deselected.count());
     // Il cambio riga corrente è dovuto a operazioni di tipo cut-paste.
     // Per evitare duplicazioni accidentali di righe ripulisce il buffer di editing ed esce
-    if (m_fCutOrPaste || selection.count() > 1)  {
-        if (selection.count() > 1)  {
-            m_szMsg = QString::fromAscii("Selected Rows: %1") .arg(selection.count());
-            displayStatusMessage(m_szMsg, STD_DISPLAY_TIME);
-        }
+    m_fMultiSelect = false;
+    if (m_fCutOrPaste)  {
         clearEntryForm();
         ui->fraEdit->setEnabled(false);
         ui->cboSections->setCurrentIndex(-1);
+        m_fMultiSelect = false;
         return;
+    }
+    // E' stato deselezionato una riga
+    // Si sta uscendo dalla selezione di una riga
+    if (! deselected.isEmpty() &&  deselected.count() >= 1 && lstSelectedRows.count() > 0)  {
+        // Considera sempre la prima riga della lista
+        int nPrevRow = -1;
+        for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
+            nRow = lstSelectedRows[nItem];
+            qDebug("tableCTItemChanged(): Updating Row:%d Item: %d Total Items: %d", nRow + 1, nItem + 1, lstSelectedRows.count());
+            // Se la riga corrente è stata modificata, salva il contenuto
+            if (nRow >= 0 && nRow != nPrevRow && nRow < lstCTRecords.count())  {
+                // Il contenuto viene aggiornato solo se la linea risulta modificata e il form non è vuoto
+                fRes = updateRow(nRow);
+                // Cambio riga Ko
+                if (! fRes)    {
+                    // Disconnette segnale per evitare ricorsione
+            //        disableAndBlockSignals(ui->tblCT);
+                    disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+                                SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
+                    // Cambia Selezione (ritorna a riga precedente)
+                    ui->tblCT->selectRow(nRow);
+                    m_nGridRow = nRow;
+            //        enableAndUnlockSignals(ui->tblCT);
+                    // Riconnette slot gestione
+                    connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+                                SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
+                    return;
+                }
+            }
+            nPrevRow = nRow;
+        }
+    }
+    // Selezione Singola o multipla
+    if (selection.count() == 0)  {
+        lstSelectedRows.clear();
+        qDebug("tableCTItemChanged(): Clear Selection");
+    }
+    else if (selection.count() == 1)  {
+        lstSelectedRows.clear();
+        lstSelectedRows.append(selection.at(0).row());
+    }
+    if (selection.count() > 1)  {
+        m_szMsg = QString::fromAscii("Selected Rows: %1") .arg(selection.count());
+        displayStatusMessage(m_szMsg, STD_DISPLAY_TIME);
+        lstSelectedRows.clear();
+        for (nItem = 0; nItem < selection.count(); nItem++)  {
+            int newRow = selection.at(nItem).row();
+            if (lstSelectedRows.indexOf(newRow) < 0)  {
+                lstSelectedRows.append(newRow);
+            }
+        }
+        qSort(lstSelectedRows.begin(), lstSelectedRows.end());
+        ui->fraCondition->setVisible(false);
+        m_fMultiSelect = true;
+    }
+    else {
+        m_fMultiSelect = false;
+        clearStatusMessage();
+    }
+    // Elenco delle variabili selezionate
+    for (nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
+        qDebug("tableCTItemChanged(): Selected Item %d @Row: %d", nItem + 1, lstSelectedRows.at(nItem) + 1);
     }
     ui->fraEdit->setEnabled(true);
-    // Si sta uscendo dalla selezione di una riga sola
-    if (! deselected.isEmpty() &&  deselected.count() == 1)  {
-        // Considera sempre la prima riga della lista
-        nRow = deselected.indexes().at(0).row();
-        // qDebug() << "Previous Row: " << nRow;
-    }
-    // Se la riga corrente è stata modificata, salva il contenuto
-    if (nRow >= 0 && nRow < lstCTRecords.count())  {
-        // Il contenuto viene aggiornato solo se la linea risulta modificata e il form non è vuoto
-        fRes = updateRow(nRow);
-    }
-    // Cambio riga Ko
-    if (! fRes)    {
-        // Disconnette segnale per evitare ricorsione
-//        disableAndBlockSignals(ui->tblCT);
-        disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-                    SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
-        // Cambia Selezione (ritorna a riga precedente)
-        ui->tblCT->selectRow(nRow);
-        m_nGridRow = nRow;
-//        enableAndUnlockSignals(ui->tblCT);
-        // Riconnette slot gestione
-        connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-                    SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
-        return;
-    }
     // Si può cambiare riga, legge contenuto
     if (! selected.isEmpty() && selected.count() == 1)  {
         clearEntryForm();
@@ -1948,8 +2002,9 @@ int ctedit::copySelected(bool fClearSelection)
     // QStringList     lstFields;
 
     // Check Selection
-    if (selection.count() <= 0)
+    if (selection.count() <= 0)  {
         return 0;
+    }
     m_fCutOrPaste = true;
     // Compile Selected Row List
     xmlBuffer.setAutoFormatting(true);
@@ -1998,15 +2053,14 @@ int ctedit::copySelected(bool fClearSelection)
     // Return value
     return nCopied;
 }
+
 void ctedit::pasteSelected()
 // Incolla righe da Buffer di copiatura a Riga corrente
 {
     int             nRow = ui->tblCT->currentRow();
-    int             nCur = 0;
     int             nPasted = 0;
-    bool            fUsed = false;
     // Recupera righe selezionate
-    QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
+    // QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
     // Gestione della ClipBoard
     QClipboard      *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
@@ -2026,10 +2080,8 @@ void ctedit::pasteSelected()
         fClipSourceOk = getRowsFromXMLBuffer(szClipBuffer, lstPastedRecords, lstSourceRows, lstDestRows);
     }
     // No Records copied
-    fUsed = false;
     if (! fClipSourceOk)  {
         m_szMsg = QLatin1String("Can't Copy as Copy Buffer is Empty or Invalid");
-        fUsed = true;
     }
     // Controllo area di destinazione
     if (! checkFreeArea(nRow, lstPastedRecords.count()))  {
@@ -2284,7 +2336,7 @@ bool ctedit::isFormEmpty()
     // nFilled += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(m_nGridRow, colBlockSize)->text().trimmed());
     nFilled += (! ui->txtComment->text().trimmed().isEmpty());
     nFilled += (ui->cboBehavior->currentIndex() >= 0);
-    if (ui->cboBehavior->currentIndex() >= behavior_alarm)  {
+    if (ui->cboBehavior->currentIndex() >= behavior_alarm && ! m_fMultiSelect)  {
         nFilled += (ui->cboVariable1->currentIndex() >= 0);
         nFilled += (ui->cboCondition->currentIndex() >= 0);
         nFilled += (ui->cboVariable2->currentIndex() >= 0);
@@ -2304,50 +2356,56 @@ bool ctedit::isLineModified(int nRow)
 
     // Confronto tra Form Editing e riga Grid
     if(nRow >= 0 && nRow < lstCTRecords.count())  {
-        nModif += (ui->cboPriority->currentText().trimmed() != ui->tblCT->item(nRow, colPriority)->text().trimmed());
-        nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colUpdate)->text().trimmed());
-        // La Colonna Group non ha inpatto in calcolo modifiche
-        // nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colGroup)->text().trimmed());
-        nModif += (ui->txtName->text().trimmed() != ui->tblCT->item(nRow, colName)->text().trimmed());
-        nModif += (ui->cboType->currentText().trimmed() != ui->tblCT->item(nRow, colType)->text().trimmed());
-        nModif += (ui->txtDecimal->text().trimmed() != ui->tblCT->item(nRow, colDecimal)->text().trimmed());
-        nModif += (ui->cboProtocol->currentText().trimmed() != ui->tblCT->item(nRow, colProtocol)->text().trimmed());
-        nModif += (ui->txtIP->text().trimmed() != ui->tblCT->item(nRow, colIP)->text().trimmed());
-        if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)
-            nModif += ui->cboPort->currentText().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed();
-        else
-            nModif += (ui->txtPort->text().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed());
-        nModif += (ui->txtNode->text().trimmed() != ui->tblCT->item(nRow, colNodeID)->text().trimmed());
-        // Input Register
-        if (ui->chkInputRegister->isVisible()) {
-            szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
-            nModif += (szTemp != ui->tblCT->item(nRow, colInputReg)->text().trimmed());
+        // Se è attivo il MultiSelect NON si salva all'interno di righe vuote
+        if (m_fMultiSelect && ui->tblCT->item(nRow, colName)->text().trimmed().isEmpty())  {
+            nModif = 0;
         }
-        // Offset Register
-        nModif += (ui->txtRegister->text().trimmed() != ui->tblCT->item(nRow, colRegister)->text().trimmed());
-        // nModif += (ui->txtBlock->text().trimmed() != ui->tblCT->item(nRow, colBlock)->text().trimmed());
-        // nModif += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(nRow, colBlockSize)->text().trimmed());
-        nModif += (ui->txtComment->text().trimmed() != ui->tblCT->item(nRow, colComment)->text().trimmed());
-        nModif += (ui->cboBehavior->currentText().trimmed() != ui->tblCT->item(nRow, colBehavior)->text().trimmed());
-        // Frame Allarmi
-        if (ui->cboBehavior->currentIndex() >= behavior_alarm)  {
-            nModif += (ui->cboVariable1->currentText().trimmed() != ui->tblCT->item(nRow, colSourceVar)->text().trimmed());
-            nModif += (ui->cboCondition->currentText().trimmed() != ui->tblCT->item(nRow, colCondition)->text().trimmed());
-            if (ui->optFixedVal->isChecked())  {
-                // Confronto tra Real arrotondati a 4 decimali
-                bool    fIfVal = false;
-                bool    fTbVal = false;
-                double dblIfaceVal = ui->txtFixedValue->text().toDouble(&fIfVal);
-                dblIfaceVal = fIfVal ? myRound(dblIfaceVal, nCompareDecimals) : 0.0;
-                double dblTableVal = ui->tblCT->item(nRow, colCompare)->text().toDouble(&fTbVal);
-                dblTableVal = fIfVal ? myRound(dblTableVal, nCompareDecimals) : 0.0;
-                // Entrambi convertiti, valori diversi, oppure Uno dei due non convertibile
-                if ((fIfVal && fTbVal && dblIfaceVal != dblTableVal) || (fIfVal != fTbVal))
-                    nModif++;
-//                nModif += (ui->txtFixedValue->text().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
-            }
+        else  {
+            nModif += (ui->cboPriority->currentText().trimmed() != ui->tblCT->item(nRow, colPriority)->text().trimmed());
+            nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colUpdate)->text().trimmed());
+            // La Colonna Group non ha inpatto in calcolo modifiche
+            // nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colGroup)->text().trimmed());
+            nModif += (! m_fMultiSelect && (ui->txtName->text().trimmed() != ui->tblCT->item(nRow, colName)->text().trimmed()));
+            nModif += (ui->cboType->currentText().trimmed() != ui->tblCT->item(nRow, colType)->text().trimmed());
+            nModif += (ui->txtDecimal->text().trimmed() != ui->tblCT->item(nRow, colDecimal)->text().trimmed());
+            nModif += (ui->cboProtocol->currentText().trimmed() != ui->tblCT->item(nRow, colProtocol)->text().trimmed());
+            nModif += (ui->txtIP->text().trimmed() != ui->tblCT->item(nRow, colIP)->text().trimmed());
+            if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)
+                nModif += ui->cboPort->currentText().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed();
             else
-                nModif += (ui->cboVariable2->currentText().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+                nModif += (ui->txtPort->text().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed());
+            nModif += (ui->txtNode->text().trimmed() != ui->tblCT->item(nRow, colNodeID)->text().trimmed());
+            // Input Register
+            if (ui->chkInputRegister->isVisible()) {
+                szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
+                nModif += (szTemp != ui->tblCT->item(nRow, colInputReg)->text().trimmed());
+            }
+            // Offset Register
+            nModif += (! m_fMultiSelect && (ui->txtRegister->text().trimmed() != ui->tblCT->item(nRow, colRegister)->text().trimmed()));
+            // nModif += (ui->txtBlock->text().trimmed() != ui->tblCT->item(nRow, colBlock)->text().trimmed());
+            // nModif += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(nRow, colBlockSize)->text().trimmed());
+            nModif += (ui->txtComment->text().trimmed() != ui->tblCT->item(nRow, colComment)->text().trimmed());
+            nModif += (! m_fMultiSelect && (ui->cboBehavior->currentText().trimmed() != ui->tblCT->item(nRow, colBehavior)->text().trimmed()));
+            // Frame Allarmi
+            if ((! m_fMultiSelect) && ui->cboBehavior->currentIndex() >= behavior_alarm)  {
+                nModif += (ui->cboVariable1->currentText().trimmed() != ui->tblCT->item(nRow, colSourceVar)->text().trimmed());
+                nModif += (ui->cboCondition->currentText().trimmed() != ui->tblCT->item(nRow, colCondition)->text().trimmed());
+                if (ui->optFixedVal->isChecked())  {
+                    // Confronto tra Real arrotondati a 4 decimali
+                    bool    fIfVal = false;
+                    bool    fTbVal = false;
+                    double dblIfaceVal = ui->txtFixedValue->text().toDouble(&fIfVal);
+                    dblIfaceVal = fIfVal ? myRound(dblIfaceVal, nCompareDecimals) : 0.0;
+                    double dblTableVal = ui->tblCT->item(nRow, colCompare)->text().toDouble(&fTbVal);
+                    dblTableVal = fIfVal ? myRound(dblTableVal, nCompareDecimals) : 0.0;
+                    // Entrambi convertiti, valori diversi, oppure Uno dei due non convertibile
+                    if ((fIfVal && fTbVal && dblIfaceVal != dblTableVal) || (fIfVal != fTbVal))
+                        nModif++;
+    //                nModif += (ui->txtFixedValue->text().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+                }
+                else
+                    nModif += (ui->cboVariable2->currentText().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+            }
         }
     }
     // qDebug() << "Modified(): N.Row:" << nRow << "Numero Modifiche:" << nModif;
@@ -5373,6 +5431,7 @@ bool ctedit::updateRow(int nRow)
     QBrush      brushInputReg(Qt::SolidPattern);
 
     if (! isFormEmpty() && isLineModified(nRow))  {
+        qDebug("updateRow() - Updating Row: %d", nRow);
         // Valori da interfaccia a Lista Stringhe
         fRes = iface2values(lstFields);
         // Primo controllo di coerenza sulla riga corrente
@@ -5380,9 +5439,9 @@ bool ctedit::updateRow(int nRow)
         if (fRes && nErrors == 0)  {
             // Copia l'attuale CT nella lista Undo
             lstUndo.append(lstCTRecords);
-            qDebug() << "updateRow() - lstUndo added";
+            qDebug("updateRow() - lstUndo added");
             // Salva Record
-            fIsSaved = fieldValues2CTrecList(lstFields, lstCTRecords, nRow);
+            fIsSaved = fieldValues2CTrecList(lstFields, lstCTRecords, nRow, m_fMultiSelect);
             // Aggiorna Grid Utente per riga corrente
             if (fIsSaved)  {
                 fRes = list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nRow);

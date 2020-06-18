@@ -203,6 +203,7 @@ private:
     QList<int>              lstNoHUpdates;          // Lista contenente tutti i tipi di Update tranne H (per Allarmi)
     QList<int>              lstLogUpdates;          // Lista contenente tutti i tipi di Update
     QList<int>              lstAllVarTypes;         // Lista contenente tutti i tipi di Variabili definiti
+    QList<int>              lstSelectedRows;        // Lista delle righe di CT in Editing
     QStringList             lstUsedVarNames;        // Lista contenente i nomi delle variabili (per Search)
     QStringList             lstLoggedVars;          // Lista contenente i nomi delle variabili Loggate (per Trends)
     QList<Err_CT>           lstCTErrors;
@@ -237,6 +238,7 @@ private:
     varTypes                m_vtAlarmVarType;       // Tipo della variabile SX in un espressione Allarme/Evento
     int                     m_nAlarmDecimals;       // Numero di Decimali della Variabile SX di un Allarme
     bool                    m_fSkipLine;            // Se vero non devono essere fatti controlli sulla riga in uscita
+    bool                    m_fMultiSelect;         // Flag di stato Selezione multipla
     // Gestione nodi su MPNC
     QList<int>              lstMPNC;                // Liste delle righe capofila delle teste MPNC presenti
     int                     m_nMPNC;                // Indice della Testa MPNC correntemente visualizzata

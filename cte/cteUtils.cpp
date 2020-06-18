@@ -515,7 +515,7 @@ void freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow)
 
 
 
-bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow)
+bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow, bool fMulti)
 // Conversione da Lista Valori di Interfaccia a CT Record (Form -> REC SINGOLO)
 // Scrive un Record letto da interfaccia direttamente in lista di Record C
 {
@@ -545,13 +545,15 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
         nPos = lstRecValues[colModule].toInt(&fOk);
         nPos = fOk ? nPos : 0;
         lstCTRecs[nRow].Module = nPos;
-        // Campo Name
-        strcpy(lstCTRecs[nRow].Tag, lstRecValues[colName].trimmed().toAscii().data());
-        // Campo Abilitazione record
-        if (strlen(lstCTRecs[nRow].Tag) > 0)
-            lstCTRecs[nRow].UsedEntry = 1;
-        else
-            lstCTRecs[nRow].UsedEntry = 0;
+        // Campo Name  (No per MultiSelect)
+        if (! fMulti)  {
+            strcpy(lstCTRecs[nRow].Tag, lstRecValues[colName].trimmed().toAscii().data());
+            // Campo Abilitazione record
+            if (strlen(lstCTRecs[nRow].Tag) > 0)
+                lstCTRecs[nRow].UsedEntry = 1;
+            else
+                lstCTRecs[nRow].UsedEntry = 0;
+        }
         // Campo Type
         nPos = lstTipi.indexOf(lstRecValues[colType]);
         nPos = (nPos >= 0 && nPos < lstTipi.count()) ? nPos : 0;
@@ -583,10 +585,12 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
         lstCTRecs[nRow].NodeId = nPos;
         // Flag Input Register
         lstCTRecs[nRow].InputReg = (lstRecValues[colInputReg] == szTRUE) ? 1 : 0;
-        // OffSet Register
-        nPos = lstRecValues[colRegister].toInt(&fOk);
-        nPos = fOk ? nPos : 0;
-        lstCTRecs[nRow].Offset = nPos;
+        // OffSet Register   (No per MultiSelect)
+        if (! fMulti)  {
+            nPos = lstRecValues[colRegister].toInt(&fOk);
+            nPos = fOk ? nPos : 0;
+            lstCTRecs[nRow].Offset = nPos;
+        }
         // Block
         nPos = lstRecValues[colBlock].toInt(&fOk);
         nPos = fOk ? nPos : 0;
@@ -603,58 +607,61 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
         }
         // Commento
         strncpy(lstCTRecs[nRow].Comment, lstRecValues[colComment].trimmed().toAscii().data(), MAX_COMMENT_LEN - 1);
-        // Clear all Variable - Event fields
-        lstCTRecs[nRow].usedInAlarmsEvents = FALSE;
-        lstCTRecs[nRow].ALType = -1;
-        strcpy(lstCTRecs[nRow].ALSource, szEMPTY.toAscii().data());
-        lstCTRecs[nRow].ALOperator = -1;
-        strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
-        lstCTRecs[nRow].ALCompareVal = 0.0;
-        lstCTRecs[nRow].ALComparison = -1;
-        lstCTRecs[nRow].ALCompatible = 0;
-        // Behavior
-        nPos = lstBehavior.indexOf(lstRecValues[colBehavior]);
-        nPos = (nPos >= 0 && nPos < lstBehavior.count()) ? nPos : 0;
-        lstCTRecs[nRow].Behavior = nPos;
-        // Salvataggio dei valori di Allarme/Evento
-        if (nPos >= behavior_alarm)   {
-            // Flag isAlarm
-            lstCTRecs[nRow].usedInAlarmsEvents = TRUE;
-            // Type of Alarm or Event
-            if (nPos == behavior_alarm)
-                lstCTRecs[nRow].ALType = Alarm;
-            else
-                lstCTRecs[nRow].ALType = Event;
-            // Left Variable Name
-            strcpy(lstCTRecs[nRow].ALSource, lstRecValues[colSourceVar].trimmed().toAscii().data());
-            // Operator
-            nPos = lstCondition.indexOf(lstRecValues[colCondition]);
-            nPos = (nPos >= 0 && nPos < lstCondition.count()) ? nPos : -1;
-            lstCTRecs[nRow].ALOperator = nPos;
-            // Compare VAR - VAL
-            QString szCompare = lstRecValues[colCompare].trimmed();
-            if (szCompare.isEmpty())  {
-                strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
-                lstCTRecs[nRow].ALCompareVal = 0.0;
-            }
-            else  {
-                // Decisione se il secondo lato dell'espressione sia una costante o un nome variabile
-                QChar cc = szCompare.at(0);
-                if (cc.isLetter())  {
-                    // Variable
-                    strcpy(lstCTRecs[nRow].ALCompareVar, szCompare.toAscii().data());
+        // Behavior    (No per MultiSelect)
+        if (! fMulti)   {
+            // Clear all Variable - Event fields
+            lstCTRecs[nRow].usedInAlarmsEvents = FALSE;
+            lstCTRecs[nRow].ALType = -1;
+            strcpy(lstCTRecs[nRow].ALSource, szEMPTY.toAscii().data());
+            lstCTRecs[nRow].ALOperator = -1;
+            strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
+            lstCTRecs[nRow].ALCompareVal = 0.0;
+            lstCTRecs[nRow].ALComparison = -1;
+            lstCTRecs[nRow].ALCompatible = 0;
+            // Behavior
+            nPos = lstBehavior.indexOf(lstRecValues[colBehavior]);
+            nPos = (nPos >= 0 && nPos < lstBehavior.count()) ? nPos : 0;
+            lstCTRecs[nRow].Behavior = nPos;
+            // Salvataggio dei valori di Allarme/Evento
+            if (nPos >= behavior_alarm)   {
+                // Flag isAlarm
+                lstCTRecs[nRow].usedInAlarmsEvents = TRUE;
+                // Type of Alarm or Event
+                if (nPos == behavior_alarm)
+                    lstCTRecs[nRow].ALType = Alarm;
+                else
+                    lstCTRecs[nRow].ALType = Event;
+                // Left Variable Name
+                strcpy(lstCTRecs[nRow].ALSource, lstRecValues[colSourceVar].trimmed().toAscii().data());
+                // Operator
+                nPos = lstCondition.indexOf(lstRecValues[colCondition]);
+                nPos = (nPos >= 0 && nPos < lstCondition.count()) ? nPos : -1;
+                lstCTRecs[nRow].ALOperator = nPos;
+                // Compare VAR - VAL
+                QString szCompare = lstRecValues[colCompare].trimmed();
+                if (szCompare.isEmpty())  {
+                    strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
                     lstCTRecs[nRow].ALCompareVal = 0.0;
                 }
                 else  {
-                    float fValue = 0;
-                    // Value
-                    strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
-                    fValue = szCompare.toFloat(&fOk);
-                    fValue = fOk ? fValue : 0.0;
-                    lstCTRecs[nRow].ALCompareVal = fValue;
-                    // TODO: Fill correct values for Comparison and Compatible
-                    lstCTRecs[nRow].ALComparison = COMP_UNSIGNED;
-                    lstCTRecs[nRow].ALCompatible = 1;
+                    // Decisione se il secondo lato dell'espressione sia una costante o un nome variabile
+                    QChar cc = szCompare.at(0);
+                    if (cc.isLetter())  {
+                        // Variable
+                        strcpy(lstCTRecs[nRow].ALCompareVar, szCompare.toAscii().data());
+                        lstCTRecs[nRow].ALCompareVal = 0.0;
+                    }
+                    else  {
+                        float fValue = 0;
+                        // Value
+                        strcpy(lstCTRecs[nRow].ALCompareVar, szEMPTY.toAscii().data());
+                        fValue = szCompare.toFloat(&fOk);
+                        fValue = fOk ? fValue : 0.0;
+                        lstCTRecs[nRow].ALCompareVal = fValue;
+                        // TODO: Fill correct values for Comparison and Compatible
+                        lstCTRecs[nRow].ALComparison = COMP_UNSIGNED;
+                        lstCTRecs[nRow].ALCompatible = 1;
+                    }
                 }
             }
         }
@@ -1033,7 +1040,7 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
                     lstRootRows.append(nBaseRow);
                     // Riporta all'inizio il confronto
                     nModelRow = 0;
-                    qDebug() << QString::fromAscii("searchIOModules() - Model Found %1 @ Row: %2") .arg(szModule) .arg(nBaseRow);
+                    // qDebug() << QString::fromAscii("searchIOModules() - Model Found %1 @ Row: %2") .arg(szModule) .arg(nBaseRow);
                 }
             }
             else  {
