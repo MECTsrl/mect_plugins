@@ -95,7 +95,7 @@ private:
     bool    ctable2Grid();                          // Lettura di tutta la CT in Grid
     bool    grid2CTable();                          // Dump di tutto il Grid in lista di CT Records
     bool    values2Iface(QStringList &lstRecValues);// Copia Lista Stringhe convertite da CT Record a Zona di Editing
-    bool    iface2values(QStringList &lstRecValues);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
+    bool    iface2values(QStringList &lstRecValues, bool fMultiLine, int nRow);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
     void    initTargetList();                       // Init della lista dei Target definiti
     bool    updateRow(int nRow);                    // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing

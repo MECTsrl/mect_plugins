@@ -46,16 +46,19 @@ extern QColor      colorRetentive[2];
 extern QColor      colorNonRetentive[2];
 extern QColor      colorSystem[2];
 extern QColor      colorGray;
+extern QColor      colorMultiEdit;
+
 extern QString     szColorRet[2];
 extern QString     szColorNonRet[2];
 extern QString     szColorSystem[2];
+extern QString     szColorMultiEdit;
 
 
 void    initLists();                       // Init delle Liste globali
 void    setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int nPriority, int nBaseOffset = 0);   // Imposta il colore di sfondo di una riga
 bool    recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, QList<CrossTableRecord> &lstModel, int nModelRow);// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
 bool    recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow);        // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
-bool    fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow, bool fMulti = false);     // Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
+bool    fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow);     // Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
 void    freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow);                    // Marca il Record della CT come inutilizzato
 int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSlow, int &nOnVar, int &nOnShot);                 // Conta il Numero delle Variabili CT che sono Loggate
 int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTableRecord> &CTTemplate, TP_Config &configTP, QList<int> &lstDiff, QStringList &lstActions, bool forceDiff);
