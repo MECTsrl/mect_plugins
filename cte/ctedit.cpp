@@ -1083,16 +1083,28 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiLine, int nRow)
             fillVarList(lstLoggedVars, lstAllVarTypes, lstLogUpdates);
         }
     }
-    // Type colType
-    nPos = ui->cboType->currentIndex();
-    if (nPos >= 0 && nPos < lstTipi.count())
-        szTemp = ui->cboType->itemData(nPos).toString();
-    else
-        szTemp = szEMPTY;
-    lstRecValues[colType] = szTemp.trimmed();
-    // Decimal
+    // Type colType (No per MultiSelect)
+    if (! fMultiLine)  {
+        nPos = ui->cboType->currentIndex();
+        if (nPos >= 0 && nPos < lstTipi.count())  {
+            szTemp = ui->cboType->itemData(nPos).toString();
+        }
+        else  {
+            szTemp = szEMPTY;
+        }
+        lstRecValues[colType] = szTemp.trimmed();
+    }
+    else  {
+        lstRecValues[colType] = ui->tblCT->item(nRow, colType)->text().trimmed();
+    }
+    // Decimal  (No per MultiSelect se di tipo BIT)
     szTemp = ui->txtDecimal->text();
-    lstRecValues[colDecimal] = szTemp.trimmed();
+    if (fMultiLine && isBitField(lstCTRecords[nRow].VarType))  {
+        lstRecValues[colDecimal]  = ui->tblCT->item(nRow, colDecimal)->text().trimmed();
+    }
+    else  {
+        lstRecValues[colDecimal] = szTemp.trimmed();
+    }
     // Protocol lstBusType
     nProtocol = ui->cboProtocol->currentIndex();
     if (nProtocol >= 0 && nProtocol < lstProtocol.count())
@@ -1446,7 +1458,7 @@ void ctedit::enableFields()
         ui->cboPriority->setEnabled(true);
         ui->cboUpdate->setEnabled(true);
         ui->txtName->setEnabled(! m_fMultiSelect);  // Nome abilitato solo se no selezione multipla
-        ui->cboType->setEnabled(true);
+        ui->cboType->setEnabled(! m_fMultiSelect);  // Tipo abilitato solo se no selezione multipla
         ui->txtDecimal->setEnabled(true);
         ui->cboProtocol->setEnabled(true);
         ui->txtComment->setEnabled(true);
@@ -2623,9 +2635,20 @@ void ctedit::on_cmdSearch_clicked()
     QString szText;
 
     szText.clear();
-    szText = QInputDialog::getItem(this, QLatin1String("Variable Name"),
-                                            QLatin1String("Enter Variable Name:"), lstUsedVarNames, 0, true, &fOk, Qt::Dialog);
-    if (fOk)  {
+//    szText = QInputDialog::getItem(this, QLatin1String("Variable Name"),
+//                                   QLatin1String("Enter Variable Name:"), lstUsedVarNames,
+//                                   0, true, &fOk, Qt::Dialog);
+//    if (fOk)  {
+    QInputDialog searchID(this, Qt::Dialog);
+    searchID.setInputMode(QInputDialog::TextInput);
+    searchID.setFixedSize(400, 350);
+    searchID.setWindowTitle(QLatin1String("Variable Name"));
+    searchID.setLabelText(QLatin1String("Enter Variable Name:"));
+    searchID.setOptions(QInputDialog::UseListViewForComboBoxItems);
+    searchID.setComboBoxItems(lstUsedVarNames);
+    searchID.setComboBoxEditable(true);
+    if (searchID.exec()  == QDialog::Accepted)   {
+        szText = searchID.textValue();
         // Ricerca sequenziale della stringa
         for (nRow = 0; nRow < lstCTRecords.count(); nRow++)    {
             QString szVarName = QLatin1String(lstCTRecords[nRow].Tag);
@@ -2638,6 +2661,7 @@ void ctedit::on_cmdSearch_clicked()
             jumpToGridRow(nRow, true);
         }
     }
+    searchID.deleteLater();
 }
 void ctedit::jumpToGridRow(int nRow, bool fCenter)
 // Salto alla riga nRow del Grid
