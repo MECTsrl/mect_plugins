@@ -132,6 +132,10 @@ ctedit::ctedit(QWidget *parent) :
     m_nMPNC = -1;                       // Indice della Testa MPNC correntemente visualizzata
     lstMPNE.clear();                    // Liste delle capofila delle teste MPNE presenti
     m_nMPNE = -1;                       // Indice della Testa MPNE correntemente visualizzata
+    // Colore Frame Editing
+    colorNormalEdit = ui->fraEdit->palette().background().color();
+    szColorNormalEdit =QString::fromLatin1("color: rgb(%1, %2, %3);")
+            .arg(colorNormalEdit.red()) .arg(colorNormalEdit.green()) .arg(colorNormalEdit.blue());
     //------------------------
     // Riempimento liste
     //------------------------
@@ -384,6 +388,10 @@ ctedit::ctedit(QWidget *parent) :
     thePlcVarsNumber = 0;
     theBlocksNumber = 0;
     m_fMultiSelect = false;
+    m_fMultiEdit = false;
+    ui->chkMultiEdit->setChecked(m_fMultiEdit);
+    ui->cmdCancel->setVisible(false);
+    ui->cmdApply->setVisible(false);
     lstSelectedRows.clear();
     // Validator per Interi
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
@@ -693,6 +701,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         // Cursore Normale
         this->setCursor(Qt::ArrowCursor);
         // Abilita interfaccia
+        m_fMultiSelect = false;
         enableInterface();
         // Controllo errori globali su Cross Table
         nErr = globalChecks();
@@ -839,7 +848,7 @@ void ctedit::on_cmdHideShow_toggled(bool checked)
     // Show-Hide Rows
     showAllRows(m_fShowAllRows);
 }
-bool ctedit::values2Iface(QStringList &lstRecValues)
+bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
 // Copia Lista Stringhe convertite da CT Record a Zona di Editing
 // Caricamento Lista valori stringa su area editing
 {
@@ -855,7 +864,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues)
     m_vtAlarmVarType = UNKNOWN;
     m_nAlarmDecimals = -1;
     // Row #
-    szTemp = QString::number(m_nGridRow + 1);
+    szTemp = QString::number(nRow + 1);
     ui->txtRow->setText(szTemp);
     // Priority
     szTemp = lstRecValues[colPriority].trimmed();
@@ -1225,6 +1234,7 @@ void ctedit::on_cmdBlocchi_clicked()
         warnUser(this, szMectTitle, m_szMsg);
     }
     // Refresh abilitazioni interfaccia
+    m_fMultiSelect = false;
     enableInterface();
 }
 
@@ -1653,9 +1663,9 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
 {
     int         nRow = -1;
     int         nItem = -1;
+    int         nLastSelectedRow = -1;
     QStringList lstFields;
     bool        fRes = true;
-    QString     szBackGround;
 
     // Recupera righe selezionate
     QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
@@ -1663,7 +1673,12 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
     if (ui->tblCT->rowCount() == 0)  {
         return;
     }
-    qDebug("tableCTItemChanged(): Rows: %d Selected Items: %d Deselected Items: %d", ui->tblCT->rowCount(), selected.count(), deselected.count());
+    if (selected.count())  {
+        int nCount = selected.indexes().count();
+        nLastSelectedRow = selected.indexes().at(nCount - 1).row();
+    }
+    qDebug("tableCTItemChanged(): Rows: %d Selected Items: %d Deselected Items: %d - Last Selected Row: %d",
+           ui->tblCT->rowCount(), selected.count(), deselected.count(), nLastSelectedRow + 1);
     // Il cambio riga corrente è dovuto a operazioni di tipo cut-paste.
     // Per evitare duplicazioni accidentali di righe ripulisce il buffer di editing ed esce
     if (m_fCutOrPaste)  {
@@ -1673,59 +1688,49 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         m_fMultiSelect = false;
         return;
     }
-    // E' stata deselezionata una riga
-    // Si sta uscendo dalla selezione di una riga
-    if (deselected.count() >= 1 && lstSelectedRows.count() > 0)  {
-        int nPrevRow = -1;
-        // Ciclo sulle variabili selezionate
-        for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
-            nRow = lstSelectedRows[nItem];
-            qDebug("tableCTItemChanged(): Updating Row:%d Item: %d Total Items: %d", nRow + 1, nItem + 1, lstSelectedRows.count());
-            // Se la riga corrente è stata modificata, salva il contenuto
-            if (nRow >= 0 && nRow != nPrevRow && nRow < lstCTRecords.count())  {
-                // Il contenuto viene aggiornato solo se la linea risulta modificata e il form non è vuoto
-                fRes = updateRow(nRow);
-                // Cambio riga Ko
-                if (! fRes)    {
-                    // Disconnette segnale per evitare ricorsione
-                    disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-                                SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
-                    // Cambia Selezione (ritorna a riga precedente)
-                    ui->tblCT->selectRow(nRow);
-                    m_nGridRow = nRow;
-                    // Riconnette slot gestione
-                    connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-                                SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
-                    return;
-                }
+    // Si sta uscendo dalla selezione di una riga sola
+    if (deselected.count() == 1 && ! m_fMultiSelect && ! m_fMultiEdit)  {
+        // Considera sempre la prima riga della lista
+        nRow = deselected.indexes().at(0).row();
+        // Se la riga corrente è stata modificata, salva il contenuto
+        if (nRow >= 0 && nRow < lstCTRecords.count())  {
+            // Il contenuto viene aggiornato solo se la linea risulta modificata e il form non è vuoto
+            fRes = updateRow(nRow);
+            // Cambio riga Ko
+            if (! fRes)    {
+                // Disconnette segnale per evitare ricorsione
+                disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+                            SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
+                // Cambia Selezione (ritorna a riga precedente)
+                ui->tblCT->selectRow(nRow);
+                m_nGridRow = nRow;
+                // Riconnette slot gestione
+                connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+                            SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
+                return;
             }
-            nPrevRow = nRow;
         }
     }
-    // Nessuna Riga selezionata
+    // Nessuna Nuova Riga selezionata
     m_fMultiSelect = false;
     clearStatusMessage();
+    clearEntryForm();
     if (selection.count() == 0)  {
         lstSelectedRows.clear();
         qDebug("tableCTItemChanged(): Clear Selection");
-        szBackGround.clear();
     }
     // Una sola riga selezionata
     else if (selection.count() == 1)  {
         lstSelectedRows.clear();
         nRow = selection.at(0).row();
         lstSelectedRows.append(nRow);
-        clearEntryForm();
         // qDebug() << "New Row: " << nRow;
         if (nRow >= 0 && nRow < lstCTRecords.count())  {
             // Cambia riga corrente
             m_nGridRow = nRow;
             // Imposta Sezione in cboSections
             setSectionArea(nRow);
-            // Imposta lo sfondo dell'area di Editing
-
         }
-        szBackGround.clear();
     }
     // Selezionate più righe
     if (selection.count() > 1)  {
@@ -1741,30 +1746,29 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         qSort(lstSelectedRows.begin(), lstSelectedRows.end());
         ui->fraCondition->setVisible(false);
         m_fMultiSelect = true;
-        szBackGround = QLatin1String("background-");
-        szBackGround.append(szColorMultiEdit);
     }
-    // Imposta lo sfondo delle variabili
-    ui->fraEdit->setStyleSheet(szBackGround);
     // Elenco delle variabili selezionate
     bool fNotLoaded = true;
     for (nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
         qDebug("tableCTItemChanged(): Selected Item %d @Row: %d", nItem + 1, lstSelectedRows.at(nItem) + 1);
         nRow = lstSelectedRows[nItem];
         // Prova a caricare da CT i valori presenti nella lista dati se la variabile è definita
-        if (fNotLoaded && lstCTRecords[nRow].UsedEntry)  {
-            // Convert CT Record 2 User Values
-            fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
-            // Se la conversione è Ok, legge
-            if (fRes)  {
-                fRes = values2Iface(lstFields);
+        if (fNotLoaded && lstCTRecords[nRow].UsedEntry && nRow == nLastSelectedRow)  {
+            // Solo se c'è qualcosa da editare (singolo Record o MultiEdit
+            if (! m_fMultiSelect || (m_fMultiSelect && m_fMultiEdit))  {
+                // Convert CT Record 2 User Values
+                fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
+                // Se la conversione è Ok, aggiorna interfaccia
                 if (fRes)  {
-                    fNotLoaded = false;
+                    fRes = values2Iface(lstFields, nRow);
+                    if (fRes)  {
+                        fNotLoaded = false;
+                    }
                 }
             }
         }
     }
-    ui->fraEdit->setEnabled(true);
+    ui->fraEdit->setEnabled(! fNotLoaded);
     // Si può cambiare riga, legge contenuto
     if (! selected.isEmpty() && selected.count() == 1)  {
     }
@@ -2090,6 +2094,7 @@ int ctedit::copySelected(bool fClearSelection)
     selection.clear();
     m_szMsg = QString::fromAscii("Rows Copied: %1") .arg(nCopied);
     displayStatusMessage(m_szMsg);
+    m_fMultiSelect = false;
     enableInterface();
     // Return value
     return nCopied;
@@ -2145,6 +2150,7 @@ void ctedit::pasteSelected()
         m_szMsg = QString::fromAscii("Error Pasting Rows: %1") .arg(lstPastedRecords.count());
     }
     displayStatusMessage(m_szMsg);
+    m_fMultiSelect = false;
     enableInterface();
 }
 
@@ -2200,6 +2206,8 @@ void ctedit::insertRows()
         for (nCur = 0; nCur < nInserted; nCur++)  {
             lstCTRecords.removeAt(nStart);
         }
+        // Se era in corso un Multiselect ripristina il pannello di Editing
+
         // Refresh Grid
         ctable2Grid();
         m_isCtModified = true;
@@ -2214,8 +2222,10 @@ void ctedit::insertRows()
     }
     m_szMsg = QString::fromAscii("Rows Inserted: %1") .arg(selection.count());
     displayStatusMessage(m_szMsg);
-    if (nCurPos >= 0)
+    if (nCurPos >= 0)  {
         jumpToGridRow(nCurPos, true);
+    }
+    m_fMultiSelect = false;
     enableInterface();
 }
 void ctedit::emptySelected()
@@ -2269,6 +2279,7 @@ void ctedit::emptySelected()
     m_szMsg = QString::fromAscii("Rows Removed: %1") .arg(nRemoved);
     displayStatusMessage(m_szMsg);
     // Update Iface
+    m_fMultiSelect = false;
     enableInterface();
 }
 
@@ -2332,6 +2343,7 @@ void ctedit::removeSelected()
     m_szMsg = QString::fromAscii("Rows Removed: %1") .arg(nRemoved);
     displayStatusMessage(m_szMsg);
     // Update Iface
+    m_fMultiSelect = false;
     enableInterface();
 }
 void ctedit::cutSelected()
@@ -2882,6 +2894,7 @@ void ctedit::on_cmdUndo_clicked()
         m_isCtModified = true;
         m_rebuildDeviceTree = true;
         m_rebuildTimingTree = true;
+        m_fMultiSelect = false;
         enableInterface();
     }
 }
@@ -2920,6 +2933,7 @@ void ctedit::tabSelected(int nTab)
         // Jump n+1
         jumpToGridRow(nOldRow + 1, true);
         jumpToGridRow(nOldRow, true);
+        m_fMultiSelect = false;
         enableInterface();
     }
     else if (nPrevTab == TAB_MPNE)  {
@@ -2940,6 +2954,7 @@ void ctedit::tabSelected(int nTab)
         // Jump n+1
         jumpToGridRow(nOldRow + 1, true);
         jumpToGridRow(nOldRow, true);
+        m_fMultiSelect = false;
         enableInterface();
     }
     //---------------------------------
@@ -2988,25 +3003,54 @@ void ctedit::tabSelected(int nTab)
 void ctedit::enableInterface()
 // Abilita l'interfaccia in funzione dello stato del sistema
 {
-    // Abilitazioni elementi di interfaccia ancora da decidere
-    ui->cmdUndo->setEnabled(lstUndo.count() > 0);
-    ui->cmdBlocchi->setEnabled(true);
-    ui->cmdCompile->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
+    bool        fMultiEdit = m_fMultiEdit && m_fMultiSelect;
+    QString     szFameEditBackGround;
+
+
+    szFameEditBackGround.clear();
+    // Imposta lo sfondo del frame di Editing
+    ui->fraEdit->setStyleSheet(QLatin1String(""));
+    szFameEditBackGround = QLatin1String("background-");
+    if (fMultiEdit)  {
+        szFameEditBackGround.append(szColorMultiEdit);
+    }
+    else  {
+        szFameEditBackGround.append(szColorNormalEdit);
+    }
+    ui->cboSections->setEnabled(! fMultiEdit);
+    ui->fraEdit->setStyleSheet(szFameEditBackGround);
+    // Abilitazioni elementi di interfaccia da impostare ad ogni cambio riga
+    ui->cmdHideShow->setVisible(! fMultiEdit);
+    ui->cmdSearch->setVisible(! fMultiEdit);
+    ui->cmdImport->setVisible(! fMultiEdit);
+    ui->cmdUndo->setVisible(! fMultiEdit);
+    ui->cmdUndo->setEnabled(lstUndo.count() > 0 && ! fMultiEdit);
+    ui->cmdBlocchi->setVisible(! fMultiEdit);
+    ui->cmdBlocchi->setEnabled(! fMultiEdit);
+    ui->cmdSave->setVisible(! fMultiEdit);
+    ui->cmdCompile->setVisible(! fMultiEdit);
+    ui->cmdCompile->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty() && ! fMultiEdit);
     // Salva sempre abilitato, bordo green se non ci sono salvataggi pendenti
-    ui->cmdSave->setEnabled(! m_szCurrentModel.isEmpty());
+    ui->cmdSave->setEnabled(! m_szCurrentModel.isEmpty() && ! fMultiEdit);
     if (m_isCtModified)  {
         ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid red;"));
     }
     else  {
         ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid green;"));
     }
-    ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
-    ui->fraCondition->setEnabled(true);
+    ui->cmdPLC->setVisible(! fMultiEdit);
+    ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty() && ! fMultiEdit);
+    // Frame MultiEdit
+    ui->cmdApply->setVisible(fMultiEdit);
+    ui->cmdApply->setEnabled(fMultiEdit);
+    ui->cmdCancel->setVisible(fMultiEdit);
+    ui->cmdCancel->setEnabled(fMultiEdit);
+    ui->fraCondition->setEnabled(! fMultiEdit);
     ui->tblCT->setEnabled(true);
     m_fCutOrPaste = false;
     // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
     m_nMPNC = -1;
-    if (isSerialPortEnabled)  {
+    if (isSerialPortEnabled && ! fMultiEdit)  {
         bool enableMPNC = searchIOModules(szMPNC006, lstCTRecords, lstMPNC006_Vars, lstMPNC);
         bool enableMPNE = searchIOModules(szMPNE10, lstCTRecords, lstMPNE_Vars, lstMPNE);
         m_nMPNC = 0;
@@ -3024,7 +3068,7 @@ void ctedit::enableInterface()
     int nVar = 0;
     int nShot = 0;
     if (countLoggedVars(lstCTRecords, nFast, nSlow, nVar, nShot) > 0)  {
-        ui->tabWidget->setTabEnabled(TAB_LOG, true);
+        ui->tabWidget->setTabEnabled(TAB_LOG, ! fMultiEdit);
     }
     else  {
         ui->tabWidget->setTabEnabled(TAB_LOG, false);
@@ -4359,7 +4403,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
 // Gestore Event Handler
 {
     static      int nPrevKey = 0;
-
+    bool        fMultiEdit = m_fMultiEdit && m_fMultiSelect && m_nCurTab == TAB_CT;
 
     // Evento Key Press
     if (event->type() == QEvent::KeyPress) {
@@ -4368,14 +4412,14 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         // Tasto ESC (Intercettato per le Combo Box)
         if (keyEvent->key() == Qt::Key_Escape) {
             qDebug() << QLatin1String("ESC: Abort Editing");
-            if (m_nCurTab == TAB_CT)  {
+            if (m_nCurTab == TAB_CT && ! fMultiEdit)  {
                 // Abort Editing on current Row
                 if (lstCTRecords[m_nGridRow].UsedEntry)  {
                     // Convert CT Record 2 User Values
                     QStringList lstFields;
                     bool fRes = recCT2FieldsValues(lstCTRecords, lstFields, m_nGridRow);
                     if (fRes)  {
-                        fRes = values2Iface(lstFields);
+                        fRes = values2Iface(lstFields, m_nGridRow);
                     }
                 }
                 return true;
@@ -4386,7 +4430,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         //-------------------------------------------------
         // Save su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Save)) {
-            if (m_nCurTab == TAB_CT)  {
+            if (m_nCurTab == TAB_CT && ! fMultiEdit)  {
                 // qDebug() << QLatin1String("Save");
                 if (m_isCtModified)
                     on_cmdSave_clicked();
@@ -4395,7 +4439,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         }
         // F2 Rename Variable
         if (keyEvent->key() == Qt::Key_F2)  {
-            if (m_nCurTab == TAB_CT)  {
+            if (m_nCurTab == TAB_CT && ! fMultiEdit)  {
                 // Edit Var Name on Used Row
                 if (lstCTRecords[m_nGridRow].UsedEntry)  {
                     qDebug() << QLatin1String("F2: Rename Var");
@@ -4407,7 +4451,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         }
         // Find su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Find)) {
-            if (m_nCurTab == TAB_CT)  {
+            if (m_nCurTab == TAB_CT && ! fMultiEdit)  {
                 // qDebug() << QLatin1String("Find");
                 on_cmdSearch_clicked();
                 return true;
@@ -4415,7 +4459,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         }
         // Undo su Tab CrossTable Editor
         if (keyEvent->matches(QKeySequence::Undo)) {
-            if (m_nCurTab == TAB_CT)  {
+            if (m_nCurTab == TAB_CT && ! fMultiEdit)  {
                 // qDebug() << QLatin1String("Undo");
                 if (! lstUndo.isEmpty())
                     on_cmdUndo_clicked();
@@ -4423,7 +4467,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
             }
         }
         // Goto Line su Tab CrossTable Editor
-        if (keyEvent->key() == Qt::Key_L && nPrevKey == Qt::Key_Control)  {
+        if (keyEvent->key() == Qt::Key_L && nPrevKey == Qt::Key_Control && ! fMultiEdit)  {
             // qDebug() << QLatin1String("CTRL-L");
             if (m_nCurTab == TAB_CT)  {
                 gotoRow();
@@ -4432,7 +4476,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
         }
         // Return / Enter Button [differenziato tra Grid e Form di Data Entry]
         if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)  {
-            if (m_nCurTab == TAB_CT)  {
+            if (m_nCurTab == TAB_CT && ! fMultiEdit)  {
                 if (obj == ui->fraEdit)  {
                     int nextRow = findNextVisibleRow(m_nGridRow);
                     // Salto a riga successiva
@@ -7270,4 +7314,66 @@ int     ctedit::checkRegister(int nCurRow, QList<int> &lstUsingRegister)
     }
     // Return Value
     return nUsed;
+}
+
+void ctedit::on_cmdCancel_clicked()
+// Esce da MultiEdit
+{
+    int nRow = m_nGridRow;
+    // Cerca il primo Item utilizzato della lista delle variabili selezionate
+    for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
+        int nCurRow = lstSelectedRows.at(nItem);
+        if (! ui->tblCT->item(nCurRow, colName)->text().trimmed().isEmpty())  {
+            nRow = nCurRow;
+            break;
+        }
+    }
+    // Svuota lista elementi selezionati e toglie flag di MultiSelect
+    lstSelectedRows.clear();
+    m_fMultiSelect = false;
+    qDebug("Cancelling MultiEdit: GotoRow: %d", nRow + 1);
+    // Seleziona Riga corrente
+    ui->tblCT->selectRow(nRow);
+    m_nGridRow = nRow;
+}
+
+void ctedit::on_cmdApply_clicked()
+{
+    bool    fRes = false;
+
+    // Cerca il primo Item utilizzato della lista delle variabili selezionate
+    for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
+        int nCurRow = lstSelectedRows.at(nItem);
+        if (nCurRow >= 0 && nCurRow < lstCTRecords.count())  {
+            // Il contenuto viene aggiornato solo se la linea risulta modificata e il form non è vuoto
+            fRes = updateRow(nCurRow);
+        }
+        // Aggiornamento Riga Ko
+        if (! fRes)    {
+            // Disconnette segnale per evitare ricorsione
+            disconnect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+                        SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
+            // Cambia Selezione (ritorna a riga precedente)
+            ui->tblCT->clearSelection();
+            ui->tblCT->selectRow(nCurRow);
+            m_nGridRow = nCurRow;
+            // Riconnette slot gestione
+            connect(ui->tblCT->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+                        SLOT(tableCTItemChanged(const QItemSelection &, const QItemSelection & ) ));
+            return;
+        }
+    }
+    //    // Svuota lista elementi selezionati e toglie flag di MultiSelect
+    //    nJumpRow = lstSelectedRows.at(0);
+    //    lstSelectedRows.clear();
+    //    m_fMultiSelect = false;
+    //    qDebug("Applaing MultiEdit: GotoRow: %d", nJumpRow + 1);
+    //    // Seleziona Riga corrente
+    //    ui->tblCT->selectRow(nJumpRow);
+    //    m_nGridRow = nJumpRow;
+}
+
+void ctedit::on_chkMultiEdit_clicked(bool checked)
+{
+    m_fMultiEdit = checked;
 }

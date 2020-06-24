@@ -71,6 +71,9 @@ private slots:
     void on_cmdUndo_clicked();                      // Retrieve a CT Block from Undo List
     void on_cmdHideShow_toggled(bool checked);
     void on_cmdPLC_clicked();
+    void on_cmdApply_clicked();
+    void on_cmdCancel_clicked();
+    void on_chkMultiEdit_clicked(bool checked);
     void on_chkInputRegister_stateChanged(int state);   // Cambio di Stato della Checkbox Input Register
     void on_cboPriority_currentIndexChanged(int index);
     void on_cboUpdate_currentIndexChanged(int index);
@@ -87,6 +90,8 @@ private slots:
     void treeItemDoubleClicked(const QModelIndex &index);
     void return2GridRow(int nRow);                  // Ritorno da Tab MPNC - MPNE
 
+
+
 private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
@@ -94,7 +99,7 @@ private:
     // Lettura e scrittura dati da e per strutture di appoggio
     bool    ctable2Grid();                          // Lettura di tutta la CT in Grid
     bool    grid2CTable();                          // Dump di tutto il Grid in lista di CT Records
-    bool    values2Iface(QStringList &lstRecValues);// Copia Lista Stringhe convertite da CT Record a Zona di Editing
+    bool    values2Iface(QStringList &lstRecValues, int nRow);// Copia Lista Stringhe convertite da CT Record a Zona di Editing
     bool    iface2values(QStringList &lstRecValues, bool fMultiLine, int nRow);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
     void    initTargetList();                       // Init della lista dei Target definiti
@@ -239,6 +244,7 @@ private:
     int                     m_nAlarmDecimals;       // Numero di Decimali della Variabile SX di un Allarme
     bool                    m_fSkipLine;            // Se vero non devono essere fatti controlli sulla riga in uscita
     bool                    m_fMultiSelect;         // Flag di stato Selezione multipla
+    bool                    m_fMultiEdit;           // Flag per abilitare il MultiEdit di righe (da CheckBox)
     // Gestione nodi su MPNC
     QList<int>              lstMPNC;                // Liste delle righe capofila delle teste MPNC presenti
     int                     m_nMPNC;                // Indice della Testa MPNC correntemente visualizzata

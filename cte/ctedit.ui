@@ -281,14 +281,35 @@
             <number>1</number>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="leftMargin">
+             <number>1</number>
+            </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
+            <property name="rightMargin">
+             <number>1</number>
+            </property>
+            <property name="bottomMargin">
+             <number>2</number>
+            </property>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <property name="spacing">
+               <number>1</number>
+              </property>
+              <property name="leftMargin">
+               <number>4</number>
+              </property>
+              <property name="rightMargin">
+               <number>4</number>
+              </property>
               <item>
                <widget class="QLabel" name="lblJumpTo">
                 <property name="minimumSize">
                  <size>
                   <width>150</width>
-                  <height>0</height>
+                  <height>12</height>
                  </size>
                 </property>
                 <property name="font">
@@ -310,8 +331,8 @@
                <widget class="QComboBox" name="cboSections">
                 <property name="minimumSize">
                  <size>
-                  <width>150</width>
-                  <height>0</height>
+                  <width>180</width>
+                  <height>22</height>
                  </size>
                 </property>
                 <property name="maximumSize">
@@ -327,11 +348,141 @@
                   <bold>false</bold>
                  </font>
                 </property>
+                <property name="toolTip">
+                 <string>Select Crosstable Area</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="chkMultiEdit">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Multiple Line Edit</string>
+                </property>
                </widget>
               </item>
              </layout>
             </item>
             <item>
+             <widget class="QPushButton" name="cmdCancel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>72</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>72</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>MS Shell Dlg 2</family>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string>Cancel Multiline Changes</string>
+              </property>
+              <property name="text">
+               <string notr="true"/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/cteicons/img/Cancel_32.png</normaloff>:/cteicons/img/Cancel_32.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="autoDefault">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="cmdApply">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>72</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>72</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>MS Shell Dlg 2</family>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string>Apply Multiline Changes</string>
+              </property>
+              <property name="text">
+               <string notr="true"/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/cteicons/img/Done_32.png</normaloff>:/cteicons/img/Done_32.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="autoDefault">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_11">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item alignment="Qt::AlignVCenter">
              <widget class="QPushButton" name="cmdHideShow">
               <property name="minimumSize">
                <size>
@@ -356,7 +507,7 @@
                <string>Show or Hide unused rows</string>
               </property>
               <property name="text">
-               <string/>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
@@ -405,7 +556,7 @@
                <string>Search Variable by Name</string>
               </property>
               <property name="text">
-               <string/>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
@@ -463,7 +614,7 @@
                <string>Import User Data from another Crosstable File</string>
               </property>
               <property name="text">
-               <string/>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
@@ -521,7 +672,7 @@
                <string>Undo Changes</string>
               </property>
               <property name="text">
-               <string/>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
@@ -579,7 +730,7 @@
                <string>Reorder Blocks Assignment</string>
               </property>
               <property name="text">
-               <string/>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
@@ -627,7 +778,7 @@
                <string>Save user changes   </string>
               </property>
               <property name="text">
-               <string/>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
@@ -685,7 +836,7 @@
                <string>Start Crosstable Compiler</string>
               </property>
               <property name="text">
-               <string/>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">
@@ -705,7 +856,7 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignVCenter">
              <widget class="QPushButton" name="cmdPLC">
               <property name="enabled">
                <bool>false</bool>
@@ -736,7 +887,7 @@
                <string/>
               </property>
               <property name="text">
-               <string/>
+               <string notr="true"/>
               </property>
               <property name="icon">
                <iconset resource="qtc.qrc">

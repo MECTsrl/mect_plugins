@@ -53,11 +53,13 @@ QColor      colorNonRetentive[2];
 QColor      colorSystem[2];
 QColor      colorGray;
 QColor      colorMultiEdit;
+QColor      colorNormalEdit;
 
 QString     szColorRet[2];
 QString     szColorNonRet[2];
 QString     szColorSystem[2];
 QString     szColorMultiEdit;
+QString     szColorNormalEdit;
 
 
 

@@ -47,11 +47,13 @@ extern QColor      colorNonRetentive[2];
 extern QColor      colorSystem[2];
 extern QColor      colorGray;
 extern QColor      colorMultiEdit;
+extern QColor      colorNormalEdit;
 
 extern QString     szColorRet[2];
 extern QString     szColorNonRet[2];
 extern QString     szColorSystem[2];
 extern QString     szColorMultiEdit;
+extern QString     szColorNormalEdit;
 
 
 void    initLists();                       // Init delle Liste globali
