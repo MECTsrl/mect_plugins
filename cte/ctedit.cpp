@@ -4962,45 +4962,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_B].ser2_Enabled = false;
     lstTargets[TP1043_02_B].ser3_Enabled = false;
     lstTargets[TP1043_02_B].can1_Enabled = true;
-    // 05 TP1057_01_A
-    lstTargets[TP1057_01_A].modelName =  QLatin1String(product_name[TP1057_01_A]);
-    lstTargets[TP1057_01_A].displayWidth =  320;
-    lstTargets[TP1057_01_A].displayHeight = 240;
-    lstTargets[TP1057_01_A].sdCards = 0;
-    lstTargets[TP1057_01_A].digitalIN = 0;
-    lstTargets[TP1057_01_A].digitalOUT = 0;
-    lstTargets[TP1057_01_A].nEncoders = 0;
-    lstTargets[TP1057_01_A].analogIN = 0;
-    lstTargets[TP1057_01_A].analogINrowCT = -1;
-    lstTargets[TP1057_01_A].analogOUT = 0;
-    lstTargets[TP1057_01_A].analogOUTrowCT = -1;
-    lstTargets[TP1057_01_A].tAmbient = false;
-    lstTargets[TP1057_01_A].rpmPorts = 0;
-    lstTargets[TP1057_01_A].ser0_Enabled = false;
-    lstTargets[TP1057_01_A].ser1_Enabled = false;
-    lstTargets[TP1057_01_A].ser2_Enabled = false;
-    lstTargets[TP1057_01_A].ser3_Enabled = true;
-    lstTargets[TP1057_01_A].can1_Enabled = false;
-    // 06 TP1057_01_B
-    lstTargets[TP1057_01_B].modelName =  QLatin1String(product_name[TP1057_01_B]);
-    lstTargets[TP1057_01_B].displayWidth =  320;
-    lstTargets[TP1057_01_B].displayHeight = 240;
-    lstTargets[TP1057_01_B].sdCards = 0;
-    lstTargets[TP1057_01_B].digitalIN = 0;
-    lstTargets[TP1057_01_B].digitalOUT = 0;
-    lstTargets[TP1057_01_B].nEncoders = 0;
-    lstTargets[TP1057_01_B].analogIN = 0;
-    lstTargets[TP1057_01_B].analogINrowCT = -1;
-    lstTargets[TP1057_01_B].analogOUT = 0;
-    lstTargets[TP1057_01_B].analogOUTrowCT = -1;
-    lstTargets[TP1057_01_B].tAmbient = false;
-    lstTargets[TP1057_01_B].rpmPorts = 0;
-    lstTargets[TP1057_01_B].ser0_Enabled = false;
-    lstTargets[TP1057_01_B].ser1_Enabled = false;
-    lstTargets[TP1057_01_B].ser2_Enabled = false;
-    lstTargets[TP1057_01_B].ser3_Enabled = true;
-    lstTargets[TP1057_01_B].can1_Enabled = true;
-    // 07 TP1070_01_A
+    // 05 TP1070_01_A
     lstTargets[TP1070_01_A].modelName =  QLatin1String(product_name[TP1070_01_A]);
     lstTargets[TP1070_01_A].displayWidth =  800;
     lstTargets[TP1070_01_A].displayHeight = 480;
@@ -5019,7 +4981,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_A].ser2_Enabled = false;
     lstTargets[TP1070_01_A].ser3_Enabled = true;
     lstTargets[TP1070_01_A].can1_Enabled = false;
-    // 08 TP1070_01_B
+    // 06 TP1070_01_B
     lstTargets[TP1070_01_B].modelName =  QLatin1String(product_name[TP1070_01_B]);
     lstTargets[TP1070_01_B].displayWidth =  800;
     lstTargets[TP1070_01_B].displayHeight = 480;
@@ -5038,7 +5000,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_B].ser2_Enabled = false;
     lstTargets[TP1070_01_B].ser3_Enabled = true;
     lstTargets[TP1070_01_B].can1_Enabled = true;
-    // 09 TP1070_01_C
+    // 07 TP1070_01_C
     lstTargets[TP1070_01_C].modelName =  QLatin1String(product_name[TP1070_01_C]);
     lstTargets[TP1070_01_C].displayWidth =  800;
     lstTargets[TP1070_01_C].displayHeight = 480;
@@ -5057,7 +5019,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_C].ser2_Enabled = false;
     lstTargets[TP1070_01_C].ser3_Enabled = true;
     lstTargets[TP1070_01_C].can1_Enabled = false;
-    // 10 TPAC1005
+    // 08 TPAC1005
     lstTargets[TPAC1005].modelName =  QLatin1String(product_name[TPAC1005]);
     lstTargets[TPAC1005].displayWidth =  480;
     lstTargets[TPAC1005].displayHeight = 272;
@@ -5076,26 +5038,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1005].ser2_Enabled = false;
     lstTargets[TPAC1005].ser3_Enabled = false;
     lstTargets[TPAC1005].can1_Enabled = true;
-    // 11 TPAC1006
-    lstTargets[TPAC1006].modelName =  QLatin1String(product_name[TPAC1006]);
-    lstTargets[TPAC1006].displayWidth =  320;
-    lstTargets[TPAC1006].displayHeight = 240;
-    lstTargets[TPAC1006].sdCards = 0;
-    lstTargets[TPAC1006].digitalIN = 8;
-    lstTargets[TPAC1006].digitalOUT = 12;
-    lstTargets[TPAC1006].nEncoders = 1;
-    lstTargets[TPAC1006].analogIN = 4;
-    lstTargets[TPAC1006].analogINrowCT = 5323;
-    lstTargets[TPAC1006].analogOUT = 2;
-    lstTargets[TPAC1006].analogOUTrowCT = 5332;
-    lstTargets[TPAC1006].tAmbient = true;
-    lstTargets[TPAC1006].rpmPorts = 1;
-    lstTargets[TPAC1006].ser0_Enabled = false;
-    lstTargets[TPAC1006].ser1_Enabled = false;
-    lstTargets[TPAC1006].ser2_Enabled = false;
-    lstTargets[TPAC1006].ser3_Enabled = true;
-    lstTargets[TPAC1006].can1_Enabled = true;
-    // 12 TPAC1007_03
+    // 09 TPAC1007_03
     lstTargets[TPAC1007_03].modelName =  QLatin1String(product_name[TPAC1007_03]);
     lstTargets[TPAC1007_03].displayWidth =  480;
     lstTargets[TPAC1007_03].displayHeight = 272;
@@ -5114,7 +5057,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_03].ser2_Enabled = false;
     lstTargets[TPAC1007_03].ser3_Enabled = false;
     lstTargets[TPAC1007_03].can1_Enabled = false;
-    // 13 TPAC1007_04_AA
+    // 10 TPAC1007_04_AA
     lstTargets[TPAC1007_04_AA].modelName =  QLatin1String(product_name[TPAC1007_04_AA]);
     lstTargets[TPAC1007_04_AA].displayWidth =  480;
     lstTargets[TPAC1007_04_AA].displayHeight = 272;
@@ -5133,7 +5076,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AA].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AA].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AA].can1_Enabled = false;
-    // 14 TPAC1007_04_AB
+    // 11 TPAC1007_04_AB
     lstTargets[TPAC1007_04_AB].modelName =  QLatin1String(product_name[TPAC1007_04_AB]);
     lstTargets[TPAC1007_04_AB].displayWidth =  480;
     lstTargets[TPAC1007_04_AB].displayHeight = 272;
@@ -5152,7 +5095,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AB].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AB].can1_Enabled = false;
-    // 15 TPAC1007_04_AC
+    // 12 TPAC1007_04_AC
     lstTargets[TPAC1007_04_AC].modelName =  QLatin1String(product_name[TPAC1007_04_AC]);
     lstTargets[TPAC1007_04_AC].displayWidth =  480;
     lstTargets[TPAC1007_04_AC].displayHeight = 272;
@@ -5171,7 +5114,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AC].ser2_Enabled = false;
     lstTargets[TPAC1007_04_AC].ser3_Enabled = false;
     lstTargets[TPAC1007_04_AC].can1_Enabled = false;
-    // 16 TPAC1007_LV
+    // 13 TPAC1007_LV
     lstTargets[TPAC1007_LV].modelName =  QLatin1String(product_name[TPAC1007_LV]);
     lstTargets[TPAC1007_LV].displayWidth =  480;
     lstTargets[TPAC1007_LV].displayHeight = 272;
@@ -5190,7 +5133,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_LV].ser2_Enabled = false;
     lstTargets[TPAC1007_LV].ser3_Enabled = true;
     lstTargets[TPAC1007_LV].can1_Enabled = false;
-    // 17 TPAC1008_01
+    // 14 TPAC1008_01
     lstTargets[TPAC1008_01].modelName =  QLatin1String(product_name[TPAC1008_01]);
     lstTargets[TPAC1008_01].displayWidth =  800;
     lstTargets[TPAC1008_01].displayHeight = 480;
@@ -5209,7 +5152,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_01].ser2_Enabled = false;
     lstTargets[TPAC1008_01].ser3_Enabled = true;
     lstTargets[TPAC1008_01].can1_Enabled = true;
-    // 18 TPAC1008_02_AA
+    // 15 TPAC1008_02_AA
     lstTargets[TPAC1008_02_AA].modelName =  QLatin1String(product_name[TPAC1008_02_AA]);
     lstTargets[TPAC1008_02_AA].displayWidth =  800;
     lstTargets[TPAC1008_02_AA].displayHeight = 480;
@@ -5228,7 +5171,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AA].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AA].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AA].can1_Enabled = true;
-    // 19 TPAC1008_02_AB
+    // 16 TPAC1008_02_AB
     lstTargets[TPAC1008_02_AB].modelName =  QLatin1String(product_name[TPAC1008_02_AB]);
     lstTargets[TPAC1008_02_AB].displayWidth =  800;
     lstTargets[TPAC1008_02_AB].displayHeight = 480;
@@ -5247,7 +5190,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AB].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AB].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AB].can1_Enabled = false;
-    // 20 TPAC1008_02_AD
+    // 17 TPAC1008_02_AD
     lstTargets[TPAC1008_02_AD].modelName =  QLatin1String(product_name[TPAC1008_02_AD]);
     lstTargets[TPAC1008_02_AD].displayWidth =  800;
     lstTargets[TPAC1008_02_AD].displayHeight = 480;
@@ -5266,7 +5209,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AD].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AD].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AD].can1_Enabled = false;
-    // 21 TPAC1008_02_AE
+    // 18 TPAC1008_02_AE
     lstTargets[TPAC1008_02_AE].modelName =  QLatin1String(product_name[TPAC1008_02_AE]);
     lstTargets[TPAC1008_02_AE].displayWidth =  800;
     lstTargets[TPAC1008_02_AE].displayHeight = 480;
@@ -5285,7 +5228,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AE].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AE].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AE].can1_Enabled = false;
-    // 22 TPAC1008_02_AF
+    // 19 TPAC1008_02_AF
     lstTargets[TPAC1008_02_AF].modelName =  QLatin1String(product_name[TPAC1008_02_AF]);
     lstTargets[TPAC1008_02_AF].displayWidth =  800;
     lstTargets[TPAC1008_02_AF].displayHeight = 480;
@@ -5304,7 +5247,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AF].ser2_Enabled = false;
     lstTargets[TPAC1008_02_AF].ser3_Enabled = true;
     lstTargets[TPAC1008_02_AF].can1_Enabled = false;
-    // 23 TPLC050_01_AA
+    // 20 TPLC050_01_AA
     lstTargets[TPLC050_01_AA].modelName =  QLatin1String(product_name[TPLC050_01_AA]);
     lstTargets[TPLC050_01_AA].displayWidth =  -1;
     lstTargets[TPLC050_01_AA].displayHeight = -1;
@@ -5322,7 +5265,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].ser2_Enabled = false;
     lstTargets[TPLC050_01_AA].ser3_Enabled = false;
     lstTargets[TPLC050_01_AA].can1_Enabled = false;
-    // 24 TPLC050_01_AB
+    // 21 TPLC050_01_AB
     lstTargets[TPLC050_01_AB].modelName =  QLatin1String(product_name[TPLC050_01_AB]);
     lstTargets[TPLC050_01_AB].displayWidth =  -1;
     lstTargets[TPLC050_01_AB].displayHeight = -1;
@@ -5340,7 +5283,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AB].ser2_Enabled = false;
     lstTargets[TPLC050_01_AB].ser3_Enabled = false;
     lstTargets[TPLC050_01_AB].can1_Enabled = false;
-    // 25 TPLC100_01_AA
+    // 22 TPLC100_01_AA
     lstTargets[TPLC100_01_AA].modelName =  QLatin1String(product_name[TPLC100_01_AA]);
     lstTargets[TPLC100_01_AA].displayWidth =  -1;
     lstTargets[TPLC100_01_AA].displayHeight = -1;
@@ -5360,7 +5303,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].ser2_Enabled = false;
     lstTargets[TPLC100_01_AA].ser3_Enabled = false;
     lstTargets[TPLC100_01_AA].can1_Enabled = true;
-    // 26 TPLC100_01_AB
+    // 23 TPLC100_01_AB
     lstTargets[TPLC100_01_AB].modelName =  QLatin1String(product_name[TPLC100_01_AB]);
     lstTargets[TPLC100_01_AB].displayWidth =  -1;
     lstTargets[TPLC100_01_AB].displayHeight = -1;
@@ -5380,7 +5323,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].ser2_Enabled = false;
     lstTargets[TPLC100_01_AB].ser3_Enabled = true;
     lstTargets[TPLC100_01_AB].can1_Enabled = false;
-    // 27 TPAC1008_03_AC
+    // 24 TPAC1008_03_AC
     lstTargets[TPAC1008_03_AC].modelName =  QLatin1String(product_name[TPAC1008_03_AC]);
     lstTargets[TPAC1008_03_AC].displayWidth =  800;
     lstTargets[TPAC1008_03_AC].displayHeight = 480;
@@ -5399,7 +5342,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].ser2_Enabled = false;
     lstTargets[TPAC1008_03_AC].ser3_Enabled = true;
     lstTargets[TPAC1008_03_AC].can1_Enabled = false;
-    // 28 TPAC1008_03_AD
+    // 25 TPAC1008_03_AD
     lstTargets[TPAC1008_03_AD].modelName =  QLatin1String(product_name[TPAC1008_03_AD]);
     lstTargets[TPAC1008_03_AD].displayWidth =  800;
     lstTargets[TPAC1008_03_AD].displayHeight = 480;
@@ -5418,7 +5361,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AD].ser2_Enabled = false;
     lstTargets[TPAC1008_03_AD].ser3_Enabled = true;
     lstTargets[TPAC1008_03_AD].can1_Enabled = false;
-    // 29 TP1070_02_E
+    // 26 TP1070_02_E
     lstTargets[TP1070_02_E].modelName =  QLatin1String(product_name[TP1070_02_E]);
     lstTargets[TP1070_02_E].displayWidth =  800;
     lstTargets[TP1070_02_E].displayHeight = 480;
@@ -5437,7 +5380,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_E].ser2_Enabled = false;
     lstTargets[TP1070_02_E].ser3_Enabled = true;
     lstTargets[TP1070_02_E].can1_Enabled = false;
-    // 30 TP1070_02_F
+    // 27 TP1070_02_F
     lstTargets[TP1070_02_F].modelName =  QLatin1String(product_name[TP1070_02_F]);
     lstTargets[TP1070_02_F].displayWidth =  800;
     lstTargets[TP1070_02_F].displayHeight = 480;

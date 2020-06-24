@@ -55,11 +55,7 @@ while ($line = <INFILE>)
 		$key =~ s/^\s+|\s+$//g;
 		$value =~ s/^\s+|\s+$//g;
 		
-		if ($model eq "TP1057_01_A" || $model eq "TP1057_01_B")
-		{
-			# nothing to check
-		}
-		elsif ($model eq "TP1070_01_A" || $model eq "TP1070_01_B" || $model eq "TP1070_01_C" || $model eq "TP1070_01_D")
+		if ($model eq "TP1070_01_A" || $model eq "TP1070_01_B" || $model eq "TP1070_01_C" || $model eq "TP1070_01_D")
 		{
 			# nothing to check
 		}
