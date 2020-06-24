@@ -1,22 +1,22 @@
 #include "timepopup.h"
 #include <QtGui>
 
-#define SIZE_X 230
-#define SIZE_Y 230
-#define SIZE_TAB_X 225
-#define SIZE_TAB_Y 225
-#define SIZE_TABLE_X 220
-#define SIZE_TABLE_Y 220
+#define SIZE_X 250 //230
+#define SIZE_Y 250 //230
+#define SIZE_TAB_X 245
+#define SIZE_TAB_Y 245
+#define SIZE_TABLE_X 240
+#define SIZE_TABLE_Y 240
 
 #define COL_HOUR 6
 #define ROW_HOUR 4
 #define COL_MINUTE_SECOND 5
 #define ROW_MINUTE_SECOND 3
 
-#define SIZE_CELL_HOUR_X 36
-#define SIZE_CELL_HOUR_Y 45
-#define SIZE_CELL_MINUTE_SECOND_X 43
-#define SIZE_CELL_MINUTE_SECOND_Y 45
+#define SIZE_CELL_HOUR_X 40
+#define SIZE_CELL_HOUR_Y 46
+#define SIZE_CELL_MINUTE_SECOND_X 47
+#define SIZE_CELL_MINUTE_SECOND_Y 54
 
 TimePopup::TimePopup(QWidget *parent) :
     QDialog(parent, Qt::Popup)
@@ -166,6 +166,7 @@ void TimePopup::setUpTableHours()
         {
             QTableWidgetItem *item=new QTableWidgetItem(QString::number(hours));
             item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            item->setTextAlignment(Qt::AlignCenter);
             if((j & 1)==0)
             {
                 item->setTextColor(Qt::red);
@@ -271,6 +272,7 @@ void TimePopup::populateTableMinSec(QTableWidget *tableWidget00,QTableWidget *ta
             {
                 QTableWidgetItem *item=new QTableWidgetItem(QString::number(minsec));
                 item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+                item->setTextAlignment(Qt::AlignCenter);
                 if((j & 1)==0)
                 {
                     item->setTextColor(ColorTextItem);

@@ -12,6 +12,7 @@
 #include "trend_range.h"
 #include "ui_trend_range.h"
 #include "timepopup.h"
+#include "calendar.h"
 
 #define DEFAULT_YMIN -1000
 #define DEFAULT_YMAX  1000
@@ -76,13 +77,15 @@ trend_range::trend_range(QWidget *parent) :
 void trend_range::reload()
 {
     /* initial time */
-    ui->dateEdit->setDate(actualTzero.date());
+
 #if 0
+    ui->dateEdit->setDate(actualTzero.date());
     ui->spinBoxHoursIn->setValue(actualTzero.time().hour());
     ui->spinBoxMinutesIn->setValue(actualTzero.time().minute());
     ui->spinBoxSecondsIn->setValue(actualTzero.time().second());
 #else
     ui->pushButtonTime->setText(actualTzero.time().toString("HH:mm:ss"));
+    ui->pushButtonCalendar->setText(QDateTime::currentDateTime().date().toString("yyyy-MM-dd"));
 #endif
 
     /* interval */
@@ -210,11 +213,12 @@ void trend_range::on_pushButtonOk_clicked()
         actualVisibleWindowSec = tmpwindow;
     }
 
-    QDateTime tmpTzero = QDateTime(
-                ui->dateEdit->date(),
+    QDateTime tmpTzero = QDateTime(                          
 #if 0
+                ui->dateEdit->date(),
                 QTime(ui->spinBoxHoursIn->value(), ui->spinBoxMinutesIn->value(), ui->spinBoxSecondsIn->value())
 #else
+                QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd"),
                 QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss") // and not "HH:mm:ss"
 #endif
                 );
@@ -235,4 +239,18 @@ void trend_range::on_pushButtonOk_clicked()
 
     _trend_data_reload_ = false;
     go_back();
+}
+
+void trend_range::on_pushButtonCalendar_clicked()
+{
+    Calendar *calendar = new Calendar(this->ui->pushButtonCalendar);
+
+    if (calendar) {
+        QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
+        calendar->setDate(d);
+        if (calendar->exec() == QDialog::Accepted) {
+           ui->pushButtonCalendar->setText(calendar->getDate().toString("yyyy-MM-dd"));
+        }
+        delete calendar;
+    }
 }

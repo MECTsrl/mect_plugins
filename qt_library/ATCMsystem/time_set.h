@@ -38,6 +38,8 @@ private slots:
 
     void on_pushButtonTime_clicked();
 
+    void on_pushButtonCalendar_clicked();
+
 private:
     Ui::time_set *ui;
 };

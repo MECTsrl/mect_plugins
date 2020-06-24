@@ -214,7 +214,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>DATE AND TIME</string>
+        <string>DATE &amp;&amp; TIME</string>
        </property>
       </widget>
      </item>

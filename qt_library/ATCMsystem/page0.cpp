@@ -125,7 +125,7 @@ void page0::changePage()
     struct tm *pt = NULL;
     rt = time(NULL);
     pt = localtime(&rt);
-    if (pt != NULL && pt->tm_year == 70 && pt->tm_mon == 0 && pt->tm_mday == 1)
+    if (pt != NULL && pt->tm_year < 120 )
     {
         if (goto_page("time_set", false) == false && goto_page(STARTPAGE_DEF, false) == false && goto_page(HomePage, false) == false && goto_page(HOMEPAGE_DEF, false) == false )
         {

@@ -13,6 +13,7 @@
 #include <sys/time.h>
 
 #include "timepopup.h"
+#include "calendar.h"
 
 /* this define set the window title */
 #define WINDOW_TITLE "DATA E ORA"
@@ -73,12 +74,13 @@ time_set::time_set(QWidget *parent) :
 void time_set::reload()
 {
     /* Load data and time 1*/
-    ui->dateEdit->setDate(QDateTime::currentDateTime().date());
 #if 0
+    ui->dateEdit->setDate(QDateTime::currentDateTime().date());
     ui->spinBoxOre->setValue(QDateTime::currentDateTime().time().hour());
     ui->spinBoxMinuti->setValue(QDateTime::currentDateTime().time().minute());
 #else
     ui->pushButtonTime->setText(QTime::currentTime().toString("HH:mm:ss"));
+    ui->pushButtonCalendar->setText(QDateTime::currentDateTime().date().toString("yyyy-MM-dd"));
 #endif
     showFullScreen();
 }
@@ -145,15 +147,19 @@ void time_set::on_pushButtonOk_clicked()
         return;
     }
 
+#if 0
     pt->tm_year = ui->dateEdit->date().year() - 1900;
     pt->tm_mon = ui->dateEdit->date().month() - 1;
     pt->tm_mday = ui->dateEdit->date().day();
-
-#if 0
     pt->tm_hour = ui->spinBoxOre->value();
     pt->tm_min = ui->spinBoxMinuti->value();
     pt->tm_sec = 0;
 #else
+    QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
+    pt->tm_year = d.year() - 1900;
+    pt->tm_mon = d.month() - 1;
+    pt->tm_mday = d.day();
+
     QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss");
     pt->tm_hour = t.hour();
     pt->tm_min = t.minute();
@@ -193,4 +199,18 @@ void time_set::on_pushButtonHome_clicked()
 void time_set::on_pushButtonBack_clicked()
 {
     go_back();
+}
+
+void time_set::on_pushButtonCalendar_clicked()
+{
+    Calendar *calendar = new Calendar(this->ui->pushButtonCalendar);
+
+    if (calendar) {
+        QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
+        calendar->setDate(d);
+        if (calendar->exec() == QDialog::Accepted) {
+           ui->pushButtonCalendar->setText(calendar->getDate().toString("yyyy-MM-dd"));
+        }
+        delete calendar;
+    }
 }

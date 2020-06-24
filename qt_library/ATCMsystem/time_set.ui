@@ -113,72 +113,15 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QDateEdit" name="dateEdit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QPushButton" name="pushButtonCalendar">
        <property name="maximumSize">
         <size>
          <width>128</width>
          <height>64</height>
         </size>
        </property>
-       <property name="font">
-        <font>
-         <family>DejaVu Sans Mono</family>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">/*
-QPushButton#qt_calendar_yearbutton {
-    width: 80px;
-}
-
-QSpinBox {
-	font: 1000 18pt &quot;DejaVu Sans Mono&quot;;
-    padding-left: 20px;
-    padding-right: 20px;
- }
-
- QSpinBox::up-button {
-     subcontrol-origin: border;
-     subcontrol-position: right center;
-     height: 40px;
-     width: 40px;
- }
-
- QSpinBox::up-arrow {
-	image: url(:/libicons/img/Forward.png);
-     width: 10px;
-     height: 10px;
- }
-
- QSpinBox::down-button {
-     subcontrol-origin: border;
-     subcontrol-position: left center;
-     height: 40px;
-     width: 40px;
-}
-
- QSpinBox::down-arrow {
- 	image: url(:/libicons/img/Back.png);
-     width: 10px;
-     height: 10px;
- }
-*/</string>
-       </property>
-       <property name="displayFormat">
-        <string>yyyy-MM-dd</string>
-       </property>
-       <property name="calendarPopup">
-        <bool>true</bool>
+       <property name="text">
+        <string>YYYY:MM:DD</string>
        </property>
       </widget>
      </item>
