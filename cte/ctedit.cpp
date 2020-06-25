@@ -788,7 +788,7 @@ bool    ctedit::ctable2Grid()
     ui->tblCT->setColumnCount(colTotals);
     // Caricamento elementi
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
-        // Covert CT Record 2 User Values
+        // Convert CT Record 2 User Values
         fRes = recCT2FieldsValues(lstCTRecords, lstFields, nCur);
         // If Ok add row to Table View
         if (fRes)  {
@@ -1992,7 +1992,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
                 addModelVars(szMPNC006, m_nGridRow, nPort, nNode);
                 ui->tabWidget->setCurrentIndex(TAB_MPNC);
             }
-            delete qryPort;
+            qryPort->deleteLater();
         }
     }
     // Add MPNE10
@@ -2011,7 +2011,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
                 addModelVars(szMPNE10, m_nGridRow, nPort, nNode);
                 ui->tabWidget->setCurrentIndex(TAB_MPNE);
             }
-            delete qryPort;
+            qryPort->deleteLater();
         }
     }
     // Add TPLC050
@@ -2029,7 +2029,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
                 qryPort->getPortNode(nPort, nNode);
                 addModelVars(szTPLC050, m_nGridRow, nPort, nNode);
             }
-            delete qryPort;
+            qryPort->deleteLater();
         }
     }
     // Edit MPNC
@@ -2649,45 +2649,19 @@ void ctedit::gotoRow()
 void ctedit::on_cmdSearch_clicked()
 // Search Variable by Name
 {
-    bool fOk;
     int  nRow = 0;
-    // QStringList lstFields;
 
-    // Valori da interfaccia a Lista Stringhe
-    // fOk = iface2values(lstFields);
-    // if (checkFormFields(m_nGridRow, lstFields, true) > 0)
-    //     return;
-    // Input Dialog per Nome Variabile
-    QString szText;
-
-    szText.clear();
-//    szText = QInputDialog::getItem(this, QLatin1String("Variable Name"),
-//                                   QLatin1String("Enter Variable Name:"), lstUsedVarNames,
-//                                   0, true, &fOk, Qt::Dialog);
-//    if (fOk)  {
-    QInputDialog searchID(this, Qt::Dialog);
-    searchID.setInputMode(QInputDialog::TextInput);
-    searchID.setFixedSize(400, 350);
-    searchID.setWindowTitle(QLatin1String("Variable Name"));
-    searchID.setLabelText(QLatin1String("Enter Variable Name:"));
-    searchID.setOptions(QInputDialog::UseListViewForComboBoxItems);
-    searchID.setComboBoxItems(lstUsedVarNames);
-    searchID.setComboBoxEditable(true);
-    if (searchID.exec()  == QDialog::Accepted)   {
-        szText = searchID.textValue();
-        // Ricerca sequenziale della stringa
-        for (nRow = 0; nRow < lstCTRecords.count(); nRow++)    {
-            QString szVarName = QLatin1String(lstCTRecords[nRow].Tag);
-            if (QString::compare(szText, szVarName, Qt::CaseSensitive) == 0)  {
-                break;
-            }
-        }
-        // Item Found
-        if (nRow < lstCTRecords.count()) {
+    searcForm->setModal(true);
+    if (searcForm->exec()  == QDialog::Accepted)   {
+        nRow = searcForm->getSelectedVariable();
+        qDebug("Searc Variable: Selected Row: %d", nRow);
+        if (nRow >= 0 && nRow < lstCTRecords.count())  {
             jumpToGridRow(nRow, true);
         }
     }
-    searchID.deleteLater();
+    else {
+        qCritical("Search Cancelled");
+    }
 }
 void ctedit::jumpToGridRow(int nRow, bool fCenter)
 // Salto alla riga nRow del Grid
