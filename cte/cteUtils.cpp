@@ -61,8 +61,6 @@ QString     szColorSystem[2];
 QString     szColorMultiEdit;
 QString     szColorNormalEdit;
 
-
-
 void initLists()
 // Init delle Liste globali
 {
@@ -293,6 +291,7 @@ void setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int n
     QBrush bCell(cSfondo, Qt::SolidPattern);
     setRowBackground(bCell, table->model(), nRow);
 }
+
 bool recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, QList<CrossTableRecord> &lstModel, int nModelRow)
 // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
 // Da Record C a QStringList di valori per caricamento griglia
@@ -481,6 +480,7 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
     // Return value
     return true;
 }
+
 void freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow)
 // Marca il Record della CT come inutilizzato
 {
@@ -519,8 +519,6 @@ void freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow)
     lstCTRecs[nRow].ALCompatible  = FALSE;
     strcpy(lstCTRecs[nRow].Comment, "");
 }
-
-
 
 bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow)
 // Conversione da Lista Valori di Interfaccia a CT Record (Form -> REC SINGOLO)
@@ -672,6 +670,7 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
     // Return Value
     return fRes;
 }
+
 int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTableRecord> &CTTemplate, TP_Config &configTP, QList<int> &lstDiff, QStringList &lstActions, bool forceDiff)
 // Confronta la CT del Progetto con quella di Template di modello aggiornato (Solo in Area di Sistema da 5000 a salire, tranne che per TPAC1008_03)
 {
@@ -840,6 +839,7 @@ bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int>
     }
     return true;
 }
+
 void getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
 // Cerca la prima porta disponibile in funzione del protocollo e della configurazione corrente
 // Ritorna -1 se il protocollo non è disponibile sul modello o tutte le porte sono disabilitate
@@ -943,6 +943,7 @@ int     enableSerialPortCombo(QComboBox *cboBox)
     // Return Value
     return nPorts;
 }
+
 void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> &lstHeadSizes, QAbstractItemView::SelectionMode nMode)
 // Imposta i parametri generali di visualizzazione Grid
 {
@@ -970,6 +971,7 @@ void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> 
     // qDebug() << QLatin1String("setGridParams():    Col Height: %1") .arg(nColHeight);
 
 }
+
 bool    isValidVarName(QString szName)
 {
     bool    fRes = true;
@@ -1001,6 +1003,7 @@ bool    isValidVarName(QString szName)
     // Return value
     return fRes;
 }
+
 bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CT_IOModule, QList<int> &lstRootRows)
 // Ricerca di un Modulo I/O in CT
 {
@@ -1058,9 +1061,11 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
     // Return Value
     return (lstRootRows.count() > 0);
 }
+
 QString     priority2String(int nPriority){
     return (QString::fromAscii("Priority %1 - %2") .arg(nPriority) .arg(lstPriorityDesc[nPriority]));
 }
+
 QString getSerialPortSpeed(int nPort)
 // Restituisce in forma leggibile i parametri della porta seriale selezionata
 {

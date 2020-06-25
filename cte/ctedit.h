@@ -9,6 +9,7 @@
 #include "ctecommon.h"
 #include "config_mpnc.h"
 #include "config_mpne.h"
+#include "searchvariable.h"
 
 #include <QObject>
 #include <QTableWidget>
@@ -100,10 +101,10 @@ private:
     bool    ctable2Grid();                          // Lettura di tutta la CT in Grid
     bool    grid2CTable();                          // Dump di tutto il Grid in lista di CT Records
     bool    values2Iface(QStringList &lstRecValues, int nRow);// Copia Lista Stringhe convertite da CT Record a Zona di Editing
-    bool    iface2values(QStringList &lstRecValues, bool fMultiLine, int nRow);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
+    bool    iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
     void    initTargetList();                       // Init della lista dei Target definiti
-    bool    updateRow(int nRow);                    // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
+    bool    updateRow(int nRow, bool fMultiEdit);   // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
     int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool checkRTU = true);
     // Gestione interfaccia
     void    enableFields();                         // Abilitazione dei campi form in funzione di Protocollo
@@ -175,6 +176,7 @@ private:
     TrendEditor     *trendEdit;
     Config_MPNC     *configMPNC;
     Config_MPNE     *configMPNE;
+    SearchVariable  *searcForm;
 
     int         m_nGridRow;                         // Riga corrente sul Grid
     QString     m_szCurrentCTFile;                  // File Cross Table corrente (completo di Path)
