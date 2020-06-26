@@ -4,6 +4,7 @@
 #include "utils.h"
 
 #include <QIntValidator>
+#include <QPushButton>
 
 SearchVariable::SearchVariable(QWidget *parent) :
     QDialog(parent),
@@ -50,12 +51,21 @@ SearchVariable::SearchVariable(QWidget *parent) :
     lstVisibleCols.append(colPort);
     lstVisibleCols.append(colNodeID);
     lstVisibleCols.append(colRegister);
+    lstVisibleCols.append(colBehavior);
     lstVisibleCols.append(colComment);
     // Righe presenti
     lstRowNumbers.clear();
     // Azioni collegate ai pulsanti
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    QPushButton *resetButton = ui->buttonBox->button(QDialogButtonBox::Reset);
+    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetFilters()));
+    // Row Double Clicled
+    connect(ui->tblVariables, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onRowDoubleClicked(QModelIndex)));
+    connect(ui->tblVariables, SIGNAL(clicked(QModelIndex)), this, SLOT(onRowClicked(QModelIndex)));
+    nSelectedRow = -1;
+    fCaseSensitive = false;
+    fNameStartsWith = false;
     resetFilters();
 }
 
@@ -66,15 +76,19 @@ SearchVariable::~SearchVariable()
 
 int SearchVariable::getSelectedVariable()
 {
-    return -1;
+    return     nSelectedRow;
 }
 
-bool SearchVariable::ctable2Filter()
+bool SearchVariable::filterCTVars()
 {
-    bool            fRes = false;
-    int             nCur = 0;
-    int             nCol = 0;
-    QStringList     lstFields;
+    bool                fRes = false;
+    int                 nCur = 0;
+    int                 nCol = 0;
+    int                 nFound = 0;
+    QStringList         lstLineValues;
+    QList<QStringList > lstTableRows;
+    QList<int16_t>      lstRowPriority;
+    QList<int16_t>      lstRows;
 
     // Reset dei filtri in corso, non deve fare nulla
     if (isResettingFilter)  {
@@ -84,29 +98,51 @@ bool SearchVariable::ctable2Filter()
     // Preparazione tabella
     this->setCursor(Qt::WaitCursor);
     disableAndBlockSignals(ui->tblVariables);
+    // ui->tblVariables->setVisible(false);
     ui->tblVariables->setEnabled(false);
     ui->tblVariables->clearSelection();
     ui->tblVariables->setRowCount(0);
+    ui->tblVariables->setColumnCount(0);
+    ui->tblVariables->clearContents();
     ui->tblVariables->clear();
-    ui->tblVariables->setColumnCount(colTotals);
-    // Caricamento elementi
+    nSelectedRow = -1;
+    // Verifica elementi di CT
     lstRowNumbers.clear();
+    lstTableRows.clear();
+    lstRowPriority.clear();
+    lstRows.clear();
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Convert CT Record 2 User Values
-        fRes = recCT2FieldsValues(lstCTRecords, lstFields, nCur);
+        fRes = recCT2FieldsValues(lstCTRecords, lstLineValues, nCur);
         if (fRes)  {
             // Controllo se la riga corrente supera il filtro
-            if (rec2show(lstFields, nCur))  {
-                ui->tblVariables->insertRow(nCur);
-                fRes = list2GridRow(ui->tblVariables, lstFields, lstHeadLeftCols, nCur);
-                // Imposta Numero Riga
-                lstRowNumbers.append(QString::fromAscii("%1") .arg(nCur + 1, 5, 10));
+            if (rec2show(lstLineValues, nCur))  {
+                lstTableRows.append(lstLineValues);
+                lstRowPriority.append(lstCTRecords[nCur].Enable);
+                lstRows.append(nCur);
+                nFound++;
             }
         }
     }
+    // Dimensionamento e caricamento elementi in Tabella
+    ui->tblVariables->setRowCount(lstTableRows.count());
+    ui->tblVariables->setColumnCount(colTotals);
+    // Caricamento in Tabella
+    for (nCur = 0; nCur < lstTableRows.count(); nCur++)  {
+        // Imposta Numero Riga
+        lstRowNumbers.append(QString::fromAscii("%1") .arg(lstRows[nCur] + 1, 5, 10));
+        // Aggiunge elemento in Tabella
+        fRes = list2GridRow(ui->tblVariables, lstTableRows[nCur], lstHeadLeftCols, nCur);
+    }
     // Impostazione parametri TableView
     ui->tblVariables->setVerticalHeaderLabels(lstRowNumbers);
+    ui->tblVariables->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tblVariables->setSelectionMode(QAbstractItemView::SingleSelection);
     setGridParams(ui->tblVariables, lstHeadCols, lstHeadSizes, QAbstractItemView::SingleSelection);
+    // Colore di Sfondo delle righe
+    for (nCur = 0; nCur < lstTableRows.count(); nCur++)  {
+        setRowColor(ui->tblVariables, lstRows[nCur], 0, 1, lstRowPriority[nCur], 0);
+    }
     // Nascondi Colonne non visibili
     for (nCol = 0; nCol < colTotals; nCol++)  {
         // Se la colonna non è tra quelle visibili la nasconde
@@ -114,10 +150,21 @@ bool SearchVariable::ctable2Filter()
             ui->tblVariables->setColumnHidden(nCol, true);
         }
     }
+    // Numero di Elementi trovato
+    ui->lblFound->setText(QString::number(nFound));
+
     // Return value
-    enableAndUnlockSignals(ui->tblVariables);
     this->setCursor(Qt::ArrowCursor);
-    qDebug("ctable2Grid(): Result %d", fRes);
+    qDebug("ctable2Filter(): Found %d", nFound);
+    if (nFound)  {
+        ui->tblVariables->selectRow(0);
+        fRes = true;
+    }
+    // ui->tblVariables->setVisible(true);
+    ui->tblVariables->setEnabled(true);
+    ui->tblVariables->update();
+    // ui->tblVariables->setFocus();
+    enableAndUnlockSignals(ui->tblVariables);
     return fRes;
 }
 
@@ -127,6 +174,7 @@ bool    SearchVariable::rec2show(QStringList &lstFields, int nRow)
     QString szNameFilter = ui->txtVarname->text().trimmed();
     QString szNode = ui->txtNode->text().trimmed();
     int     nSection = ui->cboSections->currentIndex();
+    Qt::CaseSensitivity caseCompare = fCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
     // Entry non utilizzata
     if (lstFields[colName].trimmed().isEmpty())  {
@@ -191,7 +239,16 @@ bool    SearchVariable::rec2show(QStringList &lstFields, int nRow)
     }
     // Filtro sui Nomi delle variabili
     if (! szNameFilter.isEmpty())  {
-
+        if (fNameStartsWith)  {
+            if (! lstFields[colName].startsWith(szNameFilter, caseCompare)) {
+                goto endCheck;
+            }
+        }
+        else  {
+            if (! lstFields[colName].contains(szNameFilter, caseCompare))  {
+                goto endCheck;
+            }
+        }
     }
     // Tutti i controlli sono superati, il record deve essere mostrato
     f2Show = true;
@@ -203,13 +260,15 @@ endCheck:
 
 void SearchVariable::on_cboSections_currentIndexChanged(int index)
 {
-    if (index >= 0)  {
-        qDebug("New Filter on Section: %s", lstRegions[index].toLatin1().data());
+    if (! isResettingFilter)  {
+        if (index >= 0)  {
+            qDebug("New Filter on Section: %s", lstRegions[index].toLatin1().data());
+        }
+        else  {
+            qDebug("Cleared Section Filter");
+        }
+        filterCTVars();
     }
-    else  {
-        qDebug("Cleared Section Filter");
-    }
-    ctable2Filter();
 }
 
 void SearchVariable::resetFilters()
@@ -222,6 +281,119 @@ void SearchVariable::resetFilters()
     ui->txtNode->clear();
     ui->txtVarname->clear();
     ui->chkCase->setChecked(false);
-    ui->chkWhole->setChecked(false);
+    ui->chkStartsWith->setChecked(false);
+    ui->lblFound->setText(szZERO);
+    ui->tblVariables->setRowCount(0);
+    nSelectedRow = -1;
     isResettingFilter = false;
 }
+
+void SearchVariable::on_cboPriority_currentIndexChanged(int index)
+{
+    if (! isResettingFilter)  {
+        if (index >= 0)  {
+            qDebug("New Filter on Priority: %s", lstPriority[index].toLatin1().data());
+        }
+        else  {
+            qDebug("Cleared Priority Filter");
+        }
+        filterCTVars();
+    }
+}
+
+void SearchVariable::on_cboType_currentIndexChanged(int index)
+{
+    if (! isResettingFilter)  {
+        if (index >= 0)  {
+            qDebug("New Filter on Type: %s", lstTipi[index].toLatin1().data());
+        }
+        else  {
+            qDebug("Cleared Var Type Filter");
+        }
+        filterCTVars();
+    }
+}
+
+void SearchVariable::on_cboProtocol_currentIndexChanged(int index)
+{
+    if (! isResettingFilter)  {
+        if (index >= 0)  {
+            qDebug("New Filter on Protocol: %s", lstProtocol[index].toLatin1().data());
+        }
+        else  {
+            qDebug("Cleared Protocol Filter");
+        }
+        filterCTVars();
+    }
+}
+
+void SearchVariable::on_chkCase_clicked(bool checked)
+{
+    fCaseSensitive = checked;
+    if (! isResettingFilter && ! ui->txtVarname->text().trimmed().isEmpty())  {
+        filterCTVars();
+    }
+}
+
+void SearchVariable::on_chkStartsWith_clicked(bool checked)
+{
+    fNameStartsWith = checked;
+    if (! isResettingFilter && ! ui->txtVarname->text().trimmed().isEmpty())  {
+        filterCTVars();
+    }
+}
+
+void SearchVariable::on_txtVarname_textChanged(const QString &arg1)
+{
+    qDebug("New Filter on Var Name: %s", arg1.toLatin1().data());
+    if (! isResettingFilter)  {
+        filterCTVars();
+    }
+}
+
+void SearchVariable::on_txtNode_textChanged(const QString &arg1)
+{
+    qDebug("New Filter on Node ID: %s", arg1.toLatin1().data());
+    if (! isResettingFilter)  {
+        filterCTVars();
+    }
+}
+
+void    SearchVariable::onRowClicked(const QModelIndex &index)
+{
+    int nRow = index.row();
+
+    if (nRow >= 0)  {
+        // Deduce il Numero di Riga assoluto in CT dal verticalHeader della griglia
+        QTableWidgetItem    *tItem = ui->tblVariables->verticalHeaderItem(nRow);
+        if (tItem != 0)  {
+            bool fOk = false;
+            nRow = tItem->text().toInt(&fOk);
+            if (fOk)  {
+                nSelectedRow = nRow;
+                qDebug("SearchVariable::onRowClicked(): Row %d", nRow);
+            }
+        }
+    }
+}
+
+void    SearchVariable::onRowDoubleClicked(const QModelIndex &index)
+// Evento Row Double Clicked
+{
+    int nRow = index.row();
+
+    if (nRow >= 0)  {
+        // Deduce il Numero di Riga assoluto in CT dal verticalHeader della griglia
+        QTableWidgetItem    *tItem = ui->tblVariables->verticalHeaderItem(nRow);
+        if (tItem != 0)  {
+            bool fOk = false;
+            nRow = tItem->text().toInt(&fOk);
+            if (fOk)  {
+                nSelectedRow = nRow;
+                qDebug("SearchVariable::onRowDoubleClicked(): Row %d", nRow);
+                this->accept();
+            }
+        }
+    }
+}
+

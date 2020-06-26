@@ -2654,9 +2654,9 @@ void ctedit::on_cmdSearch_clicked()
     searcForm->setModal(true);
     if (searcForm->exec()  == QDialog::Accepted)   {
         nRow = searcForm->getSelectedVariable();
-        qDebug("Searc Variable: Selected Row: %d", nRow);
-        if (nRow >= 0 && nRow < lstCTRecords.count())  {
-            jumpToGridRow(nRow, true);
+        qDebug("on_cmdSearch_clicked(): Selected Row: %d", nRow);
+        if (nRow > 0 && nRow <= lstCTRecords.count())  {
+            jumpToGridRow(nRow - 1, true);
         }
     }
     else {
