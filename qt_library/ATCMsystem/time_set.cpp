@@ -14,6 +14,7 @@
 
 #include "timepopup.h"
 #include "calendar.h"
+#include "ntpclient.h"
 
 /* this define set the window title */
 #define WINDOW_TITLE "DATA E ORA"
@@ -81,6 +82,20 @@ void time_set::reload()
 #else
     ui->pushButtonTime->setText(QTime::currentTime().toString("HH:mm:ss"));
     ui->pushButtonCalendar->setText(QDateTime::currentDateTime().date().toString("yyyy-MM-dd"));
+    int tz;
+    int tzIni = ntpclient::getTimeZoneDST();
+    if(!tzIni) {
+        tzIni = 2;
+    }
+    ui->comboBoxTZDST->clear();
+    for (int i=0; i< 25 ; i++) {
+        tz = i-12;
+        ui->comboBoxTZDST->addItem(QString::number(tz));
+        if(tz == tzIni) {
+            ui->comboBoxTZDST->setCurrentIndex(i);
+        }
+    }
+    ui->labelSync->setVisible(false);
 #endif
     showFullScreen();
 }
@@ -212,5 +227,36 @@ void time_set::on_pushButtonCalendar_clicked()
            ui->pushButtonCalendar->setText(calendar->getDate().toString("yyyy-MM-dd"));
         }
         delete calendar;
+    }
+}
+
+void time_set::on_pushButtonNTPSync_clicked()
+{
+    ui->labelSync->setVisible(true);
+    QCoreApplication::processEvents();
+
+    ntpclient *ntp = new ntpclient();
+    ntp->setServerName(ui->pushButtonNTP->text());
+    ntp->setTimeZoneDST(ui->comboBoxTZDST->currentText().toInt());
+    if(ntp->doNTPSync()){
+        ui->pushButtonCalendar->setText(QDate::currentDate().toString("yyyy-MM-dd"));
+        ui->pushButtonTime->setText(QTime::currentTime().toString("hh:mm:ss"));
+        QMessageBox::information(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Date and Time set."));
+    } else {
+        QMessageBox::warning(0,QApplication::trUtf8("NTP SYNC"), QApplication::trUtf8("Network Error \nDate and Time can not be set."));
+    }
+    ui->labelSync->setVisible(false);
+
+}
+
+void time_set::on_pushButtonNTP_clicked()
+{
+    char value [64];
+    alphanumpad tastiera_alfanum(value,ui->pushButtonNTP->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted)
+    {
+        ui->pushButtonNTP->setText(value);
+
     }
 }

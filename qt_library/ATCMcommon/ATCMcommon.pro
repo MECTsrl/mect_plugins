@@ -21,6 +21,7 @@ LIBS += \
 -lATCMutility
 
 SOURCES += \
+ntpclient.cpp \
 calendar.cpp \
 timepopup.cpp \
 global_var.cpp \
@@ -31,6 +32,7 @@ screensaver.cpp \
 
 
 HEADERS += \
+ntpclient.h \
 calendar.h \
 timepopup.h \
 global_var.h \

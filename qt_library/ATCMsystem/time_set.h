@@ -40,6 +40,10 @@ private slots:
 
     void on_pushButtonCalendar_clicked();
 
+    void on_pushButtonNTPSync_clicked();
+
+    void on_pushButtonNTP_clicked();
+
 private:
     Ui::time_set *ui;
 };
