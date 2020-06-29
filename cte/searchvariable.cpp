@@ -5,6 +5,7 @@
 
 #include <QIntValidator>
 #include <QPushButton>
+#include <QSortFilterProxyModel>
 
 SearchVariable::SearchVariable(QWidget *parent) :
     QDialog(parent),
@@ -63,6 +64,7 @@ SearchVariable::SearchVariable(QWidget *parent) :
     // Row Double Clicled
     connect(ui->tblVariables, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onRowDoubleClicked(QModelIndex)));
     connect(ui->tblVariables, SIGNAL(clicked(QModelIndex)), this, SLOT(onRowClicked(QModelIndex)));
+    connect(ui->tblVariables->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(sortVarColumn(int)));
     nSelectedRow = -1;
     fCaseSensitive = false;
     fNameStartsWith = false;
@@ -135,13 +137,14 @@ bool SearchVariable::filterCTVars()
         fRes = list2GridRow(ui->tblVariables, lstTableRows[nCur], lstHeadLeftCols, nCur);
     }
     // Impostazione parametri TableView
+    ui->tblVariables->setCornerButtonEnabled(false);
     ui->tblVariables->setVerticalHeaderLabels(lstRowNumbers);
     ui->tblVariables->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tblVariables->setSelectionMode(QAbstractItemView::SingleSelection);
     setGridParams(ui->tblVariables, lstHeadCols, lstHeadSizes, QAbstractItemView::SingleSelection);
     // Colore di Sfondo delle righe
     for (nCur = 0; nCur < lstTableRows.count(); nCur++)  {
-        setRowColor(ui->tblVariables, lstRows[nCur], 0, 1, lstRowPriority[nCur], 0);
+        setRowColor(ui->tblVariables, nCur, 0, 1, lstRowPriority[nCur], (lstRows[nCur] - nCur));
     }
     // Nascondi Colonne non visibili
     for (nCol = 0; nCol < colTotals; nCol++)  {
@@ -150,6 +153,12 @@ bool SearchVariable::filterCTVars()
             ui->tblVariables->setColumnHidden(nCol, true);
         }
     }
+    ui->tblVariables->verticalHeader()->setSortIndicatorShown(false);
+//    // Filtro per gli ordimanenti di colonna
+//    QSortFilterProxyModel filterVars(this);
+//    filterVars.setSourceModel(ui->tblVariables->model());
+//    filterVars.setFilterCaseSensitivity(Qt::CaseInsensitive);
+//    ui->tblVariables->setModel(& filterVars);
     // Numero di Elementi trovato
     ui->lblFound->setText(QString::number(nFound));
 
@@ -397,3 +406,9 @@ void    SearchVariable::onRowDoubleClicked(const QModelIndex &index)
     }
 }
 
+void SearchVariable::sortVarColumn(int nColumn)
+{
+    qDebug("sortVarColumn(): Column: %d", nColumn);
+    ui->tblVariables->sortByColumn(nColumn);
+    ui->tblVariables->verticalHeader()->setSortIndicatorShown(true);
+}

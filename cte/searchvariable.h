@@ -30,6 +30,7 @@ private slots:
     void on_txtVarname_textChanged(const QString &arg1);
     void onRowClicked(const QModelIndex &index);
     void onRowDoubleClicked(const QModelIndex &index);
+    void sortVarColumn(int nColumn);
     void resetFilters();
 
 private:
@@ -42,7 +43,6 @@ private:
     int             nSelectedRow;
     bool            fCaseSensitive;
     bool            fNameStartsWith;
-
 };
 
 #endif // SEARCHVARIABLE_H

@@ -287,6 +287,7 @@ void setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int n
         // cSfondo = cSfondo.lighter(150);
         cSfondo = cSfondo.darker(130);
     }
+    // qDebug("setRowColor(): (Row: %d Base: %d) @[%d] --> [R:%d G:%d B:%d]", nRow, nBaseOffset, nZoneRow, cSfondo.red(), cSfondo.green(), cSfondo.blue());
     // Impostazione del colore di sfondo
     QBrush bCell(cSfondo, Qt::SolidPattern);
     setRowBackground(bCell, table->model(), nRow);

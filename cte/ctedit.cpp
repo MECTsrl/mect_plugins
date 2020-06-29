@@ -474,6 +474,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->tabWidget->setCurrentIndex(TAB_CT);
 
     // Connessione Segnali - Slot
+    ui->tblCT->setCornerButtonEnabled(false);
     ui->tblCT->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->tblCT, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(displayUserMenu(const QPoint &)));
     // connect(ui->tblCT, SIGNAL(clicked(QModelIndex)), this, SLOT(itemClicked(QModelIndex)));
@@ -3011,8 +3012,8 @@ void ctedit::enableInterface()
     ui->cmdHideShow->setVisible(! fMultiEdit);
     ui->cmdSearch->setVisible(! fMultiEdit);
     ui->cmdImport->setVisible(! fMultiEdit);
-    ui->cmdUndo->setVisible(! fMultiEdit);
-    ui->cmdUndo->setEnabled(lstUndo.count() > 0 && ! fMultiEdit);
+    ui->cmdUndo->setVisible(true);
+    ui->cmdUndo->setEnabled(lstUndo.count() > 0);
     ui->cmdBlocchi->setVisible(! fMultiEdit);
     ui->cmdBlocchi->setEnabled(! fMultiEdit);
     ui->cmdSave->setVisible(! fMultiEdit);
@@ -7338,14 +7339,8 @@ void ctedit::on_cmdApply_clicked()
             return;
         }
     }
-    //    // Svuota lista elementi selezionati e toglie flag di MultiSelect
-    //    nJumpRow = lstSelectedRows.at(0);
-    //    lstSelectedRows.clear();
-    //    m_fMultiSelect = false;
-    //    qDebug("Applaing MultiEdit: GotoRow: %d", nJumpRow + 1);
-    //    // Seleziona Riga corrente
-    //    ui->tblCT->selectRow(nJumpRow);
-    //    m_nGridRow = nJumpRow;
+    // Aggiorna abilitazioni (per Bottone UNDO)
+    enableInterface();
 }
 
 void ctedit::on_chkMultiEdit_clicked(bool checked)
