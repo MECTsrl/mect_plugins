@@ -19,23 +19,29 @@
 	<ul>
 		<li/>
 <p class="western"><strong>S:</strong> Die Variable wird immer aktualisiert und langsam mit einer Zeit &ldquo;Slow Log Period&rdquo;
-		gespeichert (Parameter Systemeditor).</p>
+		gespeichert (Parameter Systemeditor &#8594; System).</p>
 		<li/>
-<p class="western"><strong>F:</strong> wie &ldquo;S&rdquo;", aber schnell und mit einer Zeit &ldquo;Fast Log Period&rdquo; (Parameter Systemeditor).
+<p class="western"><strong>F:</strong> wie &ldquo;S&rdquo;", aber schnell und mit einer Zeit &ldquo;Fast Log Period&rdquo; (Parameter Systemeditor &#8594; System).
 		</p>
 		<li/>
 <p class="western"><strong>V:</strong> Die Variable wird nur bei einer Änderung erfasst und historisiert.</p>
 		<li/>
 <p class="western"><strong>X:</strong> Die Variable wird beim Aufruf durch die logShot() Funktion historisiert.</p>
 	</ul>
-	<p class="western">Die erzeugte Historie ist täglich und ist für alle für diese Funktion aktivierten Mengen eindeutig. Es ist 
-	möglich, eine Reihe von &ldquo;Teilgeschichten&rdquo;  zu definieren, für die die Panelanzeige verfügbar ist. 
-	</p>
-	<p class="western">Um die Verlaufsseite anzuzeigen, wählen Sie  MENU &#8594; DATA &#8594; STORE, alternativ können Sie eine 
-    <strong>ATCMbutton</strong> im Seitenwechselmodus verwenden und in der Eigenschaft &ldquo;<strong>pageName</strong>&rdquo; das Wort &ldquo;<strong>Dateiname
-	</strong>&rdquo; ohne Erweiterung eingeben. Wo &ldquo;Dateiname&rdquo; eine.csv-Datei ist, die mit &ldquo;<strong>store</strong>&rdquo; beginnen sollte.</p>
-	<p lang="it-IT" class="western"><img src="Funzionamento_storici_1.png" name="Immagine 30" align="bottom" width="322" height="182" border="0"/>
-</p>
+	<p class="western">Der Protokollmechanismus kann mit den Funktionen gestartet, gestoppt und beliebig erzwungen werden.
+	<strong>logStart();</strong>, <strong>logStop();</strong> e <strong>logShot();</strong>. Die Funktion <strong>logReset();</strong> löscht alle Logs auf dem Gerät. Diese Funktionen werden wie im Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI_de.html">Realisierung einer Automatisierung</a></u></font>&rdquo; gezeigt in den gewünschten Code eingefügt.</p>
+	<p class="western">Die erzeugte Historie ist täglich und ist für alle für diese Funktion aktivierten Mengen eindeutig. Eine neue Datei wird bei logStart(); (eine neue Datei wird automatisch um 00.00 Uhr erstellt.)</p>
+	<p class="western">Um die Verlaufsseite anzuzeigen, können Sie eine 
+    <strong>ATCMbutton</strong> im Seitenwechselmodus verwenden und in der Eigenschaft &ldquo;<strong>pageName</strong>&rdquo; den Namen der Bibliotheksseite &ldquo;<strong>store</strong>&rdquo; einführen.</p>
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Funzionamento_storici_2.png" name="Immagine212" align="bottom" width="360" height="203" border="0"/></p>
+		<p class="western">Die Schaltfläche  
+	<img src="Funzionamento_storici_3.png" name="Immagine213" align="bottom" width="24" height="26" border="0"/>
+	ermöglicht das Filtern im Laufe der Zeit von Historikern, während die Schaltfläche 
+	<img src="Funzionamento_storici_4.png" name="Immagine214" align="bottom" width="24" height="24" border="0"/>,
+	die beim Einstecken eines USB-Sticks aktiviert wird, es Ihnen ermöglicht, Daten auf den USB-Stick herunterzuladen. </p>	
+	<br/>
+	
+	<p class="western">Es ist möglich, eine Reihe von &ldquo;Teilgeschichten&rdquo; zu definieren, für die die Panelanzeige verfügbar ist. </p>	
 	<p class="western">Die neue Datei muss über die Webschnittstelle auf das Gerät hochgeladen werden, siehen Sie Kapitel 
 	 &ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web_de.html">Funktionsweise der Webschnittstelle</a></u></font>&rdquo;.
 	Optional können Sie eine Teilmenge der historisierten Variablen angeben, indem Sie auf diese Weise eine Konfigurationsdatei (store1.csv) 
@@ -44,21 +50,10 @@
 	<p class="western"><strong>time</strong></p>
 	<p class="western"><strong><i>TPLC_IN_3</i></strong></p>
 	<p class="western"><strong><i>TPLC_IN_AN_2</i></strong></p>
+	<p class="western">Um die Verlaufsseite anzuzeigen, wählen Sie  MENU &#8594; DATA &#8594; STORE, alternativ können Sie eine 
+    <strong>ATCMbutton</strong> im Seitenwechselmodus verwenden und in der Eigenschaft &ldquo;<strong>pageName</strong>&rdquo; das Wort &ldquo;<strong>Dateiname
+	</strong>&rdquo; ohne Erweiterung eingeben. Wo &ldquo;Dateiname&rdquo; eine.csv-Datei ist, die mit &ldquo;<strong>store</strong>&rdquo; beginnen sollte.</p>
+	<p lang="it-IT" class="western"><img src="Funzionamento_storici_1.png" name="Immagine 30" align="bottom" width="322" height="182" border="0"/>	</p>
 	
-	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Funzionamento_storici_2.png" name="Immagine212" align="bottom" width="360" height="203" border="0"/>
-</p>
-	
-	<p class="western">Die Schaltfläche  
-	<img src="Funzionamento_storici_3.png" name="Immagine213" align="bottom" width="24" height="26" border="0"/>
-
-	ermöglicht das Filtern im Laufe der Zeit von Historikern, während die Schaltfläche 
-	<img src="Funzionamento_storici_4.png" name="Immagine214" align="bottom" width="24" height="24" border="0"/>
-,
-	die beim Einstecken eines USB-Sticks aktiviert wird, es Ihnen ermöglicht, Daten auf den USB-Stick herunterzuladen. </p>
-	<p class="western"><strong>Hinweis:</strong> Der Protokollmechanismus kann mit den Funktionen gestartet, gestoppt und beliebig erzwungen werden.
-	<strong>logStart()</strong>, <strong>logStop()</strong> e <strong>logShot()</strong>. 	</p>
-	<p class="western">Die Funktion <strong>logReset()</strong> löscht alle Logs auf dem Gerät. Diese Funktionen werden wie im
-	 Kapitel &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI_de.html">Realisierung einer Automatisierung</a></u></font>&rdquo; gezeigt in den gewünschten Code eingefügt.</p>
-	<br/>
 	</body>
 </html>

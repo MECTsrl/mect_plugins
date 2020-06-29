@@ -19,23 +19,29 @@
 	<ul>
 		<li/>
 <p class="western"><strong>S:</strong> La variable siempre se actualiza y almacena lentamente con un tiempo de &ldquo;Slow Log Period&rdquo;
-		(parámetro System Editor);</p>
+		(parámetro System Editor &#8594; System);</p>
 		<li/>
 <p class="western"><strong>F:</strong> como &ldquo;S&rdquo; pero de forma rápida y con un tiempo &ldquo;Fast Log Period&rdquo; (parámetro System
-		Editor);</p>
+		Editor &#8594; System);</p>
 		<li/>
 <p class="western"><strong>V:</strong> la variable se adquiere e historiza sólo cuando hay un cambio;</p>
 		<li/>
 <p class="western"><strong>X:</strong> La variable es historizada cuando es llamada por la función logShot().</p>
 	</ul>
-	<p class="western">El historial generado es diario y es único para todas las cantidades habilitadas para esta función. Sin 
-	embargo, es posible definir una serie de &ldquo;historiales parciales&rdquo;  para las que está disponible la pantalla del panel. 
-	</p>
-	<p class="western">Para visualizar la página de historial seleccione MENU &#8594; DATA &#8594; STORE, o bien utilice un
-	 <strong>ATCMbutton</strong> en el modo de cambio de página e introduzca en la propiedad &ldquo;<strong>pageName</strong>&rdquo; la palabra &ldquo;<strong>nombre de 
-	archivo</strong>&rdquo; sin extensión. Donde &ldquo;nombre de archivo&rdquo; será un archivo.csv que debería empezar por &ldquo;<strong>store</strong>&rdquo;.</p>
-	<p lang="it-IT" class="western"><img src="Funzionamento_storici_1.png" name="Immagine 30" align="bottom" width="322" height="182" border="0"/>
-</p>
+	<p class="western">El mecanismo de log puede ser iniciado, detenido y forzado a voluntad usando las funciones 
+	<strong>logStart();</strong>, <strong>logStop();</strong> y <strong>logShot();</strong>. La función <strong>logReset();</strong> elimina todos los registros del dispositivo. Estas funciones se introducirán en el código 
+	deseado como se muestra en el capítulo &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI_es.html">Realización de una automatización</a></u></font>&rdquo;.</p>
+	<p class="western">El historial generado es diario y es único para todas las cantidades habilitadas para esta función. Se genera un nuevo archivo en logStart(); (se crea automáticamente un nuevo archivo a las 00.00).</p>
+	<p class="western">Para visualizar la página de historial utilice un <strong>ATCMbutton</strong> en el modo de cambio de página e introduzca en la propiedad &ldquo;<strong>pageName</strong>&rdquo; el nombre de la página de biblioteca &ldquo;<strong>store</strong>&rdquo;.</p>
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Funzionamento_storici_2.png" name="Immagine212" align="bottom" width="360" height="203" border="0"/></p>
+	<p class="western">El botón  
+	<img src="Funzionamento_storici_3.png" name="Immagine213" align="bottom" width="24" height="26" border="0"/>
+	permite el filtrado a lo largo del tiempo de los historiadores, mientras que el botón 
+	<img src="Funzionamento_storici_4.png" name="Immagine214" align="bottom" width="24" height="24" border="0"/>,
+	que se activará al insertar un lápiz de memoria USB , le permitirá descargar datos en el lápiz de memoria USB. </p>	
+	<br/>
+	
+	<p class="western">Sin embargo, es posible definir una serie de &ldquo;historiales parciales&rdquo;  para las que está disponible la pantalla del panel. </p>
 	<p class="western">El nuevo archivo debe cargarse en el aparato a través de la interfaz web, 
 	web, véase el capítulo &ldquo;<font color="#0000ff"><u><a class="western" href="Interfaccia_web_es.html">Funcionamiento de la interfaz web</a></u></font>&rdquo;.
 	Opcionalmente puede especificar un subconjunto de las variables historiadas  escribiendo un archivo de configuración 
@@ -44,21 +50,10 @@
 	<p class="western"><strong>time</strong></p>
 	<p class="western"><strong><i>TPLC_IN_3</i></strong></p>
 	<p class="western"><strong><i>TPLC_IN_AN_2</i></strong></p>
+	<p class="western">Para visualizar la página de historial seleccione MENU &#8594; DATA &#8594; STORE, o bien utilice un
+	 <strong>ATCMbutton</strong> en el modo de cambio de página e introduzca en la propiedad &ldquo;<strong>pageName</strong>&rdquo; la palabra &ldquo;<strong>nombre de 
+	archivo</strong>&rdquo; sin extensión. Donde &ldquo;nombre de archivo&rdquo; será un archivo.csv que debería empezar por &ldquo;<strong>store</strong>&rdquo;.</p>
+	<p lang="it-IT" class="western"><img src="Funzionamento_storici_1.png" name="Immagine 30" align="bottom" width="322" height="182" border="0"/>
 	
-	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Funzionamento_storici_2.png" name="Immagine212" align="bottom" width="360" height="203" border="0"/>
-</p>
-	
-	<p class="western">El botón  
-	<img src="Funzionamento_storici_3.png" name="Immagine213" align="bottom" width="24" height="26" border="0"/>
-
-	permite el filtrado a lo largo del tiempo de los historiadores, mientras que el botón 
-	<img src="Funzionamento_storici_4.png" name="Immagine214" align="bottom" width="24" height="24" border="0"/>
-,
-	que se activará al insertar un lápiz de memoria USB , le permitirá descargar datos en el lápiz de memoria USB. </p>
-	<p class="western"><strong>Nota:</strong> El mecanismo de log puede ser iniciado, detenido y forzado a voluntad usando las funciones 
-	<strong>logStart()</strong>, <strong>logStop()</strong> y <strong>logShot()</strong>. 	</p>
-	<p class="western">La función <strong>logReset()</strong> elimina todos los registros del dispositivo. Estas funciones se introducirán en el código 
-	deseado como se muestra en el capítulo &ldquo;<font color="#0000ff"><u><a class="western" href="Realizzazione_automazione_HMI_es.html">Realización de una automatización</a></u></font>&rdquo;.</p>
-	<br/>
 	</body>
 </html>
