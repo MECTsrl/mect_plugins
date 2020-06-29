@@ -142,17 +142,6 @@ ATCM-template-project-TPAC1007_LV/config/trend1.csv \
 ATCM-template-project-TPAC1007_LV/console.png \
 ATCM-template-project-TPAC1007_LV/template.pri \
 ATCM-template-project-TPAC1007_LV/wizard.xml \
-ATCM-template-project-TPAC1008_01/config/Crosstable.csv \
-ATCM-template-project-TPAC1008_01/config/crosstable.cpp \
-ATCM-template-project-TPAC1008_01/config/crosstable.h \
-ATCM-template-project-TPAC1008_01/config/iomap0.cmg \
-ATCM-template-project-TPAC1008_01/config/network0.cmg \
-ATCM-template-project-TPAC1008_01/config/splash.png \
-ATCM-template-project-TPAC1008_01/config/system.ini \
-ATCM-template-project-TPAC1008_01/config/trend1.csv \
-ATCM-template-project-TPAC1008_01/console.png \
-ATCM-template-project-TPAC1008_01/template.pri \
-ATCM-template-project-TPAC1008_01/wizard.xml \
 ATCM-template-project-TPAC1008_02_AA/config/Crosstable.csv \
 ATCM-template-project-TPAC1008_02_AA/config/crosstable.cpp \
 ATCM-template-project-TPAC1008_02_AA/config/crosstable.h \
