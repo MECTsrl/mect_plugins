@@ -149,7 +149,7 @@ ctedit::ctedit(QWidget *parent) :
     // MPNC006
     if (readModelVars(szMPNC006, lstMPNC006_Vars))  {
         qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
-                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMNPxHeadSizes[colMPNxName]) .arg(lstMNPxHeadSizes[colMPNxComment]);
+                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNC006);
         lstMPNC006_Vars.clear();
@@ -157,7 +157,7 @@ ctedit::ctedit(QWidget *parent) :
     // TPLC050
     if (readModelVars(szTPLC050, lstTPLC050_Vars))  {
         qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
-                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMNPxHeadSizes[colMPNxName]) .arg(lstMNPxHeadSizes[colMPNxComment]);
+                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szTPLC050);
         lstTPLC050_Vars.clear();
@@ -165,7 +165,7 @@ ctedit::ctedit(QWidget *parent) :
     // MPNE10
     if (readModelVars(szMPNE10, lstMPNE_Vars))  {
         qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
-                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMNPxHeadSizes[colMPNxName]) .arg(lstMNPxHeadSizes[colMPNxComment]);
+                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE10);
         lstMPNE_Vars.clear();
@@ -3014,8 +3014,8 @@ void ctedit::enableInterface()
     ui->cmdImport->setVisible(! fMultiEdit);
     ui->cmdUndo->setVisible(true);
     ui->cmdUndo->setEnabled(lstUndo.count() > 0);
-    ui->cmdBlocchi->setVisible(! fMultiEdit);
-    ui->cmdBlocchi->setEnabled(! fMultiEdit);
+    ui->cmdBlocchi->setVisible(false);
+    ui->cmdBlocchi->setEnabled(false);
     ui->cmdSave->setVisible(! fMultiEdit);
     ui->cmdCompile->setVisible(! fMultiEdit);
     ui->cmdCompile->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty() && ! fMultiEdit);
@@ -5738,13 +5738,13 @@ bool ctedit::readModelVars(const QString szModelName, QList<CrossTableRecord> &l
                     freeCTrec(lstModelVars, nRow);
                     fieldValues2CTrecList(lstModelFields[nRow], lstModelVars, nRow);
                     // Aggiorna la larghezza della colonna VarName
-                    lstMNPxHeadSizes[colMPNxName];
-                    if (lstModelFields[nRow][colName].length() > lstMNPxHeadSizes[colMPNxName])  {
-                        lstMNPxHeadSizes[colMPNxName] = lstModelFields[nRow][colName].length();
+                    lstMPNxHeadSizes[colMPNxName];
+                    if (lstModelFields[nRow][colName].length() > lstMPNxHeadSizes[colMPNxName])  {
+                        lstMPNxHeadSizes[colMPNxName] = lstModelFields[nRow][colName].length();
                     }
                     // Aggiorna la larghezza della colonna commento
-                    if (lstModelFields[nRow][colComment].length() > lstMNPxHeadSizes[colMPNxComment])  {
-                        lstMNPxHeadSizes[colMPNxComment] = lstModelFields[nRow][colComment].length();
+                    if (lstModelFields[nRow][colComment].length() > lstMPNxHeadSizes[colMPNxComment])  {
+                        lstMPNxHeadSizes[colMPNxComment] = lstModelFields[nRow][colComment].length();
                     }
                 }
             }

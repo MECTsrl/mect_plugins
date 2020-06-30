@@ -23,9 +23,9 @@ QStringList lstPriority;                // Elenco dei valori di Priority
 QStringList lstPriorityDesc;            // Descrizioni Priority
 QStringList lstBehavior;                // Significato variabili
 QStringList lstCondition;               // Operatori Logici per Allarmi
-QStringList lstHeadCols;
-QStringList lstHeadNames;
-QList<int>  lstHeadSizes;
+QStringList lstHeadCols;                // Header Colonne Grid principale
+QStringList lstHeadNames;               // Nome della colonna nel Grid principale (per XML)
+QList<int>  lstHeadSizes;               // Largezza Header Grid Principale
 QList<int > lstHeadLeftCols;            // Indici di colonna con allineamento a SX
 
 QStringList lstRegions;                 // Aree della CT
@@ -33,8 +33,11 @@ QStringList lstTipi;                    // Descrizione dei Tipi
 QStringList lstUpdateNames;             // Descrizione delle Priorità
 QStringList lstProtocol;                // Descrizione dei Protocolli
 QStringList lstMPNxCols;                // Header Colonne MPNx
-QList<int>  lstMNPxHeadSizes;           // Largezza Header MPNx
+QList<int>  lstMPNxHeadSizes;           // Largezza Header MPNx
 QList<int>  lstMPNxHeadLeftCols;        // Indici di colonna MPNx con allineamento a SX
+QStringList lstSearchCols;              // Header Colonne Search
+QList<int>  lstSearchHeadSizes;         // Largezza Header Search
+QList<int>  lstSearchHeadLeftCols;      // Indici di colonna Search con allineamento a SX
 bool        isSerialPortEnabled;        // Vero se almeno una porta seriale è abilitata
 int         nPresentSerialPorts;        // Numero di porte Seriali utilizzabili a bordo
 TP_Config   panelConfig;                // Configurazione corrente del Target letta da Form mectSettings
@@ -99,7 +102,9 @@ void initLists()
         lstHeadNames.append(szEMPTY);
         lstHeadSizes.append(10);
     }
-
+    //-----------------------------------------
+    // Grid Principale CT
+    //-----------------------------------------
     lstHeadCols[colPriority] = QLatin1String("Priority");
     lstHeadNames[colPriority] = QLatin1String("Priority");
     lstHeadSizes[colPriority] = 8;
@@ -166,46 +171,89 @@ void initLists()
     lstHeadLeftCols.append(colComment);
     lstHeadLeftCols.append(colSourceVar);
     lstHeadLeftCols.append(colCompare);
-    // Prompt della Griglia MPNx
-    lstMNPxHeadSizes.clear();
+    //-----------------------------------------
+    // Grid MPNx
+    //-----------------------------------------
+    lstMPNxHeadSizes.clear();
     lstMPNxCols.clear();
     for (nCol = 0; nCol < colMPNxTotals; nCol++)  {
-        lstMNPxHeadSizes.append(10);
+        lstMPNxHeadSizes.append(10);
         lstMPNxCols.append(szEMPTY);
     }
     lstMPNxCols[colMPNxPriority] = lstHeadCols[colPriority];
-    lstMNPxHeadSizes[colMPNxPriority] = lstHeadSizes[colPriority];
+    lstMPNxHeadSizes[colMPNxPriority] = lstHeadSizes[colPriority];
     lstMPNxCols[colMPNxUpdate] = lstHeadCols[colUpdate];
-    lstMNPxHeadSizes[colMPNxUpdate] = lstHeadSizes[colUpdate];
+    lstMPNxHeadSizes[colMPNxUpdate] = lstHeadSizes[colUpdate];
     lstMPNxCols[colMPNxGroup] =  lstHeadCols[colGroup];
-    lstMNPxHeadSizes[colMPNxGroup] = lstHeadSizes[colGroup];
+    lstMPNxHeadSizes[colMPNxGroup] = lstHeadSizes[colGroup];
     lstMPNxCols[colMPNxModule] =  lstHeadCols[colModule];
-    lstMNPxHeadSizes[colMPNxModule] = lstHeadSizes[colModule];
+    lstMPNxHeadSizes[colMPNxModule] = lstHeadSizes[colModule];
     lstMPNxCols[colMPNxName] = lstHeadCols[colName];
-    lstMNPxHeadSizes[colMPNxName] = lstHeadSizes[colName];
+    lstMPNxHeadSizes[colMPNxName] = lstHeadSizes[colName];
     lstMPNxCols[colMPNxType] = lstHeadCols[colType];
-    lstMNPxHeadSizes[colMPNxType] = lstHeadSizes[colType];
+    lstMPNxHeadSizes[colMPNxType] = lstHeadSizes[colType];
     lstMPNxCols[colMPNxDecimal] = lstHeadCols[colDecimal];
-    lstMNPxHeadSizes[colMPNxDecimal] = lstHeadSizes[colDecimal];
+    lstMPNxHeadSizes[colMPNxDecimal] = lstHeadSizes[colDecimal];
     lstMPNxCols[colMPNxNodeID] = lstHeadCols[colNodeID];
-    lstMNPxHeadSizes[colMPNxNodeID] = lstHeadSizes[colNodeID];
+    lstMPNxHeadSizes[colMPNxNodeID] = lstHeadSizes[colNodeID];
     lstMPNxCols[colMPNxRegister] = lstHeadCols[colRegister];
-    lstMNPxHeadSizes[colMPNxRegister] = lstHeadSizes[colRegister];
+    lstMPNxHeadSizes[colMPNxRegister] = lstHeadSizes[colRegister];
     lstMPNxCols[colMPNxBlock] = lstHeadCols[colBlock];
-    lstMNPxHeadSizes[colMPNxBlock] = lstHeadSizes[colBlock];
+    lstMPNxHeadSizes[colMPNxBlock] = lstHeadSizes[colBlock];
     lstMPNxCols[colMPNxBlockSize] = lstHeadCols[colBlockSize];
-    lstMNPxHeadSizes[colMPNxBlockSize] = lstHeadSizes[colBlockSize];
+    lstMPNxHeadSizes[colMPNxBlockSize] = lstHeadSizes[colBlockSize];
     lstMPNxCols[colMPNxBehavior] = lstHeadCols[colBehavior];
-    lstMNPxHeadSizes[colMPNxBehavior] = lstHeadSizes[colBehavior];
+    lstMPNxHeadSizes[colMPNxBehavior] = lstHeadSizes[colBehavior];
     lstMPNxCols[colMPNxComment] = lstHeadCols[colComment];
-    lstMNPxHeadSizes[colMPNxComment] = lstHeadSizes[colComment];
+    lstMPNxHeadSizes[colMPNxComment] = lstHeadSizes[colComment];
     lstMPNxCols[colMPNxService] = QLatin1String("Service");
-    lstMNPxHeadSizes[colMPNxService] = 30;
+    lstMPNxHeadSizes[colMPNxService] = 30;
     // Colonne allineate a SX nel Grid MPNx
     lstMPNxHeadLeftCols.clear();
     lstMPNxHeadLeftCols.append(colMPNxName);
     lstMPNxHeadLeftCols.append(colMPNxComment);
+    //-----------------------------------------
+    // Grid for Search
+    //-----------------------------------------
+    lstSearchCols.clear();
+    lstSearchHeadSizes.clear();
+    for (nCol = 0; nCol < colSearchTotals; nCol++)  {
+        lstSearchHeadSizes.append(10);
+        lstSearchCols.append(szEMPTY);
+    }
+    lstSearchCols[colSearchNumRow] = QLatin1String("Row");
+    lstSearchHeadSizes[colSearchNumRow] = lstHeadSizes[colPriority];
+    lstSearchCols[colSearchPriority] = lstHeadCols[colPriority];
+    lstSearchHeadSizes[colSearchPriority] = lstHeadSizes[colPriority];
+    lstSearchCols[colSearchUpdate] = lstHeadCols[colUpdate];
+    lstSearchHeadSizes[colSearchUpdate] = lstHeadSizes[colUpdate];
+    lstSearchCols[colSearchName] = lstHeadCols[colName];
+    lstSearchHeadSizes[colSearchName] = lstHeadSizes[colName];
+    lstSearchCols[colSearchType] = lstHeadCols[colType];
+    lstSearchHeadSizes[colSearchType] = lstHeadSizes[colType];
+    lstSearchCols[colSearchDecimal] = lstHeadCols[colDecimal];
+    lstSearchHeadSizes[colSearchDecimal] = lstHeadSizes[colDecimal];
+    lstSearchCols[colSearchProtocol] = lstHeadCols[colProtocol];
+    lstSearchHeadSizes[colSearchProtocol] = lstHeadSizes[colProtocol];
+    lstSearchCols[colSearchIP] = lstHeadCols[colIP];
+    lstSearchHeadSizes[colSearchIP] = lstHeadSizes[colIP];
+    lstSearchCols[colSearchPort] = lstHeadCols[colPort];
+    lstSearchHeadSizes[colSearchPort] = lstHeadSizes[colPort];
+    lstSearchCols[colSearchNodeID] = lstHeadCols[colNodeID];
+    lstSearchHeadSizes[colSearchNodeID] = lstHeadSizes[colNodeID];
+    lstSearchCols[colSearchRegister] = lstHeadCols[colRegister];
+    lstSearchHeadSizes[colSearchRegister] = lstHeadSizes[colRegister];
+    lstSearchCols[colSearchBehavior] = lstHeadCols[colBehavior];
+    lstSearchHeadSizes[colSearchBehavior] = lstHeadSizes[colBehavior];
+    lstSearchCols[colSearchComment] = lstHeadCols[colComment];
+    lstSearchHeadSizes[colSearchComment] = lstHeadSizes[colComment];
+    // Colonne allineate a SX nel Grid Search
+    lstSearchHeadLeftCols.clear();
+    lstSearchHeadLeftCols.append(colSearchName);
+    lstSearchHeadLeftCols.append(colSearchComment);
+    //-----------------------------------------
     // Regioni CT
+    //-----------------------------------------
     lstRegions.clear();
     for (nCol = 0; nCol < regTotals; nCol++)  {
         lstRegions.append(szEMPTY);
@@ -347,6 +395,99 @@ bool recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lst
     return true;
 }
 
+bool recCT2SearchFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow)
+// Conversione da CT Record a Lista Stringhe per Grid Search (REC -> Grid)
+// Da Record C a QStringList di valori per caricamento griglia
+{
+    QString     szTemp;
+    char        ip[MAX_IPADDR_LEN];
+
+    if (nRow < 0 || nRow >= CTRecords.count())  {
+        return false;
+    }
+    listClear(lstRecValues, colSearchTotals);
+    // Recupero informazioni da Record CT
+    if (CTRecords[nRow].UsedEntry)  {
+        // Numero Riga
+        szTemp = QString::fromAscii("%1") .arg(nRow + 1, lstSearchHeadSizes[colSearchNumRow], 10);
+        lstRecValues[colSearchNumRow] = szTemp;
+        // Priority
+        if (CTRecords[nRow].Enable >= 0 && CTRecords[nRow].Enable < nNumPriority)  {
+            lstRecValues[colSearchPriority] = lstPriority.at((int) CTRecords[nRow].Enable);
+        }
+        else   {
+            lstRecValues[colSearchPriority] = lstPriority.at(0);
+        }
+        // Campo Update
+        if (CTRecords[nRow].Update >= 0 && CTRecords[nRow].Update < lstUpdateNames.count())  {
+            lstRecValues[colSearchUpdate] = lstUpdateNames[CTRecords[nRow].Update];
+        }
+        else  {
+            lstRecValues[colSearchUpdate] = lstUpdateNames[0];
+        }
+        // Campo Name
+        lstRecValues[colSearchName] = QLatin1String(CTRecords[nRow].Tag);
+        // Campo Type
+        if (CTRecords[nRow].VarType >= BIT && CTRecords[nRow].VarType < TYPE_TOTALS)  {
+            lstRecValues[colSearchType] = lstTipi[CTRecords[nRow].VarType];
+        }
+        else  {
+            lstRecValues[colSearchType] = lstTipi[0];
+        }
+        // Campo Decimal
+        lstRecValues[colSearchDecimal] = QString::fromAscii("%1") .arg(CTRecords[nRow].Decimal, lstSearchHeadSizes[colSearchDecimal], 10);
+        // Protocol
+        if (CTRecords[nRow].Protocol >= 0 && CTRecords[nRow].Protocol < lstProtocol.count())  {
+            lstRecValues[colSearchProtocol] = lstProtocol[CTRecords[nRow].Protocol];
+        }
+        else  {
+            lstRecValues[colSearchProtocol] = lstProtocol[PLC];
+        }
+        // IP Address (Significativo solo per Protocolli a base TCP)
+        if (CTRecords[nRow].Protocol == TCP || CTRecords[nRow].Protocol == TCPRTU ||
+                CTRecords[nRow].Protocol == TCP_SRV || CTRecords[nRow].Protocol ==TCPRTU_SRV)  {
+            ipaddr2str(CTRecords[nRow].IPAddress, ip);
+            szTemp = QLatin1String(ip);
+        }
+        else  {
+            szTemp = szEMPTY;
+        }
+        lstRecValues[colSearchIP] = szTemp;
+        // Port
+        lstRecValues[colSearchPort] = QString::fromAscii("%1") .arg(CTRecords[nRow].Port, lstSearchHeadSizes[colSearchPort], 10);
+        // Node Id
+        lstRecValues[colSearchNodeID] = QString::fromAscii("%1") .arg(CTRecords[nRow].NodeId, lstSearchHeadSizes[colSearchNodeID], 10);
+        // Offeset (Register)
+        lstRecValues[colSearchRegister] = QString::fromAscii("%1") .arg(CTRecords[nRow].Offset, lstSearchHeadSizes[colSearchRegister], 10);
+        // PLC forza tutto a Blank
+        if (CTRecords[nRow].Protocol == PLC)  {
+            lstRecValues[colSearchPort] = szEMPTY;
+            lstRecValues[colSearchNodeID] = szEMPTY;
+            lstRecValues[colSearchRegister] = szEMPTY;
+        }
+        // Commento
+        lstRecValues[colSearchComment] = QString::fromAscii(CTRecords[nRow].Comment).trimmed().left(MAX_COMMENT_LEN - 1);
+        // Behavior
+        // Allarme o Evento (non MPNx)
+        if (CTRecords[nRow].usedInAlarmsEvents && CTRecords[nRow].Behavior >= behavior_alarm)  {
+            // Tipo Allarme-Evento
+            if (CTRecords[nRow].ALType == Alarm)
+                lstRecValues[colSearchBehavior] = lstBehavior[behavior_alarm];
+            else if (CTRecords[nRow].ALType == Event)
+                lstRecValues[colSearchBehavior] = lstBehavior[behavior_event];
+        }
+        else   {
+            // R/O o R/W
+            if (CTRecords[nRow].Behavior == behavior_readonly)
+                lstRecValues[colSearchBehavior] = lstBehavior[behavior_readonly];
+            else if (CTRecords[nRow].Behavior == behavior_readwrite)
+                lstRecValues[colSearchBehavior] = lstBehavior[behavior_readwrite];
+        }
+    }
+    // Return value
+    return true;
+}
+
 bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow)
 // Conversione da CT Record a record come Lista Stringhe per Interfaccia (Grid)
 // Da Record C a QStringList di valori per caricamento griglia
@@ -415,8 +556,9 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
             ipaddr2str(CTRecords[nRow].IPAddress, ip);
             szTemp = QLatin1String(ip);
         }
-        else
+        else  {
             szTemp = szEMPTY;
+        }
         lstRecValues[colIP] = szTemp;
         // Port
         lstRecValues[colPort] = QString::number(CTRecords[nRow].Port);

@@ -43,19 +43,20 @@ SearchVariable::SearchVariable(QWidget *parent) :
     ui->txtNode->clear();
     // Lista Colonne Visibili
     lstVisibleCols.clear();
-    lstVisibleCols.append(colPriority);
-    lstVisibleCols.append(colUpdate);
-    lstVisibleCols.append(colName);
-    lstVisibleCols.append(colType);
-    lstVisibleCols.append(colDecimal);
-    lstVisibleCols.append(colProtocol);
-    lstVisibleCols.append(colPort);
-    lstVisibleCols.append(colNodeID);
-    lstVisibleCols.append(colRegister);
-    lstVisibleCols.append(colBehavior);
-    lstVisibleCols.append(colComment);
+    lstVisibleCols.append(colSearchNumRow);
+    lstVisibleCols.append(colSearchPriority);
+    lstVisibleCols.append(colSearchUpdate);
+    lstVisibleCols.append(colSearchName);
+    lstVisibleCols.append(colSearchType);
+    lstVisibleCols.append(colSearchDecimal);
+    lstVisibleCols.append(colSearchProtocol);
+    lstVisibleCols.append(colSearchPort);
+    lstVisibleCols.append(colSearchNodeID);
+    lstVisibleCols.append(colSearchRegister);
+    lstVisibleCols.append(colSearchBehavior);
+    lstVisibleCols.append(colSearchComment);
     // Righe presenti
-    lstRowNumbers.clear();
+    // lstRowNumbers.clear();
     // Azioni collegate ai pulsanti
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
@@ -64,6 +65,7 @@ SearchVariable::SearchVariable(QWidget *parent) :
     // Row Double Clicled
     connect(ui->tblVariables, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onRowDoubleClicked(QModelIndex)));
     connect(ui->tblVariables, SIGNAL(clicked(QModelIndex)), this, SLOT(onRowClicked(QModelIndex)));
+    connect(ui->tblVariables, SIGNAL(itemSelectionChanged()), this, SLOT(rowChanged()));
     connect(ui->tblVariables->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(sortVarColumn(int)));
     nSelectedRow = -1;
     fCaseSensitive = false;
@@ -87,6 +89,7 @@ bool SearchVariable::filterCTVars()
     int                 nCur = 0;
     int                 nCol = 0;
     int                 nFound = 0;
+    int                 nFirstRow = -1;
     QStringList         lstLineValues;
     QList<QStringList > lstTableRows;
     QList<int16_t>      lstRowPriority;
@@ -109,18 +112,24 @@ bool SearchVariable::filterCTVars()
     ui->tblVariables->clear();
     nSelectedRow = -1;
     // Verifica elementi di CT
-    lstRowNumbers.clear();
+    // lstRowNumbers.clear();
+    hashVariables.clear();
     lstTableRows.clear();
     lstRowPriority.clear();
     lstRows.clear();
     for (nCur = 0; nCur < lstCTRecords.count(); nCur++)  {
         // Convert CT Record 2 User Values
-        fRes = recCT2FieldsValues(lstCTRecords, lstLineValues, nCur);
+        fRes = recCT2SearchFieldsValues(lstCTRecords, lstLineValues, nCur);
         if (fRes)  {
             // Controllo se la riga corrente supera il filtro
             if (rec2show(lstLineValues, nCur))  {
+                // Seleziona la prima riga utile
+                if (nFirstRow < 0)  {
+                    nFirstRow = nCur  + 1;
+                }
                 lstTableRows.append(lstLineValues);
                 lstRowPriority.append(lstCTRecords[nCur].Enable);
+                hashVariables.insert(lstLineValues[colSearchName], nCur);
                 lstRows.append(nCur);
                 nFound++;
             }
@@ -128,37 +137,34 @@ bool SearchVariable::filterCTVars()
     }
     // Dimensionamento e caricamento elementi in Tabella
     ui->tblVariables->setRowCount(lstTableRows.count());
-    ui->tblVariables->setColumnCount(colTotals);
+    ui->tblVariables->setColumnCount(colSearchTotals);
     // Caricamento in Tabella
     for (nCur = 0; nCur < lstTableRows.count(); nCur++)  {
-        // Imposta Numero Riga
-        lstRowNumbers.append(QString::fromAscii("%1") .arg(lstRows[nCur] + 1, 5, 10));
         // Aggiunge elemento in Tabella
-        fRes = list2GridRow(ui->tblVariables, lstTableRows[nCur], lstHeadLeftCols, nCur);
+        fRes = list2GridRow(ui->tblVariables, lstTableRows[nCur], lstSearchHeadLeftCols, nCur);
     }
     // Impostazione parametri TableView
     ui->tblVariables->setCornerButtonEnabled(false);
-    ui->tblVariables->setVerticalHeaderLabels(lstRowNumbers);
+    // ui->tblVariables->setVerticalHeaderLabels(lstRowNumbers);
     ui->tblVariables->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tblVariables->setSelectionMode(QAbstractItemView::SingleSelection);
-    setGridParams(ui->tblVariables, lstHeadCols, lstHeadSizes, QAbstractItemView::SingleSelection);
+    setGridParams(ui->tblVariables, lstSearchCols, lstSearchHeadSizes, QAbstractItemView::SingleSelection);
     // Colore di Sfondo delle righe
     for (nCur = 0; nCur < lstTableRows.count(); nCur++)  {
         setRowColor(ui->tblVariables, nCur, 0, 1, lstRowPriority[nCur], (lstRows[nCur] - nCur));
     }
     // Nascondi Colonne non visibili
-    for (nCol = 0; nCol < colTotals; nCol++)  {
+    for (nCol = 0; nCol < colSearchTotals; nCol++)  {
         // Se la colonna non è tra quelle visibili la nasconde
         if (lstVisibleCols.indexOf(nCol) < 0)  {
             ui->tblVariables->setColumnHidden(nCol, true);
         }
     }
     ui->tblVariables->verticalHeader()->setSortIndicatorShown(false);
-//    // Filtro per gli ordimanenti di colonna
-//    QSortFilterProxyModel filterVars(this);
-//    filterVars.setSourceModel(ui->tblVariables->model());
-//    filterVars.setFilterCaseSensitivity(Qt::CaseInsensitive);
-//    ui->tblVariables->setModel(& filterVars);
+    // Filtro per gli ordimanenti di colonna
+    ui->tblVariables->setSortingEnabled(true);
+    ui->tblVariables->sortByColumn(colSearchNumRow, Qt::AscendingOrder);
+    ui->tblVariables->verticalHeader()->setSortIndicatorShown(true);
     // Numero di Elementi trovato
     ui->lblFound->setText(QString::number(nFound));
 
@@ -166,6 +172,7 @@ bool SearchVariable::filterCTVars()
     this->setCursor(Qt::ArrowCursor);
     qDebug("ctable2Filter(): Found %d", nFound);
     if (nFound)  {
+        nSelectedRow = nFirstRow;
         ui->tblVariables->selectRow(0);
         fRes = true;
     }
@@ -186,7 +193,7 @@ bool    SearchVariable::rec2show(QStringList &lstFields, int nRow)
     Qt::CaseSensitivity caseCompare = fCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
     // Entry non utilizzata
-    if (lstFields[colName].trimmed().isEmpty())  {
+    if (lstFields[colSearchName].trimmed().isEmpty())  {
         goto endCheck;
     }
     // Controllo sulla Sezione
@@ -224,37 +231,37 @@ bool    SearchVariable::rec2show(QStringList &lstFields, int nRow)
     }
     // Controllo su Priorità
     if (ui->cboPriority->currentIndex() >= 0)  {
-        if (lstFields[colPriority] != ui->cboPriority->currentText())  {
+        if (lstFields[colSearchPriority] != ui->cboPriority->currentText())  {
             goto endCheck;
         }
     }
     // Controllo sul Tipo
     if (ui->cboType->currentIndex() >= 0)  {
-        if (lstFields[colType] != ui->cboType->currentText())  {
+        if (lstFields[colSearchType] != ui->cboType->currentText())  {
             goto endCheck;
         }
     }
     // Controllo sul Protocollo
     if (ui->cboProtocol->currentIndex() >= 0)  {
-        if (lstFields[colProtocol] != ui->cboProtocol->currentText())  {
+        if (lstFields[colSearchProtocol] != ui->cboProtocol->currentText())  {
             goto endCheck;
         }
     }
     // Controllo sul numero di Nodo
     if (! szNode.isEmpty())  {
-        if (lstFields[colNodeID] != szNode)  {
+        if (lstFields[colSearchNodeID] != szNode)  {
             goto endCheck;
         }
     }
     // Filtro sui Nomi delle variabili
     if (! szNameFilter.isEmpty())  {
         if (fNameStartsWith)  {
-            if (! lstFields[colName].startsWith(szNameFilter, caseCompare)) {
+            if (! lstFields[colSearchName].startsWith(szNameFilter, caseCompare)) {
                 goto endCheck;
             }
         }
         else  {
-            if (! lstFields[colName].contains(szNameFilter, caseCompare))  {
+            if (! lstFields[colSearchName].contains(szNameFilter, caseCompare))  {
                 goto endCheck;
             }
         }
@@ -373,11 +380,10 @@ void    SearchVariable::onRowClicked(const QModelIndex &index)
     int nRow = index.row();
 
     if (nRow >= 0)  {
-        // Deduce il Numero di Riga assoluto in CT dal verticalHeader della griglia
-        QTableWidgetItem    *tItem = ui->tblVariables->verticalHeaderItem(nRow);
-        if (tItem != 0)  {
+        QVariant vRowValue = ui->tblVariables->model()->index(nRow, colSearchNumRow).data();
+        if (vRowValue.isValid())  {
             bool fOk = false;
-            nRow = tItem->text().toInt(&fOk);
+            nRow = vRowValue.toInt(&fOk);
             if (fOk)  {
                 nSelectedRow = nRow;
                 qDebug("SearchVariable::onRowClicked(): Row %d", nRow);
@@ -392,11 +398,10 @@ void    SearchVariable::onRowDoubleClicked(const QModelIndex &index)
     int nRow = index.row();
 
     if (nRow >= 0)  {
-        // Deduce il Numero di Riga assoluto in CT dal verticalHeader della griglia
-        QTableWidgetItem    *tItem = ui->tblVariables->verticalHeaderItem(nRow);
-        if (tItem != 0)  {
+        QVariant vRowValue = ui->tblVariables->model()->index(nRow, colSearchNumRow).data();
+        if (vRowValue.isValid())  {
             bool fOk = false;
-            nRow = tItem->text().toInt(&fOk);
+            nRow = vRowValue.toInt(&fOk);
             if (fOk)  {
                 nSelectedRow = nRow;
                 qDebug("SearchVariable::onRowDoubleClicked(): Row %d", nRow);
@@ -409,6 +414,26 @@ void    SearchVariable::onRowDoubleClicked(const QModelIndex &index)
 void SearchVariable::sortVarColumn(int nColumn)
 {
     qDebug("sortVarColumn(): Column: %d", nColumn);
+    ui->tblVariables->setSortingEnabled(true);
     ui->tblVariables->sortByColumn(nColumn);
     ui->tblVariables->verticalHeader()->setSortIndicatorShown(true);
+}
+void SearchVariable::rowChanged()
+{
+    int             nRow = -1;
+    QModelIndexList selection = ui->tblVariables->selectionModel()->selectedRows();
+
+
+    if (selection.count() > 0)  {
+        nRow = selection.at(0).row();
+        QVariant vRowValue = ui->tblVariables->model()->index(nRow, colSearchNumRow).data();
+        if (vRowValue.isValid())  {
+            bool fOk = false;
+            nRow = vRowValue.toInt(&fOk);
+            if (fOk)  {
+                nSelectedRow = nRow;
+            }
+        }
+    }
+    qDebug("rowChanged(): Row %d", nRow);
 }

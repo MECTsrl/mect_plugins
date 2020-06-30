@@ -16,18 +16,21 @@ extern QStringList lstPriority;         // Elenco dei valori di Priority
 extern QStringList lstPriorityDesc;     // Descrizioni Priority
 extern QStringList lstBehavior;         // Significato variabili
 extern QStringList lstCondition;        // Operatori Logici per Allarmi
-extern QStringList lstHeadCols;
-extern QStringList lstHeadNames;
-extern QList<int>  lstHeadSizes;
+extern QStringList lstHeadCols;         // Header Colonne Grid principale
+extern QStringList lstHeadNames;        // Nome della colonna nel Grid principale
+extern QList<int>  lstHeadSizes;        // Largezza Header Grid Principale
 extern QList<int > lstHeadLeftCols;     // Indici di colonna con allineamento a SX
-
+// Liste per gestione dei Grid e dei valori dell'interfaccia
 extern QStringList lstRegions;          // Aree della CT
 extern QStringList lstTipi;             // Descrizione dei Tipi
 extern QStringList lstUpdateNames;      // Descrizione delle Priorità
 extern QStringList lstProtocol;         // Descrizione dei Protocolli
 extern QStringList lstMPNxCols;         // Header Colonne MPNx
-extern QList<int>  lstMNPxHeadSizes;    // Largezza Header MPNx
+extern QList<int>  lstMPNxHeadSizes;    // Largezza Header MPNx
 extern QList<int>  lstMPNxHeadLeftCols; // Indici di colonna MPNx con allineamento a SX
+extern QStringList lstSearchCols;       // Header Colonne Search
+extern QList<int>  lstSearchHeadSizes;  // Largezza Header Search
+extern QList<int>  lstSearchHeadLeftCols;// Indici di colonna Search con allineamento a SX
 
 extern bool        isSerialPortEnabled; // Vero se almeno una porta seriale è abilitata
 extern int         nPresentSerialPorts; // Numero di porte Seriali utilizzabili a bordo
@@ -60,6 +63,7 @@ void    initLists();                       // Init delle Liste globali
 void    setRowColor(QTableWidget *table, int nRow, int nAlternate, int nUsed, int nPriority, int nBaseOffset = 0);   // Imposta il colore di sfondo di una riga
 bool    recCT2MPNxFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow, QList<CrossTableRecord> &lstModel, int nModelRow);// Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
 bool    recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow);        // Conversione da CT Record a Lista Stringhe per Interfaccia (REC -> Grid)
+bool    recCT2SearchFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow);  // Conversione da CT Record a Lista Stringhe per Grid Search (REC -> Grid)
 bool    fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow);     // Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
 void    freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow);                    // Marca il Record della CT come inutilizzato
 int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSlow, int &nOnVar, int &nOnShot);                 // Conta il Numero delle Variabili CT che sono Loggate

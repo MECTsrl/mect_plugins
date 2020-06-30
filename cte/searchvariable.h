@@ -2,6 +2,8 @@
 #define SEARCHVARIABLE_H
 
 #include <QDialog>
+#include <QString>
+#include <QHash>
 #include <QList>
 #include <QStringList>
 #include <QModelIndex>
@@ -32,17 +34,19 @@ private slots:
     void onRowDoubleClicked(const QModelIndex &index);
     void sortVarColumn(int nColumn);
     void resetFilters();
+    void rowChanged();
 
 private:
     bool    filterCTVars();
     bool    rec2show(QStringList &lstFields, int nRow);
     Ui::SearchVariable *ui;
     QList<int>      lstVisibleCols;
-    QStringList     lstRowNumbers;
+    // QStringList     lstRowNumbers;
     bool            isResettingFilter;
     int             nSelectedRow;
     bool            fCaseSensitive;
     bool            fNameStartsWith;
+    QHash<QString, int> hashVariables;
 };
 
 #endif // SEARCHVARIABLE_H

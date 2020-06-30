@@ -1002,7 +1002,7 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
         list2GridRow(tblCT, lstTableRows[nRow], lstMPNxHeadLeftCols, nRow);
     }
     tblCT->setVerticalHeaderLabels(lstRowNumbers);
-    setGridParams(tblCT, lstMPNxCols, lstMNPxHeadSizes, QAbstractItemView::SingleSelection);
+    setGridParams(tblCT, lstMPNxCols, lstMPNxHeadSizes, QAbstractItemView::SingleSelection);
     // Colore di Sfondo
     for (nRow = 0; nRow < lstTableRows.count(); nRow++)  {
         setRowColor(tblCT, nRow, 0, 1, lstRowPriority[nRow], m_nBaseRow);

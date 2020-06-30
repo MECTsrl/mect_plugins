@@ -140,6 +140,23 @@ enum colonne_MPNx  {
     colMPNxTotals
 };
 
+enum colonneSearch {
+    colSearchNumRow = 0,
+    colSearchPriority,
+    colSearchUpdate,
+    colSearchName,
+    colSearchType,
+    colSearchDecimal,
+    colSearchProtocol,
+    colSearchIP,
+    colSearchPort,
+    colSearchNodeID,
+    colSearchRegister,
+    colSearchBehavior,
+    colSearchComment,
+    colSearchTotals
+};
+
 enum modbusserver_e
 {
     srvRTU0 = 0,
