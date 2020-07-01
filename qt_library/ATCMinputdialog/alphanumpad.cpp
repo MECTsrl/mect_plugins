@@ -104,6 +104,7 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
 void alphanumpad::reload()
 {
     showUpper(capsLock);
+    ui->showSymbols->setChecked(false);
     ui->lineEditVal->setFocus();
     clean = false;
 }
@@ -409,4 +410,163 @@ void alphanumpad::showUpper(bool checked)
         ui->w->setText("w");
         ui->z->setText("z");
     }
+}
+
+void alphanumpad::on_showSymbols_toggled(bool checked)
+{
+    if (checked) {
+        ui->showSymbols->setText("2/2");
+        ui->stackedKeys->setCurrentIndex(1);
+    }
+    else  {
+        ui->showSymbols->setText("1/2");
+        ui->stackedKeys->setCurrentIndex(0);
+    }
+}
+
+void alphanumpad::on_pushButtonMinus_clicked()
+{
+    ui->lineEditVal->insert("-");
+}
+
+void alphanumpad::on_pushButtonPlus_clicked()
+{
+    ui->lineEditVal->insert("+");
+}
+
+void alphanumpad::on_pushButtonColon_clicked()
+{
+    ui->lineEditVal->insert(":");
+}
+
+void alphanumpad::on_pushButtonAsterisk_clicked()
+{
+    ui->lineEditVal->insert("*");
+}
+
+void alphanumpad::on_pushButtonEquals_clicked()
+{
+    ui->lineEditVal->insert("=");
+}
+
+
+void alphanumpad::on_pushButtonDollar_clicked()
+{
+    ui->lineEditVal->insert("$");
+}
+
+void alphanumpad::on_pushButtonCaret_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(94)));
+}
+
+
+void alphanumpad::on_pushButtonPipe_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(124)));
+}
+
+void alphanumpad::on_pushButtonSemicolon_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(59)));
+}
+
+void alphanumpad::on_pushButtonQuestionMark_clicked()
+{
+    ui->lineEditVal->insert("?");
+}
+
+void alphanumpad::on_pushButtonExclamationMark_clicked()
+{
+    ui->lineEditVal->insert("!");
+}
+
+void alphanumpad::on_pushButtonAtSign_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(64)));
+}
+
+void alphanumpad::on_pushButtonPercent_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(37)));
+}
+
+void alphanumpad::on_pushButtonLessThan_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(60)));
+}
+
+void alphanumpad::on_pushButtonMoreThan_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(62)));
+}
+
+void alphanumpad::on_pushButtonHash_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(35)));
+}
+
+void alphanumpad::on_pushButtonAmpersand_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(38)));
+}
+
+void alphanumpad::on_pushButtonSlash_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(47)));
+}
+
+void alphanumpad::on_pushButtonComma_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(44)));
+}
+
+void alphanumpad::on_pushButtonBackSlash_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(92)));
+}
+
+void alphanumpad::on_pushButtonOpenGraph_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(123)));
+}
+
+void alphanumpad::on_pushButtonCloseGraph_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(125)));
+}
+
+void alphanumpad::on_pushButtonOpenSquare_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(91)));
+}
+
+void alphanumpad::on_pushButtonCloseSquare_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(93)));
+}
+
+void alphanumpad::on_pushButtonOpenBracket_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(40)));
+}
+
+void alphanumpad::on_pushButtonCloseBracket_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(41)));
+}
+
+void alphanumpad::on_pushButtonTilde_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(126)));
+}
+
+void alphanumpad::on_pushButtonBacktick_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(96)));
+}
+
+void alphanumpad::on_pushButtonDoubleQuote_clicked()
+{
+    ui->lineEditVal->insert(QString(QChar::fromAscii(34)));
 }
