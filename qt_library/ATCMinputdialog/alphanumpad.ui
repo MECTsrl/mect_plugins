@@ -3215,7 +3215,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>9</pointsize>
+         <pointsize>6</pointsize>
         </font>
        </property>
        <property name="toolTip">
