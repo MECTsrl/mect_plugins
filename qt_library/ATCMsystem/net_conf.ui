@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>321</width>
-    <height>327</height>
+    <width>480</width>
+    <height>281</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -74,7 +74,7 @@ QComboBox
 }  </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_eth0">
       <attribute name="title">
@@ -632,7 +632,7 @@ QComboBox
              </property>
             </widget>
            </item>
-           <item row="0" column="1" colspan="2">
+           <item row="0" column="2" colspan="2">
             <widget class="QComboBox" name="comboBox_wlan0_essid">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
@@ -645,7 +645,7 @@ QComboBox
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="label__wlan0_pwd">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -661,7 +661,7 @@ QComboBox
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="2" column="2">
             <widget class="QPushButton" name="pushButton_wlan0_pwd">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
@@ -677,7 +677,7 @@ QComboBox
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="label_wlan0_MACtxt">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -693,7 +693,7 @@ QComboBox
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
+           <item row="2" column="3">
             <widget class="QCheckBox" name="checkBox_wlan0_DHCP">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -718,7 +718,7 @@ QComboBox
              </property>
             </widget>
            </item>
-           <item row="2" column="1" colspan="2">
+           <item row="3" column="2" colspan="2">
             <widget class="QLabel" name="label_wlan0_MAC">
              <property name="sizePolicy">
               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -734,6 +734,20 @@ QComboBox
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="checkBox_hiddenESSID">
+             <property name="text">
+              <string>Hidden WLan</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="pushButton_hidden_WLan">
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>
