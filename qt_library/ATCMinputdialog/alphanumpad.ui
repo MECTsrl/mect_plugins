@@ -21,7 +21,7 @@
     <number>2</number>
    </property>
    <property name="margin">
-    <number>6</number>
+    <number>2</number>
    </property>
    <item>
     <widget class="QLineEdit" name="lineEditVal">
@@ -49,6 +49,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <property name="spacing">
+      <number>0</number>
+     </property>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
@@ -64,7 +67,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>40</width>
+           <width>36</width>
            <height>40</height>
           </size>
          </property>
@@ -133,7 +136,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>40</width>
+           <width>36</width>
            <height>40</height>
           </size>
          </property>
@@ -224,7 +227,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -237,7 +240,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -267,7 +270,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -280,7 +283,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -310,7 +313,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -323,7 +326,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -353,7 +356,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -366,7 +369,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -396,7 +399,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -409,7 +412,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -439,7 +442,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -452,7 +455,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -482,7 +485,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -495,7 +498,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -525,7 +528,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -538,7 +541,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -568,7 +571,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -581,7 +584,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -611,7 +614,7 @@ border: 2px solid  rgb(194, 194, 194);
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
+             <width>24</width>
              <height>30</height>
             </size>
            </property>
@@ -624,7 +627,7 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="font">
             <font>
              <family>DejaVu Sans Mono</family>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>50</weight>
              <italic>false</italic>
              <bold>false</bold>
@@ -666,7 +669,16 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="spacing">
             <number>2</number>
            </property>
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>2</number>
            </property>
            <item>
@@ -697,7 +709,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -710,7 +722,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -740,7 +752,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -753,7 +765,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -783,7 +795,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -796,7 +808,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -826,7 +838,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -839,7 +851,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -869,7 +881,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -882,7 +894,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -912,7 +924,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -925,7 +937,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -955,7 +967,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -968,7 +980,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -998,7 +1010,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1011,7 +1023,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1041,7 +1053,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1054,7 +1066,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1175,7 +1187,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1188,7 +1200,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1218,7 +1230,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1231,7 +1243,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1261,7 +1273,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1274,7 +1286,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1304,7 +1316,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1317,7 +1329,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1347,7 +1359,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1360,7 +1372,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1390,7 +1402,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1403,7 +1415,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1433,7 +1445,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1446,7 +1458,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1476,7 +1488,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1489,7 +1501,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1519,7 +1531,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1532,7 +1544,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1625,7 +1637,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1638,7 +1650,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="focusPolicy">
@@ -1659,7 +1671,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1672,7 +1684,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1702,7 +1714,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1715,7 +1727,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1745,7 +1757,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1758,7 +1770,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1788,7 +1800,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1801,7 +1813,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1831,7 +1843,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1844,7 +1856,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1874,7 +1886,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1887,7 +1899,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1917,7 +1929,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1930,7 +1942,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                  <weight>50</weight>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1960,7 +1972,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1973,7 +1985,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="focusPolicy">
@@ -1994,7 +2006,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2007,7 +2019,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="focusPolicy">
@@ -2055,7 +2067,16 @@ border: 2px solid  rgb(194, 194, 194);
            <property name="spacing">
             <number>2</number>
            </property>
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>2</number>
            </property>
            <item>
@@ -2073,7 +2094,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2086,7 +2107,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2110,7 +2131,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2123,7 +2144,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2147,7 +2168,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2160,7 +2181,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2184,7 +2205,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2197,7 +2218,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2221,7 +2242,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2234,7 +2255,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2258,7 +2279,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2271,7 +2292,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2295,7 +2316,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2308,7 +2329,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2332,7 +2353,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2345,7 +2366,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2369,7 +2390,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2382,7 +2403,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2406,7 +2427,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2419,7 +2440,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2442,6 +2463,17 @@ border: 2px solid  rgb(194, 194, 194);
              </property>
              <item>
               <spacer name="horizontalSpacer_9">
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>13</pointsize>
+                </font>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -2463,7 +2495,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2476,7 +2508,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2500,7 +2532,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2513,7 +2545,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2537,7 +2569,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2550,7 +2582,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2574,7 +2606,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2587,7 +2619,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2611,7 +2643,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2624,7 +2656,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2648,7 +2680,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2661,7 +2693,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2685,7 +2717,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2698,7 +2730,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2722,7 +2754,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2735,7 +2767,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2759,7 +2791,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2772,7 +2804,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2788,6 +2820,17 @@ border: 2px solid  rgb(194, 194, 194);
              </item>
              <item>
               <spacer name="horizontalSpacer_10">
+               <property name="minimumSize">
+                <size>
+                 <width>24</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>13</pointsize>
+                </font>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -2829,7 +2872,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2842,7 +2885,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2866,7 +2909,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2879,7 +2922,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2903,7 +2946,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2916,7 +2959,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2940,7 +2983,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2953,7 +2996,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -2977,7 +3020,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -2990,7 +3033,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -3014,7 +3057,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -3027,7 +3070,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -3051,7 +3094,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -3064,7 +3107,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -3088,7 +3131,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -3101,7 +3144,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -3125,7 +3168,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -3138,7 +3181,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -3162,7 +3205,7 @@ border: 2px solid  rgb(194, 194, 194);
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>24</width>
                  <height>30</height>
                 </size>
                </property>
@@ -3175,7 +3218,7 @@ border: 2px solid  rgb(194, 194, 194);
                <property name="font">
                 <font>
                  <family>DejaVu Sans Mono</family>
-                 <pointsize>14</pointsize>
+                 <pointsize>13</pointsize>
                 </font>
                </property>
                <property name="toolTip">
@@ -3313,7 +3356,7 @@ border: 2px solid  rgb(194, 194, 194);
          </property>
          <property name="minimumSize">
           <size>
-           <width>40</width>
+           <width>36</width>
            <height>40</height>
           </size>
          </property>
@@ -3350,7 +3393,7 @@ border: 2px solid  rgb(194, 194, 194);
          </property>
          <property name="minimumSize">
           <size>
-           <width>40</width>
+           <width>36</width>
            <height>40</height>
           </size>
          </property>
@@ -3406,7 +3449,7 @@ border: 2px solid  rgb(194, 194, 194);
          </property>
          <property name="minimumSize">
           <size>
-           <width>40</width>
+           <width>36</width>
            <height>40</height>
           </size>
          </property>
