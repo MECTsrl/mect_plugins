@@ -3202,20 +3202,20 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="minimumSize">
         <size>
-         <width>50</width>
+         <width>40</width>
          <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>50</width>
+         <width>45</width>
          <height>70</height>
         </size>
        </property>
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>12</pointsize>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="toolTip">
@@ -3265,7 +3265,7 @@ border: 2px solid  rgb(194, 194, 194);
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string notr="true">space</string>
+        <string notr="true"/>
        </property>
       </widget>
      </item>
