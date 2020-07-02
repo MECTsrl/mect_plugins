@@ -3202,20 +3202,20 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="minimumSize">
         <size>
-         <width>40</width>
+         <width>50</width>
          <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>45</width>
+         <width>50</width>
          <height>70</height>
         </size>
        </property>
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>6</pointsize>
+         <pointsize>5</pointsize>
         </font>
        </property>
        <property name="toolTip">
@@ -3227,10 +3227,19 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="text">
         <string notr="true">1/2</string>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>6</width>
+         <height>6</height>
+        </size>
+       </property>
        <property name="checkable">
         <bool>true</bool>
        </property>
        <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
         <bool>false</bool>
        </property>
       </widget>
@@ -3245,7 +3254,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="minimumSize">
         <size>
-         <width>30</width>
+         <width>50</width>
          <height>40</height>
         </size>
        </property>
