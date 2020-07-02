@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>326</height>
+    <height>272</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,21 +35,21 @@
    <item>
     <widget class="QLineEdit" name="lineEditVal">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>30</width>
-       <height>50</height>
+       <width>2</width>
+       <height>35</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>80</height>
+       <height>60</height>
       </size>
      </property>
      <property name="font">
@@ -77,7 +77,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>10</height>
+       <height>1</height>
       </size>
      </property>
     </spacer>
@@ -98,13 +98,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -130,7 +130,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton2">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -141,13 +141,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -173,7 +173,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton3">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -184,13 +184,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -216,7 +216,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton4">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -227,13 +227,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -259,7 +259,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton5">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -270,13 +270,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -302,7 +302,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton6">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -313,13 +313,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -345,7 +345,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton7">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -356,13 +356,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -388,7 +388,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton8">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -399,13 +399,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -431,7 +431,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton9">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -442,13 +442,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -474,7 +474,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton0">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -485,13 +485,13 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -517,7 +517,7 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignVCenter">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButtonBackspace">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -528,13 +528,13 @@
        <property name="minimumSize">
         <size>
          <width>24</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>70</width>
-         <height>80</height>
+         <height>140</height>
         </size>
        </property>
        <property name="font">
@@ -582,13 +582,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -614,7 +614,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="w">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -625,13 +625,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -657,7 +657,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="e">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -668,13 +668,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -700,7 +700,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="r">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -711,13 +711,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -743,7 +743,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="t">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -754,13 +754,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -786,7 +786,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="y">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -797,13 +797,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -829,7 +829,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="u">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -840,13 +840,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -872,7 +872,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="i">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -883,13 +883,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -915,7 +915,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="o">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -926,13 +926,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -958,7 +958,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="p">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -969,13 +969,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1036,7 +1036,7 @@
            </property>
           </spacer>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="a">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1047,13 +1047,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1079,7 +1079,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="s">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1090,13 +1090,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1122,7 +1122,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="d">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1133,13 +1133,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1165,7 +1165,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="f">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1176,13 +1176,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1208,7 +1208,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="g">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1219,13 +1219,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1251,7 +1251,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="h">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1262,13 +1262,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1294,7 +1294,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="j">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1305,13 +1305,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1337,7 +1337,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="k">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1348,13 +1348,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1380,7 +1380,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="l">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1391,13 +1391,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1458,7 +1458,7 @@
          <property name="spacing">
           <number>1</number>
          </property>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonSingleQuote">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1469,13 +1469,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1492,7 +1492,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="z">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1503,13 +1503,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1535,7 +1535,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="x">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1546,13 +1546,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1578,7 +1578,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="c">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1589,13 +1589,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1621,7 +1621,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="v">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1632,13 +1632,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1664,7 +1664,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="b">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1675,13 +1675,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1707,7 +1707,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="n">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1718,13 +1718,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1750,7 +1750,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="m">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1761,13 +1761,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1793,7 +1793,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonUnderscore">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1804,13 +1804,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1827,7 +1827,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonDot">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1838,13 +1838,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1878,7 +1878,7 @@
          <property name="spacing">
           <number>1</number>
          </property>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonMinus">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1889,13 +1889,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1915,7 +1915,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonPlus">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1926,13 +1926,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1952,7 +1952,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonAsterisk">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -1963,13 +1963,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -1989,7 +1989,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonSlash">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2000,13 +2000,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2026,7 +2026,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonEquals">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2037,13 +2037,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2063,7 +2063,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonColon">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2074,13 +2074,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2100,7 +2100,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonSemicolon">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2111,13 +2111,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2137,7 +2137,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonDollar">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2148,13 +2148,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2174,7 +2174,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonCaret">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2185,13 +2185,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2211,7 +2211,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonPipe">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2222,13 +2222,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2288,7 +2288,7 @@
            </property>
           </spacer>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonQuestionMark">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2299,13 +2299,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2325,7 +2325,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonExclamationMark">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2336,13 +2336,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2362,7 +2362,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonAtSign">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2373,13 +2373,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2399,7 +2399,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonComma">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2410,13 +2410,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2436,7 +2436,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonPercent">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2447,13 +2447,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2473,7 +2473,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonLessThan">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2484,13 +2484,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2510,7 +2510,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonMoreThan">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2521,13 +2521,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2547,7 +2547,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonHash">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2558,13 +2558,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2584,7 +2584,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignVCenter">
           <widget class="QPushButton" name="pushButtonBackSlash">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2595,13 +2595,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2661,7 +2661,7 @@
          <property name="spacing">
           <number>1</number>
          </property>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonDoubleQuote">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2672,13 +2672,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2698,7 +2698,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonAmpersand">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2709,13 +2709,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2735,7 +2735,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonOpenGraph">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2746,13 +2746,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2772,7 +2772,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonCloseGraph">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2783,13 +2783,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2809,7 +2809,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonOpenSquare">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2820,13 +2820,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2846,7 +2846,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonCloseSquare">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2857,13 +2857,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2883,7 +2883,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonOpenBracket">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2894,13 +2894,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2920,7 +2920,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonCloseBracket">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2931,13 +2931,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2957,7 +2957,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonTilde">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2968,13 +2968,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -2994,7 +2994,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonBacktick">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -3005,13 +3005,13 @@
            <property name="minimumSize">
             <size>
              <width>20</width>
-             <height>50</height>
+             <height>40</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>70</width>
-             <height>80</height>
+             <height>140</height>
             </size>
            </property>
            <property name="font">
@@ -3033,22 +3033,6 @@
          </item>
         </layout>
        </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>5</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
     </widget>
@@ -3058,7 +3042,7 @@
      <property name="spacing">
       <number>1</number>
      </property>
-     <item alignment="Qt::AlignTop">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButtonEsc">
        <property name="enabled">
         <bool>true</bool>
@@ -3078,7 +3062,7 @@
        <property name="maximumSize">
         <size>
          <width>40</width>
-         <height>70</height>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3136,7 +3120,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButtonClear">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -3153,7 +3137,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>40</width>
-         <height>70</height>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3189,7 +3173,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="showSymbols">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -3206,7 +3190,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>50</width>
-         <height>70</height>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3241,7 +3225,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButtonSpace">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -3258,7 +3242,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>70</height>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3275,7 +3259,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButtonCapsLock">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -3292,7 +3276,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>40</width>
-         <height>70</height>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3315,7 +3299,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignTop">
+     <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButtonEnter">
        <property name="enabled">
         <bool>true</bool>
@@ -3335,7 +3319,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>40</width>
-         <height>70</height>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
