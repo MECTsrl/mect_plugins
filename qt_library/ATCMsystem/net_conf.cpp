@@ -48,6 +48,8 @@ net_conf::net_conf(QWidget *parent) :
     translateFontSize(this);
     ui->comboBox_wlan0_essid->clear();
     ui->comboBox_wlan0_essid->addItem(NONE);
+    ui->pushButton_hidden_wlan0->setText(NONE);
+    ui->checkBox_hiddenESSID->setChecked(false);
     is_eth0_enabled = (system("grep -c INTERFACE0 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
     is_eth1_enabled = (system("grep -c INTERFACE1 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
     ui->tab_eth0->setEnabled(is_eth0_enabled);
@@ -606,7 +608,7 @@ void net_conf::reload()
     if (app_netconf_item_get(&tmp, "ESSIDW0") != NULL && tmp[0] != '\0')
     {
         wlan0_essid = QString(tmp).mid(1, strlen(tmp)-2);
-        if (wlan0_essid.length() == 0 && is_wlan_active)
+        if (wlan0_essid.isEmpty() && is_wlan_active)
         {
             FILE * fp = popen("iwconfig wlan0 2> /dev/null | grep ESSID: | cut -d: -f2", "r");
             if (fp == NULL)
@@ -623,9 +625,10 @@ void net_conf::reload()
             pclose(fp);
         }
         int index;
-        if (wlan0_essid.length())
+        if (! wlan0_essid.isEmpty())
         {
             index = ui->comboBox_wlan0_essid->findText(wlan0_essid);
+            ui->pushButton_hidden_wlan0->setText(wlan0_essid);
         }
         else
         {
@@ -658,7 +661,7 @@ void net_conf::reload()
         ui->pushButton_wlan0_pwd->setText(NONE);
     }
 
-    if (wlan0_essid.length() > 0 && wlan0_pwd.length() > 0)
+    if (! wlan0_essid.isEmpty() && ! wlan0_pwd.isEmpty())
     {
         char command[256];
         sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
@@ -1304,3 +1307,30 @@ bool net_conf::checkUSBwlanKey()
     return system("ifconfig wlan0 >/dev/null 2>&1") == 0;
 }
 
+
+void net_conf::on_pushButton_hidden_wlan0_clicked()
+{
+    char value [64];
+    alphanumpad tastiera_alfanum(value, wlan0_essid.toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted)
+    {
+        QString szValue = QString(value).trimmed();
+        ui->pushButton_hidden_wlan0->setText(szValue);
+        wlan0_essid = szValue;
+    }
+}
+
+void net_conf::on_checkBox_hiddenESSID_toggled(bool checked)
+{
+    if (checked)  {
+        ui->comboBox_wlan0_essid->setEnabled(false);
+        ui->pushButton_hidden_wlan0->setEnabled(true);
+        ui->pushButton_wlan0_scan->setEnabled(false);
+    }
+    else  {
+        ui->comboBox_wlan0_essid->setEnabled(true);
+        ui->pushButton_hidden_wlan0->setEnabled(false);
+        ui->pushButton_wlan0_scan->setEnabled(true);
+    }
+}

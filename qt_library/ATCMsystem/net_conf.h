@@ -64,6 +64,10 @@ private slots:
     void on_pushButton_wan0_DNS1_clicked();
     void on_pushButton_wan0_DNS2_clicked();
 
+    void on_pushButton_hidden_wlan0_clicked();
+
+    void on_checkBox_hiddenESSID_toggled(bool checked);
+
 private:
     bool checkNetAddr(char * ipaddr);
     bool saveETH0cfg();
