@@ -73,6 +73,8 @@ private slots:
     void on_cmdHideShow_toggled(bool checked);
     void on_cmdPLC_clicked();
     void on_cmdApply_clicked();
+    void on_cmdMultiEdit_toggled(bool checked);
+    void on_cmdCancel_clicked();
     void on_chkInputRegister_stateChanged(int state);   // Cambio di Stato della Checkbox Input Register
     void on_cboPriority_currentIndexChanged(int index);
     void on_cboUpdate_currentIndexChanged(int index);
@@ -81,6 +83,7 @@ private slots:
     void on_cboBehavior_currentIndexChanged(int index);
     void on_cboVariable1_currentIndexChanged(int index);
     void on_cboCondition_currentIndexChanged(int index);
+    void on_lstEditableFields_itemSelectionChanged();
     void on_optFixedVal_toggled(bool checked);
     void on_optVariableVal_toggled(bool checked);
     void on_cboSections_currentIndexChanged(int index);
@@ -88,12 +91,6 @@ private slots:
     void on_txtName_editingFinished();              // Modificato nome della variabile
     void treeItemDoubleClicked(const QModelIndex &index);
     void return2GridRow(int nRow);                  // Ritorno da Tab MPNC - MPNE
-
-
-
-    void on_cmdMultiEdit_toggled(bool checked);
-
-    void on_cmdCancel_clicked();
 
 private:
     //---------------------------------------------------------------------

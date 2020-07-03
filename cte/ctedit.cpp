@@ -12,6 +12,8 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QModelIndexList>
+#include <QListWidget>
+#include <QListWidgetItem>
 #include <QString>
 #include <QLatin1String>
 #include <QRect>
@@ -389,6 +391,8 @@ ctedit::ctedit(QWidget *parent) :
     theBlocksNumber = 0;
     m_fMultiSelect = false;
     m_fMultiEdit = false;
+    ui->lblEditableFields->setVisible(false);
+    ui->lstEditableFields->setVisible(false);
     ui->cmdCancel->setVisible(false);
     ui->cmdApply->setVisible(false);
     lstSelectedRows.clear();
@@ -428,6 +432,29 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtBlockSize->setEnabled(false);
     // Model Name
     ui->lblModel->setText(szEMPTY);
+    // Lista dei campi editabili in ListView
+    // QString szStyleItem = "QListWidget :: Item: hover {background: skyblue;} QListWidget :: item: selected {background: darkblue; color: yellow;}";
+    ui->lstEditableFields->clear();
+    ui->lstEditableFields->addItem(lstHeadCols[colPriority]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    ui->lstEditableFields->addItem(lstHeadCols[colUpdate]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    ui->lstEditableFields->addItem(lstHeadCols[colType]);
+    ui->lstEditableFields->addItem(lstHeadCols[colDecimal]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    ui->lstEditableFields->addItem(lstHeadCols[colProtocol]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    ui->lstEditableFields->addItem(lstHeadCols[colIP]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    ui->lstEditableFields->addItem(lstHeadCols[colPort]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    ui->lstEditableFields->addItem(lstHeadCols[colNodeID]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    ui->lstEditableFields->addItem(lstHeadCols[colRegister]);
+    ui->lstEditableFields->addItem(lstHeadCols[colBehavior]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    ui->lstEditableFields->addItem(lstHeadCols[colComment]);
+    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
     // Stringhe generiche per gestione dei formati di Data e ora
     m_szFormatDate = QLatin1String("yyyy.MM.dd");
     m_szFormatTime = QLatin1String("hh:mm:ss");
@@ -1906,7 +1933,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Sep 3
     gridMenu.addSeparator();
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale
-    QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC005/MPNC006 Modules"));
+    QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC006 Modules"));
     addMPNC006->setEnabled((isSerialPortEnabled)
                            && (m_nGridRow + lstMPNC006_Vars.count()) < MIN_DIAG - 1);
     QAction *addMPNE10 = gridMenu.addAction(cIco, trUtf8("Paste MPNE10 Module"));
@@ -1948,7 +1975,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
         if (m_nGridRow < MIN_DIAG - 1 && isMPNE)  {
             cIco = QIcon(szPathIMG + QLatin1String("Card_32.png"));
             gridMenu.addSeparator();
-            editMPNE = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE10"));
+            editMPNE = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE1001"));
         }
     }
     // Esecuzione del Menu
@@ -3015,7 +3042,7 @@ void ctedit::enableInterface()
     ui->fraEdit->setStyleSheet(szFameEditBackGround);
     // Abilitazioni elementi di interfaccia da impostare ad ogni cambio riga
     ui->cmdHideShow->setVisible(! fMultiEdit);
-    ui->cmdMultiEdit->setEnabled(m_fMultiSelect);
+    ui->cmdMultiEdit->setEnabled(true);
     ui->cmdSearch->setVisible(! fMultiEdit);
     ui->cmdImport->setVisible(! fMultiEdit);
     ui->cmdUndo->setVisible(true);
@@ -3036,6 +3063,8 @@ void ctedit::enableInterface()
     ui->cmdPLC->setVisible(! fMultiEdit);
     ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty() && ! fMultiEdit);
     // Frame MultiEdit
+    ui->lblEditableFields->setVisible(fMultiEdit);
+    ui->lstEditableFields->setVisible(fMultiEdit);
     ui->cmdCancel->setVisible(fMultiEdit);
     ui->cmdCancel->setEnabled(fMultiEdit);
     ui->cmdApply->setVisible(fMultiEdit);
@@ -7356,3 +7385,8 @@ void ctedit::on_cmdMultiEdit_toggled(bool checked)
     m_fMultiEdit = checked;
 }
 
+
+void ctedit::on_lstEditableFields_itemSelectionChanged()
+{
+
+}
