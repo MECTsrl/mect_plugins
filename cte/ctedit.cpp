@@ -389,7 +389,6 @@ ctedit::ctedit(QWidget *parent) :
     theBlocksNumber = 0;
     m_fMultiSelect = false;
     m_fMultiEdit = false;
-    ui->chkMultiEdit->setChecked(m_fMultiEdit);
     ui->cmdCancel->setVisible(false);
     ui->cmdApply->setVisible(false);
     lstSelectedRows.clear();
@@ -862,6 +861,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
     bool    fOk = false;
     int     nLeftVar = 0;
     QList<int> lstVarTypes;
+    bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
     lstVarTypes.clear();
     m_vtAlarmVarType = UNKNOWN;
@@ -954,10 +954,11 @@ bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
     // Analisi del Behavior per determinare uso degli Allarmi
     if (! szTemp.isEmpty())  {
         nPos = ui->cboBehavior->findText(szTemp, Qt::MatchFixedString);
-        if (nPos >= 0 && nPos < ui->cboBehavior->count())
+        if (nPos >= 0 && nPos < ui->cboBehavior->count())  {
             ui->cboBehavior->setCurrentIndex(nPos);
+        }
         // Caricamento ulteriori elementi interfaccia Allarmi / Eventi
-        if (nPos >= behavior_alarm)  {
+        if (! fMultiEdit && nPos >= behavior_alarm)  {
             // Clear Data Entry Form for Alarm/Variables
             // Seleziona tutte le variabili tranne le H lstAllVarTypes a prescindere dallo stato della variabile
             ui->cboVariable1->setCurrentIndex(-1);
@@ -1163,16 +1164,19 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     lstRecValues[colSourceVar] = szEMPTY;
     lstRecValues[colCondition] = szEMPTY;
     lstRecValues[colCompare] = szEMPTY;
-    // Behavior  (No per MultiSelect)
-    if (! fMultiEdit)  {
-        nPos = ui->cboBehavior->currentIndex();
-        if (nPos >= 0 && nPos < lstBehavior.count())
-            szTemp = ui->cboBehavior->itemText(nPos);
-        else
-            szTemp = szEMPTY;
+    // Behavior  (per MultiSelect solo se NON allarme)
+    nPos = ui->cboBehavior->currentIndex();
+    if (nPos >= 0 && nPos < lstBehavior.count())  {
+        szTemp = ui->cboBehavior->itemText(nPos);
+    }
+    else  {
+        szTemp = szEMPTY;
+    }
+    if (nPos < behavior_alarm)  {
         lstRecValues[colBehavior] = szTemp.trimmed();
-        // Gestione Allarmi/Eventi (Se necessario)
-        if (nPos >= behavior_alarm)  {
+    }
+    else  {
+        if (nPos >= behavior_alarm && ! fMultiEdit)  {
             // Source Var
             nPos = ui->cboVariable1->currentIndex();
             if (nPos >= 0 && nPos < ui->cboVariable1->count())
@@ -1203,12 +1207,12 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
             }
             lstRecValues[colCompare] = szTemp;
         }
-    }
-    else  {
-        lstRecValues[colBehavior] = ui->tblCT->item(nRow, colBehavior)->text().trimmed();
-        lstRecValues[colSourceVar] = ui->tblCT->item(nRow, colSourceVar)->text().trimmed();;
-        lstRecValues[colCondition] = ui->tblCT->item(nRow, colCondition)->text().trimmed();;
-        lstRecValues[colCompare] = ui->tblCT->item(nRow, colCompare)->text().trimmed();;
+        else  {
+            lstRecValues[colBehavior] = ui->tblCT->item(nRow, colBehavior)->text().trimmed();
+            lstRecValues[colSourceVar] = ui->tblCT->item(nRow, colSourceVar)->text().trimmed();;
+            lstRecValues[colCondition] = ui->tblCT->item(nRow, colCondition)->text().trimmed();;
+            lstRecValues[colCompare] = ui->tblCT->item(nRow, colCompare)->text().trimmed();;
+        }
     }
     // Finalizzazione controlli su protocolli
     // Protocollo PLC tutto abblencato
@@ -1478,7 +1482,7 @@ void ctedit::enableFields()
         ui->txtDecimal->setEnabled(true);
         ui->cboProtocol->setEnabled(true);
         ui->txtComment->setEnabled(true);
-        ui->cboBehavior->setEnabled(! fMultiEdit);
+        ui->cboBehavior->setEnabled(true);
         // Abilitazione dei campi in funzione del Tipo
         // Tipo BIT -> Blocca decimali
         if (nType == BIT)  {
@@ -1759,12 +1763,12 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         m_fMultiSelect = true;
     }
     // Elenco delle variabili selezionate
-    bool fNotLoaded = true;
+    bool fLoaded = false;
     for (nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
         qDebug("tableCTItemChanged(): Selected Item %d @Row: %d", nItem + 1, lstSelectedRows.at(nItem) + 1);
         nRow = lstSelectedRows[nItem];
         // Prova a caricare da CT i valori presenti nella lista dati se la variabile è definita
-        if (fNotLoaded && lstCTRecords[nRow].UsedEntry && nRow == nLastSelectedRow)  {
+        if (! fLoaded && lstCTRecords[nRow].UsedEntry && nRow == nLastSelectedRow)  {
             // Solo se c'è qualcosa da editare (singolo Record o MultiEdit
             if (! m_fMultiSelect || (m_fMultiSelect && m_fMultiEdit))  {
                 // Convert CT Record 2 User Values
@@ -1773,7 +1777,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
                 if (fRes)  {
                     fRes = values2Iface(lstFields, nRow);
                     if (fRes)  {
-                        fNotLoaded = false;
+                        fLoaded = true;
                         // Cambia riga corrente
                         m_nGridRow = nRow;
                     }
@@ -1781,7 +1785,8 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
             }
         }
     }
-    ui->fraEdit->setEnabled(! fNotLoaded);
+    // La Cella è abilitata se ne è stata letta almeno una o se la riga corrente è vuota (No MultiEdit in corso)
+    ui->fraEdit->setEnabled(fLoaded || (! m_fMultiSelect && ! m_fMultiEdit));
     // Si può cambiare riga, legge contenuto
     if (! selected.isEmpty() && selected.count() == 1)  {
     }
@@ -2453,7 +2458,7 @@ bool ctedit::isLineModified(int nRow)
             // nModif += (ui->txtBlock->text().trimmed() != ui->tblCT->item(nRow, colBlock)->text().trimmed());
             // nModif += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(nRow, colBlockSize)->text().trimmed());
             nModif += (ui->txtComment->text().trimmed() != ui->tblCT->item(nRow, colComment)->text().trimmed());
-            nModif += (! fMultiEdit && (ui->cboBehavior->currentText().trimmed() != ui->tblCT->item(nRow, colBehavior)->text().trimmed()));
+            nModif += (ui->cboBehavior->currentText().trimmed() != ui->tblCT->item(nRow, colBehavior)->text().trimmed());
             // Frame Allarmi
             if ((! fMultiEdit) && ui->cboBehavior->currentIndex() >= behavior_alarm)  {
                 nModif += (ui->cboVariable1->currentText().trimmed() != ui->tblCT->item(nRow, colSourceVar)->text().trimmed());
@@ -3010,6 +3015,7 @@ void ctedit::enableInterface()
     ui->fraEdit->setStyleSheet(szFameEditBackGround);
     // Abilitazioni elementi di interfaccia da impostare ad ogni cambio riga
     ui->cmdHideShow->setVisible(! fMultiEdit);
+    ui->cmdMultiEdit->setEnabled(m_fMultiSelect);
     ui->cmdSearch->setVisible(! fMultiEdit);
     ui->cmdImport->setVisible(! fMultiEdit);
     ui->cmdUndo->setVisible(true);
@@ -3030,10 +3036,10 @@ void ctedit::enableInterface()
     ui->cmdPLC->setVisible(! fMultiEdit);
     ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty() && ! fMultiEdit);
     // Frame MultiEdit
-    ui->cmdApply->setVisible(fMultiEdit);
-    ui->cmdApply->setEnabled(fMultiEdit);
     ui->cmdCancel->setVisible(fMultiEdit);
     ui->cmdCancel->setEnabled(fMultiEdit);
+    ui->cmdApply->setVisible(fMultiEdit);
+    ui->cmdApply->setEnabled(fMultiEdit);
     ui->fraCondition->setEnabled(! fMultiEdit);
     ui->tblCT->setEnabled(true);
     m_fCutOrPaste = false;
@@ -3678,14 +3684,12 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     //---------------------------------------
     // Controllo Behavior
     //---------------------------------------
-    if (! fMultiEdit)  {
-        szTemp = lstValues[colBehavior].trimmed();
-        nPos = szTemp.isEmpty() ? -1 : lstBehavior.indexOf(szTemp);
-        if (nPos < 0 || nPos >= lstBehavior.count())  {
-            fillErrorMessage(nRow, colBehavior, errCTNoBehavior, szVarName, szTemp, chSeverityError, &errCt);
-            lstCTErrors.append(errCt);
-            nErrors++;
-        }
+    szTemp = lstValues[colBehavior].trimmed();
+    nPos = szTemp.isEmpty() ? -1 : lstBehavior.indexOf(szTemp);
+    if (nPos < 0 || nPos >= lstBehavior.count())  {
+        fillErrorMessage(nRow, colBehavior, errCTNoBehavior, szVarName, szTemp, chSeverityError, &errCt);
+        lstCTErrors.append(errCt);
+        nErrors++;
     }
     //---------------------------------------
     // Controlli specifici per Allarmi/Eventi
@@ -7290,27 +7294,6 @@ int     ctedit::checkRegister(int nCurRow, QList<int> &lstUsingRegister)
     return nUsed;
 }
 
-void ctedit::on_cmdCancel_clicked()
-// Esce da MultiEdit
-{
-    int nRow = m_nGridRow;
-    // Cerca il primo Item utilizzato della lista delle variabili selezionate
-    for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
-        int nCurRow = lstSelectedRows.at(nItem);
-        if (! ui->tblCT->item(nCurRow, colName)->text().trimmed().isEmpty())  {
-            nRow = nCurRow;
-            break;
-        }
-    }
-    // Svuota lista elementi selezionati e toglie flag di MultiSelect
-    lstSelectedRows.clear();
-    m_fMultiSelect = false;
-    qDebug("Cancelling MultiEdit: GotoRow: %d", nRow + 1);
-    // Seleziona Riga corrente
-    ui->tblCT->selectRow(nRow);
-    m_nGridRow = nRow;
-}
-
 void ctedit::on_cmdApply_clicked()
 {
     bool    fRes = false;
@@ -7343,7 +7326,33 @@ void ctedit::on_cmdApply_clicked()
     enableInterface();
 }
 
-void ctedit::on_chkMultiEdit_clicked(bool checked)
+void ctedit::on_cmdCancel_clicked()
+// Esce da MultiEdit
 {
+    int nRow = m_nGridRow;
+    // Cerca il primo Item utilizzato della lista delle variabili selezionate
+    for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
+        int nCurRow = lstSelectedRows.at(nItem);
+        if (! ui->tblCT->item(nCurRow, colName)->text().trimmed().isEmpty())  {
+            nRow = nCurRow;
+            break;
+        }
+    }
+    // Svuota lista elementi selezionati e toglie flag di MultiSelect
+    lstSelectedRows.clear();
+    m_fMultiSelect = false;
+    qDebug("Cancelling MultiEdit: GotoRow: %d", nRow + 1);
+    // Seleziona Riga corrente
+    ui->tblCT->selectRow(nRow);
+    m_nGridRow = nRow;
+}
+
+void ctedit::on_cmdMultiEdit_toggled(bool checked)
+{
+    // Esce da MultiEdit
+    if (! checked)  {
+        on_cmdCancel_clicked();
+    }
     m_fMultiEdit = checked;
 }
+
