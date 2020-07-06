@@ -435,6 +435,7 @@ ctedit::ctedit(QWidget *parent) :
     // Lista dei campi editabili in ListView
     // QString szStyleItem = "QListWidget :: Item: hover {background: skyblue;} QListWidget :: item: selected {background: darkblue; color: yellow;}";
     ui->lstEditableFields->clear();
+    lstEditableFields.clear();
     ui->lstEditableFields->addItem(lstHeadCols[colPriority]);
     ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
     ui->lstEditableFields->addItem(lstHeadCols[colUpdate]);
@@ -455,6 +456,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
     ui->lstEditableFields->addItem(lstHeadCols[colComment]);
     ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
+    updateEditableFields(ui->lstEditableFields->selectedItems().count());
     // Stringhe generiche per gestione dei formati di Data e ora
     m_szFormatDate = QLatin1String("yyyy.MM.dd");
     m_szFormatTime = QLatin1String("hh:mm:ss");
@@ -1080,24 +1082,39 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     int     nPos = 0;
     int     nUpdate = -1;
     int     nProtocol = -1;
+    int     nType = -1;
 
     // Pulizia Buffers
     szTemp.clear();
     listClear(lstRecValues, colTotals);
     // Priority
-    nPos = ui->cboPriority->currentIndex();
-    if (nPos>= 0 && nPos < nNumPriority)
-        szTemp = ui->cboPriority->itemData(nPos).toString();
-    else
-        szTemp = szEMPTY;
-    lstRecValues[colPriority] = szTemp.trimmed();
-    // Update colUpdate
-    nUpdate = ui->cboUpdate->currentIndex();
-    if (nUpdate >= 0 && nPos < lstUpdateNames.count())
-        szTemp = ui->cboUpdate->itemData(nUpdate).toString();
-    else
-        szTemp = szEMPTY;
-    lstRecValues[colUpdate] = szTemp;
+    if (! fMultiEdit || lstEditableFields.indexOf(colPriority) >= 0)  {
+        nPos = ui->cboPriority->currentIndex();
+        if (nPos>= 0 && nPos < nNumPriority)  {
+            szTemp = ui->cboPriority->itemData(nPos).toString();
+        }
+        else  {
+            szTemp = szEMPTY;
+        }
+        lstRecValues[colPriority] = szTemp.trimmed();
+    }
+    else  {
+        lstRecValues[colPriority] = ui->tblCT->item(nRow, colPriority)->text().trimmed();
+    }
+    // Update
+    if (! fMultiEdit || lstEditableFields.indexOf(colUpdate) >= 0)  {
+        nUpdate = ui->cboUpdate->currentIndex();
+        if (nUpdate >= 0 && nPos < lstUpdateNames.count())  {
+            szTemp = ui->cboUpdate->itemData(nUpdate).toString();
+        }
+        else  {
+            szTemp = szEMPTY;
+        }
+        lstRecValues[colUpdate] = szTemp;
+    }
+    else  {
+        lstRecValues[colUpdate] = ui->tblCT->item(nRow, colUpdate)->text().trimmed();
+    }
     // Gruppo, per ora forzato a 0
     lstRecValues[colGroup] = szZERO;
     // Gruppo, per ora forzato a 0
@@ -1123,55 +1140,84 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
             fillVarList(lstLoggedVars, lstAllVarTypes, lstLogUpdates);
         }
     }
-    // Type colType (No per MultiSelect)
-//    if (! fMultiEdit)  {
-        nPos = ui->cboType->currentIndex();
-        if (nPos >= 0 && nPos < lstTipi.count())  {
-            szTemp = ui->cboType->itemData(nPos).toString();
+    // Type colType
+    if (! fMultiEdit || lstEditableFields.indexOf(colType) >= 0)  {
+        nType = ui->cboType->currentIndex();
+        if (nType >= 0 && nType < lstTipi.count())  {
+            szTemp = ui->cboType->itemData(nType).toString();
         }
         else  {
             szTemp = szEMPTY;
         }
         lstRecValues[colType] = szTemp.trimmed();
-//    }
-//    else  {
-//        lstRecValues[colType] = ui->tblCT->item(nRow, colType)->text().trimmed();
-//    }
-    // Decimal  (No per MultiSelect se di tipo BIT)
-    szTemp = ui->txtDecimal->text();
-    if (fMultiEdit && ! szTemp.isEmpty() && isBitField((varTypes) nPos))  {
-        lstRecValues[colDecimal]  = ui->tblCT->item(nRow, colDecimal)->text().trimmed();
     }
     else  {
+        lstRecValues[colType] = ui->tblCT->item(nRow, colType)->text().trimmed();
+    }
+    // Decimal  (No per MultiSelect se di tipo BIT)
+    if (! fMultiEdit || (lstEditableFields.indexOf(colDecimal) >= 0 && ! isBitField((varTypes) nType)))  {
+        szTemp = ui->txtDecimal->text();
         lstRecValues[colDecimal] = szTemp.trimmed();
     }
+    else  {
+        lstRecValues[colDecimal]  = ui->tblCT->item(nRow, colDecimal)->text().trimmed();
+    }
     // Protocol lstBusType
-    nProtocol = ui->cboProtocol->currentIndex();
-    if (nProtocol >= 0 && nProtocol < lstProtocol.count())
-        szTemp = ui->cboProtocol->itemData(nProtocol).toString();
-    else
-        szTemp = szEMPTY;
+    if (! fMultiEdit || lstEditableFields.indexOf(colProtocol) >= 0)  {
+        nProtocol = ui->cboProtocol->currentIndex();
+        if (nProtocol >= 0 && nProtocol < lstProtocol.count())  {
+            szTemp = ui->cboProtocol->itemData(nProtocol).toString();
+        }
+        else  {
+            szTemp = szEMPTY;
+        }
+    }
+    else  {
+        szTemp = ui->tblCT->item(nRow, colProtocol)->text().trimmed();
+        nProtocol = ui->cboProtocol->findText(szTemp);
+    }
     lstRecValues[colProtocol] = szTemp.trimmed();
     // IP
-    szTemp = ui->txtIP->text();
-    lstRecValues[colIP] = szTemp.trimmed();
+    // Protocol lstBusType
+    if (! fMultiEdit || lstEditableFields.indexOf(colIP) >= 0)  {
+        szTemp = ui->txtIP->text();
+        lstRecValues[colIP] = szTemp.trimmed();
+    }
+    else  {
+        lstRecValues[colIP]  = ui->tblCT->item(nRow, colIP)->text().trimmed();
+    }
     // Port
-    // Protocolli Seriali
-    if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)
-        szTemp = ui->cboPort->currentText();
-    else
-        szTemp = ui->txtPort->text();
-//    qDebug() << QLatin1String("Port: ") << szTemp;
-
-    lstRecValues[colPort] = szTemp.trimmed();
+    if (! fMultiEdit || lstEditableFields.indexOf(colPort) >= 0)  {
+        // Protocolli Seriali
+        if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
+            szTemp = ui->cboPort->currentText();
+        }
+        else  {
+            szTemp = ui->txtPort->text();
+        }
+        lstRecValues[colPort] = szTemp.trimmed();
+    }
+    else  {
+        lstRecValues[colPort]  = ui->tblCT->item(nRow, colPort)->text().trimmed();
+    }
     // Node ID
-    szTemp = ui->txtNode->text();
-    lstRecValues[colNodeID]  = szTemp.trimmed();
-    // Input Register
-    szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
-    lstRecValues[colInputReg] = szTemp.trimmed();
-    // Register  (No per MultiSelect)
+    if (! fMultiEdit || lstEditableFields.indexOf(colNodeID) >= 0)  {
+        szTemp = ui->txtNode->text();
+        lstRecValues[colNodeID]  = szTemp.trimmed();
+    }
+    else  {
+        lstRecValues[colNodeID]  = ui->tblCT->item(nRow, colNodeID)->text().trimmed();
+    }
+    // Input Register (NO MULTIEDIT)
     if (! fMultiEdit)  {
+        szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
+        lstRecValues[colInputReg] = szTemp.trimmed();
+    }
+    else  {
+        lstRecValues[colInputReg]  = ui->tblCT->item(nRow, colInputReg)->text().trimmed();
+    }
+    // Register  (No per MultiSelect)
+    if (! fMultiEdit || lstEditableFields.indexOf(colRegister) >= 0)  {
         szTemp = ui->txtRegister->text();
         lstRecValues[colRegister] = szTemp.trimmed();
     }
@@ -1181,12 +1227,17 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     // Block
     szTemp = ui->txtBlock->text();
     lstRecValues[colBlock] = szTemp.trimmed();
-    // N° Registro
+    // Block Size
     szTemp = ui->txtBlockSize->text();
     lstRecValues[colBlockSize] = szTemp.trimmed();
     // Comment
-    szTemp = ui->txtComment->text();
-    lstRecValues[colComment] = szTemp.trimmed().left(MAX_COMMENT_LEN - 1);
+    if (! fMultiEdit || lstEditableFields.indexOf(colComment) >= 0)  {
+        szTemp = ui->txtComment->text();
+        lstRecValues[colComment] = szTemp.trimmed().left(MAX_COMMENT_LEN - 1);
+    }
+    else  {
+        lstRecValues[colComment] = ui->tblCT->item(nRow, colComment)->text().trimmed();
+    }
     // Clear all values for Alarms/Events
     lstRecValues[colSourceVar] = szEMPTY;
     lstRecValues[colCondition] = szEMPTY;
@@ -1200,7 +1251,12 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         szTemp = szEMPTY;
     }
     if (nPos < behavior_alarm)  {
-        lstRecValues[colBehavior] = szTemp.trimmed();
+        if (! fMultiEdit || lstEditableFields.indexOf(colBehavior) >= 0)  {
+            lstRecValues[colBehavior] = szTemp.trimmed();
+        }
+        else  {
+            lstRecValues[colBehavior]  = ui->tblCT->item(nRow, colBehavior)->text().trimmed();
+        }
     }
     else  {
         if (nPos >= behavior_alarm && ! fMultiEdit)  {
@@ -1454,6 +1510,13 @@ bool ctedit::grid2CTable()
     // Return Value
     return fRes;
 }
+
+void    ctedit::updateEditableFields(int nEditable)
+// Aggiorna il contatore dei cambi modificabili in MultiEdit
+{
+    ui->lblEditableFields->setText(QString(QLatin1String("Editable Fields:\n%1")) .arg(nEditable));
+}
+
 void ctedit::enableFields()
 // Abilitazione dei campi form in funzione del Protocollo
 {
@@ -1501,15 +1564,15 @@ void ctedit::enableFields()
     }
     else  {
         // Campi comuni
-        ui->cboPriority->setEnabled(true);
-        ui->cboUpdate->setEnabled(true);
+        ui->cboPriority->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colPriority) >= 0);
+        ui->cboUpdate->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
         ui->txtName->setEnabled(! fMultiEdit);  // Nome abilitato solo se no selezione multipla
         // ui->cboType->setEnabled(! fMultiEdit);  // Tipo abilitato solo se no selezione multipla
-        ui->cboType->setEnabled(true);
-        ui->txtDecimal->setEnabled(true);
-        ui->cboProtocol->setEnabled(true);
-        ui->txtComment->setEnabled(true);
-        ui->cboBehavior->setEnabled(true);
+        ui->cboType->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colType) >= 0);
+        ui->txtDecimal->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colDecimal) >= 0);
+        ui->cboProtocol->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colProtocol) >= 0);
+        ui->txtComment->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colComment) >= 0);
+        ui->cboBehavior->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colBehavior) >= 0);
         // Abilitazione dei campi in funzione del Tipo
         // Tipo BIT -> Blocca decimali
         if (nType == BIT)  {
@@ -1530,18 +1593,18 @@ void ctedit::enableFields()
         getFirstPortFromProtocol(nProtocol, nDefPort, nTotalPorts);
         // Abilitazione dei campi se non PLC
         if (nProtocol != PLC)  {
-            ui->txtNode->setEnabled(true);
+            ui->txtNode->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colNodeID) >= 0);
             // ui->txtRegister->setEnabled(! fMultiEdit);
-            ui->txtRegister->setEnabled(true);
+            ui->txtRegister->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colRegister) >= 0);
             // IP abilitato solo per protocolli Client TCP, TCPRTU
             if (nProtocol == TCP || nProtocol == TCPRTU)  {
-                ui->txtIP->setEnabled(true);
+                ui->txtIP->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colIP) >= 0);
             }
             // Porta Abilitata per tutti i protocolli di Network
             // TCP, TCPRTU, TCP_SRV, TCPRTU_SRV
             if (nProtocol == TCP || nProtocol == TCPRTU ||
                 nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV    )  {
-                ui->txtPort->setEnabled(true);
+                ui->txtPort->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colPort) >= 0);
             }
         }
         // Visibilità Combo Port per Protocolli Seriali di ogni tipo
@@ -1562,7 +1625,7 @@ void ctedit::enableFields()
         // Visibilità Check Box Input Regs per protocolli RTU - TCP - TCPRTU
         if (nProtocol == RTU || nProtocol == RTU_SRV ||
             nProtocol == TCP || nProtocol == TCPRTU  ||
-            nProtocol == TCP_SRV)  {
+            nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
             ui->lblInputRegister->setVisible(true);
             ui->chkInputRegister->setVisible(true);
             ui->chkInputRegister->setEnabled(true);
@@ -1684,8 +1747,8 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     else {
         enableComboItem(ui->cboType, BIT);
     }
-    // De-check Flag Input register for all but RTU - TCPRTU
-    if ( ! (index == RTU) || (index == TCPRTU))  {
+    // De-check Flag Input register for all but ModBus
+    if ( ! isModbus(index))  {
         ui->chkInputRegister->setChecked(false);
     }
     // Imposta la Porta di default se la porta è vuota oppure quella presente non è valida
@@ -7351,6 +7414,9 @@ void ctedit::on_cmdApply_clicked()
             return;
         }
     }
+    m_isCtModified = true;
+    m_rebuildDeviceTree = true;
+    m_rebuildTimingTree = true;
     // Aggiorna abilitazioni (per Bottone UNDO)
     enableInterface();
 }
@@ -7374,6 +7440,9 @@ void ctedit::on_cmdCancel_clicked()
     // Seleziona Riga corrente
     ui->tblCT->selectRow(nRow);
     m_nGridRow = nRow;
+    m_isCtModified = true;
+    m_rebuildDeviceTree = true;
+    m_rebuildTimingTree = true;
 }
 
 void ctedit::on_cmdMultiEdit_toggled(bool checked)
@@ -7389,4 +7458,16 @@ void ctedit::on_cmdMultiEdit_toggled(bool checked)
 void ctedit::on_lstEditableFields_itemSelectionChanged()
 {
 
+    QList<QListWidgetItem *> lstSelected = ui->lstEditableFields->selectedItems();
+
+    lstEditableFields.clear();
+    for (int nItem = 0; nItem < lstSelected.count(); nItem++)  {
+        int nPos = lstHeadCols.indexOf(lstSelected[nItem]->text());
+        if (nPos >= 0)  {
+            lstEditableFields.append(nPos);
+        }
+    }
+    qSort(lstEditableFields.begin(), lstEditableFields.end());
+    updateEditableFields(lstEditableFields.count());
+    enableFields();
 }

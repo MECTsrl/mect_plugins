@@ -107,6 +107,7 @@ private:
     int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool checkRTU = true);
     // Gestione interfaccia
     void    enableFields();                         // Abilitazione dei campi form in funzione di Protocollo
+    void    updateEditableFields(int nEditable = 0);// Aggiorna il contatore dei cambi modificabili in MultiEdit
     bool    isLineModified(int nRow);               // Check se linea corrente Grid è diversa da Form in Editing
     bool    riassegnaBlocchi();                     // Riassegnazione blocchi variabili
     void    showAllRows(bool fShowAll);             // Visualizza o nascondi tutte le righe
@@ -166,6 +167,7 @@ private:
     bool    addModelVars(const QString szModelName, int nRow, int nPort, int nNode);
     void    showTabMPNC();
     void    showTabMPNE();
+
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
@@ -246,6 +248,7 @@ private:
     bool                    m_fSkipLine;            // Se vero non devono essere fatti controlli sulla riga in uscita
     bool                    m_fMultiSelect;         // Flag di stato Selezione multipla
     bool                    m_fMultiEdit;           // Flag per abilitare il MultiEdit di righe (da CheckBox)
+    QList<int>              lstEditableFields;      // Lista delle colonne editabili in MultiLineEdit
     // Gestione nodi su MPNC
     QList<int>              lstMPNC;                // Liste delle righe capofila delle teste MPNC presenti
     int                     m_nMPNC;                // Indice della Testa MPNC correntemente visualizzata

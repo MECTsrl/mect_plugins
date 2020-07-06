@@ -526,7 +526,7 @@
                <string notr="true">Editable Fields:</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+               <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
               </property>
              </widget>
             </item>
@@ -542,9 +542,13 @@
                <string>Select Multiline Edit editable fields</string>
               </property>
               <property name="styleSheet">
-               <string notr="true">QListWidget {background: lightgray;
-	selection-color: yellow;
-	selection-background-color: darkblue
+               <string notr="true">QListWidget {
+	background: lightgray;
+	colord: darkgray
+}
+QListWidget::item:selected  {
+    background-color: DodgerBlue;
+	color: yellow;
 }
 </string>
               </property>
