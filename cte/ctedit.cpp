@@ -2921,6 +2921,21 @@ QString ctedit::getModelInfo(int nModel)
         szText.append(QString::fromAscii("Digital OUT: \t\t%1\n") .arg(lstTargets[nModel].digitalOUT));
         szText.append(QString::fromAscii("Analog IN: \t\t%1\n") .arg(lstTargets[nModel].analogIN));
         szText.append(QString::fromAscii("Analog OUT: \t\t%1\n") .arg(lstTargets[nModel].analogOUT));
+        if (lstTargets[nModel].fastIn)  {
+            szText.append(QString::fromAscii("Fast IN: \t\t%1\n") .arg(lstTargets[nModel].fastIn));
+        }
+        if (lstTargets[nModel].fastOut)  {
+            szText.append(QString::fromAscii("Fast OUT: \t\t%1\n") .arg(lstTargets[nModel].fastOut));
+        }
+        if (lstTargets[nModel].pwm)  {
+            szText.append(QString::fromAscii("PWM-PTO: \t\t%1\n") .arg(lstTargets[nModel].pwm));
+        }
+        if (lstTargets[nModel].rpmPorts)  {
+            szText.append(QString::fromAscii("RPM In: \t\t%1\n") .arg(lstTargets[nModel].rpmPorts));
+        }
+        if (lstTargets[nModel].loadCells)  {
+            szText.append(QString::fromAscii("Load Cells: \t\t%1\n") .arg(lstTargets[nModel].loadCells));
+        }
         // Bus Interfaces
         // Serial 0
         szText.append(QString::fromAscii("Serial 0 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser0_Enabled)));
@@ -4954,6 +4969,10 @@ void ctedit::initTargetList()
     tpRec.analogOUTrowCT = -1;
     tpRec.tAmbient = false;
     tpRec.rpmPorts = 0;
+    tpRec.fastIn = 0;
+    tpRec.fastOut = 0;
+    tpRec.pwm = 0;
+    tpRec.loadCells = 0;
     tpRec.retries = 1;
     tpRec.blacklist = 2;
     tpRec.readPeriod1 = 10;
@@ -5448,6 +5467,10 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].analogOUTrowCT = 5347;
     lstTargets[TPAC1008_03_AC].tAmbient = true;
     lstTargets[TPAC1008_03_AC].rpmPorts = 1;
+    lstTargets[TPAC1008_03_AC].fastIn = 4;
+    lstTargets[TPAC1008_03_AC].fastOut = 4;
+    lstTargets[TPAC1008_03_AC].pwm = 4;
+    lstTargets[TPAC1008_03_AC].loadCells = 3;
     lstTargets[TPAC1008_03_AC].ser0_Enabled = true;         // Internal Port
     lstTargets[TPAC1008_03_AC].ser1_Enabled = false;
     lstTargets[TPAC1008_03_AC].ser2_Enabled = false;
@@ -5460,13 +5483,17 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AD].sdCards = 0;
     lstTargets[TPAC1008_03_AD].digitalIN = 24;
     lstTargets[TPAC1008_03_AD].digitalOUT = 16;
-    lstTargets[TPAC1008_03_AD].nEncoders = 1;
+    lstTargets[TPAC1008_03_AD].nEncoders = 5;
     lstTargets[TPAC1008_03_AD].analogIN = 4;
     lstTargets[TPAC1008_03_AD].analogINrowCT = 5325;
     lstTargets[TPAC1008_03_AD].analogOUT = 4;
     lstTargets[TPAC1008_03_AD].analogOUTrowCT = 5347;
     lstTargets[TPAC1008_03_AD].tAmbient = true;
     lstTargets[TPAC1008_03_AD].rpmPorts = 1;
+    lstTargets[TPAC1008_03_AD].fastIn = 4;
+    lstTargets[TPAC1008_03_AD].fastOut = 4;
+    lstTargets[TPAC1008_03_AD].pwm = 4;
+    lstTargets[TPAC1008_03_AD].loadCells = 3;
     lstTargets[TPAC1008_03_AD].ser0_Enabled = true;         // Internal Port
     lstTargets[TPAC1008_03_AD].ser1_Enabled = false;
     lstTargets[TPAC1008_03_AD].ser2_Enabled = false;

@@ -236,6 +236,10 @@ struct  TP_Config {
     bool        tAmbient;
     bool        audioIF;
     int         rpmPorts;
+    int         fastIn;
+    int         fastOut;
+    int         pwm;
+    int         loadCells;
     // Config Parameters
     int         retries;
     int         blacklist;
