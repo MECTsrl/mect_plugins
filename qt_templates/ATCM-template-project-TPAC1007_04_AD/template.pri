@@ -4,7 +4,7 @@
 # @section LICENSE
 # Copyright Mect s.r.l. 2013
 #
-# @brief Qmake project file for TP1007_04_LV
+# @brief Qmake project file for TPAC1007_04_AD
 #
 
 INSTALLS += target
@@ -28,7 +28,7 @@ OTHER_FILES += \
 
 include(./common.pri)
 
-TYPE = "TPAC1007_LV"
+TYPE = "TPAC1007_04_AD"
 
 # display size
 MODEL = "%Model%"

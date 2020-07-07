@@ -1105,8 +1105,8 @@ void MectSettings::enablePortsFromModel(TP_Config &targetConfig)
     if (targetConfig.nModel == AnyTPAC || targetConfig.nModel >= MODEL_TOTALS)  {
         return;
     }
-    // Seriale 0
-    m_tabEnabled[tabSerial0] = targetConfig.ser0_Enabled;
+    // Seriale 0 (In alcuni modelli NON può essere modificato il Baud Rate perché di uso interno)
+    m_tabEnabled[tabSerial0] = targetConfig.ser0_Enabled; // && targetConfig.ser0_Editable;
     // Seriale 1
     m_tabEnabled[tabSerial1] = targetConfig.ser1_Enabled;
     // Seriale 2
@@ -1118,6 +1118,7 @@ void MectSettings::enablePortsFromModel(TP_Config &targetConfig)
     // Can1
     m_tabEnabled[tabCan1] = targetConfig.can1_Enabled;;
 }
+
 bool MectSettings::getTargetConfig(TP_Config &targetConfig)
 // Retrieves current target configuration
 {

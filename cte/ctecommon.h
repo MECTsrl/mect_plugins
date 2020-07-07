@@ -251,6 +251,7 @@ struct  TP_Config {
     // Bus Interfaces
     // Serial 0
     bool        ser0_Enabled;
+    bool        ser0_Editable;
     int         ser0_BaudRate;
     QString     ser0_Parity;
     int         ser0_DataBits;

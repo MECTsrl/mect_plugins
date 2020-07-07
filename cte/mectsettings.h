@@ -28,7 +28,6 @@ public:
 signals:
 
 public slots:
-    void    setModel(TP_Config &tpConfig);
     void    saveMectSettings();
 
 private slots:
@@ -39,6 +38,7 @@ private:
     //---------------------------------------------------------------------
     // Funzioni locali al modulo
     //---------------------------------------------------------------------
+    void setModel(TP_Config &tpConfig);
     bool saveOrCheckAll(QString szFileName, bool checkOnly = false);
     bool checkOrSet(QSettings &settings, QString szKey, QString szValue, bool checkOnly, bool isChanged);
     bool checkFields();
