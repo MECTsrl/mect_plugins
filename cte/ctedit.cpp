@@ -165,11 +165,11 @@ ctedit::ctedit(QWidget *parent) :
         lstTPLC050_Vars.clear();
     }
     // MPNE10
-    if (readModelVars(szMPNE10, lstMPNE_Vars))  {
+    if (readModelVars(szMPNE1001, lstMPNE_Vars))  {
         qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
                     .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
-        qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE10);
+        qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE1001);
         lstMPNE_Vars.clear();
     }
     //------------------------
@@ -1999,8 +1999,8 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC006 Modules"));
     addMPNC006->setEnabled((isSerialPortEnabled)
                            && (m_nGridRow + lstMPNC006_Vars.count()) < MIN_DIAG - 1);
-    QAction *addMPNE10 = gridMenu.addAction(cIco, trUtf8("Paste MPNE10 Module"));
-    addMPNE10->setEnabled((isSerialPortEnabled)
+    QAction *addMPNE1001 = gridMenu.addAction(cIco, trUtf8("Paste MPNE1001 Module"));
+    addMPNE1001->setEnabled((isSerialPortEnabled)
                           && (m_nGridRow + lstMPNE_Vars.count()) < MIN_DIAG - 1);
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
     QAction *addTPLC050 = gridMenu.addAction(cIco, trUtf8("Paste TPLC050 Modules"));
@@ -2092,19 +2092,19 @@ void ctedit::displayUserMenu(const QPoint &pos)
         }
     }
     // Add MPNE10
-    else if (actMenu == addMPNE10)  {
+    else if (actMenu == addMPNE1001)  {
         // Controllo dell'area di destinazione
         if (checkFreeArea(nRow, lstMPNE_Vars.count()))  {
             // Richiesta Porta e Nodo di destinazione
             int nPort = -1;
             int nNode = -1;
-            QString szMsg = QString(szModuleMessage) .arg(szMPNE10);
+            QString szMsg = QString(szModuleMessage) .arg(szMPNE1001);
             queryPortNode *qryPort = new queryPortNode(szMectTitle, szMsg, this);
             qryPort->setModal(true);
             int nResPort = qryPort->exec();
             if (nResPort == QDialog::Accepted)  {
                 qryPort->getPortNode(nPort, nNode);
-                addModelVars(szMPNE10, m_nGridRow, nPort, nNode);
+                addModelVars(szMPNE1001, m_nGridRow, nPort, nNode);
                 ui->tabWidget->setCurrentIndex(TAB_MPNE);
             }
             qryPort->deleteLater();
@@ -3158,7 +3158,7 @@ void ctedit::enableInterface()
     m_nMPNC = -1;
     if (isSerialPortEnabled && ! fMultiEdit)  {
         bool enableMPNC = searchIOModules(szMPNC006, lstCTRecords, lstMPNC006_Vars, lstMPNC);
-        bool enableMPNE = searchIOModules(szMPNE10, lstCTRecords, lstMPNE_Vars, lstMPNE);
+        bool enableMPNE = searchIOModules(szMPNE1001, lstCTRecords, lstMPNE_Vars, lstMPNE);
         m_nMPNC = 0;
         m_nMPNE = 0;
         ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
@@ -6548,7 +6548,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (lstMPNE.count() > 0)  {
                         nPosMPNX = lstMPNE.indexOf(nCur);
                         if (nPosMPNX >= 0)  {
-                            theNodes[nNod].szNodeName.append(QString::fromAscii("  %1 (%2)") .arg(szMPNE10) .arg(nPosMPNX + 1));
+                            theNodes[nNod].szNodeName.append(QString::fromAscii("  %1 (%2)") .arg(szMPNE1001) .arg(nPosMPNX + 1));
                         }
                     }
                 }

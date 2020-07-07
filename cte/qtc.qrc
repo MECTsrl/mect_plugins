@@ -52,6 +52,6 @@
     <qresource prefix="/ctexml">
         <file>models/TPLC050.xml</file>
         <file>models/MPNC006.xml</file>
-        <file>models/MPNE10.xml</file>
+        <file>models/MPNE1001.xml</file>
     </qresource>
 </RCC>
