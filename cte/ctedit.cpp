@@ -370,7 +370,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->cboCondition->setEditable(true);
     // ui->cboCondition->lineEdit()->setReadOnly(true);
     ui->cboCondition->lineEdit()->setAlignment(Qt::AlignCenter);
-    for  (nCol=0; nCol<lstCondition.count(); nCol++)   {
+    for (nCol=0; nCol<lstCondition.count(); nCol++)   {
         ui->cboCondition->addItem(lstCondition[nCol], lstCondition[nCol]);
         ui->cboCondition->setItemData(nCol, Qt::AlignCenter, Qt::TextAlignmentRole);
     }
@@ -393,7 +393,6 @@ ctedit::ctedit(QWidget *parent) :
     m_fMultiEdit = false;
     ui->lblEditableFields->setVisible(false);
     ui->lstEditableFields->setVisible(false);
-    ui->cmdCancel->setVisible(false);
     ui->cmdApply->setVisible(false);
     lstSelectedRows.clear();
     // Validator per Interi
@@ -434,29 +433,38 @@ ctedit::ctedit(QWidget *parent) :
     ui->lblModel->setText(szEMPTY);
     // Lista dei campi editabili in ListView
     // QString szStyleItem = "QListWidget :: Item: hover {background: skyblue;} QListWidget :: item: selected {background: darkblue; color: yellow;}";
-    ui->lstEditableFields->clear();
     lstEditableFields.clear();
-    ui->lstEditableFields->addItem(lstHeadCols[colPriority]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    ui->lstEditableFields->addItem(lstHeadCols[colUpdate]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    ui->lstEditableFields->addItem(lstHeadCols[colType]);
-    ui->lstEditableFields->addItem(lstHeadCols[colDecimal]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    ui->lstEditableFields->addItem(lstHeadCols[colProtocol]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    ui->lstEditableFields->addItem(lstHeadCols[colIP]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    ui->lstEditableFields->addItem(lstHeadCols[colPort]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    ui->lstEditableFields->addItem(lstHeadCols[colNodeID]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    ui->lstEditableFields->addItem(lstHeadCols[colRegister]);
-    ui->lstEditableFields->addItem(lstHeadCols[colBehavior]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    ui->lstEditableFields->addItem(lstHeadCols[colComment]);
-    ui->lstEditableFields->item(ui->lstEditableFields->count() - 1)->setSelected(true);
-    updateEditableFields(ui->lstEditableFields->selectedItems().count());
+    ui->lstEditableFields->clear();
+    connect(ui->lstEditableFields, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(highlightEditableFields(QListWidgetItem*)));
+    QStringList lstItems;
+    lstItems.append(lstHeadCols[colPriority]);
+    lstItems.append(lstHeadCols[colUpdate]);
+    lstItems.append(lstHeadCols[colType]);
+    lstItems.append(lstHeadCols[colDecimal]);
+    lstItems.append(lstHeadCols[colProtocol]);
+    lstItems.append(lstHeadCols[colIP]);
+    lstItems.append(lstHeadCols[colPort]);
+    lstItems.append(lstHeadCols[colNodeID]);
+    lstItems.append(lstHeadCols[colRegister]);
+    lstItems.append(lstHeadCols[colBehavior]);
+    lstItems.append(lstHeadCols[colComment]);
+    ui->lstEditableFields->addItems(lstItems);
+    QListWidgetItem* listItem = 0;
+    for (nCol = 0; nCol < lstItems.count(); nCol++)  {
+        listItem = ui->lstEditableFields->item(nCol);
+        listItem->setFlags(listItem->flags() |  Qt::ItemIsUserCheckable);
+        // Abilitazione campi di default
+        if (listItem->text() == lstHeadCols[colPriority] ||
+            listItem->text() == lstHeadCols[colUpdate]   ||
+            listItem->text() == lstHeadCols[colProtocol] ||
+            listItem->text() == lstHeadCols[colNodeID]   ||
+            listItem->text() == lstHeadCols[colBehavior] )    {
+            listItem->setCheckState(Qt::Checked);
+        }
+        else  {
+            listItem->setCheckState(Qt::Unchecked);
+        }
+    }
     // Stringhe generiche per gestione dei formati di Data e ora
     m_szFormatDate = QLatin1String("yyyy.MM.dd");
     m_szFormatTime = QLatin1String("hh:mm:ss");
@@ -1511,12 +1519,6 @@ bool ctedit::grid2CTable()
     return fRes;
 }
 
-void    ctedit::updateEditableFields(int nEditable)
-// Aggiorna il contatore dei cambi modificabili in MultiEdit
-{
-    ui->lblEditableFields->setText(QString(QLatin1String("Editable Fields:\n%1")) .arg(nEditable));
-}
-
 void ctedit::enableFields()
 // Abilitazione dei campi form in funzione del Protocollo
 {
@@ -1567,7 +1569,6 @@ void ctedit::enableFields()
         ui->cboPriority->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colPriority) >= 0);
         ui->cboUpdate->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
         ui->txtName->setEnabled(! fMultiEdit);  // Nome abilitato solo se no selezione multipla
-        // ui->cboType->setEnabled(! fMultiEdit);  // Tipo abilitato solo se no selezione multipla
         ui->cboType->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colType) >= 0);
         ui->txtDecimal->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colDecimal) >= 0);
         ui->cboProtocol->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colProtocol) >= 0);
@@ -3147,8 +3148,6 @@ void ctedit::enableInterface()
     // Frame MultiEdit
     ui->lblEditableFields->setVisible(fMultiEdit);
     ui->lstEditableFields->setVisible(fMultiEdit);
-    ui->cmdCancel->setVisible(fMultiEdit);
-    ui->cmdCancel->setEnabled(fMultiEdit);
     ui->cmdApply->setVisible(fMultiEdit);
     ui->cmdApply->setEnabled(fMultiEdit);
     ui->fraCondition->setEnabled(! fMultiEdit);
@@ -7468,53 +7467,67 @@ void ctedit::on_cmdApply_clicked()
     enableInterface();
 }
 
-void ctedit::on_cmdCancel_clicked()
-// Esce da MultiEdit
+void ctedit::on_cmdMultiEdit_clicked(bool checked)
 {
     int nRow = m_nGridRow;
-    // Cerca il primo Item utilizzato della lista delle variabili selezionate
-    for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
-        int nCurRow = lstSelectedRows.at(nItem);
-        if (! ui->tblCT->item(nCurRow, colName)->text().trimmed().isEmpty())  {
-            nRow = nCurRow;
-            break;
-        }
-    }
-    // Svuota lista elementi selezionati e toglie flag di MultiSelect
-    lstSelectedRows.clear();
-    m_fMultiSelect = false;
-    qDebug("Cancelling MultiEdit: GotoRow: %d", nRow + 1);
-    // Seleziona Riga corrente
-    ui->tblCT->selectRow(nRow);
-    m_nGridRow = nRow;
-    m_isCtModified = true;
-    m_rebuildDeviceTree = true;
-    m_rebuildTimingTree = true;
-}
 
-void ctedit::on_cmdMultiEdit_toggled(bool checked)
-{
-    // Esce da MultiEdit
     if (! checked)  {
-        on_cmdCancel_clicked();
+        // Esce da MultiEdit
+        // Cerca il primo Item utilizzato della lista delle variabili selezionate
+        for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
+            int nCurRow = lstSelectedRows.at(nItem);
+            if (! ui->tblCT->item(nCurRow, colName)->text().trimmed().isEmpty())  {
+                nRow = nCurRow;
+                break;
+            }
+        }
+        // Svuota lista elementi selezionati e toglie flag di MultiSelect
+        lstSelectedRows.clear();
+        m_fMultiSelect = false;
+        qDebug("Cancelling MultiEdit: GotoRow: %d", nRow + 1);
+        // Seleziona Riga corrente
+        ui->cmdMultiEdit->setChecked(false);
+        ui->cmdMultiEdit->setToolTip(QLatin1String("Switch to Multiline Edit Mode"));
+        ui->tblCT->selectRow(nRow);
+        enableFields();
+        m_nGridRow = nRow;
+        m_isCtModified = true;
+        m_rebuildDeviceTree = true;
+        m_rebuildTimingTree = true;
+    }
+    else  {
+        ui->cmdMultiEdit->setToolTip(QLatin1String("Back to Single Line Edit Mode"));
     }
     m_fMultiEdit = checked;
 }
 
-
-void ctedit::on_lstEditableFields_itemSelectionChanged()
+void ctedit::highlightEditableFields(QListWidgetItem *itemClicked)
+// Evidenzia i campi editabili (MultiEdit)
 {
-
-    QList<QListWidgetItem *> lstSelected = ui->lstEditableFields->selectedItems();
-
+    // Impostazione del Colore  Background dell'item
+    if (itemClicked->checkState() == Qt::Checked)  {
+        itemClicked->setTextColor(QColor(QLatin1String("LemonChiffon")));
+        itemClicked->setBackgroundColor(QColor(QLatin1String("DodgerBlue")));
+    }
+    else  {
+        itemClicked->setTextColor(QColor(QLatin1String("Black")));
+        itemClicked->setBackgroundColor(colorNormalEdit);
+    }
     lstEditableFields.clear();
-    for (int nItem = 0; nItem < lstSelected.count(); nItem++)  {
-        int nPos = lstHeadCols.indexOf(lstSelected[nItem]->text());
-        if (nPos >= 0)  {
-            lstEditableFields.append(nPos);
+    QListWidgetItem* listItem = 0;
+    for (int nItem = 0; nItem < ui->lstEditableFields->count(); nItem++)  {
+        listItem = ui->lstEditableFields->item(nItem);
+        if (listItem->checkState() == Qt::Checked)  {
+            int nPos = lstHeadCols.indexOf(listItem->text());
+            if (nPos >= 0)  {
+                lstEditableFields.append(nPos);
+            }
         }
     }
     qSort(lstEditableFields.begin(), lstEditableFields.end());
-    updateEditableFields(lstEditableFields.count());
-    enableFields();
+    ui->lblEditableFields->setText(QString(QLatin1String("Editable Fields:\n%1")) .arg(lstEditableFields.count()));
+    if (m_fMultiEdit)  {
+        enableFields();
+    }
 }
+

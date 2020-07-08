@@ -64,6 +64,7 @@ private slots:
     void clearStatusMessage();                      // Clear message in ui->lblMessage
     void tabSelected(int nTab);                     // Change current Tab
     void gotoRow();                                 // Show Dialog Goto Row n
+    void highlightEditableFields(QListWidgetItem *itemClicked); // Evidenzia i campi editabili (MultiEdit)
     void on_cmdBlocchi_clicked();                   // Riordino Blocchi
     void on_cmdSave_clicked();                      // Salvataggio file
     void on_cmdImport_clicked();                    // Import Rows from Another CT File
@@ -73,8 +74,7 @@ private slots:
     void on_cmdHideShow_toggled(bool checked);
     void on_cmdPLC_clicked();
     void on_cmdApply_clicked();
-    void on_cmdMultiEdit_toggled(bool checked);
-    void on_cmdCancel_clicked();
+    void on_cmdMultiEdit_clicked(bool checked);
     void on_chkInputRegister_stateChanged(int state);   // Cambio di Stato della Checkbox Input Register
     void on_cboPriority_currentIndexChanged(int index);
     void on_cboUpdate_currentIndexChanged(int index);
@@ -83,7 +83,6 @@ private slots:
     void on_cboBehavior_currentIndexChanged(int index);
     void on_cboVariable1_currentIndexChanged(int index);
     void on_cboCondition_currentIndexChanged(int index);
-    void on_lstEditableFields_itemSelectionChanged();
     void on_optFixedVal_toggled(bool checked);
     void on_optVariableVal_toggled(bool checked);
     void on_cboSections_currentIndexChanged(int index);
@@ -107,7 +106,6 @@ private:
     int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool checkRTU = true);
     // Gestione interfaccia
     void    enableFields();                         // Abilitazione dei campi form in funzione di Protocollo
-    void    updateEditableFields(int nEditable = 0);// Aggiorna il contatore dei cambi modificabili in MultiEdit
     bool    isLineModified(int nRow);               // Check se linea corrente Grid è diversa da Form in Editing
     bool    riassegnaBlocchi();                     // Riassegnazione blocchi variabili
     void    showAllRows(bool fShowAll);             // Visualizza o nascondi tutte le righe

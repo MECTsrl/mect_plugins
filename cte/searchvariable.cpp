@@ -36,7 +36,8 @@ SearchVariable::SearchVariable(QWidget *parent) :
         ui->cboProtocol->addItem(lstProtocol[nCol], lstProtocol[nCol]);
     }
     ui->cboProtocol->setCurrentIndex(-1);
-    // Validator per txtNode
+    // Validator per txtPort - txtNode
+    ui->txtPort->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
     // Reset dei filtri a carattere
     ui->txtVarname->clear();
@@ -189,6 +190,7 @@ bool    SearchVariable::rec2show(QStringList &lstFields, int nRow)
     bool    f2Show = false;
     QString szNameFilter = ui->txtVarname->text().trimmed();
     QString szNode = ui->txtNode->text().trimmed();
+    QString szPort = ui->txtPort->text().trimmed();
     int     nSection = ui->cboSections->currentIndex();
     Qt::CaseSensitivity caseCompare = fCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
 
@@ -247,9 +249,15 @@ bool    SearchVariable::rec2show(QStringList &lstFields, int nRow)
             goto endCheck;
         }
     }
+    // Controllo sul numero Porta
+    if (! szPort.isEmpty())  {
+        if (lstFields[colSearchPort].trimmed() != szPort)  {
+            goto endCheck;
+        }
+    }
     // Controllo sul numero di Nodo
     if (! szNode.isEmpty())  {
-        if (lstFields[colSearchNodeID] != szNode)  {
+        if (lstFields[colSearchNodeID].trimmed() != szNode)  {
             goto endCheck;
         }
     }
@@ -294,6 +302,7 @@ void SearchVariable::resetFilters()
     ui->cboPriority->setCurrentIndex(-1);
     ui->cboType->setCurrentIndex(-1);
     ui->cboProtocol->setCurrentIndex(-1);
+    ui->txtPort->clear();
     ui->txtNode->clear();
     ui->txtVarname->clear();
     ui->chkCase->setChecked(false);
@@ -375,6 +384,14 @@ void SearchVariable::on_txtNode_textChanged(const QString &arg1)
     }
 }
 
+void SearchVariable::on_txtPort_textChanged(const QString &arg1)
+{
+    qDebug("New Filter on Port: %s", arg1.toLatin1().data());
+    if (! isResettingFilter)  {
+        filterCTVars();
+    }
+}
+
 void    SearchVariable::onRowClicked(const QModelIndex &index)
 {
     int nRow = index.row();
@@ -437,3 +454,4 @@ void SearchVariable::rowChanged()
     }
     qDebug("rowChanged(): Row %d", nRow);
 }
+

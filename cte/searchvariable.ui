@@ -27,6 +27,64 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="2">
+       <widget class="QComboBox" name="cboPriority">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="6">
+       <widget class="QLineEdit" name="txtNode">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
+        <property name="maxLength">
+         <number>6</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0" colspan="2">
        <widget class="QLabel" name="lblSections">
         <property name="minimumSize">
@@ -50,58 +108,6 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="5">
-       <widget class="QLineEdit" name="txtNode">
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>90</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="maxLength">
-         <number>6</number>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QComboBox" name="cboPriority">
-        <property name="minimumSize">
-         <size>
-          <width>70</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>70</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="3">
        <widget class="QComboBox" name="cboType">
         <property name="minimumSize">
@@ -116,6 +122,9 @@
           <weight>50</weight>
           <bold>false</bold>
          </font>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
         </property>
        </widget>
       </item>
@@ -133,6 +142,9 @@
           <weight>50</weight>
           <bold>false</bold>
          </font>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
         </property>
        </widget>
       </item>
@@ -188,7 +200,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="5">
+      <item row="1" column="6">
        <widget class="QLabel" name="lblNode">
         <property name="minimumSize">
          <size>
@@ -256,7 +268,7 @@
          </font>
         </property>
         <property name="toolTip">
-         <string>Select Crosstable Area</string>
+         <string notr="true">Select Crosstable Area</string>
         </property>
        </widget>
       </item>
@@ -273,14 +285,14 @@
       <item row="0" column="1" colspan="4">
        <widget class="QLineEdit" name="txtVarname"/>
       </item>
-      <item row="1" column="6">
+      <item row="1" column="7">
        <widget class="QLabel" name="lblPromptFound">
         <property name="text">
          <string>Found:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="5" colspan="2">
+      <item row="0" column="6" colspan="2">
        <layout class="QVBoxLayout" name="verticalLayout">
         <property name="spacing">
          <number>2</number>
@@ -307,13 +319,16 @@
         </item>
        </layout>
       </item>
-      <item row="2" column="6">
+      <item row="2" column="7">
        <widget class="QLabel" name="lblFound">
         <property name="minimumSize">
          <size>
           <width>70</width>
           <height>0</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
         </property>
         <property name="frameShape">
          <enum>QFrame::Box</enum>
@@ -326,6 +341,61 @@
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QLineEdit" name="txtPort">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
+        <property name="maxLength">
+         <number>6</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="lblPort">
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Port</string>
+        </property>
+        <property name="buddy">
+         <cstring>txtNode</cstring>
         </property>
        </widget>
       </item>

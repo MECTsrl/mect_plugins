@@ -28,6 +28,7 @@ private slots:
     void on_cboProtocol_currentIndexChanged(int index);
     void on_chkCase_clicked(bool checked);
     void on_chkStartsWith_clicked(bool checked);
+    void on_txtPort_textChanged(const QString &arg1);
     void on_txtNode_textChanged(const QString &arg1);
     void on_txtVarname_textChanged(const QString &arg1);
     void onRowClicked(const QModelIndex &index);
@@ -35,6 +36,7 @@ private slots:
     void sortVarColumn(int nColumn);
     void resetFilters();
     void rowChanged();
+
 
 private:
     bool    filterCTVars();
