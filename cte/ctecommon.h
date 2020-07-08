@@ -261,6 +261,7 @@ struct  TP_Config {
     int         ser0_BlockSize;
     // Serial 1
     bool        ser1_Enabled;
+    bool        ser1_Editable;
     int         ser1_BaudRate;
     QString     ser1_Parity;
     int         ser1_DataBits;
@@ -270,6 +271,7 @@ struct  TP_Config {
     int         ser1_BlockSize;
     // Serial 2
     bool        ser2_Enabled;
+    bool        ser2_Editable;
     int         ser2_BaudRate;
     QString     ser2_Parity;
     int         ser2_DataBits;
@@ -279,6 +281,7 @@ struct  TP_Config {
     int         ser2_BlockSize;
     // Serial 3
     bool        ser3_Enabled;
+    bool        ser3_Editable;
     int         ser3_BaudRate;
     QString     ser3_Parity;
     int         ser3_DataBits;

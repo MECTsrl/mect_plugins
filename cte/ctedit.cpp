@@ -3067,7 +3067,10 @@ void ctedit::tabSelected(int nTab)
     }
     // Entering SYSTEM Editor
     else if (nTab == TAB_SYSTEM)  {
-        // mectSet->ui->SERIAL_PORT_0->setEnabled(false);
+        mectSet->enableSerialPanel(panelConfig.ser0_Enabled && panelConfig.ser0_Editable,
+                                   panelConfig.ser1_Enabled && panelConfig.ser1_Editable,
+                                   panelConfig.ser2_Enabled && panelConfig.ser2_Editable,
+                                   panelConfig.ser3_Enabled && panelConfig.ser3_Editable);
     }
     // Entering Trends: Aggiornamento della lista di variabili e ripopolamento liste per Trends
     else if (nTab == TAB_TREND) {
@@ -3601,6 +3604,12 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
                 lstCTErrors.append(errCt);
                 nErrors++;
             }
+        }
+        // Numero di Nodo non utilizzabile su TPAC_1007_04_AE per Variabili Utente (Nodo 20) su Porta 3
+        if ( (nRow < MAX_NONRETENTIVE) && (panelConfig.modelName.contains(QLatin1String(product_name[TPAC1007_04_AE]))) && (nPort == 3) && (nNodeID == 20))  {
+            fillErrorMessage(nRow, colPort, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
         }
     }
     // Protocolli TCP
@@ -4950,6 +4959,9 @@ void ctedit::initTargetList()
 
     // Valori di default comuni a tutti i modelli
     // General Params
+    // Di default tutte le seriali sono DISABILITATE ma EDITABLI
+    // Al System_Editor si abilitano i relativi TAB con AND dei due parametri per gestire modelli in cui la Seriale è presente ed utilizzabile
+    // ma con parametri FISSI non modificabil dall'utente (es. 1007_04_AE Lever o 1008_03_XX)
     tpRec.modelName.clear();    
     tpRec.displayWidth = 480;
     tpRec.displayHeight = 272;
@@ -4987,6 +4999,7 @@ void ctedit::initTargetList()
     tpRec.ser0_BlockSize = 64;
     // Serial 1
     tpRec.ser1_Enabled = false;
+    tpRec.ser1_Editable = true;
     tpRec.ser1_BaudRate = 38400;
     tpRec.ser1_DataBits = 8;
     tpRec.ser1_StopBits = 1;
@@ -4995,6 +5008,7 @@ void ctedit::initTargetList()
     tpRec.ser1_BlockSize = 64;
     // Serial 2
     tpRec.ser2_Enabled = false;
+    tpRec.ser2_Editable = true;
     tpRec.ser2_BaudRate = 38400;
     tpRec.ser2_DataBits = 8;
     tpRec.ser2_StopBits = 1;
@@ -5003,6 +5017,7 @@ void ctedit::initTargetList()
     tpRec.ser2_BlockSize = 64;
     // Serial 3
     tpRec.ser3_Enabled = true;
+    tpRec.ser3_Editable = true;
     tpRec.ser3_BaudRate = 38400;
     tpRec.ser3_DataBits = 8;
     tpRec.ser3_StopBits = 1;
@@ -5294,10 +5309,10 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AE].tAmbient = true;
     lstTargets[TPAC1007_04_AE].rpmPorts = 0;
     lstTargets[TPAC1007_04_AE].ser0_Enabled = true;
-    lstTargets[TPAC1007_04_AE].ser0_Editable = false;
     lstTargets[TPAC1007_04_AE].ser1_Enabled = false;
     lstTargets[TPAC1007_04_AE].ser2_Enabled = false;
-    lstTargets[TPAC1007_04_AE].ser3_Enabled = true;
+    lstTargets[TPAC1007_04_AE].ser3_Enabled = true;             // Internal Port
+    lstTargets[TPAC1007_04_AE].ser3_Editable = false;
     lstTargets[TPAC1007_04_AE].can1_Enabled = false;
     // 15 TPAC1008_02_AA
     lstTargets[TPAC1008_02_AA].modelName =  QLatin1String(product_name[TPAC1008_02_AA]);

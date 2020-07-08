@@ -1096,6 +1096,7 @@ bool MectSettings::checkFields()
 exitCheck:
     return fRes;
 }
+
 void MectSettings::enablePortsFromModel(TP_Config &targetConfig)
 {
     // tab System and TCP are always ON
@@ -1233,6 +1234,16 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     // Return value
     return fRes;
 }
+
+void MectSettings::enableSerialPanel(bool serPanel0, bool serPanel1, bool serPanel2, bool serPanel3)
+// Abilitazione Pannelli parametri Seriali
+{
+    ui->SERIAL_PORT_0->setEnabled(serPanel0);
+    ui->SERIAL_PORT_1->setEnabled(serPanel1);
+    ui->SERIAL_PORT_2->setEnabled(serPanel2);
+    ui->SERIAL_PORT_3->setEnabled(serPanel3);
+}
+
 bool MectSettings::isModified()
 {
     bool fChanged = false;
@@ -1245,6 +1256,7 @@ bool MectSettings::isModified()
     }
     return (fChanged);
 }
+
 void MectSettings::saveMectSettings()
 {
 

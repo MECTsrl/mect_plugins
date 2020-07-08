@@ -24,6 +24,7 @@ public:
     bool loadProjectFiles(const QString &szFileSettings, const QString szFilePro, const QString &szProjectPath, TP_Config &targetConfig);
     bool getTargetConfig(TP_Config &targetConfig);              // Retrieves current target configuration
     bool isModified();
+    void enableSerialPanel(bool serPanel0, bool serPanel1, bool serPanel2, bool serPanel3);
 
 signals:
 
