@@ -2115,18 +2115,10 @@ void ctedit::displayUserMenu(const QPoint &pos)
     else if (actMenu == addTPLC050)  {
         // Controllo dell'area di destinazione
         if (checkFreeArea(nRow, lstTPLC050_Vars.count()))  {
-            // Richiesta Porta e Nodo di destinazione
-            int nPort = -1;
-            int nNode = -1;
-            QString szMsg = QString(szModuleMessage) .arg(szTPLC050);
-            queryPortNode *qryPort = new queryPortNode(szMectTitle, szMsg, this);
-            qryPort->setModal(true);
-            int nResPort = qryPort->exec();
-            if (nResPort == QDialog::Accepted)  {
-                qryPort->getPortNode(nPort, nNode);
-                addModelVars(szTPLC050, m_nGridRow, nPort, nNode);
-            }
-            qryPort->deleteLater();
+            // Porta fissa a 3 e Nodo fisso a 1
+            int nPort = 3;
+            int nNode = 1;
+            addModelVars(szTPLC050, m_nGridRow, nPort, nNode);
         }
     }
     // Edit MPNC
