@@ -130,6 +130,9 @@ void page0::changePage()
         {
             QMessageBox::critical(0,QApplication::trUtf8("Invalid Page"), QApplication::trUtf8("Cannot show any of Default pages '%1', '%2' and home pages '%3'. '%4'").arg("time_set").arg(STARTPAGE_DEF).arg(HomePage).arg(HOMEPAGE_DEF));
         }
+        else  {
+            this->hide();
+        }
     }
 
     /* go to the home page */
