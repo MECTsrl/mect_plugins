@@ -435,7 +435,6 @@ ctedit::ctedit(QWidget *parent) :
     // QString szStyleItem = "QListWidget :: Item: hover {background: skyblue;} QListWidget :: item: selected {background: darkblue; color: yellow;}";
     lstEditableFields.clear();
     ui->lstEditableFields->clear();
-    connect(ui->lstEditableFields, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(highlightEditableFields(QListWidgetItem*)));
     QStringList lstItems;
     lstItems.append(lstHeadCols[colPriority]);
     lstItems.append(lstHeadCols[colUpdate]);
@@ -452,17 +451,13 @@ ctedit::ctedit(QWidget *parent) :
     QListWidgetItem* listItem = 0;
     for (nCol = 0; nCol < lstItems.count(); nCol++)  {
         listItem = ui->lstEditableFields->item(nCol);
-        listItem->setFlags(listItem->flags() |  Qt::ItemIsUserCheckable);
+        listItem->setFlags(listItem->flags() &  (~ Qt::ItemIsUserCheckable));
+        listItem->setCheckState(Qt::Unchecked);
         // Abilitazione campi di default
         if (listItem->text() == lstHeadCols[colPriority] ||
-            listItem->text() == lstHeadCols[colUpdate]   ||
-            listItem->text() == lstHeadCols[colProtocol] ||
-            listItem->text() == lstHeadCols[colNodeID]   ||
-            listItem->text() == lstHeadCols[colBehavior] )    {
-            listItem->setCheckState(Qt::Checked);
-        }
-        else  {
-            listItem->setCheckState(Qt::Unchecked);
+            listItem->text() == lstHeadCols[colUpdate] )    {
+            // Accende voce come fosse selezionata dall'utente
+            on_lstEditableFields_itemClicked(listItem);
         }
     }
     // Stringhe generiche per gestione dei formati di Data e ora
@@ -4860,7 +4855,9 @@ void ctedit::on_txtName_editingFinished()
         // Applicazione dei valori di default Priority nel caso di una riga vuota preceduta da una riga vuota o con protocollo differente
         if (! szVarName.isEmpty() && ! lstCTRecords[m_nGridRow].UsedEntry)  {
             // Solo se la riga è la prima di un blocco oppure ha un protocollo differente dalla precedente
-            if ((m_nGridRow == 0) || (m_nGridRow > 0 && (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 || lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex())))  {
+            if (ui->cboPriority->currentIndex() < 0 &&
+                    ((m_nGridRow == 0) ||
+                     (m_nGridRow > 0 && (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 || lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex()))))  {
                 // Forza il livello di priorià a Alto
                 ui->cboPriority->setCurrentIndex(nPriorityHigh);
             }
@@ -7508,18 +7505,25 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
     m_fMultiEdit = checked;
 }
 
-void ctedit::highlightEditableFields(QListWidgetItem *itemClicked)
-// Evidenzia i campi editabili (MultiEdit)
+void ctedit::on_lstEditableFields_itemClicked(QListWidgetItem *itemClicked)
 {
-    // Impostazione del Colore  Background dell'item
-    if (itemClicked->checkState() == Qt::Checked)  {
-        itemClicked->setTextColor(QColor(QLatin1String("LemonChiffon")));
-        itemClicked->setBackgroundColor(QColor(QLatin1String("DodgerBlue")));
+    bool    fCheched = false;
+
+    if (itemClicked == 0)  {
+        return;
     }
-    else  {
+    fCheched = (itemClicked->checkState() == Qt::Checked);
+    if (fCheched)  {
+        itemClicked->setCheckState(Qt::Unchecked);
         itemClicked->setTextColor(QColor(QLatin1String("Black")));
         itemClicked->setBackgroundColor(colorNormalEdit);
     }
+    else  {
+        itemClicked->setCheckState(Qt::Checked);
+        itemClicked->setTextColor(QColor(QLatin1String("LemonChiffon")));
+        itemClicked->setBackgroundColor(QColor(QLatin1String("DodgerBlue")));
+    }
+    qDebug("on_lstEditableFields_itemClicked(): Item: %s Switched to: %d", itemClicked->text().toLatin1().data(), ! fCheched);
     lstEditableFields.clear();
     QListWidgetItem* listItem = 0;
     for (int nItem = 0; nItem < ui->lstEditableFields->count(); nItem++)  {
@@ -7536,5 +7540,5 @@ void ctedit::highlightEditableFields(QListWidgetItem *itemClicked)
     if (m_fMultiEdit)  {
         enableFields();
     }
-}
 
+}

@@ -64,7 +64,6 @@ private slots:
     void clearStatusMessage();                      // Clear message in ui->lblMessage
     void tabSelected(int nTab);                     // Change current Tab
     void gotoRow();                                 // Show Dialog Goto Row n
-    void highlightEditableFields(QListWidgetItem *itemClicked); // Evidenzia i campi editabili (MultiEdit)
     void on_cmdBlocchi_clicked();                   // Riordino Blocchi
     void on_cmdSave_clicked();                      // Salvataggio file
     void on_cmdImport_clicked();                    // Import Rows from Another CT File
@@ -83,9 +82,10 @@ private slots:
     void on_cboBehavior_currentIndexChanged(int index);
     void on_cboVariable1_currentIndexChanged(int index);
     void on_cboCondition_currentIndexChanged(int index);
+    void on_cboSections_currentIndexChanged(int index);
+    void on_lstEditableFields_itemClicked(QListWidgetItem *itemClicked);
     void on_optFixedVal_toggled(bool checked);
     void on_optVariableVal_toggled(bool checked);
-    void on_cboSections_currentIndexChanged(int index);
     void on_tblCT_doubleClicked(const QModelIndex &index);
     void on_txtName_editingFinished();              // Modificato nome della variabile
     void treeItemDoubleClicked(const QModelIndex &index);
