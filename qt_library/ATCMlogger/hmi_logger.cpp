@@ -499,7 +499,7 @@ size_t Logger::loadAlarmsTable()
     fp = fopen(CROSS_TABLE, "r");
     if (fp == NULL)
     {
-        sprintf(CrossTableErrorMsg, "Cannot open The error cross table '%s': [%s]", CROSS_TABLE, strerror(errno));
+        sprintf(CrossTableErrorMsg, "Cannot open the error Crosstable '%s': [%s]", CROSS_TABLE, strerror(errno));
         LOG_PRINT(error_e, "%s\n", CrossTableErrorMsg);
         return -1;
     }

@@ -509,20 +509,20 @@ bool CommStart()
     int elem_read = fillSyncroArea();
     if (elem_read < 0)
     {
-        LOG_PRINT(error_e, "cannot find the cross table [%s]\n", CROSS_TABLE);
-        QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Cannot find the cross table %1\nMSG: '%2'").arg(CROSS_TABLE).arg(CrossTableErrorMsg));
+        LOG_PRINT(error_e, "cannot find the Crosstable [%s]\n", CROSS_TABLE);
+        QMessageBox::critical(0,QApplication::trUtf8("Crosstable Check"), QApplication::trUtf8("Cannot find the Crosstable %1\nMSG: '%2'").arg(CROSS_TABLE).arg(CrossTableErrorMsg));
         return false;
     }
     else if (elem_read < DB_SIZE_ELEM)
     {
-        LOG_PRINT(error_e, "cannot load completly the cross table [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
-        QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Syntax error into the cross table at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
+        LOG_PRINT(error_e, "cannot load completly the Crosstable [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
+        QMessageBox::critical(0,QApplication::trUtf8("Crosstable Check"), QApplication::trUtf8("Syntax error into the Crosstable at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
         return false;
     }
     else if (elem_read > DB_SIZE_ELEM)
     {
-        LOG_PRINT(error_e, "Too many variable into the cross table [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
-        QMessageBox::critical(0,QApplication::trUtf8("Cross Table Check"), QApplication::trUtf8("Syntax error into the cross table at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
+        LOG_PRINT(error_e, "Too many variable into the Crosstable [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
+        QMessageBox::critical(0,QApplication::trUtf8("Crosstable Check"), QApplication::trUtf8("Syntax error into the Crosstable at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
         return false;
     }
 

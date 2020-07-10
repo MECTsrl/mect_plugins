@@ -116,7 +116,7 @@ private:
     int     fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal = false); // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
     int     fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal = false);   // Caricamento ComboBox con Nomi Variabili filtrate in funzione del Tipo and Update Type in lstUpdates
     int     fillCompatibleTypesList(varTypes nTypeVar, QList<int> &lstTypes);           // Riempie la lista dei tipi compatibili tra loro
-    int     varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs);        // Search in Cross Table Record List the index of szVarName
+    int     varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs);        // Search in Crosstable Record List the index of szVarName
     int     findNextVisibleRow(int nRow);           // Cerca la prossima riga visibile cui saltare (Per Enter on Grid)
     void    fillDeviceTree(int nCurRow = 0);        // Riempimento Albero dei device collegati al TP
     void    fillTimingsTree(int nCurRow = 0);       // Riempimento Albero delle variabili raggruppate per Priorità (Timings)
@@ -178,10 +178,10 @@ private:
     SearchVariable  *searcForm;
 
     int         m_nGridRow;                         // Riga corrente sul Grid
-    QString     m_szCurrentCTFile;                  // File Cross Table corrente (completo di Path)
-    QString     m_szCurrentCTPath;                  // Path del file Cross Table corrente
+    QString     m_szCurrentCTFile;                  // File Crosstable corrente (completo di Path)
+    QString     m_szCurrentCTPath;                  // Path del file Crosstable corrente
     QString     m_szCurrentPLCPath;                 // Path della parte PLC del Progetto corrente
-    QString     m_szCurrentCTName;                  // Nome del file Cross Table (senza Path)
+    QString     m_szCurrentCTName;                  // Nome del file Crosstable (senza Path)
     QString     m_szCurrentProjectPath;             // Project Path corrente
     QString     m_szCurrentProjectName;             // Project Name senza Path
     QString     m_szCurrentModel;                   // Modello TPAC del progetto
@@ -199,7 +199,7 @@ private:
 
     // Record CrossTable
     QList<CrossTableRecord> lstCopiedRecords;       // Lista di Record per copia/incolla
-    QList<QList<CrossTableRecord> > lstUndo;        // Lista degli Undo di elementi di Cross Table Editor
+    QList<QList<CrossTableRecord> > lstUndo;        // Lista degli Undo di elementi di Crosstable Editor
     CrossTableRecord        CrossTable[1 + DimCrossTable];	 // campi sono riempiti a partire dall'indice 1
 
     // System Configuration

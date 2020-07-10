@@ -113,7 +113,7 @@ size_t fillSyncroArea(void)
     fp = fopen(CROSS_TABLE, "r");
     if (fp == NULL)
     {
-        sprintf(CrossTableErrorMsg, "Cannot open The cross table '%s': [%s]", CROSS_TABLE, strerror(errno));
+        sprintf(CrossTableErrorMsg, "Cannot open the Crosstable '%s': [%s]", CROSS_TABLE, strerror(errno));
         LOG_PRINT(error_e, "%s\n", CrossTableErrorMsg);
         return -1;
     }

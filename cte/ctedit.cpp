@@ -612,7 +612,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         fRes = false;
         qDebug() << QString::fromAscii("CT File: %1 Not Found or not Selected") .arg(szFile);
     }
-    // Retrieving Path and Name of Cross Table file
+    // Retrieving Path and Name of Crosstable file
     m_szCurrentModel.clear();
     m_szCurrentCTPath.clear();
     m_szCurrentCTName.clear();
@@ -694,7 +694,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
                     lstColSizes.append(lstHeadSizes[colName] * 2);
                     // Adding Header Row
                     lstMessages.append(lstRow);
-                    m_szMsg = QString::fromAscii("Found [%1] Differences between Project and [%2] Template Cross Table file\n\nAlign Project to Template ?")
+                    m_szMsg = QString::fromAscii("Found [%1] Differences between Project and [%2] Template Crosstable file\n\nAlign Project to Template ?")
                             .arg(nDiff) .arg(m_szCurrentModel);
                     for (nErr = 0; nErr < lstDifferences.count(); nErr++)  {
                         int nPos = lstDifferences[nErr];
@@ -737,7 +737,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         // Abilita interfaccia
         m_fMultiSelect = false;
         enableInterface();
-        // Controllo errori globali su Cross Table
+        // Controllo errori globali su Crosstable
         nErr = globalChecks();
         qDebug() << QString::fromAscii("Load Errors: <%1>") .arg(nErr);
         if (nErr > 0)  {
@@ -2564,7 +2564,7 @@ bool ctedit::isLineModified(int nRow)
 }
 
 void ctedit::on_cmdImport_clicked()
-// Import another Cross Table File
+// Import another Crosstable File
 {
     QString szSourceFile;
     QString szMsg;
@@ -2584,9 +2584,9 @@ void ctedit::on_cmdImport_clicked()
                 lstUndo.append(lstCTRecords);
                 qDebug() << "on_cmdImport_clicked() - lstUndo added";
                 lstNewRecs.clear();
-                // Caricamento della nuova Cross Table (a questo livello non vengono fatti checks sulle righe caricate)
+                // Caricamento della nuova Crosstable (a questo livello non vengono fatti checks sulle righe caricate)
                 if (loadCTFile(szSourceFile, lstNewRecs, false))  {
-                    // Aggiunta alla Cross Table dei record letti dalla nuova CT
+                    // Aggiunta alla Crosstable dei record letti dalla nuova CT
                     for (nRow = 0; nRow < MAX_NONRETENTIVE; nRow++)  {
                         // Controllo Protocollo / Porta RTU su righe importate
                         nProtocol = lstNewRecs[nRow].Protocol;
@@ -2599,7 +2599,7 @@ void ctedit::on_cmdImport_clicked()
                                     lstNewRecs[nRow].Port = nPort;
                             }
                         }
-                        // Rimpiazza record in Cross Table
+                        // Rimpiazza record in Crosstable
                         lstCTRecords[nRow] = lstNewRecs[nRow];
                     }
                     // Ricarica la lista dei dati CT in Grid
@@ -4025,7 +4025,7 @@ void ctedit::on_cboCondition_currentIndexChanged(int index)
 }
 
 int ctedit::varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs)
-// Search in Cross Table the index of szVarName
+// Search in Crosstable the index of szVarName
 {
     int nRow = -1;
     char searchTag[MAX_IDNAME_LEN + 1];

@@ -1088,7 +1088,7 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
         ERR = TRUE;
         goto exit_function;
     }
-    // Cicle on Cross Table Elements
+    // Cicle on Crosstable Elements
     // read loop
     for (addr = 1; addr <= DimCrossTable; ++ addr) {
         // Clear Rowfilling string with chars

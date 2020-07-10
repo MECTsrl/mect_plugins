@@ -51,7 +51,7 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
 #if 1
         if (j >= DB_SIZE_ELEM - 1)
         {
-            //QMessageBox::critical(0, "Crosstable error", tr("Too many line into cross table. Maximum line is %1.").arg(DB_SIZE_ELEM));
+            //QMessageBox::critical(0, "Crosstable error", tr("Too many line into Crosstable. Maximum line is %1.").arg(DB_SIZE_ELEM));
             break;
         }
 #endif
@@ -102,7 +102,7 @@ CrossTableEditor::CrossTableEditor(QWidget *parent, QString * selection)
     mainLayout->addWidget(buttonBox);
 
     setLayout(mainLayout);
-    setWindowTitle(tr("Choose Cross-Table variale"));
+    setWindowTitle(tr("Choose Crosstable Variable"));
 
     setStyleSheet(
                 "    /*background-color: rgb(221;221;221);*/\n"

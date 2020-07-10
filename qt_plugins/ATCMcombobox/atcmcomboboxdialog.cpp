@@ -139,18 +139,28 @@ void atcmcomboboxDialog::addMapItem()
 {
 	QTableWidgetItem * item;
     int i;
-    if (table->selectionModel()->selectedRows().count() > 0) {
-        i = table->currentRow();
+    int nMaxItem = -1;
+
+    //    if (table->selectionModel()->selectedRows().count() > 0) {
+    //        i = table->currentRow();
+    //    }
+    //    else
+    //    {
+    //        i = table->rowCount();
+    //    }
+    // Searching Max Value in Table
+    for (i = 0; i < table->rowCount(); i++)  {
+        int nValue = table->item(i, 0)->text().toInt();
+        if (nValue > nMaxItem)  {
+            nMaxItem = nValue;
+        }
     }
-    else
-    {
-        i = table->rowCount();
-    }
+    i = table->rowCount();
     table->insertRow(i);
-    item = new QTableWidgetItem(QString("%1").setNum(i+1));
-    table->setItem(i,0,item);
+    item = new QTableWidgetItem(QString("%1").setNum(nMaxItem + 1));
+    table->setItem(i, 0, item);
 	item = new QTableWidgetItem("");
-	table->setItem(i,1,item);
+    table->setItem(i, 1, item);
 }
 
 void atcmcomboboxDialog::removeMapItem()

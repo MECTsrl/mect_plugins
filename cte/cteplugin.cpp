@@ -64,7 +64,7 @@ public:
     }
 };
 
-/*! Constructs the Cross Table Editor plugin. Normally plugins don't do anything
+/*! Constructs the Crosstable Editor plugin. Normally plugins don't do anything
     in their constructor except for initializing their member variables. The
     actual work is done later, in the initialize() and extensionsInitialized()
     methods.
@@ -113,10 +113,10 @@ CTEPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     //menu->setTitle(tr("&MECT Editor"));
     //menu->setEnabled(true);
 
-    // Add the Cross Table Editor action command to the menu
+    // Add the Crosstable Editor action command to the menu
     //CTEMenu->addAction(command);
 
-    // Request the Tools menu and add the Cross Table Editor menu to it
+    // Request the Tools menu and add the Crosstable Editor menu to it
     //Core::ActionContainer *toolsMenu = Core::ActionManager::actionContainer(Core::Constants::M_TOOLS);
     //toolsMenu->addMenu(CTEMenu);
 
@@ -167,8 +167,8 @@ CTEPlugin::extensionsInitialized()
 {
 }
 
-/*! Enable the cross table editor only when there is an active
-    project and if it has a cross table file (Crosstable.csv).
+/*! Enable the Crosstable editor only when there is an active
+    project and if it has a Crosstable file (Crosstable.csv).
  */
 void
 CTEPlugin::enableIfCT(ProjectExplorer::Project* p)
@@ -200,11 +200,11 @@ CTEPlugin::enableIfCT(ProjectExplorer::Project* p)
         m_cteMode->setEnabled(false);
         return;
     }
-    // Building Cross Table File Name
+    // Building Crosstable File Name
     szFileCT = pd + QLatin1String("/") + QLatin1String(Constants::CT_PROJ_REL_PATH) + QLatin1String("/") + QLatin1String(Constants::CT_FILE_NAME);
     qDebug()  << "Checking File: " << szFileCT;
     qDebug()  << "Project File Path; " << pd;
-    // Any cross table in the project?
+    // Any Crosstable in the project?
     QFileInfo ctFile(szFileCT);
     fFileExists = ctFile.exists() && ctFile.isFile();
     // Opening file

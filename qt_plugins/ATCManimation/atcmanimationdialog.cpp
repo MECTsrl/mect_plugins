@@ -21,14 +21,14 @@
 	item = new QTableWidgetItem(tr("Picture"));
 	editor->setHorizontalHeaderItem(1, item);
 
-	editor->setColumnWidth(0,30);
+    editor->setColumnWidth(0,60);
 	editor->setColumnWidth(1,300);
-	this->setGeometry(
-			this->geometry().x(),
-			this->geometry().y(),
-			400,
-			this->geometry().height()
-			);
+//	this->setGeometry(
+//			this->geometry().x(),
+//			this->geometry().y(),
+//			400,
+//			this->geometry().height()
+//			);
 
 	/* Fill the table widget with the actual mapping */
 	m_mapping = animation->mapping().trimmed();
@@ -105,7 +105,7 @@
 
 QSize atcmanimationDialog::sizeHint() const
 {
-	return QSize(250, 250);
+    return QSize(400, 400);
 }
 
 void atcmanimationDialog::saveState()
@@ -138,21 +138,29 @@ void atcmanimationDialog::saveState()
 void atcmanimationDialog::addMapItem()
 {
     QTableWidgetItem * item;
-
     int i;
-    if (editor->selectionModel()->selectedRows().count() > 0) {
-        i = editor->currentRow();
-    }
-    else
-    {
-        i = editor->rowCount();
-    }
+    int nMaxItem = -1;
 
+    //    if (editor->selectionModel()->selectedRows().count() > 0) {
+    //        i = editor->currentRow();
+    //    }
+    //    else
+    //    {
+    //        i = editor->rowCount();
+    //    }
+
+    // Searching Max Value in Table
+    for (i = 0; i < editor->rowCount(); i++)  {
+        int nValue = editor->item(i, 0)->text().toInt();
+        if (nValue > nMaxItem)  {
+            nMaxItem = nValue;
+        }
+    }
     editor->insertRow(i);
-    item = new QTableWidgetItem(QString("%1").setNum(i+1));
-    editor->setItem(i,0,item);
+    item = new QTableWidgetItem(QString("%1").setNum(nMaxItem + 1));
+    editor->setItem(i, 0, item);
     item = new QTableWidgetItem("");
-    editor->setItem(i,1,item);
+    editor->setItem(i, 1, item);
 }
 
 void atcmanimationDialog::removeMapItem()

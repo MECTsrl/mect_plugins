@@ -36,7 +36,7 @@ extern bool        isSerialPortEnabled; // Vero se almeno una porta seriale è a
 extern int         nPresentSerialPorts; // Numero di porte Seriali utilizzabili a bordo
 extern TP_Config   panelConfig;         // Configurazione corrente del Target letta da Form mectSettings
 
-// Cross Table Records
+// Crosstable Records
 extern QList<CrossTableRecord> lstCTRecords;    // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE)
 extern QList<CrossTableRecord> lstTemplateRecs; // Lista completa di Record da Template (per confronto con CT)
 extern QList<CrossTableRecord> lstMPNC006_Vars; // Lista delle Variabili MPNC006

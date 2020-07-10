@@ -43,7 +43,7 @@ int         nPresentSerialPorts;        // Numero di porte Seriali utilizzabili 
 TP_Config   panelConfig;                // Configurazione corrente del Target letta da Form mectSettings
 
 
-// Cross Table Records
+// Crosstable Records
 QList<CrossTableRecord> lstCTRecords;   // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE)
 QList<CrossTableRecord> lstTemplateRecs; // Lista completa di Record da Template (per confronto con CT)
 QList<CrossTableRecord> lstMPNC006_Vars;// Lista delle Variabili MPNC006
