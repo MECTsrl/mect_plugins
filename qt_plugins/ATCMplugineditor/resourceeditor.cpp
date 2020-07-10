@@ -16,7 +16,7 @@ ResourceEditor::ResourceEditor(QWidget *parent, QString * selection)
     while (it.hasNext()) {
         QString item = it.next();
 
-        if (item.endsWith(".png") && (item.startsWith(":/icons/") || item.startsWith(":/systemicons/")))
+        if (item.toLower().endsWith(".png") && (item.startsWith(":/icons/") || item.startsWith(":/systemicons/")))
         {
              QListWidgetItem * m_item = new QListWidgetItem(QIcon(item), item);
              list->addItem(m_item);
