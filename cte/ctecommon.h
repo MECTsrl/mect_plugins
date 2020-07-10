@@ -214,6 +214,8 @@ struct  MODBUS_Srv  {
     int         nProtocol;
     int         nPort;
     int         nodeId;
+    int         nLastRow;
+    int         nRegisters;
 };
 
 struct  TP_Config {

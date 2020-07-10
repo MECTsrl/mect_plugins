@@ -1778,6 +1778,12 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         int nCount = selected.indexes().count();
         nLastSelectedRow = selected.indexes().at(nCount - 1).row();
     }
+    else  {
+        // Nessuna riga selezionata, prova con l'ultima di un Multiselect
+        if (lstSelectedRows.count() > 0)  {
+            nLastSelectedRow = lstSelectedRows.last();
+        }
+    }
     qDebug("tableCTItemChanged(): Rows: %d Selected Items: %d Deselected Items: %d - Last Selected Row: %d",
            ui->tblCT->rowCount(), selected.count(), deselected.count(), nLastSelectedRow + 1);
     // Il cambio riga corrente è dovuto a operazioni di tipo cut-paste.
@@ -1829,8 +1835,6 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         if (nRow >= 0 && nRow < lstCTRecords.count())  {
             // Cambia riga corrente
             m_nGridRow = nRow;
-            // Imposta Sezione in cboSections
-            setSectionArea(nRow);
         }
     }
     // Selezionate più righe
@@ -1855,7 +1859,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         nRow = lstSelectedRows[nItem];
         // Prova a caricare da CT i valori presenti nella lista dati se la variabile è definita
         if (! fLoaded && lstCTRecords[nRow].UsedEntry && nRow == nLastSelectedRow)  {
-            // Solo se c'è qualcosa da editare (singolo Record o MultiEdit
+            // Solo se c'è qualcosa da editare (singolo Record o MultiEdit  m_fMultiSelect
             if (! m_fMultiSelect || (m_fMultiSelect && m_fMultiEdit))  {
                 // Convert CT Record 2 User Values
                 fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
@@ -1870,15 +1874,20 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
                 }
             }
         }
+        // Imposta Sezione in cboSections
+        setSectionArea(nRow);
     }
     // La Cella è abilitata se ne è stata letta almeno una o se la riga corrente è vuota (No MultiEdit in corso)
     ui->fraEdit->setEnabled(fLoaded || (! m_fMultiSelect && ! m_fMultiEdit));
     // Si può cambiare riga, legge contenuto
-    if (! selected.isEmpty() && selected.count() == 1)  {
-    }
-    else  {
+    if (! fLoaded)  {
         clearEntryForm();
     }
+
+//    if (! selected.isEmpty() && selected.count() == 1)  {
+//    }
+//    else  {
+//    }
     // Refresh abilitazioni interfaccia
     enableInterface();
 }
@@ -2182,7 +2191,7 @@ int ctedit::copySelected(bool fClearSelection)
     if (fClearSelection)  {
         ui->tblCT->selectionModel()->clearSelection();
         if (nFirstRow >= 0)  {
-            jumpToGridRow(nFirstRow, true);
+            jumpToGridRow(nFirstRow, false);
             // recCT2List(lstFields, nFirstRow);
             // values2Iface(lstFields);
         }
@@ -2202,7 +2211,7 @@ void ctedit::pasteSelected()
     int             nRow = ui->tblCT->currentRow();
     int             nPasted = 0;
     // Recupera righe selezionate
-    // QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
+    QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
     // Gestione della ClipBoard
     QClipboard      *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
@@ -2225,13 +2234,34 @@ void ctedit::pasteSelected()
     if (! fClipSourceOk)  {
         m_szMsg = QLatin1String("Can't Copy as Copy Buffer is Empty or Invalid");
     }
-    // Controllo area di destinazione
-    if (! checkFreeArea(nRow, lstPastedRecords.count()))  {
-        return;
+    else  {
+        // Caso Copia da 1 riga ---> N Righe
+        if (lstPastedRecords.count() == 1 && lstDestRows.count() == 1 && selection.count() > 1)  {
+            qDebug("pasteSelected(): Copy 1 to N Rows: %d", selection.count());
+            QStringList lstCopiedRow = lstPastedRecords.at(0);
+            lstPastedRecords.clear();
+            lstDestRows.clear();
+            for (int nDestCount = 0; nDestCount < selection.count(); nDestCount++)  {
+                int nDestRow = selection.at(nDestCount).row();
+                // Controllo che non ci siano righe selezionate in System Area
+                if (nDestRow < MAX_NONRETENTIVE)  {
+                    // Aggiunge la prima riga a quelle da copiare
+                    lstPastedRecords.append(lstCopiedRow);
+                    // Aggiunge la riga della selezione corrente a quelle su cui copiare
+                    lstDestRows.append(nDestRow);
+                }
+            }
+            fClipSourceOk = lstDestRows.count() > 0;
+        }
+        else {
+            // Controllo area di destinazione
+            if (! checkFreeArea(nRow, lstPastedRecords.count()))  {
+                return;
+            }
+        }
+        // Paste Rows
+        qDebug() << QString::fromAscii("Pasted Rows Count: %1") .arg(lstPastedRecords.count());
     }
-
-    // Paste Rows
-    qDebug() << QString::fromAscii("Pasted Rows Count: %1") .arg(lstPastedRecords.count());
     if (fClipSourceOk)  {
         if (nRow + lstPastedRecords.count() < MAX_NONRETENTIVE)  {
             nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows);
@@ -2753,8 +2783,10 @@ void ctedit::jumpToGridRow(int nRow, bool fCenter)
     // Seleziona la riga nRow
     ui->tblCT->selectRow(nRow);
     // Se vero il flag fCenter, centra la riga selezionata rispetto alla finestra di scroll
-    if (fCenter)
+    if (fCenter)  {
         ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtCenter);
+    }
+    enableFields();
     ui->tblCT->setFocus();
     m_nGridRow = nRow;
 }
@@ -3278,6 +3310,8 @@ int ctedit::globalChecks()
         serverModBus[nRow].nProtocol = -1;
         serverModBus[nRow].nPort = -1;
         serverModBus[nRow].nodeId = -1;
+        serverModBus[nRow].nRegisters = 0;
+        serverModBus[nRow].nLastRow = -1;
     }
     qDebug() << QLatin1String("globalChecks(): Clean Servers List Done");
     // Ciclo Globale su tutti gli Items di CT
@@ -3657,81 +3691,95 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         */
     }
     //---------------------------------------
-    // Controlli Univocità Server (MODBUS)
+    // Controlli Univocità Server (MODBUS) [NO MULTIEDIT]
     //---------------------------------------
-    if (nProtocol == TCP_SRV)  {
-        // Non esiste ancora un Server TCP definito
-        if (serverModBus[srvTCP].nPort < 0)  {
-            serverModBus[srvTCP].nPort = nPort;
-            serverModBus[srvTCP].nProtocol = nProtocol;
-            serverModBus[srvTCP].szIpAddress = szIP;
-            serverModBus[srvTCP].nodeId = nNodeID;
-        }
-        else  {
-            // Controllo su Porta
-            if (serverModBus[srvTCP].nPort != nPort)  {
-                szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String(" Vs TCP Server Port: ") + QString::number(serverModBus[srvTCP].nPort);
-                fillErrorMessage(nRow, colPort, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
-                lstCTErrors.append(errCt);
-                nErrors++;
+    if (! fMultiEdit)  {
+        if (nProtocol == TCP_SRV)  {
+            // Non esiste ancora un Server TCP definito
+            if (serverModBus[srvTCP].nPort < 0)  {
+                serverModBus[srvTCP].nPort = nPort;
+                serverModBus[srvTCP].nProtocol = nProtocol;
+                serverModBus[srvTCP].szIpAddress = szIP;
+                serverModBus[srvTCP].nodeId = nNodeID;
+                serverModBus[srvTCP].nLastRow = nRow;
+                serverModBus[srvTCP].nRegisters = 1;
             }
-            // Controllo su Node ID
-            if (serverModBus[srvTCP].nodeId != nNodeID)  {
-                szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs TCP Server Node Id: ") + QString::number(serverModBus[srvTCP].nodeId);
-                fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
-                lstCTErrors.append(errCt);
-                nErrors++;
-            }
-        }
-    }
-    else if (nProtocol == TCPRTU_SRV)  {
-        // Non esiste ancora un Server TCP_RTU definito
-        if (serverModBus[srvTCPRTU].nPort < 0)  {
-            serverModBus[srvTCPRTU].nPort = nPort;
-            serverModBus[srvTCPRTU].nProtocol = nProtocol;
-            serverModBus[srvTCPRTU].szIpAddress = szIP;
-            serverModBus[srvTCPRTU].nodeId = nNodeID;
-        }
-        else  {
-            // Controllo su Porta
-            if (serverModBus[srvTCPRTU].nPort != nPort)  {
-                szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String(" Vs TCP_RTU Server Port: ") + QString::number(serverModBus[srvTCPRTU].nPort);
-                fillErrorMessage(nRow, colPort, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
-                lstCTErrors.append(errCt);
-                nErrors++;
-            }
-            // Controllo su Node ID
-            if (serverModBus[srvTCPRTU].nodeId != nNodeID)  {
-                szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs TCP_RTU Server Node Id: ") + QString::number(serverModBus[srvTCPRTU].nodeId);
-                fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
-                lstCTErrors.append(errCt);
-                nErrors++;
-            }
-        }
-    }
-    else if (nProtocol == RTU_SRV)  {
-        // Non esiste ancora un Server RTU_SRV definito per la porta richiesta
-        // # Porta entro i Range
-        if (nPort >= 0 && nPort <= nMaxSerialPorts) {
-            if (serverModBus[nPort].nPort < 0)  {
-                serverModBus[nPort].nPort = nPort;
-                serverModBus[nPort].nProtocol = nProtocol;
-                serverModBus[nPort].szIpAddress = szIP;
-                serverModBus[nPort].nodeId = nNodeID;
-            }
-            else {
+            else  {
+                // Controllo su Porta
+                if (serverModBus[srvTCP].nLastRow != nRow && serverModBus[srvTCP].nPort != nPort)  {
+                    szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String(" Vs TCP Server Port: ") + QString::number(serverModBus[srvTCP].nPort);
+                    fillErrorMessage(nRow, colPort, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                    lstCTErrors.append(errCt);
+                    nErrors++;
+                }
                 // Controllo su Node ID
-                if (serverModBus[nPort].nodeId != nNodeID)  {
-                    szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs RTU Server Node Id: ") + QString::number(serverModBus[nPort].nodeId);
+                if (! fSingleLine && serverModBus[srvTCP].nodeId != nNodeID)  {
+                    szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs TCP Server Node Id: ") + QString::number(serverModBus[srvTCP].nodeId);
                     fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
                     lstCTErrors.append(errCt);
                     nErrors++;
+                }
+                serverModBus[srvTCP].nLastRow = nRow;
+                serverModBus[srvTCP].nRegisters++;
+            }
+        }
+        else if (nProtocol == TCPRTU_SRV)  {
+            // Non esiste ancora un Server TCP_RTU definito
+            if (serverModBus[srvTCPRTU].nPort < 0)  {
+                serverModBus[srvTCPRTU].nPort = nPort;
+                serverModBus[srvTCPRTU].nProtocol = nProtocol;
+                serverModBus[srvTCPRTU].szIpAddress = szIP;
+                serverModBus[srvTCPRTU].nodeId = nNodeID;
+                serverModBus[srvTCPRTU].nLastRow = nRow;
+                serverModBus[srvTCPRTU].nRegisters = 1;
+            }
+            else  {
+                // Controllo su Porta
+                if (serverModBus[srvTCP].nLastRow != nRow && serverModBus[srvTCPRTU].nPort != nPort)  {
+                    szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String(" Vs TCP_RTU Server Port: ") + QString::number(serverModBus[srvTCPRTU].nPort);
+                    fillErrorMessage(nRow, colPort, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                    lstCTErrors.append(errCt);
+                    nErrors++;
+                }
+                // Controllo su Node ID
+                if (! fSingleLine && serverModBus[srvTCPRTU].nodeId != nNodeID)  {
+                    szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs TCP_RTU Server Node Id: ") + QString::number(serverModBus[srvTCPRTU].nodeId);
+                    fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                    lstCTErrors.append(errCt);
+                    nErrors++;
+                }
+                serverModBus[srvTCPRTU].nLastRow = nRow;
+                serverModBus[srvTCPRTU].nRegisters++;
+            }
+        }
+        else if (nProtocol == RTU_SRV)  {
+            // Non esiste ancora un Server RTU_SRV definito per la porta richiesta
+            // # Porta entro i Range
+            if (nPort >= 0 && nPort <= nMaxSerialPorts) {
+                if (serverModBus[nPort].nPort < 0)  {
+                    serverModBus[nPort].nPort = nPort;
+                    serverModBus[nPort].nProtocol = nProtocol;
+                    serverModBus[nPort].szIpAddress = szIP;
+                    serverModBus[nPort].nodeId = nNodeID;
+                    serverModBus[nPort].nLastRow = nRow;
+                    serverModBus[nPort].nRegisters = 1;
+                }
+                else {
+                    // Controllo su Node ID
+                    if (serverModBus[nPort].nLastRow != nRow && serverModBus[nPort].nodeId != nNodeID)  {
+                        szTemp = QLatin1String("Node Id: ") + lstValues[colNodeID] + QLatin1String(" Vs RTU Server Node Id: ") + QString::number(serverModBus[nPort].nodeId);
+                        fillErrorMessage(nRow, colNodeID, errCTModBusServerDuplicate, szVarName, szTemp, chSeverityError, &errCt);
+                        lstCTErrors.append(errCt);
+                        nErrors++;
+                    }
+                    serverModBus[nPort].nLastRow = nRow;
+                    serverModBus[nPort].nRegisters++;
                 }
             }
         }
     }
     //---------------------------------------
-    // Controllo per Register (MODBUS)
+    // Controllo per Register (MODBUS) [NO MULTIEDIT]
     //---------------------------------------
     if (! fMultiEdit)  {
         szTemp = lstValues[colRegister];
@@ -4857,9 +4905,15 @@ void ctedit::on_txtName_editingFinished()
             // Solo se la riga è la prima di un blocco oppure ha un protocollo differente dalla precedente
             if (ui->cboPriority->currentIndex() < 0 &&
                     ((m_nGridRow == 0) ||
-                     (m_nGridRow > 0 && (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 || lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex()))))  {
+                     (m_nGridRow > 0 &&
+                      (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 ||
+                      (lstCTRecords[m_nGridRow - 1].UsedEntry && ui->cboProtocol->currentIndex() >= 0 && lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex())))))  {
                 // Forza il livello di priorià a Alto
                 ui->cboPriority->setCurrentIndex(nPriorityHigh);
+            }
+            else if (ui->cboPriority->currentIndex() < 0 && lstCTRecords[m_nGridRow - 1].UsedEntry && lstCTRecords[m_nGridRow - 1].Update >= 0)  {
+                // Forza il livello di priorità come quello della variabile precedente
+                ui->cboPriority->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Update);
             }
         }
         // Variabile già precedentemente utilizzata
@@ -5905,7 +5959,7 @@ bool ctedit::checkFreeArea(int nStartRow, int nRows)
     int         nUsed = 0;
     bool        fRes = false;
 
-    if (nStartRow + nRows > MIN_DIAG - 1)  {
+    if (nStartRow + nRows > MAX_NONRETENTIVE)  {
         m_szMsg = QLatin1String("Pasted Rows could overlap to System Area");
         warnUser(this, szMectTitle, m_szMsg);
     }
@@ -5990,8 +6044,10 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
     for (nPasted = 0; nPasted < lstRecords2Add.count(); nPasted ++)  {
         // Check Destination Row
         nDestRow = nRow++;
-        if (lstDestRows[nPasted] > -1)
+        if (lstDestRows[nPasted] > -1)  {
             nDestRow = lstDestRows[nPasted];
+        }
+        // qDebug("addRowsToCT(): Add Row Source: [%s] @ Row: [%d]", lstRecords2Add[nPasted][colName].toLatin1().data(),  nDestRow + 1);
         // Force Block address to Row Number
         lstRecords2Add[nPasted][colBlock] = QString::number(nDestRow + 1);
         // Paste element
@@ -7477,23 +7533,22 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
 
     if (! checked)  {
         // Esce da MultiEdit
-        // Cerca il primo Item utilizzato della lista delle variabili selezionate
-        for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
-            int nCurRow = lstSelectedRows.at(nItem);
-            if (! ui->tblCT->item(nCurRow, colName)->text().trimmed().isEmpty())  {
-                nRow = nCurRow;
-                break;
-            }
-        }
+        nRow = lstSelectedRows.last();
+        //        // Cerca il primo Item utilizzato della lista delle variabili selezionate
+        //        for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
+        //            int nCurRow = lstSelectedRows.at(nItem);
+        //            if (! ui->tblCT->item(nCurRow, colName)->text().trimmed().isEmpty())  {
+        //                nRow = nCurRow;
+        //                break;
+        //            }
+        //        }
         // Svuota lista elementi selezionati e toglie flag di MultiSelect
         lstSelectedRows.clear();
         m_fMultiSelect = false;
         qDebug("Cancelling MultiEdit: GotoRow: %d", nRow + 1);
         // Seleziona Riga corrente
-        ui->cmdMultiEdit->setChecked(false);
         ui->cmdMultiEdit->setToolTip(QLatin1String("Switch to Multiline Edit Mode"));
-        ui->tblCT->selectRow(nRow);
-        enableFields();
+        jumpToGridRow(nRow);
         m_nGridRow = nRow;
         m_isCtModified = true;
         m_rebuildDeviceTree = true;

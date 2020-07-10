@@ -112,6 +112,7 @@ private:
     void    setRowsColor();                         // Imposta il colore di sfondo di tutte le righe senza cambiare riga corrente
     void    jumpToGridRow(int nRow, bool fCenter = false);                // Salto alla riga nRow del Grid
     void    enableInterface();                      // Abilita l'interfaccia in funzione dello stato del sistema
+
     void    setSectionArea(int nRow);               // Set Current item in combo cboSection from current Row
     int     fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal = false); // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
     int     fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal = false);   // Caricamento ComboBox con Nomi Variabili filtrate in funzione del Tipo and Update Type in lstUpdates
