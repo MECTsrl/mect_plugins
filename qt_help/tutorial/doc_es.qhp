@@ -151,18 +151,19 @@
 					</section>
 				<section title="Sinóptico (E/S locales)" ref="Sinottico_es.html"/>	
 				<section title="Variables de producto (E/S locales)" ref="Variabili_prodotto_es.html">	
-				<section title="Modelos TPAC1006 / TPAC1008_02" ref="Modelli_tpac1006_100801_100802_es.html"/>
+				<section title="Modelos TPAC1008_02" ref="Modelli_tpac1006_100801_100802_es.html"/>
 				<section title="Modelos TPAC1007" ref="Modelli_tpac1007_es.html"/>
 				<section title="Modelos TPAC1008_03" ref="Modelli_tpac100803_es.html"/>
 				<section title="Modelos TPLC050 / TPLC100" ref="Modelli_tplc050_100_es.html"/>
 					</section>
 				<section title="Configuración de entradas/salidas" ref="Config_ingressi_uscite_es.html">	
-				<section title="Configuración de entradas/salidas TPAC1006, TPAC1007 y TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802_es.html"/>
+				<section title="Configuración de entradas/salidas TPAC1007 y TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802_es.html"/>
 				<section title="Configuración de entradas/salidas TPAC1008_03" ref="Config_ingressi_uscite_tpac100803_es.html"/>
 				<section title="Configuración de entradas/salidas TPLC050 y TPLC100" ref="Config_ingressi_uscite_tplc050_100_es.html"/>
 					</section>				
 				<section title="Variables de diagnóstico" ref="Variabili_diagnostica_es.html"/>
-				<section title="Habilitar / deshabilitar nodo Modbus RTU-TCP" ref="Abilitazione_disabilitazione_nodo_es.html"/>
+				<section title="Habilitar / deshabilitar nodo Modbus RTU-TCP" ref="Abilitazione_disabilitazione_nodo_es.html"/>				
+				<section title="Cloner" ref="Cloner_es.html"/>
 				<section title="Inserción de la tarjeta micro SD" ref="SD_card_es.html"/>
 				<section title="Activación VNC" ref="VNC_es.html"/>	
 				<section title="Configuración CAN" ref="Can_es.html"/>		
@@ -174,6 +175,11 @@
             <keyword id="MyApplication::foobar" ref="doc_es.html#foobar"/>
         </keywords>
         <files>
+			<file>Cloner_es.html</file>
+			<file>Cloner_1.png</file>
+			<file>Cloner_2.png</file>
+			<file>Cloner_3.png</file>
+			<file>Cloner_4.png</file>
 			<file>Config_Filtro_In_Analogici_tpac100802_es.html</file>
 			<file>Config_Filtro_In_Analogici_tplc050_es.html</file>
 			<file>Config_Filtro_In_Analogici_tpac100704_es.html</file>

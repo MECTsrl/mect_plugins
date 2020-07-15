@@ -151,13 +151,13 @@
 					</section>	
 				<section title="Sinottico (Local I/O)" ref="Sinottico.html"/>
 				<section title="Variabili di prodotto (Local I/O)" ref="Variabili_prodotto.html">	
-				<section title="Modelli TPAC1006 / TPAC1008_02" ref="Modelli_tpac1006_100801_100802.html"/>
+				<section title="Modelli TPAC1008_02" ref="Modelli_tpac1006_100801_100802.html"/>
 				<section title="Modelli TPAC1007" ref="Modelli_tpac1007.html"/>
 				<section title="Modelli TPAC1008_03" ref="Modelli_tpac100803.html"/>
 				<section title="Modelli TPLC050 / TPLC100" ref="Modelli_tplc050_100.html"/>
 					</section>
 				<section title="Configurazione ingressi / uscite" ref="Config_ingressi_uscite.html">
-				<section title="Configurazione ingressi/uscite TPAC1006, TPAC1007 e TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802.html"/>
+				<section title="Configurazione ingressi/uscite TPAC1007 e TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802.html"/>
 				<section title="Configurazione ingressi/uscite TPAC1008_03" ref="Config_ingressi_uscite_tpac100803.html"/>
 				<section title="Configurazione ingressi/uscite TPLC050 e TPLC100" ref="Config_ingressi_uscite_tplc050_100.html"/>
 					</section>

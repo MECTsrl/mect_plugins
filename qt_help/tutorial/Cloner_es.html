@@ -1,0 +1,79 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Cloner</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Cloner</h3>
+		<p class="western">El &ldquo;Cloner&rdquo; se utiliza para hacer una copia de backup (seguridad) de una aplicación y eventualmente utilizarla para actualizar otros dispositivos (del mismo modelo). </p>
+		<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Cloner_1.png" name="Immagine1212" align="bottom" width="474" height="268" border="0"/></p>
+	<p class="western"><strong><u>Procedimiento de BACKUP</u>:</strong></p>
+	<ul>		
+		<li/>
+			<p class="western">Copie los archivos <strong>img_cloner_3.x.x.ext2</strong> y <strong>sysupdate_cloner_3.x.x.sh</strong> en la carpeta principal de una unidad USB  (formato FAT32 de una sola partición - ms-dos MBR). <br>
+			<u>Atención</u>: NO use el navegador  &ldquo;Edge&rdquo; porque cambia la extensión del archivo. <br>
+			<u>Atención</u>: NO debe haber ningún otro archivo de actualización: sysupdate_…
+			</p>
+		<li/>
+			<p class="western">Apaga el dispositivo.</p>			
+		<li/>
+			<p class="western">Inserte la unidad USB (si el dispositivo tiene un micro-USB, use un adaptador micro-USB (Tipo A) &#8594; USB).</p>
+		<li/>
+			<p class="western">Enciende el dispositivo.</p>
+		<li/>
+			<p class="western">Presiona el botón <strong>&ldquo;BACKUP&rdquo;</strong>.</p>
+		<li/>
+			<p class="western">Escriba el nombre deseado y pulse <img src="Cloner_2.png" align="bottom" width="44" height="44" border="0"/> </p>
+		<li/>
+			<p class="western">El proceso de backup se termina cuando se lee &ldquo;Operation &lsquo;Local file system&rsquo; completed.&rdquo;</p>
+		<li/>
+			<p class="western">Apaga el dispositivo.</p>
+		<li/>
+			<p class="western">Retire la unidad de USB.</p>
+	</ul>
+	<p class="western">Se creará una carpeta de <strong>&ldquo;cloner&rdquo;</strong> en el unidad USB donde se encontrará una copia de BACKUP.</p>
+	<br/>
+	<p class="western"><strong><u>Procedimiento de INSTALL</u>:</strong></p>
+	<ul>		
+		<li/>
+			<p class="western">Copiar a la carpeta principal de una unidad USB (formato FAT32 de una sola partición - ms-dos MBR):</p>
+			<ul>
+				<li/>
+				<p class="western">los archivos  <strong>img_cloner_3.x.x.ext2</strong> y <strong>sysupdate_cloner_3.x.x.sh</strong>.<br>
+				<u>Atención</u>: NO use el navegador &ldquo;Edge&rdquo; porque cambia la extensión del archivo. </p>
+				<li/>
+				<p class="western">la carpeta <strong>&ldquo;cloner&rdquo;</strong>.<br>
+				<u>Atención</u>: Dentro de la carpeta &ldquo;cloner&rdquo; debe haber una carpeta con el nombre de la &ldquo;backup&rdquo; que se hizo en el procedimiento BACKUP. Dentro de esta carpeta debe estar el archivo &ldquo;localfs.tar&rdquo;.</p>
+				<p class="western"><img src="Cloner_3.png" align="bottom" width="208" height="84" border="0"/>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<img src="Cloner_4.png" align="bottom" width="147" height="70" border="0"/></p>
+			</ul>
+		<li/>	
+			<p class="western">Comprueba que no hay otros archivos de actualización: sysupdate_…</p>				
+		<li/>
+			<p class="western">Apaga el dispositivo.</p>			
+		<li/>
+			<p class="western">Inserte la unidad USB (si el dispositivo tiene un micro-USB, use un adaptador micro-USB (Tipo A) &#8594; USB).</p>
+		<li/>
+			<p class="western">Enciende el dispositivo.</p>
+		<li/>
+			<p class="western">Selecciona la versión que quiere instalar en el menú desplegable.</p>	
+		<li/>
+			<p class="western">Presiona el botón <strong>&ldquo;INSTALL&rdquo;</strong>.</p>
+		<li/>
+			<p class="western">El proceso de INSTALL se termina cuando se lee &ldquo;Operation &lsquo;Local file system&rsquo; completed.&rdquo;</p>
+		<li/>
+			<p class="western">Apaga el dispositivo.</p>
+		<li/>
+			<p class="western">Retire la unidad USB.</p>
+	</ul>	
+	</body>
+</html>
