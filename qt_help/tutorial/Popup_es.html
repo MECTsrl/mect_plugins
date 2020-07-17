@@ -27,6 +27,10 @@
 	<p class="western" ><img src="Popup_1.png" name="Immagine236" align="bottom" width="269" height="143" border="0"/></p>
 	<p class="western" >En el ejemplo, la escritura USB <i>error</i> corresponde al título, mientras que la escritura <i>Cannot
 	mount the usb key</i> es el mensaje.</p>
+	<p class="western">Introduzca el siguiente código al principio de pagexxx.cpp:</p>
+	<pre class="western" >
+	&nbsp;&nbsp;#include &lt;QMessageBox&gt  </pre>
+	<br/>
 	  
 	<p class="western" >Para visualizar el icono de mensaje &ldquo;avviso&rdquo; escriba:</p>
 	<pre class="western" >QMessageBox::warning(this,trUtf8(&ldquo;USB	error&rdquo;), trUtf8(&ldquo;Cannot mount the usb key&rdquo;));</pre>

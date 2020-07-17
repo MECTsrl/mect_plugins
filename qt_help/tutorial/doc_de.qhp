@@ -151,18 +151,19 @@
 					</section>
 				<section title="Synoptik (Lokale E/A)" ref="Sinottico_de.html"/>	
 				<section title="Produktvariablen (Lokale E/A)" ref="Variabili_prodotto_de.html">	
-				<section title="Modelle TPAC1006 / TPAC1008_02" ref="Modelli_tpac1006_100801_100802_de.html"/>
+				<section title="Modelle TPAC1008_02" ref="Modelli_tpac1006_100801_100802_de.html"/>
 				<section title="Modelle TPAC1007" ref="Modelli_tpac1007_de.html"/>
 				<section title="Modelle TPAC1008_03" ref="Modelli_tpac100803_de.html"/>
 				<section title="Modelle TPLC050 / TPLC100" ref="Modelli_tplc050_100_de.html"/>
 					</section>
 				<section title="Konfiguration der Ein-/Ausgänge" ref="Config_ingressi_uscite_de.html">	
-				<section title="Konfiguration der Ein-/Ausgänge TPAC1006, TPAC1007 und TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802_de.html"/>
+				<section title="Konfiguration der Ein-/Ausgänge TPAC1007 und TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802_de.html"/>
 				<section title="Konfiguration der Ein-/Ausgänge TPAC1008_03" ref="Config_ingressi_uscite_tpac100803_de.html"/>
 				<section title="Konfiguration der Ein-/Ausgänge TPLC050 und TPLC100" ref="Config_ingressi_uscite_tplc050_100_de.html"/>
 					</section>				
 				<section title="Diagnosevariablen" ref="Variabili_diagnostica_de.html"/>
 				<section title="Aktivieren / deaktivieren des Knotens Modbus RTU-TCP" ref="Abilitazione_disabilitazione_nodo_de.html"/>
+				<section title="Cloner" ref="Cloner_de.html"/>
 				<section title="Einlegen der Micro-SD-Karte" ref="SD_card_de.html"/>
 				<section title="Aktivierung VNC" ref="VNC_de.html"/>	
 				<section title="CAN-Konfiguration" ref="Can_de.html"/>		
@@ -174,6 +175,11 @@
             <keyword id="MyApplication::foobar" ref="doc_de.html#foobar"/>
         </keywords>
         <files>
+			<file>Cloner_de.html</file>
+			<file>Cloner_1.png</file>
+			<file>Cloner_2.png</file>
+			<file>Cloner_3.png</file>
+			<file>Cloner_4.png</file>
 			<file>Config_Filtro_In_Analogici_tpac100802_de.html</file>
 			<file>Config_Filtro_In_Analogici_tplc050_de.html</file>
 			<file>Config_Filtro_In_Analogici_tpac100704_de.html</file>

@@ -151,13 +151,13 @@
 					</section>
 				<section title="Synoptic (Local I/O)" ref="Sinottico_eng.html"/>
 				<section title="Device variables (Local I/O)" ref="Variabili_prodotto_eng.html">	
-				<section title="TPAC1006 / TPAC1008_02 models" ref="Modelli_tpac1006_100801_100802_eng.html"/>
+				<section title="TPAC1008_02 models" ref="Modelli_tpac1006_100801_100802_eng.html"/>
 				<section title="TPAC1007 models" ref="Modelli_tpac1007_eng.html"/>
 				<section title="TPAC1008_03 model" ref="Modelli_tpac100803_eng.html"/>
 				<section title="TPLC050 / TPLC100 models" ref="Modelli_tplc050_100_eng.html"/>
 					</section>
 				<section title="Inputs / outputs configuration" ref="Config_ingressi_uscite_eng.html">	
-				<section title="TPAC1006, TPAC1007 and TPAC1008_02 Inputs / outputs configuration" ref="Config_ingressi_uscite_tpac1006_1007_100802_eng.html"/>
+				<section title="TPAC1007 and TPAC1008_02 Inputs / outputs configuration" ref="Config_ingressi_uscite_tpac1006_1007_100802_eng.html"/>
 				<section title="TPAC1008_03 Inputs / outputs configuration" ref="Config_ingressi_uscite_tpac100803_eng.html"/>
 				<section title="TPLC050 and TPLC100 Inputs / outputs configuration" ref="Config_ingressi_uscite_tplc050_100_eng.html"/>
 					</section>				
