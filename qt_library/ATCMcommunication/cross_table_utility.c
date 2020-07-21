@@ -1593,18 +1593,18 @@ int getVarDecimalByCtIndex(const int ctIndex)
             }
             else if (decimal > MAX_DECIMAL_DIGIT)
             {
-                LOG_PRINT(error_e, "Too many decimal nuber specifyed '%d' by variable '%s'. Max nuber of digit is '%d'\n", decimal, varNameArray[ctIndex].tag, MAX_DECIMAL_DIGIT);
+                LOG_PRINT(error_e, "Too many decimal places specifyed '%d' by variable '%s'. Max nuber of digit is '%d'\n", decimal, varNameArray[ctIndex].tag, MAX_DECIMAL_DIGIT);
                 decimal = MAX_DECIMAL_DIGIT;
             }
             else if (decimal < 0)
             {
-                LOG_PRINT(error_e, "The decimal digit number '%d' specyfied by variable '%s' must be greater than '0'\n", decimal, varNameArray[ctIndex].tag);
+                LOG_PRINT(error_e, "The decimal places  number '%d' specyfied by variable '%s' must be greater than '0'\n", decimal, varNameArray[ctIndex].tag);
                 decimal = 0;
             }
         }
         else
         {
-            LOG_PRINT(error_e, "Invalid decimal specification for variable '%d'\n", ctIndex);
+            LOG_PRINT(error_e, "Invalid decimal places for variable '%d'\n", ctIndex);
             decimal = 0;
         }
     }

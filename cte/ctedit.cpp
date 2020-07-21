@@ -741,7 +741,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         nErr = globalChecks();
         qDebug() << QString::fromAscii("Load Errors: <%1>") .arg(nErr);
         if (nErr > 0)  {
-            m_szMsg = QString::fromAscii("Found Errors Loading CrossTable file: %1\n Total Erros: %2") .arg(szFileCT) .arg(nErr);
+            m_szMsg = QString::fromAscii("Found Errors Loading Crosstable file: %1\n Total Erros: %2") .arg(szFileCT) .arg(nErr);
             warnUser(this, szMectTitle, m_szMsg);
         }
         m_isCtModified = false;
@@ -789,7 +789,7 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
             fRes = true;
     }
     else  {
-        m_szMsg = QString::fromAscii("Error Loading CrossTable file: %1\n At Row: %2\n\nCannot continue") .arg(szFileCT) .arg(nTotalRows);
+        m_szMsg = QString::fromAscii("Error Loading Crosstable file: %1\n At Row: %2\n\nCannot continue") .arg(szFileCT) .arg(nTotalRows);
         warnUser(this, szMectTitle, m_szMsg);
     }
     this->setCursor(Qt::ArrowCursor);
@@ -3549,12 +3549,19 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             }
         }
         // Numero Decimali > 4 ===> Variable (per tipi differenti da Bit in tutte le versioni possibili)
-        else if (nDecimals >= 4 && nType != BYTE_BIT && nType == WORD_BIT && nType == DWORD_BIT)  {
+        else if (nDecimals >= 4)  { // && nType != BYTE_BIT && nType == WORD_BIT && nType == DWORD_BIT)  {
             // Controlla che il numero indicato punti ad una variabile del tipo necessario a contenere il numero di decimali
+            // (vanno bene tutti i tipi riconducibili a INT). Il valore massimo consentito a Runtime è 6
             if (nDecimals > DimCrossTable || ! lstCTRecords[nDecimals - 1].Enable ||
-                    (lstCTRecords[nDecimals - 1].VarType != UINT8 &&  lstCTRecords[nDecimals - 1].VarType != UINT16 && lstCTRecords[nDecimals - 1].VarType != UINT16BA &&
-                     lstCTRecords[nDecimals - 1].VarType != UDINT &&  lstCTRecords[nDecimals - 1].VarType != UDINTDCBA && lstCTRecords[nDecimals - 1].VarType != UDINTCDAB &&
-                     lstCTRecords[nDecimals - 1].VarType != UDINTBADC ) )   {
+                    (lstCTRecords[nDecimals - 1].VarType == BIT         ||
+                     lstCTRecords[nDecimals - 1].VarType == BYTE_BIT    ||
+                     lstCTRecords[nDecimals - 1].VarType == WORD_BIT    ||
+                     lstCTRecords[nDecimals - 1].VarType == DWORD_BIT   ||
+                     lstCTRecords[nDecimals - 1].VarType == REAL        ||
+                     lstCTRecords[nDecimals - 1].VarType == REALDCBA    ||
+                     lstCTRecords[nDecimals - 1].VarType == REALCDAB    ||
+                     lstCTRecords[nDecimals - 1].VarType == REALBADC    ||
+                     lstCTRecords[nDecimals - 1].VarType == UNKNOWN ) )   {
                 fillErrorMessage(nRow, colDecimal, errCTNoVarDecimals, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
                 nErrors++;
