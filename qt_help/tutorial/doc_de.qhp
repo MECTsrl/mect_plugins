@@ -125,6 +125,7 @@
 						<section title="Zugriff auf MySQL/SQLite-Datenbanken" ref="Database_de.html"/>
 						<section title="Einfügen eines Popup-Fensters" ref="Popup_de.html"/>
 						<section title="Verwendung von PWM" ref="PWM_de.html"/>
+						<section title="Buzzer" ref="Buzzer_de.html"/>
 						</section>
 				</section>	
 				<section title="PLC(SPS)" ref="PLC_de.html">
@@ -147,6 +148,7 @@
 						</section>
 					<section title="SPS-Debugging" ref="Debug_PLC_de.html"/>
 					<section title="Bibliotheken zum Projekt hinzufügen" ref="Aggiungere_librerie_de.html"/>
+					<section title="Ausführungszeit eines Tasks" ref="Tempo_esecuzione_Task_de.html"/>
 					<section title="Projektpfad" ref="Path_progetto_de.html"/>
 					</section>
 				<section title="Synoptik (Lokale E/A)" ref="Sinottico_de.html"/>	
@@ -162,6 +164,7 @@
 				<section title="Konfiguration der Ein-/Ausgänge TPLC050 und TPLC100" ref="Config_ingressi_uscite_tplc050_100_de.html"/>
 					</section>				
 				<section title="Diagnosevariablen" ref="Variabili_diagnostica_de.html"/>
+				<section title="Modbus-Prookoll" ref="Protocollo_Modbus_de.html"/>	
 				<section title="Aktivieren / deaktivieren des Knotens Modbus RTU-TCP" ref="Abilitazione_disabilitazione_nodo_de.html"/>
 				<section title="Cloner" ref="Cloner_de.html"/>
 				<section title="Einlegen der Micro-SD-Karte" ref="SD_card_de.html"/>
@@ -175,10 +178,14 @@
             <keyword id="MyApplication::foobar" ref="doc_de.html#foobar"/>
         </keywords>
         <files>
+			<file>Protocollo_Modbus_de.html</file>
+			<file>Tempo_esecuzione_Task.png</file>
+			<file>Tempo_esecuzione_Task_de.html</file>
+			<file>Buzzer_de.html</file>
 			<file>Cloner_de.html</file>
 			<file>Cloner_1.png</file>
 			<file>Cloner_2.png</file>
-			<file>Cloner_3.png</file>
+			<file>Cloner_3_a.png</file>
 			<file>Cloner_4.png</file>
 			<file>Config_Filtro_In_Analogici_tpac100802_de.html</file>
 			<file>Config_Filtro_In_Analogici_tplc050_de.html</file>
@@ -529,6 +536,7 @@
 			<file>Aggiungere_pagina_2.png</file>
 			<file>Aggiungere_pagina_3.png</file>
 			<file>Aggiungere_pagina_4.png</file>
+			<file>Aggiungere_pagina_5.png</file>
 			<file>Rimuovere_pagina_de.html</file>
 			<file>Rimuovere_pagina_1.png</file>
 			<file>Rimuovere_pagina_2.png</file>

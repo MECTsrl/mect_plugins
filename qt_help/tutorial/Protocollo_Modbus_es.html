@@ -1,0 +1,263 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Protocolo Modbus</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Protocolo Modbus</h3>
+	<p class="western">Los protocolos Modbus/TCP y Modbus/RTU pueden ser usados en los dispositivos Mect:</p>
+	<ul>
+		<li/>
+		<p class="western">en modo Maestro (Cliente) para acceder a los registros de los dispositivos externos conectados, respectivamente, a través de TCP/IP o a través de la serie (RS485/RS422).</p>
+		<li/>
+		<p class="western">en modo Servidor (Esclavo) para exponer los registros a los dispositivos externos conectados como arriba.</p>
+	</ul>
+	<p class="western">En el editor de la Crosstable:</p>
+	<table width="500" cellpadding="9" cellspacing="0">
+			<col width="250">
+			<col width="250">
+			<col width="250">
+			<thead>
+				<tr valign="top">
+					<th width="250" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"></p>
+					</th>
+					<th width="250" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">Modbus TCP</p>
+					</th>
+					<th width="250" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 0px solid #000000; border-right: 1px solid #000000; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">Modbus RTU</p>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr valign="top">
+					<td width="250" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western"><strong>Maestro(Cliente)</strong></p>
+					</td>
+					<td width="250"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western"><strong>TCP</strong></p>
+					</td>
+					<td width="250"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 0px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western"><strong>RTU</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="250" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western"><strong>Servidor(Esclavo)</strong></p>
+					</td>
+					<td width="250"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western"><strong>TCP_SRV</strong></p>
+					</td>
+					<td width="250"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 0px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western"><strong>RTU_SRV</strong></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	<p class="western">L’uso de los protocolos de Modbus es muy simple, ya que no hay necesidad de hacer llamadas de función para leer los registros a través de Modbus. Los registros Modbus deben asociarse con variables dentro del “Editor de la Crosstable” y se especifica un “Período de lectura” (Read period): entonces el sistema actualiza automáticamente las variables, según el período especificado y gestionando los errores de comunicación. Además, escribir las variables (tanto del HMI como del PLC) hace que el registro correspondiente se escriba inmediatamente a través de Modbus.</p>	
+	<p class="western"><u>Sin embargo, es importante especificar los “periodos de lectura” corectos</u>.</p>	
+	<p class="western"><u>Si son demasiado cortos o hay demasiados registros en el mismo dispositivo entonces el sistema no será capaz de actualizar todas las variables</u>.</p>
+	<p class="western"><u>Para facilitar la elección recomendamos usar la pestaña &ldquo;<font color="#0000ff"><u><a class="western" href="Timings_es.html">Timings</a></u></font>&rdquo; en el editor de la Crosstable</u>.</p>
+	
+	<p class="western">En el campo (Register) hay que indicar el desplazamiento del registro(a veces llamado índice o dirección o número). Recuerde que los registros del Modbus son de 16 bits, por lo tanto:</p>
+	<ul>
+		<li/>
+		<p class="western">si (Type) es 8 o 16 (por ejemplo BIT, INT, ...) entonces el desplazamiento(offset) del siguiente registro es “+1”.</p>
+		<li/>
+		<p class="western">si (Type) es de 32 bit (por ejemplo DWORD_BIT, REAL, UDINT, DINT, ...) el desplazamiento(offset) del siguiente es “+2”.</p>
+	</ul>
+	<p class="western">También:</p>
+	<ul>
+		<li/>
+		<p class="western">si la variable es con (Type) BIT entonces el sistema utilizará automáticamente las funciones:</p>
+			<ul>
+				<li/>
+				<p class="western">"0x01 Read Coils"</p>
+				<li/>
+				<p class="western">"0x05 Write Single Coil"</p>
+				<li/>
+				<p class="western">"0x15 Write Multiple Coils"</p>
+			</ul>
+		<li/>
+		<p class="western">si ha especificado “Input register” entonces el sistema utilizará automáticamente la función “0x04 Read Input Registers”.</p>
+		<li/>
+		<p class="western">de lo contrario, el sistema utilizará automáticamente las funciones:</p> 
+		<ul>
+			<li/>
+			<p class="western">"0x03 Read Holding Register"</p>
+			<li/>
+			<p class="western">"0x06 Write Single Register"</p>
+			<li/>
+			<p class="western">"0x10 Write Multiple Registers"</p>
+		</ul>		
+	</ul>
+	<br/>
+	<p class="western"><strong><u>Definición de la variable cuando el plc es Maestro/Cliente</u>:</strong></p>
+	<ul>
+		<li/>
+		<p class="western">RTU</p>
+			<ul>
+			<li/>
+			<p class="western">(Priority) - 2 (directriz, no obligatorio).</p>
+			<li/>
+			<p class="western">(Protocol) - RTU.</p>
+			<li/>
+			<p class="western">(Node ID) - de 1 a 247.</p>
+			<li/>
+			<p class="western">(Register) - de 0 a 65535.</p>
+			</ul>
+		<li/>
+		<p class="western">TCP</p>
+			<ul>
+			<li/>
+			<p class="western">(Priority) - 3 (directriz, no obligatorio).</p>
+			<li/>
+			<p class="western">(Protocol) - TCP.</p>
+			<li/>
+			<p class="western">(IP Address) - x.x.x.x (servidor/esclavo).</p>
+			<li/>
+			<p class="western">(Port) - 502.</p>
+			<li/>
+			<p class="western">(Node ID) - de 0 a 255.</p>
+			<li/>
+			<p class="western">(Register) - de 0 a 65535.</p>
+			</ul>
+	</ul>
+	<table width="600" cellpadding="8" cellspacing="0">
+			<col width="300">
+			<col width="300">
+			<thead>
+				<tr valign="top">
+					<th width="300" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Maestro / cliente = TPAC (tanto TCP como RTU)</p>
+					</th>
+					<th width="300" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">Servidor / esclavo = dispositivo externo</p>
+					</th>					
+				</tr>
+			</thead>
+			<tbody>
+				<tr valign="top">
+					<td width="300" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">Type: <strong>BIT</strong></p>
+					</td>
+					<td width="300"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">"0x01 Read Coils"<br> "0x05 Write Single Coil"<br> "0x15 Write Multiple Coils"</p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="300" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">Type: <strong>todos los demás</strong></p>
+					</td>
+					<td width="300"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">“0x03 Read Holding Register”<br> “0x06 Write Single Register”<br> “0x10 Write Multiple Registers”</p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="300" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western"><strong>Registro de entrada</strong></p>
+					</td>
+					<td width="300"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">“0x04 Read Input Registers”</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br/>
+		<p class="western"><strong><u>Definicion de la variable cuando el plc es Servidor/Esclavo</u>:</strong></p>
+	<ul>
+		<li/>
+		<p class="western">RTU_SRV</p>
+			<ul>
+			<li/>
+			<p class="western">(Priority) - 2 (directriz, no obligatorio).</p>
+			<li/>
+			<p class="western">(Type) - no acepta BIT, es posible usar WORD_BIT.</p>
+			<li/>
+			<p class="western">(Protocol) - RTU_SRV.</p>
+			<li/>
+			<p class="western">(Node ID) - de 1 a 247.</p>
+			<li/>
+			<p class="western">(Register) - de 0 a <strong>4095</strong>.</p>
+			<li/>
+			<p class="western">(Behavior) - RW si la lógica del plc debe escribir la variable, RO si sólo es escrita por dispositivos externos.</p>
+			</ul>
+		<li/>
+		<p class="western">TCP_SRV</p>
+			<ul>
+			<li/>
+			<p class="western">(Priority) - 3 (directriz, no obligatorio).</p>
+			<li/>
+			<p class="western">(Type) - no acepta BIT, es posible usar WORD_BIT.</p>
+			<li/>
+			<p class="western">(Protocol) - TCP_SRV.</p>
+			<li/>
+			<p class="western">(IP Address) - 0.0.0.0</p>
+			<li/>
+			<p class="western">(Port) - 502.</p>
+			<li/>
+			<p class="western">(Node ID) - 1 (acepta sólo 1).</p>
+			<li/>
+			<p class="western">(Register) - de 0 a <strong>4095</strong>.</p>
+			<li/>
+			<p class="western">(Behavior) - RW si la lógica del plc debe escribir la variable, RO si sólo es escrita por dispositivos externos.</p>
+			</ul>
+	</ul>
+	<table width="600" cellpadding="8" cellspacing="0">
+			<col width="300">
+			<col width="300">
+			<thead>
+				<tr valign="top">
+					<th width="300" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Maestro / client = dispositivo externo</p>
+					</th>
+					<th width="300" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">Servidor /esclavo = TPAC<br>(tanto TCP_SRV como RTU_SRV)</p>
+					</th>					
+				</tr>
+			</thead>
+			<tbody>
+				<tr valign="top">
+					<td width="300" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">"0x01 Read Coils"<br> "0x05 Write Single Coil"<br> "0x15 Write Multiple Coils"</p>
+					</td>
+					<td width="300"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">NO PERMITIDO</p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="300" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">“0x03 Read Holding Register”<br> “0x06 Write Single Register”<br> “0x10 Write Multiple Registers”</p>
+					</td>
+					<td width="300"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">Type: <strong>todos excepto BIT</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="300" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+						<p class="western">“0x04 Read Input Registers”</p>
+					</td>
+					<td width="300"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm" align="center">
+					<p class="western">NO PERMITIDO</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	<br/>
+	<p class="western"><strong><u>CONFIGURACIÓN DEL MODBUS</u>:</strong></p>
+	<p class="western">Una vez introducidas las variables con los registros Modbus en la Crosstable, hay que comprobar los tiempos de lectura de los buses (ver capítulo &ldquo;<font color="#0000ff"><u><a class="western" href="Timings_es.html">Timings</a></u></font>&rdquo;). </p>
+	<p class="western">El campo “Prioridad” (2) y (3) asocia un tiempo de lectura a las variables que tienen esa prioridad específica. Para cambiar estos tiempos vaya al &ldquo;<font color="#0000ff"><u><a class="western" href="System_Editor_es.html">Editor del Sistema</a></u></font>&rdquo;, en “Sistema” -> “Read Period 2 [ms]” y “Read Period 3 [ms]”.  </p>
+	<p class="western">Para cambiar “Baudrate”, “Timeout” y “Silence” vaya al Editor del sistema -> “SERIAL PORT x” </p>
+	<br/>
+	</body>
+</html>

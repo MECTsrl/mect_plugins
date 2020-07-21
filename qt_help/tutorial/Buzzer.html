@@ -1,0 +1,59 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Buzzer</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Buzzer</h3>
+	<p class="western">Il buzzer può essere abilitato / disabilitato in modo semplice utilizzando la variabile <strong>PLC_buzzerOn</strong> (abilitato = 1, disabilitato = 0).</p>
+	<p class="western">In alternativa è possibile personalizzare il buzzer.</p>
+	<p class="western">La funzionalità attuata dalla variabile <strong>PLC_BUZZER</strong> consiste nel generare <u>segnalazioni acustiche complesse con un'unica scrittura su variabile</u> (anche da HMI), in particolare:</p>
+	<ol>
+		<li/>
+		<p class="western">con beep a volume variabile.</p>
+		<li/>
+		<p class="western">con tempo di beep e di silenzio variabili.</p>
+		<li/>
+		<p class="western">con eventuali ripetizioni di (beep + silenzio).</p>
+	</ol>
+	<p class="western">Questa funzionalità è realizzata scrivendo nella variabile a 32 bit PLC_BUZZER, cioè ogni volta che viene scritta PLC_BUZZER da HMI o da PLC, il motore del PLC inizia ad eseguire la segnalazione acustica specificata, eventualmente interrompendo quella già in corso.</p>
+	<p class="western">Il dispositivo hardware utilizzato è semplicemente un PWM dell'i.MX28 che comanda direttamente il GPIO connesso al buzzer sulla scheda.<br>
+	Ci sono due cicli:</p>
+	<ul>
+		<li/>
+		<p class="western">un ciclo molto veloce gestito dal PWM dell'i.MX28, che realizza il beep stesso.</p>
+		<li/>
+		<p class="western">un ciclo veloce (centesimi di secondo) gestito dal motore del PLC, che realizza la ripetizione (beep + silenzio).</p>
+	</ul>
+	<p class="western">Scrivendo il valore esadecimale <strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong>, i 4 byte specificano:</p>
+	<ul>
+		<li/>
+		<p class="western"><strong>0x<font color="#cb3234">11</font> volume </strong>del beep in percentuale (da 0% a 100%, cioè da 0x00 a 0x64), è il duty cyle del pwm sul buzzer.</p>
+		<li/>
+		<p class="western"><strong>0x<font color="#ffa500">22</font></strong> durata del <strong>beep</strong> in centesimi di secondo.</p>
+		<li/>
+		<p class="western"><strong>0x<font color="#35682d">33</font></strong> durata del <strong>silenzio</strong> in centesimi di secondo.</p>
+		<li/>
+		<p class="western"><strong>0x<font color="#2271b3">44</font></strong> numero di <strong>ripetizioni</strong> di (beep + silenzio).</p>
+	</ul>
+	<p class="western">Esempi:</p>
+	<ul>
+		<li/>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>beep semplice piano</u>", cioè volume = 50%; beep = 12 cs (120 ms); silenzio = nullo; ripetizioni = 1.</p>
+		<li/>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>triplo beep breve forte</u>", cioè volume = 100%; beep = 50 cs (500 ms); silenzio = 25 cs (250 ms); ripetizioni = 3.</p>
+		<li/>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>quintuplo beep lungo forte</u>", cioè volume = 100%; beep = 100 cs (1 s); silenzio = 50 cs (500 ms); ripetizioni = 5.</p>
+	</ul>
+	<br/>
+	</body>
+</html>

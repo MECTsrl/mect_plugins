@@ -125,6 +125,7 @@
 						<section title="MySQL/SQLite database access" ref="Database_eng.html"/>
 						<section title="Add a popup window" ref="Popup_eng.html"/>
 						<section title="PWM output" ref="PWM_eng.html"/>
+						<section title="Buzzer" ref="Buzzer_eng.html"/>
 						</section>
 				</section>	
 				<section title="PLC" ref="PLC_eng.html">
@@ -147,6 +148,7 @@
 						</section>
 					<section title="Debug PLC" ref="Debug_PLC_eng.html"/>
 					<section title="Add libraries to the project" ref="Aggiungere_librerie_eng.html"/>
+					<section title="Task Run Time" ref="Tempo_esecuzione_Task_eng.html"/>
 					<section title="Project path" ref="Path_progetto_eng.html"/>
 					</section>
 				<section title="Synoptic (Local I/O)" ref="Sinottico_eng.html"/>
@@ -161,7 +163,8 @@
 				<section title="TPAC1008_03 Inputs / outputs configuration" ref="Config_ingressi_uscite_tpac100803_eng.html"/>
 				<section title="TPLC050 and TPLC100 Inputs / outputs configuration" ref="Config_ingressi_uscite_tplc050_100_eng.html"/>
 					</section>				
-				<section title="Diagnostic variables" ref="Variabili_diagnostica_eng.html"/>
+				<section title="Diagnostic variables" ref="Variabili_diagnostica_eng.html"/>				
+				<section title="Modbus protocol" ref="Protocollo_Modbus_eng.html"/>					
 				<section title="Enable / disable Modbus RTU-TCP node" ref="Abilitazione_disabilitazione_nodo_eng.html"/>
 				<section title="Cloner" ref="Cloner_eng.html"/>
 				<section title="Micro SD card insertion" ref="SD_card_eng.html"/>
@@ -175,10 +178,14 @@
             <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
         </keywords>
         <files>
+			<file>Protocollo_Modbus_eng.html</file>
+			<file>Tempo_esecuzione_Task.png</file>
+			<file>Tempo_esecuzione_Task_eng.html</file>
+			<file>Buzzer_eng.html</file>
 			<file>Cloner_eng.html</file>
 			<file>Cloner_1.png</file>
 			<file>Cloner_2.png</file>
-			<file>Cloner_3.png</file>
+			<file>Cloner_3_a.png</file>
 			<file>Cloner_4.png</file>
 			<file>Config_Filtro_In_Analogici_tpac100802_eng.html</file>
 			<file>Config_Filtro_In_Analogici_tplc050_eng.html</file>
@@ -529,6 +536,7 @@
 			<file>Aggiungere_pagina_2.png</file>
 			<file>Aggiungere_pagina_3.png</file>
 			<file>Aggiungere_pagina_4.png</file>
+			<file>Aggiungere_pagina_5.png</file>
 			<file>Rimuovere_pagina_eng.html</file>
 			<file>Rimuovere_pagina_1.png</file>
 			<file>Rimuovere_pagina_2.png</file>
