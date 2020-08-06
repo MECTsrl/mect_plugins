@@ -205,7 +205,7 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNoRegister] = trUtf8("Empty or Invalid Register Value");
     lstErrorMessages[errCTRegisterTooBig] = trUtf8("Register Number too big for TCP Server");
     lstErrorMessages[errCTRegisterUsedTwice] = trUtf8("Register Number or Bit Position (Decimal) already used in Other Variables");
-    lstErrorMessages[errCTInputOnlyModbusClient]  = trUtf8("Input Register allowed only on Modbus Client");
+    lstErrorMessages[errCTInputOnlyModbus]  = trUtf8("Input Register allowed only on Modbus Client/Server");
     lstErrorMessages[errCTModBusServerDuplicate] = trUtf8("Server Already present with different Port/Node");
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
     lstErrorMessages[errCTNoBit] = trUtf8("Alarm/Event Variables must be of BIT type");
@@ -1373,6 +1373,9 @@ void ctedit::saveCTFile()
                 lstCTRecords[nCur].Module = 0;
                 lstCTRecords[nCur].Offset = 0;
             }
+            if (nProtocol == CANOPEN || nProtocol == MECT_PTC )  {
+                lstCTRecords[nCur].InputReg = 0;
+            }
             if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV || nProtocol == CANOPEN)  {
 
             }
@@ -1618,10 +1621,8 @@ void ctedit::enableFields()
             ui->cboPort->setVisible(false);
             ui->txtPort->setVisible(true);
         }
-        // Visibilità Check Box Input Regs per protocolli RTU - TCP - TCPRTU
-        if (nProtocol == RTU || nProtocol == RTU_SRV ||
-            nProtocol == TCP || nProtocol == TCPRTU  ||
-            nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
+        // Visibilità Check Box Input Regs per protocolli RTU - TCP (Client e Server in tutte le combinazioni possibili)
+        if (! (nProtocol == PLC || nProtocol == CANOPEN || nProtocol == MECT_PTC) )  {
             ui->lblInputRegister->setVisible(true);
             ui->chkInputRegister->setVisible(true);
             ui->chkInputRegister->setEnabled(true);
@@ -3808,11 +3809,12 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
                     lstCTErrors.append(errCt);
                     nErrors++;
                 }
-                // Input Register allowed only on MODBUS Client (no SERVER)
+                // Input Register allowed only on MODBUS Client & Server (RTU e TPC nelle varie declinazioni)
                 if ((lstValues[colInputReg] == szTRUE) &&
-                    ! ((nProtocol == RTU) ||
-                       (nProtocol == TCPRTU)) )  {
-                    fillErrorMessage(nRow, colRegister, errCTInputOnlyModbusClient, szVarName, szTemp, chSeverityError, &errCt);
+                    ((nProtocol == PLC)     ||
+                     (nProtocol == CANOPEN) ||
+                     (nProtocol == MECT_PTC)) )  {
+                    fillErrorMessage(nRow, colRegister, errCTInputOnlyModbus, szVarName, szTemp, chSeverityError, &errCt);
                     lstCTErrors.append(errCt);
                     nErrors++;
                 }
