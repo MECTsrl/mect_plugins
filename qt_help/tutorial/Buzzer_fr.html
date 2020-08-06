@@ -14,45 +14,45 @@
 	</head>	
 	<body>
 		<h3 class="western">Buzzer</h3>
-	<p class="western">Il buzzer può essere abilitato / disabilitato in modo semplice utilizzando la variabile <strong>PLC_buzzerOn</strong> (abilitato = 1, disabilitato = 0).</p>
-	<p class="western">In alternativa è possibile personalizzare il buzzer.</p>
-	<p class="western">La funzionalità attuata dalla variabile <strong>PLC_BUZZER</strong> consiste nel generare <u>segnalazioni acustiche complesse con un'unica scrittura su variabile</u> (anche da HMI), in particolare:</p>
+	<p class="western">Le buzzer peut être activé / désactivé de manière simple en utilisant la variable <strong>PLC_buzzerOn</strong> (activé = 1, désactivé = 0).</p>
+	<p class="western">Vous pouvez également personnaliser le buzzer.</p>
+	<p class="western">La fonctionnalité mise en œuvre par la variable <strong>PLC_BUZZER</strong> consiste à générer des <u>signaux acoustiques complexes avec une seule écriture de variable </u>(également à partir de l'IHM), en particulier:</p>
 	<ol>
 		<li/>
-		<p class="western">con beep a volume variabile.</p>
+		<p class="western">avec un bip à volume variable.</p>
 		<li/>
-		<p class="western">con tempo di beep e di silenzio variabili.</p>
+		<p class="western">avec temps de bip et temps de silence variables.</p>
 		<li/>
-		<p class="western">con eventuali ripetizioni di (beep + silenzio).</p>
+		<p class="western">avec d’éventuelles répétitions de (bip + silence).</p>
 	</ol>
-	<p class="western">Questa funzionalità è realizzata scrivendo nella variabile a 32 bit PLC_BUZZER, cioè ogni volta che viene scritta PLC_BUZZER da HMI o da PLC, il motore del PLC inizia ad eseguire la segnalazione acustica specificata, eventualmente interrompendo quella già in corso.</p>
-	<p class="western">Il dispositivo hardware utilizzato è semplicemente un PWM dell'i.MX28 che comanda direttamente il GPIO connesso al buzzer sulla scheda.<br>
-	Ci sono due cicli:</p>
+	<p class="western">Cette fonctionnalité est réalisée en écrivant dans la variable PLC_BUZZER à 32 bits, c'est-à-dire que chaque fois que PLC_BUZZER est écrite à partir de l'IHM ou de l'automate PLC, le moteur de l'automate commence à exécuter le signal acoustique spécifié, interrompant éventuellement celui qui est déjà en cours.</p>
+	<p class="western">Le dispositif matériel utilisé est simplement un PWM de l'i.MX28 qui contrôle directement le GPIO connecté au buzzer sur la carte.<br>
+	Il y a deux cycles:</p>
 	<ul>
 		<li/>
-		<p class="western">un ciclo molto veloce gestito dal PWM dell'i.MX28, che realizza il beep stesso.</p>
+		<p class="western">un cycle très rapide géré par le PWM de l'i.MX28, qui fait le bip lui-même.</p>
 		<li/>
-		<p class="western">un ciclo veloce (centesimi di secondo) gestito dal motore del PLC, che realizza la ripetizione (beep + silenzio).</p>
+		<p class="western">un cycle rapide (centièmes de seconde) géré par le moteur de l'automate, qui réalise la répétition (bip + silence).</p>
 	</ul>
-	<p class="western">Scrivendo il valore esadecimale <strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong>, i 4 byte specificano:</p>
+	<p class="western">En écrivant la valeur hexadécimale <strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong>, les 4 octets spécifient:</p>
 	<ul>
 		<li/>
-		<p class="western"><strong>0x<font color="#cb3234">11</font> volume </strong>del beep in percentuale (da 0% a 100%, cioè da 0x00 a 0x64), è il duty cyle del pwm sul buzzer.</p>
+		<p class="western"><strong>0x<font color="#cb3234">11</font> volume </strong>bip en pourcentage (de 0% à 100%, c'est-à-dire de 0x00 à 0x64), est le rapport cyclique du pwm sur le buzzer.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#ffa500">22</font></strong> durata del <strong>beep</strong> in centesimi di secondo.</p>
+		<p class="western"><strong>0x<font color="#ffa500">22</font></strong> durée du <strong>bip</strong> en centièmes de seconde.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#35682d">33</font></strong> durata del <strong>silenzio</strong> in centesimi di secondo.</p>
+		<p class="western"><strong>0x<font color="#35682d">33</font></strong> temps de <strong>silence</strong> en centièmes de seconde.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#2271b3">44</font></strong> numero di <strong>ripetizioni</strong> di (beep + silenzio).</p>
+		<p class="western"><strong>0x<font color="#2271b3">44</font></strong> nombre de <strong>répétitions</strong> de (bip + silence).</p>
 	</ul>
-	<p class="western">Esempi:</p>
+	<p class="western">Exemples:</p>
 	<ul>
 		<li/>
-		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>beep semplice piano</u>", cioè volume = 50%; beep = 12 cs (120 ms); silenzio = nullo; ripetizioni = 1.</p>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> est un "<u>bip plan simple</u>", c'est-à-dire volume = 50%; bip = 12 cs (120 ms); silence = nul; répétitions = 1.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>triplo beep breve forte</u>", cioè volume = 100%; beep = 50 cs (500 ms); silenzio = 25 cs (250 ms); ripetizioni = 3.</p>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> est un "<u>triple bip court et fort</u>", c'est-à-dire volume = 100%; bip = 50 cs (500 ms); silence = 25 cs (250 ms); répétitions = 3.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>quintuplo beep lungo forte</u>", cioè volume = 100%; beep = 100 cs (1 s); silenzio = 50 cs (500 ms); ripetizioni = 5.</p>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> est un "<u>quintuple long bip fort</u>", c'est-à-dire volume = 100%; bip = 100 cs (1 s); silence = 50 cs (500 ms); répétitions = 5.</p>
 	</ul>
 	<br/>
 	</body>

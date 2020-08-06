@@ -2,7 +2,7 @@
 <html>
 	<head>
 	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
-	   <title>Buzzer</title>
+	   <title>Summer</title>
 	   <style type="text/css">
 		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
 		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
@@ -13,46 +13,46 @@
 	</style>
 	</head>	
 	<body>
-		<h3 class="western">Buzzer</h3>
-	<p class="western">Il buzzer può essere abilitato / disabilitato in modo semplice utilizzando la variabile <strong>PLC_buzzerOn</strong> (abilitato = 1, disabilitato = 0).</p>
-	<p class="western">In alternativa è possibile personalizzare il buzzer.</p>
-	<p class="western">La funzionalità attuata dalla variabile <strong>PLC_BUZZER</strong> consiste nel generare <u>segnalazioni acustiche complesse con un'unica scrittura su variabile</u> (anche da HMI), in particolare:</p>
+		<h3 class="western">Summer</h3>
+	<p class="western">Der Summer kann auf einfache Weise über die Variable <strong>PLC_buzzerOn</strong> (aktiviert = 1, deaktiviert = 0) aktiviert/deaktiviert werden.</p>
+	<p class="western">Alternativ können Sie den Summer anpassen.</p>
+	<p class="western">Die durch die Variable <strong>PLC_BUZZER</strong> implementierte <u>Funktionalität besteht in der Erzeugung komplexer akustischer Signale mit einem einzigen Schreiben auf die Variable</u> (auch von der HMI), ins Besonders:</p>
 	<ol>
 		<li/>
-		<p class="western">con beep a volume variabile.</p>
+		<p class="western">mit variablem Lautstärke-Piepton.</p>
 		<li/>
-		<p class="western">con tempo di beep e di silenzio variabili.</p>
+		<p class="western">mit variabler Pieptonzeit und Stillezeit.</p>
 		<li/>
-		<p class="western">con eventuali ripetizioni di (beep + silenzio).</p>
+		<p class="western">mit möglichen Wiederholungen von (Piepton + Stille).</p>
 	</ol>
-	<p class="western">Questa funzionalità è realizzata scrivendo nella variabile a 32 bit PLC_BUZZER, cioè ogni volta che viene scritta PLC_BUZZER da HMI o da PLC, il motore del PLC inizia ad eseguire la segnalazione acustica specificata, eventualmente interrompendo quella già in corso.</p>
-	<p class="western">Il dispositivo hardware utilizzato è semplicemente un PWM dell'i.MX28 che comanda direttamente il GPIO connesso al buzzer sulla scheda.<br>
-	Ci sono due cicli:</p>
+	<p class="western">Diese Funktionalität wird durch Schreiben in die 32-Bit-Variable PLC_BUZZER realisiert, d.h. jedes Mal, wenn PLC_BUZZER vom HMI oder von der SPS aus geschrieben wird, beginnt der SPS-Motor mit der Ausführung des spezifizierten akustischen Signals und unterbricht das bereits laufende.</p>
+	<p class="western">Das verwendete Hardware-Gerät ist einfach eine PWM des i.MX28, die direkt den GPIO steuert, der an den Summer auf der Platine angeschlossen ist.<br>
+	Es gibt zwei Zyklen:</p>
 	<ul>
 		<li/>
-		<p class="western">un ciclo molto veloce gestito dal PWM dell'i.MX28, che realizza il beep stesso.</p>
+		<p class="western">ein sehr schneller Zyklus, der von der PWM des i.MX28 gesteuert wird und den Piepton selbst erzeugt.</p>
 		<li/>
-		<p class="western">un ciclo veloce (centesimi di secondo) gestito dal motore del PLC, che realizza la ripetizione (beep + silenzio).</p>
+		<p class="western">ein schneller Zyklus (Hundertstelsekunden), der von der PLC-Motor verwaltet wird, die die Wiederholung realisiert (Piepton + Stille).</p>
 	</ul>
-	<p class="western">Scrivendo il valore esadecimale <strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong>, i 4 byte specificano:</p>
+	<p class="western">Durch Schreiben des hexadezimalen Werts <strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong>, geben die 4 Bytes an:</p>
 	<ul>
 		<li/>
-		<p class="western"><strong>0x<font color="#cb3234">11</font> volume </strong>del beep in percentuale (da 0% a 100%, cioè da 0x00 a 0x64), è il duty cyle del pwm sul buzzer.</p>
+		<p class="western"><strong>0x<font color="#cb3234">11</font> Piepton-Lautstärke </strong>in Prozent (von 0% bis 100%, d.h. von 0x00 bis 0x64), ist der Arbeitszyklus des PWM auf dem Summer.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#ffa500">22</font></strong> durata del <strong>beep</strong> in centesimi di secondo.</p>
+		<p class="western"><strong>0x<font color="#ffa500">22</font></strong><strong> Pieptondauer </strong> in Hundertstelsekunden.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#35682d">33</font></strong> durata del <strong>silenzio</strong> in centesimi di secondo.</p>
+		<p class="western"><strong>0x<font color="#35682d">33</font></strong><strong> Stillezeit </strong> in Hundertstelsekunden.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#2271b3">44</font></strong> numero di <strong>ripetizioni</strong> di (beep + silenzio).</p>
+		<p class="western"><strong>0x<font color="#2271b3">44</font></strong> Anzahl der <strong>Wiederholungen</strong> von (Piepton + Stille).</p>
 	</ul>
-	<p class="western">Esempi:</p>
+	<p class="western">Beispiele:</p>
 	<ul>
 		<li/>
-		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>beep semplice piano</u>", cioè volume = 50%; beep = 12 cs (120 ms); silenzio = nullo; ripetizioni = 1.</p>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> ist ein "<u>einfacher ebener Piepton</u>", d.h. Lautstärke = 50%; Piepton = 12 cs (120 ms); Stille = Null; Wiederholungen = 1.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>triplo beep breve forte</u>", cioè volume = 100%; beep = 50 cs (500 ms); silenzio = 25 cs (250 ms); ripetizioni = 3.</p>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> ist ein "<u>dreifach starker kurzer Piepton</u>", d.h. Lautstärke = 100%; Piepton = 50 cs (500 ms); Stille = 25 cs (250 ms); Wiederholungen = 3.</p>
 		<li/>
-		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> è un "<u>quintuplo beep lungo forte</u>", cioè volume = 100%; beep = 100 cs (1 s); silenzio = 50 cs (500 ms); ripetizioni = 5.</p>
+		<p class="western"><strong>0x<font color="#2271b3">44</font><font color="#35682d">33</font><font color="#ffa500">22</font><font color="#cb3234">11</font></strong> ist ein "<u>fünffach langer lauter Piepton</u>", d.h. Lautstärke = 100%; Piepton = 100 cs (1 s); Stille = 50 cs (500 ms); Wiederholungen = 5.</p>
 	</ul>
 	<br/>
 	</body>

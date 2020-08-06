@@ -1,0 +1,42 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Traducción de las alarmas</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+	<h3 class="western">Traducción de las alarmas</h3>
+	<p class="western">El comentario de alarma no puede ser visto/traducido por Qt Linguist porque no es parte de un elemento gráfico sino que está dentro del Crosstable Editor.</p>
+	<p class="western">Sin embargo, es posible hacer una traducción "manual" de las alarmas introduciendo el código en la pagexxx.cpp (página .cpp donde se hace el cambio de idioma).</p>
+	<p class="western">Puede ver un ejemplo en el que se ha utilizado un QComboBox para el cambio de idioma. Ver el proyecto "Allarme_TPAC1007_04_AC" en C:\Qt485\MectApps\Examples.</p>
+	<p class="western"><strong><u>Procedimiento</u></strong>:</p>
+	<ul>
+		<li/>
+		<p class="western">Copie la siguiente función en la parte inferior de pagexxx<strong>.cpp</strong>:</p>
+		<pre class="western"><font color="#35682d"><strong>void</strong></font> setEventDescription(QString name, QString description)</pre>
+		<pre class="western">{</pre>
+		<pre class="western">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;event_t * event = EventHash.find(name).value();</pre>
+		<pre class="western">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong><font color="#35682d">if</font></strong> (event) {</pre>
+		<pre class="western">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strncpy(event->description, description.toLatin1().data(), DESCR_LEN);</pre>
+		<pre class="western">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</pre>
+		<pre class="western">}</pre>
+		<li/>
+		<p class="western">En la correspondiente pagexxx<strong>.h</strong>, copie dentro de "private slots":</p>
+		<pre class="western"><font color="#35682d"><strong>void</strong></font> changeEvent(QEvent * event);</pre>
+		<li/>
+		<p class="western">Llame a la función <strong>setEventDescription()</strong> introduciendo la traducción que quiera.</p>
+		<p class="western">Si utiliza un botón ATCM para cambiar el idioma, debe llamar la función setEventDescription(Nombre de la variable de alarma, Texto a mostrar) en la llamada del botón (Go to slot...), véase la opción "2" en el capítulo &ldquo;<font color="#0000ff"><u><a class="western" href="Selezione_lingua_es.html">Seleccionar el idioma desde el dispositivo</a></u></font>&rdquo;.</p>
+		<p class="western"><u>Por ejemplo</u>: setEventDescription(<font color="#35682d">"Alarma_temp"</font>, <font color="#35682d">"Alarma de temperatura - Entrada analógica 1"</font>);</p>
+		<p class="western">Sigue este último paso para todas las alarmas de lenguaje.</p>
+	</ul>	
+	<br/>
+	</body>
+</html>

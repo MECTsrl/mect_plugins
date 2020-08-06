@@ -97,7 +97,7 @@
 							<section title="Aspetto e funzionalità" ref="Aspetto_funzionalita_graph.html"/>	
 							</section>		
 						</section>	
-					<section title="Compilazione e installazione di un progetto" ref="Compilazione_installazione.html">	
+					<section title="Compilazione e trasferimento di un progetto" ref="Compilazione_installazione.html">	
 						<section title="Compilazione" ref="Compilazione.html"/>						
 						<section title="Trasferimento dell'applicazione sul dispositivo" ref="Trasferimento_applicazione.html"/>
 						<section title="Trasferimento dell'applicazione sul dispositivo in DEBUG" ref="Trasferimento_applicazione_debug.html"/>						
@@ -115,6 +115,7 @@
 						<section title="Aggiungere un nuovo file di lingue" ref="Add_file_lingue.html"/>
 						<section title="Utilizzo di Qt Linguist" ref="Qt_Linguist.html"/>
 						<section title="Selezionare la lingua dal dispositivo" ref="Selezione_lingua.html"/>
+						<section title="Traduzione degli allarmi" ref="Traduzioni_allarmi.html"/>
 						</section>	
 					<section title="Funzionamento interfaccia web" ref="Interfaccia_web.html"/>	
 					<section title="Cambio password di sistema" ref="Cambio_password_sistema.html"/>	
@@ -178,6 +179,11 @@
             <keyword id="MyApplication::foobar" ref="doc.html#foobar"/>
         </keywords>
         <files>
+			<file>Traduzioni_allarmi.html</file>
+			<file>Schema_TPAC100704AE.html</file>
+			<file>Schema_TPAC100704AD.html</file>
+			<file>Schema_TPAC100704AE.png</file>
+			<file>Schema_TPAC100704AD.png</file>
 			<file>Protocollo_Modbus.html</file>
 			<file>Tempo_esecuzione_Task.png</file>
 			<file>Tempo_esecuzione_Task.html</file>
@@ -230,7 +236,7 @@
 			<file>Schema_TPAC100802AE.png</file>
 			<file>Schema_TPAC100802AF.html</file>
 			<file>Schema_TPAC100802AF.png</file>
-			<file>Schema_TPAC100704AC.html</file>
+			<file>Schema_TPAC100704AC.html</file>			
 			<file>Schema_TPAC100704AC.png</file>
 			<file>Schema_TPAC100704AB.html</file>
 			<file>Schema_TPAC100704AB.png</file>

@@ -97,7 +97,7 @@
 							<section title="Look and functionality customization" ref="Aspetto_funzionalita_graph_eng.html"/>	
 							</section>		
 						</section>	
-					<section title="Compiling and installing a graphic project" ref="Compilazione_installazione_eng.html">	
+					<section title="Compiling and downloading a graphic project" ref="Compilazione_installazione_eng.html">	
 						<section title="Build" ref="Compilazione_eng.html"/>
 						<section title="Download to the panel of a graphic application" ref="Trasferimento_applicazione_eng.html"/>
 						<section title="Download of a graphic application in DEBUG mode" ref="Trasferimento_applicazione_debug_eng.html"/>						
@@ -115,6 +115,7 @@
 						<section title="Add a new language file" ref="Add_file_lingue_eng.html"/>
 						<section title="QtLinguist use" ref="Qt_Linguist_eng.html"/>
 						<section title="Select the language from the device" ref="Selezione_lingua_eng.html"/>
+						<section title="Alarms translation" ref="Traduzioni_allarmi_eng.html"/>
 						</section>	
 					<section title="Web interface functioning" ref="Interfaccia_web_eng.html"/>	
 					<section title="System password change" ref="Cambio_password_sistema_eng.html"/>
@@ -178,6 +179,11 @@
             <keyword id="MyApplication::foobar" ref="doc_eng.html#foobar"/>
         </keywords>
         <files>
+			<file>Traduzioni_allarmi_eng.html</file>
+			<file>Schema_TPAC100704AE_eng.html</file>
+			<file>Schema_TPAC100704AD_eng.html</file>
+			<file>Schema_TPAC100704AE.png</file>
+			<file>Schema_TPAC100704AD.png</file>
 			<file>Protocollo_Modbus_eng.html</file>
 			<file>Tempo_esecuzione_Task.png</file>
 			<file>Tempo_esecuzione_Task_eng.html</file>

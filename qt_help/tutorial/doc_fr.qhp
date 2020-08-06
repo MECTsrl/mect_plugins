@@ -97,7 +97,7 @@
 							<section title="Aspect et fonctionnalité" ref="Aspetto_funzionalita_graph_fr.html"/>	
 							</section>		
 						</section>	
-					<section title="Compiler et installer un projet" ref="Compilazione_installazione_fr.html">	
+					<section title="Compiler et transfert un projet" ref="Compilazione_installazione_fr.html">	
 						<section title="Compilation" ref="Compilazione_fr.html"/>
 						<section title="Transfert de l'application vers l'appareil" ref="Trasferimento_applicazione_fr.html"/>
 						<section title="Transférer l'application à l'appareil en DEBUG" ref="Trasferimento_applicazione_debug_fr.html"/>						
@@ -115,6 +115,7 @@
 						<section title="Ajouter un nouveau fichier de langues" ref="Add_file_lingue_fr.html"/>
 						<section title="Utilisation de Qt Linguist" ref="Qt_Linguist_fr.html"/>
 						<section title="Sélectionner la langue depuis l'appareil" ref="Selezione_lingua_fr.html"/>
+						<section title="Traduction des alarmes" ref="Traduzioni_allarmi_fr.html"/>
 						</section>	
 					<section title="Fonctionnement de l'interface Web" ref="Interfaccia_web_fr.html"/>	
 					<section title="Modifier le mot de passe du système" ref="Cambio_password_sistema_fr.html"/>
@@ -140,7 +141,7 @@
 					<section title="Syntaxe du langage ST" ref="Sintassi_ST_fr.html"/>
 					<section title="Insérer des variables dans les programmes ST" ref="Inserire_variabili_PLC_ST_fr.html"/>
 					<section title="Insérer des variables dans les programmes FBD - LD - SFC" ref="Inserire_variabili_PLC_fr.html"/>
-					<section title="Utiliser un bloc function" ref="Usare_blocco_funzione_fr.html"/>
+					<section title="Utiliser un bloc fonction" ref="Usare_blocco_funzione_fr.html"/>
 					<section title="Utiliser une fonction" ref="Usare_funzione_fr.html"/>
 					<section title="Importation d'un bloc fonction / d'une fonction" ref="Importare_funzione_fr.html"/>
 					<section title="Compilation et téléchargement de l'application" ref="Compilazione_download_fr.html">
@@ -178,6 +179,11 @@
             <keyword id="MyApplication::foobar" ref="doc_fr.html#foobar"/>
         </keywords>
         <files>
+			<file>Traduzioni_allarmi_fr.html</file>
+			<file>Schema_TPAC100704AE_fr.html</file>
+			<file>Schema_TPAC100704AD_fr.html</file>
+			<file>Schema_TPAC100704AE.png</file>
+			<file>Schema_TPAC100704AD.png</file>
 			<file>Protocollo_Modbus_fr.html</file>
 			<file>Tempo_esecuzione_Task.png</file>
 			<file>Tempo_esecuzione_Task_fr.html</file>

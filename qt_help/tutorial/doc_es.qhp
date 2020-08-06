@@ -97,7 +97,7 @@
 							<section title="Aspecto y funcionalidad" ref="Aspetto_funzionalita_graph_es.html"/>	
 							</section>		
 						</section>	
-					<section title="Compilación e instalación de un proyecto" ref="Compilazione_installazione_es.html">	
+					<section title="Compilación e transferir de un proyecto" ref="Compilazione_installazione_es.html">	
 						<section title="Compilación" ref="Compilazione_es.html"/>
 						<section title="Transferencia de la aplicación al dispositivo" ref="Trasferimento_applicazione_es.html"/>
 						<section title="Transferir la aplicación al dispositivo en DEBUG" ref="Trasferimento_applicazione_debug_es.html"/>						
@@ -115,6 +115,7 @@
 						<section title="Añadir un nuevo archivo de idiomas" ref="Add_file_lingue_es.html"/>
 						<section title="Uso de Qt Linguist" ref="Qt_Linguist_es.html"/>
 						<section title="Seleccionar el idioma desde el dispositivo" ref="Selezione_lingua_es.html"/>
+						<section title="Traducción de las alarmas" ref="Traduzioni_allarmi_es.html"/>
 						</section>	
 					<section title="Funcionamiento de la interfaz web" ref="Interfaccia_web_es.html"/>	
 					<section title="Cambiar la contraseña del sistema" ref="Cambio_password_sistema_es.html"/>
@@ -125,7 +126,7 @@
 						<section title="Acceso a bases de datos MySQL/SQLite" ref="Database_es.html"/>
 						<section title="Insertar una ventana emergente" ref="Popup_es.html"/>
 						<section title="Uso de PWM" ref="PWM_es.html"/>
-						<section title="Buzzer" ref="Buzzer_es.html"/>
+						<section title="Zumbador" ref="Buzzer_es.html"/>
 						</section>
 				</section>	
 				<section title="PLC" ref="PLC_es.html">
@@ -178,6 +179,11 @@
             <keyword id="MyApplication::foobar" ref="doc_es.html#foobar"/>
         </keywords>
         <files>
+			<file>Traduzioni_allarmi_es.html</file>
+			<file>Schema_TPAC100704AE_es.html</file>
+			<file>Schema_TPAC100704AD_es.html</file>
+			<file>Schema_TPAC100704AE.png</file>
+			<file>Schema_TPAC100704AD.png</file>
 			<file>Protocollo_Modbus_es.html</file>
 			<file>Tempo_esecuzione_Task.png</file>
 			<file>Tempo_esecuzione_Task_es.html</file>
