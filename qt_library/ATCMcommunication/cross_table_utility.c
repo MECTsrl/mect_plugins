@@ -1259,8 +1259,10 @@ void writeVarQueuedByCtIndex(void)
         // get items from queue head
         write_queue_elem_t * queue_elem = queue_head;
         write_queue_elem_t * queue_prev = NULL;
+
         while (queue_elem != NULL)
         {
+#if 0
             if (prepareWriteVarByCtIndex(queue_elem->ctIndex, queue_elem->value, 1) == BUSY)
             {
                 // BUSY: rimane in coda
@@ -1289,6 +1291,27 @@ void writeVarQueuedByCtIndex(void)
                     queue_elem = queue_prev->next;
                 }
             }
+#else
+            LOG_PRINT(warning_e, "Ignoring queued write %d %X\n", queue_elem->ctIndex, queue_elem->value);
+            if (queue_head == queue_elem)
+            {
+                // toglie dalla testa
+                queue_head = queue_elem->next;
+                if (queue_head == NULL)
+                {
+                    queue_tail = NULL;
+                }
+                free(queue_elem);
+                queue_elem = queue_head;
+            }
+            else
+            {
+                // toglie da in mezzo
+                queue_prev->next = queue_elem->next;
+                free(queue_elem);
+                queue_elem = queue_prev->next;
+            }
+#endif
         }
     }
     pthread_mutex_unlock(&write_queue_mutex);
@@ -1348,6 +1371,7 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
     {
         uint16_t oper;
         uint16_t addr;
+        int already_present = 0;
 
         /* search for pending writes on the same variable */
         for (i = 0; i < SyncroAreaSize; i++)
@@ -1357,6 +1381,7 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
                /* marked               all writes             prepare            empty */
             if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
             {
+#if 0
                 if (execwrite) {
                     LOG_PRINT(warning_e, "busy variable(W) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
                 } else {
@@ -1364,33 +1389,40 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
                 }
                 retval = BUSY;
                 goto exit_function;
+#else
+                LOG_PRINT(warning_e, "overwriting variable #%d %s\n", ctIndex, varNameArray[ctIndex].tag);
+                already_present = 1; /* both execwrite and ! execwrite */
+                break;
+#endif
             }
         }
 
         /* create a new item in Syncro area */
-        if (SyncroAreaSize >= SYNCRO_DB_SIZE_ELEM)
-        {
-            retval = BUSY;
-            LOG_PRINT(error_e, "full area while writing %d\n", ctIndex);
-            goto exit_function;
+        if (! already_present) {
+            if (SyncroAreaSize >= SYNCRO_DB_SIZE_ELEM)
+            {
+                LOG_PRINT(error_e, "full area while writing %d\n", ctIndex);
+                retval = BUSY;
+                goto exit_function;
+            }
+            pIOSyncroAreaO[SyncroAreaSize] = ctIndex & ADDRESS_MASK;
+            if (execwrite) {
+                SET_SYNCRO_FLAG(SyncroAreaSize, WRITE_MASK);
+            } else {
+                SET_SYNCRO_FLAG(SyncroAreaSize, PREPARE_MASK);
+            }
+            SyncroAreaSize++;
         }
-        pIOSyncroAreaO[SyncroAreaSize] = ctIndex & ADDRESS_MASK;
-        if (execwrite) {
-            SET_SYNCRO_FLAG(SyncroAreaSize, WRITE_MASK);
-        } else {
-            SET_SYNCRO_FLAG(SyncroAreaSize, PREPARE_MASK);
-        }
-        SyncroAreaSize++;
 
         /* update the value into the Data area */
         int *p = (int *)IODataAreaO;
         p[ctIndex] = value;
         retval = DONE;
-    }
 exit_function:
-    if (retval == DONE && execwrite)
-    {
-        pthread_cond_signal(&theWritingCondvar);
+        if (retval == DONE && execwrite)
+        {
+            pthread_cond_signal(&theWritingCondvar);
+        }
     }
     pthread_mutex_unlock(&datasync_send_mutex);
     return retval;
