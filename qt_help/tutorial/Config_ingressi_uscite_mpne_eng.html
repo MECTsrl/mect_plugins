@@ -1,0 +1,123 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>MPNE Inputs / outputs configuration</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">MPNE Inputs / outputs configuration</h3>
+		
+		<p class="western">Digital and analogue I/O configuration is done inside the program in the &ldquo;Task0_Init&rdquo; in plc software or when the Modbus connection is activate (RTUX_STATUS = 2).</p>
+		<br/>
+		<center>
+		<table width="400" cellpadding="4" cellspacing="0">
+			<col width="141">
+			<col width="252">
+			<thead>
+				<tr valign="top">
+					<th width="141" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>Variable</strong></p>
+					</th>					
+					<th width="252" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>MPNE</strong></p>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>MPNE_DigDir_1</strong></p>
+						<p class="western"><strong>MPNE_DigDir_2</strong></p>
+						<p class="western"><strong>MPNE_DigDir_3</strong></p>
+						<p class="western"><strong>MPNE_DigDir_4</strong></p>
+						<p class="western"><strong>MPNE_DigDir_5</strong></p>
+						<p class="western"><strong>MPNE_DigDir_6</strong></p>
+						<p class="western"><strong>MPNE_DigDir_7</strong></p>
+						<p class="western">   <strong>MPNE_DigDir_8</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Configuration 8 I/O:</p>
+						<ul>
+							<li/>
+							<p class="western">0 input</p>
+							<li/>
+							<p class="western">1 output</p>
+						</ul>
+						<p class="western">Ex&deg;: ch5 = input</span></p>
+						<p class="western"><strong>MPNE_DigDir_5 := 0;</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"><strong>MPNE_AnIn1Conf</strong></p>
+						<p class="western"><strong>MPNE_AnIn2Conf</strong></p>
+						<p class="western"> <strong>MPNE_AnIn3Conf</strong></p>
+						<p class="western"><strong> MPNE_AnIn4Conf</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Analogue	input configuration:</p>
+						<ul>
+							<li/>
+							<p class="western">0 not configured</p>
+							<li/>
+							<p class="western">1 current</p>
+							<li/>
+							<p class="western">2 voltage</p>
+							<li/>
+							<p class="western">3 TCJ (thermocouple J)</p>
+							<li/>
+							<p class="western">4 TCK (thermocouple K)</p>
+							<li/>
+							<p class="western">5 TCT (thermocouple T)</p>
+							<li/>
+							<p class="western">6 PT100E (Resolution 1 degree) range: -40 +800°C</p>
+							<li/>
+							<p class="western">7 PT100R (Resolution 0.1 degree) range: -40 +200°C</p>
+							<li/>
+							<p class="western">
+							8 TCS (thermocouple S)</p>
+							<li/>
+							<p class="western">
+							9 TCB (thermocouple B)</p>
+							<li/>
+							<p class="western">10 TCR (thermocouple R)</p>
+						</ul>
+						<p class="western"><span lang="en-US">Ex&deg;: ch2 = PT100E</span></p>
+						<p class="western"><strong>MPNE_AnIn2Conf := 6;</strong></p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong></strong></p>
+						<p class="western"> <strong>MPNE_AnOut1Conf</strong></p>
+						<p class="western"> <strong>MPNE_AnOut2Conf</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western">Analog output configuration:</p>
+						<ul>
+							<li/>
+							<p class="western">0 not configured</p>
+							<li/>
+							<p class="western">1 current</p>
+							<li/>
+							<p class="western">2 voltage</p>							
+						</ul>
+						<p class="western">Ex&deg;: ch2= voltage</p>
+						<p class="western"><strong>MPNE_AnOut2Conf := 2;</strong></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</center>		
+	<br/>
+	</body>
+</html>

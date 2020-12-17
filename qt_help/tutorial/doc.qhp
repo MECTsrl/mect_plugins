@@ -151,7 +151,8 @@
 					<section title="Aggiungere librerie nel progetto" ref="Aggiungere_librerie.html"/>
 					<section title="Tempo di esecuzione di un Task" ref="Tempo_esecuzione_Task.html"/>
 					<section title="Path di progetto" ref="Path_progetto.html"/>
-					</section>	
+					</section>					
+				<section title="Sinottico (I/O remoti)" ref="Sinottico_IO_remoti.html"/>
 				<section title="Sinottico (Local I/O)" ref="Sinottico.html"/>
 				<section title="Variabili di prodotto (Local I/O)" ref="Variabili_prodotto.html">	
 				<section title="Modelli TPAC1008_02" ref="Modelli_tpac1006_100801_100802.html"/>
@@ -163,6 +164,7 @@
 				<section title="Configurazione ingressi/uscite TPAC1007 e TPAC1008_02" ref="Config_ingressi_uscite_tpac1006_1007_100802.html"/>
 				<section title="Configurazione ingressi/uscite TPAC1008_03" ref="Config_ingressi_uscite_tpac100803.html"/>
 				<section title="Configurazione ingressi/uscite TPLC050 e TPLC100" ref="Config_ingressi_uscite_tplc050_100.html"/>
+				<section title="Configurazione ingressi/uscite MPNE" ref="Config_ingressi_uscite_mpne.html"/>
 					</section>
 				<section title="Variabili di diagnostica" ref="Variabili_diagnostica.html"/>
 				<section title="Protocollo Modbus" ref="Protocollo_Modbus.html"/>	
@@ -179,6 +181,23 @@
             <keyword id="MyApplication::foobar" ref="doc.html#foobar"/>
         </keywords>
         <files>
+			<file>Config_ingressi_uscite_mpne.html</file>
+			<file>Schema_MPNE1001_06.html</file>
+			<file>Schema_MPNE1001_06.png</file>
+			<file>Schema_MPNE1001_05.html</file>
+			<file>Schema_MPNE1001_05.png</file>
+			<file>Config_In_Analogici_generico_MPNE1001_05.html</file>
+			<file>Config_Out_Analogici_generico_MPNE1001_05.html</file>
+			<file>Config_Filtro_In_Analogici_MPNE1001_05.html</file>
+			<file>Schema_MPNE1001_02.html</file>
+			<file>Schema_MPNE1001_02.png</file>
+			<file>Schema_MPNE1001_01.html</file>
+			<file>Schema_MPNE1001_01.png</file>
+			<file>Schema_MPNE1001_0000.html</file>
+			<file>Schema_MPNE1001_0000.png</file>
+			<file>Config_dir_In_Out_digitali_mpne1001_0000.html</file>
+			<file>Sinottico_IO_remoti.html</file>
+			
 			<file>Traduzioni_allarmi.html</file>
 			<file>Schema_TPAC100704AE.html</file>
 			<file>Schema_TPAC100704AD.html</file>
