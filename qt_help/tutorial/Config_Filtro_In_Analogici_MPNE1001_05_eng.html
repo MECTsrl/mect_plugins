@@ -1,0 +1,51 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Filter  configuration for analog inputs</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Filter  configuration for analog inputs</h3>		
+		<p class="western">The configuration can be performed within the &ldquo;Task0_Init&rdquo; of the plc software or when the Modbus connection is activate (RTUX_STATUS = 2).</p>
+		<br/>
+		<p class="western"><u>Weight of the moving average with which to filter the signal</u>.</p>
+		<br/>
+		<table width="400" cellpadding="4" cellspacing="0">
+			<col width="141">
+			<col width="252">
+			<thead>
+				<tr valign="top">
+					<th width="141" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>Variable</strong></p>
+					</th>
+					<th width="252" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0.1cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>Filter  configuration for analog inputs</strong></p>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr valign="top">
+					<td width="141" style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><strong>MPNE_AnIn..Filter</strong></p>
+					</td>
+					<td width="252"  style="border-top: none; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000; padding-top: 0cm; padding-bottom: 0.1cm; padding-left: 0.1cm; padding-right: 0cm">
+						<p class="western"><span lang="en-US">Ex&deg;: ch1 </span></p>
+						<p class="western"><strong>MPNE_AnIn1Filter := 16;</strong></p>
+						<p class="western"><span lang="en-US">Ex&deg;: ch2 </span></p>
+						<p class="western"><strong>MPNE_AnIn2Filter := 8;</strong></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</center>		
+<br/>
+	</body>
+</html>
