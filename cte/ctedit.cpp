@@ -5296,7 +5296,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].sdCards = 1;
     lstTargets[TPAC1007_04_AB].digitalIN = 9;
     lstTargets[TPAC1007_04_AB].digitalOUT = 8;
-    lstTargets[TPAC1007_04_AB].nEncoders = 1;
+    lstTargets[TPAC1007_04_AB].nEncoders = 0;
     lstTargets[TPAC1007_04_AB].analogIN = 5;
     lstTargets[TPAC1007_04_AB].analogINrowCT = 5328;
     lstTargets[TPAC1007_04_AB].analogOUT = 4;
@@ -5335,7 +5335,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AD].digitalIN = 12;
     lstTargets[TPAC1007_04_AD].digitalOUT = 8;
     lstTargets[TPAC1007_04_AD].nEncoders = 1;
-    lstTargets[TPAC1007_04_AD].analogIN = 2;
+    lstTargets[TPAC1007_04_AD].analogIN = 3;
     lstTargets[TPAC1007_04_AD].analogINrowCT = 5328;
     lstTargets[TPAC1007_04_AD].analogOUT = 1;
     lstTargets[TPAC1007_04_AD].analogOUTrowCT = 5344;
