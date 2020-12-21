@@ -3540,7 +3540,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             }
         }
         // Numero Decimali > 4 ===> Variable (per tipi differenti da Bit in tutte le versioni possibili)
-        else if (nDecimals >= 4)  { // && nType != BYTE_BIT && nType == WORD_BIT && nType == DWORD_BIT)  {
+        else if (nDecimals > 4)  { // && nType != BYTE_BIT && nType == WORD_BIT && nType == DWORD_BIT)  {
             // Controlla che il numero indicato punti ad una variabile del tipo necessario a contenere il numero di decimali
             // (vanno bene tutti i tipi riconducibili a INT). Il valore massimo consentito a Runtime è 6
             if (nDecimals > DimCrossTable || ! lstCTRecords[nDecimals - 1].Enable ||
@@ -5327,7 +5327,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AD].nEncoders = 1;
     lstTargets[TPAC1007_04_AD].analogIN = 3;
     lstTargets[TPAC1007_04_AD].analogINrowCT = 5328;
-    lstTargets[TPAC1007_04_AD].analogOUT = 1;
+    lstTargets[TPAC1007_04_AD].analogOUT = 2;
     lstTargets[TPAC1007_04_AD].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AD].tAmbient = true;
     lstTargets[TPAC1007_04_AD].rpmPorts = 0;
