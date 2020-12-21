@@ -167,6 +167,10 @@ private:
     void    showTabMPNC();
     void    showTabMPNE();
 
+    bool    isVarBlock(int nRow, QList<int> &lstBlockStart, int nBlockSize);        // Verifica se la variabile appartiene ad un Blocco identificato da Block Start e Block Size
+    bool    isMPNC_Row(int nRow);                // Vero se la riga corrente appartiene ad un blocco MPNC
+    bool    isMPNE_Row(int nRow);                // Vero se la riga corrente appartiene ad un blocco MPNE
+
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------

@@ -1632,6 +1632,12 @@ void ctedit::enableFields()
             ui->lblInputRegister->setVisible(false);
             ui->chkInputRegister->setVisible(false);
         }
+        // Ulteriore disabilitazione per variabili utente che siano comprese in un blocco MPNE o MPNC
+        if (isSerialPortEnabled)  {
+            if (isMPNC_Row(m_nGridRow) || isMPNE_Row(m_nGridRow))  {
+                ui->chkInputRegister->setEnabled(false);
+            }
+        }
     }
 }
 void ctedit::on_cboType_currentIndexChanged(int index)
@@ -2019,30 +2025,13 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QAction *editMPNE = 0;
     if (isSerialPortEnabled)  {
         // Menu Editing grafico MPNC (Abilitato se esistono Moduli definiti)
-        bool isMPNC = false;
-        int nModule = 0;
-        for (nModule = 0; nModule < lstMPNC.count(); nModule++)  {
-            int nBase = lstMPNC.at(nModule);
-            if (m_nGridRow >= nBase && m_nGridRow < nBase + lstMPNC006_Vars.count())  {
-                isMPNC = true;
-                break;
-            }
-        }
-        if (m_nGridRow < MIN_DIAG - 1 && isMPNC)  {
+        if (isMPNC_Row(m_nGridRow))  {
             cIco = QIcon(szPathIMG + QLatin1String("Card_32.png"));
             gridMenu.addSeparator();
             editMPNC = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNC006"));
         }
         // Menù Grafico per MPNE (Abilitato se esistono Moduli definiti)
-        bool isMPNE = false;
-        for (nModule = 0; nModule < lstMPNE.count(); nModule++)  {
-            int nBase = lstMPNE.at(nModule);
-            if (m_nGridRow >= nBase && m_nGridRow < nBase + lstMPNE_Vars.count())  {
-                isMPNE = true;
-                break;
-            }
-        }
-        if (m_nGridRow < MIN_DIAG - 1 && isMPNE)  {
+        if (isMPNE_Row(m_nGridRow))  {
             cIco = QIcon(szPathIMG + QLatin1String("Card_32.png"));
             gridMenu.addSeparator();
             editMPNE = gridMenu.addAction(cIco, trUtf8("Graphic Editor for MPNE1001"));
@@ -7606,4 +7595,40 @@ void ctedit::on_lstEditableFields_itemClicked(QListWidgetItem *itemClicked)
         enableFields();
     }
 
+}
+
+bool    ctedit::isVarBlock(int nRow, QList<int> &lstBlockStart, int nBlockSize)
+// Verifica se la variabile appartiene ad un Blocco identificato da Block Start e Block Size
+{
+    bool    isBlock = false;
+    int     nModule = 0;
+
+    for (nModule = 0; nModule < lstBlockStart.count(); nModule++)  {
+        int nBase = lstBlockStart.at(nModule);
+        if (nRow >= nBase && nRow < nBase + nBlockSize)  {
+            isBlock = true;
+            break;
+        }
+    }
+    return isBlock;
+}
+
+bool    ctedit::isMPNC_Row(int nRow)
+// Vero se la riga corrente appartiene ad un blocco MPNC
+{
+    bool isMPNC = false;
+    if (nRow < MIN_DIAG - 1)  {
+        isMPNC = isVarBlock(nRow, lstMPNC, lstMPNC006_Vars.count());
+    }
+    return isMPNC;
+}
+
+bool    ctedit::isMPNE_Row(int nRow)
+// Vero se la riga corrente appartiene ad un blocco MPNE
+{
+    bool isMPNE = false;
+    if (nRow < MIN_DIAG - 1)  {
+        isMPNE = isVarBlock(nRow, lstMPNE, lstMPNE_Vars.count());
+    }
+    return isMPNE;
 }
