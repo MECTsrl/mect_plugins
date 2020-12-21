@@ -1540,6 +1540,7 @@ void ctedit::enableFields()
     ui->txtRegister->setEnabled(false);
     ui->txtComment->setEnabled(false);
     ui->cboBehavior->setEnabled(false);
+    ui->chkInputRegister->setEnabled(false);
     // Variabili di Sistema, abilitate in modifica solo il nome, commento. No Insert in campi vuoti
     // Da versione 3.1.2 disabilitati i campi (priorità)
     if (m_nGridRow >= MIN_DIAG -1)  {

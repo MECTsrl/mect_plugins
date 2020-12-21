@@ -899,10 +899,20 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
                 CTProject[nRow].Decimal = CTTemplate[nRow].Decimal;
             }
         }
-        // Commento solo in Template ---> Copiato in Progetto
+        // Modificato il Behavior della Variabile
+        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
+            CTTemplate[nRow].Behavior != CTProject[nRow].Behavior)  {
+            nDifferences++;
+            lstDiff.append(nRow);
+            lstActions.append(QString::fromAscii("Updated Behavior: %1") .arg(lstBehavior[CTTemplate[nRow].Behavior]));
+            if (forceDiff)  {
+                CTProject[nRow].Behavior = CTTemplate[nRow].Behavior;
+            }
+        }
+        // Commento diverso in Template ---> Copiato in Progetto
         if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
             strlen(CTTemplate[nRow].Comment) > 0 &&
-            strlen(CTProject[nRow].Comment) == 0)  {
+            strncmp(CTProject[nRow].Comment, CTTemplate[nRow].Comment, strlen(CTTemplate[nRow].Comment)) != 0)  {
             nDifferences++;
             lstDiff.append(nRow);
             lstActions.append(QString::fromAscii("Added Comment: %1") .arg(QLatin1String(CTTemplate[nRow].Comment)));
