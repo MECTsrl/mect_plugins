@@ -1086,12 +1086,13 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     int     nUpdate = -1;
     int     nProtocol = -1;
     int     nType = -1;
+    bool    userVar = nRow < MIN_DIAG -1;
 
     // Pulizia Buffers
     szTemp.clear();
     listClear(lstRecValues, colTotals);
     // Priority
-    if (! fMultiEdit || lstEditableFields.indexOf(colPriority) >= 0)  {
+    if (! fMultiEdit || (lstEditableFields.indexOf(colPriority) >= 0 && userVar))  {
         nPos = ui->cboPriority->currentIndex();
         if (nPos>= 0 && nPos < nNumPriority)  {
             szTemp = ui->cboPriority->itemData(nPos).toString();
@@ -1104,7 +1105,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     else  {
         lstRecValues[colPriority] = ui->tblCT->item(nRow, colPriority)->text().trimmed();
     }
-    // Update
+    // Update (anche in System Area)
     if (! fMultiEdit || lstEditableFields.indexOf(colUpdate) >= 0)  {
         nUpdate = ui->cboUpdate->currentIndex();
         if (nUpdate >= 0 && nPos < lstUpdateNames.count())  {
@@ -1144,7 +1145,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         }
     }
     // Type colType
-    if (! fMultiEdit || lstEditableFields.indexOf(colType) >= 0)  {
+    if (! fMultiEdit || (lstEditableFields.indexOf(colType) >= 0 && userVar))  {
         nType = ui->cboType->currentIndex();
         if (nType >= 0 && nType < lstTipi.count())  {
             szTemp = ui->cboType->itemData(nType).toString();
@@ -1158,7 +1159,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         lstRecValues[colType] = ui->tblCT->item(nRow, colType)->text().trimmed();
     }
     // Decimal  (No per MultiSelect se di tipo BIT)
-    if (! fMultiEdit || (lstEditableFields.indexOf(colDecimal) >= 0 && ! isBitField((varTypes) nType)))  {
+    if (! fMultiEdit || (lstEditableFields.indexOf(colDecimal) >= 0 && userVar && ! isBitField((varTypes) nType)))  {
         szTemp = ui->txtDecimal->text();
         lstRecValues[colDecimal] = szTemp.trimmed();
     }
@@ -1166,7 +1167,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         lstRecValues[colDecimal]  = ui->tblCT->item(nRow, colDecimal)->text().trimmed();
     }
     // Protocol lstBusType
-    if (! fMultiEdit || lstEditableFields.indexOf(colProtocol) >= 0)  {
+    if (! fMultiEdit || (lstEditableFields.indexOf(colProtocol) >= 0 && userVar))  {
         nProtocol = ui->cboProtocol->currentIndex();
         if (nProtocol >= 0 && nProtocol < lstProtocol.count())  {
             szTemp = ui->cboProtocol->itemData(nProtocol).toString();
@@ -1182,7 +1183,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     lstRecValues[colProtocol] = szTemp.trimmed();
     // IP
     // Protocol lstBusType
-    if (! fMultiEdit || lstEditableFields.indexOf(colIP) >= 0)  {
+    if (! fMultiEdit || (lstEditableFields.indexOf(colIP) >= 0 && userVar))  {
         szTemp = ui->txtIP->text();
         lstRecValues[colIP] = szTemp.trimmed();
     }
@@ -1190,7 +1191,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         lstRecValues[colIP]  = ui->tblCT->item(nRow, colIP)->text().trimmed();
     }
     // Port
-    if (! fMultiEdit || lstEditableFields.indexOf(colPort) >= 0)  {
+    if (! fMultiEdit || (lstEditableFields.indexOf(colPort) >= 0 && userVar))  {
         // Protocolli Seriali
         if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
             szTemp = ui->cboPort->currentText();
@@ -1204,7 +1205,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         lstRecValues[colPort]  = ui->tblCT->item(nRow, colPort)->text().trimmed();
     }
     // Node ID
-    if (! fMultiEdit || lstEditableFields.indexOf(colNodeID) >= 0)  {
+    if (! fMultiEdit || (lstEditableFields.indexOf(colNodeID) >= 0  && userVar))  {
         szTemp = ui->txtNode->text();
         lstRecValues[colNodeID]  = szTemp.trimmed();
     }
@@ -1220,7 +1221,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         lstRecValues[colInputReg]  = ui->tblCT->item(nRow, colInputReg)->text().trimmed();
     }
     // Register  (No per MultiSelect)
-    if (! fMultiEdit || lstEditableFields.indexOf(colRegister) >= 0)  {
+    if (! fMultiEdit || (lstEditableFields.indexOf(colRegister) >= 0 && userVar))  {
         szTemp = ui->txtRegister->text();
         lstRecValues[colRegister] = szTemp.trimmed();
     }
@@ -1254,7 +1255,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         szTemp = szEMPTY;
     }
     if (nPos < behavior_alarm)  {
-        if (! fMultiEdit || lstEditableFields.indexOf(colBehavior) >= 0)  {
+        if (! fMultiEdit || (lstEditableFields.indexOf(colBehavior) >= 0  && userVar))  {
             lstRecValues[colBehavior] = szTemp.trimmed();
         }
         else  {
