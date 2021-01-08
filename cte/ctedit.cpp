@@ -1129,6 +1129,8 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         lstRecValues[colName] = szTemp;
     }
     else  {
+        // Mantiene il nome della variabile originale
+        szTemp.clear();
         lstRecValues[colName] = ui->tblCT->item(nRow, colName)->text().trimmed();
     }
     // Update Used and Logged Variable List
@@ -1228,11 +1230,22 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     else {
         lstRecValues[colRegister] = ui->tblCT->item(nRow, colRegister)->text().trimmed();
     }
+    // Block e Block Size Modificati solo in Single Edit
     // Block
-    szTemp = ui->txtBlock->text();
+    if (! fMultiEdit)  {
+        szTemp = ui->txtBlock->text();
+    }
+    else  {
+        szTemp = ui->tblCT->item(nRow, colBlock)->text().trimmed();
+    }
     lstRecValues[colBlock] = szTemp.trimmed();
     // Block Size
-    szTemp = ui->txtBlockSize->text();
+    if (! fMultiEdit)  {
+        szTemp = ui->txtBlockSize->text();
+    }
+    else {
+        szTemp = ui->tblCT->item(nRow, colBlockSize)->text().trimmed();
+    }
     lstRecValues[colBlockSize] = szTemp.trimmed();
     // Comment
     if (! fMultiEdit || lstEditableFields.indexOf(colComment) >= 0)  {
@@ -1547,20 +1560,22 @@ void ctedit::enableFields()
     if (m_nGridRow >= MIN_DIAG -1)  {
         bool fDecimal = false;
         if (nProtocol != -1)  {
-//            ui->cboPriority->setEnabled(true);
-            ui->cboUpdate->setEnabled(true);
+            // Update Sempre abilitato
+            ui->cboUpdate->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
             ui->txtName->setEnabled(! fMultiEdit);
-            ui->txtComment->setEnabled(true);
+            ui->txtComment->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colComment) >= 0);
         }
         // Abilitazione dei Decimal per Input Analogiche se abilitati
         if (panelConfig.analogIN > 0 && panelConfig.analogINrowCT > 0)  {
-            if (m_nGridRow >= panelConfig.analogINrowCT -1 && m_nGridRow < panelConfig.analogINrowCT + panelConfig.analogIN -1)
+            if (m_nGridRow >= panelConfig.analogINrowCT -1 && m_nGridRow < panelConfig.analogINrowCT + panelConfig.analogIN -1)  {
                 fDecimal = true;
+            }
         }
         // Abilitazione dei Decimal per Output Analogiche se abilitati
         if (panelConfig.analogOUT > 0 && panelConfig.analogOUTrowCT > 0)  {
-            if (m_nGridRow >= panelConfig.analogOUTrowCT -1 && m_nGridRow < panelConfig.analogOUTrowCT + panelConfig.analogOUT -1)
+            if (m_nGridRow >= panelConfig.analogOUTrowCT -1 && m_nGridRow < panelConfig.analogOUTrowCT + panelConfig.analogOUT -1)  {
                 fDecimal = true;
+            }
         }
         ui->txtDecimal->setEnabled(fDecimal);
     }
@@ -5656,7 +5671,7 @@ bool ctedit::updateRow(int nRow, bool fMultiEdit)
             qDebug("updateRow(MultiSelect) - Row: [%d] Skipped as not used", nRow + 1);
             goto exitSave;
         }
-        qDebug("updateRow() - Updating Row: %d", nRow);
+        qDebug("updateRow() - Updating Row: %d", nRow + 1);
         // Valori da interfaccia a Lista Stringhe
         fRes = iface2values(lstFields, fMultiEdit, nRow);
         // Primo controllo di coerenza sulla riga corrente
