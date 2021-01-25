@@ -5117,8 +5117,6 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_A].analogINrowCT = -1;
     lstTargets[TP1043_01_A].analogOUT = 0;
     lstTargets[TP1043_01_A].analogOUTrowCT = -1;
-    lstTargets[TP1043_01_A].tAmbient = false;
-    lstTargets[TP1043_01_A].rpmPorts = 0;
     lstTargets[TP1043_01_A].ser0_Enabled = true;
     lstTargets[TP1043_01_A].ser1_Enabled = false;
     lstTargets[TP1043_01_A].ser2_Enabled = false;
@@ -5136,8 +5134,6 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_B].analogINrowCT = -1;
     lstTargets[TP1043_01_B].analogOUT = 0;
     lstTargets[TP1043_01_B].analogOUTrowCT = -1;
-    lstTargets[TP1043_01_B].tAmbient = false;
-    lstTargets[TP1043_01_B].rpmPorts = 0;
     lstTargets[TP1043_01_B].ser0_Enabled = false;
     lstTargets[TP1043_01_B].ser1_Enabled = false;
     lstTargets[TP1043_01_B].ser2_Enabled = false;
@@ -5155,8 +5151,6 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_A].analogINrowCT = -1;
     lstTargets[TP1043_02_A].analogOUT = 0;
     lstTargets[TP1043_02_A].analogOUTrowCT = -1;
-    lstTargets[TP1043_02_A].tAmbient = false;
-    lstTargets[TP1043_02_A].rpmPorts = 0;
     lstTargets[TP1043_02_A].ser0_Enabled = true;
     lstTargets[TP1043_02_A].ser1_Enabled = false;
     lstTargets[TP1043_02_A].ser2_Enabled = false;
@@ -5174,8 +5168,6 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_B].analogINrowCT = -1;
     lstTargets[TP1043_02_B].analogOUT = 0;
     lstTargets[TP1043_02_B].analogOUTrowCT = -1;
-    lstTargets[TP1043_02_B].tAmbient = false;
-    lstTargets[TP1043_02_B].rpmPorts = 0;
     lstTargets[TP1043_02_B].ser0_Enabled = false;
     lstTargets[TP1043_02_B].ser1_Enabled = false;
     lstTargets[TP1043_02_B].ser2_Enabled = false;
@@ -5193,8 +5185,6 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_A].analogINrowCT = -1;
     lstTargets[TP1070_01_A].analogOUT = 0;
     lstTargets[TP1070_01_A].analogOUTrowCT = -1;
-    lstTargets[TP1070_01_A].tAmbient = false;
-    lstTargets[TP1070_01_A].rpmPorts = 0;
     lstTargets[TP1070_01_A].ser0_Enabled = false;
     lstTargets[TP1070_01_A].ser1_Enabled = false;
     lstTargets[TP1070_01_A].ser2_Enabled = false;
@@ -5212,8 +5202,6 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_B].analogINrowCT = -1;
     lstTargets[TP1070_01_B].analogOUT = 0;
     lstTargets[TP1070_01_B].analogOUTrowCT = -1;
-    lstTargets[TP1070_01_B].tAmbient = false;
-    lstTargets[TP1070_01_B].rpmPorts = 0;
     lstTargets[TP1070_01_B].ser0_Enabled = false;
     lstTargets[TP1070_01_B].ser1_Enabled = false;
     lstTargets[TP1070_01_B].ser2_Enabled = false;
@@ -5231,8 +5219,6 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_C].analogINrowCT = -1;
     lstTargets[TP1070_01_C].analogOUT = 0;
     lstTargets[TP1070_01_C].analogOUTrowCT = -1;
-    lstTargets[TP1070_01_C].tAmbient = false;
-    lstTargets[TP1070_01_C].rpmPorts = 0;
     lstTargets[TP1070_01_C].ser0_Enabled = true;
     lstTargets[TP1070_01_C].ser1_Enabled = false;
     lstTargets[TP1070_01_C].ser2_Enabled = false;
@@ -5250,8 +5236,6 @@ void ctedit::initTargetList()
     lstTargets[TPAC1005].analogINrowCT = -1;
     lstTargets[TPAC1005].analogOUT = 0;
     lstTargets[TPAC1005].analogOUTrowCT = -1;
-    lstTargets[TPAC1005].tAmbient = false;
-    lstTargets[TPAC1005].rpmPorts = 0;
     lstTargets[TPAC1005].ser0_Enabled = true;
     lstTargets[TPAC1005].ser1_Enabled = false;
     lstTargets[TPAC1005].ser2_Enabled = false;
@@ -5270,7 +5254,6 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_03].analogOUT = 1;
     lstTargets[TPAC1007_03].analogOUTrowCT = 5337;
     lstTargets[TPAC1007_03].tAmbient = true;
-    lstTargets[TPAC1007_03].rpmPorts = 0;
     lstTargets[TPAC1007_03].ser0_Enabled = true;
     lstTargets[TPAC1007_03].ser1_Enabled = false;
     lstTargets[TPAC1007_03].ser2_Enabled = false;
@@ -5289,7 +5272,6 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AA].analogOUT = 4;
     lstTargets[TPAC1007_04_AA].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AA].tAmbient = true;
-    lstTargets[TPAC1007_04_AA].rpmPorts = 0;
     lstTargets[TPAC1007_04_AA].ser0_Enabled = true;
     lstTargets[TPAC1007_04_AA].ser1_Enabled = false;
     lstTargets[TPAC1007_04_AA].ser2_Enabled = false;
@@ -5308,7 +5290,6 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].analogOUT = 4;
     lstTargets[TPAC1007_04_AB].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AB].tAmbient = true;
-    lstTargets[TPAC1007_04_AB].rpmPorts = 0;
     lstTargets[TPAC1007_04_AB].ser0_Enabled = true;
     lstTargets[TPAC1007_04_AB].ser1_Enabled = false;
     lstTargets[TPAC1007_04_AB].ser2_Enabled = false;
@@ -5327,7 +5308,6 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AC].analogOUT = 1;
     lstTargets[TPAC1007_04_AC].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AC].tAmbient = true;
-    lstTargets[TPAC1007_04_AC].rpmPorts = 0;
     lstTargets[TPAC1007_04_AC].ser0_Enabled = true;
     lstTargets[TPAC1007_04_AC].ser1_Enabled = false;
     lstTargets[TPAC1007_04_AC].ser2_Enabled = false;
@@ -5346,7 +5326,6 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AD].analogOUT = 2;
     lstTargets[TPAC1007_04_AD].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AD].tAmbient = true;
-    lstTargets[TPAC1007_04_AD].rpmPorts = 0;
     lstTargets[TPAC1007_04_AD].ser0_Enabled = true;
     lstTargets[TPAC1007_04_AD].ser1_Enabled = false;
     lstTargets[TPAC1007_04_AD].ser2_Enabled = false;
@@ -5365,7 +5344,6 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AE].analogOUT = 0;
     lstTargets[TPAC1007_04_AE].analogOUTrowCT = -1;
     lstTargets[TPAC1007_04_AE].tAmbient = true;
-    lstTargets[TPAC1007_04_AE].rpmPorts = 0;
     lstTargets[TPAC1007_04_AE].ser0_Enabled = true;
     lstTargets[TPAC1007_04_AE].ser1_Enabled = false;
     lstTargets[TPAC1007_04_AE].ser2_Enabled = false;
@@ -5479,7 +5457,6 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].analogINrowCT = 5306;
     lstTargets[TPLC050_01_AA].analogOUT = 0;
     lstTargets[TPLC050_01_AA].tAmbient = true;
-    lstTargets[TPLC050_01_AA].rpmPorts = 0;
     lstTargets[TPLC050_01_AA].ser0_Enabled = true;
     lstTargets[TPLC050_01_AA].ser1_Enabled = false;
     lstTargets[TPLC050_01_AA].ser2_Enabled = false;
@@ -5497,7 +5474,6 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AB].analogINrowCT = 5328;
     lstTargets[TPLC050_01_AB].analogOUT = 0;
     lstTargets[TPLC050_01_AB].tAmbient = true;
-    lstTargets[TPLC050_01_AB].rpmPorts = 0;
     lstTargets[TPLC050_01_AB].ser0_Enabled = true;
     lstTargets[TPLC050_01_AB].ser1_Enabled = false;
     lstTargets[TPLC050_01_AB].ser2_Enabled = false;
@@ -5517,7 +5493,6 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].analogOUT = 2;
     lstTargets[TPLC100_01_AA].analogOUTrowCT = -1;
     lstTargets[TPLC100_01_AA].tAmbient = true;
-    lstTargets[TPLC100_01_AA].rpmPorts = 0;
     lstTargets[TPLC100_01_AA].ser0_Enabled = false;
     lstTargets[TPLC100_01_AA].ser1_Enabled = false;
     lstTargets[TPLC100_01_AA].ser2_Enabled = false;
@@ -5537,7 +5512,6 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].analogOUT = 2;
     lstTargets[TPLC100_01_AB].analogOUTrowCT = -1;
     lstTargets[TPLC100_01_AB].tAmbient = true;
-    lstTargets[TPLC100_01_AB].rpmPorts = 0;
     lstTargets[TPLC100_01_AB].ser0_Enabled = false;     // Possibile in futuro
     lstTargets[TPLC100_01_AB].ser1_Enabled = false;
     lstTargets[TPLC100_01_AB].ser2_Enabled = false;
@@ -5603,8 +5577,6 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_E].analogINrowCT = -1;
     lstTargets[TP1070_02_E].analogOUT = 0;
     lstTargets[TP1070_02_E].analogOUTrowCT = -1;
-    lstTargets[TP1070_02_E].tAmbient = false;
-    lstTargets[TP1070_02_E].rpmPorts = 0;
     lstTargets[TP1070_02_E].ser0_Enabled = false;
     lstTargets[TP1070_02_E].ser1_Enabled = false;
     lstTargets[TP1070_02_E].ser2_Enabled = false;
@@ -5622,13 +5594,56 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_F].analogINrowCT = -1;
     lstTargets[TP1070_02_F].analogOUT = 0;
     lstTargets[TP1070_02_F].analogOUTrowCT = -1;
-    lstTargets[TP1070_02_F].tAmbient = false;
-    lstTargets[TP1070_02_F].rpmPorts = 0;
     lstTargets[TP1070_02_F].ser0_Enabled = true;
     lstTargets[TP1070_02_F].ser1_Enabled = false;
     lstTargets[TP1070_02_F].ser2_Enabled = false;
     lstTargets[TP1070_02_F].ser3_Enabled = false;
     lstTargets[TP1070_02_F].can1_Enabled = false;
+    // 28 TPX1070_03_D
+    lstTargets[TPX1070_03_D].modelName =  QLatin1String(product_name[TPX1070_03_D]);
+    lstTargets[TPX1070_03_D].displayWidth =  800;
+    lstTargets[TPX1070_03_D].displayHeight = 480;
+    lstTargets[TPX1070_03_D].usbPorts = 2;
+    lstTargets[TPX1070_03_D].sdCards = 1;
+    lstTargets[TPX1070_03_D].digitalIN = 0;
+    lstTargets[TPX1070_03_D].digitalOUT = 0;
+    lstTargets[TPX1070_03_D].nEncoders = 0;
+    lstTargets[TPX1070_03_D].analogIN = 0;
+    lstTargets[TPX1070_03_D].analogINrowCT = -1;
+    lstTargets[TPX1070_03_D].analogOUT = 0;
+    lstTargets[TPX1070_03_D].analogOUTrowCT = -1;
+    lstTargets[TPX1070_03_D].fastIn = 4;
+    lstTargets[TPX1070_03_D].fastOut = 4;
+    lstTargets[TPX1070_03_D].ser0_Enabled = true;
+    lstTargets[TPX1070_03_D].ser1_Enabled = false;
+    lstTargets[TPX1070_03_D].ser2_Enabled = true;
+    lstTargets[TPX1070_03_D].ser2_Editable = false;
+    lstTargets[TPX1070_03_D].ser2_BaudRate = 19200;
+    lstTargets[TPX1070_03_D].ser3_Enabled = true;
+    lstTargets[TPX1070_03_D].can1_Enabled = false;
+    // 29 TPX1070_03_E
+    lstTargets[TPX1070_03_E].modelName =  QLatin1String(product_name[TPX1070_03_E]);
+    lstTargets[TPX1070_03_E].displayWidth =  800;
+    lstTargets[TPX1070_03_E].displayHeight = 480;
+    lstTargets[TPX1070_03_E].usbPorts = 2;
+    lstTargets[TPX1070_03_E].sdCards = 1;
+    lstTargets[TPX1070_03_E].digitalIN = 0;
+    lstTargets[TPX1070_03_E].digitalOUT = 0;
+    lstTargets[TPX1070_03_E].nEncoders = 0;
+    lstTargets[TPX1070_03_E].analogIN = 0;
+    lstTargets[TPX1070_03_E].analogINrowCT = -1;
+    lstTargets[TPX1070_03_E].analogOUT = 0;
+    lstTargets[TPX1070_03_E].analogOUTrowCT = -1;
+    lstTargets[TPX1070_03_D].fastIn = 4;
+    lstTargets[TPX1070_03_D].fastOut = 4;
+    lstTargets[TPX1070_03_E].ser0_Enabled = true;
+    lstTargets[TPX1070_03_E].ser1_Enabled = false;
+    lstTargets[TPX1070_03_E].ser2_Enabled = true;
+    lstTargets[TPX1070_03_E].ser2_Editable = false;
+    lstTargets[TPX1070_03_E].ser2_BaudRate = 19200;
+    lstTargets[TPX1070_03_E].ser3_Enabled = true;
+    lstTargets[TPX1070_03_E].can1_Enabled = false;
+    lstTargets[TPX1070_03_E].audioIF = true;
     // Ciclo di verifica caricamento modelli:
     for (nModel = 0; nModel < MODEL_TOTALS; nModel++)  {
         qDebug() << QString::fromLatin1("Model: %1 - Model Name: %2") .arg(QString::number(nModel)) .arg(lstTargets[nModel].modelName);
