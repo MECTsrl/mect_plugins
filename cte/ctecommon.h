@@ -42,8 +42,6 @@ const int nMAX_DEVICES = 16;        // 3 RTU + n TCP + m TCPRTU + 2 CANOPEN + 1 
 const int nMAX_NODES = 64;          // Numero Massimo di Nodi definiti
 const int nMAX_BLOCKS = 4096;       // Numero massimo di Blocchi definiti
 
-// Serial Ports
-const int nMaxSerialPorts = 3;
 // CanOpen Ports
 const int nMaxCanPorts = 1;
 // TCP Ports
@@ -96,6 +94,8 @@ const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
 const QString szMPNC006  = QString::fromAscii("MPNC006");
 const QString szMPNE1001 = QString::fromAscii("MPNE1001");
 const QString szTPLC050  = QString::fromAscii("TPLC050");
+const QString szMPNE_05  = QString::fromAscii("MPNE_05");
+const QString szTPX1070  = QString::fromAscii("TPX1070_03");
 
 enum colonne_e
 {
@@ -203,9 +203,33 @@ enum treeRoles
     treeVariable
 };
 
+enum _serialPorts
+{
+    _serial0 = 0,
+    _serial1,
+    _serial2,
+    _serial3,
+    _serialMax
+};
+
+
+
 struct  extendedCT : CrossTableRecord {
     int     nGroup;
     int     nModule;
+};
+
+struct  serialPortInfo  {
+    bool        portEnabled;
+    bool        portEditable;
+    bool        portAvailable;
+    int         BaudRate;
+    QString     Parity;
+    int         DataBits;
+    int         StopBits;
+    int         TimeOut;
+    int         Silence;
+    int         BlockSize;
 };
 
 
@@ -251,8 +275,8 @@ struct  TP_Config {
     int         fastLogPeriod;
     int         slowLogPeriod;
     // Bus Interfaces
+    serialPortInfo serialPorts[_serialMax];
     // Serial 0
-    bool        ser0_Enabled;
     bool        ser0_Editable;
     int         ser0_BaudRate;
     QString     ser0_Parity;
@@ -262,7 +286,6 @@ struct  TP_Config {
     int         ser0_Silence;
     int         ser0_BlockSize;
     // Serial 1
-    bool        ser1_Enabled;
     bool        ser1_Editable;
     int         ser1_BaudRate;
     QString     ser1_Parity;
@@ -272,7 +295,6 @@ struct  TP_Config {
     int         ser1_Silence;
     int         ser1_BlockSize;
     // Serial 2
-    bool        ser2_Enabled;
     bool        ser2_Editable;
     int         ser2_BaudRate;
     QString     ser2_Parity;
@@ -282,7 +304,6 @@ struct  TP_Config {
     int         ser2_Silence;
     int         ser2_BlockSize;
     // Serial 3
-    bool        ser3_Enabled;
     bool        ser3_Editable;
     int         ser3_BaudRate;
     QString     ser3_Parity;

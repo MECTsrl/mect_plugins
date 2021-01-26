@@ -172,7 +172,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     mainGrid->addWidget(lblBox, nRowSelector, nColPort);
     cboPort = new QComboBox(this);
     cboPort->setToolTip(QLatin1String("Change Serial Port"));
-    for (i = 0; i <= nMaxSerialPorts; i++)  {
+    for (i = _serial0; i < _serialMax; i++)  {
         cboPort->addItem(QString::number(i));
     }
     cboPort->setMaximumWidth(50);
@@ -695,7 +695,7 @@ void    Config_MPNE::changeRootElement(int nItem)
             // Scelta Porta Seriale
             int nPort = localCTRecords[m_nBaseRow].Port;
             m_nPort = -1;
-            if (nPort >= 0 && nPort <= nMaxSerialPorts)  {
+            if (nPort >= _serial0 && nPort < _serialMax)  {
                 m_nPort = nPort;
             }
             cboPort->setCurrentIndex(m_nPort);

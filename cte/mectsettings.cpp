@@ -1106,14 +1106,10 @@ void MectSettings::enablePortsFromModel(TP_Config &targetConfig)
     if (targetConfig.nModel == AnyTPAC || targetConfig.nModel >= MODEL_TOTALS)  {
         return;
     }
-    // Seriale 0 (In alcuni modelli NON può essere modificato il Baud Rate perché di uso interno)
-    m_tabEnabled[tabSerial0] = targetConfig.ser0_Enabled; // && targetConfig.ser0_Editable;
-    // Seriale 1
-    m_tabEnabled[tabSerial1] = targetConfig.ser1_Enabled;
-    // Seriale 2
-    m_tabEnabled[tabSerial2] = targetConfig.ser2_Enabled;
-    // Seriale 3
-    m_tabEnabled[tabSerial3] = targetConfig.ser3_Enabled;
+    // Seriale X da 0 a 3 (In alcuni modelli NON può essere modificato il Baud Rate perché di uso interno)
+    for (int nPort = 0; nPort < _serialMax; nPort++)  {
+        m_tabEnabled[tabSerial0 + nPort] = targetConfig.serialPorts[_serial0 + nPort].portEnabled; // && targetConfig.ser0_Editable;
+    }
     // Can 0
     m_tabEnabled[tabCan0] = targetConfig.can0_Enabled;
     // Can1
@@ -1150,65 +1146,65 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     nVal = ui->lineEdit_SlowLogPeriod->text().toInt(&fOk);
     TargetConfig.slowLogPeriod = fOk ? nVal : 0;
     //  Serial 0
-    TargetConfig.ser0_Enabled = (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex()) > 0;
+    TargetConfig.serialPorts[_serial0].portEnabled = (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_0->currentText().toInt(&fOk);
-    TargetConfig.ser0_BaudRate = fOk ? nVal : 0;
-    TargetConfig.ser0_Parity = ui->comboBox_Parity_SERIAL_PORT_0->currentText();
+    TargetConfig.serialPorts[_serial1].BaudRate = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].Parity = ui->comboBox_Parity_SERIAL_PORT_0->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&fOk);
-    TargetConfig.ser0_TimeOut = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&fOk);
-    TargetConfig.ser0_Silence = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text().toInt(&fOk);
-    TargetConfig.ser0_BlockSize = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].BlockSize = fOk ? nVal : 0;
     nVal = ui->comboBox_Databits_SERIAL_PORT_0->currentText().toInt(&fOk);
-    TargetConfig.ser0_DataBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].DataBits = fOk ? nVal : 0;
     nVal = ui->comboBox_Stopbits_SERIAL_PORT_0->currentText().toInt(&fOk);
-    TargetConfig.ser0_StopBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].StopBits = fOk ? nVal : 0;
     //  Serial 1
-    TargetConfig.ser1_Enabled = (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex()) > 0;
+    TargetConfig.serialPorts[_serial1].portEnabled = (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_1->currentText().toInt(&fOk);
-    TargetConfig.ser1_BaudRate = fOk ? nVal : 0;
-    TargetConfig.ser1_Parity = ui->comboBox_Parity_SERIAL_PORT_1->currentText();
+    TargetConfig.serialPorts[_serial1].BaudRate = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].Parity = ui->comboBox_Parity_SERIAL_PORT_1->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt(&fOk);
-    TargetConfig.ser1_TimeOut = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&fOk);
-    TargetConfig.ser1_Silence = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text().toInt(&fOk);
-    TargetConfig.ser1_BlockSize = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].BlockSize = fOk ? nVal : 0;
     nVal = ui->comboBox_Databits_SERIAL_PORT_1->currentText().toInt(&fOk);
-    TargetConfig.ser1_DataBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].DataBits = fOk ? nVal : 0;
     nVal = ui->comboBox_Stopbits_SERIAL_PORT_1->currentText().toInt(&fOk);
-    TargetConfig.ser1_StopBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial1].StopBits = fOk ? nVal : 0;
     //  Serial 2
-    TargetConfig.ser2_Enabled = (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex()) > 0;
+    TargetConfig.serialPorts[_serial2].portEnabled = (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_2->currentText().toInt(&fOk);
-    TargetConfig.ser2_BaudRate = fOk ? nVal : 0;
-    TargetConfig.ser2_Parity = ui->comboBox_Parity_SERIAL_PORT_2->currentText();
+    TargetConfig.serialPorts[_serial2].BaudRate = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial2].Parity = ui->comboBox_Parity_SERIAL_PORT_2->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt(&fOk);
-    TargetConfig.ser2_TimeOut = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial2].TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&fOk);
-    TargetConfig.ser2_Silence = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial2].Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text().toInt(&fOk);
-    TargetConfig.ser2_BlockSize = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial2].BlockSize = fOk ? nVal : 0;
     nVal = ui->comboBox_Databits_SERIAL_PORT_2->currentText().toInt(&fOk);
-    TargetConfig.ser2_DataBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial2].DataBits = fOk ? nVal : 0;
     nVal = ui->comboBox_Stopbits_SERIAL_PORT_2->currentText().toInt(&fOk);
-    TargetConfig.ser2_StopBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial2].StopBits = fOk ? nVal : 0;
     //  Serial 3
-    TargetConfig.ser3_Enabled = (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex()) > 0;
+    TargetConfig.serialPorts[_serial3].portEnabled = (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_3->currentText().toInt(&fOk);
-    TargetConfig.ser3_BaudRate = fOk ? nVal : 0;
-    TargetConfig.ser3_Parity = ui->comboBox_Parity_SERIAL_PORT_3->currentText();
+    TargetConfig.serialPorts[_serial3].BaudRate = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial3].Parity = ui->comboBox_Parity_SERIAL_PORT_3->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_3->text().toInt(&fOk);
-    TargetConfig.ser3_TimeOut = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial3].TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_3->text().toInt(&fOk);
-    TargetConfig.ser3_Silence = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial3].Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->text().toInt(&fOk);
-    TargetConfig.ser3_BlockSize = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial3].BlockSize = fOk ? nVal : 0;
     nVal = ui->comboBox_Databits_SERIAL_PORT_3->currentText().toInt(&fOk);
-    TargetConfig.ser3_DataBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial3].DataBits = fOk ? nVal : 0;
     nVal = ui->comboBox_Stopbits_SERIAL_PORT_3->currentText().toInt(&fOk);
-    TargetConfig.ser3_StopBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial3].StopBits = fOk ? nVal : 0;
     // TCP
     nVal = ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt(&fOk);
     TargetConfig.tcp_TimeOut = fOk ? nVal : 0;

@@ -22,7 +22,7 @@ queryPortNode::queryPortNode(const QString &szTitle, QString &szMessage, QWidget
     // Window Message
     ui->lblMessage->setText(szMessage);
     // Items in Combo Port
-    for (i = 0; i <= nMaxSerialPorts; i++)  {
+    for (i = _serial0; i < _serialMax; i++)  {
         ui->cboPort->addItem(QString::number(i));
     }
     // Ricerca delle Porte libere per il protocollo RTU

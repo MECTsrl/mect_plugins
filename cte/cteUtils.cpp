@@ -49,6 +49,7 @@ QList<CrossTableRecord> lstTemplateRecs; // Lista completa di Record da Template
 QList<CrossTableRecord> lstMPNC006_Vars;// Lista delle Variabili MPNC006
 QList<CrossTableRecord> lstTPLC050_Vars;// Lista delle Variabili TPLC050
 QList<CrossTableRecord> lstMPNE_Vars;   // Lista delle Variabili MPNE
+QList<CrossTableRecord> lstMPNE05_Vars; // Lista delle Variabili MPNE - Modulo 05
 
 // Colori per sfondi grid
 QColor      colorRetentive[2];
@@ -1006,21 +1007,21 @@ void getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
         case RTU:
         case RTU_SRV:
         case MECT_PTC:
-            if (panelConfig.ser0_Enabled)  {
+            if (panelConfig.serialPorts[_serial0].portEnabled)  {
                 nPort = 0;
                 nTotal++;
             }
-            if (panelConfig.ser1_Enabled)  {
+            if (panelConfig.serialPorts[_serial1].portEnabled)  {
                 if (nPort < 0)
                     nPort = 1;
                 nTotal++;
             }
-            if (panelConfig.ser2_Enabled)  {
+            if (panelConfig.serialPorts[_serial2].portEnabled)  {
                 if (nPort < 0)
                     nPort = 2;
                 nTotal++;
             }
-            if (panelConfig.ser3_Enabled)  {
+            if (panelConfig.serialPorts[_serial3].portEnabled)  {
                 if (nPort < 0)
                     nPort = 3;
                 nTotal++;
@@ -1061,7 +1062,7 @@ int     enableSerialPortCombo(QComboBox *cboBox)
 
     disableAndBlockSignals(cboBox);
     // Port 0
-    if (panelConfig.ser0_Enabled)  {
+    if (panelConfig.serialPorts[_serial0].portEnabled)  {
         enableComboItem(cboBox, 0);
         nPorts++;
     }
@@ -1069,7 +1070,7 @@ int     enableSerialPortCombo(QComboBox *cboBox)
         disableComboItem(cboBox, 0);
     }
     // Port 1
-    if (panelConfig.ser1_Enabled)  {
+    if (panelConfig.serialPorts[_serial1].portEnabled)  {
         enableComboItem(cboBox, 1);
         nPorts++;
     }
@@ -1077,7 +1078,7 @@ int     enableSerialPortCombo(QComboBox *cboBox)
         disableComboItem(cboBox, 1);
     }
     // Port 2
-    if (panelConfig.ser2_Enabled)  {
+    if (panelConfig.serialPorts[_serial2].portEnabled)  {
         enableComboItem(cboBox, 2);
         nPorts++;
     }
@@ -1085,7 +1086,7 @@ int     enableSerialPortCombo(QComboBox *cboBox)
         disableComboItem(cboBox, 2);
     }
     // Port 3
-    if (panelConfig.ser3_Enabled)  {
+    if (panelConfig.serialPorts[_serial3].portEnabled)  {
         enableComboItem(cboBox, 3);
         nPorts++;
     }
@@ -1227,27 +1228,27 @@ QString getSerialPortSpeed(int nPort)
     if (isSerialPortEnabled)  {
         switch (nPort)  {
             case 0:
-                if (panelConfig.ser0_Enabled)  {
+                if (panelConfig.serialPorts[_serial0].portEnabled)  {
                     szSpeed = QString::fromAscii("%1,%2,%3,%4")
                             .arg(panelConfig.ser0_BaudRate) .arg(panelConfig.ser0_Parity) .arg(panelConfig.ser0_DataBits) .arg(panelConfig.ser0_StopBits);
                 }
                 break;
                 ;
             case 1:
-                if (panelConfig.ser1_Enabled)  {
+                if (panelConfig.serialPorts[_serial1].portEnabled)  {
                     szSpeed = QString::fromAscii("%1,%2,%3,%4")
                             .arg(panelConfig.ser1_BaudRate) .arg(panelConfig.ser1_Parity) .arg(panelConfig.ser1_DataBits) .arg(panelConfig.ser1_StopBits);
                 }
                 break;
                 ;
             case 2:
-                if (panelConfig.ser2_Enabled)  {
+                if (panelConfig.serialPorts[_serial2].portEnabled)  {
                     szSpeed = QString::fromAscii("%1,%2,%3,%4")
                             .arg(panelConfig.ser2_BaudRate) .arg(panelConfig.ser2_Parity) .arg(panelConfig.ser2_DataBits) .arg(panelConfig.ser2_StopBits);
                 }
                 break;
             case 3:
-                if (panelConfig.ser3_Enabled)  {
+                if (panelConfig.serialPorts[_serial3].portEnabled)  {
                     szSpeed = QString::fromAscii("%1,%2,%3,%4")
                             .arg(panelConfig.ser3_BaudRate) .arg(panelConfig.ser3_Parity) .arg(panelConfig.ser3_DataBits) .arg(panelConfig.ser3_StopBits);
                 }

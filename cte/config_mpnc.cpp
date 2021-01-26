@@ -158,7 +158,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     mainGrid->addWidget(lblBox, nRowSelector, nBaseDigIn, 1, 2);
     cboPort = new QComboBox(this);
     cboPort->setToolTip(QLatin1String("Change Serial Port"));
-    for (i = 0; i <= nMaxSerialPorts; i++)  {
+    for (i = _serial0; i < _serialMax; i++)  {
         cboPort->addItem(QString::number(i));
     }
     cboPort->setMaximumWidth(50);
@@ -642,7 +642,7 @@ void    Config_MPNC::changeRootElement(int nItem)
             // Scelta Porta Seriale
             int nPort = localCTRecords[m_nBaseRow].Port;
             m_nPort = -1;
-            if (nPort >= 0 && nPort <= nMaxSerialPorts)  {
+            if (nPort >= _serial0 && nPort < _serialMax)  {
                 m_nPort = nPort;
                 // Aggiornamento Baud Rate
                 lblBaudRate->setText(getSerialPortSpeed(m_nPort));

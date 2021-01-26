@@ -134,6 +134,7 @@ ctedit::ctedit(QWidget *parent) :
     m_nMPNC = -1;                       // Indice della Testa MPNC correntemente visualizzata
     lstMPNE.clear();                    // Liste delle capofila delle teste MPNE presenti
     m_nMPNE = -1;                       // Indice della Testa MPNE correntemente visualizzata
+    m_fMPNE_05_Present = false;         // modulo MPNE_05 presente (TPX1070 only)
     // Colore Frame Editing
     colorNormalEdit = ui->fraEdit->palette().background().color();
     szColorNormalEdit =QString::fromLatin1("color: rgb(%1, %2, %3);")
@@ -150,7 +151,7 @@ ctedit::ctedit(QWidget *parent) :
     lstMPNE_Vars.clear();
     // MPNC006
     if (readModelVars(szMPNC006, lstMPNC006_Vars))  {
-        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
                     .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNC006);
@@ -158,20 +159,29 @@ ctedit::ctedit(QWidget *parent) :
     }
     // TPLC050
     if (readModelVars(szTPLC050, lstTPLC050_Vars))  {
-        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
-                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
+                    .arg(szMPNC006) .arg(lstTPLC050_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szTPLC050);
         lstTPLC050_Vars.clear();
     }
     // MPNE10
     if (readModelVars(szMPNE1001, lstMPNE_Vars))  {
-        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var: %3 - Max Comment: %4")
-                    .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
+                    .arg(szMPNE1001) .arg(lstMPNE_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE1001);
         lstMPNE_Vars.clear();
     }
+    // MPNE_05  Modulo Analogico
+    if (readModelVars(szMPNE_05, lstMPNE05_Vars))  {
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
+                    .arg(szMPNE_05) .arg(lstMPNE05_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
+    }  else  {
+        qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE_05);
+        lstMPNE05_Vars.clear();
+    }
+
     //------------------------
     // Lista Modelli
     //------------------------
@@ -251,7 +261,7 @@ ctedit::ctedit(QWidget *parent) :
     // Caricamento delle varie Combos
     // Combo delle Porte Seriali
     ui->cboPort->clear();
-    for (nCol = 0; nCol <= nMaxSerialPorts; nCol++)  {
+    for (nCol = _serial0; nCol < _serialMax; nCol++)  {
         ui->cboPort->addItem(QString::number(nCol));
     }
     // Combo Sections (bloccata per evitare Side Effects al currentIndex)
@@ -320,7 +330,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtPort->setToolTip(szToolTip);
     // Combo Porta seriale
     szToolTip.clear();
-    szToolTip.append(QString::fromAscii("Serial Communication Port, from 0 to %1") .arg(nMaxSerialPorts));
+    szToolTip.append(QString::fromAscii("Serial Communication Port, from 0 to %1") .arg(_serial3));
     ui->cboPort->setToolTip(szToolTip);
     // Indirizzo nodo remoto
     szToolTip.clear();
@@ -2026,16 +2036,22 @@ void ctedit::displayUserMenu(const QPoint &pos)
     gridMenu.addSeparator();
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale
     QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC006 Modules"));
-    addMPNC006->setEnabled((isSerialPortEnabled)
+    addMPNC006->setEnabled(isSerialPortEnabled
                            && (m_nGridRow + lstMPNC006_Vars.count()) < MIN_DIAG - 1);
     QAction *addMPNE1001 = gridMenu.addAction(cIco, trUtf8("Paste MPNE1001 Module"));
-    addMPNE1001->setEnabled((isSerialPortEnabled)
+    addMPNE1001->setEnabled(isSerialPortEnabled
                           && (m_nGridRow + lstMPNE_Vars.count()) < MIN_DIAG - 1);
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
     QAction *addTPLC050 = gridMenu.addAction(cIco, trUtf8("Paste TPLC050 Modules"));
-    addTPLC050->setVisible((panelConfig.modelName.contains(szTPLC050))
+    addTPLC050->setVisible(panelConfig.modelName.contains(szTPLC050)
                            && (m_nGridRow + lstTPLC050_Vars.count()) < MIN_DIAG - 1);
     addTPLC050->setEnabled(addTPLC050->isVisible());
+    // Menu per importazione delle variabili per il modulo aggiuntivo MPNE_05 (solo su TPX1070_03)
+    QAction *addMPNE_05 = gridMenu.addAction(cIco, trUtf8("Paste MPNE_05 Module"));
+    addMPNE_05->setVisible(isSerialPortEnabled
+                           && panelConfig.modelName.startsWith(szTPX1070)
+                           && (m_nGridRow + lstMPNE05_Vars.count()) < MIN_DIAG - 1);
+    addMPNE_05->setEnabled(addMPNE_05->isVisible() && ! m_fMPNE_05_Present);
     // Menù Grafico per MPNC // MPNE
     QAction *editMPNC = 0;
     QAction *editMPNE = 0;
@@ -2130,6 +2146,19 @@ void ctedit::displayUserMenu(const QPoint &pos)
             int nPort = 3;
             int nNode = 1;
             addModelVars(szTPLC050, m_nGridRow, nPort, nNode);
+        }
+    }
+    // Add MPNE_05
+    else if (actMenu == addMPNE_05)  {
+        // Controllo dell'area di destinazione
+        if (checkFreeArea(nRow, lstTPLC050_Vars.count()))  {
+            // Porta fissa a 2 e Nodo fisso a 1
+            int nPort = 2;
+            int nNode = 1;
+            addModelVars(szMPNE_05, m_nGridRow, nPort, nNode);
+            // Allowed One Shot Only...
+            actMenu->setEnabled(false);
+            m_fMPNE_05_Present = true;
         }
     }
     // Edit MPNC
@@ -2964,14 +2993,10 @@ QString ctedit::getModelInfo(int nModel)
             szText.append(QString::fromAscii("Load Cells: \t\t%1\n") .arg(lstTargets[nModel].loadCells));
         }
         // Bus Interfaces
-        // Serial 0
-        szText.append(QString::fromAscii("Serial 0 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser0_Enabled)));
-        // Serial 1
-        szText.append(QString::fromAscii("Serial 1 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser1_Enabled)));
-        // Serial 2
-        szText.append(QString::fromAscii("Serial 2 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser2_Enabled)));
-        // Serial 3
-        szText.append(QString::fromAscii("Serial 3 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].ser3_Enabled)));
+        // Serial X
+        for (int nPort = 0; nPort < _serialMax; nPort++)  {
+            szText.append(QString::fromAscii("Serial %1 Enabled: \t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].serialPorts[nPort].portEnabled)));
+        }
         // Can0
         szText.append(QString::fromAscii("Can 0 Enabled: \t%1\n") .arg(bool2String(lstTargets[nModel].can0_Enabled)));
         // Can1
@@ -3093,10 +3118,10 @@ void ctedit::tabSelected(int nTab)
     }
     // Entering SYSTEM Editor
     else if (nTab == TAB_SYSTEM)  {
-        mectSet->enableSerialPanel(panelConfig.ser0_Enabled && panelConfig.ser0_Editable,
-                                   panelConfig.ser1_Enabled && panelConfig.ser1_Editable,
-                                   panelConfig.ser2_Enabled && panelConfig.ser2_Editable,
-                                   panelConfig.ser3_Enabled && panelConfig.ser3_Editable);
+        mectSet->enableSerialPanel(panelConfig.serialPorts[_serial0].portEnabled && panelConfig.serialPorts[_serial0].portEditable,
+                                   panelConfig.serialPorts[_serial1].portEnabled && panelConfig.serialPorts[_serial1].portEditable,
+                                   panelConfig.serialPorts[_serial2].portEnabled && panelConfig.serialPorts[_serial2].portEditable,
+                                   panelConfig.serialPorts[_serial3].portEnabled && panelConfig.serialPorts[_serial3].portEditable);
     }
     // Entering Trends: Aggiornamento della lista di variabili e ripopolamento liste per Trends
     else if (nTab == TAB_TREND) {
@@ -3191,6 +3216,12 @@ void ctedit::enableInterface()
         m_nMPNE = 0;
         ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
         ui->tabWidget->setTabEnabled(TAB_MPNE, enableMPNE);
+        m_fMPNE_05_Present = false;
+        // Verifica MPNE_05 (TPX1070 only)
+        if (panelConfig.modelName.startsWith(szTPX1070)) {
+            QList<int> lstMPNE_05;
+            m_fMPNE_05_Present = searchIOModules(szMPNE_05, lstCTRecords, lstMPNE05_Vars, lstMPNE_05);
+        }
     }
     else {
         ui->tabWidget->setTabEnabled(TAB_MPNC, false);
@@ -3236,7 +3267,10 @@ void    ctedit::enableProtocolsFromModel()
         lstBusEnabler[CANOPEN] = true;
     }
     // Protocolli Seriali
-    isSerialPortEnabled = panelConfig.ser0_Enabled || panelConfig.ser1_Enabled || panelConfig.ser2_Enabled || panelConfig.ser3_Enabled;        // Vero se almeno una porta seriale è abilitata
+    isSerialPortEnabled =   panelConfig.serialPorts[_serial0].portEnabled ||
+                            panelConfig.serialPorts[_serial1].portEnabled ||
+                            panelConfig.serialPorts[_serial2].portEnabled ||
+                            panelConfig.serialPorts[_serial3].portEnabled;        // Vero se almeno una porta seriale è abilitata
     nPresentSerialPorts = 0;            // Numero di porte Seriali utilizzabili a bordo
     // Calcolo delle porte seriali presenti a bordo
     if (isSerialPortEnabled)  {
@@ -3626,7 +3660,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     // Protocolli Seriali errCTNoDevicePort
     if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
         // # Porta fuori Range
-        if (nPort < 0 || nPort > nMaxSerialPorts) {
+        if (nPort < _serial0 || nPort >= _serialMax) {
             fillErrorMessage(nRow, colPort, errCTNoPort, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
@@ -3769,7 +3803,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         else if (nProtocol == RTU_SRV)  {
             // Non esiste ancora un Server RTU_SRV definito per la porta richiesta
             // # Porta entro i Range
-            if (nPort >= 0 && nPort <= nMaxSerialPorts) {
+            if (nPort >= _serial0 && nPort < _serialMax) {
                 if (serverModBus[nPort].nPort < 0)  {
                     serverModBus[nPort].nPort = nPort;
                     serverModBus[nPort].nProtocol = nProtocol;
@@ -5013,7 +5047,8 @@ void ctedit::initTargetList()
 // Init della lista dei Target definiti
 {
     TP_Config   tpRec;
-    int         nModel;
+    int         nModel = 0;
+    int         nPort = 0;
 
     // Valori di default comuni a tutti i modelli
     // General Params
@@ -5046,42 +5081,18 @@ void ctedit::initTargetList()
     tpRec.readPeriod3 = 200;
     tpRec.fastLogPeriod = 1;
     tpRec.slowLogPeriod = 10;
-    // Serial 0
-    tpRec.ser0_Enabled = false;
-    tpRec.ser0_Editable = true;
-    tpRec.ser0_BaudRate = 38400;
-    tpRec.ser0_DataBits = 8;
-    tpRec.ser0_StopBits = 1;
-    tpRec.ser0_TimeOut = 50;
-    tpRec.ser0_Silence = 2;
-    tpRec.ser0_BlockSize = 64;
-    // Serial 1
-    tpRec.ser1_Enabled = false;
-    tpRec.ser1_Editable = true;
-    tpRec.ser1_BaudRate = 38400;
-    tpRec.ser1_DataBits = 8;
-    tpRec.ser1_StopBits = 1;
-    tpRec.ser1_TimeOut = 50;
-    tpRec.ser1_Silence = 2;
-    tpRec.ser1_BlockSize = 64;
-    // Serial 2
-    tpRec.ser2_Enabled = false;
-    tpRec.ser2_Editable = true;
-    tpRec.ser2_BaudRate = 38400;
-    tpRec.ser2_DataBits = 8;
-    tpRec.ser2_StopBits = 1;
-    tpRec.ser2_TimeOut = 50;
-    tpRec.ser2_Silence = 2;
-    tpRec.ser2_BlockSize = 64;
-    // Serial 3
-    tpRec.ser3_Enabled = true;
-    tpRec.ser3_Editable = true;
-    tpRec.ser3_BaudRate = 38400;
-    tpRec.ser3_DataBits = 8;
-    tpRec.ser3_StopBits = 1;
-    tpRec.ser3_TimeOut = 50;
-    tpRec.ser3_Silence = 2;
-    tpRec.ser3_BlockSize = 64;
+    // Serial X
+    for (nPort = _serial0; nPort < _serialMax; nPort++)  {
+        tpRec.serialPorts[nPort].portEnabled = false;
+        tpRec.serialPorts[nPort].portEditable = true;
+        tpRec.serialPorts[nPort].portAvailable = true;
+        tpRec.serialPorts[nPort].BaudRate = 38400;
+        tpRec.serialPorts[nPort].DataBits = 8;
+        tpRec.serialPorts[nPort].StopBits = 1;
+        tpRec.serialPorts[nPort].TimeOut = 50;
+        tpRec.serialPorts[nPort].Silence = 2;
+        tpRec.serialPorts[nPort].BlockSize = 64;
+    }
     // TCP
     tpRec.tcp_TimeOut = 200;
     tpRec.tcp_Silence = 10;
@@ -5117,10 +5128,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_A].analogINrowCT = -1;
     lstTargets[TP1043_01_A].analogOUT = 0;
     lstTargets[TP1043_01_A].analogOUTrowCT = -1;
-    lstTargets[TP1043_01_A].ser0_Enabled = true;
-    lstTargets[TP1043_01_A].ser1_Enabled = false;
-    lstTargets[TP1043_01_A].ser2_Enabled = false;
-    lstTargets[TP1043_01_A].ser3_Enabled = false;
+    lstTargets[TP1043_01_A].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1043_01_A].can1_Enabled = false;
     // 02 TP1043_01_B
     lstTargets[TP1043_01_B].modelName =  QLatin1String(product_name[TP1043_01_B]);
@@ -5134,10 +5142,6 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_B].analogINrowCT = -1;
     lstTargets[TP1043_01_B].analogOUT = 0;
     lstTargets[TP1043_01_B].analogOUTrowCT = -1;
-    lstTargets[TP1043_01_B].ser0_Enabled = false;
-    lstTargets[TP1043_01_B].ser1_Enabled = false;
-    lstTargets[TP1043_01_B].ser2_Enabled = false;
-    lstTargets[TP1043_01_B].ser3_Enabled = false;
     lstTargets[TP1043_01_B].can1_Enabled = true;
     //03 TP1043_02_A
     lstTargets[TP1043_02_A].modelName =  QLatin1String(product_name[TP1043_02_A]);
@@ -5151,10 +5155,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_A].analogINrowCT = -1;
     lstTargets[TP1043_02_A].analogOUT = 0;
     lstTargets[TP1043_02_A].analogOUTrowCT = -1;
-    lstTargets[TP1043_02_A].ser0_Enabled = true;
-    lstTargets[TP1043_02_A].ser1_Enabled = false;
-    lstTargets[TP1043_02_A].ser2_Enabled = false;
-    lstTargets[TP1043_02_A].ser3_Enabled = false;
+    lstTargets[TP1043_02_A].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1043_02_A].can1_Enabled = false;
     // 04 TP1043_02_B
     lstTargets[TP1043_02_B].modelName =  QLatin1String(product_name[TP1043_02_B]);
@@ -5168,10 +5169,6 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_B].analogINrowCT = -1;
     lstTargets[TP1043_02_B].analogOUT = 0;
     lstTargets[TP1043_02_B].analogOUTrowCT = -1;
-    lstTargets[TP1043_02_B].ser0_Enabled = false;
-    lstTargets[TP1043_02_B].ser1_Enabled = false;
-    lstTargets[TP1043_02_B].ser2_Enabled = false;
-    lstTargets[TP1043_02_B].ser3_Enabled = false;
     lstTargets[TP1043_02_B].can1_Enabled = true;
     // 05 TP1070_01_A
     lstTargets[TP1070_01_A].modelName =  QLatin1String(product_name[TP1070_01_A]);
@@ -5185,10 +5182,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_A].analogINrowCT = -1;
     lstTargets[TP1070_01_A].analogOUT = 0;
     lstTargets[TP1070_01_A].analogOUTrowCT = -1;
-    lstTargets[TP1070_01_A].ser0_Enabled = false;
-    lstTargets[TP1070_01_A].ser1_Enabled = false;
-    lstTargets[TP1070_01_A].ser2_Enabled = false;
-    lstTargets[TP1070_01_A].ser3_Enabled = true;
+    lstTargets[TP1070_01_A].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_01_A].can1_Enabled = false;
     // 06 TP1070_01_B
     lstTargets[TP1070_01_B].modelName =  QLatin1String(product_name[TP1070_01_B]);
@@ -5202,10 +5196,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_B].analogINrowCT = -1;
     lstTargets[TP1070_01_B].analogOUT = 0;
     lstTargets[TP1070_01_B].analogOUTrowCT = -1;
-    lstTargets[TP1070_01_B].ser0_Enabled = false;
-    lstTargets[TP1070_01_B].ser1_Enabled = false;
-    lstTargets[TP1070_01_B].ser2_Enabled = false;
-    lstTargets[TP1070_01_B].ser3_Enabled = true;
+    lstTargets[TP1070_01_B].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_01_B].can1_Enabled = true;
     // 07 TP1070_01_C
     lstTargets[TP1070_01_C].modelName =  QLatin1String(product_name[TP1070_01_C]);
@@ -5219,10 +5210,8 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_C].analogINrowCT = -1;
     lstTargets[TP1070_01_C].analogOUT = 0;
     lstTargets[TP1070_01_C].analogOUTrowCT = -1;
-    lstTargets[TP1070_01_C].ser0_Enabled = true;
-    lstTargets[TP1070_01_C].ser1_Enabled = false;
-    lstTargets[TP1070_01_C].ser2_Enabled = false;
-    lstTargets[TP1070_01_C].ser3_Enabled = true;
+    lstTargets[TP1070_01_C].serialPorts[_serial0].portEnabled = true;
+    lstTargets[TP1070_01_C].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_01_C].can1_Enabled = false;
     // 08 TPAC1005
     lstTargets[TPAC1005].modelName =  QLatin1String(product_name[TPAC1005]);
@@ -5236,10 +5225,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1005].analogINrowCT = -1;
     lstTargets[TPAC1005].analogOUT = 0;
     lstTargets[TPAC1005].analogOUTrowCT = -1;
-    lstTargets[TPAC1005].ser0_Enabled = true;
-    lstTargets[TPAC1005].ser1_Enabled = false;
-    lstTargets[TPAC1005].ser2_Enabled = false;
-    lstTargets[TPAC1005].ser3_Enabled = false;
+    lstTargets[TPAC1005].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1005].can1_Enabled = true;
     // 09 TPAC1007_03
     lstTargets[TPAC1007_03].modelName =  QLatin1String(product_name[TPAC1007_03]);
@@ -5254,10 +5240,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_03].analogOUT = 1;
     lstTargets[TPAC1007_03].analogOUTrowCT = 5337;
     lstTargets[TPAC1007_03].tAmbient = true;
-    lstTargets[TPAC1007_03].ser0_Enabled = true;
-    lstTargets[TPAC1007_03].ser1_Enabled = false;
-    lstTargets[TPAC1007_03].ser2_Enabled = false;
-    lstTargets[TPAC1007_03].ser3_Enabled = false;
+    lstTargets[TPAC1007_03].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_03].can1_Enabled = false;
     // 10 TPAC1007_04_AA
     lstTargets[TPAC1007_04_AA].modelName =  QLatin1String(product_name[TPAC1007_04_AA]);
@@ -5272,10 +5255,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AA].analogOUT = 4;
     lstTargets[TPAC1007_04_AA].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AA].tAmbient = true;
-    lstTargets[TPAC1007_04_AA].ser0_Enabled = true;
-    lstTargets[TPAC1007_04_AA].ser1_Enabled = false;
-    lstTargets[TPAC1007_04_AA].ser2_Enabled = false;
-    lstTargets[TPAC1007_04_AA].ser3_Enabled = false;
+    lstTargets[TPAC1007_04_AA].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AA].can1_Enabled = false;
     // 11 TPAC1007_04_AB
     lstTargets[TPAC1007_04_AB].modelName =  QLatin1String(product_name[TPAC1007_04_AB]);
@@ -5290,10 +5270,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].analogOUT = 4;
     lstTargets[TPAC1007_04_AB].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AB].tAmbient = true;
-    lstTargets[TPAC1007_04_AB].ser0_Enabled = true;
-    lstTargets[TPAC1007_04_AB].ser1_Enabled = false;
-    lstTargets[TPAC1007_04_AB].ser2_Enabled = false;
-    lstTargets[TPAC1007_04_AB].ser3_Enabled = false;
+    lstTargets[TPAC1007_04_AB].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AB].can1_Enabled = false;
     // 12 TPAC1007_04_AC
     lstTargets[TPAC1007_04_AC].modelName =  QLatin1String(product_name[TPAC1007_04_AC]);
@@ -5308,10 +5285,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AC].analogOUT = 1;
     lstTargets[TPAC1007_04_AC].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AC].tAmbient = true;
-    lstTargets[TPAC1007_04_AC].ser0_Enabled = true;
-    lstTargets[TPAC1007_04_AC].ser1_Enabled = false;
-    lstTargets[TPAC1007_04_AC].ser2_Enabled = false;
-    lstTargets[TPAC1007_04_AC].ser3_Enabled = false;
+    lstTargets[TPAC1007_04_AC].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AC].can1_Enabled = false;
     // 13 TPAC1007_04_AD
     lstTargets[TPAC1007_04_AD].modelName =  QLatin1String(product_name[TPAC1007_04_AD]);
@@ -5326,10 +5300,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AD].analogOUT = 2;
     lstTargets[TPAC1007_04_AD].analogOUTrowCT = 5344;
     lstTargets[TPAC1007_04_AD].tAmbient = true;
-    lstTargets[TPAC1007_04_AD].ser0_Enabled = true;
-    lstTargets[TPAC1007_04_AD].ser1_Enabled = false;
-    lstTargets[TPAC1007_04_AD].ser2_Enabled = false;
-    lstTargets[TPAC1007_04_AD].ser3_Enabled = false;
+    lstTargets[TPAC1007_04_AD].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AD].can1_Enabled = false;
     // 14 TPAC1007_04_AE (ex TPAC1007_LV)
     lstTargets[TPAC1007_04_AE].modelName =  QLatin1String(product_name[TPAC1007_04_AE]);
@@ -5344,11 +5315,9 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AE].analogOUT = 0;
     lstTargets[TPAC1007_04_AE].analogOUTrowCT = -1;
     lstTargets[TPAC1007_04_AE].tAmbient = true;
-    lstTargets[TPAC1007_04_AE].ser0_Enabled = true;
-    lstTargets[TPAC1007_04_AE].ser1_Enabled = false;
-    lstTargets[TPAC1007_04_AE].ser2_Enabled = false;
-    lstTargets[TPAC1007_04_AE].ser3_Enabled = true;             // Internal Port
-    lstTargets[TPAC1007_04_AE].ser3_Editable = false;
+    lstTargets[TPAC1007_04_AE].serialPorts[_serial0].portEnabled = true;
+    lstTargets[TPAC1007_04_AE].serialPorts[_serial3].portEnabled = true;             // Internal Port
+    lstTargets[TPAC1007_04_AE].serialPorts[_serial3].portEditable = false;
     lstTargets[TPAC1007_04_AE].can1_Enabled = false;
     // 15 TPAC1008_02_AA
     lstTargets[TPAC1008_02_AA].modelName =  QLatin1String(product_name[TPAC1008_02_AA]);
@@ -5364,10 +5333,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AA].analogOUTrowCT = 5347;
     lstTargets[TPAC1008_02_AA].tAmbient = true;
     lstTargets[TPAC1008_02_AA].rpmPorts = 1;
-    lstTargets[TPAC1008_02_AA].ser0_Enabled = false;
-    lstTargets[TPAC1008_02_AA].ser1_Enabled = false;
-    lstTargets[TPAC1008_02_AA].ser2_Enabled = false;
-    lstTargets[TPAC1008_02_AA].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AA].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AA].can1_Enabled = true;
     // 16 TPAC1008_02_AB
     lstTargets[TPAC1008_02_AB].modelName =  QLatin1String(product_name[TPAC1008_02_AB]);
@@ -5383,10 +5349,8 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AB].analogOUTrowCT = 5347;
     lstTargets[TPAC1008_02_AB].tAmbient = true;
     lstTargets[TPAC1008_02_AB].rpmPorts = 1;
-    lstTargets[TPAC1008_02_AB].ser0_Enabled = true;
-    lstTargets[TPAC1008_02_AB].ser1_Enabled = false;
-    lstTargets[TPAC1008_02_AB].ser2_Enabled = false;
-    lstTargets[TPAC1008_02_AB].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AB].serialPorts[_serial0].portEnabled = true;
+    lstTargets[TPAC1008_02_AB].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AB].can1_Enabled = false;
     // 17 TPAC1008_02_AD
     lstTargets[TPAC1008_02_AD].modelName =  QLatin1String(product_name[TPAC1008_02_AD]);
@@ -5402,10 +5366,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AD].analogOUTrowCT = 5347;
     lstTargets[TPAC1008_02_AD].tAmbient = true;
     lstTargets[TPAC1008_02_AD].rpmPorts = 1;
-    lstTargets[TPAC1008_02_AD].ser0_Enabled = false;
-    lstTargets[TPAC1008_02_AD].ser1_Enabled = false;
-    lstTargets[TPAC1008_02_AD].ser2_Enabled = false;
-    lstTargets[TPAC1008_02_AD].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AD].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AD].can1_Enabled = false;
     // 18 TPAC1008_02_AE
     lstTargets[TPAC1008_02_AE].modelName =  QLatin1String(product_name[TPAC1008_02_AE]);
@@ -5421,10 +5382,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AE].analogOUTrowCT = 5347;
     lstTargets[TPAC1008_02_AE].tAmbient = true;
     lstTargets[TPAC1008_02_AE].rpmPorts = 1;
-    lstTargets[TPAC1008_02_AE].ser0_Enabled = false;
-    lstTargets[TPAC1008_02_AE].ser1_Enabled = false;
-    lstTargets[TPAC1008_02_AE].ser2_Enabled = false;
-    lstTargets[TPAC1008_02_AE].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AE].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AE].can1_Enabled = false;
     // 19 TPAC1008_02_AF
     lstTargets[TPAC1008_02_AF].modelName =  QLatin1String(product_name[TPAC1008_02_AF]);
@@ -5440,10 +5398,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AF].analogOUTrowCT = 5347;
     lstTargets[TPAC1008_02_AF].tAmbient = true;
     lstTargets[TPAC1008_02_AF].rpmPorts = 1;
-    lstTargets[TPAC1008_02_AF].ser0_Enabled = false;
-    lstTargets[TPAC1008_02_AF].ser1_Enabled = false;
-    lstTargets[TPAC1008_02_AF].ser2_Enabled = false;
-    lstTargets[TPAC1008_02_AF].ser3_Enabled = true;
+    lstTargets[TPAC1008_02_AF].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AF].can1_Enabled = false;
     // 20 TPLC050_01_AA
     lstTargets[TPLC050_01_AA].modelName =  QLatin1String(product_name[TPLC050_01_AA]);
@@ -5457,10 +5412,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].analogINrowCT = 5306;
     lstTargets[TPLC050_01_AA].analogOUT = 0;
     lstTargets[TPLC050_01_AA].tAmbient = true;
-    lstTargets[TPLC050_01_AA].ser0_Enabled = true;
-    lstTargets[TPLC050_01_AA].ser1_Enabled = false;
-    lstTargets[TPLC050_01_AA].ser2_Enabled = false;
-    lstTargets[TPLC050_01_AA].ser3_Enabled = false;
+    lstTargets[TPLC050_01_AA].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPLC050_01_AA].can1_Enabled = false;
     // 21 TPLC050_01_AB
     lstTargets[TPLC050_01_AB].modelName =  QLatin1String(product_name[TPLC050_01_AB]);
@@ -5474,10 +5426,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AB].analogINrowCT = 5328;
     lstTargets[TPLC050_01_AB].analogOUT = 0;
     lstTargets[TPLC050_01_AB].tAmbient = true;
-    lstTargets[TPLC050_01_AB].ser0_Enabled = true;
-    lstTargets[TPLC050_01_AB].ser1_Enabled = false;
-    lstTargets[TPLC050_01_AB].ser2_Enabled = false;
-    lstTargets[TPLC050_01_AB].ser3_Enabled = false;
+    lstTargets[TPLC050_01_AB].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPLC050_01_AB].can1_Enabled = false;
     // 22 TPLC100_01_AA
     lstTargets[TPLC100_01_AA].modelName =  QLatin1String(product_name[TPLC100_01_AA]);
@@ -5493,10 +5442,6 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].analogOUT = 2;
     lstTargets[TPLC100_01_AA].analogOUTrowCT = -1;
     lstTargets[TPLC100_01_AA].tAmbient = true;
-    lstTargets[TPLC100_01_AA].ser0_Enabled = false;
-    lstTargets[TPLC100_01_AA].ser1_Enabled = false;
-    lstTargets[TPLC100_01_AA].ser2_Enabled = false;
-    lstTargets[TPLC100_01_AA].ser3_Enabled = false;
     lstTargets[TPLC100_01_AA].can1_Enabled = true;
     // 23 TPLC100_01_AB
     lstTargets[TPLC100_01_AB].modelName =  QLatin1String(product_name[TPLC100_01_AB]);
@@ -5512,10 +5457,8 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].analogOUT = 2;
     lstTargets[TPLC100_01_AB].analogOUTrowCT = -1;
     lstTargets[TPLC100_01_AB].tAmbient = true;
-    lstTargets[TPLC100_01_AB].ser0_Enabled = false;     // Possibile in futuro
-    lstTargets[TPLC100_01_AB].ser1_Enabled = false;
-    lstTargets[TPLC100_01_AB].ser2_Enabled = false;
-    lstTargets[TPLC100_01_AB].ser3_Enabled = true;
+    lstTargets[TPLC100_01_AB].serialPorts[_serial0].portEnabled = false;     // Possibile in futuro
+    lstTargets[TPLC100_01_AB].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPLC100_01_AB].can1_Enabled = false;
     // 24 TPAC1008_03_AC
     lstTargets[TPAC1008_03_AC].modelName =  QLatin1String(product_name[TPAC1008_03_AC]);
@@ -5535,11 +5478,8 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].fastOut = 4;
     lstTargets[TPAC1008_03_AC].pwm = 4;
     lstTargets[TPAC1008_03_AC].loadCells = 3;
-    lstTargets[TPAC1008_03_AC].ser0_Enabled = true;         // Internal Port
-    lstTargets[TPAC1008_03_AC].ser0_Editable = false;
-    lstTargets[TPAC1008_03_AC].ser1_Enabled = false;
-    lstTargets[TPAC1008_03_AC].ser2_Enabled = false;
-    lstTargets[TPAC1008_03_AC].ser3_Enabled = true;
+    lstTargets[TPAC1008_03_AC].serialPorts[_serial0].portEnabled = true;         // Internal Port
+    lstTargets[TPAC1008_03_AC].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_03_AC].can1_Enabled = false;
     // 25 TPAC1008_03_AD
     lstTargets[TPAC1008_03_AD].modelName =  QLatin1String(product_name[TPAC1008_03_AD]);
@@ -5559,11 +5499,9 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AD].fastOut = 4;
     lstTargets[TPAC1008_03_AD].pwm = 4;
     lstTargets[TPAC1008_03_AD].loadCells = 3;
-    lstTargets[TPAC1008_03_AD].ser0_Enabled = true;         // Internal Port
-    lstTargets[TPAC1008_03_AD].ser0_Editable = false;
-    lstTargets[TPAC1008_03_AD].ser1_Enabled = false;
-    lstTargets[TPAC1008_03_AD].ser2_Enabled = false;
-    lstTargets[TPAC1008_03_AD].ser3_Enabled = true;
+    lstTargets[TPAC1008_03_AD].serialPorts[_serial0].portEnabled = true;         // Internal Port
+    lstTargets[TPAC1008_03_AD].serialPorts[_serial0].portEditable = false;
+    lstTargets[TPAC1008_03_AD].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_03_AD].can1_Enabled = false;
     // 26 TP1070_02_E
     lstTargets[TP1070_02_E].modelName =  QLatin1String(product_name[TP1070_02_E]);
@@ -5577,10 +5515,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_E].analogINrowCT = -1;
     lstTargets[TP1070_02_E].analogOUT = 0;
     lstTargets[TP1070_02_E].analogOUTrowCT = -1;
-    lstTargets[TP1070_02_E].ser0_Enabled = false;
-    lstTargets[TP1070_02_E].ser1_Enabled = false;
-    lstTargets[TP1070_02_E].ser2_Enabled = false;
-    lstTargets[TP1070_02_E].ser3_Enabled = true;
+    lstTargets[TP1070_02_E].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_02_E].can1_Enabled = false;
     // 27 TP1070_02_F
     lstTargets[TP1070_02_F].modelName =  QLatin1String(product_name[TP1070_02_F]);
@@ -5594,10 +5529,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_F].analogINrowCT = -1;
     lstTargets[TP1070_02_F].analogOUT = 0;
     lstTargets[TP1070_02_F].analogOUTrowCT = -1;
-    lstTargets[TP1070_02_F].ser0_Enabled = true;
-    lstTargets[TP1070_02_F].ser1_Enabled = false;
-    lstTargets[TP1070_02_F].ser2_Enabled = false;
-    lstTargets[TP1070_02_F].ser3_Enabled = false;
+    lstTargets[TP1070_02_F].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1070_02_F].can1_Enabled = false;
     // 28 TPX1070_03_D
     lstTargets[TPX1070_03_D].modelName =  QLatin1String(product_name[TPX1070_03_D]);
@@ -5614,12 +5546,12 @@ void ctedit::initTargetList()
     lstTargets[TPX1070_03_D].analogOUTrowCT = -1;
     lstTargets[TPX1070_03_D].fastIn = 4;
     lstTargets[TPX1070_03_D].fastOut = 4;
-    lstTargets[TPX1070_03_D].ser0_Enabled = true;
-    lstTargets[TPX1070_03_D].ser1_Enabled = false;
-    lstTargets[TPX1070_03_D].ser2_Enabled = true;
-    lstTargets[TPX1070_03_D].ser2_Editable = false;
-    lstTargets[TPX1070_03_D].ser2_BaudRate = 19200;
-    lstTargets[TPX1070_03_D].ser3_Enabled = true;
+    lstTargets[TPX1070_03_D].serialPorts[_serial0].portEnabled = true;
+    lstTargets[TPX1070_03_D].serialPorts[_serial2].portEnabled = true;      // Internal For MPNE_0X
+    lstTargets[TPX1070_03_D].serialPorts[_serial2].portEditable = false;    // Not Editable
+    lstTargets[TPX1070_03_D].serialPorts[_serial2].portAvailable = false;   // Only for Module MPNE_X
+    lstTargets[TPX1070_03_D].serialPorts[_serial2].BaudRate = 19200;        // Fixed
+    lstTargets[TPX1070_03_D].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPX1070_03_D].can1_Enabled = false;
     // 29 TPX1070_03_E
     lstTargets[TPX1070_03_E].modelName =  QLatin1String(product_name[TPX1070_03_E]);
@@ -5636,12 +5568,12 @@ void ctedit::initTargetList()
     lstTargets[TPX1070_03_E].analogOUTrowCT = -1;
     lstTargets[TPX1070_03_D].fastIn = 4;
     lstTargets[TPX1070_03_D].fastOut = 4;
-    lstTargets[TPX1070_03_E].ser0_Enabled = true;
-    lstTargets[TPX1070_03_E].ser1_Enabled = false;
-    lstTargets[TPX1070_03_E].ser2_Enabled = true;
-    lstTargets[TPX1070_03_E].ser2_Editable = false;
-    lstTargets[TPX1070_03_E].ser2_BaudRate = 19200;
-    lstTargets[TPX1070_03_E].ser3_Enabled = true;
+    lstTargets[TPX1070_03_D].serialPorts[_serial0].portEnabled = true;
+    lstTargets[TPX1070_03_D].serialPorts[_serial2].portEnabled = true;      // Internal For MPNE_0X
+    lstTargets[TPX1070_03_D].serialPorts[_serial2].portEditable = false;    // Not Editable
+    lstTargets[TPX1070_03_D].serialPorts[_serial2].portAvailable = false;   // Only for Module MPNE_X
+    lstTargets[TPX1070_03_D].serialPorts[_serial2].BaudRate = 19200;        // Fixed
+    lstTargets[TPX1070_03_D].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPX1070_03_E].can1_Enabled = false;
     lstTargets[TPX1070_03_E].audioIF = true;
     // Ciclo di verifica caricamento modelli:
@@ -5790,11 +5722,11 @@ bool ctedit::isValidPort(int nPort, int nProtocol)
         case RTU:
         case MECT_PTC:
         case RTU_SRV:
-            if (nPort >= 0 && nPort <= nMaxSerialPorts)  {
-                if ((nPort == 0 && panelConfig.ser0_Enabled) ||
-                    (nPort == 1 && panelConfig.ser1_Enabled) ||
-                    (nPort == 2 && panelConfig.ser2_Enabled) ||
-                    (nPort == 3 && panelConfig.ser3_Enabled) )  {
+            if (nPort >= _serial0 && nPort < _serialMax)  {
+                if ((nPort == 0 && panelConfig.serialPorts[_serial0].portEnabled) ||
+                    (nPort == 1 && panelConfig.serialPorts[_serial1].portEnabled) ||
+                    (nPort == 2 && panelConfig.serialPorts[_serial2].portEnabled) ||
+                    (nPort == 3 && panelConfig.serialPorts[_serial3].portEnabled) )  {
                     fRes = true;
                 }
             }
@@ -5968,7 +5900,7 @@ bool ctedit::readModelVars(const QString szModelName, QList<CrossTableRecord> &l
                     freeCTrec(lstModelVars, nRow);
                     fieldValues2CTrecList(lstModelFields[nRow], lstModelVars, nRow);
                     // Aggiorna la larghezza della colonna VarName
-                    lstMPNxHeadSizes[colMPNxName];
+                    // lstMPNxHeadSizes[colMPNxName];
                     if (lstModelFields[nRow][colName].length() > lstMPNxHeadSizes[colMPNxName])  {
                         lstMPNxHeadSizes[colMPNxName] = lstModelFields[nRow][colName].length();
                     }
@@ -6041,6 +5973,10 @@ bool ctedit::addModelVars(const QString szModelName, int nRow, int nPort, int nN
                 }
                 // Aggiunta righe in blocco a CT
                 nAdded = addRowsToCT(nRow, lstModelRows, lstDestRows, checkRTUPort);
+                // Rinumera i Blocchi
+                if (nAdded > 0)  {
+                    riassegnaBlocchi();
+                }
                 m_szMsg = QString::fromAscii("Added %1 Rows for Model: %2") .arg(nAdded) .arg(szModelName);
             }
             else {

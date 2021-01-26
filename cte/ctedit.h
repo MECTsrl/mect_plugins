@@ -258,6 +258,8 @@ private:
     // Gestione nodi su MPNE
     QList<int>              lstMPNE;                // Liste delle capofila delle teste MPNE presenti
     int                     m_nMPNE;                // Indice della Testa MPNE correntemente visualizzata
+    // Gestione modulo MPNE_05
+    bool                    m_fMPNE_05_Present;     // Vero se nelle variabili è stato riconosciuto un modulo MPNE_05 (TPX1070 only)
 };
 
 #endif // CTEDIT_H
