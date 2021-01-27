@@ -1111,9 +1111,9 @@ void MectSettings::enablePortsFromModel(TP_Config &targetConfig)
         m_tabEnabled[tabSerial0 + nPort] = targetConfig.serialPorts[_serial0 + nPort].portEnabled; // && targetConfig.ser0_Editable;
     }
     // Can 0
-    m_tabEnabled[tabCan0] = targetConfig.can0_Enabled;
+    m_tabEnabled[tabCan0] = targetConfig.canPorts[_can0].portEnabled;
     // Can1
-    m_tabEnabled[tabCan1] = targetConfig.can1_Enabled;;
+    m_tabEnabled[tabCan1] = targetConfig.canPorts[_can1].portEnabled;
 }
 
 bool MectSettings::getTargetConfig(TP_Config &targetConfig)
@@ -1207,23 +1207,23 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     TargetConfig.serialPorts[_serial3].StopBits = fOk ? nVal : 0;
     // TCP
     nVal = ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt(&fOk);
-    TargetConfig.tcp_TimeOut = fOk ? nVal : 0;
+    TargetConfig.tpcPort.TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_TCP_IP_PORT->text().toInt(&fOk);
-    TargetConfig.tcp_Silence = fOk ? nVal : 0;
+    TargetConfig.tpcPort.Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text().toInt(&fOk);
-    TargetConfig.tcp_BlockSize = fOk ? nVal : 0;
+    TargetConfig.tpcPort.BlockSize = fOk ? nVal : 0;
     // CAN_0
-    TargetConfig.can0_Enabled = (m_tabEnabled[tabCan0] && ui->comboBox_Baudrate_CANOPEN_0->currentIndex()) > 0;
+    TargetConfig.canPorts[_can0].portEnabled = (m_tabEnabled[tabCan0] && ui->comboBox_Baudrate_CANOPEN_0->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_CANOPEN_0->currentText().toInt(&fOk);
-    TargetConfig.can0_BaudRate = fOk ? nVal : 0;
+    TargetConfig.canPorts[_can0].BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_CANOPEN_0->text().toInt(&fOk);
-    TargetConfig.can0_BlockSize = fOk ? nVal : 0;
+    TargetConfig.canPorts[_can0].BlockSize = fOk ? nVal : 0;
     // CAN_1
-    TargetConfig.can1_Enabled = (m_tabEnabled[tabCan1] && ui->comboBox_Baudrate_CANOPEN_1->currentIndex()) > 0;
+    TargetConfig.canPorts[_can1].portEnabled = (m_tabEnabled[tabCan1] && ui->comboBox_Baudrate_CANOPEN_1->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_CANOPEN_1->currentText().toInt(&fOk);
-    TargetConfig.can1_BaudRate = fOk ? nVal : 0;
+    TargetConfig.canPorts[_can1].BaudRate = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_CANOPEN_1->text().toInt(&fOk);
-    TargetConfig.can1_BlockSize = fOk ? nVal : 0;
+    TargetConfig.canPorts[_can1].BlockSize = fOk ? nVal : 0;
 //    qDebug() << tr("getTargetConfig: Updated Configuration");
     // Global settings
     targetConfig = TargetConfig;

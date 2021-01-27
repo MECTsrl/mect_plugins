@@ -102,6 +102,7 @@ private:
     bool    iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow);// Copia da Zona Editing a Lista Stringhe per Grid e Record CT
     bool    loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid);
     void    initTargetList();                       // Init della lista dei Target definiti
+    void    exportTargetList(const QString &szFileName);    // Estrazione della lista dei Target definiti
     bool    updateRow(int nRow, bool fMultiEdit);   // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
     int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool checkRTU = true);
     // Gestione interfaccia

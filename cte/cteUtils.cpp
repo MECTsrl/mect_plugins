@@ -1001,30 +1001,21 @@ void getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
 
     nPort = -1;
     nTotal = 0;
+    int     nItem = 0;
 
     switch (nProtocol) {
         // Protocolli Seriali
         case RTU:
         case RTU_SRV:
         case MECT_PTC:
-            if (panelConfig.serialPorts[_serial0].portEnabled)  {
-                nPort = 0;
-                nTotal++;
-            }
-            if (panelConfig.serialPorts[_serial1].portEnabled)  {
-                if (nPort < 0)
-                    nPort = 1;
-                nTotal++;
-            }
-            if (panelConfig.serialPorts[_serial2].portEnabled)  {
-                if (nPort < 0)
-                    nPort = 2;
-                nTotal++;
-            }
-            if (panelConfig.serialPorts[_serial3].portEnabled)  {
-                if (nPort < 0)
-                    nPort = 3;
-                nTotal++;
+            for (nItem = _serial0; nItem < _serialMax; nItem++)  {
+                if (panelConfig.serialPorts[nItem].portEnabled)  {
+                    // Segna la prima porta disponibile
+                    if (nPort < 0)  {
+                        nPort = nItem;
+                    }
+                    nTotal++;
+                }
             }
             break;
         // Protocolli TCP
@@ -1039,16 +1030,17 @@ void getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
             break;
         // Protocollo CAN
         case CANOPEN:
-            if (panelConfig.can0_Enabled)  {
-                nPort = 0;
-                nTotal++;
-            }
-            if (panelConfig.can1_Enabled)  {
-                if (nPort < 0)
-                    nPort = 1;
-                nTotal++;
+            for (nItem = _can0; nItem < _canMax; nItem++)  {
+                if (panelConfig.canPorts[nItem].portEnabled)  {
+                    // Segna la prima porta disponibile
+                    if (nPort < 0)  {
+                        nPort = nItem;
+                    }
+                    nTotal++;
+                }
             }
             break;
+
         default:
             nPort = 0;
             nTotal = 1;
@@ -1227,35 +1219,14 @@ QString getSerialPortSpeed(int nPort)
     QString     szSpeed = QLatin1String("Disabled");
 
     if (isSerialPortEnabled)  {
-        switch (nPort)  {
-            case 0:
-                if (panelConfig.serialPorts[_serial0].portEnabled)  {
-                    szSpeed = QString::fromAscii("%1,%2,%3,%4")
-                            .arg(panelConfig.ser0_BaudRate) .arg(panelConfig.ser0_Parity) .arg(panelConfig.ser0_DataBits) .arg(panelConfig.ser0_StopBits);
-                }
-                break;
-                ;
-            case 1:
-                if (panelConfig.serialPorts[_serial1].portEnabled)  {
-                    szSpeed = QString::fromAscii("%1,%2,%3,%4")
-                            .arg(panelConfig.ser1_BaudRate) .arg(panelConfig.ser1_Parity) .arg(panelConfig.ser1_DataBits) .arg(panelConfig.ser1_StopBits);
-                }
-                break;
-                ;
-            case 2:
-                if (panelConfig.serialPorts[_serial2].portEnabled)  {
-                    szSpeed = QString::fromAscii("%1,%2,%3,%4")
-                            .arg(panelConfig.ser2_BaudRate) .arg(panelConfig.ser2_Parity) .arg(panelConfig.ser2_DataBits) .arg(panelConfig.ser2_StopBits);
-                }
-                break;
-            case 3:
-                if (panelConfig.serialPorts[_serial3].portEnabled)  {
-                    szSpeed = QString::fromAscii("%1,%2,%3,%4")
-                            .arg(panelConfig.ser3_BaudRate) .arg(panelConfig.ser3_Parity) .arg(panelConfig.ser3_DataBits) .arg(panelConfig.ser3_StopBits);
-                }
-                break;
-            default:
-                break;
+        if (nPort >= _serial0 && nPort < _serialMax)  {
+            if (panelConfig.serialPorts[nPort].portEnabled)  {
+                szSpeed = QString::fromAscii("%1,%2,%3,%4")
+                            .arg(panelConfig.serialPorts[nPort].BaudRate)
+                            .arg(panelConfig.serialPorts[nPort].Parity)
+                            .arg(panelConfig.serialPorts[nPort].DataBits)
+                            .arg(panelConfig.serialPorts[nPort].StopBits);
+            }
         }
     }
     // Return value

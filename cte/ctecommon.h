@@ -42,8 +42,6 @@ const int nMAX_DEVICES = 16;        // 3 RTU + n TCP + m TCPRTU + 2 CANOPEN + 1 
 const int nMAX_NODES = 64;          // Numero Massimo di Nodi definiti
 const int nMAX_BLOCKS = 4096;       // Numero massimo di Blocchi definiti
 
-// CanOpen Ports
-const int nMaxCanPorts = 1;
 // TCP Ports
 const int nPortFTPControl = 21;
 const int nPortSFTP = 22;
@@ -212,6 +210,12 @@ enum _serialPorts
     _serialMax
 };
 
+enum _canPorts
+{
+    _can0 = 0,
+    _can1,
+    _canMax
+};
 
 
 struct  extendedCT : CrossTableRecord {
@@ -232,6 +236,17 @@ struct  serialPortInfo  {
     int         BlockSize;
 };
 
+struct  tcpInfo  {
+    int         TimeOut;
+    int         Silence;
+    int         BlockSize;
+};
+
+struct  canInfo  {
+    bool        portEnabled;
+    int         BaudRate;
+    int         BlockSize;
+};
 
 struct  MODBUS_Srv  {
     QString     szIpAddress;
@@ -260,12 +275,12 @@ struct  TP_Config {
     int         analogOUT;
     int         analogOUTrowCT;
     bool        tAmbient;
-    bool        audioIF;
     int         rpmPorts;
     int         fastIn;
     int         fastOut;
     int         pwm;
     int         loadCells;
+    bool        audioIF;
     // Config Parameters
     int         retries;
     int         blacklist;
@@ -276,54 +291,10 @@ struct  TP_Config {
     int         slowLogPeriod;
     // Bus Interfaces
     serialPortInfo serialPorts[_serialMax];
-    // Serial 0
-    bool        ser0_Editable;
-    int         ser0_BaudRate;
-    QString     ser0_Parity;
-    int         ser0_DataBits;
-    int         ser0_StopBits;
-    int         ser0_TimeOut;
-    int         ser0_Silence;
-    int         ser0_BlockSize;
-    // Serial 1
-    bool        ser1_Editable;
-    int         ser1_BaudRate;
-    QString     ser1_Parity;
-    int         ser1_DataBits;
-    int         ser1_StopBits;
-    int         ser1_TimeOut;
-    int         ser1_Silence;
-    int         ser1_BlockSize;
-    // Serial 2
-    bool        ser2_Editable;
-    int         ser2_BaudRate;
-    QString     ser2_Parity;
-    int         ser2_DataBits;
-    int         ser2_StopBits;
-    int         ser2_TimeOut;
-    int         ser2_Silence;
-    int         ser2_BlockSize;
-    // Serial 3
-    bool        ser3_Editable;
-    int         ser3_BaudRate;
-    QString     ser3_Parity;
-    int         ser3_DataBits;
-    int         ser3_StopBits;
-    int         ser3_TimeOut;
-    int         ser3_Silence;
-    int         ser3_BlockSize;
     // TCP
-    int         tcp_TimeOut;
-    int         tcp_Silence;
-    int         tcp_BlockSize;
-    // Can0
-    bool        can0_Enabled;
-    int         can0_BaudRate;
-    int         can0_BlockSize;
-    // Can1
-    bool        can1_Enabled;
-    int         can1_BaudRate;
-    int         can1_BlockSize;
+    tcpInfo     tpcPort;
+    // Can
+    canInfo     canPorts[_canMax];
 };
 // Struttura per Servers
 struct  serverStruct {
