@@ -1212,6 +1212,7 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
             nRow++;
         }
     }
+    qDebug("searchIOModules(): Search Module: [%s] Found: %d", szModule.toLatin1().data(), lstRootRows.count());
     // Return Value
     return (lstRootRows.count() > 0);
 }

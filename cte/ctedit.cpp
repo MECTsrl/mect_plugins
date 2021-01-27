@@ -5121,13 +5121,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_A].displayWidth =  480;
     lstTargets[TP1043_01_A].displayHeight = 272;
     lstTargets[TP1043_01_A].sdCards = 1;
-    lstTargets[TP1043_01_A].digitalIN = 0;
-    lstTargets[TP1043_01_A].digitalOUT = 0;
     lstTargets[TP1043_01_A].nEncoders = 0;
-    lstTargets[TP1043_01_A].analogIN = 0;
-    lstTargets[TP1043_01_A].analogINrowCT = -1;
-    lstTargets[TP1043_01_A].analogOUT = 0;
-    lstTargets[TP1043_01_A].analogOUTrowCT = -1;
     lstTargets[TP1043_01_A].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1043_01_A].can1_Enabled = false;
     // 02 TP1043_01_B
@@ -5135,26 +5129,14 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_B].displayWidth =  480;
     lstTargets[TP1043_01_B].displayHeight = 272;
     lstTargets[TP1043_01_B].sdCards = 1;
-    lstTargets[TP1043_01_B].digitalIN = 0;
-    lstTargets[TP1043_01_B].digitalOUT = 0;
     lstTargets[TP1043_01_B].nEncoders = 0;
-    lstTargets[TP1043_01_B].analogIN = 0;
-    lstTargets[TP1043_01_B].analogINrowCT = -1;
-    lstTargets[TP1043_01_B].analogOUT = 0;
-    lstTargets[TP1043_01_B].analogOUTrowCT = -1;
     lstTargets[TP1043_01_B].can1_Enabled = true;
     //03 TP1043_02_A
     lstTargets[TP1043_02_A].modelName =  QLatin1String(product_name[TP1043_02_A]);
     lstTargets[TP1043_02_A].displayWidth =  480;
     lstTargets[TP1043_02_A].displayHeight = 272;
     lstTargets[TP1043_02_A].sdCards = 1;
-    lstTargets[TP1043_02_A].digitalIN = 0;
-    lstTargets[TP1043_02_A].digitalOUT = 0;
     lstTargets[TP1043_02_A].nEncoders = 0;
-    lstTargets[TP1043_02_A].analogIN = 0;
-    lstTargets[TP1043_02_A].analogINrowCT = -1;
-    lstTargets[TP1043_02_A].analogOUT = 0;
-    lstTargets[TP1043_02_A].analogOUTrowCT = -1;
     lstTargets[TP1043_02_A].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1043_02_A].can1_Enabled = false;
     // 04 TP1043_02_B
@@ -5162,26 +5144,14 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_B].displayWidth =  480;
     lstTargets[TP1043_02_B].displayHeight = 272;
     lstTargets[TP1043_02_B].sdCards = 1;
-    lstTargets[TP1043_02_B].digitalIN = 0;
-    lstTargets[TP1043_02_B].digitalOUT = 0;
     lstTargets[TP1043_02_B].nEncoders = 0;
-    lstTargets[TP1043_02_B].analogIN = 0;
-    lstTargets[TP1043_02_B].analogINrowCT = -1;
-    lstTargets[TP1043_02_B].analogOUT = 0;
-    lstTargets[TP1043_02_B].analogOUTrowCT = -1;
     lstTargets[TP1043_02_B].can1_Enabled = true;
     // 05 TP1070_01_A
     lstTargets[TP1070_01_A].modelName =  QLatin1String(product_name[TP1070_01_A]);
     lstTargets[TP1070_01_A].displayWidth =  800;
     lstTargets[TP1070_01_A].displayHeight = 480;
     lstTargets[TP1070_01_A].sdCards = 0;
-    lstTargets[TP1070_01_A].digitalIN = 0;
-    lstTargets[TP1070_01_A].digitalOUT = 0;
     lstTargets[TP1070_01_A].nEncoders = 0;
-    lstTargets[TP1070_01_A].analogIN = 0;
-    lstTargets[TP1070_01_A].analogINrowCT = -1;
-    lstTargets[TP1070_01_A].analogOUT = 0;
-    lstTargets[TP1070_01_A].analogOUTrowCT = -1;
     lstTargets[TP1070_01_A].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_01_A].can1_Enabled = false;
     // 06 TP1070_01_B
@@ -5189,13 +5159,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_B].displayWidth =  800;
     lstTargets[TP1070_01_B].displayHeight = 480;
     lstTargets[TP1070_01_B].sdCards = 0;
-    lstTargets[TP1070_01_B].digitalIN = 0;
-    lstTargets[TP1070_01_B].digitalOUT = 0;
     lstTargets[TP1070_01_B].nEncoders = 0;
-    lstTargets[TP1070_01_B].analogIN = 0;
-    lstTargets[TP1070_01_B].analogINrowCT = -1;
-    lstTargets[TP1070_01_B].analogOUT = 0;
-    lstTargets[TP1070_01_B].analogOUTrowCT = -1;
     lstTargets[TP1070_01_B].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_01_B].can1_Enabled = true;
     // 07 TP1070_01_C
@@ -5203,13 +5167,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_C].displayWidth =  800;
     lstTargets[TP1070_01_C].displayHeight = 480;
     lstTargets[TP1070_01_C].sdCards = 0;
-    lstTargets[TP1070_01_C].digitalIN = 0;
-    lstTargets[TP1070_01_C].digitalOUT = 0;
     lstTargets[TP1070_01_C].nEncoders = 0;
-    lstTargets[TP1070_01_C].analogIN = 0;
-    lstTargets[TP1070_01_C].analogINrowCT = -1;
-    lstTargets[TP1070_01_C].analogOUT = 0;
-    lstTargets[TP1070_01_C].analogOUTrowCT = -1;
     lstTargets[TP1070_01_C].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1070_01_C].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_01_C].can1_Enabled = false;
@@ -5218,13 +5176,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1005].displayWidth =  480;
     lstTargets[TPAC1005].displayHeight = 272;
     lstTargets[TPAC1005].sdCards = 0;
-    lstTargets[TPAC1005].digitalIN = 0;
-    lstTargets[TPAC1005].digitalOUT = 0;
     lstTargets[TPAC1005].nEncoders = 0;
-    lstTargets[TPAC1005].analogIN = 0;
-    lstTargets[TPAC1005].analogINrowCT = -1;
-    lstTargets[TPAC1005].analogOUT = 0;
-    lstTargets[TPAC1005].analogOUTrowCT = -1;
     lstTargets[TPAC1005].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1005].can1_Enabled = true;
     // 09 TPAC1007_03
@@ -5310,10 +5262,6 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AE].digitalIN = 8;
     lstTargets[TPAC1007_04_AE].digitalOUT = 8;
     lstTargets[TPAC1007_04_AE].nEncoders = 1;
-    lstTargets[TPAC1007_04_AE].analogIN = 0;
-    lstTargets[TPAC1007_04_AE].analogINrowCT = -1;
-    lstTargets[TPAC1007_04_AE].analogOUT = 0;
-    lstTargets[TPAC1007_04_AE].analogOUTrowCT = -1;
     lstTargets[TPAC1007_04_AE].tAmbient = true;
     lstTargets[TPAC1007_04_AE].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AE].serialPorts[_serial3].portEnabled = true;             // Internal Port
@@ -5410,7 +5358,6 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].nEncoders = 1;
     lstTargets[TPLC050_01_AA].analogIN = 2;
     lstTargets[TPLC050_01_AA].analogINrowCT = 5306;
-    lstTargets[TPLC050_01_AA].analogOUT = 0;
     lstTargets[TPLC050_01_AA].tAmbient = true;
     lstTargets[TPLC050_01_AA].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPLC050_01_AA].can1_Enabled = false;
@@ -5419,12 +5366,9 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AB].displayWidth =  -1;
     lstTargets[TPLC050_01_AB].displayHeight = -1;
     lstTargets[TPLC050_01_AB].sdCards = 1;
-    lstTargets[TPLC050_01_AB].digitalIN = 0;
-    lstTargets[TPLC050_01_AB].digitalOUT = 0;
     lstTargets[TPLC050_01_AB].nEncoders = 1;
     lstTargets[TPLC050_01_AB].analogIN = 2;
     lstTargets[TPLC050_01_AB].analogINrowCT = 5328;
-    lstTargets[TPLC050_01_AB].analogOUT = 0;
     lstTargets[TPLC050_01_AB].tAmbient = true;
     lstTargets[TPLC050_01_AB].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPLC050_01_AB].can1_Enabled = false;
@@ -5440,7 +5384,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].analogIN = 12;
     lstTargets[TPLC100_01_AA].analogINrowCT = -1;
     lstTargets[TPLC100_01_AA].analogOUT = 2;
-    lstTargets[TPLC100_01_AA].analogOUTrowCT = -1;
+    lstTargets[TPLC100_01_AA].analogOUTrowCT = 5371;
     lstTargets[TPLC100_01_AA].tAmbient = true;
     lstTargets[TPLC100_01_AA].can1_Enabled = true;
     // 23 TPLC100_01_AB
@@ -5455,7 +5399,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].analogIN = 12;
     lstTargets[TPLC100_01_AB].analogINrowCT = -1;
     lstTargets[TPLC100_01_AB].analogOUT = 2;
-    lstTargets[TPLC100_01_AB].analogOUTrowCT = -1;
+    lstTargets[TPLC100_01_AB].analogOUTrowCT = 5371;
     lstTargets[TPLC100_01_AB].tAmbient = true;
     lstTargets[TPLC100_01_AB].serialPorts[_serial0].portEnabled = false;     // Possibile in futuro
     lstTargets[TPLC100_01_AB].serialPorts[_serial3].portEnabled = true;
@@ -5503,47 +5447,21 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AD].serialPorts[_serial0].portEditable = false;
     lstTargets[TPAC1008_03_AD].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_03_AD].can1_Enabled = false;
-    // 26 TP1070_02_E
-    lstTargets[TP1070_02_E].modelName =  QLatin1String(product_name[TP1070_02_E]);
-    lstTargets[TP1070_02_E].displayWidth =  800;
-    lstTargets[TP1070_02_E].displayHeight = 480;
-    lstTargets[TP1070_02_E].sdCards = 0;
-    lstTargets[TP1070_02_E].digitalIN = 0;
-    lstTargets[TP1070_02_E].digitalOUT = 0;
-    lstTargets[TP1070_02_E].nEncoders = 0;
-    lstTargets[TP1070_02_E].analogIN = 0;
-    lstTargets[TP1070_02_E].analogINrowCT = -1;
-    lstTargets[TP1070_02_E].analogOUT = 0;
-    lstTargets[TP1070_02_E].analogOUTrowCT = -1;
-    lstTargets[TP1070_02_E].serialPorts[_serial3].portEnabled = true;
-    lstTargets[TP1070_02_E].can1_Enabled = false;
-    // 27 TP1070_02_F
+    // 26 TP1070_02_F
     lstTargets[TP1070_02_F].modelName =  QLatin1String(product_name[TP1070_02_F]);
     lstTargets[TP1070_02_F].displayWidth =  800;
     lstTargets[TP1070_02_F].displayHeight = 480;
     lstTargets[TP1070_02_F].sdCards = 0;
-    lstTargets[TP1070_02_F].digitalIN = 0;
-    lstTargets[TP1070_02_F].digitalOUT = 0;
     lstTargets[TP1070_02_F].nEncoders = 0;
-    lstTargets[TP1070_02_F].analogIN = 0;
-    lstTargets[TP1070_02_F].analogINrowCT = -1;
-    lstTargets[TP1070_02_F].analogOUT = 0;
-    lstTargets[TP1070_02_F].analogOUTrowCT = -1;
     lstTargets[TP1070_02_F].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1070_02_F].can1_Enabled = false;
-    // 28 TPX1070_03_D
+    // 27 TPX1070_03_D
     lstTargets[TPX1070_03_D].modelName =  QLatin1String(product_name[TPX1070_03_D]);
     lstTargets[TPX1070_03_D].displayWidth =  800;
     lstTargets[TPX1070_03_D].displayHeight = 480;
     lstTargets[TPX1070_03_D].usbPorts = 2;
     lstTargets[TPX1070_03_D].sdCards = 1;
-    lstTargets[TPX1070_03_D].digitalIN = 0;
-    lstTargets[TPX1070_03_D].digitalOUT = 0;
     lstTargets[TPX1070_03_D].nEncoders = 0;
-    lstTargets[TPX1070_03_D].analogIN = 0;
-    lstTargets[TPX1070_03_D].analogINrowCT = -1;
-    lstTargets[TPX1070_03_D].analogOUT = 0;
-    lstTargets[TPX1070_03_D].analogOUTrowCT = -1;
     lstTargets[TPX1070_03_D].fastIn = 4;
     lstTargets[TPX1070_03_D].fastOut = 4;
     lstTargets[TPX1070_03_D].serialPorts[_serial0].portEnabled = true;
@@ -5553,19 +5471,13 @@ void ctedit::initTargetList()
     lstTargets[TPX1070_03_D].serialPorts[_serial2].BaudRate = 19200;        // Fixed
     lstTargets[TPX1070_03_D].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPX1070_03_D].can1_Enabled = false;
-    // 29 TPX1070_03_E
+    // 28 TPX1070_03_E
     lstTargets[TPX1070_03_E].modelName =  QLatin1String(product_name[TPX1070_03_E]);
     lstTargets[TPX1070_03_E].displayWidth =  800;
     lstTargets[TPX1070_03_E].displayHeight = 480;
     lstTargets[TPX1070_03_E].usbPorts = 2;
     lstTargets[TPX1070_03_E].sdCards = 1;
-    lstTargets[TPX1070_03_E].digitalIN = 0;
-    lstTargets[TPX1070_03_E].digitalOUT = 0;
     lstTargets[TPX1070_03_E].nEncoders = 0;
-    lstTargets[TPX1070_03_E].analogIN = 0;
-    lstTargets[TPX1070_03_E].analogINrowCT = -1;
-    lstTargets[TPX1070_03_E].analogOUT = 0;
-    lstTargets[TPX1070_03_E].analogOUTrowCT = -1;
     lstTargets[TPX1070_03_D].fastIn = 4;
     lstTargets[TPX1070_03_D].fastOut = 4;
     lstTargets[TPX1070_03_D].serialPorts[_serial0].portEnabled = true;
