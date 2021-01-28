@@ -5,6 +5,15 @@ ATCM-template-form-class/page.cpp \
 ATCM-template-form-class/page.h \
 ATCM-template-form-class/page.ui \
 ATCM-template-form-class/wizard.xml \
+ATCM-template-project-AnyTPAC043/config/Crosstable.csv \
+ATCM-template-project-AnyTPAC043/config/crosstable.cpp \
+ATCM-template-project-AnyTPAC043/config/crosstable.h \
+ATCM-template-project-AnyTPAC043/config/splash.png \
+ATCM-template-project-AnyTPAC043/config/system.ini \
+ATCM-template-project-AnyTPAC043/config/trend1.csv \
+ATCM-template-project-AnyTPAC043/console.png \
+ATCM-template-project-AnyTPAC043/template.pri \
+ATCM-template-project-AnyTPAC043/wizard.xml \
 ATCM-template-project-TP1043_01_A/config/Crosstable.csv \
 ATCM-template-project-TP1043_01_A/config/crosstable.cpp \
 ATCM-template-project-TP1043_01_A/config/crosstable.h \

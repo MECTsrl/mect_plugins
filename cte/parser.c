@@ -100,6 +100,7 @@ const char *logic_operators[] = {">",
 
 // PRODUCT_NAMES <-- PRODUCT_ID
 const char *product_name[] = {
+    /*00*/ "NoModel",
     /*00*/ "AnyTPAC043",
     /*01*/ "AnyTPAC070",
     /*02*/ "TP1043_01_A",

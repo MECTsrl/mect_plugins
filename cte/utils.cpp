@@ -40,10 +40,18 @@ QString szSpace(int nSpaces)
     // Return Value
     return szTemp;
 }
-QString     bool2String(bool logicalValue)
+QString     bool2String(bool logicalValue, bool onlyYes)
 // Ritorna Yes/No in funzione di logicalValue
 {
-    return (logicalValue ? QLatin1String("Yes") : QLatin1String("No"));
+    QString szValue;
+    szValue.clear();
+    if (onlyYes)  {
+        if (logicalValue) szValue = QLatin1String("Yes");
+    }
+    else  {
+        szValue = logicalValue ? QLatin1String("Yes") : QLatin1String("No");
+    }
+    return szValue;
 }
 
 void splitFileName(const QString &fileName, QString &szPath, QString &szFile, QString &szSuffisso)

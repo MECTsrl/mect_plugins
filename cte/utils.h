@@ -34,7 +34,7 @@ const  char     cFloat = 102;           // Carattere f per formattazione Floatin
     QString     addDoubleQuote(const QString &szStringValue);               // Aggiunge Doppio Quote ad una stringa
     QString     string2CamelCase(const QString szValue);                    // Conversione di una stringa a Camel Case [Prima iniziale di ogni parola maiuscola]
     QString     szSpace(int nSpaces);                                       // Ritorna una stringa di nSpaces Spazio o vuota se nSpaces <= 0
-    QString     bool2String(bool logicalValue);                             // Ritorna Yes/No in funzione di logicalValue
+    QString     bool2String(bool logicalValue, bool onlyYes = false);       // Ritorna Yes/No in funzione di logicalValue
     double      myRound(double dblVal, unsigned decPlaces);                 // Arrotondamento a n Cifre Decimali di un double
     void        listClear(QStringList &lstRecValues, int nCols);            // Svuotamento e pulizia Lista Stringhe
     void        setCellEnabled(QTableWidgetItem *tItem, bool fEnabled);     // Abilita o disabilita una cella di un QTableWidget

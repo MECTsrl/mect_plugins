@@ -84,7 +84,8 @@ enum varTypes {BIT = 0,
               };
 
 enum productId {
-        /*00*/ AnyTPAC043 = 0,
+        /*00*/ NoModel = 0,
+        /*00*/ AnyTPAC043,
         /*01*/ AnyTPAC070,
         /*02*/ TP1043_01_A,
         /*03*/ TP1043_02_A,
