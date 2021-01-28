@@ -23,7 +23,7 @@ queryPortNode::queryPortNode(const QString &szTitle, QString &szMessage, QWidget
     ui->lblMessage->setText(szMessage);
     // Items in Combo Port
     for (i = _serial0; i < _serialMax; i++)  {
-        ui->cboPort->addItem(QString::number(i));
+        ui->cboPort->addItem(QString::fromLatin1("%1") .arg(i, 10, 10));
     }
     // Ricerca delle Porte libere per il protocollo RTU
     getFirstPortFromProtocol(RTU, nFirstPort, nPorts);
@@ -43,10 +43,12 @@ queryPortNode::~queryPortNode()
 {
     delete ui;
 }
+
 void queryPortNode::getPortNode(int &nPort, int&nNode)
 {
     bool    fOk = false;
-    int nUserNode = ui->txtNode->text().trimmed().toInt(&fOk);
+    int     nUserNode = ui->txtNode->text().trimmed().toInt(&fOk);
+
     nNode = fOk ? nUserNode : 1;
     nPort = ui->cboPort->currentIndex();
 }

@@ -527,7 +527,7 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
     setModel(targetConfig);
     m_isIniModified = false;
     ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid green;"));
-    ui->cmdSave->setEnabled(TargetConfig.nModel != AnyTPAC);
+    ui->cmdSave->setEnabled(TargetConfig.nModel != AnyTPAC043);
     // All Ok, return true
     return true;
 }
@@ -1103,7 +1103,7 @@ void MectSettings::enablePortsFromModel(TP_Config &targetConfig)
     m_tabEnabled[tabSystem] = true;
     m_tabEnabled[tabTCP] = true;
     // Check if model is in range
-    if (targetConfig.nModel == AnyTPAC || targetConfig.nModel >= MODEL_TOTALS)  {
+    if (targetConfig.nModel == AnyTPAC043 || targetConfig.nModel >= MODEL_TOTALS)  {
         return;
     }
     // Seriale X da 0 a 3 (In alcuni modelli NON può essere modificato il Baud Rate perché di uso interno)

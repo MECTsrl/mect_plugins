@@ -173,7 +173,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     cboPort = new QComboBox(this);
     cboPort->setToolTip(QLatin1String("Change Serial Port"));
     for (i = _serial0; i < _serialMax; i++)  {
-        cboPort->addItem(QString::number(i));
+        cboPort->addItem(QString::fromLatin1("%1") .arg(i, 6, 10));
     }
     cboPort->setMaximumWidth(50);
     mainGrid->addWidget(cboPort, nRowSelector, nColPort + 1);

@@ -49,7 +49,7 @@ QList<CrossTableRecord> lstTemplateRecs; // Lista completa di Record da Template
 QList<CrossTableRecord> lstMPNC006_Vars;// Lista delle Variabili MPNC006
 QList<CrossTableRecord> lstTPLC050_Vars;// Lista delle Variabili TPLC050
 QList<CrossTableRecord> lstMPNE_Vars;   // Lista delle Variabili MPNE
-QList<CrossTableRecord> lstMPNE05_Vars; // Lista delle Variabili MPNE - Modulo 05
+QList<CrossTableRecord> lstMPNE100105_Vars; // Lista delle Variabili MPNE - Modulo 05
 
 // Colori per sfondi grid
 QColor      colorRetentive[2];
@@ -1051,39 +1051,18 @@ void getFirstPortFromProtocol(int nProtocol, int &nPort, int &nTotal)
 int     enableSerialPortCombo(QComboBox *cboBox)
 {
     int nPorts = 0;
+    int nPort = 0;
 
     disableAndBlockSignals(cboBox);
-    // Port 0
-    if (panelConfig.serialPorts[_serial0].portEnabled)  {
-        enableComboItem(cboBox, 0);
-        nPorts++;
-    }
-    else  {
-        disableComboItem(cboBox, 0);
-    }
-    // Port 1
-    if (panelConfig.serialPorts[_serial1].portEnabled)  {
-        enableComboItem(cboBox, 1);
-        nPorts++;
-    }
-    else  {
-        disableComboItem(cboBox, 1);
-    }
-    // Port 2
-    if (panelConfig.serialPorts[_serial2].portEnabled)  {
-        enableComboItem(cboBox, 2);
-        nPorts++;
-    }
-    else  {
-        disableComboItem(cboBox, 2);
-    }
-    // Port 3
-    if (panelConfig.serialPorts[_serial3].portEnabled)  {
-        enableComboItem(cboBox, 3);
-        nPorts++;
-    }
-    else  {
-        disableComboItem(cboBox, 3);
+    for (nPort = _serial0; nPort < _serialMax; nPort++)  {
+        // Port X disponibile all'utente per collegamenti
+        if (panelConfig.serialPorts[nPort].portEnabled && panelConfig.serialPorts[nPort].portAvailable)  {
+            enableComboItem(cboBox, nPort);
+            nPorts++;
+        }
+        else  {
+            disableComboItem(cboBox, nPort);
+        }
     }
     enableAndUnlockSignals(cboBox);
     // Return Value

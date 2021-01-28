@@ -14,15 +14,6 @@ ATCM-template-project-TP1043_01_A/config/trend1.csv \
 ATCM-template-project-TP1043_01_A/console.png \
 ATCM-template-project-TP1043_01_A/template.pri \
 ATCM-template-project-TP1043_01_A/wizard.xml \
-ATCM-template-project-TP1043_01_B/config/Crosstable.csv \
-ATCM-template-project-TP1043_01_B/config/crosstable.cpp \
-ATCM-template-project-TP1043_01_B/config/crosstable.h \
-ATCM-template-project-TP1043_01_B/config/splash.png \
-ATCM-template-project-TP1043_01_B/config/system.ini \
-ATCM-template-project-TP1043_01_B/config/trend1.csv \
-ATCM-template-project-TP1043_01_B/console.png \
-ATCM-template-project-TP1043_01_B/template.pri \
-ATCM-template-project-TP1043_01_B/wizard.xml \
 ATCM-template-project-TP1043_02_A/config/Crosstable.csv \
 ATCM-template-project-TP1043_02_A/config/crosstable.cpp \
 ATCM-template-project-TP1043_02_A/config/crosstable.h \

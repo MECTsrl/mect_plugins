@@ -135,7 +135,8 @@ ctedit::ctedit(QWidget *parent) :
     m_nMPNC = -1;                       // Indice della Testa MPNC correntemente visualizzata
     lstMPNE.clear();                    // Liste delle capofila delle teste MPNE presenti
     m_nMPNE = -1;                       // Indice della Testa MPNE correntemente visualizzata
-    m_fMPNE_05_Present = false;         // modulo MPNE_05 presente (TPX1070 only)
+    m_fMPNE100105_Present = false;      // modulo MPNE_05 presente (TPX1070 only)
+    lstMPNE100105.clear();              // Lista delle posizioni di un modulo MPNE100105 (dovrebbe al più contenere 1 solo Item)
     // Colore Frame Editing
     colorNormalEdit = ui->fraEdit->palette().background().color();
     szColorNormalEdit =QString::fromLatin1("color: rgb(%1, %2, %3);")
@@ -175,12 +176,12 @@ ctedit::ctedit(QWidget *parent) :
         lstMPNE_Vars.clear();
     }
     // MPNE_05  Modulo Analogico
-    if (readModelVars(szMPNE_05, lstMPNE05_Vars))  {
+    if (readModelVars(szMPNE100105, lstMPNE100105_Vars))  {
         qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
-                    .arg(szMPNE_05) .arg(lstMPNE05_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
+                    .arg(szMPNE100105) .arg(lstMPNE100105_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
-        qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE_05);
-        lstMPNE05_Vars.clear();
+        qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE100105);
+        lstMPNE100105_Vars.clear();
     }
 
     //------------------------
@@ -188,7 +189,7 @@ ctedit::ctedit(QWidget *parent) :
     //------------------------
     lstTargets.clear();
     initTargetList();
-    panelConfig = lstTargets[AnyTPAC];
+    panelConfig = lstTargets[AnyTPAC043];
     // Lista Messaggi di Errore
     lstErrorMessages.clear();
     for (nCol = 0; nCol < errCTTotals; nCol++)  {
@@ -256,14 +257,14 @@ ctedit::ctedit(QWidget *parent) :
     }
     // Lista Prodotti
     lstProductNames.clear();
-    for (nCol = AnyTPAC; nCol < MODEL_TOTALS; nCol++)  {
+    for (nCol = AnyTPAC043; nCol < MODEL_TOTALS; nCol++)  {
         lstProductNames.append(QLatin1String(product_name[nCol]));
     }
     // Caricamento delle varie Combos
     // Combo delle Porte Seriali
     ui->cboPort->clear();
     for (nCol = _serial0; nCol < _serialMax; nCol++)  {
-        ui->cboPort->addItem(QString::number(nCol));
+        ui->cboPort->addItem(QString::fromLatin1("%1") .arg(nCol, 6, 10), nCol);
     }
     // Combo Sections (bloccata per evitare Side Effects al currentIndex)
     oldState = ui->cboSections->blockSignals(true);
@@ -583,7 +584,9 @@ void    ctedit::setProjectPath(QString szProjectPath)
         if (!dirPlc.exists()) {
             dirPlc.mkpath(m_szCurrentPLCPath);
         }
-        // DEBUG MODEL LIST
+        //---------------------------------
+        // DEBUG MODEL LIST in Models.csv
+        //---------------------------------
         // Dump della lista dei modelli nella cartella del progetto
         QString szModelList = QString::fromLatin1("%1/Models.csv") .arg(szProjectPath);
         exportTargetList(szModelList);
@@ -604,7 +607,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
 {
     QString     szFile;
     bool        fRes = false;
-    int         nModel = AnyTPAC;
+    int         nModel = AnyTPAC043;
     int         nErr = 0;
 
     if (fileExists(szFileCT)) {
@@ -652,13 +655,13 @@ bool    ctedit::selectCTFile(QString szFileCT)
             m_szTemplateCTFile = QString(szTemplateCTFile) .arg(m_szCurrentModel);
         }
         else  {
-            nModel = AnyTPAC;
+            nModel = AnyTPAC043;
         }
         // Imposta configurazione corrente
         panelConfig = lstTargets[nModel];
         // Se il modello non è stato trovato in template.pri oppure nella lista modelli definiti vale comunque AnyTPAC ma il salvataggio è disabilitato
         // (Viene ripulita la variabile m_szCurrentModel)
-        if (nModel == AnyTPAC)  {
+        if (nModel == AnyTPAC043)  {
             ui->lblModel->setStyleSheet(QLatin1String("background-color: Red"));
             m_szMsg = QString::fromAscii("No Model Type Found in file: <%1>\nor Model Unknown: <%2>") .arg(szTemplateFile) .arg(m_szCurrentModel);
             warnUser(this, szMectTitle, m_szMsg);
@@ -907,6 +910,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
     int     nDec = 0;
     bool    fOk = false;
     int     nLeftVar = 0;
+    int     nPort = 0;
     QList<int> lstVarTypes;
     bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
@@ -970,9 +974,10 @@ bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
     // Porta in ComboBox
     if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
         ui->cboPort->setCurrentIndex(-1);
-        nPos = ui->cboPort->findText(szTemp);
-        if (nPos >= 0 && nPos < ui->cboPort->count())  {
-            ui->cboPort->setCurrentIndex(nPos);
+        nPort = szTemp.toInt(&fOk);
+        nPort = fOk ? nPort : -1;
+        if (nPort >= _serial0 && nPort < ui->cboPort->count())  {
+            ui->cboPort->setCurrentIndex(nPort);
         }
     }
     // Port Comunque in Text
@@ -1663,10 +1668,17 @@ void ctedit::enableFields()
             ui->lblInputRegister->setVisible(false);
             ui->chkInputRegister->setVisible(false);
         }
-        // Ulteriore disabilitazione per variabili utente che siano comprese in un blocco MPNE o MPNC
+        // Ulteriore disabilitazione per variabili utente che siano comprese in un blocco MPNE o MPNC o MPNE100105
         if (isSerialPortEnabled)  {
-            if (isMPNC_Row(m_nGridRow) || isMPNE_Row(m_nGridRow))  {
-                ui->chkInputRegister->setEnabled(false);
+            // Blocco MPNE o MPNC o MPNE100105
+            if ( isMPNC_Row(m_nGridRow) ||
+                 isMPNE_Row(m_nGridRow) ||
+                (m_fMPNE100105_Present && isMPNE05_Row(m_nGridRow))    )  {
+                    ui->cboProtocol->setEnabled(false);
+                    ui->cboPort->setEnabled(false);
+                    ui->txtNode->setEnabled(false);
+                    ui->chkInputRegister->setEnabled(false);
+                    ui->txtRegister->setEnabled(false);
             }
         }
     }
@@ -2052,11 +2064,17 @@ void ctedit::displayUserMenu(const QPoint &pos)
                            && (m_nGridRow + lstTPLC050_Vars.count()) < MIN_DIAG - 1);
     addTPLC050->setEnabled(addTPLC050->isVisible());
     // Menu per importazione delle variabili per il modulo aggiuntivo MPNE_05 (solo su TPX1070_03)
-    QAction *addMPNE_05 = gridMenu.addAction(cIco, trUtf8("Paste MPNE_05 Module"));
-    addMPNE_05->setVisible(isSerialPortEnabled
+    QAction *addMPNE100105 = gridMenu.addAction(cIco, trUtf8("Paste MPNE100105 Module"));
+    addMPNE100105->setVisible(isSerialPortEnabled
                            && panelConfig.modelName.startsWith(szTPX1070)
-                           && (m_nGridRow + lstMPNE05_Vars.count()) < MIN_DIAG - 1);
-    addMPNE_05->setEnabled(addMPNE_05->isVisible() && ! m_fMPNE_05_Present);
+                           && (m_nGridRow + lstMPNE100105_Vars.count()) < MIN_DIAG - 1);
+    addMPNE100105->setEnabled(addMPNE100105->isVisible() && ! m_fMPNE100105_Present);
+    // Menu per Salto a variabili  per il modulo aggiuntivo MPNE_05 (solo su TPX1070_03)
+    QAction *jump2MPNE100105 = gridMenu.addAction(cIco, trUtf8("Jump to MPNE100105 Module"));
+    jump2MPNE100105->setVisible(isSerialPortEnabled
+                           && panelConfig.modelName.startsWith(szTPX1070) );
+    jump2MPNE100105->setEnabled(jump2MPNE100105->isVisible() && m_fMPNE100105_Present &&
+                                ! isMPNE05_Row(m_nGridRow));
     // Menù Grafico per MPNC // MPNE
     QAction *editMPNC = 0;
     QAction *editMPNE = 0;
@@ -2153,17 +2171,23 @@ void ctedit::displayUserMenu(const QPoint &pos)
             addModelVars(szTPLC050, m_nGridRow, nPort, nNode);
         }
     }
-    // Add MPNE_05
-    else if (actMenu == addMPNE_05)  {
+    // Add MPNE100105
+    else if (actMenu == addMPNE100105)  {
         // Controllo dell'area di destinazione
-        if (checkFreeArea(nRow, lstTPLC050_Vars.count()))  {
+        if (checkFreeArea(nRow, lstMPNE100105_Vars.count()))  {
             // Porta fissa a 2 e Nodo fisso a 1
             int nPort = 2;
             int nNode = 1;
-            addModelVars(szMPNE_05, m_nGridRow, nPort, nNode);
+            addModelVars(szMPNE100105, m_nGridRow, nPort, nNode);
             // Allowed One Shot Only...
             actMenu->setEnabled(false);
-            m_fMPNE_05_Present = true;
+            m_fMPNE100105_Present = true;
+        }
+    }
+    // Jump to MPNE100105
+    else if (actMenu == jump2MPNE100105)  {
+        if (! isMPNE05_Row(m_nGridRow) && lstMPNE100105.count() > 0)  {
+            jumpToGridRow(lstMPNE100105.at(0));
         }
     }
     // Edit MPNC
@@ -3222,11 +3246,10 @@ void ctedit::enableInterface()
         m_nMPNE = 0;
         ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
         ui->tabWidget->setTabEnabled(TAB_MPNE, enableMPNE);
-        m_fMPNE_05_Present = false;
+        m_fMPNE100105_Present = false;
         // Verifica MPNE_05 (TPX1070 only)
         if (panelConfig.modelName.startsWith(szTPX1070)) {
-            QList<int> lstMPNE_05;
-            m_fMPNE_05_Present = searchIOModules(szMPNE_05, lstCTRecords, lstMPNE05_Vars, lstMPNE_05);
+            m_fMPNE100105_Present = searchIOModules(szMPNE100105, lstCTRecords, lstMPNE100105_Vars, lstMPNE100105);
         }
     }
     else {
@@ -5078,12 +5101,16 @@ void ctedit::exportTargetList(const QString &szFileName)
         << QLatin1String("Fast IN")
         << QLatin1String("Fast OUT")
         << QLatin1String("rtu0 Enabled")
+        << QLatin1String("rtu0 Editable")
         << QLatin1String("rtu0 Available")
         << QLatin1String("rtu1 Enabled")
+        << QLatin1String("rtu1 Editable")
         << QLatin1String("rtu1 Available")
         << QLatin1String("rtu2 Enabled")
+        << QLatin1String("rtu2 Editable")
         << QLatin1String("rtu2 Available")
         << QLatin1String("rtu3 Enabled")
+        << QLatin1String("rtu3 Editable")
         << QLatin1String("rtu3 Available")
         << QLatin1String("can0 Enabled")
         << QLatin1String("can1 Enabled")
@@ -5118,12 +5145,16 @@ void ctedit::exportTargetList(const QString &szFileName)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].fastIn, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].fastOut, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial0].portEnabled, 4,10)
+                << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial0].portEditable, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial0].portAvailable, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial1].portEnabled, 4,10)
+                << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial1].portEditable, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial1].portAvailable, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial2].portEnabled, 4,10)
+                << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial2].portEditable, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial2].portAvailable, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial3].portEnabled, 4,10)
+                << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial3].portEditable, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].serialPorts[_serial3].portAvailable, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].canPorts[_can0].portEnabled, 4,10)
                 << QString::fromLatin1("%1") .arg(lstTargets[nModel].canPorts[_can1].portEnabled, 4,10)
@@ -5207,7 +5238,7 @@ void ctedit::initTargetList()
     }
     // Customizzazione dei modelli
     //00 AnyTPAC = 0
-    lstTargets[AnyTPAC].modelName =  QLatin1String(product_name[AnyTPAC]);
+    lstTargets[AnyTPAC043].modelName =  QLatin1String(product_name[AnyTPAC043]);
     //01 TP1043_01_A
     lstTargets[TP1043_01_A].modelName =  QLatin1String(product_name[TP1043_01_A]);
     lstTargets[TP1043_01_A].displayWidth =  480;
@@ -5217,13 +5248,6 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_A].serialPorts[_serial0].portEnabled   = true;
     lstTargets[TP1043_01_A].serialPorts[_serial0].portEditable  = true;
     lstTargets[TP1043_01_A].serialPorts[_serial0].portAvailable = true;
-    // 02 TP1043_01_B
-    lstTargets[TP1043_01_B].modelName =  QLatin1String(product_name[TP1043_01_B]);
-    lstTargets[TP1043_01_B].displayWidth =  480;
-    lstTargets[TP1043_01_B].displayHeight = 272;
-    lstTargets[TP1043_01_B].sdCards = 1;
-    lstTargets[TP1043_01_B].nEncoders = 0;
-    lstTargets[TP1043_01_B].canPorts[_can1].portEnabled = true;
     //03 TP1043_02_A
     lstTargets[TP1043_02_A].modelName =  QLatin1String(product_name[TP1043_02_A]);
     lstTargets[TP1043_02_A].displayWidth =  480;
@@ -5297,6 +5321,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_03].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_03].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_03].serialPorts[_serial0].portAvailable = true;
+    lstTargets[TPAC1007_03].serialPorts[_serial3].portEnabled = true;           // Internal Port
     // 10 TPAC1007_04_AA
     lstTargets[TPAC1007_04_AA].modelName =  QLatin1String(product_name[TPAC1007_04_AA]);
     lstTargets[TPAC1007_04_AA].displayWidth =  480;
@@ -5313,6 +5338,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AA].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AA].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_04_AA].serialPorts[_serial0].portAvailable = true;
+    lstTargets[TPAC1007_04_AA].serialPorts[_serial3].portEnabled = true;           // Internal Port
     // 11 TPAC1007_04_AB
     lstTargets[TPAC1007_04_AB].modelName =  QLatin1String(product_name[TPAC1007_04_AB]);
     lstTargets[TPAC1007_04_AB].displayWidth =  480;
@@ -5329,6 +5355,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AB].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_04_AB].serialPorts[_serial0].portAvailable = true;
+    lstTargets[TPAC1007_04_AB].serialPorts[_serial3].portEnabled = true;           // Internal Port
     // 12 TPAC1007_04_AC
     lstTargets[TPAC1007_04_AC].modelName =  QLatin1String(product_name[TPAC1007_04_AC]);
     lstTargets[TPAC1007_04_AC].displayWidth =  480;
@@ -5345,6 +5372,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AC].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AC].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_04_AC].serialPorts[_serial0].portAvailable = true;
+    lstTargets[TPAC1007_04_AC].serialPorts[_serial3].portEnabled = true;           // Internal Port
     // 13 TPAC1007_04_AD
     lstTargets[TPAC1007_04_AD].modelName =  QLatin1String(product_name[TPAC1007_04_AD]);
     lstTargets[TPAC1007_04_AD].displayWidth =  480;
@@ -5361,14 +5389,15 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AD].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AD].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_04_AD].serialPorts[_serial0].portAvailable = true;
+    lstTargets[TPAC1007_04_AD].serialPorts[_serial3].portEnabled = true;           // Internal Port
     // 14 TPAC1007_04_AE (ex TPAC1007_LV)
     lstTargets[TPAC1007_04_AE].modelName =  QLatin1String(product_name[TPAC1007_04_AE]);
     lstTargets[TPAC1007_04_AE].displayWidth =  480;
     lstTargets[TPAC1007_04_AE].displayHeight = 272;
-    lstTargets[TPAC1007_04_AE].sdCards = 0;
+    lstTargets[TPAC1007_04_AE].sdCards = 1;
     lstTargets[TPAC1007_04_AE].digitalIN = 8;
     lstTargets[TPAC1007_04_AE].digitalOUT = 8;
-    lstTargets[TPAC1007_04_AE].nEncoders = 1;
+    lstTargets[TPAC1007_04_AE].nEncoders = 0;
     lstTargets[TPAC1007_04_AE].tAmbient = true;
     lstTargets[TPAC1007_04_AE].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPAC1007_04_AE].serialPorts[_serial0].portEditable  = true;
@@ -5466,8 +5495,8 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AF].serialPorts[_serial3].portAvailable = true;
     // 20 TPLC050_01_AA
     lstTargets[TPLC050_01_AA].modelName =  QLatin1String(product_name[TPLC050_01_AA]);
-    lstTargets[TPLC050_01_AA].displayWidth =  -1;
-    lstTargets[TPLC050_01_AA].displayHeight = -1;
+    lstTargets[TPLC050_01_AA].displayWidth =  480;
+    lstTargets[TPLC050_01_AA].displayHeight = 272;
     lstTargets[TPLC050_01_AA].sdCards = 0;
     lstTargets[TPLC050_01_AA].digitalIN = 8;
     lstTargets[TPLC050_01_AA].digitalOUT = 8;
@@ -5478,25 +5507,13 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPLC050_01_AA].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPLC050_01_AA].serialPorts[_serial0].portAvailable = true;
-    // 21 TPLC050_01_AB
-    lstTargets[TPLC050_01_AB].modelName =  QLatin1String(product_name[TPLC050_01_AB]);
-    lstTargets[TPLC050_01_AB].displayWidth =  -1;
-    lstTargets[TPLC050_01_AB].displayHeight = -1;
-    lstTargets[TPLC050_01_AB].sdCards = 1;
-    lstTargets[TPLC050_01_AB].nEncoders = 1;
-    lstTargets[TPLC050_01_AB].analogIN = 2;
-    lstTargets[TPLC050_01_AB].analogINrowCT = 5328;
-    lstTargets[TPLC050_01_AB].tAmbient = true;
-    lstTargets[TPLC050_01_AB].serialPorts[_serial0].portEnabled = true;
-    lstTargets[TPLC050_01_AB].serialPorts[_serial0].portEditable  = true;
-    lstTargets[TPLC050_01_AB].serialPorts[_serial0].portAvailable = true;
     // 22 TPLC100_01_AA
     lstTargets[TPLC100_01_AA].modelName =  QLatin1String(product_name[TPLC100_01_AA]);
-    lstTargets[TPLC100_01_AA].displayWidth =  -1;
-    lstTargets[TPLC100_01_AA].displayHeight = -1;
-    lstTargets[TPLC100_01_AA].usbPorts = 2;
+    lstTargets[TPLC100_01_AA].displayWidth =  800;
+    lstTargets[TPLC100_01_AA].displayHeight = 480;
+    lstTargets[TPLC100_01_AA].usbPorts = 1;
     lstTargets[TPLC100_01_AA].sdCards = 0;
-    lstTargets[TPLC100_01_AA].digitalIN = 4;
+    lstTargets[TPLC100_01_AA].digitalIN = 8;
     lstTargets[TPLC100_01_AA].digitalOUT = 8;
     lstTargets[TPLC100_01_AA].nEncoders = 1;
     lstTargets[TPLC100_01_AA].analogIN = 12;
@@ -5507,11 +5524,11 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].canPorts[_can1].portEnabled = true;
     // 23 TPLC100_01_AB
     lstTargets[TPLC100_01_AB].modelName =  QLatin1String(product_name[TPLC100_01_AB]);
-    lstTargets[TPLC100_01_AB].displayWidth =  -1;
-    lstTargets[TPLC100_01_AB].displayHeight = -1;
-    lstTargets[TPLC100_01_AB].usbPorts = 2;
+    lstTargets[TPLC100_01_AB].displayWidth =  800;
+    lstTargets[TPLC100_01_AB].displayHeight = 480;
+    lstTargets[TPLC100_01_AB].usbPorts = 1;
     lstTargets[TPLC100_01_AB].sdCards = 0;
-    lstTargets[TPLC100_01_AB].digitalIN = 4;
+    lstTargets[TPLC100_01_AB].digitalIN = 8;
     lstTargets[TPLC100_01_AB].digitalOUT = 8;
     lstTargets[TPLC100_01_AB].nEncoders = 1;
     lstTargets[TPLC100_01_AB].analogIN = 12;
@@ -5630,7 +5647,7 @@ int ctedit::searchModelInList(QString szModel)
     }
     // Valori di Default se la ricerca non ha trovato nulla
     if (nModel < 0 || nCur >= lstTargets.count())  {
-        nModel = AnyTPAC;
+        nModel = AnyTPAC043;
         qDebug() << QLatin1String("searchModelInList: Model Code Forced to AnyTPAC");
     }
     // qDebug() << QString::fromAscii("searchModelInList: Model Code <%1> Model No <%2>") .arg(TargetConfig.modelName) .arg(nModel);
@@ -5982,6 +5999,9 @@ bool ctedit::addModelVars(const QString szModelName, int nRow, int nPort, int nN
     int         nAdded = 0;
     bool        checkRTUPort = (szModelName != szTPLC050);
 
+
+    this->setCursor(Qt::WaitCursor);
+    this->update();
     if (fileXML.exists())  {
         fileXML.open(QIODevice::ReadOnly | QIODevice::Text);
         szXMLBuffer = QLatin1String(fileXML.readAll().data());
@@ -6016,6 +6036,8 @@ bool ctedit::addModelVars(const QString szModelName, int nRow, int nPort, int nN
     else {
         m_szMsg = QString::fromAscii("Variable File Not Found for Model: %1") .arg(szModelName);
     }
+    this->setCursor(Qt::ArrowCursor);
+    this->update();
     // Notify to user
     displayStatusMessage(m_szMsg);
     // Return Value
@@ -7575,4 +7597,14 @@ bool    ctedit::isMPNE_Row(int nRow)
         isMPNE = isVarBlock(nRow, lstMPNE, lstMPNE_Vars.count());
     }
     return isMPNE;
+}
+bool    ctedit::isMPNE05_Row(int nRow)
+// Vero se la riga corrente appartiene ad un blocco MPNE100105
+{
+    bool isMPNE05 = false;
+    if (nRow < MIN_DIAG - 1)  {
+        isMPNE05 = isVarBlock(nRow, lstMPNE100105, lstMPNE100105_Vars.count());
+    }
+    return isMPNE05;
+
 }

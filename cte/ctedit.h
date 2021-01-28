@@ -169,9 +169,9 @@ private:
     void    showTabMPNE();
 
     bool    isVarBlock(int nRow, QList<int> &lstBlockStart, int nBlockSize);        // Verifica se la variabile appartiene ad un Blocco identificato da Block Start e Block Size
-    bool    isMPNC_Row(int nRow);                // Vero se la riga corrente appartiene ad un blocco MPNC
-    bool    isMPNE_Row(int nRow);                // Vero se la riga corrente appartiene ad un blocco MPNE
-
+    bool    isMPNC_Row(int nRow);               // Vero se la riga corrente appartiene ad un blocco MPNC
+    bool    isMPNE_Row(int nRow);               // Vero se la riga corrente appartiene ad un blocco MPNE
+    bool    isMPNE05_Row(int nRow);             // Vero se la riga corrente appartiene ad un blocco MPNE100105
     //---------------------------------------------------------------------
     // Variabili varie
     //---------------------------------------------------------------------
@@ -260,7 +260,8 @@ private:
     QList<int>              lstMPNE;                // Liste delle capofila delle teste MPNE presenti
     int                     m_nMPNE;                // Indice della Testa MPNE correntemente visualizzata
     // Gestione modulo MPNE_05
-    bool                    m_fMPNE_05_Present;     // Vero se nelle variabili è stato riconosciuto un modulo MPNE_05 (TPX1070 only)
+    bool                    m_fMPNE100105_Present;  // Vero se nelle variabili è stato riconosciuto un modulo MPNE100105 (TPX1070 only)
+    QList<int>              lstMPNE100105;
 };
 
 #endif // CTEDIT_H

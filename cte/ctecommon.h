@@ -92,7 +92,7 @@ const QString szMODELSPATH =  QString::fromAscii(":/ctexml/models/");
 const QString szMPNC006  = QString::fromAscii("MPNC006");
 const QString szMPNE1001 = QString::fromAscii("MPNE1001");
 const QString szTPLC050  = QString::fromAscii("TPLC050");
-const QString szMPNE_05  = QString::fromAscii("MPNE_05");
+const QString szMPNE100105  = QString::fromAscii("MPNE100105");
 const QString szTPX1070  = QString::fromAscii("TPX1070_03");
 
 enum colonne_e
