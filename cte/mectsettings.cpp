@@ -13,7 +13,7 @@
 #include <QIntValidator>
 
 
-#define MAX_SPACE_AVAILABLE_MAX 512
+#define MAX_LOG_SPACE_AVAILABLE 4095
 #define TREND_WINDOW_MAX 2147483647
 #define LINE_SIZE 1024
 #define MAXBLOCKSIZE 64
@@ -41,7 +41,7 @@ MectSettings::MectSettings(QWidget *parent) :
     ui->lineEdit_ScreenSaver->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_SlowLogPeriod->setValidator(new QIntValidator(2, nMax_Int16, this));
     ui->lineEdit_FastLogPeriod->setValidator(new QIntValidator(1, nMax_Int16, this));
-    ui->lineEdit_MaxLogSpace->setValidator(new QIntValidator(1, MAX_SPACE_AVAILABLE_MAX, this));
+    ui->lineEdit_MaxLogSpace->setValidator(new QIntValidator(1, MAX_LOG_SPACE_AVAILABLE, this));
     ui->lineEdit_TraceWindow->setValidator(new QIntValidator(0, TREND_WINDOW_MAX, this));
     /* SERIAL 0 */
     ui->lineEdit_Silence_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
@@ -840,9 +840,9 @@ bool MectSettings::checkFields()
         QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be greater than 'Fast Log Period' parameter."));
         goto exitCheck;
     }
-    if (ui->lineEdit_MaxLogSpace->text().toInt(&OK) <= 0 && ui->lineEdit_MaxLogSpace->text().toInt(&OK) > MAX_SPACE_AVAILABLE_MAX && OK == true)
+    if (ui->lineEdit_MaxLogSpace->text().toInt(&OK) <= 0 && ui->lineEdit_MaxLogSpace->text().toInt(&OK) > MAX_LOG_SPACE_AVAILABLE && OK == true)
     {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be greater than 0 and less than %1.").arg(MAX_SPACE_AVAILABLE_MAX));
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be greater than 0 and less than %1.").arg(MAX_LOG_SPACE_AVAILABLE));
         goto exitCheck;
     }
 

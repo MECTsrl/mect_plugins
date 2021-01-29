@@ -50,7 +50,7 @@
 #define PWD_LOGOUT_PAGE_DEF     ""
 #define MAX_SPACE_AVAILABLE_TAG "SYSTEM/max_log_space_MB"
 #define MAX_SPACE_AVAILABLE_DEF 5
-#define MAX_SPACE_AVAILABLE_MAX 128
+#define MAX_SPACE_AVAILABLE_MAX 4095
 #define RETRIES_TAG             "SYSTEM/retries"
 #define RETRIES_DEF             3
 #define BLACKLIST_TAG           "SYSTEM/blacklist"

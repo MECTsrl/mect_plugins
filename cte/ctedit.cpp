@@ -749,7 +749,6 @@ bool    ctedit::selectCTFile(QString szFileCT)
                         qDebug() << QLatin1String("Applied Differences to CT from Template");
                         ctable2Grid();
                         saveCTFile();
-
                     }
                 }
             }
@@ -822,9 +821,9 @@ bool    ctedit::ctable2Grid()
 {
     bool            fRes = true;
     int             nCur = 0;
-    QStringList     lstFields;
-    QStringList     lstRowNumbers;
-    QBrush          brushRed(Qt::SolidPattern);
+    QStringList     lstFields;                      // Buffer di riga CT
+    QStringList     lstRowNumbers;                  // Intestazione Verticale delle Righe (#riga in prima colonna)
+    QBrush          brushRed(Qt::SolidPattern);     // Colore per gli Input Registers
 
 
     lstFields.clear();
@@ -877,7 +876,6 @@ bool    ctedit::ctable2Grid()
         // Aggiorna le liste delle variabili
         fillVarList(lstUsedVarNames, lstAllVarTypes, lstAllUpdates);
         fillVarList(lstLoggedVars, lstAllVarTypes, lstLogUpdates);
-
     }
     else  {
         qDebug() << QLatin1String("Error Loading Rows");
@@ -1453,7 +1451,7 @@ bool    ctedit::riassegnaBlocchi()
     this->setCursor(Qt::WaitCursor);
     // Copia l'attuale CT nella lista Undo
     lstUndo.append(lstCTRecords);
-    qDebug() << "riassegnaBlocchi() - lstUndo added";
+    qDebug("riassegnaBlocchi() - lstUndo added");
     for (nRow = 0; nRow < MIN_DIAG - 1; nRow++)  {
         // Ignora le righe con Priority == 0
         if (lstCTRecords[nRow].Enable > 0)  {
@@ -1604,7 +1602,7 @@ void ctedit::enableFields()
         ui->txtDecimal->setEnabled(fDecimal);
     }
     else  {
-        // Campi comuni
+        // Campi comuni (Edit Singolo o campo abilitato in MultiEdit
         ui->cboPriority->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colPriority) >= 0);
         ui->cboUpdate->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
         ui->txtName->setEnabled(! fMultiEdit);  // Nome abilitato solo se no selezione multipla
@@ -2370,7 +2368,7 @@ void ctedit::insertRows()
     if (nCurPos + selection.count() < MAX_NONRETENTIVE - 1)  {
         // Append to Undo List
         lstUndo.append(lstCTRecords);
-        qDebug() << "insertRows() - lstUndo added";
+        qDebug("insertRows() - lstUndo added");
         // Enter in Paste Mode
         m_fCutOrPaste = true;
         // Ricerca del Punto di Inserzione
@@ -2442,7 +2440,7 @@ void ctedit::emptySelected()
         return;
     }
     lstUndo.append(lstCTRecords);
-    qDebug() << "emptySelected() - lstUndo added";
+    qDebug("emptySelected() - lstUndo added");
     // Compile Selected Row List
     m_fCutOrPaste = true;
     for (nCur = 0; nCur < selection.count(); nCur++)  {
@@ -2681,7 +2679,7 @@ void ctedit::on_cmdImport_clicked()
             if (queryUser(this, szMectTitle, szMsg))  {
                 // Copia di Salvataggio
                 lstUndo.append(lstCTRecords);
-                qDebug() << "on_cmdImport_clicked() - lstUndo added";
+                qDebug("on_cmdImport_clicked() - lstUndo added");
                 lstNewRecs.clear();
                 // Caricamento della nuova Crosstable (a questo livello non vengono fatti checks sulle righe caricate)
                 if (loadCTFile(szSourceFile, lstNewRecs, false))  {
@@ -3071,8 +3069,7 @@ void ctedit::on_cmdUndo_clicked()
 {
     if (! lstUndo.isEmpty())  {
         lstCTRecords.clear();
-        lstCTRecords = lstUndo[lstUndo.count()-1];
-        lstUndo.removeLast();
+        lstCTRecords = lstUndo.takeLast();
         // Refresh List
         ctable2Grid();
         // Force Marker to Updated
@@ -4976,32 +4973,49 @@ void ctedit::on_txtName_editingFinished()
         ui->txtName->setModified(false);
         szVarName = ui->txtName->text().trimmed();
         szOldVarName = QString::fromAscii(lstCTRecords[m_nGridRow].Tag).trimmed();
-        // qDebug() << QString::fromAscii("Variable Name Changed from [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(m_nGridRow);
-        // Applicazione dei valori di default Priority nel caso di una riga vuota preceduta da una riga vuota o con protocollo differente
+        //----------------------------------------
+        // Gestione della priorità da assegnare per la riga corrente
+        // La riga corrente passa da vuota a piena
+        //----------------------------------------
         if (! szVarName.isEmpty() && ! lstCTRecords[m_nGridRow].UsedEntry)  {
             // Solo se la riga è la prima di un blocco oppure ha un protocollo differente dalla precedente
             if (ui->cboPriority->currentIndex() < 0 &&
-                    ((m_nGridRow == 0) ||
-                     (m_nGridRow > 0 &&
-                      (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 ||
-                      (lstCTRecords[m_nGridRow - 1].UsedEntry && ui->cboProtocol->currentIndex() >= 0 && lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex())))))  {
+                    ((m_nGridRow == 0) ||                               // Prima riga di CT
+                     (m_nGridRow > 0 &&                                 // Altra riga
+                      (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 ||   // Riga precedente vuota
+                      (lstCTRecords[m_nGridRow - 1].UsedEntry   &&      // Riga precedente già usata
+                       ui->cboProtocol->currentIndex() >= 0     &&      // Protocollo della riga corrente specificato
+                       lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex() ) // Protocollo corrente diverso da precedente
+                       )
+                      ))
+                )   {
                 // Forza il livello di priorià a Alto
                 ui->cboPriority->setCurrentIndex(nPriorityHigh);
             }
-            else if (ui->cboPriority->currentIndex() < 0 && lstCTRecords[m_nGridRow - 1].UsedEntry && lstCTRecords[m_nGridRow - 1].Update >= 0)  {
+            else if (ui->cboPriority->currentIndex() < 0    &&  // Priorità non specificato
+                     m_nGridRow > 0                         &&  // Altra riga
+                     lstCTRecords[m_nGridRow - 1].UsedEntry &&  // Riga precedente utilizzata
+                     lstCTRecords[m_nGridRow - 1].Update >= 0   // Riga precedente con priorità nota
+                    )  {
                 // Forza il livello di priorità come quello della variabile precedente
                 ui->cboPriority->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Update);
             }
         }
+        //----------------------------------------
         // Variabile già precedentemente utilizzata
+        //----------------------------------------
         else if (! szVarName.isEmpty() && lstCTRecords[m_nGridRow].UsedEntry)  {
+            //----------------------------------------
             // Se il nome della variabile è cambiato rispetto al valore precedente
+            //----------------------------------------
             if (szVarName != szOldVarName && (! szVarName.isEmpty()))  {
                 // Forza inserimento in lista Undo (al limite ci saranno 2 entry in lista Undo se esistono anche altre modifiche sulla riga corrente)
-                lstUndo.append(lstCTRecords);
+                // lstUndo.append(lstCTRecords);
                 // Aggiorna il nome della variabile in CT (Inibisce l'aggiornamento della lista Undo)
-                strcpy(lstCTRecords[m_nGridRow].Tag, szVarName.toAscii().data());
+                // strcpy(lstCTRecords[m_nGridRow].Tag, szVarName.toAscii().data());
+                //----------------------------------------
                 // Controlla che la variabile non sia presente nei valori SX e DX di un allarme
+                //----------------------------------------
                 for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
                     // Test solo per righe diverse dalla riga corrente e utilizzate
                     if (nRow != m_nGridRow && lstCTRecords[nRow].UsedEntry)  {
@@ -5026,8 +5040,10 @@ void ctedit::on_txtName_editingFinished()
             }
         }        
         // Ricarica le combo dei nomi variabili
-        fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates, true);
-        fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates, true);
+        if (szVarName != szOldVarName)  {
+            fillComboVarNames(ui->cboVariable1, lstAllVarTypes, lstNoHUpdates, true);
+            fillComboVarNames(ui->cboVariable2, lstAllVarTypes, lstNoHUpdates, true);
+        }
     }
     enableAndUnlockSignals(ui->txtName);
 }
@@ -5719,8 +5735,8 @@ bool ctedit::updateRow(int nRow, bool fMultiEdit)
             //(Se MultiEdit viene fatto una volta sola PRIMA di salvare tutte le righe modificate)
             if (! fMultiEdit)  {
                 lstUndo.append(lstCTRecords);
+                qDebug("updateRow() - lstUndo added");
             }
-            qDebug("updateRow() - lstUndo added");
             // Salva Record
             fIsSaved = fieldValues2CTrecList(lstFields, lstCTRecords, nRow);
             // Aggiorna Grid Utente per riga corrente
