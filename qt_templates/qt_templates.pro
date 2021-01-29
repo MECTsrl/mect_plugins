@@ -14,6 +14,15 @@ ATCM-template-project-AnyTPAC043/config/trend1.csv \
 ATCM-template-project-AnyTPAC043/console.png \
 ATCM-template-project-AnyTPAC043/template.pri \
 ATCM-template-project-AnyTPAC043/wizard.xml \
+ATCM-template-project-AnyTPAC070/config/Crosstable.csv \
+ATCM-template-project-AnyTPAC070/config/crosstable.cpp \
+ATCM-template-project-AnyTPAC070/config/crosstable.h \
+ATCM-template-project-AnyTPAC070/config/splash.png \
+ATCM-template-project-AnyTPAC070/config/system.ini \
+ATCM-template-project-AnyTPAC070/config/trend1.csv \
+ATCM-template-project-AnyTPAC070/console.png \
+ATCM-template-project-AnyTPAC070/template.pri \
+ATCM-template-project-AnyTPAC070/wizard.xml \
 ATCM-template-project-TP1043_01_A/config/Crosstable.csv \
 ATCM-template-project-TP1043_01_A/config/crosstable.cpp \
 ATCM-template-project-TP1043_01_A/config/crosstable.h \
