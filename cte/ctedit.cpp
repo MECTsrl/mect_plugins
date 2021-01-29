@@ -257,7 +257,7 @@ ctedit::ctedit(QWidget *parent) :
     }
     // Lista Prodotti
     lstProductNames.clear();
-    for (nCol = NoModel; nCol < MODEL_TOTALS; nCol++)  {
+    for (nCol = AnyTPAC043; nCol < MODEL_TOTALS; nCol++)  {
         lstProductNames.append(QLatin1String(product_name[nCol]));
     }
     // Caricamento delle varie Combos
@@ -657,15 +657,17 @@ bool    ctedit::selectCTFile(QString szFileCT)
         else  {
             nModel = NoModel;
         }
-        // Imposta configurazione corrente
+        //----------------------------------
+        // Verifica della configurazione delle porte
+        //----------------------------------
+        // Imposta configurazione corrente da Tabella globale della Mect Suite
         panelConfig = lstTargets[nModel];
-        // Se il modello non è stato trovato in template.pri oppure nella lista modelli definiti vale comunque AnyTPAC ma il salvataggio è disabilitato
-        // (Viene ripulita la variabile m_szCurrentModel)
+        // Se il modello non è stato trovato in template.pri oppure nella lista modelli definiti vale comunque NoModel
+        // (NON viene effettuato il confronto con i Template)
         if (nModel == NoModel)  {
             ui->lblModel->setStyleSheet(QLatin1String("background-color: Red"));
             m_szMsg = QString::fromAscii("No Model Type Found in file: <%1>\nor Model Unknown: <%2>") .arg(szTemplateFile) .arg(m_szCurrentModel);
             warnUser(this, szMectTitle, m_szMsg);
-            m_szCurrentModel.clear();
             m_szTemplateCTFile.clear();
         }
         m_isCtModified = false;
@@ -687,7 +689,9 @@ bool    ctedit::selectCTFile(QString szFileCT)
         szFileTemplate.append(szTemplateFile);
         trendEdit->updateVarLists(lstLoggedVars);
         trendEdit->setTrendsParameters(m_szCurrentModel, m_szCurrentCTPath, szEMPTY, szFileTemplate);
-        // Caricamento del file da Template
+        //----------------------------------
+        // Caricamento del file da Template per comparazione con Template di versione corrente
+        //----------------------------------
         if (! m_szTemplateCTFile.isEmpty())  {
             if (loadCTFile(m_szTemplateCTFile, lstTemplateRecs, false))  {
                 // Confronto tra CT del Template e CT corrente
@@ -3270,6 +3274,7 @@ void ctedit::enableInterface()
 }
 void    ctedit::enableProtocolsFromModel()
 // Abilita i Protocolli in funzione della configurazione del Modello corrente (da TargetConfig)
+// Dopo aver letto il System.ini del progetto da cui ricavare le porte ok
 {
     int nCur = 0;
     QString szPort;
@@ -5119,7 +5124,8 @@ void ctedit::exportTargetList(const QString &szFileName)
         QTextStream outStream(&modelFile);
         line = lstTitoliColonne.join(szSEMICOL);
         outStream << line << endl;
-        for (nModel = 0; nModel < MODEL_TOTALS; nModel++)  {
+        // Estrazione dei modelli
+        for (nModel = AnyTPAC043; nModel < MODEL_TOTALS; nModel++)  {
             tpRec = lstTargets[nModel];
             lstLine.clear();
             lstLine
@@ -5232,21 +5238,48 @@ void ctedit::initTargetList()
     tpRec.audioIF = false;
     // Creazione Lista modelli
     lstTargets.clear();
-    for (nModel = 0; nModel < MODEL_TOTALS; nModel++)  {
+    for (nModel = NoModel; nModel < MODEL_TOTALS; nModel++)  {
         tpRec.nModel = nModel;
         lstTargets.append(tpRec);
     }
+    //---------------------------
     // Customizzazione dei modelli
+    //---------------------------
+    //00 NoModel = 0
     lstTargets[NoModel].modelName =  QLatin1String(product_name[NoModel]);
-    //00 AnyTPAC = 0
+    lstTargets[NoModel].displayWidth = 1027;
+    lstTargets[NoModel].displayHeight = 768;
+    lstTargets[NoModel].digitalIN = 8;
+    lstTargets[NoModel].digitalOUT = 8;
+    // Serial X (tutte le seriali abilitate)
+    for (nPort = _serial0; nPort < _serialMax; nPort++)  {
+        lstTargets[NoModel].serialPorts[nPort].portEnabled = true;
+        lstTargets[NoModel].serialPorts[nPort].portEditable = true;
+        lstTargets[NoModel].serialPorts[nPort].portAvailable = true;
+        lstTargets[NoModel].serialPorts[nPort].BaudRate = 38400;
+        lstTargets[NoModel].serialPorts[nPort].DataBits = 8;
+        lstTargets[NoModel].serialPorts[nPort].StopBits = 1;
+        lstTargets[NoModel].serialPorts[nPort].TimeOut = 50;
+        lstTargets[NoModel].serialPorts[nPort].Silence = 2;
+        lstTargets[NoModel].serialPorts[nPort].BlockSize = 64;
+    }
+    // Can (tutte le interfaccie abilitate)
+    for (nPort = _can0; nPort < _canMax; nPort++)  {
+        lstTargets[NoModel].canPorts[nPort].portEnabled = true;
+        lstTargets[NoModel].canPorts[nPort].BaudRate = 125000;
+        lstTargets[NoModel].canPorts[nPort].BlockSize = 64;
+    }
+    // Audio
+    lstTargets[NoModel].audioIF = true;
+    //01 AnyTPAC043
     lstTargets[AnyTPAC043].modelName =  QLatin1String(product_name[AnyTPAC043]);
     lstTargets[AnyTPAC043].displayWidth =  480;
     lstTargets[AnyTPAC043].displayHeight = 272;
-    //01 AnyTPAC = 0
+    //02 AnyTPAC070
     lstTargets[AnyTPAC070].modelName =  QLatin1String(product_name[AnyTPAC070]);
     lstTargets[AnyTPAC070].displayWidth =  800;
     lstTargets[AnyTPAC070].displayHeight = 480;
-    //02 TP1043_01_A
+    //03 TP1043_01_A
     lstTargets[TP1043_01_A].modelName =  QLatin1String(product_name[TP1043_01_A]);
     lstTargets[TP1043_01_A].displayWidth =  480;
     lstTargets[TP1043_01_A].displayHeight = 272;
@@ -5255,7 +5288,7 @@ void ctedit::initTargetList()
     lstTargets[TP1043_01_A].serialPorts[_serial0].portEnabled   = true;
     lstTargets[TP1043_01_A].serialPorts[_serial0].portEditable  = true;
     lstTargets[TP1043_01_A].serialPorts[_serial0].portAvailable = true;
-    //03 TP1043_02_A
+    //04 TP1043_02_A
     lstTargets[TP1043_02_A].modelName =  QLatin1String(product_name[TP1043_02_A]);
     lstTargets[TP1043_02_A].displayWidth =  480;
     lstTargets[TP1043_02_A].displayHeight = 272;
@@ -5264,14 +5297,14 @@ void ctedit::initTargetList()
     lstTargets[TP1043_02_A].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1043_02_A].serialPorts[_serial0].portEditable  = true;
     lstTargets[TP1043_02_A].serialPorts[_serial0].portAvailable = true;
-    // 04 TP1043_02_B
+    // 05 TP1043_02_B
     lstTargets[TP1043_02_B].modelName =  QLatin1String(product_name[TP1043_02_B]);
     lstTargets[TP1043_02_B].displayWidth =  480;
     lstTargets[TP1043_02_B].displayHeight = 272;
     lstTargets[TP1043_02_B].sdCards = 1;
     lstTargets[TP1043_02_B].nEncoders = 0;
     lstTargets[TP1043_02_B].canPorts[_can1].portEnabled = true;
-    // 05 TP1070_01_A
+    // 06 TP1070_01_A
     lstTargets[TP1070_01_A].modelName =  QLatin1String(product_name[TP1070_01_A]);
     lstTargets[TP1070_01_A].displayWidth =  800;
     lstTargets[TP1070_01_A].displayHeight = 480;
@@ -5280,7 +5313,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_A].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_01_A].serialPorts[_serial3].portEditable  = true;
     lstTargets[TP1070_01_A].serialPorts[_serial3].portAvailable = true;
-    // 06 TP1070_01_B
+    // 07 TP1070_01_B
     lstTargets[TP1070_01_B].modelName =  QLatin1String(product_name[TP1070_01_B]);
     lstTargets[TP1070_01_B].displayWidth =  800;
     lstTargets[TP1070_01_B].displayHeight = 480;
@@ -5290,7 +5323,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_B].serialPorts[_serial3].portEditable  = true;
     lstTargets[TP1070_01_B].serialPorts[_serial3].portAvailable = true;
     lstTargets[TP1070_01_B].canPorts[_can1].portEnabled = true;
-    // 07 TP1070_01_C
+    // 08 TP1070_01_C
     lstTargets[TP1070_01_C].modelName =  QLatin1String(product_name[TP1070_01_C]);
     lstTargets[TP1070_01_C].displayWidth =  800;
     lstTargets[TP1070_01_C].displayHeight = 480;
@@ -5302,7 +5335,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_01_C].serialPorts[_serial3].portEnabled = true;
     lstTargets[TP1070_01_C].serialPorts[_serial3].portEditable  = true;
     lstTargets[TP1070_01_C].serialPorts[_serial3].portAvailable = true;
-    // 08 TPAC1005
+    // 09 TPAC1005
     lstTargets[TPAC1005].modelName =  QLatin1String(product_name[TPAC1005]);
     lstTargets[TPAC1005].displayWidth =  480;
     lstTargets[TPAC1005].displayHeight = 272;
@@ -5312,7 +5345,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1005].serialPorts[_serial3].portEditable  = true;
     lstTargets[TPAC1005].serialPorts[_serial3].portAvailable = true;
     lstTargets[TPAC1005].canPorts[_can1].portEnabled = true;
-    // 09 TPAC1007_03
+    // 10 TPAC1007_03
     lstTargets[TPAC1007_03].modelName =  QLatin1String(product_name[TPAC1007_03]);
     lstTargets[TPAC1007_03].displayWidth =  480;
     lstTargets[TPAC1007_03].displayHeight = 272;
@@ -5329,7 +5362,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_03].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_03].serialPorts[_serial0].portAvailable = true;
     lstTargets[TPAC1007_03].serialPorts[_serial3].portEnabled = true;           // Internal Port
-    // 10 TPAC1007_04_AA
+    // 11 TPAC1007_04_AA
     lstTargets[TPAC1007_04_AA].modelName =  QLatin1String(product_name[TPAC1007_04_AA]);
     lstTargets[TPAC1007_04_AA].displayWidth =  480;
     lstTargets[TPAC1007_04_AA].displayHeight = 272;
@@ -5346,7 +5379,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AA].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_04_AA].serialPorts[_serial0].portAvailable = true;
     lstTargets[TPAC1007_04_AA].serialPorts[_serial3].portEnabled = true;           // Internal Port
-    // 11 TPAC1007_04_AB
+    // 12 TPAC1007_04_AB
     lstTargets[TPAC1007_04_AB].modelName =  QLatin1String(product_name[TPAC1007_04_AB]);
     lstTargets[TPAC1007_04_AB].displayWidth =  480;
     lstTargets[TPAC1007_04_AB].displayHeight = 272;
@@ -5363,7 +5396,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AB].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_04_AB].serialPorts[_serial0].portAvailable = true;
     lstTargets[TPAC1007_04_AB].serialPorts[_serial3].portEnabled = true;           // Internal Port
-    // 12 TPAC1007_04_AC
+    // 13 TPAC1007_04_AC
     lstTargets[TPAC1007_04_AC].modelName =  QLatin1String(product_name[TPAC1007_04_AC]);
     lstTargets[TPAC1007_04_AC].displayWidth =  480;
     lstTargets[TPAC1007_04_AC].displayHeight = 272;
@@ -5380,7 +5413,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AC].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_04_AC].serialPorts[_serial0].portAvailable = true;
     lstTargets[TPAC1007_04_AC].serialPorts[_serial3].portEnabled = true;           // Internal Port
-    // 13 TPAC1007_04_AD
+    // 14 TPAC1007_04_AD
     lstTargets[TPAC1007_04_AD].modelName =  QLatin1String(product_name[TPAC1007_04_AD]);
     lstTargets[TPAC1007_04_AD].displayWidth =  480;
     lstTargets[TPAC1007_04_AD].displayHeight = 272;
@@ -5397,7 +5430,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AD].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPAC1007_04_AD].serialPorts[_serial0].portAvailable = true;
     lstTargets[TPAC1007_04_AD].serialPorts[_serial3].portEnabled = true;           // Internal Port
-    // 14 TPAC1007_04_AE (ex TPAC1007_LV)
+    // 15 TPAC1007_04_AE (ex TPAC1007_LV)
     lstTargets[TPAC1007_04_AE].modelName =  QLatin1String(product_name[TPAC1007_04_AE]);
     lstTargets[TPAC1007_04_AE].displayWidth =  480;
     lstTargets[TPAC1007_04_AE].displayHeight = 272;
@@ -5411,7 +5444,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1007_04_AE].serialPorts[_serial0].portAvailable = true;
     lstTargets[TPAC1007_04_AE].serialPorts[_serial3].portEnabled = true;            // Internal Port fixed Baud Rate
     lstTargets[TPAC1007_04_AE].serialPorts[_serial3].portAvailable = true;          // Also for external Devices
-    // 15 TPAC1008_02_AA
+    // 16 TPAC1008_02_AA
     lstTargets[TPAC1008_02_AA].modelName =  QLatin1String(product_name[TPAC1008_02_AA]);
     lstTargets[TPAC1008_02_AA].displayWidth =  800;
     lstTargets[TPAC1008_02_AA].displayHeight = 480;
@@ -5429,7 +5462,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AA].serialPorts[_serial3].portEditable  = true;
     lstTargets[TPAC1008_02_AA].serialPorts[_serial3].portAvailable = true;
     lstTargets[TPAC1008_02_AA].canPorts[_can1].portEnabled = true;
-    // 16 TPAC1008_02_AB
+    // 17 TPAC1008_02_AB
     lstTargets[TPAC1008_02_AB].modelName =  QLatin1String(product_name[TPAC1008_02_AB]);
     lstTargets[TPAC1008_02_AB].displayWidth =  800;
     lstTargets[TPAC1008_02_AB].displayHeight = 480;
@@ -5449,7 +5482,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AB].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AB].serialPorts[_serial3].portEditable  = true;
     lstTargets[TPAC1008_02_AB].serialPorts[_serial3].portAvailable = true;
-    // 17 TPAC1008_02_AD
+    // 18 TPAC1008_02_AD
     lstTargets[TPAC1008_02_AD].modelName =  QLatin1String(product_name[TPAC1008_02_AD]);
     lstTargets[TPAC1008_02_AD].displayWidth =  800;
     lstTargets[TPAC1008_02_AD].displayHeight = 480;
@@ -5466,7 +5499,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AD].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AD].serialPorts[_serial3].portEditable  = true;
     lstTargets[TPAC1008_02_AD].serialPorts[_serial3].portAvailable = true;
-    // 18 TPAC1008_02_AE
+    // 19 TPAC1008_02_AE
     lstTargets[TPAC1008_02_AE].modelName =  QLatin1String(product_name[TPAC1008_02_AE]);
     lstTargets[TPAC1008_02_AE].displayWidth =  800;
     lstTargets[TPAC1008_02_AE].displayHeight = 480;
@@ -5483,7 +5516,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AE].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AE].serialPorts[_serial3].portEditable  = true;
     lstTargets[TPAC1008_02_AE].serialPorts[_serial3].portAvailable = true;
-    // 19 TPAC1008_02_AF
+    // 20 TPAC1008_02_AF
     lstTargets[TPAC1008_02_AF].modelName =  QLatin1String(product_name[TPAC1008_02_AF]);
     lstTargets[TPAC1008_02_AF].displayWidth =  800;
     lstTargets[TPAC1008_02_AF].displayHeight = 480;
@@ -5500,7 +5533,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_02_AF].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_02_AF].serialPorts[_serial3].portEditable  = true;
     lstTargets[TPAC1008_02_AF].serialPorts[_serial3].portAvailable = true;
-    // 20 TPLC050_01_AA
+    // 21 TPLC050_01_AA
     lstTargets[TPLC050_01_AA].modelName =  QLatin1String(product_name[TPLC050_01_AA]);
     lstTargets[TPLC050_01_AA].displayWidth =  480;
     lstTargets[TPLC050_01_AA].displayHeight = 272;
@@ -5514,7 +5547,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC050_01_AA].serialPorts[_serial0].portEnabled = true;
     lstTargets[TPLC050_01_AA].serialPorts[_serial0].portEditable  = true;
     lstTargets[TPLC050_01_AA].serialPorts[_serial0].portAvailable = true;
-    // 21 TPLC100_01_AA
+    // 22 TPLC100_01_AA
     lstTargets[TPLC100_01_AA].modelName =  QLatin1String(product_name[TPLC100_01_AA]);
     lstTargets[TPLC100_01_AA].displayWidth =  800;
     lstTargets[TPLC100_01_AA].displayHeight = 480;
@@ -5529,7 +5562,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AA].analogOUTrowCT = 5371;
     lstTargets[TPLC100_01_AA].tAmbient = true;
     lstTargets[TPLC100_01_AA].canPorts[_can1].portEnabled = true;
-    // 22 TPLC100_01_AB
+    // 23 TPLC100_01_AB
     lstTargets[TPLC100_01_AB].modelName =  QLatin1String(product_name[TPLC100_01_AB]);
     lstTargets[TPLC100_01_AB].displayWidth =  800;
     lstTargets[TPLC100_01_AB].displayHeight = 480;
@@ -5547,7 +5580,7 @@ void ctedit::initTargetList()
     lstTargets[TPLC100_01_AB].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPLC100_01_AB].serialPorts[_serial3].portEditable = true;
     lstTargets[TPLC100_01_AB].serialPorts[_serial3].portAvailable = true;
-    // 23 TPAC1008_03_AC
+    // 24 TPAC1008_03_AC
     lstTargets[TPAC1008_03_AC].modelName =  QLatin1String(product_name[TPAC1008_03_AC]);
     lstTargets[TPAC1008_03_AC].displayWidth =  800;
     lstTargets[TPAC1008_03_AC].displayHeight = 480;
@@ -5569,7 +5602,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AC].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPAC1008_03_AC].serialPorts[_serial3].portEditable = true;
     lstTargets[TPAC1008_03_AC].serialPorts[_serial3].portAvailable = true;
-    // 24 TPAC1008_03_AD
+    // 25 TPAC1008_03_AD
     lstTargets[TPAC1008_03_AD].modelName =  QLatin1String(product_name[TPAC1008_03_AD]);
     lstTargets[TPAC1008_03_AD].displayWidth =  800;
     lstTargets[TPAC1008_03_AD].displayHeight = 480;
@@ -5588,7 +5621,7 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AD].pwm = 4;
     lstTargets[TPAC1008_03_AD].loadCells = 3;
     lstTargets[TPAC1008_03_AD].serialPorts[_serial0].portEnabled = true;         // Internal Port
-    // 25 TP1070_02_F
+    // 26 TP1070_02_F
     lstTargets[TP1070_02_F].modelName =  QLatin1String(product_name[TP1070_02_F]);
     lstTargets[TP1070_02_F].displayWidth =  800;
     lstTargets[TP1070_02_F].displayHeight = 480;
@@ -5597,7 +5630,7 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_F].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1070_02_F].serialPorts[_serial0].portEditable  = true;
     lstTargets[TP1070_02_F].serialPorts[_serial0].portAvailable = true;
-    // 26 TPX1070_03_D
+    // 27 TPX1070_03_D
     lstTargets[TPX1070_03_D].modelName =  QLatin1String(product_name[TPX1070_03_D]);
     lstTargets[TPX1070_03_D].displayWidth =  800;
     lstTargets[TPX1070_03_D].displayHeight = 480;
@@ -5614,7 +5647,7 @@ void ctedit::initTargetList()
     lstTargets[TPX1070_03_D].serialPorts[_serial3].portEnabled = true;
     lstTargets[TPX1070_03_D].serialPorts[_serial3].portEditable  = true;
     lstTargets[TPX1070_03_D].serialPorts[_serial3].portAvailable = true;
-    // 27 TPX1070_03_E
+    // 28 TPX1070_03_E
     lstTargets[TPX1070_03_E].modelName =  QLatin1String(product_name[TPX1070_03_E]);
     lstTargets[TPX1070_03_E].displayWidth =  800;
     lstTargets[TPX1070_03_E].displayHeight = 480;
@@ -5635,7 +5668,7 @@ void ctedit::initTargetList()
     lstTargets[TPX1070_03_E].serialPorts[_serial3].portAvailable = true;
     lstTargets[TPX1070_03_E].audioIF = true;
     // Ciclo di verifica caricamento modelli:
-    for (nModel = 0; nModel < MODEL_TOTALS; nModel++)  {
+    for (nModel = NoModel; nModel < MODEL_TOTALS; nModel++)  {
         qDebug() << QString::fromLatin1("Model: %1 - Model Name: %2") .arg(QString::number(nModel)) .arg(lstTargets[nModel].modelName);
     }
 }

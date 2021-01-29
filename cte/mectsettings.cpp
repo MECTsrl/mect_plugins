@@ -97,6 +97,7 @@ void    MectSettings::setModel(TP_Config &tpConfig)
     // Set Tab System as current Tab
     ui->tabWidget->setCurrentIndex(tabSystem);
 }
+
 bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QString szFilePro, const QString &szProjectPath, TP_Config &targetConfig)
 {
     QVariant defBlockSize = QString::number(MAXBLOCKSIZE);
@@ -105,9 +106,6 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
     m_szFileSettings = szFileSettings;
     m_szFilePro = szFilePro;
     m_szProjectPath = szProjectPath;
-    // qDebug() << "Settings: " << m_szFileSettings;
-    // qDebug() << "Project:  " << m_szFilePro;
-    // qDebug() << "Path Prj: " << m_szProjectPath;
 
     // Enable All Tabs as default
     int nTab = 0;
@@ -120,7 +118,9 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
         QMessageBox::critical(this,trUtf8("Error"),trUtf8("System.ini file don't exist, it's impossible tool open."));
         return false;
     }
-
+    //----------------------------------------
+    // Lettura e definizione degli Items del Tab System
+    //----------------------------------------
     /*Lettura del file.pro per sapere e costruire la combobox @ le pagine attualmente in uso nel progetto*/
     /* open and load crosstable file */
     QFile file(szFilePro);
@@ -147,7 +147,6 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
         }
     }
     file.close();
-    // qDebug() << "Ui File list" << pagesList;
     /* Aggiungo in coda le pagine di Libreria */
     pagesList << QLatin1String("alarms")
               << QLatin1String("alarms_history")
@@ -195,7 +194,6 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
         }
         langFile.close();
     }
-    // qDebug() << "LanguageMap Items: " << LanguageMap.count();
     /* load the translations file list */
     QDirIterator lang_it(szProjectPath, QDirIterator::Subdirectories);
     QString lang = settings.value(QLatin1String("SYSTEM/language"), szDEFLANG).toString();
@@ -232,7 +230,6 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
 
         }
     }
-//    qDebug() << tr("LoadProjectFiles: Languages Loaded");
     QString szValue;
     ui->comboBoxLanguage->setCurrentIndex(indexlang);
     ui->lineEdit_Retries->setText(settings.value(QLatin1String("SYSTEM/retries")).toString());
@@ -258,9 +255,12 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
     ui->lineEdit_MaxLogSpace->setText(settings.value(QLatin1String("SYSTEM/max_log_space_MB")).toString());
     ui->lineEdit_TraceWindow->setText(settings.value(QLatin1String("SYSTEM/trace_window_s")).toString());
 
+    //----------------------------------------
+    // Lettura e definizione degli Items dei Tab Porte Seriali
+    // La presenza del Baud Rate abilita o meno il Tab per la porta in esame
+    //----------------------------------------
     int index;
     QString value;
-    /* La presenza del Baud Rate abilita o meno il Tab per la porta in esame */
     value = settings.value(QLatin1String("SERIAL_PORT_0/baudrate")).toString();
     if (value.length() > 0)
     {
@@ -489,6 +489,10 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
     ui->lineEdit_Timeout_TCP_IP_PORT->setText(settings.value(QLatin1String("TCP_IP_PORT/timeout_ms")).toString());
     ui->lineEdit_MaxBlockSize_TCP_IP_PORT->setText(settings.value(QLatin1String("TCP_IP_PORT/max_block_size"), defBlockSize).toString());
 
+    //----------------------------------------
+    // Lettura e definizione degli Items dei Tab Porte CAN
+    // La presenza del Baud Rate abilita o meno il Tab per la porta in esame
+    //----------------------------------------
     value = settings.value(QLatin1String("CANOPEN_0/baudrate")).toString();
     if (value.length() > 0)
     {
@@ -527,7 +531,8 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
     setModel(targetConfig);
     m_isIniModified = false;
     ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid green;"));
-    ui->cmdSave->setEnabled(TargetConfig.nModel != NoModel);
+    // ui->cmdSave->setEnabled(TargetConfig.nModel != NoModel);
+    ui->cmdSave->setEnabled(true);
     // All Ok, return true
     return true;
 }
@@ -1117,7 +1122,8 @@ void MectSettings::enablePortsFromModel(TP_Config &targetConfig)
 }
 
 bool MectSettings::getTargetConfig(TP_Config &targetConfig)
-// Retrieves current target configuration
+// Aggiorna le abilitazioni delle porte in funzione del file System.ini letto dal progetto
+// (comanda sulla definizione globale del Modello)
 {
     bool fRes = true;
     bool fOk = false;
@@ -1148,18 +1154,18 @@ bool MectSettings::getTargetConfig(TP_Config &targetConfig)
     //  Serial 0
     TargetConfig.serialPorts[_serial0].portEnabled = (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_0->currentText().toInt(&fOk);
-    TargetConfig.serialPorts[_serial1].BaudRate = fOk ? nVal : 0;
-    TargetConfig.serialPorts[_serial1].Parity = ui->comboBox_Parity_SERIAL_PORT_0->currentText();
+    TargetConfig.serialPorts[_serial0].BaudRate = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial0].Parity = ui->comboBox_Parity_SERIAL_PORT_0->currentText();
     nVal = ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&fOk);
-    TargetConfig.serialPorts[_serial1].TimeOut = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial0].TimeOut = fOk ? nVal : 0;
     nVal = ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&fOk);
-    TargetConfig.serialPorts[_serial1].Silence = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial0].Silence = fOk ? nVal : 0;
     nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text().toInt(&fOk);
-    TargetConfig.serialPorts[_serial1].BlockSize = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial0].BlockSize = fOk ? nVal : 0;
     nVal = ui->comboBox_Databits_SERIAL_PORT_0->currentText().toInt(&fOk);
-    TargetConfig.serialPorts[_serial1].DataBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial0].DataBits = fOk ? nVal : 0;
     nVal = ui->comboBox_Stopbits_SERIAL_PORT_0->currentText().toInt(&fOk);
-    TargetConfig.serialPorts[_serial1].StopBits = fOk ? nVal : 0;
+    TargetConfig.serialPorts[_serial0].StopBits = fOk ? nVal : 0;
     //  Serial 1
     TargetConfig.serialPorts[_serial1].portEnabled = (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex()) > 0;
     nVal = ui->comboBox_Baudrate_SERIAL_PORT_1->currentText().toInt(&fOk);
