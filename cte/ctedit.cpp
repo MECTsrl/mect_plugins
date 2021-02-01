@@ -3865,7 +3865,8 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         nRegister = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
         nRegister = fOk && nRegister != -1 ? nRegister : -1;
         if (nProtocol != PLC)  {
-            if (nProtocol== TCP_SRV || nProtocol == TCPRTU_SRV)  {
+            // ModBus Server Reg <= 4095
+            if (nProtocol == RTU_SRV || nProtocol== TCP_SRV || nProtocol == TCPRTU_SRV)  {
                 // Range allowed 0..MAX_TCPSRV_REGS (4095)
                 if (nRegister > MAX_TCPSRV_REGS)  {
                     fillErrorMessage(nRow, colRegister, errCTRegisterTooBig, szVarName, szTemp, chSeverityError, &errCt);
@@ -3880,15 +3881,15 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
                     lstCTErrors.append(errCt);
                     nErrors++;
                 }
-                // Input Register allowed only on MODBUS Client & Server (RTU e TPC nelle varie declinazioni)
-                if ((lstValues[colInputReg] == szTRUE) &&
-                    ((nProtocol == PLC)     ||
-                     (nProtocol == CANOPEN) ||
-                     (nProtocol == MECT_PTC)) )  {
-                    fillErrorMessage(nRow, colRegister, errCTInputOnlyModbus, szVarName, szTemp, chSeverityError, &errCt);
-                    lstCTErrors.append(errCt);
-                    nErrors++;
-                }
+            }
+            // Input Register allowed only on MODBUS Client & Server (RTU e TPC nelle varie declinazioni)
+            if ((lstValues[colInputReg] == szTRUE) &&
+                ((nProtocol == PLC)     ||
+                 (nProtocol == CANOPEN) ||
+                 (nProtocol == MECT_PTC)) )  {
+                fillErrorMessage(nRow, colRegister, errCTInputOnlyModbus, szVarName, szTemp, chSeverityError, &errCt);
+                lstCTErrors.append(errCt);
+                nErrors++;
             }
             // Controllo Registro già utilizzato per ModBus
             // Solo come controllo globale (prima di salvataggio)
