@@ -269,7 +269,7 @@ ctedit::ctedit(QWidget *parent) :
     // Combo Sections (bloccata per evitare Side Effects al currentIndex)
     oldState = ui->cboSections->blockSignals(true);
     for (nCol = 0; nCol < regTotals; nCol++)  {
-        ui->cboSections->addItem(lstRegions[nCol]);
+        ui->cboSections->addItem(lstRegions[nCol], nCol);
     }
     ui->cboSections->setCurrentIndex(-1);
     ui->cboSections->blockSignals(oldState);
@@ -281,7 +281,8 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.append(QLatin1String("2 - Enabled Medium Priority\n"));
     szToolTip.append(QLatin1String("3 - Enabled Low Priority"));
     for  (nCol = 0; nCol < nNumPriority; nCol++)   {
-        ui->cboPriority->addItem(lstPriority[nCol], lstPriority[nCol]);
+        ui->cboPriority->addItem(lstPriority[nCol], nCol);
+        ui->cboPriority->setItemData(nCol, Qt::AlignCenter, Qt::TextAlignmentRole);
     }
     ui->cboPriority->setToolTip(szToolTip);
     // Combo Update
@@ -294,7 +295,8 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.append(QLatin1String("V - Permanent Logging if Changed\n"));
     szToolTip.append(QLatin1String("X - Permanent Logging on Shot"));
     for  (nCol=0; nCol<lstUpdateNames.count(); nCol++)   {
-        ui->cboUpdate->addItem(lstUpdateNames[nCol], lstUpdateNames[nCol]);
+        ui->cboUpdate->addItem(lstUpdateNames[nCol], nCol);
+        ui->cboUpdate->setItemData(nCol, Qt::AlignCenter, Qt::TextAlignmentRole);
     }
     ui->cboUpdate->setToolTip(szToolTip);
     // ToolTip nome variabile
@@ -306,7 +308,7 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.clear();
     szToolTip.append(QLatin1String("Variable Data Type"));
     for  (nCol=0; nCol<lstTipi.count(); nCol++)   {
-        ui->cboType->addItem(lstTipi[nCol], lstTipi[nCol]);
+        ui->cboType->addItem(lstTipi[nCol], nCol);
     }
     ui->cboType->setToolTip(szToolTip);
     // Decimals
@@ -319,7 +321,8 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.clear();
     szToolTip.append(QLatin1String("Protocol with the remote device"));
     for  (nCol=0; nCol<lstProtocol.count(); nCol++)   {
-        ui->cboProtocol->addItem(lstProtocol[nCol], lstProtocol[nCol]);
+        ui->cboProtocol->addItem(lstProtocol[nCol], nCol);
+        ui->cboProtocol->setItemData(nCol, Qt::AlignCenter, Qt::TextAlignmentRole);
     }
     ui->cboProtocol->setToolTip(szToolTip);
     // Indirizzo IP
@@ -365,7 +368,7 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.clear();
     szToolTip.append(QLatin1String("Variable behavior: Reading, Reading and Writing, Alarm, Event"));
     for  (nCol=0; nCol<lstBehavior.count(); nCol++)   {
-        ui->cboBehavior->addItem(lstBehavior[nCol], lstBehavior[nCol]);
+        ui->cboBehavior->addItem(lstBehavior[nCol], nCol);
     }
     ui->cboBehavior->setToolTip(szToolTip);
     // Combo Condition
@@ -934,7 +937,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
     szTemp = lstRecValues[colUpdate].trimmed();
     ui->cboUpdate->setCurrentIndex(-1);
     if (! szTemp.isEmpty())  {
-        nPos = ui->cboUpdate->findText(szTemp, Qt::MatchFixedString);
+        nPos = lstUpdateNames.indexOf(szTemp);
         if (nPos >= 0 && nPos < ui->cboUpdate->count())
             ui->cboUpdate->setCurrentIndex(nPos);
     }
@@ -1116,8 +1119,8 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     // Priority
     if (! fMultiEdit || (lstEditableFields.indexOf(colPriority) >= 0 && userVar))  {
         nPos = ui->cboPriority->currentIndex();
-        if (nPos>= 0 && nPos < nNumPriority)  {
-            szTemp = ui->cboPriority->itemData(nPos).toString();
+        if (nPos>= 0 && nPos < lstPriority.count())  {
+            szTemp = lstPriority[nPos].trimmed();
         }
         else  {
             szTemp = szEMPTY;
@@ -1131,7 +1134,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     if (! fMultiEdit || lstEditableFields.indexOf(colUpdate) >= 0)  {
         nUpdate = ui->cboUpdate->currentIndex();
         if (nUpdate >= 0 && nPos < lstUpdateNames.count())  {
-            szTemp = ui->cboUpdate->itemData(nUpdate).toString();
+            szTemp = lstUpdateNames[nUpdate].trimmed();
         }
         else  {
             szTemp = szEMPTY;
@@ -1172,7 +1175,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     if (! fMultiEdit || (lstEditableFields.indexOf(colType) >= 0 && userVar))  {
         nType = ui->cboType->currentIndex();
         if (nType >= 0 && nType < lstTipi.count())  {
-            szTemp = ui->cboType->itemData(nType).toString();
+            szTemp = lstTipi[nType].trimmed();
         }
         else  {
             szTemp = szEMPTY;
@@ -1194,7 +1197,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     if (! fMultiEdit || (lstEditableFields.indexOf(colProtocol) >= 0 && userVar))  {
         nProtocol = ui->cboProtocol->currentIndex();
         if (nProtocol >= 0 && nProtocol < lstProtocol.count())  {
-            szTemp = ui->cboProtocol->itemData(nProtocol).toString();
+            szTemp = lstProtocol[nProtocol].trimmed();
         }
         else  {
             szTemp = szEMPTY;
@@ -1277,7 +1280,9 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     else  {
         lstRecValues[colComment] = ui->tblCT->item(nRow, colComment)->text().trimmed();
     }
+    //--------------------------------------
     // Clear all values for Alarms/Events
+    //--------------------------------------
     lstRecValues[colSourceVar] = szEMPTY;
     lstRecValues[colCondition] = szEMPTY;
     lstRecValues[colCompare] = szEMPTY;
@@ -1289,6 +1294,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     else  {
         szTemp = szEMPTY;
     }
+    qDebug("iface2values: Actual Behavior: [%s] Index: [%d]", szTemp.toLatin1().data(), nPos);
     if (nPos < behavior_alarm)  {
         if (! fMultiEdit || (lstEditableFields.indexOf(colBehavior) >= 0  && userVar))  {
             lstRecValues[colBehavior] = szTemp.trimmed();
@@ -1298,21 +1304,26 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
         }
     }
     else  {
-        if (nPos >= behavior_alarm && ! fMultiEdit)  {
+        // La modifica del Behavior è gestita solo in modalità Single Line
+        if (! fMultiEdit)  {
+            lstRecValues[colBehavior] = szTemp.trimmed();
             // Source Var
             nPos = ui->cboVariable1->currentIndex();
-            if (nPos >= 0 && nPos < ui->cboVariable1->count())
+            if (nPos >= 0 && nPos < ui->cboVariable1->count())  {
                 szTemp = ui->cboVariable1->itemText(nPos);
-            else
+            }
+            else  {
                 szTemp = szEMPTY;
-            // qDebug() << "Variable Var1 Pos: " << nPos;
+            }
             lstRecValues[colSourceVar] = szTemp;
             // Operator
             nPos = ui->cboCondition->currentIndex();
-            if (nPos >= 0 && nPos < ui->cboCondition->count())
+            if (nPos >= 0 && nPos < ui->cboCondition->count())  {
                 szTemp = lstCondition[nPos];
-            else
+            }
+            else  {
                 szTemp = szEMPTY;
+            }
             lstRecValues[colCondition] = szTemp;
             // Fixed Value or Variable name
             if (ui->optFixedVal->isChecked())  {
@@ -1322,10 +1333,13 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
             else  {
                 // Save Variable Name
                 nPos = ui->cboVariable2->currentIndex();
-                if (nPos >= 0 && nPos < ui->cboVariable2->count())
+                if (nPos >= 0 && nPos < ui->cboVariable2->count())  {
                     szTemp = ui->cboVariable2->itemText(nPos);
-                else
+                    qDebug("Variable Var2 Pos: %d VarName: %s", nPos, szTemp.toLatin1().data());
+                }
+                else  {
                     szTemp = szEMPTY;
+                }
             }
             lstRecValues[colCompare] = szTemp;
         }
@@ -1335,6 +1349,12 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
             lstRecValues[colCondition] = ui->tblCT->item(nRow, colCondition)->text().trimmed();;
             lstRecValues[colCompare] = ui->tblCT->item(nRow, colCompare)->text().trimmed();;
         }
+        qDebug("iface2values: Final Behavior: [%s] Source: [%s] Condition: [%s] Compare: [%s]",
+                    lstRecValues[colBehavior].toLatin1().data(),
+                    lstRecValues[colSourceVar].toLatin1().data(),
+                    lstRecValues[colCondition].toLatin1().data(),
+                    lstRecValues[colCompare].toLatin1().data()
+            );
     }
     // Finalizzazione controlli su protocolli
     // Protocollo PLC tutto abblencato
@@ -3370,13 +3390,13 @@ int ctedit::globalChecks()
     lstUniqueVarNames.clear();
     // Ricaricamento della liste Device-Nodi per i controlli di unicità registro
     // Rebuild Server-Device-Nodes structures
-    qDebug() << QLatin1String("globalChecks(): Starting");
+    qDebug("globalChecks(): Starting");
     if (! checkServersDevicesAndNodes())  {
         m_szMsg = QLatin1String("Error checking Device and Nodes structure, cannot continue checks !");
         warnUser(this, szMectTitle, m_szMsg);
         return 1;
     }
-    qDebug() << QLatin1String("globalChecks(): checkServersDevicesAndNodes Done");
+    qDebug("globalChecks(): checkServersDevicesAndNodes Done");
     // Ripulitura Array Server ModBus (1 per ogni Seriale + Protocolli TCP_SRV e TCPRTU_SRV
     for (nRow = 0; nRow < srvTotals; nRow++)  {
         serverModBus[nRow].nProtocol = -1;
@@ -3385,7 +3405,7 @@ int ctedit::globalChecks()
         serverModBus[nRow].nRegisters = 0;
         serverModBus[nRow].nLastRow = -1;
     }
-    qDebug() << QLatin1String("globalChecks(): Clean Servers List Done");
+    qDebug("globalChecks(): Clean Servers List Done");
     // Ciclo Globale su tutti gli Items di CT
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Controlla solo righe utilizzate
@@ -3422,7 +3442,7 @@ int ctedit::globalChecks()
         }
         delete errWindow;
     }
-    qDebug() << QLatin1String("globalChecks(): Ended");
+    qDebug("globalChecks(): Ended");
     return nErrors;
 }
 int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal)

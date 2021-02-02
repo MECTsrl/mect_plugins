@@ -177,7 +177,7 @@ CTEPlugin::enableIfCT(ProjectExplorer::Project* p)
     QString szFileCT;
 
     // Ask to Replace current file
-    qDebug() << tr("Loading New File....");
+    qDebug("Loading New File....");
     if (m_currentProject != p)
         checkSave();
     // Clear Project Path for Editor
@@ -202,19 +202,20 @@ CTEPlugin::enableIfCT(ProjectExplorer::Project* p)
     }
     // Building Crosstable File Name
     szFileCT = pd + QLatin1String("/") + QLatin1String(Constants::CT_PROJ_REL_PATH) + QLatin1String("/") + QLatin1String(Constants::CT_FILE_NAME);
-    qDebug()  << "Checking File: " << szFileCT;
-    qDebug()  << "Project File Path; " << pd;
+    qDebug("Checking File: %s", szFileCT.toLatin1().data());
+    qDebug("Project File Path %s", pd.toLatin1().data());
     // Any Crosstable in the project?
     QFileInfo ctFile(szFileCT);
     fFileExists = ctFile.exists() && ctFile.isFile();
     // Opening file
     if (fFileExists)  {
-        qDebug()  << "File Found: " << szFileCT << "CTE Enabled";
+        qDebug("File Found: %s CTE Enabled", szFileCT.toLatin1().data());
         ctEditor->setProjectPath(pd);
         fFileExists = ctEditor->selectCTFile(szFileCT);
     }
-    else
-        qDebug()  << "File Not Found: " << szFileCT;
+    else  {
+        qDebug("File Not Found: %s", szFileCT.toLatin1().data());
+    }
     // Enabling CTEditor and saving current file
     m_cteMode->setEnabled(fFileExists);
     m_CT_Opened = fFileExists;
@@ -229,7 +230,7 @@ void
 CTEPlugin::checkSave2()
 {
     // Used to Ask Saving only when leaving Crosstable Editor
-    qDebug() << tr("Check To Save2");
+    qDebug("Check To Save2");
     if (ctEditor->isVisible())  {
         checkSave();
     }
@@ -238,7 +239,7 @@ void
 CTEPlugin::checkSave()
 {
     // To be used always on Project Change and leaving Crosstable Editor
-    qDebug() << tr("Check To Save");
+    qDebug("Check To Save");
     if (m_CT_Opened && ! m_CT_File.isEmpty())  {
         if (ctEditor->needSave())  {
             ctEditor->querySave();
