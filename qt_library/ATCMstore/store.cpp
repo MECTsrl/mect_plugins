@@ -12,6 +12,7 @@
 #include <QDir>
 #include <errno.h>
 #include <QWSServer>
+#include <QCoreApplication>
 
 #include "global_functions.h"
 #include "app_logprint.h"
@@ -179,15 +180,18 @@ void store::updateData()
         {
             filename[0] = '\0';
         }
-
-        while(ui->tableWidget->rowCount() > 0)
-        {
-            ui->tableWidget->removeRow(0);
-        }
-        while(ui->tableWidget->columnCount() > 0)
-        {
-            ui->tableWidget->removeColumn(0);
-        }
+        // Clear Table
+        ui->tableWidget->clear();
+        ui->tableWidget->setRowCount(0);
+        ui->tableWidget->setColumnCount(0);
+        //        while(ui->tableWidget->rowCount() > 0)
+        //        {
+        //            ui->tableWidget->removeRow(0);
+        //        }
+        //        while(ui->tableWidget->columnCount() > 0)
+        //        {
+        //            ui->tableWidget->removeColumn(0);
+        //        }
         ui->tableWidget->update();
         ui->tableWidget->repaint();
 
@@ -206,6 +210,7 @@ void store::updateData()
         int retval = 0;
         while (i < LINE_BUFFER_SIZE)
         {
+            this->update();
             retval = getLogRead(STORE_DIR, ti, tf, &fpin, outstruct);
             if(retval < 0)
             {
@@ -216,6 +221,7 @@ void store::updateData()
                 showLogRead(outstruct);
                 i++;
             }
+            QCoreApplication::processEvents();
         }
 
         ui->labelFilter->setText(QString("Filter: [%1 - %2]")
@@ -443,7 +449,7 @@ void store::on_pushButtonSaveUSB_clicked()
         QWSServer::setCursorVisible(true);
         QApplication::setOverrideCursor(Qt::WaitCursor);
         ui->pushButtonSaveUSB->setEnabled(false);
-        update();
+        this->update();
 
         if (USBmount() == false)
         {
@@ -534,6 +540,7 @@ void store::on_pushButtonSaveUSB_clicked()
 
         while ( (retval = getLogRead(STORE_DIR, ti, tf, &fpin, outstruct)) >= 0)
         {
+            QCoreApplication::processEvents();
             if (retval == 0)
             {
                 if (dumpLogRead(fpout, outstruct) != 0)
@@ -543,6 +550,7 @@ void store::on_pushButtonSaveUSB_clicked()
                     goto umount_and_exit;
                 }
             }
+            this->update();
         }
         fclose(fpout);
 
@@ -566,6 +574,7 @@ void store::on_pushButtonSaveUSB_clicked()
         
         LOG_PRINT(verbose_e, "DOWNLOADED\n");
         QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
+
 umount_and_exit:
         /* unmount USB key */
         USBumount();
