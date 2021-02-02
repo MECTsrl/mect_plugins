@@ -181,6 +181,27 @@
             <keyword id="MyApplication::foobar" ref="doc.html#foobar"/>
         </keywords>
         <files>
+			<file>Schema_TPX107003D.png</file>
+			<file>Schema_TPX107003E.png</file>
+			<file>Schema_TPX107003D.html</file>
+			<file>Schema_TPX107003E.html</file>
+			<file>Config_Out_Analogici_generico_MPNC035.html</file>
+			<file>Config_In_Analogici_generico_MPNC030.html</file>
+			<file>Schema_MPNC035.png</file>
+			<file>Schema_MPNC035.html</file>
+			<file>Schema_MPNC020_02.png</file>
+			<file>Schema_MPNC020_02.html</file>
+			<file>Schema_MPNC020_01.png</file>
+			<file>Schema_MPNC020_01.html</file>
+			<file>Schema_MPNC030.png</file>
+			<file>Schema_MPNC030.html</file>
+			<file>Config_Filtro_In_Analogici_MPNC006.html</file>
+			<file>Config_In_Analogici_generico_MPNC006.html</file>
+			<file>Schema_MPNC_Daisy_C.png</file>
+			<file>Schema_MPNC006.png</file>
+			<file>Schema_MPNC006.html</file>
+			<file>Config_dir_In_Out_digitali_mpnc006.html</file>
+		
 			<file>Config_ingressi_uscite_mpne.html</file>
 			<file>Schema_MPNE1001_06.html</file>
 			<file>Schema_MPNE1001_06.png</file>
@@ -196,8 +217,7 @@
 			<file>Schema_MPNE1001_0000.html</file>
 			<file>Schema_MPNE1001_0000.png</file>
 			<file>Config_dir_In_Out_digitali_mpne1001_0000.html</file>
-			<file>Sinottico_IO_remoti.html</file>
-			
+			<file>Sinottico_IO_remoti.html</file>			
 			<file>Traduzioni_allarmi.html</file>
 			<file>Schema_TPAC100704AE.html</file>
 			<file>Schema_TPAC100704AD.html</file>

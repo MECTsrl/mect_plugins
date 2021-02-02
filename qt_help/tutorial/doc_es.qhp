@@ -181,6 +181,27 @@
             <keyword id="MyApplication::foobar" ref="doc_es.html#foobar"/>
         </keywords>
         <files>
+			<file>Schema_TPX107003D.png</file>
+			<file>Schema_TPX107003E.png</file>
+			<file>Schema_TPX107003D.html</file>
+			<file>Schema_TPX107003E.html</file>
+			<file>Config_Out_Analogici_generico_MPNC035_es.html</file>
+			<file>Config_In_Analogici_generico_MPNC030_es.html</file>
+			<file>Schema_MPNC035.png</file>
+			<file>Schema_MPNC035_es.html</file>
+			<file>Schema_MPNC020_02.png</file>
+			<file>Schema_MPNC020_02_es.html</file>
+			<file>Schema_MPNC020_01.png</file>
+			<file>Schema_MPNC020_01_es.html</file>
+			<file>Schema_MPNC030.png</file>
+			<file>Schema_MPNC030_es.html</file>
+			<file>Config_Filtro_In_Analogici_MPNC006_es.html</file>
+			<file>Config_In_Analogici_generico_MPNC006_es.html</file>
+			<file>Schema_MPNC_Daisy_C.png</file>
+			<file>Schema_MPNC006.png</file>
+			<file>Schema_MPNC006_es.html</file>
+			<file>Config_dir_In_Out_digitali_mpnc006_es.html</file>
+			
 			<file>Config_ingressi_uscite_mpne_es.html</file>
 			<file>Schema_MPNE1001_06.html</file>
 			<file>Schema_MPNE1001_06.png</file>
