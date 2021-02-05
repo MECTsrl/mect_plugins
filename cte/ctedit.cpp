@@ -217,6 +217,7 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNoRegister] = trUtf8("Empty or Invalid Register Value");
     lstErrorMessages[errCTRegisterTooBig] = trUtf8("Register Number too big for TCP Server");
     lstErrorMessages[errCTRegisterUsedTwice] = trUtf8("Register Number or Bit Position (Decimal) already used in Other Variables");
+    lstErrorMessages[errCTRegisterOverlapping] = trUtf8("Register Overlapping with Previous Register");
     lstErrorMessages[errCTInputOnlyModbus]  = trUtf8("Input Register allowed only on Modbus Client/Server");
     lstErrorMessages[errCTModBusServerDuplicate] = trUtf8("Server Already present with different Port/Node");
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
@@ -341,7 +342,7 @@ ctedit::ctedit(QWidget *parent) :
     szToolTip.clear();
     szToolTip.append(QLatin1String("Remode Node Address 0..255\n"));
     szToolTip.append(QLatin1String("\tFor RTU 1..247\n"));
-    szToolTip.append(QLatin1String("\tFor TCP 0 or 255"));
+    szToolTip.append(QLatin1String("\tFor TCP 0..255"));
     ui->txtNode->setToolTip(szToolTip);
     // Check Input Register
     szToolTip.clear();
@@ -3370,6 +3371,7 @@ void ctedit::fillErrorMessage(int nRow, int nCol, int nErrCode, QString szVarNam
     errCt->szVarName = szVarName;
     errCt->szValue = szValue;
 }
+
 int ctedit::globalChecks()
 // Controlli complessivi su tutta la CT
 {
@@ -3381,10 +3383,16 @@ int ctedit::globalChecks()
     Err_CT      errCt;
     // Form per Display Errori
     cteErrorList    *errWindow;
+    int nPrevProtocol = PLC;
+    int nPrevPort = -1;
+    int nPrevNode = -1;
+    int nPrevRegister = -1;
+    int nPrevSize = 0;
 
     // Condizione di sicurezza per file CT non aperto
-    if (lstCTRecords.count() <= 0)
+    if (lstCTRecords.count() <= 0)  {
         return 0;
+    }
     // Ripulitura lista errori
     lstCTErrors.clear();
     lstUniqueVarNames.clear();
@@ -3410,7 +3418,6 @@ int ctedit::globalChecks()
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Controlla solo righe utilizzate
         if (lstCTRecords[nRow].Enable)  {
-            // qDebug() << QString::fromAscii("globalChecks(): Checking Row: %1") .arg(nRow);
             // Controllo univocità di nome
             szTemp = QString::fromAscii(lstCTRecords[nRow].Tag).trimmed();
             if (lstUniqueVarNames.contains(szTemp, Qt::CaseInsensitive))  {
@@ -3426,6 +3433,50 @@ int ctedit::globalChecks()
             if (fRecOk)  {
                 nErrors += checkFormFields(nRow, lstFields, false);
             }
+            // Controlli sulla variabile corrente (Solo Area Utente)
+            if (nRow < MAX_NONRETENTIVE)  {
+                // Controllo della dimensione del registro (Modbus Only)
+                if (isModbus(lstCTRecords[nRow].Protocol))  {
+                    int nVarSize = varSizeInBlock(lstCTRecords[nRow].VarType);
+                    // Stesso Protocollo della variabile precedente, Stesso Nodo, stessa Porta
+                    if (lstCTRecords[nRow].Protocol == nPrevProtocol    &&
+                        lstCTRecords[nRow].Port     == nPrevPort        &&
+                        lstCTRecords[nRow].nNode    == nPrevNode)  {
+                            // Controllo di registri in Overlapping
+                            int nActRegister = lstCTRecords[nRow].Offset;
+                            int nPrevEnd = (nPrevRegister + nPrevSize);
+                            if (nActRegister < nPrevEnd)  {
+                                szTemp = QString::fromLatin1("Reg.[%1] overlapped on:[%2]") .arg(lstCTRecords[nRow].Offset) .arg(nPrevRegister);
+                                QString szVarName = QString::fromAscii(lstCTRecords[nRow].Tag);
+                                // Overlapping con variabile precedente
+                                qDebug("globalChecks(): Overlapping tra riga %d e %d Registro %d", nRow, nRow + 1, nActRegister);
+                                fillErrorMessage(nRow, colRegister, errCTRegisterOverlapping, szVarName, szTemp, chSeverityError, &errCt);
+                                lstCTErrors.append(errCt);
+                                nErrors++;
+                            }
+                    }
+                    nPrevProtocol = lstCTRecords[nRow].Protocol;
+                    nPrevPort = lstCTRecords[nRow].Port;
+                    nPrevNode = lstCTRecords[nRow].nNode;
+                    nPrevRegister = lstCTRecords[nRow].Offset;
+                    nPrevSize = nVarSize;
+                }
+                else {
+                    // No Modbus protocol
+                    nPrevProtocol = PLC;
+                    nPrevPort = -1;
+                    nPrevNode = -1;
+                    nPrevRegister = -1;
+                    nPrevSize = 0;
+                }
+            }
+        }
+        else {
+            nPrevProtocol = PLC;
+            nPrevPort = -1;
+            nPrevNode = -1;
+            nPrevRegister = -1;
+            nPrevSize = 0;
         }
     }
     // Display finestra errore
@@ -3772,22 +3823,20 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             lstCTErrors.append(errCt);
             nErrors++;
         }
-        /*
         // Per RTU valori 0..247
-        else if (nProtocol == RTU && nNodeID > nMaxRTUNodeID)  {
-            szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String("Must be from 0 to ") + QString::number(nMaxRTUNodeID);
+        if (nProtocol == RTU && (nNodeID < 1 || nNodeID > nMaxRTUNodeID))  {
+            szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String("Must be from 1 to ") + QString::number(nMaxRTUNodeID);
             fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }
-        // Per TCP sono ammessi solo i valori 0 o 255
-        else if (nProtocol == TCP && (nNodeID > 0 || nNodeID < nMaxNodeID))  {
-            szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String("Must be from 0 or ") + QString::number(nMaxNodeID);
-            fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
-            lstCTErrors.append(errCt);
-            nErrors++;
-        }
-        */
+        //        // Per TCP sono ammessi solo i valori 0 o 255
+        //        if ((nProtocol == TCP || nProtocol == TCPRTU) && (nNodeID < 0 || nNodeID > nMaxNodeID))  {
+        //            szTemp = QLatin1String("Port: ") + lstValues[colPort] + QLatin1String("Must be from 0 or ") + QString::number(nMaxNodeID);
+        //            fillErrorMessage(nRow, colNodeID, errCTNoNode, szVarName, szTemp, chSeverityError, &errCt);
+        //            lstCTErrors.append(errCt);
+        //            nErrors++;
+        //        }
     }
     //---------------------------------------
     // Controlli Univocità Server (MODBUS) [NO MULTIEDIT]
@@ -6144,10 +6193,12 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
         // Paste element
         fieldValues2CTrecList(lstRecords2Add[nPasted], lstCTRecords, nDestRow);
         // Force Block Size to Var Size
-        if (lstCTRecords[nDestRow].Protocol ==  PLC)
+        if (lstCTRecords[nDestRow].Protocol ==  PLC)  {
             lstCTRecords[nDestRow].BlockSize = 1;
-        else
+        }
+        else  {
             lstCTRecords[nDestRow].BlockSize = varSizeInBlock(lstCTRecords[nDestRow].VarType);
+        }
         // Controllo Protocollo / Porta RTU
         int nProtocol = lstCTRecords[nDestRow].Protocol;
         if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {

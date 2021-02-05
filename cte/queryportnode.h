@@ -17,6 +17,9 @@ public:
     ~queryPortNode();
     void getPortNode(int &nPort, int&nNode);
 
+private slots:
+    void validatePort();
+
 private:
     Ui::queryPortNode *ui;
 };

@@ -191,7 +191,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     txtNode = new QLineEdit(this);
     txtNode->setStyleSheet(szTemp);
     txtNode->setToolTip(QLatin1String("Change Node ID"));
-    txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
+    txtNode->setValidator(new QIntValidator(1, nMaxRTUNodeID, this));
     txtNode->setMaximumWidth(40);
     mainGrid->addWidget(txtNode, nRowSelector, nColNode + 1);
     // Baud Rate Seriale

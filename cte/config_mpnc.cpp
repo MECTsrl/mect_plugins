@@ -172,7 +172,7 @@ Config_MPNC::Config_MPNC(QWidget *parent) :
     txtNode->setToolTip(QLatin1String("Change Node ID"));
     txtNode->setStyleSheet(szTemp);
     txtNode->setAlignment(Qt::AlignVCenter | Qt::AlignHCenter);
-    txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
+    txtNode->setValidator(new QIntValidator(1, nMaxRTUNodeID, this));
     mainGrid->addWidget(txtNode, nRowSelector, nBaseDigOut + 2, 1, 2);
     // Baud Rate Seriale
     szTemp.clear();

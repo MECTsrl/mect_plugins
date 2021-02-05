@@ -32,6 +32,7 @@ enum errorMessages_e
     errCTNoRegister,
     errCTRegisterTooBig,
     errCTRegisterUsedTwice,
+    errCTRegisterOverlapping,
     errCTInputOnlyModbus,
     errCTModBusServerDuplicate,
     errCTNoBehavior,

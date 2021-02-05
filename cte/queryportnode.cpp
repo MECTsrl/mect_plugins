@@ -36,7 +36,8 @@ queryPortNode::queryPortNode(const QString &szTitle, QString &szMessage, QWidget
     // Default Node to 1
     ui->txtNode->setText(QLatin1String("1"));
     // Int Validator
-    ui->txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
+    ui->txtNode->setValidator(new QIntValidator(1, nMaxRTUNodeID, this));
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(validatePort()));
 }
 
 queryPortNode::~queryPortNode()
@@ -51,4 +52,21 @@ void queryPortNode::getPortNode(int &nPort, int&nNode)
 
     nNode = fOk ? nUserNode : 1;
     nPort = ui->cboPort->currentIndex();
+}
+
+void queryPortNode::validatePort()
+
+{
+    QString szTemp;
+    bool    fOk = false;
+    int     nUserNode = ui->txtNode->text().trimmed().toInt(&fOk);
+
+    if ((nUserNode >= 1 && nUserNode <= nMaxRTUNodeID) && ui->cboPort->currentIndex() >= 0) {
+        this->accept();
+    }
+    else  {
+        szTemp = QLatin1String("Port Number Must be from 1 to ") + QString::number(nMaxRTUNodeID);
+        warnUser(this, this->windowTitle(), szTemp);
+        this->reject();
+    }
 }
