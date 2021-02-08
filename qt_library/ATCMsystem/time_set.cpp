@@ -77,16 +77,16 @@ void time_set::reload()
     ui->pushButtonTime->setText(QTime::currentTime().toString("HH:mm:ss"));
     ui->pushButtonCalendar->setText(QDateTime::currentDateTime().date().toString("yyyy-MM-dd"));
 
-    fOffset = ntpclient->getOffset_h();
+    nOffset = ntpclient->getOffset_h();
     nTimeOut = ntpclient->getTimeout_s();
     nPeriod = ntpclient->getPeriod_h();
     szTimeServer = ntpclient->getNtpServer();
 
     ui->pushButtonNTP->setText(szTimeServer);
-    ui->pushButtonOffset->setText(QString::number(fOffset, 'f', 1));
+    ui->pushButtonOffset->setText(QString::number(nOffset));
     ui->pushButtonTimeOut->setText(QString::number(nTimeOut));
     ui->pushButtonPeriod->setText(QString::number(nPeriod));
-
+    ui->progressBarElapsed->setVisible(false);
     showFullScreen();
 }
 
@@ -161,7 +161,7 @@ void time_set::on_pushButtonNTPSync_clicked()
 {
 
     if (! szTimeServer.isEmpty())  {
-        ntpclient->setNtpParams(szTimeServer, nTimeOut, fOffset, nPeriod);
+        ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod);
         ntpclient->requestNTPSync();
     }
 
@@ -207,16 +207,16 @@ void time_set::on_pushButtonSetManual_clicked()
 void time_set::on_pushButtonOffset_clicked()
 {
     numpad * dk;
-    float value = fOffset;
-    float min = -12;
-    float max = +12;
+    int value = nOffset;
+    int min = -12;
+    int max = +12;
 
-    dk = new numpad(&value, fOffset, 1, min, max);
+    dk = new numpad(&value, nOffset, min, max);
     dk->showFullScreen();
     if (dk->exec() == QDialog::Accepted)
     {
-        fOffset = value;
-        ui->pushButtonOffset->setText(QString::number(fOffset, 'f', 1));
+        nOffset = value;
+        ui->pushButtonOffset->setText(QString::number(nOffset));
     }
 }
 
@@ -244,7 +244,7 @@ void time_set::on_pushButtonPeriod_clicked()
     int min = 0;
     int max = THE_NTP_MAX_PERIOD_H;
 
-    dk = new numpad(&value, nTimeOut, min, max);
+    dk = new numpad(&value, nPeriod, min, max);
     dk->showFullScreen();
 
     if (dk->exec() == QDialog::Accepted)
@@ -257,7 +257,7 @@ void time_set::on_pushButtonPeriod_clicked()
 void time_set::on_pushButtonNTPSet_clicked()
 {
     if (! szTimeServer.isEmpty())  {
-        ntpclient->setNtpParams(szTimeServer, nTimeOut, fOffset, nPeriod);
+        ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod);
     }
 }
 
@@ -267,10 +267,10 @@ void time_set::on_pushButtonNTPDefualts_clicked()
     szTimeServer = QString(THE_NTP_SERVER);
     nTimeOut = 10;
     nPeriod = 0;
-    fOffset = 1.0;
+    nOffset = 1;
 
     ui->pushButtonNTP->setText(szTimeServer);
-    ui->pushButtonOffset->setText(QString::number(fOffset, 'f', 1));
+    ui->pushButtonOffset->setText(QString::number(nOffset));
     ui->pushButtonTimeOut->setText(QString::number(nTimeOut));
     ui->pushButtonPeriod->setText(QString::number(nPeriod));
 

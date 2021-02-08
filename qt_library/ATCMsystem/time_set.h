@@ -49,7 +49,7 @@ private slots:
 
 private:
     Ui::time_set *ui;
-    float       fOffset;
+    int         nOffset;
     int         nTimeOut;
     int         nPeriod;
     QString     szTimeServer;

@@ -23,7 +23,7 @@ NtpClient::NtpClient(QObject *parent) :
     objSettings->beginGroup("NTP-Server");
     ntpServerName = objSettings->value("serverName", THE_NTP_SERVER).toString();
     ntpTimeout = objSettings->value("serverTimeOut", "10").toInt();
-    ntpOffset = objSettings->value("serverOffset", "1.0").toFloat();
+    ntpOffset = objSettings->value("serverOffset", "1").toInt();
     ntpPeriod = objSettings->value("serverPeriod", "0").toInt();
     objSettings->endGroup();
 
@@ -39,7 +39,7 @@ int         NtpClient::getTimeout_s()
     return ntpTimeout;
 }
 
-float       NtpClient::getOffset_h()
+int       NtpClient::getOffset_h()
 {
     return ntpOffset;
 }
@@ -49,7 +49,7 @@ int         NtpClient::getPeriod_h()
     return ntpPeriod;
 }
 
-void        NtpClient::setNtpParams(const QString &ntpServer, int ntpTimeout_s, float ntpOffset_h, int ntpPeriod_h )
+void        NtpClient::setNtpParams(const QString &ntpServer, int ntpTimeout_s, int ntpOffset_h, int ntpPeriod_h )
 {
     QSettings  *objSettings = new QSettings(NTP_FILE, QSettings::IniFormat);
     objSettings->beginGroup("NTP-Server");
@@ -63,7 +63,7 @@ void        NtpClient::setNtpParams(const QString &ntpServer, int ntpTimeout_s, 
     objSettings->setValue("serverTimeOut", ntpTimeout);
     // Offset
     ntpOffset = ntpOffset_h;
-    ntpOffset = (ntpOffset > 12 || ntpOffset < -12) ? 1.0 : ntpOffset;
+    ntpOffset = (ntpOffset > 12 || ntpOffset < -12) ? 1 : ntpOffset;
     objSettings->setValue("serverOffset", ntpOffset);
     // Period
     ntpPeriod = ntpPeriod_h;

@@ -21,9 +21,9 @@ public:
 
     QString     getNtpServer();
     int         getTimeout_s();
-    float       getOffset_h();
+    int         getOffset_h();
     int         getPeriod_h();
-    void        setNtpParams(const QString &ntpServer, int ntpTimeout_s, float ntpOffset_h, int ntpPeriod_h);
+    void        setNtpParams(const QString &ntpServer, int ntpTimeout_s, int ntpOffset_h, int ntpPeriod_h);
 
 signals:
     void        ntpSyncFinish(bool timeOut);
@@ -44,7 +44,7 @@ private:
     QDateTime       newDateTime;
     QString         ntpServerName;
     int             ntpTimeout;
-    float           ntpOffset;
+    int             ntpOffset;
     int             ntpPeriod;
 
 protected:
