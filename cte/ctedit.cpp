@@ -3441,7 +3441,8 @@ int ctedit::globalChecks()
                     // Stesso Protocollo della variabile precedente, Stesso Nodo, stessa Porta
                     if (lstCTRecords[nRow].Protocol == nPrevProtocol    &&
                         lstCTRecords[nRow].Port     == nPrevPort        &&
-                        lstCTRecords[nRow].nNode    == nPrevNode)  {
+                        lstCTRecords[nRow].nNode    == nPrevNode        &&
+                        ! isBitField(lstCTRecords[nRow].VarType)    )  {
                             // Controllo di registri in Overlapping
                             int nActRegister = lstCTRecords[nRow].Offset;
                             int nPrevEnd = (nPrevRegister + nPrevSize);
