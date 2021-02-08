@@ -11,9 +11,11 @@
 
 #include "pagebrowser.h"
 
+#include <QString>
+
 namespace Ui {
 class time_set;
-    }
+}
 
 class time_set : public page
 {
@@ -52,6 +54,6 @@ private:
     int         nPeriod;
     QString     szTimeServer;
 
-}
+};
 #endif // TIME_SET_H
 

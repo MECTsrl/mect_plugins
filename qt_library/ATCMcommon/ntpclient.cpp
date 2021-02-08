@@ -13,6 +13,8 @@
 #define THE_NTP_TIMEOUT_ms 9000
 #define THE_MAX_TRIPTIME_s 1LL
 
+NtpClient * ntpclient = NULL;
+
 NtpClient::NtpClient(QObject *parent) :
     QObject(parent)
 {

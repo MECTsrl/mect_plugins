@@ -13,7 +13,7 @@
 
 #include "timepopup.h"
 #include "calendar.h"
-#include "hmi_logger.h"
+#include "ntpclient.h"
 
 /* this define set the window title */
 #define WINDOW_TITLE "DATA E ORA"
