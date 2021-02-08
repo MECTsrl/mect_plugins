@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>391</width>
-    <height>306</height>
+    <width>272</width>
+    <height>272</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>0</height>
+    <width>242</width>
+    <height>242</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -29,8 +29,17 @@
    <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <property name="margin">
+    <number>2</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <property name="sizeConstraint">
       <enum>QLayout::SetMinimumSize</enum>
      </property>
@@ -67,11 +76,16 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <family>DejaVu Sans</family>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>Date Time</string>
+        <string>Time Set</string>
        </property>
       </widget>
      </item>
@@ -89,6 +103,11 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>DejaVu Sans</family>
+        </font>
        </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
@@ -112,18 +131,52 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
-      <widget class="QPushButton" name="pushButtonCalendar">
+      <widget class="QLabel" name="labelManual">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>57</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
-         <width>128</width>
-         <height>64</height>
+         <width>57</width>
+         <height>30</height>
         </size>
        </property>
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>14</pointsize>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Manual:        </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonCalendar">
+       <property name="maximumSize">
+        <size>
+         <width>128</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>DejaVu Sans Mono</family>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -142,13 +195,13 @@
        <property name="maximumSize">
         <size>
          <width>128</width>
-         <height>64</height>
+         <height>50</height>
         </size>
        </property>
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>14</pointsize>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -156,33 +209,117 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonSetManual">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+border: 2px solid  rgb(94, 94, 94);
+border-radius: 8px;
+qproperty-icon: url(:/libicons/img/OK.png);
+qproperty-iconSize: 24px 24px;
+qproperty-focusPolicy: NoFocus;
+}
+QPushButton:pressed
+{
+border: 2px solid  rgb(194, 194, 194);
+background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+border: 2px solid  rgb(194, 194, 194);
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <spacer name="verticalSpacer_2">
+    <widget class="Line" name="line_3">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Horizontal</enum>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
+    </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_6">
-     <property name="leftMargin">
-      <number>0</number>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="spacing">
+      <number>1</number>
      </property>
-     <item>
+     <item row="2" column="5">
+      <widget class="QPushButton" name="pushButtonNTPSync">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+border: 2px solid  rgb(94, 94, 94);
+border-radius: 8px;
+qproperty-icon: url(:/libicons/img/Refresh.png);
+qproperty-iconSize: 24px 24px;
+qproperty-focusPolicy: NoFocus;
+}
+QPushButton:pressed
+{
+border: 2px solid  rgb(194, 194, 194);
+background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+border: 2px solid  rgb(194, 194, 194);
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
       <widget class="QLabel" name="labelNtpServer">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
        </property>
        <property name="maximumSize">
         <size>
@@ -193,32 +330,15 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>14</pointsize>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>NTP Server:        </string>
+        <string>NTP:        </string>
        </property>
       </widget>
      </item>
-     <item>
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
+     <item row="0" column="1" colspan="4">
       <widget class="QPushButton" name="pushButtonNTP">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -229,19 +349,19 @@
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>0</height>
+         <height>30</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>480</width>
-         <height>64</height>
+         <width>800</width>
+         <height>40</height>
         </size>
        </property>
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>14</pointsize>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="text">
@@ -249,12 +369,70 @@
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
-      <widget class="QLabel" name="labelTZ">
+     <item row="1" column="2">
+      <widget class="QPushButton" name="pushButtonOffset">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>50</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>DejaVu Sans Mono</family>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="pushButtonPeriod">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>50</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>50</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>DejaVu Sans Mono</family>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>24</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLabel" name="labelTOut">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -263,88 +441,175 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>0</height>
+         <width>60</width>
+         <height>30</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>128</width>
-         <height>64</height>
+         <height>30</height>
         </size>
        </property>
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>14</pointsize>
+         <pointsize>9</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>TZ + DST :      </string>
+        <string>Timeout:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QComboBox" name="comboBoxTZDST">
+     <item row="1" column="4">
+      <widget class="QPushButton" name="pushButtonTimeOut">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>0</height>
+         <width>50</width>
+         <height>30</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
-         <height>64</height>
+         <width>50</width>
+         <height>40</height>
         </size>
        </property>
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_7">
-     <item alignment="Qt::AlignHCenter">
-      <widget class="QLabel" name="labelSync">
-       <property name="font">
-        <font>
-         <family>DejaVu Sans Mono</family>
-         <pointsize>14</pointsize>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>Syncing... Please Wait!</string>
+        <string>60</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="labelOffset">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>128</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>DejaVu Sans Mono</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Offset:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <widget class="QPushButton" name="pushButtonNTPSet">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+border: 2px solid  rgb(94, 94, 94);
+border-radius: 8px;
+qproperty-icon: url(:/libicons/img/Modify.png);
+qproperty-iconSize: 24px 24px;
+qproperty-focusPolicy: NoFocus;
+}
+QPushButton:pressed
+{
+border: 2px solid  rgb(194, 194, 194);
+background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+border: 2px solid  rgb(194, 194, 194);
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QLabel" name="labelPeriod">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>128</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>DejaVu Sans Mono</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Period:</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <spacer name="verticalSpacer">
+    <widget class="Line" name="line_2">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Horizontal</enum>
      </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::MinimumExpanding</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <property name="spacing">
-      <number>4</number>
+      <number>2</number>
      </property>
      <item>
       <widget class="QPushButton" name="pushButtonHome">
@@ -452,51 +717,37 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
-         <height>57</height>
+         <width>20</width>
+         <height>10</height>
         </size>
        </property>
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonNTPSync">
-       <property name="maximumSize">
-        <size>
-         <width>80</width>
-         <height>40</height>
-        </size>
+      <widget class="QProgressBar" name="progressBarElapsed">
+       <property name="maximum">
+        <number>30</number>
        </property>
-       <property name="text">
-        <string>   NTP</string>
+       <property name="value">
+        <number>30</number>
        </property>
-       <property name="icon">
-        <iconset resource="libicons.qrc">
-         <normaloff>:/libicons/img/OK.png</normaloff>:/libicons/img/OK.png</iconset>
+       <property name="textVisible">
+        <bool>true</bool>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="format">
+        <string>%v</string>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonOk">
+      <widget class="QPushButton" name="pushButtonNTPDefualts">
        <property name="minimumSize">
         <size>
          <width>40</width>
-         <height>40</height>
+         <height>30</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -513,7 +764,7 @@ border: 2px solid  rgb(194, 194, 194);
 {
 border: 2px solid  rgb(94, 94, 94);
 border-radius: 8px;
-qproperty-icon: url(:/libicons/img/OK.png);
+qproperty-icon: url(:/libicons/img/Undo.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 }
@@ -537,8 +788,6 @@ border: 2px solid  rgb(194, 194, 194);
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="libicons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

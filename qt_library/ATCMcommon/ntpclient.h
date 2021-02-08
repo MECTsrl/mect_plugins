@@ -3,31 +3,57 @@
 
 #include <QSettings>
 #include <QCoreApplication>
+#include <QObject>
+#include <QString>
+#include <QElapsedTimer>
+#include <QDateTime>
+#include <sys/types.h>
 
-#include <byteswap.h>
-#include <netdb.h> // getaddrinfo()
-#include <arpa/inet.h> // inet_ntop()
-#include <time.h>
-#include <unistd.h>
+#define THE_NTP_MAX_PERIOD_H    2982       // Massimo numero di ore convertite in ms per Int32
+#define THE_NTP_SERVER     "tempo.ien.it"
 
-class ntpclient
+
+class NtpClient : public QObject
 {
+    Q_OBJECT
+public:
+    explicit NtpClient(QObject *parent = 0);
+
+    QString     getNtpServer();
+    int         getTimeout_s();
+    float       getOffset_h();
+    int         getPeriod_h();
+    void        setNtpParams(const QString &ntpServer, int ntpTimeout_s, float ntpOffset_h, int ntpPeriod_h);
+
+signals:
+    void        ntpSyncFinish(bool timeOut);
+    void        ntpDateTimeChangeFinish();
+
+public slots:
+    void        requestNTPSync();
+    void        requestDateTimeChange(QDateTime newTime);
 
 private:
-    bool ntpClientProcedure();
-    int64_t getTimestamp();
-    void setTimestamp(int64_t TargetTimestamp);
+    int64_t         getTimestamp();
+    void            setTimestamp(int64_t TargetTimestamp);
+    bool            ntpClientProcedure();
 
-public:
-    ntpclient();
-    bool doNTPSync();
 
-    static int getTimeZoneDST();
-    static void setTimeZoneDST(int tzDST);
+    QElapsedTimer   timer;
+    bool            doSync;
+    QDateTime       newDateTime;
+    QString         ntpServerName;
+    int             ntpTimeout;
+    float           ntpOffset;
+    int             ntpPeriod;
 
-    static QString getServerName();
-    static void setServerName(QString serverName);
+protected:
+    bool            ntpSyncOrChangeRequested();
+    void            doSyncOrChange();
 
 };
+
+extern NtpClient    *ntpclient;
+
 
 #endif //  NTPCLIENT_H

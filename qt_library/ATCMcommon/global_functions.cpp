@@ -526,6 +526,8 @@ bool CommStart()
         return false;
     }
 
+    ntpclient = new NtpClient(NULL);
+
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     logger = new Logger(NULL, NULL, LogPeriodSecS*1000);
 #endif

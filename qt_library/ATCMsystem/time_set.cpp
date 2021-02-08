@@ -13,7 +13,7 @@
 
 #include "timepopup.h"
 #include "calendar.h"
-#include "ntpclient.h"
+#include "hmi_logger.h"
 
 /* this define set the window title */
 #define WINDOW_TITLE "DATA E ORA"
@@ -74,28 +74,19 @@ time_set::time_set(QWidget *parent) :
 void time_set::reload()
 {
     /* Load data and time 1*/
-#if 0
-    ui->dateEdit->setDate(QDateTime::currentDateTime().date());
-    ui->spinBoxOre->setValue(QDateTime::currentDateTime().time().hour());
-    ui->spinBoxMinuti->setValue(QDateTime::currentDateTime().time().minute());
-#else
     ui->pushButtonTime->setText(QTime::currentTime().toString("HH:mm:ss"));
     ui->pushButtonCalendar->setText(QDateTime::currentDateTime().date().toString("yyyy-MM-dd"));
-    int tz;
-    int tzIni = ntpclient::getTimeZoneDST();
-    if(!tzIni) {
-        tzIni = 2;
-    }
-    ui->comboBoxTZDST->clear();
-    for (int i=0; i< 25 ; i++) {
-        tz = i-12;
-        ui->comboBoxTZDST->addItem(QString::number(tz));
-        if(tz == tzIni) {
-            ui->comboBoxTZDST->setCurrentIndex(i);
-        }
-    }
-    ui->labelSync->setVisible(false);
-#endif
+
+    fOffset = ntpclient->getOffset_h();
+    nTimeOut = ntpclient->getTimeout_s();
+    nPeriod = ntpclient->getPeriod_h();
+    szTimeServer = ntpclient->getNtpServer();
+
+    ui->pushButtonNTP->setText(szTimeServer);
+    ui->pushButtonOffset->setText(QString::number(fOffset, 'f', 1));
+    ui->pushButtonTimeOut->setText(QString::number(nTimeOut));
+    ui->pushButtonPeriod->setText(QString::number(nPeriod));
+
     showFullScreen();
 }
 
@@ -141,69 +132,6 @@ void time_set::on_pushButtonTime_clicked()
 /**
   * @brief save the actual date/time
   */
-void time_set::on_pushButtonOk_clicked()
-{
-    /* UPDATE THE SYSTEM CLOCK */
-
-    time_t rt = 0;
-    struct tm *pt = NULL;
-    struct timezone timez;
-    struct timeval temp;
-    int rc = 0;
-
-    rt = time(NULL);
-    pt = localtime(&rt);
-    if (pt == NULL) {
-        fputs(__func__, stderr);
-        perror(": while getting local time");
-        fflush(stderr);
-
-        return;
-    }
-
-#if 0
-    pt->tm_year = ui->dateEdit->date().year() - 1900;
-    pt->tm_mon = ui->dateEdit->date().month() - 1;
-    pt->tm_mday = ui->dateEdit->date().day();
-    pt->tm_hour = ui->spinBoxOre->value();
-    pt->tm_min = ui->spinBoxMinuti->value();
-    pt->tm_sec = 0;
-#else
-    QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
-    pt->tm_year = d.year() - 1900;
-    pt->tm_mon = d.month() - 1;
-    pt->tm_mday = d.day();
-
-    QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss");
-    pt->tm_hour = t.hour();
-    pt->tm_min = t.minute();
-    pt->tm_sec = t.second();
-#endif
-
-    rc = gettimeofday(&temp, &timez);
-    if (rc < 0) {
-        fputs(__func__, stderr);
-        perror(": while getting time of day");
-        fflush(stderr);
-
-        return;
-    }
-
-    temp.tv_sec = mktime(pt);
-    temp.tv_usec = 0;
-
-    rc = settimeofday(&temp, &timez);
-    if (rc < 0) {
-        fputs(__func__, stderr);
-        perror(": while setting time of day");
-        fflush(stderr);
-
-        return;
-    }
-
-    system("/sbin/hwclock -wu");        /* Update RTC from system */
-
-}
 
 void time_set::on_pushButtonHome_clicked()
 {
@@ -231,20 +159,26 @@ void time_set::on_pushButtonCalendar_clicked()
 
 void time_set::on_pushButtonNTPSync_clicked()
 {
-    ui->labelSync->setVisible(true);
-    QCoreApplication::processEvents();
 
-    ntpclient *ntp = new ntpclient();
-    ntp->setServerName(ui->pushButtonNTP->text());
-    ntp->setTimeZoneDST(ui->comboBoxTZDST->currentText().toInt());
-    if(ntp->doNTPSync()){
-        ui->pushButtonCalendar->setText(QDate::currentDate().toString("yyyy-MM-dd"));
-        ui->pushButtonTime->setText(QTime::currentTime().toString("hh:mm:ss"));
-        QMessageBox::information(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Date and Time set."));
-    } else {
-        QMessageBox::warning(0,QApplication::trUtf8("NTP SYNC"), QApplication::trUtf8("Network Error \nDate and Time can not be set."));
+    if (! szTimeServer.isEmpty())  {
+        ntpclient->setNtpParams(szTimeServer, nTimeOut, fOffset, nPeriod);
+        ntpclient->requestNTPSync();
     }
-    ui->labelSync->setVisible(false);
+
+//    ui->labelSync->setVisible(true);
+//    QCoreApplication::processEvents();
+
+//    NtpClient *ntp = new NtpClient();
+//    ntp->setServerName(ui->pushButtonNTP->text());
+//    ntp->setTimeZoneDST(ui->comboBoxTZDST->currentText().toInt());
+//    if(ntp->doNTPSync()){
+//        ui->pushButtonCalendar->setText(QDate::currentDate().toString("yyyy-MM-dd"));
+//        ui->pushButtonTime->setText(QTime::currentTime().toString("hh:mm:ss"));
+//        QMessageBox::information(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Date and Time set."));
+//    } else {
+//        QMessageBox::warning(0,QApplication::trUtf8("NTP SYNC"), QApplication::trUtf8("Network Error \nDate and Time can not be set."));
+//    }
+//    ui->labelSync->setVisible(false);
 
 }
 
@@ -255,7 +189,89 @@ void time_set::on_pushButtonNTP_clicked()
     tastiera_alfanum.showFullScreen();
     if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
-        ui->pushButtonNTP->setText(value);
-
+        szTimeServer = QString(value);
+        ui->pushButtonNTP->setText(szTimeServer);
     }
+}
+
+void time_set::on_pushButtonSetManual_clicked()
+{
+    QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
+    QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss");
+    if (d.isValid() && t.isValid())  {
+        QDateTime   currentDT(d, t);
+        ntpclient->requestDateTimeChange(currentDT);
+    }
+}
+
+void time_set::on_pushButtonOffset_clicked()
+{
+    numpad * dk;
+    float value = fOffset;
+    float min = -12;
+    float max = +12;
+
+    dk = new numpad(&value, fOffset, 1, min, max);
+    dk->showFullScreen();
+    if (dk->exec() == QDialog::Accepted)
+    {
+        fOffset = value;
+        ui->pushButtonOffset->setText(QString::number(fOffset, 'f', 1));
+    }
+}
+
+void time_set::on_pushButtonTimeOut_clicked()
+{
+    numpad * dk;
+    int value = nTimeOut;
+    int min = 1;
+    int max = 60;
+
+    dk = new numpad(&value, nTimeOut, min, max);
+    dk->showFullScreen();
+
+    if (dk->exec() == QDialog::Accepted)
+    {
+        nTimeOut = value;
+        ui->pushButtonTimeOut->setText(QString::number(nTimeOut));
+    }
+}
+
+void time_set::on_pushButtonPeriod_clicked()
+{
+    numpad * dk;
+    int value = nPeriod;
+    int min = 0;
+    int max = THE_NTP_MAX_PERIOD_H;
+
+    dk = new numpad(&value, nTimeOut, min, max);
+    dk->showFullScreen();
+
+    if (dk->exec() == QDialog::Accepted)
+    {
+        nPeriod = value;
+        ui->pushButtonPeriod->setText(QString::number(nPeriod));
+    }
+}
+
+void time_set::on_pushButtonNTPSet_clicked()
+{
+    if (! szTimeServer.isEmpty())  {
+        ntpclient->setNtpParams(szTimeServer, nTimeOut, fOffset, nPeriod);
+    }
+}
+
+void time_set::on_pushButtonNTPDefualts_clicked()
+{
+    // Restore default values
+    szTimeServer = QString(THE_NTP_SERVER);
+    nTimeOut = 10;
+    nPeriod = 0;
+    fOffset = 1.0;
+
+    ui->pushButtonNTP->setText(szTimeServer);
+    ui->pushButtonOffset->setText(QString::number(fOffset, 'f', 1));
+    ui->pushButtonTimeOut->setText(QString::number(nTimeOut));
+    ui->pushButtonPeriod->setText(QString::number(nPeriod));
+
 }

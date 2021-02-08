@@ -1,64 +1,150 @@
 #include "ntpclient.h"
 
-#define THE_NTP_SERVER     "tempo.ien.it"
+#include "common.h"
+
+#include <byteswap.h>
+#include <netdb.h> // getaddrinfo()
+#include <arpa/inet.h> // inet_ntop()
+#include <time.h>
+#include <unistd.h>
+
+
 #define THE_NTP_PORT       123
 #define THE_NTP_TIMEOUT_ms 9000
 #define THE_MAX_TRIPTIME_s 1LL
-#define SYSTEM_INI "/local/etc/sysconfig/system.ini"
 
-
-ntpclient::ntpclient()
+NtpClient::NtpClient(QObject *parent) :
+    QObject(parent)
 {
-}
 
-
-bool ntpclient::doNTPSync()
-{
-   return ntpClientProcedure();
-
-}
-
-QString ntpclient::getServerName()
-{
-    QSettings  *objSettings = new QSettings(SYSTEM_INI, QSettings::IniFormat);
-    QString serverName;
+    QSettings  *objSettings = new QSettings(NTP_FILE, QSettings::IniFormat);
     objSettings->beginGroup("NTP-Server");
-    serverName = objSettings->value("serverName", "tempo.ien.it").toString();
+    ntpServerName = objSettings->value("serverName", THE_NTP_SERVER).toString();
+    ntpTimeout = objSettings->value("serverTimeOut", "10").toInt();
+    ntpOffset = objSettings->value("serverOffset", "1.0").tofloat();
+    ntpPeriod = objSettings->value("serverPeriod", "0").toInt();
     objSettings->endGroup();
-    return serverName;
+
 }
 
-void ntpclient::setServerName(QString serverName)
+QString     NtpClient::getNtpServer()
 {
-   if(!serverName.isEmpty()) {
-       QSettings  *objSettings = new QSettings(SYSTEM_INI, QSettings::IniFormat);
-       objSettings->beginGroup("NTP-Server");
-       objSettings->setValue("serverName", serverName);
-       objSettings->endGroup();
-       objSettings->sync();
-   }
+
 }
 
-int ntpclient::getTimeZoneDST()
+int         NtpClient::getTimeout_s()
 {
-    int tzDST;
-    QSettings  *objSettings = new QSettings(SYSTEM_INI, QSettings::IniFormat);
+
+}
+
+float       NtpClient::getOffset_h()
+{
+
+}
+
+int         NtpClient::getPeriod_h()
+{
+
+}
+
+void        NtpClient::setNtpParams(const QString &ntpServer, int ntpTimeout_s, float ntpOffset_h, int ntpPeriod_h )
+{
+    QSettings  *objSettings = new QSettings(NTP_FILE, QSettings::IniFormat);
     objSettings->beginGroup("NTP-Server");
-    tzDST = objSettings->value("tz-DST", "0").toInt();
+    // Server
+    ntpServerName = ntpServer.trimmed();
+    ntpServerName = ntpServerName.isEmpty() ? QString(THE_NTP_SERVER) : ntpServerName;
+    objSettings->setValue("serverName", ntpServerName);
+    // TimeOut
+    ntpTimeout = ntpTimeout_s;
+    ntpTimeout = ntpTimeout > 0 ? ntpTimeout : 1;
+    objSettings->setValue("serverTimeOut", ntpTimeout);
+    // Offset
+    ntpOffset = ntpOffset_h;
+    ntpOffset = (ntpOffset > 12 || ntpOffset < -12) ? 1.0 : ntpOffset;
+    objSettings->setValue("serverOffset", ntpOffset);
+    // Period
+    ntpPeriod = ntpPeriod_h;
+    ntpPeriod = (ntpPeriod < 0 || ntpPeriod > THE_NTP_MAX_PERIOD_H) ? 0 : ntpPeriod;
+    ntpPeriod = objSettings->setValue("serverPeriod", "0").toInt();
     objSettings->endGroup();
-    return tzDST;
+
 }
 
-void ntpclient::setTimeZoneDST(int tzDST)
+void        NtpClient::requestNTPSync()
 {
-    if(tzDST >= -12 && tzDST <= 12) {
-        QSettings  *objSettings = new QSettings(SYSTEM_INI, QSettings::IniFormat);
-        objSettings->beginGroup("NTP-Server");
-        objSettings->setValue("tz-DST", QString::number(tzDST));
-        objSettings->endGroup();
-        objSettings->sync();
-    }
+
 }
+
+void        NtpClient::requestDateTimeChange(QDateTime newTime)
+{
+
+}
+
+bool        NtpClient::ntpSyncOrChangeRequested()
+{
+
+}
+
+void        NtpClient::doSyncOrChange()
+{
+
+}
+
+
+
+//NtpClient::NtpClient()
+//{
+//}
+
+
+//bool NtpClient::doNTPSync()
+//{
+//   return ntpClientProcedure();
+
+//}
+
+//QString NtpClient::getServerName()
+//{
+//    QSettings  *objSettings = new QSettings(CONFIG_FILE, QSettings::IniFormat);
+//    QString serverName;
+//    objSettings->beginGroup("NTP-Server");
+//    serverName = objSettings->value("serverName", "tempo.ien.it").toString();
+//    objSettings->endGroup();
+//    return serverName;
+//}
+
+//void NtpClient::setServerName(QString serverName)
+//{
+//   if(!serverName.isEmpty()) {
+//       QSettings  *objSettings = new QSettings(CONFIG_FILE, QSettings::IniFormat);
+//       objSettings->beginGroup("NTP-Server");
+//       objSettings->setValue("serverName", serverName);
+//       objSettings->endGroup();
+//       objSettings->sync();
+//   }
+//}
+
+//int NtpClient::getTimeZoneDST()
+//{
+//    int tzDST;
+//    QSettings  *objSettings = new QSettings(CONFIG_FILE, QSettings::IniFormat);
+//    objSettings->beginGroup("NTP-Server");
+//    tzDST = objSettings->value("tz-DST", "0").toInt();
+//    objSettings->endGroup();
+//    return tzDST;
+//}
+
+//void NtpClient::setTimeZoneDST(int tzDST)
+//{
+//    if(tzDST >= -12 && tzDST <= 12) {
+//        QSettings  *objSettings = new QSettings(CONFIG_FILE, QSettings::IniFormat);
+//        objSettings->beginGroup("NTP-Server");
+//        objSettings->setValue("tz-DST", QString::number(tzDST));
+//        objSettings->endGroup();
+//        objSettings->sync();
+//    }
+//}
 
 // -------------------------------------------------------------------------
 
@@ -105,7 +191,7 @@ void swapPacket(const struct NtpPacketHeader &from, struct NtpPacketHeader &to)
     }
 }
 
-int64_t  ntpclient::getTimestamp()
+int64_t  NtpClient::getTimestamp()
 {
     int64_t retval;
     struct timespec now;
@@ -125,7 +211,7 @@ int64_t  ntpclient::getTimestamp()
     return retval;
 }
 
-void ntpclient::setTimestamp(int64_t TargetTimestamp)
+void NtpClient::setTimestamp(int64_t TargetTimestamp)
 {
     struct timespec target;
     time_t seconds;
@@ -149,7 +235,7 @@ void ntpclient::setTimestamp(int64_t TargetTimestamp)
     clock_settime(CLOCK_REALTIME, &target);
 }
 
-bool ntpclient::ntpClientProcedure()
+bool NtpClient::ntpClientProcedure()
 {
     struct NtpPacketHeader request, reply;
     int packetSize = sizeof(struct NtpPacketHeader);

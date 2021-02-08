@@ -144,6 +144,7 @@ extern "C" {
 #define CROSS_TABLE        LOCAL_ETC_DIR"/Crosstable.csv"
 #define COMMUNICATION_FILE LOCAL_ETC_DIR"/Commpar.csv"
 #define CONFIG_FILE        LOCAL_ETC_DIR"/system.ini"
+#define NTP_FILE           LOCAL_ETC_DIR"/ntp.ini"
 
 #define BACKLIGHT_FILE_SYSTEM "/sys/devices/platform/mxs-bl.0/backlight/mxs-bl/brightness"
 
