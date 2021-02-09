@@ -161,31 +161,31 @@ void trend_range::on_pushButtonBack_clicked()
 
 void trend_range::on_pushButtonTime_clicked()
 {
-    TimePopup *timepop = new TimePopup(this->ui->pushButtonTime);
-
-    if (timepop) {
+    if (timepopup) {
         QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss"); // and not "HH:mm:ss"
-        timepop->setTime(t);
-        if (timepop->exec() == QDialog::Accepted) {
-            // ui->timeEdit->setTime(timepop->getTime());
-            ui->pushButtonTime->setText(timepop->getTime().toString("HH:mm:ss"));
+        if (t.isValid()) {
+            timepopup->setTime(t);
+            timepopup->movePosition(ui->pushButtonTime->geometry().x(),ui->pushButtonTime->geometry().y());
+            if (timepopup->exec() == QDialog::Accepted) {
+                // ui->timeEdit->setTime(timepop->getTime());
+                ui->pushButtonTime->setText(timepopup->getTime().toString("HH:mm:ss"));
+            }
         }
-        delete timepop;
     }
 }
 
 void trend_range::on_pushButtonWidth_clicked()
 {
-    TimePopup *timepop = new TimePopup(this->ui->pushButtonTime);
-
-    if (timepop) {
+    if (timepopup) {
         QTime t = QTime::fromString(ui->pushButtonWidth->text(), "hh:mm:ss"); // and not "HH:mm:ss"
-        timepop->setTime(t);
-        if (timepop->exec() == QDialog::Accepted) {
-            // ui->timeEdit->setTime(timepop->getTime());
-            ui->pushButtonWidth->setText(timepop->getTime().toString("HH:mm:ss"));
+        if (t.isValid()) {
+            timepopup->setTime(t);
+            timepopup->movePosition(ui->pushButtonWidth->geometry().x(),ui->pushButtonWidth->geometry().y());
+            if (timepopup->exec() == QDialog::Accepted) {
+                // ui->timeEdit->setTime(timepop->getTime());
+                ui->pushButtonWidth->setText(timepopup->getTime().toString("HH:mm:ss"));
+            }
         }
-        delete timepop;
     }
 }
 
@@ -241,15 +241,15 @@ void trend_range::on_pushButtonOk_clicked()
 }
 
 void trend_range::on_pushButtonCalendar_clicked()
-{
-    Calendar *calendar = new Calendar(this->ui->pushButtonCalendar);
-
-    if (calendar) {
+{ 
+    if (calendarpopup) {
         QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
-        calendar->setDate(d);
-        if (calendar->exec() == QDialog::Accepted) {
-           ui->pushButtonCalendar->setText(calendar->getDate().toString("yyyy-MM-dd"));
+        if (d.isValid()) {
+            calendarpopup->setDate(d);
+            calendarpopup->movePosition(ui->pushButtonCalendar->geometry().x(),ui->pushButtonCalendar->geometry().y());
+            if (calendarpopup->exec() == QDialog::Accepted) {
+                ui->pushButtonCalendar->setText(calendarpopup->getDate().toString("yyyy-MM-dd"));
+            }
         }
-        delete calendar;
     }
 }

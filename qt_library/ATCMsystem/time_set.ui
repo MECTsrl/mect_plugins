@@ -178,7 +178,7 @@
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -197,8 +197,8 @@
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
-         <pointsize>10</pointsize>
+         <family>DejaVu Sans</family>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="text">
@@ -222,8 +222,8 @@
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
-         <pointsize>10</pointsize>
+         <family>DejaVu Sans</family>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="text">
@@ -276,6 +276,19 @@ border: 2px solid  rgb(194, 194, 194);
     </layout>
    </item>
    <item>
+    <spacer name="verticalSpacer_4">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>1</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
     <widget class="Line" name="line_3">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -283,9 +296,22 @@ border: 2px solid  rgb(194, 194, 194);
     </widget>
    </item>
    <item>
+    <spacer name="verticalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>1</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
     <layout class="QGridLayout" name="gridLayout">
      <property name="spacing">
-      <number>1</number>
+      <number>2</number>
      </property>
      <item row="2" column="5">
       <widget class="QPushButton" name="pushButtonNTPSync">
@@ -351,7 +377,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -377,12 +403,12 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>800</width>
-         <height>40</height>
+         <height>50</height>
         </size>
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -408,12 +434,12 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>50</width>
-         <height>40</height>
+         <height>50</height>
         </size>
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -439,12 +465,12 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>50</width>
-         <height>40</height>
+         <height>50</height>
         </size>
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -475,7 +501,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -501,12 +527,12 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="maximumSize">
         <size>
          <width>50</width>
-         <height>40</height>
+         <height>50</height>
         </size>
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -537,7 +563,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -610,7 +636,7 @@ border: 2px solid  rgb(194, 194, 194);
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans Mono</family>
+         <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
        </property>
@@ -794,7 +820,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="minimumSize">
         <size>
          <width>40</width>
-         <height>30</height>
+         <height>40</height>
         </size>
        </property>
        <property name="maximumSize">

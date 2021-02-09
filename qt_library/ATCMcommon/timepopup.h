@@ -28,6 +28,8 @@ public slots:
 
 QTime getTime();
 void setTime(QTime currentTime);
+void movePosition(int x, int y);
+
 
 private slots:
 
@@ -40,6 +42,8 @@ private slots:
   void on_itemClickedMin(int row,int col);
   void on_itemClickedSec(int row, int col);
 
+  void timeAccepted();
+  void timeRejected();
 
   void tableWidgetSetup(QTableWidget *tableWidgetXX);
 
@@ -48,14 +52,13 @@ private slots:
 
 
 private:
-  QWidget *widget;
   QDialogButtonBox* buttonOkCancel;
-  QVBoxLayout *verticalLayout;
-  QHBoxLayout *horizontalLayout;
   QTableWidget *tableWidgetHours;
   QTabWidget *tabWidget;
   QTimeEdit *te;
-  int hour,min,sec;
+  int hour;
+  int min;
+  int sec;
   QString colorStringSelection;
   QString colorStringBackgroundTab;
   QColor ColorTextItem;
@@ -65,9 +68,9 @@ private:
   QString subTabName[4];
 
   QTabWidget *tabMinWidget;
-  QTabWidget *tabSecWidget;
-
-  
+  QTabWidget *tabSecWidget;  
 };
+
+extern TimePopup *timepopup;
 
 #endif // TIMEPOPUP_H

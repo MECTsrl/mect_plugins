@@ -25,9 +25,6 @@ class QPushButton;
 class QFrame;
 class QTableWidget;
 
-
-
-
 class Calendar : public QDialog
 {
         Q_OBJECT
@@ -39,6 +36,8 @@ class Calendar : public QDialog
     public slots:
         QDate getDate();
         void setDate(QDate currentDate);
+        void movePosition(int x, int y);
+
 
 
 
@@ -65,23 +64,20 @@ class Calendar : public QDialog
 
     private :
 
-        QWidget *widget;
-        QDialogButtonBox* buttonOkCancel;
-        QVBoxLayout *verticalLayout;
-        QHBoxLayout *horizontalLayout;
+
         QPushButton *pushYearAndMonth;
         QPushButton *arrowUP;
         QPushButton *arrowDOWN;
-        QFrame *separatorLine;
 
         QTableWidget *tableWidgetYear;
         QTableWidget *tableWidgetMonth;
         QTableWidget *tableWidgetDay;
 
-
-        int selectedYear,selectedMonth,selectedDay;
-
-
+        int selectedYear;
+        int selectedMonth;
+        int selectedDay;
 };
+
+extern Calendar *calendarpopup;
 
 #endif // CALENDAR_H

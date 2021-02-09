@@ -20,42 +20,25 @@
 #define SIZE_CELL_DAY_X 35 //32
 #define SIZE_CELL_DAY_Y 30 //28
 
+Calendar *calendarpopup = NULL;
 
 Calendar::Calendar(QWidget *parent) :
  QDialog(parent, Qt::Popup)
 {
-    move(mapFromParent(parent->pos()));
-    int tmpPosX=parent->pos().x();
-    int tmpPosY=parent->pos().y();
-    QRect rec = QApplication::desktop()->screenGeometry();
-    int height = rec.height();
-    int width = rec.width();
-    if(parent->pos().x()+SIZE_X>width)
-      {
-        tmpPosX=width-SIZE_X;
-         move(tmpPosX,tmpPosY);
-
-      }
-    if(parent->pos().y()+SIZE_Y>height)
-      {
-        tmpPosY=height-SIZE_Y;
-        move(tmpPosX,tmpPosY);
-      }
-
     setSizeGripEnabled(false);
-    resize(SIZE_X,SIZE_Y);
-    widget = new QWidget(this);
-    widget->setObjectName(QString::fromUtf8("widgetDialog"));
-    widget->setGeometry(QRect(0,0, SIZE_X, SIZE_Y));
-    widget->setWindowFlags(Qt::FramelessWindowHint);
-    QPalette pal = palette();
+    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setGeometry(QRect(0,0, SIZE_X, SIZE_Y));
+
     // set black background
+    QPalette pal = palette();
     pal.setColor(QPalette::Background, Qt::lightGray);
-    widget->setAutoFillBackground(true);
-    widget->setPalette(pal);
+    this->setAutoFillBackground(true);
+    this->setPalette(pal);
 
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
 
-    verticalLayout = new QVBoxLayout(widget);
+    verticalLayout = new QVBoxLayout();
     verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
     verticalLayout->setContentsMargins(0, 0, 0, 0);
 
@@ -63,13 +46,13 @@ Calendar::Calendar(QWidget *parent) :
     horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
     horizontalLayout->setContentsMargins(0, 0, 0, 0);
 
-    pushYearAndMonth =new QPushButton(widget);
+    pushYearAndMonth =new QPushButton();
     pushYearAndMonth->setObjectName(QString::fromUtf8("pushYearAndMonth"));
     pushYearAndMonth->setContentsMargins(0, 0, 0, 0);
     pushYearAndMonth->setFixedWidth(120);
     connect(pushYearAndMonth,SIGNAL(clicked()),this,SLOT(on_clicked_pushYearAndMonth()));
 
-    arrowDOWN =new QPushButton(widget);
+    arrowDOWN =new QPushButton();
     arrowDOWN->setObjectName(QString::fromUtf8("arrowDOWN"));
     arrowDOWN->setContentsMargins(0, 0, 0, 0);
     arrowDOWN->setText("<");
@@ -77,7 +60,7 @@ Calendar::Calendar(QWidget *parent) :
     connect(arrowDOWN,SIGNAL(clicked()),this,SLOT(on_clicked_arrowDOWN()));
 
 
-    arrowUP =new QPushButton(widget);
+    arrowUP =new QPushButton();
     arrowUP->setObjectName(QString::fromUtf8("arrowUP"));
     arrowUP->setContentsMargins(0, 0, 0, 0);
     arrowUP->setText(">");
@@ -88,23 +71,22 @@ Calendar::Calendar(QWidget *parent) :
     horizontalLayout->addWidget (pushYearAndMonth,0,Qt::AlignCenter);
     horizontalLayout->addWidget (arrowUP,0,Qt::AlignRight);
 
-
-    separatorLine = new QFrame(widget);
+    QFrame *separatorLine = new QFrame();
     separatorLine->setFrameShape(QFrame::HLine); // Horizontal line
     separatorLine->setFrameShadow(QFrame::Sunken);
     separatorLine->setLineWidth(1);
 
-    tableWidgetYear = new QTableWidget(widget);
+    tableWidgetYear = new QTableWidget();
     tableWidgetYear->setObjectName(QString::fromUtf8("TableWidgetYear"));
     tableWidgetYear->setContentsMargins(0, 0, 0, 0);
 
-    tableWidgetMonth= new QTableWidget(widget);
+    tableWidgetMonth= new QTableWidget();
     tableWidgetMonth->setObjectName(QString::fromUtf8("TableWidgetMonth"));
     tableWidgetMonth->setContentsMargins(0, 0, 0, 0);
 
 
 
-    tableWidgetDay= new QTableWidget(widget);
+    tableWidgetDay= new QTableWidget();
     tableWidgetDay->setObjectName(QString::fromUtf8("TableWidgetDay"));
     tableWidgetDay->setContentsMargins(0, 0, 0, 0);
 
@@ -113,6 +95,7 @@ Calendar::Calendar(QWidget *parent) :
     verticalLayout->addWidget (tableWidgetYear);
     verticalLayout->addWidget (tableWidgetMonth);
     verticalLayout->addWidget (tableWidgetDay);
+    this->setLayout(verticalLayout);
 
     selectedYear=0;
     selectedMonth=0;
@@ -125,6 +108,25 @@ Calendar::Calendar(QWidget *parent) :
     tableWidgetYear->setVisible (false);
     tableWidgetMonth->setVisible (false);
     tableWidgetDay->setVisible (true);
+}
+
+void Calendar::movePosition(int x, int y)
+{
+
+    QRect rec = QApplication::desktop()->screenGeometry();
+    int height = rec.height() - 6;
+    int width = rec.width() - 6;
+    if(x + SIZE_X > width)
+    {
+        x = width - SIZE_X;
+    }
+    if(y + SIZE_Y > height)
+    {
+        y = height - SIZE_Y;
+    }
+    this->move(x,y);
+    this->show();
+    this->update();
 }
 
 void Calendar::setYear()
@@ -156,6 +158,7 @@ void Calendar::setDay()
 
     QPushButton *pB= (QPushButton*)(sender());
     selectedDay=pB->text ().toInt ();
+    this->setVisible(false);
     accept();
 }
 
@@ -461,7 +464,7 @@ void Calendar::setDayName(int year,int month)
                     pB->setVisible (true);
                     pB->setEnabled (true);
                     pB->setText (QString::number (listDayNumber));
-                    if(QDate::currentDate().day()==listDayNumber){
+                    if(selectedDay == listDayNumber){
                         tableWidgetDay->setCurrentCell(i,j);
                         pB->setStyleSheet("background-color: green; font: bold ");
                     }

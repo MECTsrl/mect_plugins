@@ -12,6 +12,8 @@
 #include "defines.h"
 #include "app_usb.h"
 #include "utility.h"
+#include "timepopup.h"
+#include "calendar.h"
 #include <QDirIterator>
 #include <QFontDatabase>
 #include <QMetaObject>
@@ -525,7 +527,8 @@ bool CommStart()
         QMessageBox::critical(0,QApplication::trUtf8("Crosstable Check"), QApplication::trUtf8("Syntax error into the Crosstable at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
         return false;
     }
-
+    timepopup = new TimePopup(NULL);
+    calendarpopup  = new Calendar(NULL);
     ntpclient = new NtpClient(NULL);
 
 #if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)

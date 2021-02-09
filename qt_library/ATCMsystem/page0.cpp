@@ -92,7 +92,6 @@ void page0::changePage()
             QProcess *myProcess = new QProcess();
             myProcess->start(RUNTIME);
         }
-
         if(CommStart() == false)
         {
             LOG_PRINT(error_e, "cannot find start the communication with the the run-time.\n");
@@ -117,6 +116,7 @@ void page0::changePage()
             ui->progressBar->setValue(pageIndex + 1);
             QCoreApplication::processEvents();
         }
+
     }
 
     /* Check the date. if it is unset 01 Jan 1970 start with time_set page */

@@ -18,41 +18,26 @@
 #define SIZE_CELL_MINUTE_SECOND_X 47
 #define SIZE_CELL_MINUTE_SECOND_Y 54
 
+TimePopup *timepopup = NULL;
+
 TimePopup::TimePopup(QWidget *parent) :
     QDialog(parent, Qt::Popup)
 {
-
-    move(mapFromParent(parent->pos()));
-    int tmpPosX=parent->pos().x();
-    int tmpPosY=parent->pos().y();
-    QRect rec = QApplication::desktop()->screenGeometry();
-    int height = rec.height();
-    int width = rec.width();
-    if(parent->pos().x()+SIZE_X>width)
-    {
-        tmpPosX=width-SIZE_X;
-        move(tmpPosX,tmpPosY);
-
-    }
-    if(parent->pos().y()+SIZE_Y>height)
-    {
-        tmpPosY=height-SIZE_Y;
-        move(tmpPosX,tmpPosY);
-    }
-
     setSizeGripEnabled(false);
-    resize(SIZE_X,SIZE_Y);
-    widget = new QWidget(this);
-    widget->setGeometry(QRect(0,0, SIZE_X, SIZE_Y));
-    widget->setWindowFlags(Qt::FramelessWindowHint);
+    QRect currentPos(0,0,SIZE_X,SIZE_Y);
+    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setGeometry(currentPos);
 
     //set background color
     QPalette pal = palette();
     pal.setColor(QPalette::Background, Qt::lightGray);
-    widget->setAutoFillBackground(true);
-    widget->setPalette(pal);
+    this->setAutoFillBackground(true);
+    this->setPalette(pal);
 
-    verticalLayout = new QVBoxLayout(widget);
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
+
+    verticalLayout = new QVBoxLayout();
     verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
     verticalLayout->setContentsMargins(0, 0, 0, 0);
 
@@ -60,11 +45,11 @@ TimePopup::TimePopup(QWidget *parent) :
     horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
     horizontalLayout->setContentsMargins(0, 0, 0, 0);
 
-    tabWidget=new QTabWidget(widget);
+    tabWidget=new QTabWidget();
     tabWidget->setObjectName(QString::fromUtf8("tabwidget"));
     tabWidget->setGeometry(QRect(0, 0, SIZE_TAB_X, SIZE_TAB_Y));
 
-    te=new QTimeEdit(widget);
+    te = new QTimeEdit();
 
     buttonOkCancel = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
@@ -73,7 +58,7 @@ TimePopup::TimePopup(QWidget *parent) :
 
     verticalLayout->addLayout(horizontalLayout);
     verticalLayout->addWidget(tabWidget);
-
+    this->setLayout(verticalLayout);
 
     hour = 0;
     min = 0;
@@ -84,16 +69,46 @@ TimePopup::TimePopup(QWidget *parent) :
     subTabName[2]= "   30 ";
     subTabName[3]= "   45 ";
 
-    colorStringSelection="green";
-    colorStringBackgroundTab="green";
-    ColorTextItem=Qt::red;
+    colorStringSelection = "green";
+    colorStringBackgroundTab = "green";
+    ColorTextItem = Qt::red;
 
     setUpTableHours();
     setUpTableMinutes();
     setUpTableSeconds();
 
-    connect( buttonOkCancel, SIGNAL(accepted()), this, SLOT(accept()));
-    connect( buttonOkCancel, SIGNAL(rejected()), this, SLOT(reject()));
+    connect( buttonOkCancel, SIGNAL(accepted()), this, SLOT(timeAccepted()));
+    connect( buttonOkCancel, SIGNAL(rejected()), this, SLOT(timeRejected()));
+}
+
+void TimePopup::movePosition(int x, int y)
+{
+
+    QRect rec = QApplication::desktop()->screenGeometry();
+    int height = rec.height() - 6;
+    int width = rec.width() - 6;
+    if(x + SIZE_X > width)
+    {
+        x = width - SIZE_X;
+    }
+    if(y + SIZE_Y > height)
+    {
+        y = height - SIZE_Y;
+    }
+    this->move(x,y);
+    this->show();
+    this->update();
+}
+
+void TimePopup::timeAccepted()
+{
+    this->setVisible(false);
+    this->accept();
+}
+void TimePopup::timeRejected()
+{
+    this->setVisible(false);
+    this->reject();
 }
 
 ///////////////

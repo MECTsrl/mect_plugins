@@ -48,12 +48,13 @@ private slots:
     void on_pushButtonNTPDefualts_clicked();
 
 private:
+    void        updateIface();
+
     Ui::time_set *ui;
     int         nOffset;
     int         nTimeOut;
     int         nPeriod;
     QString     szTimeServer;
-
 };
 #endif // TIME_SET_H
 

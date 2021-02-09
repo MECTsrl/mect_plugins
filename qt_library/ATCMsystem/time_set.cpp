@@ -61,8 +61,7 @@ time_set::time_set(QWidget *parent) :
     labelDataOra = ui->labelDataOra;
     /* connect the label that show the user name */
     //labelUserName = ui->labelUserName;
-
-    reload();
+    //reload();
 }
 
 #undef WINDOW_TITLE
@@ -80,12 +79,9 @@ void time_set::reload()
     nOffset = ntpclient->getOffset_h();
     nTimeOut = ntpclient->getTimeout_s();
     nPeriod = ntpclient->getPeriod_h();
-    szTimeServer = ntpclient->getNtpServer();
+    szTimeServer = ntpclient->getNtpServer();    
 
-    ui->pushButtonNTP->setText(szTimeServer);
-    ui->pushButtonOffset->setText(QString::number(nOffset));
-    ui->pushButtonTimeOut->setText(QString::number(nTimeOut));
-    ui->pushButtonPeriod->setText(QString::number(nPeriod));
+    updateIface();
     ui->progressBarElapsed->setVisible(false);
     showFullScreen();
 }
@@ -116,16 +112,16 @@ time_set::~time_set()
 
 void time_set::on_pushButtonTime_clicked()
 {
-    TimePopup *timepop = new TimePopup(this->ui->pushButtonTime);
-
-    if (timepop) {
+    if (timepopup) {
         QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss"); // and not "HH:mm:ss"
-        timepop->setTime(t);
-        if (timepop->exec() == QDialog::Accepted) {
-            // ui->timeEdit->setTime(timepop->getTime());
-            ui->pushButtonTime->setText(timepop->getTime().toString("HH:mm:ss"));
+        if (t.isValid()) {
+            timepopup->setTime(t);
+            timepopup->movePosition(ui->pushButtonTime->geometry().x(),ui->pushButtonTime->geometry().y());
+            if (timepopup->exec() == QDialog::Accepted) {
+                // ui->timeEdit->setTime(timepop->getTime());
+                ui->pushButtonTime->setText(timepopup->getTime().toString("HH:mm:ss"));
+            }
         }
-        delete timepop;
     }
 }
 
@@ -145,15 +141,16 @@ void time_set::on_pushButtonBack_clicked()
 
 void time_set::on_pushButtonCalendar_clicked()
 {
-    Calendar *calendar = new Calendar(this->ui->pushButtonCalendar);
 
-    if (calendar) {
+    if (calendarpopup) {
         QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
-        calendar->setDate(d);
-        if (calendar->exec() == QDialog::Accepted) {
-           ui->pushButtonCalendar->setText(calendar->getDate().toString("yyyy-MM-dd"));
+        if (d.isValid()) {
+            calendarpopup->setDate(d);
+            calendarpopup->movePosition(ui->pushButtonCalendar->geometry().x(),ui->pushButtonCalendar->geometry().y());
+            if (calendarpopup->exec() == QDialog::Accepted) {
+                ui->pushButtonCalendar->setText(calendarpopup->getDate().toString("yyyy-MM-dd"));
+            }
         }
-        delete calendar;
     }
 }
 
@@ -190,7 +187,7 @@ void time_set::on_pushButtonNTP_clicked()
     if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
         szTimeServer = QString(value);
-        ui->pushButtonNTP->setText(szTimeServer);
+        updateIface();
     }
 }
 
@@ -216,7 +213,7 @@ void time_set::on_pushButtonOffset_clicked()
     if (dk->exec() == QDialog::Accepted)
     {
         nOffset = value;
-        ui->pushButtonOffset->setText(QString::number(nOffset));
+        updateIface();
     }
 }
 
@@ -233,7 +230,7 @@ void time_set::on_pushButtonTimeOut_clicked()
     if (dk->exec() == QDialog::Accepted)
     {
         nTimeOut = value;
-        ui->pushButtonTimeOut->setText(QString::number(nTimeOut));
+        updateIface();
     }
 }
 
@@ -250,7 +247,7 @@ void time_set::on_pushButtonPeriod_clicked()
     if (dk->exec() == QDialog::Accepted)
     {
         nPeriod = value;
-        ui->pushButtonPeriod->setText(QString::number(nPeriod));
+        updateIface();
     }
 }
 
@@ -268,10 +265,14 @@ void time_set::on_pushButtonNTPDefualts_clicked()
     nTimeOut = 10;
     nPeriod = 0;
     nOffset = 1;
+    updateIface();
 
+}
+
+void time_set::updateIface()
+{
     ui->pushButtonNTP->setText(szTimeServer);
-    ui->pushButtonOffset->setText(QString::number(nOffset));
-    ui->pushButtonTimeOut->setText(QString::number(nTimeOut));
-    ui->pushButtonPeriod->setText(QString::number(nPeriod));
-
+    ui->pushButtonOffset->setText(QString("%1 h") .arg(nOffset,2,10));
+    ui->pushButtonTimeOut->setText(QString("%1 s") .arg(nTimeOut,2,10));
+    ui->pushButtonPeriod->setText(QString("%1 h") .arg(nPeriod,4,10));
 }
