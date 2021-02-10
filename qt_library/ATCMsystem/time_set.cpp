@@ -76,9 +76,6 @@ time_set::time_set(QWidget *parent) :
 void time_set::reload()
 {
     /* Load data and time 1*/
-    ui->pushButtonTime->setText(QTime::currentTime().toString(TIME_MASK));
-    ui->pushButtonCalendar->setText(QDate::currentDate().toString(DATE_MASK));
-
     nOffset = ntpclient->getOffset_h();
     nTimeOut = ntpclient->getTimeout_s();
     nPeriod = ntpclient->getPeriod_h();
@@ -129,13 +126,16 @@ void time_set::on_pushButtonTime_clicked()
     if (timepopup) {
         QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss"); // and not "HH:mm:ss"
         if (t.isValid()) {
+            lockInterface = true;
             lockUI(true);
             timepopup->setTime(t);
             timepopup->movePosition(ui->pushButtonTime->geometry().x(),ui->pushButtonTime->geometry().y());
+            timepopup->setModal(true);
             if (timepopup->exec() == QDialog::Accepted) {
                 // ui->timeEdit->setTime(timepop->getTime());
                 ui->pushButtonTime->setText(timepopup->getTime().toString(TIME_MASK));
             }
+            lockInterface = false;
         }
     }
 }
@@ -160,12 +160,15 @@ void time_set::on_pushButtonCalendar_clicked()
     if (calendarpopup) {
         QDate d = QDate::fromString(ui->pushButtonCalendar->text(), DATE_MASK);
         if (d.isValid()) {
+            lockInterface = true;
             lockUI(true);
             calendarpopup->setDate(d);
             calendarpopup->movePosition(ui->pushButtonCalendar->geometry().x(),ui->pushButtonCalendar->geometry().y());
+            calendarpopup->setModal(true);
             if (calendarpopup->exec() == QDialog::Accepted) {
                 ui->pushButtonCalendar->setText(calendarpopup->getDate().toString(DATE_MASK));
             }
+            lockInterface = false;
         }
     }
 }
@@ -176,7 +179,7 @@ void time_set::on_pushButtonNTPSync_clicked()
     if (! szTimeServer.isEmpty() && nTimeOut)  {
         ui->progressBarElapsed->setMaximum(nTimeOut);
         ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod);
-        connect(ntpclient, SIGNAL(ntpSyncFinish(bool )), this, SLOT(ntpSyncDone(bool)));
+        QObject::connect(ntpclient, SIGNAL(ntpSyncFinish(bool )), this, SLOT(ntpSyncDone(bool)));
         ntpclient->requestNTPSync();
         lockInterface = true;
         ntpSyncRunning = true;
@@ -203,7 +206,7 @@ void time_set::on_pushButtonSetManual_clicked()
     if (d.isValid() && t.isValid())  {
         lockInterface = true;
         QDateTime   currentDT(d, t);
-        connect(ntpclient, SIGNAL(ntpDateTimeChangeFinish(bool)), this, SLOT(ntpManualSetDone(bool)));
+        QObject::connect(ntpclient, SIGNAL(ntpDateTimeChangeFinish(bool)), this, SLOT(ntpManualSetDone(bool)));
         datetimeTarget = currentDT;
         ntpclient->requestDateTimeChange(currentDT);
     }
@@ -283,6 +286,8 @@ void time_set::updateIface()
     ui->pushButtonNTPOffset->setText(QString("%1 h") .arg(nOffset,2,10));
     ui->pushButtonNTPTimeOut->setText(QString("%1 s") .arg(nTimeOut,2,10));
     ui->pushButtonNTPPeriod->setText(QString("%1 h") .arg(nPeriod,4,10));
+    ui->pushButtonTime->setText(QTime::currentTime().toString(TIME_MASK));
+    ui->pushButtonCalendar->setText(QDate::currentDate().toString(DATE_MASK));
 }
 
 void time_set::lockUI(bool setLocked)
@@ -302,6 +307,7 @@ void time_set::lockUI(bool setLocked)
 
 void time_set::ntpManualSetDone(bool setOk)
 {
+    QObject::disconnect(ntpclient, SIGNAL(ntpDateTimeChangeFinish(bool)), 0, 0);
     if (setOk)  {
         QMessageBox::information(this,trUtf8("Manual Date Time Set"), trUtf8("Current Date and Time set to:\n%1") .arg(datetimeTarget.toString(DATE_MASK" "TIME_MASK)));
     }
@@ -314,13 +320,15 @@ void time_set::ntpManualSetDone(bool setOk)
 
 void time_set::ntpSyncDone(bool timeOut)
 {
+    QObject::disconnect(ntpclient, SIGNAL(ntpSyncFinish(bool )), 0, 0);
+    ntpSyncRunning = false;
     if (timeOut)  {
         QMessageBox::warning(this,trUtf8("NTP Time Error"), trUtf8("Time Out syncing Date and Time with NTP Server:\n%1") .arg(szTimeServer));
     }
     else  {
         QMessageBox::information(this,trUtf8("NTP Time Set"), trUtf8("Current Date and Time set from NTP Server:\n%1") .arg(szTimeServer));
     }
+    updateIface();
     lockInterface = false;
-    ntpSyncRunning = false;
     lockUI(lockInterface);
 }

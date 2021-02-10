@@ -124,7 +124,6 @@ void        NtpClient::doSyncOrChange()
         struct timezone timez;
         struct timeval temp;
         int rc = 0;
-
         // Lettura del RTC
         rt = time(NULL);
         pt = localtime(&rt);
@@ -164,11 +163,15 @@ void        NtpClient::doSyncOrChange()
         system("/sbin/hwclock -wu");
         manualOK = true;
     endManual:
+        newDateTime = invalidDateTime;
         emit ntpDateTimeChangeFinish(manualOK);
         return;
 
     }
     else  {
+        if (ntpPeriod > 0) {
+            ntpSyncTimer.restart();
+        }
         autoSyncOK = ntpClientProcedure();
         emit ntpSyncFinish(! autoSyncOK);
     }
@@ -230,7 +233,7 @@ int64_t  NtpClient::getTimestamp()
     clock_gettime(CLOCK_REALTIME, &now);
 
     // NTP date from 1900-01-01 <---> UNIX date from 1970-01-01
-    seconds = now.tv_sec + 2208988800;
+    seconds = now.tv_sec + ((time_t) 2208988800UL);
 
     // NTP fixed point [s/2^32] <---> POSIX fixed point [ns=s/10^9]
     fraction = (uint32_t)(now.tv_nsec * 4.294967296); // ns / 1000000000.0 * 4294967296.0
@@ -252,13 +255,13 @@ void NtpClient::setTimestamp(int64_t TargetTimestamp)
     target.tv_nsec = (uint32_t)(fraction / 4.294967296);
 
     // NTP date from 1900-01-01 <---> UNIX date from 1970-01-01
-    target.tv_sec = seconds - 2208988800;
+    target.tv_sec = seconds - ((time_t) 2208988800UL);
 
     //qDebug("set time = 0x%08lx s, ntp 0x%016llx\n", target.tv_sec, TargetTimestamp);
 
     // time zone correction
     //target.tv_sec += 3600 * TimeZone;
-    target.tv_sec += 3600 * getTimeZoneDST();
+    target.tv_sec += 3600 * ntpOffset;
 
     // set time
     clock_settime(CLOCK_REALTIME, &target);
@@ -302,9 +305,9 @@ bool NtpClient::ntpClientProcedure()
         localAddr.sin_addr.s_addr = htonl(INADDR_ANY);
         localAddr.sin_port = htons(THE_NTP_PORT);
 
-        char ntpServerName[42];
-        strcpy(ntpServerName,getServerName().toLatin1().data());
-        if (ntpServerName == NULL) {
+        char ntpServer[42];
+        strcpy(ntpServer, ntpServerName.toLatin1().data());
+        if (ntpServer == NULL) {
            // qDebug("ERROR: cannot get server name\n");
             goto exit_function;
         }
@@ -319,7 +322,7 @@ bool NtpClient::ntpClientProcedure()
             hints.ai_socktype = SOCK_DGRAM;
             hints.ai_flags = 0;
             hints.ai_protocol = 0;
-            resolv_error = getaddrinfo(ntpServerName, "ntp", &hints, &addresses);
+            resolv_error = getaddrinfo(ntpServer, "ntp", &hints, &addresses);
             if (resolv_error != 0 || addresses == NULL) {
               //  qDebug("cannot resolve ntp server name (%s)\n", gai_strerror(resolv_error));
                 goto exit_function;
@@ -358,7 +361,7 @@ bool NtpClient::ntpClientProcedure()
             sentBytes = sendto(theUdpSocket, &buffer, packetSize,
                                0, (struct sockaddr *)&ntpServerAddr, sizeof(struct sockaddr_in));
             if (sentBytes != packetSize) {
-             //   qDebug("ERROR: cannot send request(error = %d)\n", sentBytes);
+                qDebug("ERROR: cannot send request(error = %d)\n", sentBytes);
                 goto exit_function;
             }
             //qDebug("...");
@@ -380,10 +383,10 @@ bool NtpClient::ntpClientProcedure()
         selectStatus = select(theUdpSocket + 1, &recv_set, NULL, NULL, &timeout);
        // qDebug("\n");
         if (selectStatus == 0) {
-           // qDebug("ERROR: cannot receive reply (timeout %d ms)\n", THE_NTP_TIMEOUT_ms);
+            qDebug("ERROR: cannot receive reply (timeout %d s)\n", ntpTimeout);
             goto exit_function;
         } else if (selectStatus < 0) {
-          //  qDebug("ERROR: cannot receive reply (error = %d)\n", selectStatus);
+            qDebug("ERROR: cannot receive reply (error = %d)\n", selectStatus);
             goto exit_function;
         }
     }
