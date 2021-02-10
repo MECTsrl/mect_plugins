@@ -98,26 +98,26 @@ void page::refreshPage()
 
 const char *pageNames[] =
 {
-    "page0",            //  0 unused
-    "alarms",           //  1
-    "alarms_history",   //  2
-    "recipe",           //  3
-    "recipe_select",    //  4
-    "store",            //  5
-    "store_filter",     //  6
-    "data_manager",     //  7
-    "display_settings", //  8
-    "display_test",     //  9
-    "info",             // 10
-    "item_selector",    // 11
-    "menu",             // 12
-    "net_conf",         // 13
-    "options",          // 14
-    "system_ini",       // 15
-    "time_set",         // 16
-    "trend",            // 17
-    "trend_option",     // 18
-    "trend_range"       // 19
+    "page0",            //   0 unused
+    "alarms",           //  -1
+    "alarms_history",   //  -2
+    "recipe",           //  -3
+    "recipe_select",    //  -4
+    "store",            //  -5
+    "store_filter",     //  -6
+    "data_manager",     //  -7
+    "display_settings", //  -8
+    "display_test",     //  -9
+    "info",             // -10
+    "item_selector",    // -11
+    "menu",             // -12
+    "net_conf",         // -13
+    "options",          // -14
+    "system_ini",       // -15
+    "time_set",         // -16
+    "trend",            // -17
+    "trend_option",     // -18
+    "trend_range"       // -19
 
     // dialogs:
     //         "alphanumpad", "numpad", "qrcode",
