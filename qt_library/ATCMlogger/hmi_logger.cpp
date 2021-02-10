@@ -312,8 +312,18 @@ void Logger::run()
 
     logger_start = false;
 
-    while (1)
+    while (1)        
     {
+        // Check ntp sync requested
+        if (ntpclient->ntpSyncOrChangeRequested())  {
+            QDateTime timeBefore = QDateTime::currentDateTime();
+            ntpclient->doSyncOrChange();
+            QDateTime timeAfter = QDateTime::currentDateTime();
+            // TODO: Gestire Cambio di Tempo
+            if (timeAfter.secsTo(timeBefore) > 60 || timeAfter.daysTo(timeBefore) != 0)  {
+                // Chiudere Log Attuale
+            }
+        }
         if (recompute_abstime) {
             recompute_abstime = false;
             clock_gettime(CLOCK_REALTIME, &abstime); // sem_timedwait

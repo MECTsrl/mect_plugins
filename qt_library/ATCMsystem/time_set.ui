@@ -32,16 +32,7 @@
    <property name="spacing">
     <number>2</number>
    </property>
-   <property name="leftMargin">
-    <number>2</number>
-   </property>
-   <property name="topMargin">
-    <number>2</number>
-   </property>
-   <property name="rightMargin">
-    <number>2</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>2</number>
    </property>
    <item>
@@ -387,7 +378,7 @@ border: 2px solid  rgb(194, 194, 194);
       </widget>
      </item>
      <item row="0" column="1" colspan="4">
-      <widget class="QPushButton" name="pushButtonNTP">
+      <widget class="QPushButton" name="pushButtonNTPServer">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -418,7 +409,7 @@ border: 2px solid  rgb(194, 194, 194);
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QPushButton" name="pushButtonOffset">
+      <widget class="QPushButton" name="pushButtonNTPOffset">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -449,7 +440,7 @@ border: 2px solid  rgb(194, 194, 194);
       </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QPushButton" name="pushButtonPeriod">
+      <widget class="QPushButton" name="pushButtonNTPPeriod">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -511,7 +502,7 @@ border: 2px solid  rgb(194, 194, 194);
       </widget>
      </item>
      <item row="1" column="4">
-      <widget class="QPushButton" name="pushButtonTimeOut">
+      <widget class="QPushButton" name="pushButtonNTPTimeOut">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>

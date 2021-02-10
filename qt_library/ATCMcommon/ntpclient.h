@@ -1,6 +1,7 @@
 #ifndef NTPCLIENT_H
 #define NTPCLIENT_H
 
+#include "hmi_logger.h"
 #include <QSettings>
 #include <QCoreApplication>
 #include <QObject>
@@ -16,9 +17,10 @@
 class NtpClient : public QObject
 {
     Q_OBJECT
+    friend class Logger;
+
 public:
     explicit NtpClient(QObject *parent = 0);
-
     QString     getNtpServer();
     int         getTimeout_s();
     int         getOffset_h();
@@ -26,12 +28,16 @@ public:
     void        setNtpParams(const QString &ntpServer, int ntpTimeout_s, int ntpOffset_h, int ntpPeriod_h);
 
 signals:
-    void        ntpSyncFinish(bool timeOut);
-    void        ntpDateTimeChangeFinish();
+    void        ntpSyncFinish(bool timeOut);                    // ntp Sync Ended
+    void        ntpDateTimeChangeFinish(bool setOk);            // Manual Sync Ended
 
 public slots:
-    void        requestNTPSync();
-    void        requestDateTimeChange(QDateTime newTime);
+    void        requestNTPSync();                               // Starts ntp time sync
+    void        requestDateTimeChange(QDateTime newTime);       // Force RTC to newTime
+
+protected:
+    bool            ntpSyncOrChangeRequested();     // check if a Clock change is requested
+    void            doSyncOrChange();               // do a Clock change
 
 private:
     int64_t         getTimestamp();
@@ -39,17 +45,16 @@ private:
     bool            ntpClientProcedure();
 
 
-    QElapsedTimer   timer;
+    QElapsedTimer   ntpSyncTimer;           // Timer on ntpPeriod
     bool            doSync;
-    QDateTime       newDateTime;
-    QString         ntpServerName;
+    QDateTime       newDateTime;            // Manual QDateTime to set
+    QDateTime       invalidDateTime;        // Invalid QDateTime
+
+    QString         ntpServerName;          // ntp params
     int             ntpTimeout;
     int             ntpOffset;
     int             ntpPeriod;
-
-protected:
-    bool            ntpSyncOrChangeRequested();
-    void            doSyncOrChange();
+    qint64          ntpPeriodms;
 
 };
 

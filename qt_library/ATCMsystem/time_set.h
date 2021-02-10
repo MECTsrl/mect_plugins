@@ -12,6 +12,7 @@
 #include "pagebrowser.h"
 
 #include <QString>
+#include <QElapsedTimer>
 
 namespace Ui {
 class time_set;
@@ -38,23 +39,28 @@ private slots:
     void on_pushButtonTime_clicked();
     void on_pushButtonCalendar_clicked();
     void on_pushButtonNTPSync_clicked();
-    void on_pushButtonNTP_clicked();   
-    void on_pushButtonOffset_clicked();
-    void on_pushButtonTimeOut_clicked();
-    void on_pushButtonPeriod_clicked();
-
+    void on_pushButtonNTPServer_clicked();
+    void on_pushButtonNTPOffset_clicked();
+    void on_pushButtonNTPTimeOut_clicked();
+    void on_pushButtonNTPPeriod_clicked();
     void on_pushButtonNTPSet_clicked();
-
     void on_pushButtonNTPDefualts_clicked();
+    void ntpSyncDone(bool timeOut);
+    void ntpManualSetDone(bool setOk);
+    void lockUI(bool setLocked);
 
 private:
     void        updateIface();
 
-    Ui::time_set *ui;
-    int         nOffset;
-    int         nTimeOut;
-    int         nPeriod;
-    QString     szTimeServer;
+    Ui::time_set    *ui;
+    int             nOffset;
+    int             nTimeOut;
+    int             nPeriod;
+    QString         szTimeServer;
+    bool            lockInterface;
+    bool            ntpSyncRunning;
+    QElapsedTimer   syncElapsed;
+    QDateTime       datetimeTarget;
 };
 #endif // TIME_SET_H
 

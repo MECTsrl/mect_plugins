@@ -14,12 +14,15 @@
 #include "timepopup.h"
 #include "calendar.h"
 #include "ntpclient.h"
+#include <QMessageBox>
 
 /* this define set the window title */
 #define WINDOW_TITLE "DATA E ORA"
 /* this define set the window icon the file can have a path into resource file or into the file system */
 #define WINDOW_ICON ""
 
+#define TIME_MASK "HH:mm:ss"
+#define DATE_MASK "yyyy-MM-dd"
 /**
  * @brief this macro is used to set the current page style.
  * the syntax is html stylesheet-like
@@ -59,9 +62,9 @@ time_set::time_set(QWidget *parent) :
 
     /* connect the label that show the date and the time to the timer of the parent updateData */
     labelDataOra = ui->labelDataOra;
-    /* connect the label that show the user name */
-    //labelUserName = ui->labelUserName;
-    //reload();
+    // Running Flags
+    lockInterface = false;
+    ntpSyncRunning = false;
 }
 
 #undef WINDOW_TITLE
@@ -73,8 +76,8 @@ time_set::time_set(QWidget *parent) :
 void time_set::reload()
 {
     /* Load data and time 1*/
-    ui->pushButtonTime->setText(QTime::currentTime().toString("HH:mm:ss"));
-    ui->pushButtonCalendar->setText(QDateTime::currentDateTime().date().toString("yyyy-MM-dd"));
+    ui->pushButtonTime->setText(QTime::currentTime().toString(TIME_MASK));
+    ui->pushButtonCalendar->setText(QDate::currentDate().toString(DATE_MASK));
 
     nOffset = ntpclient->getOffset_h();
     nTimeOut = ntpclient->getTimeout_s();
@@ -83,11 +86,22 @@ void time_set::reload()
 
     updateIface();
     ui->progressBarElapsed->setVisible(false);
+    lockInterface = false;
+    lockUI(lockInterface);
     showFullScreen();
 }
 
 void time_set::updateData()
 {
+    lockUI(lockInterface);
+    ui->progressBarElapsed->setVisible(ntpSyncRunning);
+    // Progress Bar di aggiornamento NTP
+    if (ntpSyncRunning && nTimeOut && syncElapsed.isValid())  {
+        int nElapsed = syncElapsed.elapsed() / 1000;
+        if (nElapsed <= ui->progressBarElapsed->maximum())  {
+            ui->progressBarElapsed->setValue(nElapsed);
+        }
+    }
     page::updateData();
 }
 
@@ -115,11 +129,12 @@ void time_set::on_pushButtonTime_clicked()
     if (timepopup) {
         QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss"); // and not "HH:mm:ss"
         if (t.isValid()) {
+            lockUI(true);
             timepopup->setTime(t);
             timepopup->movePosition(ui->pushButtonTime->geometry().x(),ui->pushButtonTime->geometry().y());
             if (timepopup->exec() == QDialog::Accepted) {
                 // ui->timeEdit->setTime(timepop->getTime());
-                ui->pushButtonTime->setText(timepopup->getTime().toString("HH:mm:ss"));
+                ui->pushButtonTime->setText(timepopup->getTime().toString(TIME_MASK));
             }
         }
     }
@@ -143,12 +158,13 @@ void time_set::on_pushButtonCalendar_clicked()
 {
 
     if (calendarpopup) {
-        QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
+        QDate d = QDate::fromString(ui->pushButtonCalendar->text(), DATE_MASK);
         if (d.isValid()) {
+            lockUI(true);
             calendarpopup->setDate(d);
             calendarpopup->movePosition(ui->pushButtonCalendar->geometry().x(),ui->pushButtonCalendar->geometry().y());
             if (calendarpopup->exec() == QDialog::Accepted) {
-                ui->pushButtonCalendar->setText(calendarpopup->getDate().toString("yyyy-MM-dd"));
+                ui->pushButtonCalendar->setText(calendarpopup->getDate().toString(DATE_MASK));
             }
         }
     }
@@ -156,33 +172,22 @@ void time_set::on_pushButtonCalendar_clicked()
 
 void time_set::on_pushButtonNTPSync_clicked()
 {
-
-    if (! szTimeServer.isEmpty())  {
+    // Avvio della sincronizzazione via NTP
+    if (! szTimeServer.isEmpty() && nTimeOut)  {
+        ui->progressBarElapsed->setMaximum(nTimeOut);
         ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod);
+        connect(ntpclient, SIGNAL(ntpSyncFinish(bool )), this, SLOT(ntpSyncDone(bool)));
         ntpclient->requestNTPSync();
+        lockInterface = true;
+        ntpSyncRunning = true;
+        syncElapsed.restart();
     }
-
-//    ui->labelSync->setVisible(true);
-//    QCoreApplication::processEvents();
-
-//    NtpClient *ntp = new NtpClient();
-//    ntp->setServerName(ui->pushButtonNTP->text());
-//    ntp->setTimeZoneDST(ui->comboBoxTZDST->currentText().toInt());
-//    if(ntp->doNTPSync()){
-//        ui->pushButtonCalendar->setText(QDate::currentDate().toString("yyyy-MM-dd"));
-//        ui->pushButtonTime->setText(QTime::currentTime().toString("hh:mm:ss"));
-//        QMessageBox::information(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Date and Time set."));
-//    } else {
-//        QMessageBox::warning(0,QApplication::trUtf8("NTP SYNC"), QApplication::trUtf8("Network Error \nDate and Time can not be set."));
-//    }
-//    ui->labelSync->setVisible(false);
-
 }
 
-void time_set::on_pushButtonNTP_clicked()
+void time_set::on_pushButtonNTPServer_clicked()
 {
     char value [64];
-    alphanumpad tastiera_alfanum(value,ui->pushButtonNTP->text().toAscii().data());
+    alphanumpad tastiera_alfanum(value,ui->pushButtonNTPServer->text().toAscii().data());
     tastiera_alfanum.showFullScreen();
     if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
@@ -193,15 +198,18 @@ void time_set::on_pushButtonNTP_clicked()
 
 void time_set::on_pushButtonSetManual_clicked()
 {
-    QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
+    QDate d = QDate::fromString(ui->pushButtonCalendar->text(), DATE_MASK);
     QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss");
     if (d.isValid() && t.isValid())  {
+        lockInterface = true;
         QDateTime   currentDT(d, t);
+        connect(ntpclient, SIGNAL(ntpDateTimeChangeFinish(bool)), this, SLOT(ntpManualSetDone(bool)));
+        datetimeTarget = currentDT;
         ntpclient->requestDateTimeChange(currentDT);
     }
 }
 
-void time_set::on_pushButtonOffset_clicked()
+void time_set::on_pushButtonNTPOffset_clicked()
 {
     numpad * dk;
     int value = nOffset;
@@ -217,7 +225,7 @@ void time_set::on_pushButtonOffset_clicked()
     }
 }
 
-void time_set::on_pushButtonTimeOut_clicked()
+void time_set::on_pushButtonNTPTimeOut_clicked()
 {
     numpad * dk;
     int value = nTimeOut;
@@ -234,7 +242,7 @@ void time_set::on_pushButtonTimeOut_clicked()
     }
 }
 
-void time_set::on_pushButtonPeriod_clicked()
+void time_set::on_pushButtonNTPPeriod_clicked()
 {
     numpad * dk;
     int value = nPeriod;
@@ -271,8 +279,48 @@ void time_set::on_pushButtonNTPDefualts_clicked()
 
 void time_set::updateIface()
 {
-    ui->pushButtonNTP->setText(szTimeServer);
-    ui->pushButtonOffset->setText(QString("%1 h") .arg(nOffset,2,10));
-    ui->pushButtonTimeOut->setText(QString("%1 s") .arg(nTimeOut,2,10));
-    ui->pushButtonPeriod->setText(QString("%1 h") .arg(nPeriod,4,10));
+    ui->pushButtonNTPServer->setText(szTimeServer);
+    ui->pushButtonNTPOffset->setText(QString("%1 h") .arg(nOffset,2,10));
+    ui->pushButtonNTPTimeOut->setText(QString("%1 s") .arg(nTimeOut,2,10));
+    ui->pushButtonNTPPeriod->setText(QString("%1 h") .arg(nPeriod,4,10));
+}
+
+void time_set::lockUI(bool setLocked)
+{
+    // Aggiornamento dell'interfaccia utente
+    ui->pushButtonCalendar->setEnabled(! setLocked);
+    ui->pushButtonTime->setEnabled(! setLocked);
+    ui->pushButtonNTPServer->setEnabled(! setLocked);
+    ui->pushButtonSetManual->setEnabled(! setLocked);
+    ui->pushButtonNTPSet->setEnabled(! setLocked);
+    ui->pushButtonNTPSync->setEnabled(! setLocked);
+    ui->pushButtonNTPDefualts->setEnabled(! setLocked);
+    ui->pushButtonNTPOffset->setEnabled(! setLocked);
+    ui->pushButtonNTPTimeOut->setEnabled(! setLocked);
+    ui->pushButtonNTPPeriod->setEnabled(! setLocked);
+}
+
+void time_set::ntpManualSetDone(bool setOk)
+{
+    if (setOk)  {
+        QMessageBox::information(this,trUtf8("Manual Date Time Set"), trUtf8("Current Date and Time set to:\n%1") .arg(datetimeTarget.toString(DATE_MASK" "TIME_MASK)));
+    }
+    else {
+        QMessageBox::critical(this,trUtf8("Manual Date Time Set"), trUtf8("Error setting Date and Time to:\n%1") .arg(datetimeTarget.toString(DATE_MASK" "TIME_MASK)));
+    }
+    lockInterface = false;
+    lockUI(lockInterface);
+}
+
+void time_set::ntpSyncDone(bool timeOut)
+{
+    if (timeOut)  {
+        QMessageBox::warning(this,trUtf8("NTP Time Error"), trUtf8("Time Out syncing Date and Time with NTP Server:\n%1") .arg(szTimeServer));
+    }
+    else  {
+        QMessageBox::information(this,trUtf8("NTP Time Set"), trUtf8("Current Date and Time set from NTP Server:\n%1") .arg(szTimeServer));
+    }
+    lockInterface = false;
+    ntpSyncRunning = false;
+    lockUI(lockInterface);
 }
