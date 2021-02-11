@@ -1169,13 +1169,14 @@ bool Logger::closeStorageFile()
 bool Logger::checkVariation()
 {
     char svalue [42] = "";
+
     for (int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
     {
         register int ctIndex = StoreArrayV[i].CtIndex;
         register char status = pIODataStatusAreaI[ctIndex];
 
         if (status != DONE && status != BUSY) {
-            LOG_PRINT(error_e, "cannot read variable %d '%s'\n", StoreArrayV[i].CtIndex, StoreArrayV[i].tag );
+            // LOG_PRINT(error_e, "cannot read variable %d '%s'\n", StoreArrayV[i].CtIndex, StoreArrayV[i].tag );
             continue;
         } else {
             register int *p = (int *)IODataAreaI;
