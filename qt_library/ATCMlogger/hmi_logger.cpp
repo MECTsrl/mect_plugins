@@ -41,6 +41,9 @@ sem_t theLoggingSem;
 pthread_mutex_t alarmevents_list_mutex = PTHREAD_MUTEX_INITIALIZER;
 int removeTheOldestLog(const char * dir, FILE *current);
 
+// Variabili introdotte per gestire il cambio di tempo via NTP Server o in manuale
+bool            timeChanged = false;                    // Rilevato un cambio di data e ora genera una riga vuota nei log per segnare il cambio di tempo
+QDateTime       lastDumpTime = QDateTime();             // Ultimo dump di Logger effettuato (a parte riga vuota di marcatura cambio di Tempo)
 #if 0
 /**
  * @brief this table will filled with the color to be used for each error level:
@@ -314,15 +317,35 @@ void Logger::run()
 
     while (1)        
     {
+        timeChanged = false;
         // Check ntp sync requested
         if (ntpclient->ntpSyncOrChangeRequested())  {
             QDateTime timeBefore = QDateTime::currentDateTime();
             ntpclient->doSyncOrChange();
             QDateTime timeAfter = QDateTime::currentDateTime();
-            // TODO: Gestire Cambio di Tempo
-            if (timeAfter.secsTo(timeBefore) > 60 || timeAfter.daysTo(timeBefore) != 0)  {
+            // Verifica sull'entità della correzione
+            if (
+                (lastDumpTime.isValid() && timeAfter < lastDumpTime) ||     // Nuova Ora precedente all'ultima scrittura di Log
+                timeAfter.daysTo(timeBefore) != 0                           // Nuova Ora in un giorno differente
+                )  {
                 // Chiudere Log Attuale
+#ifdef ENABLE_ALARMS
+                closeAlarmsFile();
+#endif
+#ifdef ENABLE_STORE
+                closeStorageFile();
+#endif
             }
+            timeChanged = true;
+            time(&Now);
+            timeinfo = localtime (&Now);
+            if (not openStorageFile()) {
+                LOG_PRINT(error_e, "cannot open the store\n");
+                logger_shot = false;
+                return;
+            }
+            dumpStorage();
+            timeChanged = false;
         }
         if (recompute_abstime) {
             recompute_abstime = false;
@@ -411,7 +434,7 @@ void Logger::run()
         /* if the logger is started */
         if (logger_start)
         {
-            if (logger_shot)
+            if (logger_shot || timeChanged)
             {
                 variation = false;
             }
@@ -447,7 +470,7 @@ void Logger::run()
             logger_shot = false;
         }
 #endif
-    }
+    }   // end infinite loop
 }
 
 bool Logger::logstart()
@@ -1068,6 +1091,7 @@ bool Logger::openStorageFile()
     
     if (newfile)
     {
+        logger_shot = true;
         LOG_PRINT(verbose_e, "NEW log file\n");
         int nb_of_char = fprintf(storefp, "date; time");
         if (nb_of_char != (int)strlen("date; time"))
@@ -1214,7 +1238,12 @@ bool Logger::dumpStorage()
         return false;
     }
 
-    if (logger_shot || (store_elem_nb_S > 0  && (counterS * _period_msec) >= (LogPeriodSecS * 1000)))
+    if (timeChanged) {
+        for (int n = 0; StoreArrayS[n].tag[0] != '\0'; n++) {
+            fprintf(storefp, "; -");
+        }
+    }
+    else if (logger_shot || (store_elem_nb_S > 0  && (counterS * _period_msec) >= (LogPeriodSecS * 1000)))
     {
         counterS = 0;
         for ( iS = 0; StoreArrayS[iS].tag[0] != '\0'; iS++)
@@ -1252,7 +1281,12 @@ bool Logger::dumpStorage()
         iS = 0;
     }
     
-    if (logger_shot || (store_elem_nb_F > 0  && (counterF * _period_msec) >= (LogPeriodSecF * 1000)))
+    if (timeChanged) {
+        for (int n = 0; StoreArrayF[n].tag[0] != '\0'; n++) {
+            fprintf(storefp, "; -");
+        }
+    }
+    else if (logger_shot || (store_elem_nb_F > 0  && (counterF * _period_msec) >= (LogPeriodSecF * 1000)))
     {
         counterF = 0;
         for ( iF = 0; StoreArrayF[iF].tag[0] != '\0'; iF++)
@@ -1290,7 +1324,12 @@ bool Logger::dumpStorage()
         iF = 0;
     }
 
-    if (logger_shot || (store_elem_nb_V > 0 && variation))
+    if (timeChanged) {
+        for (int n = 0; StoreArrayV[n].tag[0] != '\0'; n++) {
+            fprintf(storefp, "; -");
+        }
+    }
+    else if (logger_shot || (store_elem_nb_V > 0 && variation))
     {
         for ( iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
         {
@@ -1341,7 +1380,12 @@ bool Logger::dumpStorage()
         iV = 0;
     }
 
-    if (logger_shot && store_elem_nb_X > 0)
+    if (timeChanged) {
+        for (int n = 0; StoreArrayX[n].tag[0] != '\0'; n++) {
+            fprintf(storefp, "; -");
+        }
+    }
+    else if (logger_shot && store_elem_nb_X > 0)
     {
         for ( iX = 0; StoreArrayX[iX].tag[0] != '\0'; iX++)
         {
@@ -1378,7 +1422,9 @@ bool Logger::dumpStorage()
         iX = 0;
     }
 
-    if (iF == 0 && iS == 0 && iV == 0 && iX == 0)
+    if (timeChanged) {
+        //..
+    } else if (iF == 0 && iS == 0 && iV == 0 && iX == 0)
     {
         LOG_PRINT(verbose_e, "No signal emitted\n");
 #if 0
@@ -1389,6 +1435,9 @@ bool Logger::dumpStorage()
         }
 #endif
 #endif
+    }
+    else {
+        lastDumpTime = QDateTime::currentDateTime();
     }
     if (fprintf(storefp, "\n") != 1)
     {
