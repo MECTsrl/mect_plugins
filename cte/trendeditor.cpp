@@ -523,7 +523,8 @@ void TrendEditor::on_cmdSaveAs_clicked()
             m_szTrendFile = infoDestination.fileName();
             fillTrendsCombo(m_szTrendPath);
             // Ripristinato per versione 3.1.3
-            m_szMsg = trUtf8("Trend File has been successfully Saved As File:\n%1").arg(szDestFile);
+            m_szMsg = trUtf8("Trend File has been successfully Saved As File:\n\n%1\n\n").arg(szDestFile);
+            m_szMsg.append(trUtf8("Please remember to Run qmake again (Build->Run qmake)"));
             notifyUser(this, szMectTitle, m_szMsg);
         }
     }
