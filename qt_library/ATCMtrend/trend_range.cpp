@@ -84,7 +84,7 @@ void trend_range::reload()
     ui->spinBoxSecondsIn->setValue(actualTzero.time().second());
 #else
     ui->pushButtonTime->setText(actualTzero.time().toString("HH:mm:ss"));
-    ui->pushButtonCalendar->setText(QDateTime::currentDateTime().date().toString("yyyy-MM-dd"));
+    ui->pushButtonCalendar->setText(actualTzero.date().toString("yyyy-MM-dd"));
 #endif
 
     /* interval */
