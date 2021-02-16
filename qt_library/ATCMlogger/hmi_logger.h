@@ -21,7 +21,7 @@
 
 #define RECORD_SIZE_BYTE 100
 #define MAX_RECORD_PER_DAY (24 * 3600 / 5)
-#define ALARMS_PERIOD_MS 100
+#define ALARMS_PERIOD_MS 1000
 #define RS_ALARM_PUSH_CMD "/usr/sbin/rs_notify_alert.sh"
 
 typedef struct event_msg_e
@@ -76,15 +76,6 @@ enum alarm_level_e
     level32_e,
     nb_of_level_e
 };
-
-#if 0
-/**
- * @brief this table will filled with the color to be used for each error level:
- * rgb sintax is used (example white is "rgb(255,255,255);")
- * tag "invisible" is used to hide the item
- */
-extern char LevelColorTable[nb_of_level_e][DESCR_LEN];
-#endif
 
 enum alarm_status_e
 {

@@ -598,7 +598,7 @@ size_t fillSyncroArea(void)
                 store_elem_nb_S++;
             }
         }
-        if (isstoref == 1)
+        else if (isstoref == 1)
         {
             strcpy(StoreArrayF[store_elem_nb_F].tag, varNameArray[elem_nb].tag);
             if (Tag2CtIndex(StoreArrayF[store_elem_nb_F].tag, &(StoreArrayF[store_elem_nb_F].CtIndex)) != 0)
@@ -611,7 +611,7 @@ size_t fillSyncroArea(void)
                 store_elem_nb_F++;
             }
         }
-        if (isstorev == 1)
+        else if (isstorev == 1)
         {
             strcpy(StoreArrayV[store_elem_nb_V].tag, varNameArray[elem_nb].tag);
             if (Tag2CtIndex(StoreArrayV[store_elem_nb_V].tag, &(StoreArrayV[store_elem_nb_V].CtIndex)) != 0)
@@ -624,7 +624,7 @@ size_t fillSyncroArea(void)
                 store_elem_nb_V++;
             }
         }
-        if (isstorex == 1)
+        else if (isstorex == 1)
         {
             strcpy(StoreArrayX[store_elem_nb_X].tag, varNameArray[elem_nb].tag);
             if (Tag2CtIndex(StoreArrayX[store_elem_nb_X].tag, &(StoreArrayX[store_elem_nb_X].CtIndex)) != 0)

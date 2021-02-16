@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  *
  * @section LICENSE
@@ -34,6 +34,10 @@
 #include "common.h"
 
 #include <QCoreApplication>
+#include <QDateTime>
+
+#define UNCHANGED '\0'
+#define CHANGED   '\1'
 
 Logger * logger = NULL;
 sem_t theLoggingSem;
@@ -158,7 +162,7 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
     time(&Now);
     memcpy(&CurrentTimeInfo, localtime(&Now),  sizeof(struct tm));
 
-    for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
+    for ( int i = 0; i < store_elem_nb_V; i++)
     {
         StoreArrayV[i].value[0] = '\0';
     }
@@ -652,9 +656,6 @@ size_t Logger::loadAlarmsTable()
     return elem_nb;
 }
 
-/**
- * @brief return false if the alarm is tagged as INVISIBLE into the LevelColorTable or into the StatusColorTable
- */
 int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
 {
     QHash<QString, event_t *>::const_iterator item = EventHash.find(event_msg->tag);
@@ -665,13 +666,7 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
     }
     
     event_t * event = item.value();
-#if 0
-    if (strcasecmp(LevelColorTable[event->level], INVISIBLE) == 0)
-    {
-        strcpy(event_msg->style, LevelColorTable[event->level]);
-        return false;
-    }
-#endif
+
     /* active */
     if (event_msg->status == alarm_rise_e)
     {
@@ -1100,7 +1095,7 @@ bool Logger::openStorageFile()
             return false;
         }
         
-        for ( int i = 0; StoreArrayS[i].tag[0] != '\0'; i++)
+        for ( int i = 0; store_elem_nb_S; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayS[i].tag);
             nb_of_char = fprintf(storefp, "; %s", StoreArrayS[i].tag);
@@ -1110,7 +1105,7 @@ bool Logger::openStorageFile()
                 return false;
             }
         }
-        for ( int i = 0; StoreArrayF[i].tag[0] != '\0'; i++)
+        for ( int i = 0; store_elem_nb_F; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayF[i].tag);
             nb_of_char = fprintf(storefp, "; %s", StoreArrayF[i].tag);
@@ -1120,7 +1115,7 @@ bool Logger::openStorageFile()
                 return false;
             }
         }
-        for ( int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
+        for ( int i = 0; i < store_elem_nb_V; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayV[i].tag);
             nb_of_char = fprintf(storefp, "; %s", StoreArrayV[i].tag);
@@ -1130,7 +1125,7 @@ bool Logger::openStorageFile()
                 return false;
             }
         }
-        for ( int i = 0; StoreArrayX[i].tag[0] != '\0'; i++)
+        for ( int i = 0; store_elem_nb_X; i++)
         {
             LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayX[i].tag);
             nb_of_char = fprintf(storefp, "; %s", StoreArrayX[i].tag);
@@ -1168,38 +1163,40 @@ bool Logger::closeStorageFile()
 
 bool Logger::checkVariation()
 {
+    bool retval = false;
     char svalue [42] = "";
+    register int *p = (int *)IODataAreaI;
 
-    for (int i = 0; StoreArrayV[i].tag[0] != '\0'; i++)
+    for (int i = 0; i < store_elem_nb_V; i++)
     {
         register int ctIndex = StoreArrayV[i].CtIndex;
         register char status = pIODataStatusAreaI[ctIndex];
 
-        if (status != DONE && status != BUSY) {
-            // LOG_PRINT(error_e, "cannot read variable %d '%s'\n", StoreArrayV[i].CtIndex, StoreArrayV[i].tag );
-            continue;
-        } else {
-            register int *p = (int *)IODataAreaI;
+        if (status == DONE or status == BUSY) {
             register int ivalue = p[ctIndex]; // atomic, quick and dirty, without locking
             register int decimal = getVarDecimalByCtIndex(ctIndex); // locks only if it's from another variable
 
             /* dump only if the last value was different */
             sprintf_fromValue(svalue, ctIndex, ivalue, decimal, 10);
-            if (strcmp(StoreArrayV[i].value, svalue) != 0)
-            {
-                return true;
+            if (strcmp(StoreArrayV[i].value, svalue) != 0) {
+                retval = true;
+                strcpy(StoreArrayV[i].value, svalue);
+                StoreArrayV[i].value[TAG_LEN - 1] = CHANGED;
+            } else {
+                StoreArrayV[i].value[TAG_LEN - 1] = UNCHANGED;
             }
         }
     }
-    return false;
+    return retval;
 }
 
 bool Logger::dumpStorage()
 {
     char buffer [FILENAME_MAX] = "";
     char value [42] = "";
-    int iF, iS, iV, iX;
+    int i;
 #ifdef ENABLE_TREND
+    QDateTime timestamp;
     trend_msg_t info_msg;
 #endif
     
@@ -1230,223 +1227,127 @@ bool Logger::dumpStorage()
 
     /* prepare the event item */
     strftime (buffer, FILENAME_MAX, "%Y/%m/%d; %H:%M:%S", timeinfo);
-    
-    LOG_PRINT(verbose_e, "dumping a new line '%s'\n", buffer);
-    int nb_of_char = fprintf(storefp, "%s", buffer);
-    if (nb_of_char != (int)strlen(buffer))
-    {
-        LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", buffer, nb_of_char, (int)strlen(buffer));
-        return false;
-    }
-
-    if (timeChanged) {
-        for (int n = 0; StoreArrayS[n].tag[0] != '\0'; n++) {
-            fprintf(storefp, "; -");
-        }
-    }
-    else if (logger_shot || (store_elem_nb_S > 0  && (counterS * _period_msec) >= (LogPeriodSecS * 1000)))
-    {
-        counterS = 0;
-        for ( iS = 0; StoreArrayS[iS].tag[0] != '\0'; iS++)
-        {
-            float fvalue = sprintf_fromDb(value, StoreArrayS[iS].CtIndex);
-            
-            nb_of_char = fprintf(storefp, "; %s", value);
-            if (nb_of_char != (int)strlen(value) + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
-                return false;
-            }
-            
+    fprintf(storefp, "%s", buffer);
 #ifdef ENABLE_TREND
-            /* emit a signal to the hmi with the new item to display */
-            info_msg.CtIndex = StoreArrayS[iS].CtIndex;
-            info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-            info_msg.value = fvalue;
-            emit new_trend(info_msg);
-            LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
+    timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
 #endif
-        }
-    }
-    else if (variation || (store_elem_nb_F > 0  || (counterF * _period_msec) >= (LogPeriodSecF * 1000)))
-    {
-        for ( iS = 0; StoreArrayS[iS].tag[0] != '\0'; iS++)
-        {
-            nb_of_char = fprintf(storefp, "; %s", "-");
-            if (nb_of_char != (int)strlen("-") + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
-                return false;
-            }
-        }
-        iS = 0;
-    }
-    
+
     if (timeChanged) {
-        for (int n = 0; StoreArrayF[n].tag[0] != '\0'; n++) {
+        for (int i = 0; i < (store_elem_nb_S + store_elem_nb_F + store_elem_nb_V + store_elem_nb_X); i++) {
             fprintf(storefp, "; -");
         }
-    }
-    else if (logger_shot || (store_elem_nb_F > 0  && (counterF * _period_msec) >= (LogPeriodSecF * 1000)))
-    {
-        counterF = 0;
-        for ( iF = 0; StoreArrayF[iF].tag[0] != '\0'; iF++)
+
+    } else {
+
+        if (logger_shot || (store_elem_nb_S > 0  && (counterS * _period_msec) >= (LogPeriodSecS * 1000)))
         {
-            float fvalue = sprintf_fromDb(value, StoreArrayF[iF].CtIndex);
-            
-            nb_of_char = fprintf(storefp, "; %s", value);
-            if (nb_of_char != (int)strlen(value) + 2)
+            counterS = 0;
+            for (int i = 0; i < store_elem_nb_S; i++)
             {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
-                return false;
-            }
-            
+                float fvalue = sprintf_fromDb(value, StoreArrayS[i].CtIndex);
+
+                fprintf(storefp, "; %s", value);
 #ifdef ENABLE_TREND
-            /* emit a signal to the hmi with the new item to display */
-            info_msg.CtIndex = StoreArrayF[iF].CtIndex;
-            info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-            info_msg.value = fvalue;
-            emit new_trend(info_msg);
-            LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
+                info_msg.CtIndex = StoreArrayS[i].CtIndex;
+                info_msg.timestamp = timestamp;
+                info_msg.value = fvalue;
+                emit new_trend(info_msg);
 #endif
-        }
-    }
-    else if (variation || (store_elem_nb_S > 0  || (counterS * _period_msec) >= (LogPeriodSecS * 1000)))
-    {
-        for ( iF = 0; StoreArrayF[iF].tag[0] != '\0'; iF++)
-        {
-            nb_of_char = fprintf(storefp, "; %s", "-");
-            if (nb_of_char != (int)strlen("-") + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
-                return false;
             }
         }
-        iF = 0;
-    }
-
-    if (timeChanged) {
-        for (int n = 0; StoreArrayV[n].tag[0] != '\0'; n++) {
-            fprintf(storefp, "; -");
-        }
-    }
-    else if (logger_shot || (store_elem_nb_V > 0 && variation))
-    {
-        for ( iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
+        else if (variation || (store_elem_nb_F > 0  || (counterF * _period_msec) >= (LogPeriodSecF * 1000)))
         {
-            float fvalue = sprintf_fromDb(value, StoreArrayV[iV].CtIndex);
+            for (int i = 0; i < store_elem_nb_S; i++) {
+                fprintf(storefp, "; -");
+            }
+        }
 
-            /* dump only if the last value was different */
-            if (logger_shot || strcmp(StoreArrayV[iV].value, value) != 0)
+        if (logger_shot || (store_elem_nb_F > 0  && (counterF * _period_msec) >= (LogPeriodSecF * 1000)))
+        {
+            counterF = 0;
+            for (int i = 0; i < store_elem_nb_F; i++)
             {
-                strcpy(StoreArrayV[iV].value, value);
-                nb_of_char = fprintf(storefp, "; %s", value);
-                if (nb_of_char != (int)strlen(value) + 2)
-                {
-                    LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
-                    return false;
+                float fvalue = sprintf_fromDb(value, StoreArrayF[i].CtIndex);
+
+                fprintf(storefp, "; %s", value);
+#ifdef ENABLE_TREND
+                info_msg.CtIndex = StoreArrayF[i].CtIndex;
+                info_msg.timestamp = timestamp;
+                info_msg.value = fvalue;
+                emit new_trend(info_msg);
+#endif
+            }
+        }
+        else if (variation || (store_elem_nb_S > 0  || (counterS * _period_msec) >= (LogPeriodSecS * 1000)))
+        {
+            for (int i = 0; i < store_elem_nb_F; i++) {
+                fprintf(storefp, "; -");
+            }
+        }
+
+        if (logger_shot || (store_elem_nb_V > 0 && variation))
+        {
+            for (int i = 0; i < store_elem_nb_V; i++)
+            {
+                float fvalue = sprintf_fromDb(value, StoreArrayV[i].CtIndex);
+
+                if (logger_shot) {
+                    strcpy(StoreArrayV[i].value, value);
+                    StoreArrayV[i].value[TAG_LEN - 1] = UNCHANGED;
+                    fprintf(storefp, "; %s", value);
+
+                } else if (StoreArrayV[i].value[TAG_LEN - 1] == CHANGED) {
+                    // use the value at checkVariation() time
+                    StoreArrayV[i].value[TAG_LEN - 1] = UNCHANGED;
+                    fprintf(storefp, "; %s", StoreArrayV[i].value);
+
+                } else {
+                    fprintf(storefp, "; -");
+
                 }
-            }
-            else
-            {
-                nb_of_char = fprintf(storefp, "; %s", "-");
-                if (nb_of_char != (int)strlen("-") + 2)
-                {
-                    LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
-                    return false;
-                }
-            }
-
 #ifdef ENABLE_TREND
-            /* emit a signal to the hmi with the new item to display */
-            info_msg.CtIndex = StoreArrayV[iV].CtIndex;
-            info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-            info_msg.value = fvalue;
-            emit new_trend(info_msg);
-            LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
+                info_msg.CtIndex = StoreArrayV[i].CtIndex;
+                info_msg.timestamp = timestamp;
+                info_msg.value = fvalue;
+                emit new_trend(info_msg);
 #endif
-        }
-    }
-    else
-    {
-        for ( iV = 0; StoreArrayV[iV].tag[0] != '\0'; iV++)
-        {
-            nb_of_char = fprintf(storefp, "; %s", "-");
-            if (nb_of_char != (int)strlen("-") + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
-                return false;
             }
         }
-        iV = 0;
-    }
-
-    if (timeChanged) {
-        for (int n = 0; StoreArrayX[n].tag[0] != '\0'; n++) {
-            fprintf(storefp, "; -");
-        }
-    }
-    else if (logger_shot && store_elem_nb_X > 0)
-    {
-        for ( iX = 0; StoreArrayX[iX].tag[0] != '\0'; iX++)
+        else
         {
-            float fvalue = sprintf_fromDb(value, StoreArrayX[iX].CtIndex);
-
-            nb_of_char = fprintf(storefp, "; %s", value);
-            if (nb_of_char != (int)strlen(value) + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", value, nb_of_char, (int)strlen(value) + 2);
-                return false;
+            for (int i = 0; i < store_elem_nb_V; i++) {
+                fprintf(storefp, "; -");
             }
+        }
 
+        if (logger_shot && store_elem_nb_X > 0)
+        {
+            for (int i = 0; i < store_elem_nb_X; i++)
+            {
+                float fvalue = sprintf_fromDb(value, StoreArrayX[i].CtIndex);
+
+                fprintf(storefp, "; %s", value);
 #ifdef ENABLE_TREND
-            /* emit a signal to the hmi with the new item to display */
-            info_msg.CtIndex = StoreArrayX[iX].CtIndex;
-            info_msg.timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-            info_msg.value = fvalue;
-            emit new_trend(info_msg);
-            LOG_PRINT(verbose_e, "emitted '%d' at '%s'(%s) value %s(%f)\n", info_msg.CtIndex, info_msg.timestamp.toString("yy/MM/dd HH:mm:ss").toAscii().data(), buffer, value, info_msg.value);
+                info_msg.CtIndex = StoreArrayX[i].CtIndex;
+                info_msg.timestamp = timestamp;
+                info_msg.value = fvalue;
+                emit new_trend(info_msg);
 #endif
-        }
-    }
-    else
-    {
-        for ( iX = 0; StoreArrayX[iX].tag[0] != '\0'; iX++)
-        {
-            nb_of_char = fprintf(storefp, "; %s", "-");
-            if (nb_of_char != (int)strlen("-") + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "-", nb_of_char, (int)strlen("-") + 2);
-                return false;
             }
         }
-        iX = 0;
-    }
-
-    if (timeChanged) {
-        //..
-    } else if (iF == 0 && iS == 0 && iV == 0 && iX == 0)
-    {
-        LOG_PRINT(verbose_e, "No signal emitted\n");
-#if 0
-#ifndef LOG_DISABLED
-        for ( int i = 0; i < 10; i++)
+        else
         {
-            LOG_PRINT(error_e, "StoreArray[%d] = '%s'\n",i, StoreArray[i].tag );
+            for (int i = 0; i < store_elem_nb_X; i++) {
+                fprintf(storefp, "; -");
+            }
         }
-#endif
-#endif
-    }
-    else {
+
+        // only if (not timeChanged)
         lastDumpTime = QDateTime::currentDateTime();
     }
-    if (fprintf(storefp, "\n") != 1)
-    {
-        LOG_PRINT(error_e, "cannot dump\n");
-        return false;
-    }
+
+    fprintf(storefp, "\n");
     fflush(storefp);
-    LOG_PRINT(verbose_e, "dumped\n");
     return true;
 }
 #endif
