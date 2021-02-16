@@ -47,7 +47,9 @@
 					<section title="Log" ref="Log_fr.html"/>
 					<section title="Structure de projet vide" ref="Struttura_progetto_fr.html"/>
 					<section title="Pages de librairie" ref="Pagine_libreria_fr.html"/>	
-					<section title="Time Set" ref="Time_set_fr.html"/>				
+					<section title="Time Set" ref="Time_set_fr.html">
+						<section title="NTP Client Class" ref="NTP_class_fr.html"/>	
+						</section>			
 					<section title="Ajouter une page" ref="Aggiungere_pagina_fr.html"/>
 					<section title="Supprimer une page" ref="Rimuovere_pagina_fr.html"/>
 					<section title="Renommer une page" ref="Rinominare_pagina_fr.html"/>										
