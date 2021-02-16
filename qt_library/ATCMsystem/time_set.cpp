@@ -177,11 +177,12 @@ void time_set::on_pushButtonNTPSync_clicked()
 {
     // Avvio della sincronizzazione via NTP
     if (! szTimeServer.isEmpty() && nTimeOut)  {
+        lockInterface = true;
+        lockUI(lockInterface);
         ui->progressBarElapsed->setMaximum(nTimeOut);
         ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod);
         QObject::connect(ntpclient, SIGNAL(ntpSyncFinish(bool )), this, SLOT(ntpSyncDone(bool)));
         ntpclient->requestNTPSync();
-        lockInterface = true;
         ntpSyncRunning = true;
         syncElapsed.restart();
     }
@@ -203,8 +204,10 @@ void time_set::on_pushButtonSetManual_clicked()
 {
     QDate d = QDate::fromString(ui->pushButtonCalendar->text(), DATE_MASK);
     QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss");
+
     if (d.isValid() && t.isValid())  {
         lockInterface = true;
+        lockUI(lockInterface);
         QDateTime   currentDT(d, t);
         QObject::connect(ntpclient, SIGNAL(ntpDateTimeChangeFinish(bool)), this, SLOT(ntpManualSetDone(bool)));
         datetimeTarget = currentDT;
