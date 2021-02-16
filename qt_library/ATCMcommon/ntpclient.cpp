@@ -140,6 +140,7 @@ void        NtpClient::doSyncOrChange()
 
         pt->tm_hour = newDateTime.time().hour();
         pt->tm_min = newDateTime.time().minute();
+        pt->tm_sec = newDateTime.time().second();
 
         rc = gettimeofday(&temp, &timez);
         if (rc < 0) {
