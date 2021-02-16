@@ -13,6 +13,7 @@
 #include "ui_info.h"
 #include "app_config.h"
 #include "qrcode.h"
+#include "ntpclient.h"
 
 #include <QList>
 #include <QString>
@@ -102,6 +103,7 @@ void info::reload()
     refreshSystemTab();
     refreshApplTab();
     refreshNetworkingTabs();
+    refreshNTPInfo();
 }
 
 void info::refreshSystemTab()
@@ -368,6 +370,16 @@ void info::refreshNetworkingTabs()
     ui->wlan0_text->appendPlainText("");
     ui->ppp0_text->appendPlainText("");
     ui->tun0_text->appendPlainText("");
+    ui->ntp_text->appendPlainText("");
+}
+
+void info::refreshNTPInfo()
+{
+    // Refresh NTP Perams
+    ui->ntp_text->appendPlainText(QString("NTP Server: \t%1") .arg(ntpclient->getNtpServer()));
+    ui->ntp_text->appendPlainText(QString("NTP Offset: \t%1 [Hours]") .arg(ntpclient->getOffset_h(), 4, 10));
+    ui->ntp_text->appendPlainText(QString("NTP TimeOut:\t%1 [Seconds]") .arg(ntpclient->getTimeout_s(), 4, 10));
+    ui->ntp_text->appendPlainText(QString("NTP Period: \t%1 [Hours, 0=Sync disabled]") .arg(ntpclient->getPeriod_h(), 4, 10));
 }
 
 /**
@@ -474,7 +486,8 @@ void info::on_pushButtonQrc_clicked()
     szMessage.append(ui->ppp0_text->toPlainText());
     szMessage.append(ui->tabWidget->tabText(6) + "\n");
     szMessage.append(ui->tun0_text->toPlainText());
-
+    szMessage.append(ui->tabWidget->tabText(7) + "\n");
+    szMessage.append(ui->ntp_text->toPlainText());
     // Compose Command
     sprintf(command,"qrencode -t PNG -o %s \"%s\" > /dev/null 2>&1", szFile.toAscii().data(), szMessage.toAscii().data());
     // Create PNG

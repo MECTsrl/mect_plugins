@@ -31,11 +31,8 @@ private slots:
     void changeEvent(QEvent * event);
 #endif
     void on_pushButtonHome_clicked();
-
     void on_pushButtonBack_clicked();
-
     void on_pushButtonQrc_clicked();
-
     void on_pushButtonRefresh_clicked();
 
 private:
@@ -43,6 +40,7 @@ private:
     void refreshSystemTab();
     void refreshApplTab();
     void refreshNetworkingTabs();
+    void refreshNTPInfo();
 };
 
 #endif // INFO_H

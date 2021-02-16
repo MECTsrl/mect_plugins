@@ -142,7 +142,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="sys">
           <property name="sizePolicy">
@@ -400,6 +400,9 @@
            <property name="spacing">
             <number>0</number>
            </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QFrame" name="frameWLAN0">
              <property name="sizePolicy">
@@ -545,6 +548,37 @@
                  <bool>true</bool>
                 </property>
                </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="ntp">
+          <attribute name="title">
+           <string>NTP</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QFrame" name="frameNTP">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <property name="margin">
+               <number>2</number>
+              </property>
+              <item>
+               <widget class="QPlainTextEdit" name="ntp_text"/>
               </item>
              </layout>
             </widget>
