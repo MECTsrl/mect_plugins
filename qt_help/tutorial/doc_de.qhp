@@ -30,6 +30,8 @@
 							<section title="Update vom Typ S / F / V / X" ref="Variabili_S_de.html"/>
 							</section>
 						<section title="Funktionalität Crosstable Editor" ref="Funzionalita_Crosstable_Editor_de.html"/>
+						<section title="Funktionalität Crosstable Editor: Suche" ref="Funzionalita_Crosstable_Ricerca_de.html"/>
+						<section title="Funktionalität Crosstable Editor: Multi Line Edit" ref="Funzionalita_Crosstable_MultiEdit_de.html"/>
 						</section>
 					<section title="System Editor" ref="System_Editor_de.html"/>
 					<section title="Trends" ref="Trends_de.html">
