@@ -336,7 +336,6 @@ void Logger::run()
                 closeStorageFile();
 #endif
             }
-            timeChanged = true;
             time(&Now);
             timeinfo = localtime (&Now);
             if (not openStorageFile()) {
@@ -344,6 +343,7 @@ void Logger::run()
                 logger_shot = false;
                 return;
             }
+            timeChanged = true;
             dumpStorage();
             timeChanged = false;
         }
@@ -434,7 +434,7 @@ void Logger::run()
         /* if the logger is started */
         if (logger_start)
         {
-            if (logger_shot || timeChanged)
+            if (logger_shot)
             {
                 variation = false;
             }
