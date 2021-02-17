@@ -1071,79 +1071,33 @@ bool Logger::dumpAck(event_msg_e * info_msg)
 bool Logger::openStorageFile()
 {
     int newfile;
-    if (storefp != NULL)
-    {
-        LOG_PRINT(verbose_e, "the log file is already open\n");
+
+    if (storefp != NULL) {
         return true;
     }
-    /*  open the log file */
     storefp = openFile(false, &newfile, StorageDir);
-    if (storefp == NULL)
-    {
-        LOG_PRINT(error_e, "cannot dump the log\n");
+    if (storefp == NULL) {
+        LOG_PRINT(error_e, "cannot open the log file\n");
         return false;
     }
-    
-    if (newfile)
-    {
+    if (newfile) {
         logger_shot = true;
-        LOG_PRINT(verbose_e, "NEW log file\n");
-        int nb_of_char = fprintf(storefp, "date; time");
-        if (nb_of_char != (int)strlen("date; time"))
-        {
-            LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", "date; time", nb_of_char, (int)strlen("date; time"));
-            return false;
+        fprintf(storefp, "date; time");
+        for ( int i = 0; i < store_elem_nb_S; i++) {
+            fprintf(storefp, "; %s", StoreArrayS[i].tag);
         }
-        
-        for ( int i = 0; store_elem_nb_S; i++)
-        {
-            LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayS[i].tag);
-            nb_of_char = fprintf(storefp, "; %s", StoreArrayS[i].tag);
-            if (nb_of_char != (int)strlen(StoreArrayS[i].tag) + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayS[i].tag, nb_of_char, (int)strlen(StoreArrayS[i].tag) + 2);
-                return false;
-            }
+        for ( int i = 0; i < store_elem_nb_F; i++) {
+            fprintf(storefp, "; %s", StoreArrayF[i].tag);
         }
-        for ( int i = 0; store_elem_nb_F; i++)
-        {
-            LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayF[i].tag);
-            nb_of_char = fprintf(storefp, "; %s", StoreArrayF[i].tag);
-            if (nb_of_char != (int)strlen(StoreArrayF[i].tag) + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayF[i].tag, nb_of_char, (int)strlen(StoreArrayF[i].tag) + 2);
-                return false;
-            }
+        for ( int i = 0; i < store_elem_nb_V; i++) {
+            fprintf(storefp, "; %s", StoreArrayV[i].tag);
         }
-        for ( int i = 0; i < store_elem_nb_V; i++)
-        {
-            LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayV[i].tag);
-            nb_of_char = fprintf(storefp, "; %s", StoreArrayV[i].tag);
-            if (nb_of_char != (int)strlen(StoreArrayV[i].tag) + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayV[i].tag, nb_of_char, (int)strlen(StoreArrayV[i].tag) + 2);
-                return false;
-            }
+        for ( int i = 0; i < store_elem_nb_X; i++) {
+            fprintf(storefp, "; %s", StoreArrayX[i].tag);
         }
-        for ( int i = 0; store_elem_nb_X; i++)
-        {
-            LOG_PRINT(verbose_e, "dumping title %s\n", StoreArrayX[i].tag);
-            nb_of_char = fprintf(storefp, "; %s", StoreArrayX[i].tag);
-            if (nb_of_char != (int)strlen(StoreArrayX[i].tag) + 2)
-            {
-                LOG_PRINT(error_e, "cannot dump '%s' %d vs %d\n", StoreArrayX[i].tag, nb_of_char, (int)strlen(StoreArrayX[i].tag) + 2);
-                return false;
-            }
-        }
-
-        if (fprintf(storefp, "\n") != 1)
-        {
-            LOG_PRINT(error_e, "cannot dump: '%s'\n", strerror(errno));
-            return false;
-        }
+        fprintf(storefp, "\n");
         fflush(storefp);
     }
-    LOG_PRINT(verbose_e, "Opened log file\n");
     return true;
 }
 
@@ -1194,7 +1148,6 @@ bool Logger::dumpStorage()
 {
     char buffer [FILENAME_MAX] = "";
     char value [42] = "";
-    int i;
 #ifdef ENABLE_TREND
     QDateTime timestamp;
     trend_msg_t info_msg;

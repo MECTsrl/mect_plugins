@@ -352,11 +352,11 @@ void trend_option::on_pushButtonChangePen_clicked()
     QString value;
     QStringList list;
     
-    for ( int i = 0; store_elem_nb_S; i++)
+    for ( int i = 0; i < store_elem_nb_S; i++)
     {
         list.append(StoreArrayS[i].tag);
     }
-    for ( int i = 0; store_elem_nb_F; i++)
+    for ( int i = 0; i < store_elem_nb_F; i++)
     {
         list.append(StoreArrayF[i].tag);
     }
@@ -364,7 +364,7 @@ void trend_option::on_pushButtonChangePen_clicked()
     {
         list.append(StoreArrayV[i].tag);
     }
-    for ( int i = 0; store_elem_nb_X; i++)
+    for ( int i = 0; i < store_elem_nb_X; i++)
     {
         list.append(StoreArrayX[i].tag);
     }
