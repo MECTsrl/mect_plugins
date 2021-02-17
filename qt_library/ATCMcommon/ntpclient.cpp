@@ -18,7 +18,6 @@ NtpClient * ntpclient = NULL;
 NtpClient::NtpClient(QObject *parent) :
     QObject(parent)
 {
-
     QSettings  *objSettings = new QSettings(NTP_FILE, QSettings::IniFormat);
     objSettings->beginGroup("NTP-Server");
     ntpServerName = objSettings->value("serverName", THE_NTP_SERVER).toString();
@@ -33,9 +32,9 @@ NtpClient::NtpClient(QObject *parent) :
     newDateTime = invalidDateTime;
     // Attiva il timer NTP
     if (ntpPeriod > 0)  {
+        requestNTPSync();
         ntpSyncTimer.start();
     }
-
 }
 
 QString     NtpClient::getNtpServer()
@@ -82,6 +81,7 @@ void        NtpClient::setNtpParams(const QString &ntpServer, int ntpTimeout_s, 
     objSettings->endGroup();
     // Attiva il timer NTP
     if (ntpPeriod > 0)  {
+        // no requestNTPSync();
         ntpSyncTimer.restart();
     }
 }
@@ -113,9 +113,6 @@ bool        NtpClient::ntpSyncOrChangeRequested()
 void        NtpClient::doSyncOrChange()
 // do a Clock change
 {
-    bool        manualOK = false;
-    bool        autoSyncOK = false;
-
     doSync = false;
     // Manual Date Request
     if (newDateTime.isValid())  {
@@ -124,6 +121,8 @@ void        NtpClient::doSyncOrChange()
         struct timezone timez;
         struct timeval temp;
         int rc = 0;
+        bool manualOK = false;
+
         // Lettura del RTC
         rt = time(NULL);
         pt = localtime(&rt);
@@ -170,6 +169,8 @@ void        NtpClient::doSyncOrChange()
 
     }
     else  {
+        bool autoSyncOK = false;
+
         if (ntpPeriod > 0) {
             ntpSyncTimer.restart();
         }
@@ -177,7 +178,6 @@ void        NtpClient::doSyncOrChange()
         emit ntpSyncFinish(! autoSyncOK);
     }
 }
-
 
 // -------------------------------------------------------------------------
 
@@ -453,6 +453,5 @@ exit_function:
         close(theUdpSocket);
         theUdpSocket = -1;
     }
-
     return fRes;
 }
