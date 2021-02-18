@@ -93,7 +93,7 @@ const QString szPLCFILE = QLatin1String("plc");
 const QString szPLCExt = QLatin1String(".4cp");
 const QString szPLCDir = QLatin1String("plc");
 const QString szINIFILE = QLatin1String("system.ini");
-const QString szFileQSS = QLatin1String("C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/CTE.qss");
+const QString szFileQSS = QLatin1String(":/qss/CTE.qss");
 // CrossTable originale del Modello corrente
 const QString szTemplateCTFile = QLatin1String("C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
 

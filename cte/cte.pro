@@ -61,7 +61,7 @@ isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=C:/Qt485/desktop/
 ##    "~/Library/Application Support/QtProject/Qt Creator" on Mac
 # USE_USER_DESTDIR = yes
 
-# PROVIDER = MyCompany
+PROVIDER = Mect
 
 include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
 
