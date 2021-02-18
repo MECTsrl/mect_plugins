@@ -1,4 +1,4 @@
-include(C:/qt-creator-2.8.0-rc-src/src/qtcreatorplugin.pri)
+# CTE: Mect CrossTable Editor plugin
 
 HEADERS += \
     cteplugin.h \
@@ -41,22 +41,38 @@ FORMS += \
     queryportnode.ui \
     searchvariable.ui
 
-#DESTDIR = C:/Qt485/desktop//lib/qtcreator/plugins/QtProject
-DESTDIR = destdir
-ATCM_VERSION = 3.2.7
+ATCM_VERSION = 3.2.8
 
-testcreator.files = destdir/CTE.dll destdir/CTE.pluginspec CTE.qss
-testcreator.path = C:/Qt485/desktop/lib/qtcreator/plugins/QtProject/
+# Qt Creator linking
 
-INSTALLS += testcreator
+## set the QTC_SOURCE environment variable to override the setting here
+QTCREATOR_SOURCES = $$(QTC_SOURCE)
+isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=C:/qt-creator-2.8.0-rc-src
 
+## set the QTC_BUILD environment variable to override the setting here
+IDE_BUILD_TREE = $$(QTC_BUILD)
+isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=C:/Qt485/desktop/
 
-LIBS += \
-    -LC:/Qt485/desktop/lib/qtcreator/plugins/QtProject \
-    -LC:/Qt485/desktop/bin \
-    -lProjectExplorer
+## uncomment to build plugin into user config directory
+## <localappdata>/plugins/<ideversion>
+##    where <localappdata> is e.g.
+##    "%LOCALAPPDATA%\QtProject\qtcreator" on Windows Vista and later
+##    "$XDG_DATA_HOME/data/QtProject/qtcreator" or "~/.local/share/data/QtProject/qtcreator" on Linux
+##    "~/Library/Application Support/QtProject/Qt Creator" on Mac
+# USE_USER_DESTDIR = yes
+
+# PROVIDER = MyCompany
+
+include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)
+
+LIBS += -L$$DESTDIR -L$$IDE_APP_PATH -lProjectExplorer
 
 RESOURCES += \
     qtc.qrc
 
-OTHER_FILES +=
+OTHER_FILES += \
+    CTE.qss
+
+#other_files.files = $$OTHER_FILES
+#other_files.path = $$DESTDIR
+#INSTALLS += other_files
