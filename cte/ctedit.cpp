@@ -1581,7 +1581,7 @@ void ctedit::enableFields()
     int     nTotalPorts = 0;
     int     nProtocol = ui->cboProtocol->currentIndex();
     int     nType = ui->cboType->currentIndex();
-    bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
+    // bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
     // Disabilita tutti i campi
     ui->cboPriority->setEnabled(false);
@@ -1604,9 +1604,9 @@ void ctedit::enableFields()
         bool fDecimal = false;
         if (nProtocol != -1)  {
             // Update Sempre abilitato
-            ui->cboUpdate->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
-            ui->txtName->setEnabled(! fMultiEdit);
-            ui->txtComment->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colComment) >= 0);
+            ui->cboUpdate->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
+            ui->txtName->setEnabled(! m_fMultiEdit);
+            ui->txtComment->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colComment) >= 0);
         }
         // Abilitazione dei Decimal per Input Analogiche se abilitati
         if (panelConfig.analogIN > 0 && panelConfig.analogINrowCT > 0)  {
@@ -1620,25 +1620,26 @@ void ctedit::enableFields()
                 fDecimal = true;
             }
         }
+        fDecimal = ! m_fMultiEdit ? fDecimal : (fDecimal && lstEditableFields.indexOf(colDecimal) >= 0);
         ui->txtDecimal->setEnabled(fDecimal);
     }
     else  {
         // Campi comuni (Edit Singolo o campo abilitato in MultiEdit
-        ui->cboPriority->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colPriority) >= 0);
-        ui->cboUpdate->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
-        ui->txtName->setEnabled(! fMultiEdit);  // Nome abilitato solo se no selezione multipla
-        ui->cboType->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colType) >= 0);
-        ui->txtDecimal->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colDecimal) >= 0);
-        ui->cboProtocol->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colProtocol) >= 0);
-        ui->txtComment->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colComment) >= 0);
-        ui->cboBehavior->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colBehavior) >= 0);
+        ui->cboPriority->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colPriority) >= 0);
+        ui->cboUpdate->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
+        ui->txtName->setEnabled(! m_fMultiEdit);  // Nome abilitato solo se no selezione multipla
+        ui->cboType->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colType) >= 0);
+        ui->txtDecimal->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colDecimal) >= 0);
+        ui->cboProtocol->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colProtocol) >= 0);
+        ui->txtComment->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colComment) >= 0);
+        ui->cboBehavior->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colBehavior) >= 0);
         // Abilitazione dei campi in funzione del Tipo
         // Tipo BIT -> Blocca decimali
         if (nType == BIT)  {
             ui->txtDecimal->setEnabled(false);
         }
         // Decimali bloccati per i tipi Bit se Multiedit
-        if (fMultiEdit && (nType >= 0 && nType < TYPE_TOTALS) && isBitField((varTypes) nType) )  {
+        if (m_fMultiEdit && (nType >= 0 && nType < TYPE_TOTALS) && isBitField((varTypes) nType) )  {
             ui->txtDecimal->setEnabled(false);
         }
         // Protocollo non definito, es per Riga vuota
@@ -1652,18 +1653,18 @@ void ctedit::enableFields()
         getFirstPortFromProtocol(nProtocol, nDefPort, nTotalPorts);
         // Abilitazione dei campi se non PLC
         if (nProtocol != PLC)  {
-            ui->txtNode->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colNodeID) >= 0);
+            ui->txtNode->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colNodeID) >= 0);
             // ui->txtRegister->setEnabled(! fMultiEdit);
-            ui->txtRegister->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colRegister) >= 0);
+            ui->txtRegister->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colRegister) >= 0);
             // IP abilitato solo per protocolli Client TCP, TCPRTU
             if (nProtocol == TCP || nProtocol == TCPRTU)  {
-                ui->txtIP->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colIP) >= 0);
+                ui->txtIP->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colIP) >= 0);
             }
             // Porta Abilitata per tutti i protocolli di Network
             // TCP, TCPRTU, TCP_SRV, TCPRTU_SRV
             if (nProtocol == TCP || nProtocol == TCPRTU ||
                 nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV    )  {
-                ui->txtPort->setEnabled(! fMultiEdit ? true : lstEditableFields.indexOf(colPort) >= 0);
+                ui->txtPort->setEnabled(! m_fMultiEdit ? true : lstEditableFields.indexOf(colPort) >= 0);
             }
         }
         // Visibilità Combo Port per Protocolli Seriali di ogni tipo
@@ -3213,7 +3214,7 @@ void ctedit::tabSelected(int nTab)
 void ctedit::enableInterface()
 // Abilita l'interfaccia in funzione dello stato del sistema
 {
-    bool        fMultiEdit = m_fMultiEdit && m_fMultiSelect;
+    // bool        fMultiEdit = m_fMultiEdit && m_fMultiSelect;
     QString     szFameEditBackGround;
 
 
@@ -3221,47 +3222,47 @@ void ctedit::enableInterface()
     // Imposta lo sfondo del frame di Editing
     ui->fraEdit->setStyleSheet(QLatin1String(""));
     szFameEditBackGround = QLatin1String("background-");
-    if (fMultiEdit)  {
+    if (m_fMultiEdit)  {
         szFameEditBackGround.append(szColorMultiEdit);
     }
     else  {
         szFameEditBackGround.append(szColorNormalEdit);
     }
-    ui->cboSections->setEnabled(! fMultiEdit);
+    ui->cboSections->setEnabled(! m_fMultiEdit);
     ui->fraEdit->setStyleSheet(szFameEditBackGround);
     // Abilitazioni elementi di interfaccia da impostare ad ogni cambio riga
-    ui->cmdHideShow->setVisible(! fMultiEdit);
+    ui->cmdHideShow->setVisible(! m_fMultiEdit);
     ui->cmdMultiEdit->setEnabled(true);
-    ui->cmdSearch->setVisible(! fMultiEdit);
-    ui->cmdImport->setVisible(! fMultiEdit);
+    ui->cmdSearch->setVisible(! m_fMultiEdit);
+    ui->cmdImport->setVisible(! m_fMultiEdit);
     ui->cmdUndo->setVisible(true);
     ui->cmdUndo->setEnabled(lstUndo.count() > 0);
     ui->cmdBlocchi->setVisible(false);
     ui->cmdBlocchi->setEnabled(false);
-    ui->cmdSave->setVisible(! fMultiEdit);
-    ui->cmdCompile->setVisible(! fMultiEdit);
-    ui->cmdCompile->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty() && ! fMultiEdit);
+    ui->cmdSave->setVisible(! m_fMultiEdit);
+    ui->cmdCompile->setVisible(! m_fMultiEdit);
+    ui->cmdCompile->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
     // Salva sempre abilitato, bordo green se non ci sono salvataggi pendenti
-    ui->cmdSave->setEnabled(! m_szCurrentModel.isEmpty() && ! fMultiEdit);
+    ui->cmdSave->setEnabled(! m_szCurrentModel.isEmpty() && ! m_fMultiEdit);
     if (m_isCtModified)  {
         ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid red;"));
     }
     else  {
         ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid green;"));
     }
-    ui->cmdPLC->setVisible(! fMultiEdit);
-    ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty() && ! fMultiEdit);
+    ui->cmdPLC->setVisible(! m_fMultiEdit);
+    ui->cmdPLC->setEnabled(! m_isCtModified && ! m_szCurrentModel.isEmpty());
     // Frame MultiEdit
-    ui->lblEditableFields->setVisible(fMultiEdit);
-    ui->lstEditableFields->setVisible(fMultiEdit);
-    ui->cmdApply->setVisible(fMultiEdit);
-    ui->cmdApply->setEnabled(fMultiEdit);
-    ui->fraCondition->setEnabled(! fMultiEdit);
+    ui->lblEditableFields->setVisible(m_fMultiEdit);
+    ui->lstEditableFields->setVisible(m_fMultiEdit);
+    ui->cmdApply->setVisible(m_fMultiEdit);
+    ui->cmdApply->setEnabled(m_fMultiEdit && lstCTRecords[m_nGridRow].UsedEntry);
+    ui->fraCondition->setEnabled(! m_fMultiEdit);
     ui->tblCT->setEnabled(true);
     m_fCutOrPaste = false;
     // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
     m_nMPNC = -1;
-    if (isSerialPortEnabled && ! fMultiEdit)  {
+    if (isSerialPortEnabled && ! m_fMultiEdit)  {
         bool enableMPNC = searchIOModules(szMPNC006, lstCTRecords, lstMPNC006_Vars, lstMPNC);
         bool enableMPNE = searchIOModules(szMPNE1001, lstCTRecords, lstMPNE_Vars, lstMPNE);
         m_nMPNC = 0;
@@ -3284,7 +3285,7 @@ void ctedit::enableInterface()
     int nVar = 0;
     int nShot = 0;
     if (countLoggedVars(lstCTRecords, nFast, nSlow, nVar, nShot) > 0)  {
-        ui->tabWidget->setTabEnabled(TAB_LOG, ! fMultiEdit);
+        ui->tabWidget->setTabEnabled(TAB_LOG, ! m_fMultiEdit);
     }
     else  {
         ui->tabWidget->setTabEnabled(TAB_LOG, false);
@@ -7652,6 +7653,8 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         ui->cmdMultiEdit->setToolTip(QLatin1String("Back to Single Line Edit Mode"));
     }
     m_fMultiEdit = checked;
+    enableInterface();
+    enableFields();
 }
 
 void ctedit::on_lstEditableFields_itemClicked(QListWidgetItem *itemClicked)
