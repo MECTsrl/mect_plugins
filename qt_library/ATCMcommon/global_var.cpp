@@ -55,7 +55,7 @@ bool ForceResetAlarmBanner = false;
 int Buzzerfd = -1;
 bool BuzzerTouch = true;
 bool BuzzerAlarm = true;
-QTime LastTouch;
+QElapsedTimer LastTouch;
 
 /* Trend */
 #ifdef ENABLE_TREND

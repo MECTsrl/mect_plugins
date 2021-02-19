@@ -13,6 +13,7 @@
 #include <QTime>
 #include <QEvent>
 #include <QHash>
+#include <QElapsedTimer>
 #include "defines.h"
 #include "io_layer_comm.h"
 
@@ -65,7 +66,7 @@ extern int active_password;
 extern int Buzzerfd;
 extern bool BuzzerTouch;
 extern bool BuzzerAlarm;
-extern QTime LastTouch;
+extern QElapsedTimer LastTouch;
 
 extern int MaxWindowSec;
 
