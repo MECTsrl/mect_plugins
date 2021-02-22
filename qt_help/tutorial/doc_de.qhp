@@ -48,10 +48,11 @@
 					<section title="MPNE Editor" ref="MPNE_Editor_de.html"/>
 					<section title="Log" ref="Log_de.html"/>
 					<section title="Struktur eines leeres Projekt" ref="Struttura_progetto_de.html"/>
-					<section title="Bibliotheks-Seiten" ref="Pagine_libreria_de.html"/>
+					<section title="Bibliotheks-Seiten" ref="Pagine_libreria_de.html">
 					<section title="Time Set" ref="Time_set_de.html">	
 						 <section title="NTP Client Klasse" ref="NTP_class_de.html"/>
-						 </section>				
+						 </section>	
+					</section>							 
 					<section title="Eine Seite hinzufügen" ref="Aggiungere_pagina_de.html"/>
 					<section title="Eine Seite entfernen" ref="Rimuovere_pagina_de.html"/>
 					<section title="Eine Seite Umbenennen" ref="Rinominare_pagina_de.html"/>										
