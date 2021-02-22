@@ -31,7 +31,7 @@
 							</section>
 						<section title="Funktionalität Crosstable Editor" ref="Funzionalita_Crosstable_Editor_de.html"/>
 						<section title="Funktionalität Crosstable Editor: Suche" ref="Funzionalita_Crosstable_Ricerca_de.html"/>
-						<section title="Funktionalität Crosstable Editor: Multi Line Edit" ref="Funzionalita_Crosstable_MultiEdit_de.html"/>
+						<section title="Crosstable-Funktionalität: Mehrzeilenbearbeitung" ref="Funzionalita_Crosstable_MultiEdit_de.html"/>
 						</section>
 					<section title="System Editor" ref="System_Editor_de.html"/>
 					<section title="Trends" ref="Trends_de.html">
@@ -50,7 +50,7 @@
 					<section title="Struktur eines leeres Projekt" ref="Struttura_progetto_de.html"/>
 					<section title="Bibliotheks-Seiten" ref="Pagine_libreria_de.html"/>
 					<section title="Time Set" ref="Time_set_de.html">	
-						 <section title="NTP Client Class" ref="NTP_class_de.html"/>
+						 <section title="NTP Client Klasse" ref="NTP_class_de.html"/>
 						 </section>				
 					<section title="Eine Seite hinzufügen" ref="Aggiungere_pagina_de.html"/>
 					<section title="Eine Seite entfernen" ref="Rimuovere_pagina_de.html"/>
