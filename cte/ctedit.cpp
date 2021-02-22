@@ -918,7 +918,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
     int     nLeftVar = 0;
     int     nPort = 0;
     QList<int> lstVarTypes;
-    bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
+    // bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
     lstVarTypes.clear();
     m_vtAlarmVarType = UNKNOWN;
@@ -1016,7 +1016,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
             ui->cboBehavior->setCurrentIndex(nPos);
         }
         // Caricamento ulteriori elementi interfaccia Allarmi / Eventi
-        if (! fMultiEdit && nPos >= behavior_alarm)  {
+        if (! m_fMultiEdit && nPos >= behavior_alarm)  {
             // Clear Data Entry Form for Alarm/Variables
             // Seleziona tutte le variabili tranne le H lstAllVarTypes a prescindere dallo stato della variabile
             ui->cboVariable1->setCurrentIndex(-1);
@@ -1532,8 +1532,9 @@ bool    ctedit::riassegnaBlocchi()
     // Rinumera ultimo blocco trattato (se esiste)
     if (nBlockStart >= 0)  {
         for (j = nBlockStart; j < MIN_DIAG - 1; j++)  {
-            if (lstCTRecords[j].UsedEntry == 0)
+            if (not lstCTRecords[j].UsedEntry)  {
                 break;
+            }
             lstCTRecords[j].BlockSize = nItemsInBlock;
         }
     }
@@ -1933,7 +1934,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         qDebug("tableCTItemChanged(): Selected Item %d @Row: %d", nItem + 1, lstSelectedRows.at(nItem) + 1);
         nRow = lstSelectedRows[nItem];
         // Prova a caricare da CT i valori presenti nella lista dati se la variabile è definita
-        if (! fLoaded && lstCTRecords[nRow].UsedEntry && nRow == nLastSelectedRow)  {
+        if (not fLoaded && lstCTRecords[nRow].UsedEntry && nRow == nLastSelectedRow)  {
             // Solo se c'è qualcosa da editare (singolo Record o MultiEdit  m_fMultiSelect
             if (! m_fMultiSelect || (m_fMultiSelect && m_fMultiEdit))  {
                 // Convert CT Record 2 User Values
@@ -2589,7 +2590,7 @@ bool ctedit::isFormEmpty()
 // Controllo Form Editing vuoto
 {
     int     nFilled = 0;
-    bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
+    // bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
     nFilled += (ui->cboPriority->currentIndex() >= 0);
     nFilled += (ui->cboUpdate->currentIndex() >= 0);
@@ -2605,7 +2606,7 @@ bool ctedit::isFormEmpty()
     // nFilled += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(m_nGridRow, colBlockSize)->text().trimmed());
     nFilled += (! ui->txtComment->text().trimmed().isEmpty());
     nFilled += (ui->cboBehavior->currentIndex() >= 0);
-    if (ui->cboBehavior->currentIndex() >= behavior_alarm && ! fMultiEdit)  {
+    if (ui->cboBehavior->currentIndex() >= behavior_alarm && ! m_fMultiEdit)  {
         nFilled += (ui->cboVariable1->currentIndex() >= 0);
         nFilled += (ui->cboCondition->currentIndex() >= 0);
         nFilled += (ui->cboVariable2->currentIndex() >= 0);
@@ -2802,9 +2803,9 @@ void ctedit::showAllRows(bool fShowAll)
         // Se non ci sono variabili utente definite, prova a saltare a Prima di Local I/O
         if (nFirstVisible == MIN_DIAG - 1)  {
             nFirstVisible = MIN_LOCALIO -1;
-            if (! lstCTRecords[MIN_LOCALIO -1].UsedEntry)  {
+            if (not lstCTRecords[MIN_LOCALIO -1].UsedEntry)  {
                 nFirstVisible = MIN_SYSTEM - 1;
-                if (! lstCTRecords[MIN_SYSTEM -1].UsedEntry)  {
+                if (not lstCTRecords[MIN_SYSTEM -1].UsedEntry)  {
                     nFirstVisible = MIN_DIAG - 1;
                 }
             }
@@ -2813,8 +2814,9 @@ void ctedit::showAllRows(bool fShowAll)
     }
     else  {
         // Riga corrente piena ?
-        if (lstCTRecords[m_nGridRow].UsedEntry == 0)
+        if (not lstCTRecords[m_nGridRow].UsedEntry)  {
             m_nGridRow = nFirstVisible;
+        }
     }
     // Trucco per centrare la riga...
     nRow = m_nGridRow;
@@ -2840,7 +2842,7 @@ void ctedit::gotoRow()
     if (fOk)  {
         nRow--;
         // Se la riga non è visibile chiede conferma se fare ShowAll
-        if (lstCTRecords[nRow].UsedEntry == 0 && ! m_fShowAllRows)  {
+        if (not lstCTRecords[nRow].UsedEntry && not m_fShowAllRows)  {
             m_szMsg = trUtf8("The requested row is not visible. Show all rows?");
             if (queryUser(this, szMectTitle, m_szMsg, false))  {
                 ui->cmdHideShow->setChecked(true);
@@ -4505,7 +4507,7 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
     if (lstCTRecords.count() <= 0 ||  index < 0 || m_nGridRow < 0)
         return;
     // Applicazione dei valori di default nel caso di una riga vuota
-    if (! lstCTRecords[m_nGridRow].UsedEntry && index >= 0 && m_nGridRow < MAX_NONRETENTIVE -1)  {
+    if (not lstCTRecords[m_nGridRow].UsedEntry && index >= 0 && m_nGridRow < MAX_NONRETENTIVE -1)  {
         // qDebug() << QString::fromAscii("Adding Row: %1") .arg(m_nGridRow);
         if (m_nGridRow > 0 && lstCTRecords[m_nGridRow - 1].UsedEntry)  {
             // Copia da precedente se definita
@@ -5049,17 +5051,19 @@ void ctedit::on_txtName_editingFinished()
         // Gestione della priorità da assegnare per la riga corrente
         // La riga corrente passa da vuota a piena
         //----------------------------------------
-        if (! szVarName.isEmpty() && ! lstCTRecords[m_nGridRow].UsedEntry)  {
+        if (not szVarName.isEmpty() && not lstCTRecords[m_nGridRow].UsedEntry)  {
             // Solo se la riga è la prima di un blocco oppure ha un protocollo differente dalla precedente
             if (ui->cboPriority->currentIndex() < 0 &&
-                    ((m_nGridRow == 0) ||                               // Prima riga di CT
-                     (m_nGridRow > 0 &&                                 // Altra riga
-                      (lstCTRecords[m_nGridRow - 1].UsedEntry == 0 ||   // Riga precedente vuota
-                      (lstCTRecords[m_nGridRow - 1].UsedEntry   &&      // Riga precedente già usata
-                       ui->cboProtocol->currentIndex() >= 0     &&      // Protocollo della riga corrente specificato
-                       lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex() ) // Protocollo corrente diverso da precedente
-                       )
-                      ))
+                    ( m_nGridRow == 0 ||                            // Prima riga di CT
+                     (m_nGridRow > 0 &&                             // Altra riga
+                      (not lstCTRecords[m_nGridRow - 1].UsedEntry   ||      // Riga precedente vuota
+                        (lstCTRecords[m_nGridRow - 1].UsedEntry     &&      // Riga precedente già usata
+                         ui->cboProtocol->currentIndex() >= 0       &&      // Protocollo della riga corrente specificato
+                         lstCTRecords[m_nGridRow - 1].Protocol != ui->cboProtocol->currentIndex()  // Protocollo corrente diverso da precedente
+                        )
+                      )
+                     )
+                    )
                 )   {
                 // Forza il livello di priorià a Alto
                 ui->cboPriority->setCurrentIndex(nPriorityHigh);
@@ -5076,7 +5080,7 @@ void ctedit::on_txtName_editingFinished()
         //----------------------------------------
         // Variabile già precedentemente utilizzata
         //----------------------------------------
-        else if (! szVarName.isEmpty() && lstCTRecords[m_nGridRow].UsedEntry)  {
+        else if (not szVarName.isEmpty() && lstCTRecords[m_nGridRow].UsedEntry)  {
             //----------------------------------------
             // Se il nome della variabile è cambiato rispetto al valore precedente
             //----------------------------------------
@@ -6407,7 +6411,7 @@ bool ctedit::checkServersDevicesAndNodes()
         nPriority = (lstCTRecords[nCur].Enable >= 0 && lstCTRecords[nCur].Enable < nNumPriority) ? lstCTRecords[nCur].Enable : 0;
         lstCTRecords[nCur].BlockBase = base;
         // Consideriamo solo gli elementi abilitati
-        if (lstCTRecords[nCur].UsedEntry > 0 && lstCTRecords[nCur].Enable > 0)  {
+        if (lstCTRecords[nCur].UsedEntry && lstCTRecords[nCur].Enable > 0)  {
             nUsedVars++;
             // Prima verifica per la gestione dei Server
             switch (lstCTRecords[nCur].Protocol) {
@@ -7094,7 +7098,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
     // Variables Loop
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Considera solo le Variabili utilizzate
-        if (lstCTRecords[nRow].UsedEntry > 0 && lstCTRecords[nRow].Enable > 0)  {
+        if (lstCTRecords[nRow].UsedEntry && lstCTRecords[nRow].Enable > 0)  {
             nDevice = lstCTRecords[nRow].nDevice;
             nNode = lstCTRecords[nRow].nNode;
             nPriority = lstCTRecords[nRow].Enable;
@@ -7281,7 +7285,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     // Variables Loop
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Considera solo le Variabili utilizzate
-        if (lstCTRecords[nRow].UsedEntry > 0 && lstCTRecords[nRow].Enable > 0)  {
+        if (lstCTRecords[nRow].UsedEntry && lstCTRecords[nRow].Enable > 0)  {
             nDevice = lstCTRecords[nRow].nDevice;
             nNode = lstCTRecords[nRow].nNode;
             nPriority = lstCTRecords[nRow].Enable;
@@ -7465,7 +7469,7 @@ void    ctedit::fillLogTree(int nCurRow)
     // Variables Loop
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
         // Considera solo le Variabili che devono essere Loggate
-        if (lstCTRecords[nRow].UsedEntry > 0 && lstCTRecords[nRow].Enable > 0)  {
+        if (lstCTRecords[nRow].UsedEntry && lstCTRecords[nRow].Enable > 0)  {
             nUsedVariables++;
             nLogLevel = lstCTRecords[nRow].Update;
             tParent = 0;
@@ -7629,14 +7633,6 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
     if (! checked)  {
         // Esce da MultiEdit
         nRow = lstSelectedRows.last();
-        //        // Cerca il primo Item utilizzato della lista delle variabili selezionate
-        //        for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
-        //            int nCurRow = lstSelectedRows.at(nItem);
-        //            if (! ui->tblCT->item(nCurRow, colName)->text().trimmed().isEmpty())  {
-        //                nRow = nCurRow;
-        //                break;
-        //            }
-        //        }
         // Svuota lista elementi selezionati e toglie flag di MultiSelect
         lstSelectedRows.clear();
         m_fMultiSelect = false;
@@ -7645,7 +7641,7 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         ui->cmdMultiEdit->setToolTip(QLatin1String("Switch to Multiline Edit Mode"));
         jumpToGridRow(nRow);
         m_nGridRow = nRow;
-        m_isCtModified = true;
+        // m_isCtModified = true;
         m_rebuildDeviceTree = true;
         m_rebuildTimingTree = true;
     }
@@ -7653,6 +7649,25 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         ui->cmdMultiEdit->setToolTip(QLatin1String("Back to Single Line Edit Mode"));
     }
     m_fMultiEdit = checked;
+    // Passaggio da Single a Multiedit
+    if (checked)  {
+        // Se era attiva una selezione multipla,
+        if (m_fMultiSelect)  {
+            nRow = lstSelectedRows.last();
+            qDebug("Entering MultiEdit reading LastRow: %d", nRow + 1);
+        }
+        ui->tblCT->setFocus();
+    }
+    // Se la riga selezionata è una riga in area utente
+    // ed è una riga usata, aggiorna il frame di Editing
+    if (lstCTRecords[nRow].UsedEntry &&
+        nRow < MIN_DIAG - 1) {
+        QStringList lstFields;
+        bool fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
+        if (fRes)  {
+            fRes = values2Iface(lstFields, nRow);
+        }
+    }
     enableInterface();
     enableFields();
 }

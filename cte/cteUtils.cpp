@@ -860,7 +860,7 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
             }
         }
         // Variabile aggiunta in Template ma non in Project
-        if (CTTemplate[nRow].UsedEntry && ! CTProject[nRow].UsedEntry)  {
+        if (CTTemplate[nRow].UsedEntry && not CTProject[nRow].UsedEntry)  {
             nDifferences++;
             lstDiff.append(nRow);
             lstActions.append(QLatin1String("New Variable added to Project"));
