@@ -136,6 +136,7 @@ CTEPlugin::initialize(const QStringList &arguments, QString *errorMessage)
         SIGNAL(currentProjectChanged(ProjectExplorer::Project*)),
         SLOT(enableIfCT(ProjectExplorer::Project*))
     );
+    // Session Manager Save project (or Open?)
     connect(
         ProjectExplorer::ProjectExplorerPlugin::instance()->session(),
         SIGNAL(aboutToSaveSession()),
@@ -178,8 +179,10 @@ CTEPlugin::enableIfCT(ProjectExplorer::Project* p)
 
     // Ask to Replace current file
     qDebug("Loading New File....");
-    if (m_currentProject != p)
+    if (m_currentProject != p) {
+        qDebug("Checking unsaved changes on previos project....");
         checkSave();
+    }
     // Clear Project Path for Editor
     szFileCT.clear();
     m_CT_Opened = false;
@@ -230,7 +233,7 @@ void
 CTEPlugin::checkSave2()
 {
     // Used to Ask Saving only when leaving Crosstable Editor
-    qDebug("Check To Save2");
+    qDebug("Check To Save2. Leaving CTE?");
     if (ctEditor->isVisible())  {
         checkSave();
     }

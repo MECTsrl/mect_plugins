@@ -5914,15 +5914,18 @@ bool ctedit::isValidPort(int nPort, int nProtocol)
     // Return Value
     return fRes;
 }
+
 bool ctedit::needSave()
 // Return true if there are changes to be saved
 {
     // Refresh Modif Flags for Config && Trends
+    qDebug("needSave: check started!");
     m_isConfModified = mectSet->isModified();
     m_isTrendModified = trendEdit->isModified();
     // Return value valid only if file is specified
     return ((m_isCtModified || m_isConfModified || m_isTrendModified) && ! m_szCurrentCTFile.isEmpty());
 }
+
 bool ctedit::querySave()
 // Return true if pending changes are saved
 {

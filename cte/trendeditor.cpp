@@ -723,7 +723,7 @@ bool TrendEditor::isModified()
     iface2MemList(lstIfaceRows);
     for (nRow = 0; nRow < lstIfaceRows.count(); nRow ++)  {
         if (nRow >= lstSourceRows.count() || lstIfaceRows[nRow] != lstSourceRows[nRow]) {
-            // qDebug() << tr("Source: %1 Interface: %2") .arg(lstSourceRows[nRow]) .arg(lstIfaceRows[nRow]);
+            qDebug() << tr("Source: %1 Interface: %2") .arg(lstSourceRows[nRow]) .arg(lstIfaceRows[nRow]);
             fEqual = false;
             break;
         }
@@ -742,8 +742,9 @@ void    TrendEditor::iface2MemList(QStringList &lstMemVars)
     lstMemVars.clear();
     // Trend Orientation
     szLine = mapOrientation.key(ui->cboOrientation->currentText());
-    if (szLine.isEmpty())
+    if (szLine.isEmpty())  {
         szLine = szLANDSCAPE;
+    }
     lstMemVars.append(szLine);
     // Trend Fields
     for (nRow = nTrk1; nRow <= nTrk4; nRow++)  {
@@ -752,8 +753,9 @@ void    TrendEditor::iface2MemList(QStringList &lstMemVars)
             szLine = lstTokens.join(szSEMICOL);
             lstMemVars.append(szLine);
         }
-        else
+        else  {
             break;
+        }
     }
 }
 void TrendEditor::saveTrend(bool notifUser)
