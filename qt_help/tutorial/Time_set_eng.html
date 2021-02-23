@@ -22,7 +22,7 @@
 		}
 		.column {
 		  float: left;
-		  width: 25%;
+		  width: 12%;
 		  padding: 5px;
 		}
 		.row::after {
@@ -33,9 +33,9 @@
 		
 		</style>
 		<h3 class="western">Time Set</h3>
-		The Time Set page is used to set the date and the time of the system.
+		<p class="western">The Time Set page is used to set the date and the time of the system.</p>
 		<p><img src="Time_set_main_page.png" name="Immagine 1" align="bottom" border="0" class="time_set_img_style"/></p>
-		It is divided into 2 areas:
+		<p class="western">It is divided into 2 areas:</p>
 		<ol>
 		<li/>
 			<a class="western" href="#Manual"><strong>Manual</strong></a>
@@ -46,72 +46,71 @@
 
 		<br/>
 		<strong><a id="Manual">Manual:</a></strong><br/>
-		In the manual section you can manually set the date and time of the system.<br/>
-		Pressing on the button with the date the calendar will appear
+		<p class="western">In the manual section you can manually set the date and time of the system.</p>
+		<p class="western">Pressing on the button with the date the calendar will appear</p>
 		<p><img src="Time_set_calendar.png" name="Immagine 2" align="bottom" border="0" class="time_set_img_style"/></p>
 		 <div class="row">
-		  <div class="column">
-		    To select the day to be set just press on the desired day.<br/><br/><br/>
-		    <img src="Time_set_days.png" name="days" title="figure 1" alt="figure 1" style="max-width: 100%;max-height: 100%;"/>
+		  <div style="width:230; float: left; padding: 5px;">
+		    <img src="Time_set_days.png" name="days" title="figure 1" alt="figure 1" style="max-width: 230px; max-height: 230px;object-fit: scale-down;"/>
+		    <p class="western">To select the day to be set just press on the desired day.<br/></p><br/>
 		  </div>
-		  <div class="column">
-		  You can go forward or backward in the months by using the arrows at the top of the calendar, 
-			or by pressing the button with the current month you can see all the months of the year.
-		    <img src="Time_set_months.png" name="months" title="figure 2" alt="figure 2" style="max-width: 100%;max-height: 100%;"/>
+		  <div style="width:230; float: left; padding: 5px;">
+		  <img src="Time_set_months.png" name="months" title="figure 2" alt="figure 2" style="max-width: 230px; max-height: 230px;object-fit: scale-down;"/>
+		   <p class="western">You can go forward or backward in the months by using the arrows at the top of the calendar, or by pressing the button with the current month you can see all the months of the year.</p>
 		  </div>
-		  <div class="column">
-		  To change the year you can go forward or backward with the arrows or press the button with the current year and select the desired year.<br/>
-		    <img src="Time_set_years.png" name="years" title="figure 3" alt="figure 3" style="max-width: 100%;max-height: 100%;"/>
+		  <div style="width:230; float: left; padding: 5px;">
+		  <img src="Time_set_years.png" name="years" title="figure 3" alt="figure 3" style="max-width: 230px; max-height: 230px;object-fit: scale-down;"/>
+		  <p class="western">To change the year you can go forward or backward with the arrows or press the button with the current year and select the desired year.</p>
 		  </div>
 		</div> 
 		<br/>
-		Pressing the button with the time will display the hours, minutes and seconds selector.<br/>
+		<p class="western">Pressing the button with the time will display the hours, minutes and seconds selector.</p>
 		<img src="Time_set_timepopup.png" name="Immagine 3" align="bottom" border="0" class="time_set_img_style"/>
 		<br/>
-		Pressing OK will save the set hours, minutes and seconds.<br/>
-		Cancel cancels the operation.<br/>
+		<p class="western">Pressing OK will save the set hours, minutes and seconds.</p>
+		<p class="western">Cancel cancels the operation.</p>
 		
-		To confirm the manual date and time change operation press<img src="Time_set_manual_ok.png" align="center" border="0" /><br/>
-		A confirmation message box will appear when the operation is completed.<br/><br/>
-		
+		<p class="western">To confirm the manual date and time change operation press<img src="Time_set_manual_ok.png" align="center" border="2" /></p>
+		<p class="western">A confirmation message box will appear when the operation is completed.</p>
+		<br/>
 		<strong><a id="NTP">NTP:</a></strong><br/>
-		In the NTP section it is possible to set the system date and time via NTP, in particular it is possible to set the parameters for enabling the Network Time Protocol, i.e. ntp server, timeout in seconds, offset in hours and period in hours.<br/>
-		<mark><sub>The NTP functionality is to be used expressly with the sMily service enabled.</sub></mark><br/>
-		<br/>The default NTP server is tempo.ien.it and can be changed using the button:<br/>
-		<img src="Time_set_server.png" align="center" border="0"/> <br/><br/>
-		The time offset sets the time difference and by default is +1 hour (CET). Integer values from -12 to +12 are allowed.<br/>
-		<img src="Time_set_offset.png" align="center" border="0"/> <br/><br/>
-		Period sets how many hours the NTP synchronisation should take place, 0h means no synchronisation, the default is 0<br/>
-		<img src="Time_set_period.png" align="center" border="0"/> <br/><br/>
-		The timeout indicates how long (in seconds) the NTP server should wait for a reply, the default is 10<br/>
-		<img src="Time_set_timeout.png" align="center" border="0"/> <br/><br/>
+		<p class="western">In the NTP section it is possible to set the system date and time via NTP, in particular it is possible to set the parameters for enabling the Network Time Protocol, i.e. ntp server, timeout in seconds, offset in hours and period in hours.</p>
+		<p class="western"><mark><sub>The NTP functionality is to be used expressly with the sMily service enabled.</sub></mark></p><br/>
+		<br/><p class="western">The default NTP server is tempo.ien.it and can be changed using the button:</p><br/>
+		<img src="Time_set_server.png" align="center" border="2"/> <br/><br/>
+		<p class="western">The time offset sets the time difference and by default is +1 hour (CET). Integer values from -12 to +12 are allowed.</p><br/>
+		<img src="Time_set_offset.png" align="center" border="2"/> <br/><br/>
+		<p class="western">Period sets how many hours the NTP synchronisation should take place, 0h means no synchronisation, the default is 0</p><br/>
+		<img src="Time_set_period.png" align="center" border="2"/> <br/><br/>
+		<p class="western">The timeout indicates how long (in seconds) the NTP server should wait for a reply, the default is 10</p><br/>
+		<img src="Time_set_timeout.png" align="center" border="2"/> <br/><br/>
 		<br/>
 		
 		<div class="row">
-		  <div class="column">
-		  	The current settings are saved by
+		  <div style="width:350; float: left; padding: 5px;">
+		  	<p class="western">The current settings are saved by</p>
 		  </div>
 		  <div class="column">
-		  	<img src="Time_set_write.png"/>
+		  	<img src="Time_set_write.png" border="2"/>
 		  </div>
 		</div> 
 				<div class="row">
-		  <div class="column">
-		  	 Synchronisation with the NTP server is carried out with the button
+		  <div style="width:350; float: left; padding: 5px;">
+		  	 <p class="western">Synchronisation with the NTP server is carried out with the button</p>
 		  </div>
 		  <div class="column">
-		  	<img src="Time_set_sync.png"/>
+		  	<img src="Time_set_sync.png" border="2" width="43" height="43"/>
 		  </div>
 		</div> 
 		<div class="row">
-		  <div class="column">
-		  	 Restore the default settings by
+		  <div style="width:350; float: left; padding: 5px;">
+		  	 <p class="western">Restore the default settings by</p>
 		  </div>
 		  <div class="column">
-		  	<img src="Time_set_default.png"/>
+		  	<img src="Time_set_default.png" border="2" width="43" height="43"/>
 		  </div>
 		</div> 
 	<br/>
-		A confirmation message box will appear when the operation is complete.<br/>
+		<p class="western">A confirmation message box will appear when the operation is complete.</p>
 	</body>
 </html>
