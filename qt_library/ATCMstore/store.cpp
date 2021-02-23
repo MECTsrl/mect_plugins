@@ -556,21 +556,23 @@ void store::on_pushButtonSaveUSB_clicked()
 
         sprintf(dstfilename, "%s.zip", srcfilename);
 
-        if (signFile(srcfilename, QString("%1.sign").arg(srcfilename)) == false)
-        {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(srcfilename));
-            goto umount_and_exit;
-        }
+        // 3.2.9 and above: Removed usage of Sign
+        // if (signFile(srcfilename, QString("%1.sign").arg(srcfilename)) == false)
+        // {
+        //     QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(srcfilename));
+        //     goto umount_and_exit;
+        // }
 
         /* zip the file, the sign file and delete them */
-        if (zipAndSave(QStringList() << srcfilename << QString("%1.sign").arg(srcfilename), QString(dstfilename), true) == false)
+        // if (zipAndSave(QStringList() << srcfilename << QString("%1.sign").arg(srcfilename), QString(dstfilename), true) == false)
+        if (not zipAndSave(QStringList() << srcfilename, QString(dstfilename), true))
         {
             QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(dstfilename));
             goto umount_and_exit;
         }
         
         QFile::remove(srcfilename);
-        QFile::remove(QString("%1.sign").arg(srcfilename));
+        // QFile::remove(QString("%1.sign").arg(srcfilename));
         
         LOG_PRINT(verbose_e, "DOWNLOADED\n");
         QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
