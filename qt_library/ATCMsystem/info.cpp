@@ -164,6 +164,8 @@ void info::refreshSystemTab()
     }
     // newline per QRcode
     ui->sys_text->appendPlainText("");
+    ui->sys_text->moveCursor(QTextCursor::Start);
+
 }
 
 void info::refreshApplTab()
@@ -202,7 +204,9 @@ void info::refreshApplTab()
         ui->appl_text->appendPlainText("USB: -");
     }
     // newline per QRcode
-    ui->appl_text->appendPlainText("");}
+    ui->appl_text->appendPlainText("");
+    ui->appl_text->moveCursor(QTextCursor::Start);
+}
 
 void info::refreshNetworkingTabs()
 {
@@ -370,16 +374,23 @@ void info::refreshNetworkingTabs()
     ui->wlan0_text->appendPlainText("");
     ui->ppp0_text->appendPlainText("");
     ui->tun0_text->appendPlainText("");
-    ui->ntp_text->appendPlainText("");
+    // Rewind the Text Cursor
+    ui->eth0_text->moveCursor(QTextCursor::Start);
+    ui->wlan0_text->moveCursor(QTextCursor::Start);
+    ui->ppp0_text->moveCursor(QTextCursor::Start);
+    ui->tun0_text->moveCursor(QTextCursor::Start);
 }
 
 void info::refreshNTPInfo()
 {
+    // Clear NPT Text
+    ui->ntp_text->setPlainText("");
     // Refresh NTP Perams
     ui->ntp_text->appendPlainText(QString("NTP Server: \t%1") .arg(ntpclient->getNtpServer()));
     ui->ntp_text->appendPlainText(QString("NTP Offset: \t%1 [Hours]") .arg(ntpclient->getOffset_h(), 4, 10));
     ui->ntp_text->appendPlainText(QString("NTP TimeOut:\t%1 [Seconds]") .arg(ntpclient->getTimeout_s(), 4, 10));
     ui->ntp_text->appendPlainText(QString("NTP Period: \t%1 [Hours, 0=Sync disabled]") .arg(ntpclient->getPeriod_h(), 4, 10));
+    ui->ntp_text->moveCursor(QTextCursor::Start);
 }
 
 /**
