@@ -35,6 +35,11 @@ c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_es.qhp -o %OUT_D
 c:\Qt485\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_de.qhp -o %OUT_DIR%\Qt485\desktop\doc\qch\doc_de.qch  >> %ErrorLog%	
 
 rem -----------------------------------------------------------------------------
+echo SSH Keys
+mkdir %OUT_DIR%\Qt485\keys
+xcopy %OUT_DIR%\keys\*.* %OUT_DIR%\Qt485\keys /Q /Y /I >> %ErrorLog%
+
+rem -----------------------------------------------------------------------------
 echo QtCreator designer plugins (distclean + qmake + make + install + distclean)
 cd /D %IN_DIR%\qt_plugins
 time /t
@@ -65,9 +70,13 @@ mingw32-make distclean >> %ErrorLog% 2>&1
 time /t
 
 rem -----------------------------------------------------------------------------
-echo QtCreator cte plugin (distclean + qmake + make + copy + distclean)
+echo QtCreator cte plugin (distclean + qmake + make)
 cd /D %IN_DIR%\cte
 time /t
+
+del /q C:\Qt485\desktop\lib\qtcreator\plugins\Mect\cte.dll
+del /q C:\Qt485\desktop\lib\qtcreator\plugins\Mect\CTE.pluginspec
+
 mingw32-make distclean >> %ErrorLog% 2>&1
 "C:\Qt485\desktop\bin\qmake.exe" cte.pro -r -spec win32-g++ "CONFIG+=release"  "DEFINES += ATCM_VERSION=\"%REVISION%\"" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
@@ -83,17 +92,6 @@ IF ERRORLEVEL 1 (
 	cd %ORIGINAL%
 	exit
 )
-del /q C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\cte.dll
-del /q C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.pluginspec
-copy %IN_DIR%\cte\destdir\CTE.dll C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.dll /Y >> %ErrorLog%
-copy %IN_DIR%\cte\CTE.pluginspec  C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.pluginspec /Y >> %ErrorLog%
-IF ERRORLEVEL 1 (
-	echo ERROR
-	pause
-	cd %ORIGINAL%
-	exit
-)
-mingw32-make distclean >> %ErrorLog% 2>&1
 time /t
 
 rem -----------------------------------------------------------------------------
@@ -243,10 +241,10 @@ for /d %%a in (%TARGET_LIST%) do (
 		exit
 	)
 )
-mkdir %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\QtProject
+mkdir %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\Mect
 mkdir %OUT_DIR%\Qt485\desktop\bin
-copy C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.dll %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\QtProject\ /Y >> %ErrorLog%
-copy C:\Qt485\desktop\lib\qtcreator\plugins\QtProject\CTE.pluginspec %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\QtProject\ /Y >> %ErrorLog%
+copy C:\Qt485\desktop\lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
+copy C:\Qt485\desktop\lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%\Qt485\desktop\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
 copy C:\Qt485\desktop\bin\ctc.exe %OUT_DIR%\Qt485\desktop\bin\ /Y >> %ErrorLog%
 mkdir %OUT_DIR%\Qt485\imx28
 xcopy C:\Qt485\imx28\rootfs %OUT_DIR%\Qt485\imx28\rootfs	/Q /Y /E /S /I >> %ErrorLog% 2>&1
@@ -280,6 +278,13 @@ IF ERRORLEVEL 1 (
 	exit
 )
 "c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt485_upd_rev%REV%.7z %OUT_DIR%\Qt485\imx28 >> %ErrorLog% 2>&1
+IF ERRORLEVEL 1 (
+	echo ERROR
+	pause
+	cd %ORIGINAL%
+	exit
+)
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt485_upd_rev%REV%.7z %OUT_DIR%\Qt485\keys >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
