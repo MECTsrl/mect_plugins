@@ -5431,11 +5431,11 @@ void ctedit::initTargetList()
     lstTargets[TPAC1005].modelName =  QLatin1String(product_name[TPAC1005]);
     lstTargets[TPAC1005].displayWidth =  480;
     lstTargets[TPAC1005].displayHeight = 272;
-    lstTargets[TPAC1005].sdCards = 0;
+    lstTargets[TPAC1005].sdCards = 1;
     lstTargets[TPAC1005].nEncoders = 0;
-    lstTargets[TPAC1005].serialPorts[_serial3].portEnabled = true;
-    lstTargets[TPAC1005].serialPorts[_serial3].portEditable  = true;
-    lstTargets[TPAC1005].serialPorts[_serial3].portAvailable = true;
+    lstTargets[TPAC1005].serialPorts[_serial0].portEnabled = true;
+    lstTargets[TPAC1005].serialPorts[_serial0].portEditable  = true;
+    lstTargets[TPAC1005].serialPorts[_serial0].portAvailable = true;
     lstTargets[TPAC1005].canPorts[_can1].portEnabled = true;
     // 10 TPAC1007_03
     lstTargets[TPAC1007_03].modelName =  QLatin1String(product_name[TPAC1007_03]);
