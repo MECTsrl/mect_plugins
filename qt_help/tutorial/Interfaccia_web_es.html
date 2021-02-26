@@ -239,141 +239,94 @@
 			</td>
 		</tr>
 	</table>
-	<h4 class="western"><u>Logs</u></h4>
-	<p class="western">La página Logs inicia el componente de la interfaz web dedicado a la gestión de historiales. Existen tres 
-	tipos de operaciones que se pueden realizar sobre los historiales: <strong>la actualización</strong> de las definiciones de los historiales parciales y 
-	en la página &ldquo;Manage Logs&rdquo; la <strong>descarga </strong> y <strong>eliminación</strong> de los historiales parciales y totales.</p>
-	<h4 class="western">Update LOG</h4>
-	<p class="western" >La función de actualización de definiciones de historial parcial actualiza la lista de historiales parciales 
-	disponibles en el panel. Las definiciones del historial a cargar deben ser archivos en formato CSV y el 
-	archivo debe comenzar con el prefijo &ldquo;store&rdquo;: 
-	</p>
-	<p  class="western" ><strong>fecha</strong></p>
-	<p class="western" ><strong>hora</strong></p>
-	<p  class="western" ><strong>VARIABLE 1</strong></p>
-	<p  class="western" ><strong>&hellip;</strong></p>
-	<p  class="western"><strong>VARIABLE N</strong></p>
-	<p class="western">La interfaz carga un archivo CSV a la vez, por lo que para cargar varias definiciones, es necesario 
-	realizar varias actualizaciones.</p>
-	<h4 class="western">Downolad LOGS</h4>
-	<p class="western">La interfase Web le permite descargar los log de las siguientes maneras:</p>
 	<ul>
-		<li/>
-<p class="western">Total / Total parcial: seleccionando el log &ldquo;Total&rdquo; o uno de los presentes parciales sin introducir ningún valor 
-en los campos de la fecha, se descargan todos los logs presentes en el panel.</p>
-		<li/>
-<p class="western">Día total / Día parcial: seleccionando el log &ldquo;Total&rdquo; o una de las Parciales actuales
- e introduciendo un valor en el campo&ldquo;Initial Date&rdquo; se descargará el log del día especificado.</p>
-		<li/>
-<p class="western">Totales diarios en un intervalo de tiempo/Parciales diarios en un intervalo de tiempo: seleccionando 
-		el log &ldquo;Total&rdquo; o uno de los presentes Parciales y introduciendo un valor en los campos &ldquo;initial Date&rdquo; y &ldquo;FinalDate&rdquo;
-		se descargarán los log diarios almacenados en el panel en el intervalo de tiempo especificado por las fechas indicadas.</p>
-		<li/>
-<p class="western">Total Unico en un intervalo de tiempo/Parcial Unico en un intervalo de tiempo: seleccionando el log 
-		&ldquo;Total&rdquo; o uno de los presentes Parciales e introduciendo toda la información relativa al intervalo de tiempo &ldquo;Initial
-		Date&rdquo; &ldquo;Initial Time&rdquo; &ldquo;Final Date&rdquo; y &ldquo;Final Time&rdquo; se descargará un único archivo de registro que contiene todos los datos
-		historiados en el intervalo de tiempo especificado.</p>
-	</ul>
-	<h4 class="western">Delete LOGS</h4>
-	<p class="western">La interfaz Web le permite borrar:</p>
-	<ul>
-		<li/>
-<p class="western">la definición de los logs parciales: la anulación se obtiene seleccionando los logs parciales que deben borrarse
- sin introducir ningún parámetro de tiempo</p>
-		<li/>
-<p class="western">todos los logs presentes en el sistema: la anulación se realiza seleccionando el log &ldquo;Total&rdquo;
-		sin introducir ningún parámetro de tiempo</p>
-		<li/>
-<p class="western">el log de un día determinado: para borrar el log de un día determinado, seleccione el log de 
-		totales e introduzca en el campo &ldquo;Initial Date&rdquo; el día para el que desea borrar los logs.</p>
-	</ul>
-	<p class="western">Los campos &ldquo;Initial Time&rdquo;, &ldquo;Final	Date&rdquo; e &ldquo;Final Time&rdquo; deben dejarse en blanco</p>
-	<ul>
-		<li/>
-<p class="western">logs relativos a un intervalo de tiempo: para borrar logs entre dos fechas, seleccione &ldquo;Total&rdquo; como tipo de log  
-		  y ajuste las fechas&ldquo;Initial Date&rdquo;	y &ldquo;Final Date&rdquo;. Los campos &ldquo;Initial Time&rdquo; y
-		&ldquo;Final Time&rdquo; deben dejarse en blanco.</p>
-	</ul>
-	<p class="western"><strong>NOTA:</strong> para los logs parciales no es posible hacer cancelaciones referidas a un día o a un intervalo de 
-	tiempo porque los logs parciales se generan a partir de los logs totales sólo cuando el usuario 
-	solicita la descarga.</p>
-	<h4 class="western"><u>Trend</u></h4>
-	<p class="western">La página Trend inicia la parte de la interfaz dedicada a la gestión de trends. Existen cuatro tipos 
-	de operaciones que se pueden realizar sobre los trends: <strong>la actualización</strong>, la <strong>descarga de capturas de pantalla</strong> y en la página &ldquo;Manage Trend&rdquo; la <strong>descarga</strong> y
-	el <strong>borrado</strong>.</p>
-	<h4 class="western">Update 	</h4>
-	<p class="western">La función de actualización de la familia de trends actualiza la lista de familias de trends 
-	disponibles en el panel. Las familias de trends que se van a cargar deben comprimirse en un archivo en 
-	formato zip. El archivo se compone de una lista de ficheros, cada uno de los cuales describe un tipo de trend.</p>
-	<h4 class="western">Manage trend</h4>
-	<p class="western">Después de cargar las tendencias de acuerdo con la estructura indicada, la página Manage Trend permette le permite navegar 
-	a través de las carpetas que contienen las propias familias de trends. Es posible 
-	descargar o borrar una familia de tendencias o una serie de familias con múltiples selecciones. 
-	</p>
-	<h4 class="western"><u>Alarms</u></h4>
-	<p class="western">La página Alarmas inicia el componente de interfaz web dedicado a la gestión de alarmas.
-	<br/>
-Hay dos tipos de operaciones que se pueden realizar en las alarmas: descargar y borrar los logs en el panel.</p>
-	<h4 class="western"><u>Recipes</u></h4>
-	<p class="western">La página Recetas inicia la sección de la interfaz dedicada a la gestión de recetas.</p>
-	<p class="western">Hay tres tipos de operaciones que se pueden realizar en las recetas: <strong>la actualización</strong> y en la página &ldquo;Manage
-	Recipes&rdquo; la <strong>descarga</strong>  y el <strong>borrado</strong>.</p> 
-	<h4 class="western">Update  </h4>
-	<p class="western">La función de actualización de recetas actualiza la lista de recetas disponibles en el panel. Las recetas que 
-	se van a cargar deben estar comprimidas en un archivo en formato zip.	El archivo comprimido está organizado en carpetas, cada
-	 una de las cuales corresponde a un tipo de receta y, dentro de cada carpeta,se encuentran las distintas implementaciones de un tipo de receta.</p>
-	<p class="western">Por ejemplo, si suponemos que tenemos dos familias de recetas, una para enfriar y otra para calentar 
-	dentro del archivo que contiene las recetas, tendremos la siguiente organización:</p>
-	<p class="western">&#9500;&#9472;&#9472; cool</p>
-	<p class="western">&#9474; &#9500;&#9472;&#9472; cool_10</p>
-	<p class="western">&#9474; &#9500;&#9472;&#9472; cool_20</p>
-	<p class="western">&#9474; &#9492;&#9472;&#9472; cool_30</p>
-	<p class="western"><br/>
-<br/>
-
-	</p>
-	<p class="western">&#9492;&#9472;&#9472; hot</p>
-	<p class="western">    &#9500;&#9472;&#9472; hot_100</p>
-	<p class="western">    &#9500;&#9472;&#9472; hot_150</p>
-	<p class="western">    &#9500;&#9472;&#9472; hot_200</p>
-	<p class="western">    &#9492;&#9472;&#9472; hot_50</p>
-	<h4 class="western">Manage recipes</h4>
-	<p class="western">Después de cargar las recetas según la estructura indicada, la página Manage Recipes le permite navegar 
-	por las carpetas que contienen las propias recetas. Es posible descargar o borrar recetas de toda la familia 
-	de recetas seleccionando la familia, ya sea en una sola receta perteneciente a una familia o en múltiples 
-	selecciones de recetas pertenecientes a la misma familia. </p>
-	<h4 class="western"><u>LAN Config</u></h4>
-	<p class="western">En esta página puede configurar las propiedades de red del panel. El panel sólo admite una configuración 
+		<li>
+		<h4 class="western"><u>LAN Config</u></h4>
+			<p class="western">En esta página puede configurar las propiedades de red del panel. El panel sólo admite una configuración 
 	de red estática para la que se puede definir la dirección IP, la máscara de red (NM), la pasarela por defecto 
 	(GW) y los servidores dns (DNS1 y DNS2).</p>
-	<h4 class="western"><u>Date and Time</u></h4>
-	<p class="western">La página &ldquo;Date and Time&rdquo; detecta automáticamente la fecha y la hora del PC en el que se ejecuta el 
+		</li>	
+		<li>	
+			<h4 class="western"><u>Date and Time</u></h4>
+			<p class="western">La página &ldquo;Date and Time&rdquo; detecta automáticamente la fecha y la hora del PC en el que se ejecuta el 
 	navegador que se conecta al panel y permite configurar los valores detectados en el propio panel.</p>
-	
-	<h4 class="western"><u>Display Settings</u></h4>
-	<p class="western">La página Display Settings le permite cambiar las siguientes características:</p>
-	<ul>
-		<li/>
-<p class="western">Brillo de la pantalla: es posible establecer un valor de brillo entre 0 y 100 correspondiente al brillo mínimo y 
-		máximo permitido respectivamente.</p>
-		<li/>
-<p class="western">Salvapantallas: Puede establecer el tiempo de inactividad de la pantalla después del cual se activa el 
-		salvapantallas del sistema. El valor ajustado debe expresarse en segundos. Un valor de 0 desactiva el salvapantallas. </p>
-		<li/>
-<p class="western">Touch Calibration: puede iniciar el procedimiento para calibrar la pantalla táctil asociada a la pantalla. El 
-		procedimiento de calibración interrumpe la ejecución del software HMI y PLC normalmente activo en el panel, y requiere que 
-		el usuario toque los puntos resaltados en la pantalla. Al final de la calibración, el software de la HMI y del PLC se reiniciarán automáticamente </p>
-	</ul>
-	<h4 class="western"><u>Manage Configuration</u></h4>
-	<p class="western">Permite al usuario actualizar la pantalla de bienvenida (splash.png) que
-	se puede mostrar al inicio de la aplicación HMI.</p>
-	<h4 class="western"><u>Manage Password</u></h4>
-	<p class="western">Permite al usuario que ha iniciado sesión en la interfaz con la contraseña &ldquo;<i>User</i>&rdquo;  o
-	&ldquo;<i>Super User</i>&rdquo; cambiar sólo su contraseña. La contraseña asociada al nivel &ldquo;<i>Admin</i>&rdquo; no se puede 
-	modificar. <strong>NOTA:</strong> Estas contraseñas son diferentes de las utilizadas en la aplicación HMI.</p>
-	<h4 class="western"><u>Reset Passwords</u></h4>
-	<p class="western">La función de restablecimiento de contraseñas restaura las contraseñas de la interfaz WEB al valor 
-	predeterminado indicado anteriormente. Sólo está disponible para el usuario &ldquo;<i>Admin</i>&rdquo;.</p>
-	<br/>
+		</li>
+		<li>
+			<h4 class="western"><u>Display Settings</u></h4>
+			<p class="western">La página Display Settings le permite cambiar las siguientes características:</p>
+			<ul>
+				<li/>
+				<p class="western">Brillo de la pantalla: es posible establecer un valor de brillo entre 0 y 100 correspondiente al brillo mínimo y 
+				máximo permitido respectivamente.</p>
+				<li/>
+				<p class="western">Salvapantallas: Puede establecer el tiempo de inactividad de la pantalla después del cual se activa el 
+				salvapantallas del sistema. El valor ajustado debe expresarse en segundos. Un valor de 0 desactiva el salvapantallas. </p>
+				<li/>
+				<p class="western">Touch Calibration: puede iniciar el procedimiento para calibrar la pantalla táctil asociada a la pantalla. El 
+				procedimiento de calibración interrumpe la ejecución del software HMI y PLC normalmente activo en el panel, y requiere que 
+				el usuario toque los puntos resaltados en la pantalla. Al final de la calibración, el software de la HMI y del PLC se reiniciarán automáticamente </p>
+			</ul>
+		</li>
+		<li>
+			<h4 class="western"><u>Manage Configuration</u></h4>
+			<p class="western">Permite al usuario actualizar la pantalla de bienvenida (splash.png) que
+			se puede mostrar al inicio de la aplicación HMI.</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Alarms</u></h4>
+			<p class="western">La página Alarmas inicia el componente de interfaz web dedicado a la gestión de alarmas.
+			<br/> Hay dos tipos de operaciones que se pueden realizar en las alarmas: descargar y borrar los logs en el panel.</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Logs</u></h4>
+			<p class="western">La página Logs inicia el componente de la interfaz web dedicado a la gestión de historiales. Existen dos 
+			tipos de operaciones que se pueden realizar sobre los historiales: la <strong>descarga </strong> y <strong>eliminación</strong> de los historiales.</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Trend</u></h4>						
+			<p class="western">La página Trend inicia la parte de la interfaz dedicada a la gestión de trends. Existen tres tipos 
+			de operaciones que se pueden realizar sobre los trends: <strong>la actualización</strong>,la <strong>descarga</strong> y
+			el <strong>borrado</strong>.</p>
+			<p class="western"><b>Upload:</b></p>
+			<p class="western">La función de actualización de la familia de trends actualiza la lista de familias de trends 
+			disponibles en el panel. Las familias de trends que se van a cargar deben comprimirse en un archivo en 
+			formato zip. El archivo se compone de una lista de ficheros, cada uno de los cuales describe un tipo de trend.</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Recipes</u></h4>
+			<p class="western">La página Recetas inicia la sección de la interfaz dedicada a la gestión de recetas.</p>
+			<p class="western">Hay tres tipos de operaciones que se pueden realizar en las recetas: <strong>la actualización</strong>, la <strong>descarga</strong>  y el <strong>borrado</strong>.</p> 
+			<p class="western"><b>Upload:</b></p>
+			<p class="western">La función de actualización de recetas actualiza la lista de recetas disponibles en el panel. Las recetas que 
+			se van a cargar deben estar comprimidas en un archivo en formato zip.	El archivo comprimido está organizado en carpetas, cada
+			 una de las cuales corresponde a un tipo de receta y, dentro de cada carpeta,se encuentran las distintas implementaciones de un tipo de receta.</p>
+			<p class="western">Por ejemplo, si suponemos que tenemos dos familias de recetas, una para enfriar y otra para calentar 
+			dentro del archivo que contiene las recetas, tendremos la siguiente organización:</p>
+			<p class="western">&#9500;&#9472;&#9472; cool</p>
+			<p class="western">&#9474; &#9500;&#9472;&#9472; cool_10</p>
+			<p class="western">&#9474; &#9500;&#9472;&#9472; cool_20</p>
+			<p class="western">&#9474; &#9492;&#9472;&#9472; cool_30</p>
+			<p class="western"><br/>
+		<br/>
+
+			</p>
+			<p class="western">&#9492;&#9472;&#9472; hot</p>
+			<p class="western">    &#9500;&#9472;&#9472; hot_100</p>
+			<p class="western">    &#9500;&#9472;&#9472; hot_150</p>
+			<p class="western">    &#9500;&#9472;&#9472; hot_200</p>
+			<p class="western">    &#9492;&#9472;&#9472; hot_50</p>
+	</li>
+	<li>
+			<h4 class="western"><u>Screenshot</u></h4>
+			<p class="western">La página Screenshot inicia el componente de interfaz web dedicado a la gestión de capturas de pantalla.
+			<br/> Hay dos tipos de operaciones que se pueden realizar en las Screenshot: descargar y borrar.</p>
+	</li>
+	<li>
+		<h4 class="western"><u>Manage Password</u></h4>
+		<p class="western">Permite al usuario que ha iniciado sesión en la interfaz con la contraseña &ldquo;<i>User</i>&rdquo;  o
+		&ldquo;<i>Super User</i>&rdquo; cambiar sólo su contraseña. La contraseña asociada al nivel &ldquo;<i>Admin</i>&rdquo; no se puede 
+		modificar. <strong>NOTA:</strong> Estas contraseñas son diferentes de las utilizadas en la aplicación HMI.</p>
+	</li>
+	</ul>		
 	</body>
 </html>

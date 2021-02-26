@@ -1,0 +1,118 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Changelog</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h1>Changelog</h1>
+		<hr color="#e6e8e6">
+		MectSuite project changes.
+		<h1>[v3.3.0] - 2021-02-24</h1>
+		<hr color="#e6e8e6">
+		<ul>
+			<li>
+				<h2>Security Features</h2>
+				<hr color="#e6e8e6">
+				<dl>
+					<dt>- Hardening is enabled by default for all machines (#339).</dt>
+					<dt>- Sysupdate now enables Hardening by default (#8).</dt>
+				</dl>
+			</li>
+			<li>
+				<h2>New Features</h2>
+				<hr color="#e6e8e6">
+				<dl>
+					<dt>- New TPX1070_03_D and TPX1070_03_E models (#215).</dt>
+					<dt>- New TPAC1007_04_AD and TPAC1007_04_AE models (#52).</dt>
+					<dt>- New NTP feature in Time Set page and ntpclient class (#228).</dt>
+					<dt>- New multi line edit mode in Crosstable Editor (#326).</dt>
+					<dt>- New 'AnyTPAC043' and 'AnyTPAC070' project templates (#60).</dt>
+					<dt>- Advance search in Crosstable Editor (#100).</dt>
+					<dt>- Added special ASCII symbols in alphapad (#68).</dt>
+					<dt>- New empty line '-;-;-' in logs when date and time is manually changed nd when NTP sync happens (#97).</dt>
+					<dt>- New 4C_TestSuite (#90).</dt>
+					<dt>- Added VoIP_caller project for TPX1070_03_E (#244).</dt>
+					<dt>- New Sysupdates for IP and touch screen calibration reset (#19).</dt>
+					<dt>- New get_trends.cgi (#31).</dt>
+				</dl>
+			</li>
+			<li>
+				<h2>Fixed Issues</h2>
+				<hr color="#e6e8e6">
+				<dl>
+					<dt>- The Combobox section now follows the current line during the scroll (#110).</dt>
+					<dt>- In Crosstable Editor "Undo" now works well (#242).</dt>
+					<dt>- Various fixes in Crosstable and Ui Designer (#109).</dt>
+					<dt>- Fix behavior in Crosstable Editor while editing a model not included in the model list (#243).</dt>
+					<dt>- Fix TPAC100803XX Tooltip in Crosstable Editor (#71).</dt>
+					<dt>- RTU now accept Node ID from 1 to 247 in Crosstable Editor (#39).</dt>
+					<dt>- TCP_SRV and RTU_SRV now checks the next register if a variable is 32bit in Crosstable Editor (#40).</dt>
+					<dt>- In Crosstable Editor added range control (0 to 4095) for Modbus Server variables offset (#205).</dt>
+					<dt>- Fixed variable decimals control error if specified by another variable (#112).</dt>
+					<dt>- Fixed Error Code 24, can not create a new alarm variable (#137).</dt>
+					<dt>- Cloner now adds underscore instead of white space while create new directory (#94).</dt>
+					<dt>- Fix MPNC ColdJunctionT variable (#83).</dt>
+					<dt>- Avoided CMD_GETCHILDREN crash (#82).</dt>
+					<dt>- Fixed Time On counter (TON) overflow (#87).</dt>
+					<dt>- In Store Page HMI is no longer freezed while saving logs in USB (#51).</dt>
+					<dt>- ATCM animation now accepts PNG with uppercase extension (#47).</dt>
+					<dt>- Splash screen now is correctly closed if the RTC battery is down and date and time is set in Time Set page (#108).</dt>
+					<dt>- Workaround for next line while ATCMButton is Pressed (#17).</dt>
+					<dt>- JSON from get_log.cgi now displays the values in the correct order (#81).</dt>
+					<dt>- Minor Bug fix (#85, #89, #104, #88)</dt>
+				</dl>	
+			</li>	
+			<li>
+				<h2>Changed Features</h2>	
+				<hr color="#e6e8e6">
+				<dl>
+					<dt>- Max logs size is set by default to 4096 MB (#65).</dt>
+					<dt>- Input Registers can be defined in Modbus TCP, TCP_SRV and RTU_SRV (#113).</dt>
+					<dt>- RTU_SRV node number can be modified (#101).</dt>
+					<dt>- RTU0 fields are no longer editable by users in TPAC100803XX (#73).</dt>
+					<dt>- Changed behavior of MPNE_AnIn1Conf and MPNE_Watchdog in Crosstable Editor for MPNE (#69).</dt>
+					<dt>- Changed behavior of PLC_EncoderCo_Lo/Hi with no decimal in Crosstable Editor for TPAC100802XX e TPAC100803YY  (#70).</dt>
+					<dt>- Changed some variables name (PLC_Pwm_* to PLC_Pto_*) in TPAC100803XX Crosstable Editor (#72).</dt>
+					<dt>- Changed some variables name (MPNE_PTORampUp_* to MPNE_ControlWord_*) in MPNE1001 Crosstable Editor (#78). </dt>
+					<dt>- Changed paste menu text from "Paste MPNE10 Module" to  "Paste MPNE1001 Module" (#79).</dt>
+					<dt>- Changed priority from 2 to 1 and the port from 0 to 3 when Paste TPLC050 Modules (#58).</dt>
+					<dt>- Changed PLC_EncoderCounter from UDINT to DINT in TPLC050 (#61).</dt>
+					<dt>- TPAC1007_04_AE default RTU3 baudrate is set to 38400 and address 20 (14hex) is not permitted (#231).</dt>
+					<dt>- Multiple copy of one line over multiple non contigues line in Crosstable Editor is now permitted (#111).</dt>
+					<dt>- Network page is able to connect to hidden wifi networks (#66).</dt>
+					<dt>- Time Set page Review (#307).</dt>
+					<dt>- CGI Review (#222).</dt>
+					<dt>- Minor internal fix (#56).</dt>
+				</dl>
+			</li>
+			<li>
+				<h2>Deprecated Models</h2>				
+				<hr color="#e6e8e6">
+				<dl>
+					<dt>- TP1070_02_E (#252).</dt>
+					<dt>- TP1057 (#34).</dt>
+					<dt>- TP1043_01_B (#34).</dt>
+					<dt>- TPAC1006 (#34).</dt>
+					<dt>- TPAC1008_01 (#34).</dt>
+				</dl>
+			</li>
+			<li>
+				<h2>Removed Features</h2>	
+				<hr color="#e6e8e6">
+				<dl>
+					<dt>- Removed old emails from source code (#102).</dt>
+					<dt>- Disabled RTU3 for TPAC1007_LV and TPAC1007_04_AE (#80).</dt>
+				</dl>
+			</li>
+		<ul>					
+	</body>
+</html>
