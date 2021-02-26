@@ -239,141 +239,92 @@
 			</td>
 		</tr>
 	</table>
-	<h4 class="western"><u>Logs</u></h4>
-	<p class="western">La page Logs démarre le composant de l'interface web dédié à la gestion des historiques. Trois types 
-	d'opérations peuvent être effectuées sur les historiques :<strong>la mise à jour</strong> des définitions des historiques partiels et  
-	dans la page &ldquo;Manage Logs&rdquo; le <strong>le téléchargement</strong> et la	<strong>suppression</strong> des historiques partiels et totaux.</p>
-	<h4 class="western">Update LOG</h4>
-	<p class="western" >La fonction de mise à jour des définitions d'historique partiel met à jour la liste des historiques partiels 
-	disponibles sur le panneau. Les définitions de l'historique à télécharger doivent être des fichiers au format 
-	CSV et le fichier doit commencer par le préfixe &ldquo;store&rdquo;: 
-	</p>
-	<p  class="western" ><strong>date</strong></p>
-	<p class="western" ><strong>temps</strong></p>
-	<p  class="western" ><strong>VARIABLE 1</strong></p>
-	<p  class="western" ><strong>&hellip;</strong></p>
-	<p  class="western"><strong>VARIABLE N</strong></p>
-	<p class="western">L'interface télécharge un fichier CSV à la fois, donc pour télécharger plusieurs définitions, vous devez effectuer 
-	 plusieurs mises à jour.</p>
-	<h4 class="western">Downolad LOGS</h4>
-	<p class="western">L'interface Web vous permet de télécharger les logs de la façon suivante:</p>
 	<ul>
-		<li/>
-<p class="western">Total / Total partiel : en sélectionnant le log(journal) &ldquo;Total&rdquo; ou l'un des logs Partiel présent sans entrer 
-		aucune valeur dans les champs de la date, tous les logs présents sur le panneau sont téléchargés.</p>
-		<li/>
-<p class="western">Jour Total / Jour Partiel : en sélectionnant le log &ldquo;Total&rdquo; ou l'un des logs Partiel présent et en entrant une  
-		valeur dans le champ &ldquo;Initial Date&rdquo; le log pour le jour spécifié sera téléchargé.</p>
-		<li/>
-<p class="western">Totaux journaliers dans un intervalle de temps / Totaux journaliers partiels dans un intervalle de temps : en sélectionnant le 
-		le log &ldquo;Total&rdquo; ou l'un des logs Partiel présent et en entrantune valeur dans les champs &ldquo;initial Date&rdquo; et &ldquo;FinalDate&rdquo;
-		les journaux journaliers stockés sur le panneau dans l'intervalle de temps spécifié par les dates indiquées seront téléchargés.</p>
-		<li/>
-<p class="western">Total Unique en un intervalle de	temps/Partiel Unique en un intervalle de temps: en sélectionnant le log
-		&ldquo;Total&rdquo; ou l'un des partiels présents et en saisissant toutes les informations relatives à l'intervalle de temps &ldquo;Initial
-		Date&rdquo; &ldquo;Initial Time&rdquo; &ldquo;Final Date&rdquo; et &ldquo;Final Time&rdquo; un seul fichier journal contenant toutes les données 
-		historisées dans l'intervalle spécifié est téléchargé.</p>
-	</ul>
-	<h4 class="western">Delete LOGS</h4>
-	<p class="western">L'interface Web vous permet de supprimer:</p>
-	<ul>
-		<li/>
-<p class="western">la définition des journaux partiels: l'annulation est obtenue en sélectionnant les logs partiels
- à supprimer sans introduire aucun paramètre de temps</p>
-		<li/>
-<p class="western">tous les logs présents sur le système: l'annulation se fait en sélectionnant le log &ldquo;Total&rdquo;
-		sans introduire aucun paramètre de temps</p>
-		<li/>
-<p class="western">le log d'un jour donné: pour supprimer le log d'un jour donné, sélectionnez le log Total et 
-		entrez dans le champ &ldquo;Initial Date&rdquo; le jour pour lequel vous voulez supprimer les logs.</p>
-	</ul> 
-	<p class="western">Les champs &ldquo;Initial Time&rdquo;, &ldquo;Final	Date&rdquo; et &ldquo;Final Time&rdquo; doivent rester vides.</p>
-	<ul>
-		<li/>
-<p class="western">les log relatifs à un intervalle de temps : pour supprimer les journaux entre deux dates, sélectionnez 
-		log &ldquo;Total&rdquo; comme type de log et réglez les dates &ldquo;Initial Date&rdquo; et &ldquo;Final Date&rdquo;. Les champs &ldquo;Initial Time&rdquo; et
-		&ldquo;Final Time&rdquo; doivent être laissés vides.</p>
-	</ul>
-	<p class="western"><strong>REMARQUE:</strong>pour les logs partiels, il n'est pas possible d'effectuer des annulations pour un jour ou un 
-	intervalle de temps car les journaux partiels ne sont générés à partir des logs totaux que lorsque 
-	l'utilisateur demande le téléchargement.</p>
-	<h4 class="western"><u>Trend</u></h4>
-	<p class="western">La page Trend démarre la partie interface dédiée à la gestion des tendances. Il y a quatre types 
-	d'opérations qui peuvent être effectuées sur les trends: <strong>la mise à jour</strong>, le <strong>téléchargement de captures d'écran </strong> et dans la page &ldquo;Manage Trend&rdquo; 
-	le <strong>téléchargement</strong> et la <strong>suppression</strong>.</p>
-	<h4 class="western">Update 	</h4>
-	<p class="western">La fonction de mise à jour des familles de trends met à jour la liste des familles de trends disponibles sur le panneau. Les familles de trends à télécharger doivent être compressées 
-	dans une archive au format zip. L'archive est composée d'une liste de fichiers, dont chacun décrit un type de trend</p>
-	<h4 class="western">Manage trend</h4>
-	<p class="western">Après avoir téléchargé les trendes selon la structure indiquée, la page Manage Trend vous permet 
-	de naviguer dans les dossiers contenant les familles de trends elles-mêmes. Il est possible de télécharger ou de supprimer une famille de trends 
-	ou une série de familles à sélections multiples. 
-	</p>
-	<h4 class="western"><u>Alarms</u></h4>
-	<p class="western">La page Alarmes démarre le composant d'interface web dédié à la gestion des alarmes.
-	<br/>
-Deux types d'opérations peuvent être effectuées sur les alarmes : le téléchargement et la suppression des logs sur le panneau.</p>
-	<h4 class="western"><u>Recipes</u></h4>
-	<p class="western">La page Recettes démarre la section de l'interface dédiée à la gestion des recettes. 	</p>
-	<p class="western">Trois types d'opérations peuvent être effectuées sur les recettes: <strong>la mise à jour</strong> et dans la page &ldquo;Manage
-	Recipes&rdquo; le <strong>téléchargement </strong> et la <strong>suppression</strong>.</p>
-	<h4 class="western">Update  </h4>
-	<p class="western">La fonction de mise à jour des recettes met à jour la liste des recettes disponibles sur le panneau. Les 
-	recettes à télécharger doivent être compressées dans une archive au format zip.	L'archive est organisée en dossiers dont chacun correspond 
-	à un type de recette et, à l'intérieur de chaque dossier, il y a  les différentes implémentations d'un type de recette.</p>
-	<p class="western">Par exemple, si nous supposons que nous avons deux familles de recettes, l'une pour le refroidissement et 
-	l'autre pour le chauffage dans les archives contenant les recettes, nous aurons l'organisation suivante:</p>
-	<p class="western">&#9500;&#9472;&#9472; cool</p>
-	<p class="western">&#9474; &#9500;&#9472;&#9472; cool_10</p>
-	<p class="western">&#9474; &#9500;&#9472;&#9472; cool_20</p>
-	<p class="western">&#9474; &#9492;&#9472;&#9472; cool_30</p>
-	<p class="western"><br/>
-<br/>
+		<li>
+		<h4 class="western"><u>LAN Config</u></h4>
+			<p class="western">Dans cette page, vous pouvez définir les propriétés réseau du panneau. Le panneau ne supporte qu'une 
+			configuration réseau statique pour laquelle vous pouvez définir l'adresse IP, le masque réseau (NM), la 
+			passerelle par défaut (GW) et les serveurs DNS (DNS1 et DNS2). 	</p>
+		</li>	
+		<li>	
+			<h4 class="western"><u>Date and Time</u></h4>
+			<p class="western">La page &ldquo;Date and Time&rdquo; détecte automatiquement la date et l'heure du PC sur lequel tourne le navigateur 
+				qui se connecte au panneau et vous permet de régler les valeurs détectées sur le panneau lui-même.</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Display Settings</u></h4>
+			<p class="western">La page Display Settings vous permet de modifier les fonctions suivantes ::</p>
+			<ul>
+				<li/>
+				<p class="western">Luminosité de l'écran : il est possible de régler une valeur de luminosité entre 0 et 100 correspondant 
+				respectivement à la luminosité minimale et maximale autorisée.</p>
+				<li/>
+				<p class="western">Economiseur d'écran: Vous pouvez régler le temps d'arrêt de l'affichage après lequel l'économiseur d'écran 
+				du système est activé. La valeur réglée doit être exprimée en secondes. Une valeur de 0 désactive 0 l'économiseur d'écran.</p>
+				<li/>
+				<p class="western">Touch Calibration: &Vous pouvez lancer la procédure d'étalonnage de l'écran tactile associé à l'affichage. La 
+				procédure d'étalonnage interrompt l'exécution du logiciel IHM et API normalement actif sur le panneau et 
+				exige que l'utilisateur touche les points surlignés sur l'écran. A la fin du calibrage, l'IHM et le logiciel du PLC 
+				redémarrent automatiquement. </p>
+			</ul>
+		</li>
+		<li>
+			<h4 class="western"><u>Manage Configuration</u></h4>
+			<p class="western">Permet à l'utilisateur de mettre à jour l'écran d'accueil (splash.png) qui peut 
+			être affiché au début de l'application IHM.</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Alarms</u></h4>
+			<p class="western">La page Alarmes démarre le composant d'interface web dédié à la gestion des alarmes.
+			<br/>Deux types d'opérations peuvent être effectuées sur les alarmes : le téléchargement et la suppression des logs sur le panneau.</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Logs</u></h4>
+			<p class="western">La page Logs démarre le composant de l'interface web dédié à la gestion des historiques. Deux types 
+			d'opérations peuvent être effectuées sur les historiques: le <strong>le téléchargement</strong> et la <strong>suppression</strong> des historiques.</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Trend</u></h4>		
+			<p class="western">La page Trend démarre la partie interface dédiée à la gestion des tendances. Il y a trois types 
+			d'opérations qui peuvent être effectuées sur les trends: <strong>la mise à jour</strong>, le <strong>téléchargement</strong> et la <strong>suppression</strong>.</p>
+			<p class="western"><b>Upload:</b></p>
+			<p class="western">La fonction de mise à jour des familles de trends met à jour la liste des familles de trends disponibles sur le panneau. Les familles de trends à télécharger doivent être compressées dans une archive au format zip. L'archive est composée d'une liste de fichiers, dont chacun décrit un type de trend</p>
+		</li>
+		<li>
+			<h4 class="western"><u>Recipes</u></h4>
+			<p class="western">La page Recettes démarre la section de l'interface dédiée à la gestion des recettes. 	</p>
+			<p class="western">Trois types d'opérations peuvent être effectuées sur les recettes: <strong>la mise à jour</strong>, le <strong>téléchargement </strong> et la <strong>suppression</strong>.</p>
+			<p class="western"><b>Upload:</b></p>
+			<p class="western">La fonction de mise à jour des recettes met à jour la liste des recettes disponibles sur le panneau. Les 
+			recettes à télécharger doivent être compressées dans une archive au format zip.	L'archive est organisée en dossiers dont chacun correspond 
+			à un type de recette et, à l'intérieur de chaque dossier, il y a  les différentes implémentations d'un type de recette.</p>
+			<p class="western">Par exemple, si nous supposons que nous avons deux familles de recettes, l'une pour le refroidissement et 
+			l'autre pour le chauffage dans les archives contenant les recettes, nous aurons l'organisation suivante:</p>
+			<p class="western">&#9500;&#9472;&#9472; cool</p>
+			<p class="western">&#9474; &#9500;&#9472;&#9472; cool_10</p>
+			<p class="western">&#9474; &#9500;&#9472;&#9472; cool_20</p>
+			<p class="western">&#9474; &#9492;&#9472;&#9472; cool_30</p>
+			<p class="western"><br/>
+		<br/>
 
-	</p>
-	<p class="western">&#9492;&#9472;&#9472; hot</p>
-	<p class="western">    &#9500;&#9472;&#9472; hot_100</p>
-	<p class="western">    &#9500;&#9472;&#9472; hot_150</p>
-	<p class="western">    &#9500;&#9472;&#9472; hot_200</p>
-	<p class="western">    &#9492;&#9472;&#9472; hot_50</p>
-	<h4 class="western">Manage recipes</h4>
-	<p class="western">Après avoir téléchargé les recettes selon la structure indiquée, la page Manage Recipes les recettes vous permet de 
-	naviguer dans les dossiers contenant les recettes elles-mêmes. Il est possible de télécharger ou de 
-	supprimer des recettes sur l'ensemble de la famille de recettes en sélectionnant la famille, soit sur une 
-	seule recette appartenant à une famille, soit sur plusieurs sélections de recettes appartenant à la même famille. </p>
-	<h4 class="western"><u>LAN Config</u></h4>
-	<p class="western">Dans cette page, vous pouvez définir les propriétés réseau du panneau. Le panneau ne supporte qu'une 
-	configuration réseau statique pour laquelle vous pouvez définir l'adresse IP, le masque réseau (NM), la 
-	passerelle par défaut (GW) et les serveurs DNS (DNS1 et DNS2). 	</p>
-	<h4 class="western"><u>Date and Time</u></h4>
-	<p class="western">La page &ldquo;Date and Time&rdquo; détecte automatiquement la date et l'heure du PC sur lequel tourne le navigateur 
-	qui se connecte au panneau et vous permet de régler les valeurs détectées sur le panneau lui-même.</p>
-	
-	<h4 class="western"><u>Display Settings</u></h4>
-	<p class="western">La page Display Settings vous permet de modifier les fonctions suivantes ::</p>
-	<ul>
-		<li/>
-<p class="western">Luminosité de l'écran : il est possible de régler une valeur de luminosité entre 0 et 100 correspondant 
-		respectivement à la luminosité minimale et maximale autorisée.</p>
-		<li/>
-<p class="western">Economiseur d'écran: Vous pouvez régler le temps d'arrêt de l'affichage après lequel l'économiseur d'écran 
-		du système est activé. La valeur réglée doit être exprimée en secondes. Une valeur de 0 désactive 0 l'économiseur d'écran.</p>
-		<li/>
-<p class="western">Touch Calibration: &Vous pouvez lancer la procédure d'étalonnage de l'écran tactile associé à l'affichage. La 
-		procédure d'étalonnage interrompt l'exécution du logiciel IHM et API normalement actif sur le panneau et 
-		exige que l'utilisateur touche les points surlignés sur l'écran. A la fin du calibrage, l'IHM et le logiciel du PLC 
-		redémarrent automatiquement. </p>
-	</ul>
-	<h4 class="western"><u>Manage Configuration</u></h4>
-	<p class="western">Permet à l'utilisateur de mettre à jour l'écran d'accueil (splash.png) qui peut 
-	être affiché au début de l'application IHM.</p>
-	<h4 class="western"><u>Manage Password</u></h4>
-	<p class="western">Permet à l'utilisateur qui s'est connecté à l'interface avec le mot de passe &ldquo;<i>User</i>&rdquo;  ou
-	&ldquo;<i>Super User</i>&rdquo; de changer uniquement son mot de passe. Le mot de passe associé au niveau &ldquo;<i>Admin</i>&rdquo; ne peut pas être 
-	modifié. <strong>REMARQUE:</strong> Ces mots de passe sont différents des mots de passe utilisés dans l'application IHM.</p>
-	<h4 class="western"><u>Reset Passwords</u></h4>
-	<p class="western">La fonction de réinitialisation des mots de passe rétablit les mots de passe de l'interface WEB à la valeur par 
-	défaut indiquée ci-dessus. Il n'est accessible qu'à l'utilisateur &ldquo;<i>Admin</i>&rdquo;.</p>
-	<br/>
+			</p>
+			<p class="western">&#9492;&#9472;&#9472; hot</p>
+			<p class="western">    &#9500;&#9472;&#9472; hot_100</p>
+			<p class="western">    &#9500;&#9472;&#9472; hot_150</p>
+			<p class="western">    &#9500;&#9472;&#9472; hot_200</p>
+			<p class="western">    &#9492;&#9472;&#9472; hot_50</p>
+	</li>
+	<li>
+			<h4 class="western"><u>Screenshot</u></h4></p>
+			<p class="western">La page Screenshot démarre le composant d'interface web dédié à la gestion de captures d'écran.
+			<br/>Deux types d'opérations peuvent être effectuées sur les Screenshot : le téléchargement et la suppression.</p>
+	</li>
+	<li>
+		<h4 class="western"><u>Manage Password</u></h4>
+		<p class="western">Permet à l'utilisateur qui s'est connecté à l'interface avec le mot de passe &ldquo;<i>User</i>&rdquo;  ou
+		&ldquo;<i>Super User</i>&rdquo; de changer uniquement son mot de passe. Le mot de passe associé au niveau &ldquo;<i>Admin</i>&rdquo; ne peut pas être 
+		modifié. <strong>REMARQUE:</strong> Ces mots de passe sont différents des mots de passe utilisés dans l'application IHM.</p>
+	</li>	
+	</ul>	
 	</body>
 </html>
