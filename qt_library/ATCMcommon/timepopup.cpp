@@ -96,7 +96,6 @@ void TimePopup::movePosition(int x, int y)
         y = height - SIZE_Y;
     }
     this->move(x,y);
-    this->show();
     this->update();
 }
 

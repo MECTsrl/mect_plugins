@@ -129,8 +129,8 @@ void time_set::on_pushButtonTime_clicked()
             lockInterface = true;
             lockUI(true);
             timepopup->setTime(t);
-            timepopup->movePosition(ui->pushButtonTime->geometry().x(),ui->pushButtonTime->geometry().y());
             timepopup->setModal(true);
+            timepopup->movePosition(ui->pushButtonTime->geometry().x(),ui->pushButtonTime->geometry().y());
             if (timepopup->exec() == QDialog::Accepted) {
                 // ui->timeEdit->setTime(timepop->getTime());
                 ui->pushButtonTime->setText(timepopup->getTime().toString(TIME_MASK));
@@ -147,24 +147,12 @@ void time_set::on_pushButtonTime_clicked()
 void time_set::on_pushButtonHome_clicked()
 {
     QObject::disconnect(ntpclient, 0, 0, 0);
-    if (calendarpopup->isVisible())  {
-        calendarpopup->reject();
-    }
-    if (timepopup->isVisible())  {
-        timepopup->reject();
-    }
     go_home();
 }
 
 void time_set::on_pushButtonBack_clicked()
 {
     QObject::disconnect(ntpclient, 0, 0, 0);
-    if (calendarpopup->isVisible())  {
-        calendarpopup->reject();
-    }
-    if (timepopup->isVisible())  {
-        timepopup->reject();
-    }
     go_back();
 }
 
@@ -177,8 +165,8 @@ void time_set::on_pushButtonCalendar_clicked()
             lockInterface = true;
             lockUI(true);
             calendarpopup->setDate(d);
-            calendarpopup->movePosition(ui->pushButtonCalendar->geometry().x(),ui->pushButtonCalendar->geometry().y());
             calendarpopup->setModal(true);
+            calendarpopup->movePosition(ui->pushButtonCalendar->geometry().x(),ui->pushButtonCalendar->geometry().y());
             if (calendarpopup->exec() == QDialog::Accepted) {
                 ui->pushButtonCalendar->setText(calendarpopup->getDate().toString(DATE_MASK));
             }

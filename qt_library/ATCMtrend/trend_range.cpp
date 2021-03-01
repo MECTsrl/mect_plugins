@@ -165,8 +165,8 @@ void trend_range::on_pushButtonTime_clicked()
         QTime t = QTime::fromString(ui->pushButtonTime->text(), "hh:mm:ss"); // and not "HH:mm:ss"
         if (t.isValid()) {
             timepopup->setTime(t);
-            timepopup->movePosition(ui->pushButtonTime->geometry().x(),ui->pushButtonTime->geometry().y());
             timepopup->setModal(true);
+            timepopup->movePosition(ui->pushButtonTime->geometry().x(),ui->pushButtonTime->geometry().y());
             if (timepopup->exec() == QDialog::Accepted) {
                 // ui->timeEdit->setTime(timepop->getTime());
                 ui->pushButtonTime->setText(timepopup->getTime().toString("HH:mm:ss"));
@@ -248,8 +248,8 @@ void trend_range::on_pushButtonCalendar_clicked()
         QDate d = QDate::fromString(ui->pushButtonCalendar->text(), "yyyy-MM-dd");
         if (d.isValid()) {
             calendarpopup->setDate(d);
-            calendarpopup->movePosition(ui->pushButtonCalendar->geometry().x(),ui->pushButtonCalendar->geometry().y());
             calendarpopup->setModal(true);
+            calendarpopup->movePosition(ui->pushButtonCalendar->geometry().x(),ui->pushButtonCalendar->geometry().y());
             if (calendarpopup->exec() == QDialog::Accepted) {
                 ui->pushButtonCalendar->setText(calendarpopup->getDate().toString("yyyy-MM-dd"));
             }
