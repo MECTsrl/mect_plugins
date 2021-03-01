@@ -147,12 +147,24 @@ void time_set::on_pushButtonTime_clicked()
 void time_set::on_pushButtonHome_clicked()
 {
     QObject::disconnect(ntpclient, 0, 0, 0);
+    if (calendarpopup->isVisible())  {
+        calendarpopup->reject();
+    }
+    if (timepopup->isVisible())  {
+        timepopup->reject();
+    }
     go_home();
 }
 
 void time_set::on_pushButtonBack_clicked()
 {
     QObject::disconnect(ntpclient, 0, 0, 0);
+    if (calendarpopup->isVisible())  {
+        calendarpopup->reject();
+    }
+    if (timepopup->isVisible())  {
+        timepopup->reject();
+    }
     go_back();
 }
 
