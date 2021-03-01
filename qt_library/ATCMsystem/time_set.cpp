@@ -146,11 +146,13 @@ void time_set::on_pushButtonTime_clicked()
 
 void time_set::on_pushButtonHome_clicked()
 {
+    QObject::disconnect(ntpclient, 0, 0, 0);
     go_home();
 }
 
 void time_set::on_pushButtonBack_clicked()
 {
+    QObject::disconnect(ntpclient, 0, 0, 0);
     go_back();
 }
 
@@ -310,7 +312,7 @@ void time_set::lockUI(bool setLocked)
 
 void time_set::ntpManualSetDone(bool setOk)
 {
-    QObject::disconnect(ntpclient, SIGNAL(ntpDateTimeChangeFinish(bool)), 0, 0);
+    QObject::disconnect(ntpclient, 0, 0, 0);
     if (setOk)  {
         QMessageBox::information(this,trUtf8("Manual Date Time Set"), trUtf8("Current Date and Time set to:\n%1") .arg(datetimeTarget.toString(DATE_MASK" "TIME_MASK)));
     }
@@ -323,7 +325,7 @@ void time_set::ntpManualSetDone(bool setOk)
 
 void time_set::ntpSyncDone(bool timeOut)
 {
-    QObject::disconnect(ntpclient, SIGNAL(ntpSyncFinish(bool )), 0, 0);
+    QObject::disconnect(ntpclient, 0, 0, 0);
     ntpSyncRunning = false;
     if (timeOut)  {
         QMessageBox::warning(this,trUtf8("NTP Time Error"), trUtf8("Time Out syncing Date and Time with NTP Server:\n%1") .arg(szTimeServer));
