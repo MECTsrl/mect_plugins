@@ -181,7 +181,7 @@ private:
     TrendEditor     *trendEdit;
     Config_MPNC     *configMPNC;
     Config_MPNE     *configMPNE;
-    SearchVariable  *searcForm;
+    SearchVariable  *searchForm;
 
     int         m_nGridRow;                         // Riga corrente sul Grid
     QString     m_szCurrentCTFile;                  // File Crosstable corrente (completo di Path)

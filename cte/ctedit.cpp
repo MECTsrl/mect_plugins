@@ -506,7 +506,7 @@ ctedit::ctedit(QWidget *parent) :
     configMPNE = new Config_MPNE(ui->tabMPNE);
     vbMPNE->addWidget(configMPNE);
     // Creazione Form ricerca
-    searcForm = new SearchVariable(this);
+    searchForm = new SearchVariable(this);
 
     // Abilitazione dei Tabs
     m_nCurTab = TAB_CT;
@@ -2856,9 +2856,10 @@ void ctedit::on_cmdSearch_clicked()
 {
     int  nRow = 0;
 
-    searcForm->setModal(true);
-    if (searcForm->exec()  == QDialog::Accepted)   {
-        nRow = searcForm->getSelectedVariable();
+    searchForm->setModal(true);
+    searchForm->refreshFilters(m_nGridRow + 1);
+    if (searchForm->exec()  == QDialog::Accepted)   {
+        nRow = searchForm->getSelectedVariable();
         qDebug("on_cmdSearch_clicked(): Selected Row: %d", nRow);
         if (nRow > 0 && nRow <= lstCTRecords.count())  {
             jumpToGridRow(nRow - 1, true);
@@ -3361,8 +3362,9 @@ void ctedit::on_cboBehavior_currentIndexChanged(int index)
         if (! ui->optFixedVal->isChecked() && ! ui->optVariableVal->isChecked())
             ui->optFixedVal->setChecked(true);
     }
-    else
+    else  {
         ui->fraCondition->setVisible(false);
+    }
 }
 void ctedit::fillErrorMessage(int nRow, int nCol, int nErrCode, QString szVarName, QString szValue, QChar severity, Err_CT *errCt)
 {
@@ -3541,6 +3543,8 @@ int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &
     }
     // Ordimanento Alfabetico della Lista
     lstVars.sort();
+    // Rimozione di eventuali duplicati dalla lista
+    lstVars.removeDuplicates();
     // Return value
     // qDebug() << "Items Added to List:" << lstVars.count();
     return lstVars.count();
@@ -4241,8 +4245,9 @@ int ctedit::varName2Row(QString &szVarName, QList<CrossTableRecord> &lstCTRecs)
             }
         }
         // Check Failed Search
-        if (nRow == lstCTRecs.count())
+        if (nRow == lstCTRecs.count())  {
             nRow = -1;
+        }
     }
     return nRow;
 }
@@ -5713,6 +5718,9 @@ void ctedit::initTargetList()
     lstTargets[TPAC1008_03_AD].pwm = 4;
     lstTargets[TPAC1008_03_AD].loadCells = 3;
     lstTargets[TPAC1008_03_AD].serialPorts[_serial0].portEnabled = true;         // Internal Port
+    lstTargets[TPAC1008_03_AD].serialPorts[_serial3].portEnabled = true;
+    lstTargets[TPAC1008_03_AD].serialPorts[_serial3].portEditable = true;
+    lstTargets[TPAC1008_03_AD].serialPorts[_serial3].portAvailable = true;
     // 26 TP1070_02_F
     lstTargets[TP1070_02_F].modelName =  QLatin1String(product_name[TP1070_02_F]);
     lstTargets[TP1070_02_F].displayWidth =  800;

@@ -19,7 +19,8 @@ class SearchVariable : public QDialog
 public:
     explicit SearchVariable(QWidget *parent = 0);
     ~SearchVariable();
-    int getSelectedVariable();
+    int     getSelectedVariable();
+    void    refreshFilters(int nMainGridRow);
 
 private slots:
     void on_cboSections_currentIndexChanged(int index);

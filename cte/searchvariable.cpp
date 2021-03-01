@@ -84,6 +84,34 @@ int SearchVariable::getSelectedVariable()
     return     nSelectedRow;
 }
 
+void SearchVariable::refreshFilters(int nMainGridRow)
+{
+    isResettingFilter = false;
+    // Ricarica l'eventuale filtro precedente (se esiste qualcosa)
+    filterCTVars();
+    // Se esiste almeno una riga trovata di impostare la riga corrente in griglia
+    if (ui->tblVariables->rowCount() > 0)  {
+        int nTabRow = 0;
+        // Ricerca del # riga corrente della griglia principale nell'elenco delle righe trovate
+        // Se trovata seleziona quell'elemento, diversamente la prima che soddisfa il filtro
+        for (int nCurRow = 0; nCurRow < ui->tblVariables->rowCount(); nCurRow++)  {
+            QVariant vRowValue = ui->tblVariables->model()->index(nCurRow, colSearchNumRow).data();
+            if (vRowValue.isValid())  {
+                bool fOk = false;
+                int nActRow = vRowValue.toInt(&fOk);
+                // qDebug("refreshFilters: %d vs %d", nActRow, nMainGridRow);
+                if (fOk && nActRow == nMainGridRow)  {
+                   nTabRow = nCurRow;
+                   break;
+                }
+            }
+        }
+        ui->tblVariables->selectRow(nTabRow);
+        ui->tblVariables->setFocus();
+    }
+}
+
+
 bool SearchVariable::filterCTVars()
 {
     bool                fRes = false;
