@@ -412,8 +412,10 @@ ATCM-template-project/img/Key.png \
 ATCM-template-project/img/Landscape.png \
 ATCM-template-project/img/Last.png \
 ATCM-template-project/img/Last_recor.png \
+ATCM-template-project/img/LedGrey.png \
 ATCM-template-project/img/LedOff.png \
 ATCM-template-project/img/LedOn.png \
+ATCM-template-project/img/LedYellow.png \
 ATCM-template-project/img/Left-right.png \
 ATCM-template-project/img/Letter.png \
 ATCM-template-project/img/Lightning.png \
