@@ -33,7 +33,6 @@
 
 #endif
 
-#define LINE_SIZE 1024
 #define STR_LEN 256
 #define SEPARATOR ";"
 #define ALL_VARIABLE "Total.csv"

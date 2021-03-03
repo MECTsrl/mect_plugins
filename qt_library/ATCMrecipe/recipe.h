@@ -14,6 +14,8 @@
 #include <QTableWidgetItem>
 #include <global_var.h>
 
+#define NAME_SIZE 1024 // ex LINE_SIZE
+
 namespace Ui {
 class recipe;
 }
@@ -50,8 +52,8 @@ private:
     Ui::recipe *ui;
     int current_row;
     int current_column;
-    char _familyName[LINE_SIZE];
-    char _recipeName[LINE_SIZE];
+    char _familyName[NAME_SIZE];
+    char _recipeName[NAME_SIZE];
     int state;
 };
 

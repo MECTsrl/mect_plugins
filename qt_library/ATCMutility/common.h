@@ -120,7 +120,7 @@ extern "C" {
 #define NAME_LEN 3
 #define DESCR_LEN (128 + 1)
 #define TAG_LEN   (31 + 1)
-#define LINE_SIZE 1024
+#define LINE_SIZE 4096
 
 #define MAX_DECIMAL_DIGIT 6
 
