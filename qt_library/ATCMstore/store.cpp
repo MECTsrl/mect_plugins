@@ -13,6 +13,8 @@
 #include <errno.h>
 #include <QWSServer>
 #include <QCoreApplication>
+#include <QElapsedTimer>
+#include <QFontMetrics>
 
 #include "global_functions.h"
 #include "app_logprint.h"
@@ -102,17 +104,18 @@ void store::reload()
     
 }
 
-void store::showLogHeder()
+void store::showLogHeader()
 {
+    QStringList list;
     current_row = 0;
     current_column = 0;
 
-    for (int i = 0; i < filterHeaderSize; i++)
-    {
-            ui->tableWidget->insertColumn(i);
-            LOG_PRINT(verbose_e, "Inserted column '%d' '%s'\n", i, filterHeader[i]);
-            ui->tableWidget->setHorizontalHeaderItem(i, new QTableWidgetItem(filterHeader[i]));
+    ui->tableWidget->setColumnCount(filterHeaderSize);
+    list.clear();
+    for (int i = 0; i < filterHeaderSize; i++) {
+        list.append(filterHeader[i]);
     }
+    ui->tableWidget->setHorizontalHeaderLabels(list);
     ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     ui->tableWidget->update();
 }
@@ -138,6 +141,7 @@ void store::showLogRead(char ** outstruct)
  */
 void store::updateData()
 {
+    page::updateData(); // moved from the function end
 
     if (status == 1)
     {
@@ -204,24 +208,34 @@ void store::updateData()
             return;
         }
 
-        showLogHeder();
+        // intestazione tabella
+        showLogHeader();
 
-        int i = 0;
+        QFontMetrics fm(ui->tableWidget->font());
+        int lineHeight = fm.height() * 2;
+        int maxLines = LINE_BUFFER_SIZE;
+        int lines = 0;
         int retval = 0;
-        while (i < LINE_BUFFER_SIZE)
+        QElapsedTimer timer;
+
+        if (lineHeight > 0) {
+            maxLines = ui->tableWidget->height() / lineHeight;
+        }
+        timer.restart();
+        while (retval >= 0 and lines < maxLines)
         {
-            this->update();
+            // -1 : "no data to read\n""Cannot get date token\n""Cannot get time token\n" "late %ld %ld %ld\n"
+            //  0 : ok riga in outstruct
+            //  1 : "early\n" "done\n"
             retval = getLogRead(STORE_DIR, ti, tf, &fpin, outstruct);
-            if(retval < 0)
-            {
-                break;
-            }
-            else if (retval == 0)
-            {
+            if (retval == 0) {
                 showLogRead(outstruct);
-                i++;
+                lines++;
             }
-            QCoreApplication::processEvents();
+            if (timer.elapsed() >= 500) { // 0.5 s
+                QCoreApplication::processEvents();
+                timer.restart();
+            }
         }
 
         ui->labelFilter->setText(QString("Filter: [%1 - %2]")
@@ -246,7 +260,7 @@ void store::updateData()
 #endif
     ui->pushButtonSaveUSB->setEnabled(USBCheck());
     
-    page::updateData();
+    // moved at the function start: page::updateData();
 }
 
 #ifdef TRANSLATION
@@ -272,11 +286,13 @@ store::~store()
 
 void store::on_pushButtonHome_clicked()
 {
+    finishLogRead();
     go_home();
 }
 
 void store::on_pushButtonBack_clicked()
 {
+    finishLogRead();
     go_back();
 }
 
@@ -538,9 +554,12 @@ void store::on_pushButtonSaveUSB_clicked()
             goto umount_and_exit;
         }
 
-        while ( (retval = getLogRead(STORE_DIR, ti, tf, &fpin, outstruct)) >= 0)
+        QElapsedTimer timer;
+        retval = 0;
+        timer.restart();
+        while (retval >= 0)
         {
-            QCoreApplication::processEvents();
+            retval = getLogRead(STORE_DIR, ti, tf, &fpin, outstruct);
             if (retval == 0)
             {
                 if (dumpLogRead(fpout, outstruct) != 0)
@@ -550,7 +569,10 @@ void store::on_pushButtonSaveUSB_clicked()
                     goto umount_and_exit;
                 }
             }
-            this->update();
+            if (timer.elapsed() >= 500) { // 0.5 s
+                QCoreApplication::processEvents();
+                timer.restart();
+            }
         }
         fclose(fpout);
 

@@ -10,6 +10,7 @@ extern int filterHeaderSize;
 
 extern char ** outstruct;
 
+void finishLogRead();
 int initLogRead(const char * logdir, const char * storeFilterFile, time_t ti, time_t tf, FILE ** fpin);
 int getLogRead(const char * logdir, time_t ti, time_t tf, FILE ** fpin, char ** outstruct);
 int dumpLogHeder(FILE * fpout);

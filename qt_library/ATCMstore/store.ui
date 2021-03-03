@@ -100,7 +100,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>PAGE store</string>
+        <string>STORE</string>
        </property>
       </widget>
      </item>
@@ -130,7 +130,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>dd.mm.yy HH:mm:ss</string>
+        <string>yyyy/mm/dd hh:mm:ss</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

@@ -54,7 +54,7 @@ private slots:
     void on_pushButtonFilter_clicked();
 
 private:
-    void showLogHeder();
+    void showLogHeader();
     void showLogRead(char ** outstruct);
 
 private:

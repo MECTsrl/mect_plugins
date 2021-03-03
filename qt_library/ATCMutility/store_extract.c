@@ -308,7 +308,7 @@ int initLogRead(const char * logdir, const char * storeFilterFile, time_t ti, ti
     if (fcount <= 0)
     {
         // no log file
-        LOG_PRINT(error_e, "Cannot found any store file into '%s'\n", logdir);
+        LOG_PRINT(error_e, "Cannot find any store file into '%s'\n", logdir);
         return -1;
     }
 
