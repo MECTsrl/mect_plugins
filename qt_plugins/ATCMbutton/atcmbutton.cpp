@@ -546,29 +546,28 @@ void ATCMbutton::updateData()
                 char svalue[42] = "";
                 register int decimal = getVarDecimalByCtIndex(m_CtIndex); // locks only if it's from another variable
                 sprintf_fromValue(svalue, m_CtIndex, ivalue, decimal, 10);
+                QString Svalue(svalue);
 
-                bool isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
+                bool isPressed = (Svalue == m_statuspressval);
                 if (isCheckable()) {
-                    do_update = (m_status != status) || (m_statusactualval.compare(QString(svalue)) != 0)
+                    do_update = (m_status != status) || (m_statusactualval != Svalue)
                              || (isPressed && ! isChecked()) || (! isPressed && isChecked());
                 } else {
-                    do_update = (m_status != status) || (m_statusactualval.compare(QString(svalue)) != 0)
+                    do_update = (m_status != status) || (m_statusactualval != Svalue)
                              || (isPressed && ! isDown()) || (! isPressed && isDown());
                 }
                 if (do_update) {
                     m_status = status;
-                    m_statusactualval = svalue;
-                    isPressed = (m_statusactualval.compare(m_statuspressval) == 0);
+                    m_statusactualval = Svalue;
+                    isPressed = (m_statusactualval == m_statuspressval);
                     if (isCheckable()) {
-                        disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+                        bool wasBlocked = this->blockSignals(true);
                         setChecked(isPressed);
-                        connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+                        this->blockSignals(wasBlocked);
                     } else {
-                        disconnect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) );
-                        disconnect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) );
+                        bool wasBlocked = this->blockSignals(true);
                         setDown(isPressed);
-                        connect( this, SIGNAL( pressed() ), this, SLOT( pressAction() ) , Qt::DirectConnection);
-                        connect( this, SIGNAL( released() ), this, SLOT( releaseAction() ) , Qt::DirectConnection);
+                        this->blockSignals(wasBlocked);
                     }
                 }
               } break;
@@ -779,9 +778,9 @@ void ATCMbutton::pressFunction()
         // Password Failed
         if (isCheckable())
         {
-            disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+            bool wasBlocked = this->blockSignals(true);
             setChecked(false);
-            connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+            this->blockSignals(wasBlocked);
         }
     }
 #endif
@@ -801,9 +800,9 @@ void ATCMbutton::releaseFunction()
         }
         else
         {
-            disconnect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ));
+            bool wasBlocked = this->blockSignals(true);
             setChecked(true);
-            connect( this, SIGNAL( toggled(bool) ), this, SLOT( toggleAction(bool) ) , Qt::DirectConnection);
+            this->blockSignals(wasBlocked);
         }
     }
     else

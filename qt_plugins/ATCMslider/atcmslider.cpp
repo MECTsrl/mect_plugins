@@ -204,9 +204,9 @@ bool ATCMslider::writeValue(int value)
     setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data());
 
     // do_update
-    disconnect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    bool wasBlocked = this->blockSignals(true);
     this->setValue(m_value);
-    connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+    this->blockSignals(wasBlocked);
 #else
     Q_UNUSED( value );
 #endif
@@ -377,9 +377,9 @@ void ATCMslider::updateData()
     }
 
     if (do_update) {
-        disconnect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+        bool wasBlocked = this->blockSignals(true);
         this->setValue(m_value);
-        connect( this, SIGNAL( valueChanged(int) ), this, SLOT( writeValue(int) ) );
+        this->blockSignals(wasBlocked);
         this->update();
     }
 #endif

@@ -204,9 +204,9 @@ bool ATCMspinbox::writeValue(double value)
     setFormattedVarByCtIndex(m_CtIndex, QString::number(m_value).toAscii().data());
 
     // do_update
-    disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+    bool wasBlocked = this->blockSignals(true);
     this->setValue(m_value);
-    connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+    this->blockSignals(wasBlocked);
 #else
     m_value = (float)value;
     this->setValue(m_value);
@@ -378,9 +378,9 @@ void ATCMspinbox::updateData()
     }
 
     if (do_update) {
-        disconnect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+        bool wasBlocked = this->blockSignals(true);
         this->setValue(m_value);
-        connect( this, SIGNAL( valueChanged(double) ), this, SLOT( writeValue(double) ) );
+        this->blockSignals(wasBlocked);
         this->update();
     }
 #endif

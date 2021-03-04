@@ -522,16 +522,16 @@ bool ATCMcombobox::setcomboValue()
     if (m_status == DONE)
     {
         // (index >= 0) or -1 from findText
-        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        bool wasBlocked = this->blockSignals(true);
         this->setCurrentIndex(index);
-        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        this->blockSignals(wasBlocked);
         return true;
     }
     else if (this->currentIndex() >= 0) // when in ERROR or UNK
     {
-        disconnect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        bool wasBlocked = this->blockSignals(true);
         this->setCurrentIndex(-1);
-        connect( this, SIGNAL( currentIndexChanged(QString) ), this, SLOT( writeValue(QString) ) );
+        this->blockSignals(wasBlocked);
     }
 #else
     /* code to manage a remapping value */
