@@ -107,8 +107,6 @@ void store::reload()
 void store::showLogHeader()
 {
     QStringList list;
-    current_row = 0;
-    current_column = 0;
 
     ui->tableWidget->setColumnCount(filterHeaderSize);
     list.clear();
@@ -118,6 +116,8 @@ void store::showLogHeader()
     ui->tableWidget->setHorizontalHeaderLabels(list);
     ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     ui->tableWidget->update();
+
+    ui->tableWidget->verticalHeader()->hide();
 }
 
 void store::showLogRead(char ** outstruct)
@@ -145,67 +145,48 @@ void store::updateData()
 
     if (status == 1)
     {
+        disableButtons();
+
         status = 0;
-        LOG_PRINT(verbose_e, "Loading '%s' ...\n", _actual_store_);
-        ui->labelFilter->setText(QString("Loading '%1' ...").arg(_actual_store_));
-        ui->labelFilter->repaint();
-        ui->labelName->setText(_actual_store_);
-        ui->labelName->repaint();
-
-        struct tm tmp_ti, tmp_tf;
         fpin = NULL;
-
-        /* extract the time_t from the date string */
-        strptime (StoreInit, "%Y/%m/%d_%H:%M:%S", &tmp_ti);
-        tmp_ti.tm_isdst = 0;
-        ti = mktime(&tmp_ti);
-        strptime (StoreFinal, "%Y/%m/%d_%H:%M:%S", &tmp_tf);
-        tmp_tf.tm_isdst = 0;
-        tf = mktime(&tmp_tf);
-
-        LOG_PRINT(verbose_e, "log from %s to %s\n", StoreInit, StoreFinal);
-
-        char filename[FILENAME_MAX];
-        if (_actual_store_[0] == '\0' || strcmp(_actual_store_, "store") == 0)
         {
-            filename[0] = '\0';
-            _actual_store_[0] = '\0';
+            struct tm tmp_ti, tmp_tf;
+
+            /* extract the time_t from the date string */
+            strptime(StoreInit, "%Y/%m/%d_%H:%M:%S", &tmp_ti);
+            strptime(StoreFinal, "%Y/%m/%d_%H:%M:%S", &tmp_tf);
+            tmp_ti.tm_isdst = 0;
+            tmp_tf.tm_isdst = 0;
+            ti = mktime(&tmp_ti);
+            tf = mktime(&tmp_tf);
         }
-        else if (QFileInfo(_actual_store_).suffix().compare("csv") == 0)
-        {
-            sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
-        }
-        else
-        {
-            sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
-        }
+        ui->labelFilter->setText("Loading ...");
+        ui->labelName->setText(_actual_store_);
+        this->update();
+        QCoreApplication::processEvents();
 
-        if (!QFile::exists(filename))
+        // Hide and Clear Table
+        ui->tableWidget->setVisible(false);
+        clearTable();
         {
-            filename[0] = '\0';
-        }
-        // Clear Table
-        ui->tableWidget->clear();
-        ui->tableWidget->setRowCount(0);
-        ui->tableWidget->setColumnCount(0);
-        //        while(ui->tableWidget->rowCount() > 0)
-        //        {
-        //            ui->tableWidget->removeRow(0);
-        //        }
-        //        while(ui->tableWidget->columnCount() > 0)
-        //        {
-        //            ui->tableWidget->removeColumn(0);
-        //        }
-        ui->tableWidget->update();
-        ui->tableWidget->repaint();
+            char filename[FILENAME_MAX];
 
-        // datein timein storefile
-        if (initLogRead(STORE_DIR, filename, ti, tf, &fpin) != 0)
-        {
-            LOG_PRINT(verbose_e, "no data to show\n");
-            ui->labelFilter->setText(trUtf8("no data to show"));
-            ui->labelFilter->repaint();
-            return;
+            if (_actual_store_[0] == '\0' || strcmp(_actual_store_, "store") == 0) {
+                filename[0] = '\0';
+                _actual_store_[0] = '\0';
+            } else if (QFileInfo(_actual_store_).suffix().compare("csv") == 0) {
+                sprintf(filename, "%s/%s", CUSTOM_STORE_DIR, _actual_store_);
+            } else {
+                sprintf(filename, "%s/%s.csv", CUSTOM_STORE_DIR, _actual_store_);
+            }
+            if (not QFile::exists(filename)) {
+                filename[0] = '\0';
+            }
+
+            if (initLogRead(STORE_DIR, filename, ti, tf, &fpin) != 0){
+                ui->labelFilter->setText(trUtf8("no data to show"));
+                return;
+            }
         }
 
         // intestazione tabella
@@ -221,6 +202,11 @@ void store::updateData()
         if (lineHeight > 0) {
             maxLines = ui->tableWidget->height() / lineHeight;
         }
+        page::updateData(); // update datetime
+        labelDataOra->update();
+        ui->labelFilter->setText(ui->labelFilter->text() + ".");
+        ui->labelFilter->update();
+        QCoreApplication::processEvents();
         timer.restart();
         while (retval >= 0 and lines < maxLines)
         {
@@ -232,35 +218,73 @@ void store::updateData()
                 showLogRead(outstruct);
                 lines++;
             }
-            if (timer.elapsed() >= 500) { // 0.5 s
+            if (timer.elapsed() >= 100) { // 0.5 s
+                page::updateData(); // update datetime
+                labelDataOra->update();
+                ui->labelFilter->setText(ui->labelFilter->text() + ".");
+                ui->labelFilter->update();
                 QCoreApplication::processEvents();
                 timer.restart();
+                // fprintf(stderr, "---- %s\n", ui->labelFilter->text().toLatin1().data());
             }
         }
+        ui->labelFilter->setText(QString("Filter: [%1 - %2]").arg(StoreInit).arg(StoreFinal));
 
-        ui->labelFilter->setText(QString("Filter: [%1 - %2]")
-                                 .arg(StoreInit)
-                                 .arg(StoreFinal));
-        ui->labelFilter->repaint();
-
-#ifdef AUTO_DISABLE_ARROW
-        /* set the arrow button status in funtion of the visible items */
-        ui->pushButtonLeft->setEnabled(current_column > 0);
-        ui->pushButtonRight->setEnabled(current_column < sizeof_filter);
-        ui->pushButtonUp->setEnabled(current_row > 0);
-        ui->pushButtonDown->setEnabled(logfp != NULL || (current_row < ui->tableWidget->rowCount()));
-#endif
+        if (ui->tableWidget->rowCount() > 0) {
+            current_row = 0;
+        } else {
+            current_row = -1;
+        }
+        if (ui->tableWidget->columnCount() > 0) {
+            current_column = (ui->tableWidget->columnCount() > 2) ? 2 : 0;
+        } else {
+            current_column = -1;
+        }
+        if (current_row >= 0) {
+            ui->tableWidget->selectRow(current_row);
+        }
+        ui->tableWidget->setVisible(true);
     }
-#ifdef AUTO_DISABLE_ARROW
-    if (abs(ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, 0)).x()) + ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, ui->tableWidget->columnCount() - 1)).x() + ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row, ui->tableWidget->columnCount() - 1)).width() < ui->tableWidget->width())
-    {
-        ui->pushButtonLeft->setEnabled(false);
-        ui->pushButtonRight->setEnabled(false);
-    }
-#endif
     ui->pushButtonSaveUSB->setEnabled(USBCheck());
-    
-    // moved at the function start: page::updateData();
+    enableDisableButtons();
+}
+
+void store::disableButtons()
+{
+    ui->pushButtonHome->setEnabled(false);
+    ui->pushButtonBack->setEnabled(false);
+    ui->pushButtonFilter->setEnabled(false);
+
+    ui->pushButtonLeft->setEnabled(false);
+    ui->pushButtonRight->setEnabled(false);
+    ui->pushButtonUp->setEnabled(false);
+    ui->pushButtonDown->setEnabled(false);
+}
+
+void store::enableDisableButtons()
+{
+    ui->pushButtonHome->setEnabled(true);
+    ui->pushButtonBack->setEnabled(true);
+    ui->pushButtonFilter->setEnabled(true);
+
+    ui->pushButtonLeft->setEnabled(current_column > 1);
+    ui->pushButtonRight->setEnabled(current_column >= 0 and current_column < ui->tableWidget->columnCount());
+    ui->pushButtonUp->setEnabled(current_row > 0);
+    ui->pushButtonDown->setEnabled(current_row >= 0 and current_row <= ui->tableWidget->rowCount());
+}
+
+void store::clearTable()
+{
+    // widget
+    ui->tableWidget->clear();
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+    ui->tableWidget->horizontalHeader()->reset();
+    ui->tableWidget->setHorizontalHeaderLabels(QStringList());
+
+    // data
+    finishLogRead();
 }
 
 #ifdef TRANSLATION
@@ -286,168 +310,61 @@ store::~store()
 
 void store::on_pushButtonHome_clicked()
 {
-    finishLogRead();
+    clearTable();
     go_home();
 }
 
 void store::on_pushButtonBack_clicked()
 {
-    finishLogRead();
+    clearTable();
     go_back();
 }
 
 void store::on_pushButtonUp_clicked()
 {
     current_row--;
-    current_row = (current_row < ui->tableWidget->rowCount()) ? current_row : ui->tableWidget->rowCount() - 1;
-    current_column = (current_column < ui->tableWidget->columnCount()) ? current_column : ui->tableWidget->columnCount() - 1;
-    current_row = (current_row > 0) ? current_row : 0;
-    current_column = (current_column > 0) ? current_column : 0;
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-
-#ifdef AUTO_DISABLE_ARROW
-    if (current_row > 0)
-    {
-        ui->pushButtonDown->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonUp->setEnabled(false);
-    }
-#endif
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column));
+    ui->tableWidget->selectRow(current_row);
+    enableDisableButtons();
 }
 
 void store::on_pushButtonDown_clicked()
-{
-    LOG_PRINT(verbose_e, "current_row %d rowCount %d\n", current_row, ui->tableWidget->rowCount());
-    
-    if (current_row >= ui->tableWidget->rowCount() - 2)
-    {
-        LOG_PRINT(verbose_e, "Reading a new line current_row %d rowCount %d\n", current_row, ui->tableWidget->rowCount());
-
+{    
+    if (current_row == ui->tableWidget->rowCount()) {
         int retval = 0;
-        while ( (retval = getLogRead(STORE_DIR, ti, tf, &fpin, outstruct)) > 0);
-        if (retval == 0)
-        {
-            showLogRead(outstruct);
-        }
-    }
-    
-    current_row++;
-    current_row = (current_row < ui->tableWidget->rowCount()) ? current_row : ui->tableWidget->rowCount() - 1;
-    current_column = (current_column < ui->tableWidget->columnCount()) ? current_column : ui->tableWidget->columnCount() - 1;
-    current_row = (current_row > 0) ? current_row : 0;
-    current_column = (current_column > 0) ? current_column : 0;
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
 
-#ifdef AUTO_DISABLE_ARROW
-    if (current_row < ui->tableWidget->rowCount() - 1)
-    {
-        ui->pushButtonUp->setEnabled(true);
+        while (retval >= 0) {
+            retval = getLogRead(STORE_DIR, ti, tf, &fpin, outstruct);
+            if (retval == 0) {
+                // una nuova riga
+                showLogRead(outstruct);
+                current_row++;
+                break;
+            }
+        }
+    } else {
+        current_row++;
     }
-    else
-    {
-        ui->pushButtonDown->setEnabled(logfp != NULL);
-    }
-#endif
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column));
+    ui->tableWidget->selectRow(current_row);
+    enableDisableButtons();
 }
 
 void store::on_pushButtonLeft_clicked()
 {
     current_column--;
-    current_row = (current_row < ui->tableWidget->rowCount()) ? current_row : ui->tableWidget->rowCount() - 1;
-    current_column = (current_column < ui->tableWidget->columnCount()) ? current_column : ui->tableWidget->columnCount() - 1;
-    current_row = (current_row > 0) ? current_row : 0;
-    current_column = (current_column > 0) ? current_column : 0;
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-
-#ifdef AUTO_DISABLE_ARROW
-    if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,0)).x() < 0)
-    {
-        ui->pushButtonLeft->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonLeft->setEnabled(false);
-    }
-    if (
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,ui->tableWidget->columnCount() - 1)).x() +
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,ui->tableWidget->columnCount() - 1)).width() - ui->tableWidget->width() > 0
-            )
-    {
-        ui->pushButtonRight->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonRight->setEnabled(false);
-    }
-#endif
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column));
+    ui->tableWidget->selectRow(current_row);
+    enableDisableButtons();
 }
 
 void store::on_pushButtonRight_clicked()
 {
     current_column++;
-    current_row = (current_row < ui->tableWidget->rowCount()) ? current_row : ui->tableWidget->rowCount() - 1;
-    current_column = (current_column < ui->tableWidget->columnCount()) ? current_column : ui->tableWidget->columnCount() - 1;
-    current_row = (current_row > 0) ? current_row : 0;
-    current_column = (current_column > 0) ? current_column : 0;
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-
-#ifdef AUTO_DISABLE_ARROW
-    if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,0)).x() < 0)
-    {
-        ui->pushButtonLeft->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonLeft->setEnabled(false);
-    }
-    if (
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,ui->tableWidget->columnCount() - 1)).x() +
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_row,ui->tableWidget->columnCount() - 1)).width() - ui->tableWidget->width() > 0
-            )
-    {
-        ui->pushButtonRight->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonRight->setEnabled(false);
-    }
-#endif
+    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column));
+    ui->tableWidget->selectRow(current_row);
+    enableDisableButtons();
 }
-
-#if 0
-void store::on_pushButtonPrevious_clicked()
-{
-    if (_file_nb == 0) return;
-    
-    LOG_PRINT(verbose_e, "_current %d\n", _current);
-    if (_current == 0)
-    {
-        _current = _file_nb - 1;
-    }
-    else
-    {
-        _current--;
-    }
-    ui->comboBoxDate->setCurrentIndex(_current);
-}
-
-void store::on_pushButtonNext_clicked()
-{
-    if (_file_nb == 0) return;
-    LOG_PRINT(verbose_e, "_current %d\n", _current);
-    if (_current == _file_nb - 1)
-    {
-        _current = 0;
-    }
-    else
-    {
-        _current++;
-    }
-    ui->comboBoxDate->setCurrentIndex(_current);
-}
-#endif
 
 void store::on_pushButtonSaveUSB_clicked()
 {

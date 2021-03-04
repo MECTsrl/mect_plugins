@@ -32,30 +32,20 @@ private slots:
     void changeEvent(QEvent * event);
 #endif
     void on_pushButtonHome_clicked();
-    
     void on_pushButtonBack_clicked();
-    
     void on_pushButtonUp_clicked();
-    
     void on_pushButtonDown_clicked();
-    
     void on_pushButtonLeft_clicked();
-    
     void on_pushButtonRight_clicked();
-    
     void on_pushButtonSaveUSB_clicked();
-    
-#if 0
-    void on_pushButtonPrevious_clicked();
-    
-    void on_pushButtonNext_clicked();
-#endif
-
     void on_pushButtonFilter_clicked();
 
 private:
+    void clearTable();
     void showLogHeader();
     void showLogRead(char ** outstruct);
+    void disableButtons();
+    void enableDisableButtons();
 
 private:
     Ui::store *ui;
@@ -65,7 +55,6 @@ private:
     char outputfile[FILENAME_MAX];
     time_t ti, tf;
     FILE * fpin;
-private:
 };
 
 #endif // STORE_H

@@ -366,17 +366,6 @@ void recipe::on_pushButtonUp_clicked()
     current_row = (current_row > 0) ? current_row : 0;
     current_column = (current_column > 0) ? current_column : 0;
     ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-
-#ifdef AUTO_DISABLE_ARROW
-    if (current_row > 0)
-    {
-        ui->pushButtonDown->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonUp->setEnabled(false);
-    }
-#endif
 }
 
 void recipe::on_pushButtonDown_clicked()
@@ -387,17 +376,6 @@ void recipe::on_pushButtonDown_clicked()
     current_row = (current_row > 0) ? current_row : 0;
     current_column = (current_column > 0) ? current_column : 0;
     ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-
-#ifdef AUTO_DISABLE_ARROW
-    if (current_row < ui->tableWidget->rowCount() - 1)
-    {
-        ui->pushButtonUp->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonDown->setEnabled(false);
-    }
-#endif
 }
 
 void recipe::on_pushButtonLeft_clicked()
@@ -408,28 +386,6 @@ void recipe::on_pushButtonLeft_clicked()
     current_row = (current_row > 0) ? current_row : 0;
     current_column = (current_column > 0) ? current_column : 0;
     ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-
-#ifdef AUTO_DISABLE_ARROW
-    if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,0)).x() < 0)
-    {
-        ui->pushButtonLeft->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonLeft->setEnabled(false);
-    }
-    if (
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,ui->tableWidget->columnCount() - 1)).x() +
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,ui->tableWidget->columnCount() - 1)).width() - ui->tableWidget->width() > 0
-            )
-    {
-        ui->pushButtonRight->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonRight->setEnabled(false);
-    }
-#endif
 }
 
 void recipe::on_pushButtonRight_clicked()
@@ -440,28 +396,6 @@ void recipe::on_pushButtonRight_clicked()
     current_row = (current_row > 0) ? current_row : 0;
     current_column = (current_column > 0) ? current_column : 0;
     ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column),QAbstractItemView::PositionAtCenter);
-
-#ifdef AUTO_DISABLE_ARROW
-    if (ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,0)).x() < 0)
-    {
-        ui->pushButtonLeft->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonLeft->setEnabled(false);
-    }
-    if (
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,ui->tableWidget->columnCount() - 1)).x() +
-            ui->tableWidget->visualItemRect(ui->tableWidget->item(current_column,ui->tableWidget->columnCount() - 1)).width() - ui->tableWidget->width() > 0
-            )
-    {
-        ui->pushButtonRight->setEnabled(true);
-    }
-    else
-    {
-        ui->pushButtonRight->setEnabled(false);
-    }
-#endif
 }
 
 void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
