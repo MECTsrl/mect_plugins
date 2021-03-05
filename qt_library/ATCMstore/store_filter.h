@@ -9,6 +9,8 @@
 #ifndef STORE_FILTER_H
 #define STORE_FILTER_H
 
+#include <QDateTime>
+
 #include "pagebrowser.h"
 
 namespace Ui {
@@ -30,13 +32,22 @@ private slots:
     void changeEvent(QEvent * event);
 #endif
     void on_pushButtonCancel_clicked();
-
     void on_pushButtonOk_clicked();
-
     void on_pushButtonReset_clicked();
+
+    void on_pushButtonDateStart_clicked();
+
+    void on_pushButtonDateEnd_clicked();
+
+    void on_pushButtonTimeStart_clicked();
+
+    void on_pushButtonTimeEnd_clicked();
 
 private:
     Ui::store_filter *ui;
+
+    QDateTime       filterStart;
+    QDateTime       filterEnd;
 };
 
 #endif // STORE_FILTER_H
