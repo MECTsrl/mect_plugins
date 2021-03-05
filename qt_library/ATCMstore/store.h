@@ -39,6 +39,7 @@ private slots:
     void on_pushButtonRight_clicked();
     void on_pushButtonSaveUSB_clicked();
     void on_pushButtonFilter_clicked();
+    void on_tableWidget_cellClicked(int row, int column);
 
 private:
     void clearTable();
@@ -46,6 +47,7 @@ private:
     void showLogRead(char ** outstruct);
     void disableButtons();
     void enableDisableButtons();
+    void gotoCell(int nRow, int nColumn);
 
 private:
     Ui::store *ui;

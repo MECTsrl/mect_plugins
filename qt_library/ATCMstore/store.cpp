@@ -8,6 +8,9 @@
  */
 #include <QMessageBox>
 #include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QAbstractItemView>
+#include <QItemSelectionModel>
 #include <QStringList>
 #include <QDir>
 #include <errno.h>
@@ -240,8 +243,8 @@ void store::updateData()
         } else {
             current_column = -1;
         }
-        if (current_row >= 0) {
-            ui->tableWidget->selectRow(current_row);
+        if (current_row >= 0 && current_column >= 0) {
+            gotoCell(current_row, current_column);
         }
         ui->tableWidget->setVisible(true);
     }
@@ -261,18 +264,6 @@ void store::disableButtons()
     ui->pushButtonDown->setEnabled(false);
 }
 
-void store::enableDisableButtons()
-{
-    ui->pushButtonHome->setEnabled(true);
-    ui->pushButtonBack->setEnabled(true);
-    ui->pushButtonFilter->setEnabled(true);
-
-    ui->pushButtonLeft->setEnabled(current_column > 1);
-    ui->pushButtonRight->setEnabled(current_column >= 0 and current_column < ui->tableWidget->columnCount());
-    ui->pushButtonUp->setEnabled(current_row > 0);
-    ui->pushButtonDown->setEnabled(current_row >= 0 and current_row <= ui->tableWidget->rowCount());
-}
-
 void store::clearTable()
 {
     // widget
@@ -282,6 +273,7 @@ void store::clearTable()
     ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
     ui->tableWidget->horizontalHeader()->reset();
     ui->tableWidget->setHorizontalHeaderLabels(QStringList());
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     // data
     finishLogRead();
@@ -323,16 +315,16 @@ void store::on_pushButtonBack_clicked()
 void store::on_pushButtonUp_clicked()
 {
     current_row--;
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column));
-    ui->tableWidget->selectRow(current_row);
     enableDisableButtons();
+    gotoCell(current_row, current_column);
 }
 
 void store::on_pushButtonDown_clicked()
 {    
-    if (current_row == ui->tableWidget->rowCount()) {
+    if (current_row == ui->tableWidget->rowCount() - 1) {
         int retval = 0;
-
+        ui->pushButtonDown->setVisible(false);
+        ui->pushButtonDown->update();
         while (retval >= 0) {
             retval = getLogRead(STORE_DIR, ti, tf, &fpin, outstruct);
             if (retval == 0) {
@@ -342,28 +334,27 @@ void store::on_pushButtonDown_clicked()
                 break;
             }
         }
+        ui->pushButtonDown->setVisible(true);
+        ui->pushButtonDown->update();
     } else {
         current_row++;
     }
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column));
-    ui->tableWidget->selectRow(current_row);
     enableDisableButtons();
+    gotoCell(current_row, current_column);
 }
 
 void store::on_pushButtonLeft_clicked()
 {
     current_column--;
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column));
-    ui->tableWidget->selectRow(current_row);
     enableDisableButtons();
+    gotoCell(current_row, current_column);
 }
 
 void store::on_pushButtonRight_clicked()
 {
     current_column++;
-    ui->tableWidget->scrollToItem(ui->tableWidget->item(current_row,current_column));
-    ui->tableWidget->selectRow(current_row);
     enableDisableButtons();
+    gotoCell(current_row, current_column);
 }
 
 void store::on_pushButtonSaveUSB_clicked()
@@ -531,3 +522,43 @@ void store::on_pushButtonFilter_clicked()
 {
     goto_page("store_filter", false);
 }
+
+void store::enableDisableButtons()
+{
+    ui->pushButtonHome->setEnabled(true);
+    ui->pushButtonBack->setEnabled(true);
+    ui->pushButtonFilter->setEnabled(true);
+    // Check position
+    current_column = current_column < 0 ? 0 : current_column;
+    current_column = current_column > ui->tableWidget->columnCount() - 1 ? ui->tableWidget->columnCount() - 1 : current_column;
+    current_row = current_row < 0 ? 0 : current_row;
+    current_row = current_row > ui->tableWidget->rowCount() - 1 ? ui->tableWidget->rowCount() - 1 : current_row;
+    // Movement Buttons
+    ui->pushButtonLeft->setEnabled(current_column > 0);
+    ui->pushButtonRight->setEnabled(current_column < ui->tableWidget->columnCount() - 1);
+    ui->pushButtonUp->setEnabled(current_row > 0);
+    ui->pushButtonDown->setEnabled(current_row >= 0 and current_row <= ui->tableWidget->rowCount());
+}
+
+void store::on_tableWidget_cellClicked(int row, int column)
+{
+    current_row = row;
+    current_column = column;
+    gotoCell(current_row, current_column);
+}
+
+void store::gotoCell(int nRow, int nColumn)
+{
+    // Deselect previous cell
+    ui->tableWidget->selectionModel()->clearSelection();
+    if (ui->tableWidget->rowCount() &&
+        ui->tableWidget->columnCount() &&
+        nRow >= 0 && nRow < ui->tableWidget->rowCount() &&
+        nColumn >= 0 && nColumn < ui->tableWidget->columnCount())  {
+        // Goto Cell
+        ui->tableWidget->scrollToItem(ui->tableWidget->item(nRow, nColumn));
+        // Select Cell
+        ui->tableWidget->selectionModel()->select(ui->tableWidget->model()->index(nRow, nColumn), QItemSelectionModel::ClearAndSelect);
+    }
+}
+
