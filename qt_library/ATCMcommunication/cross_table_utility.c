@@ -1262,7 +1262,6 @@ void writeVarQueuedByCtIndex(void)
 
         while (queue_elem != NULL)
         {
-#if 0
             if (prepareWriteVarByCtIndex(queue_elem->ctIndex, queue_elem->value, 1) == BUSY)
             {
                 // BUSY: rimane in coda
@@ -1291,27 +1290,6 @@ void writeVarQueuedByCtIndex(void)
                     queue_elem = queue_prev->next;
                 }
             }
-#else
-            LOG_PRINT(warning_e, "Ignoring queued write %d %X\n", queue_elem->ctIndex, queue_elem->value);
-            if (queue_head == queue_elem)
-            {
-                // toglie dalla testa
-                queue_head = queue_elem->next;
-                if (queue_head == NULL)
-                {
-                    queue_tail = NULL;
-                }
-                free(queue_elem);
-                queue_elem = queue_head;
-            }
-            else
-            {
-                // toglie da in mezzo
-                queue_prev->next = queue_elem->next;
-                free(queue_elem);
-                queue_elem = queue_prev->next;
-            }
-#endif
         }
     }
     pthread_mutex_unlock(&write_queue_mutex);
@@ -1381,19 +1359,22 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
                /* marked               all writes             prepare            empty */
             if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
             {
-#if 0
-                if (execwrite) {
-                    LOG_PRINT(warning_e, "busy variable(W) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
-                } else {
-                    LOG_PRINT(warning_e, "busy variable(P) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                // register char dataStatus = pIODataStatusAreaI[ctIndex];
+                register u_int16_t syncroStatus = pIOSyncroAreaI[i];
+
+                if (syncroStatus == 0) { // QUEUE_EMPTY
+                    LOG_PRINT(warning_e, "overwriting variable #%d %s\n", ctIndex, varNameArray[ctIndex].tag);
+                    already_present = 1; /* both execwrite and ! execwrite */
+                    break;
+                } else { // QUEUE_BUSY_WRITE QUEUE_BUSY_READ
+                    if (execwrite) {
+                        LOG_PRINT(warning_e, "busy variable(doWrite) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                    } else {
+                        LOG_PRINT(warning_e, "busy variable(addWrite) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
+                    }
+                    retval = BUSY;
+                    goto exit_function;
                 }
-                retval = BUSY;
-                goto exit_function;
-#else
-                LOG_PRINT(warning_e, "overwriting variable #%d %s\n", ctIndex, varNameArray[ctIndex].tag);
-                already_present = 1; /* both execwrite and ! execwrite */
-                break;
-#endif
             }
         }
 

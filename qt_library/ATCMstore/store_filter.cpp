@@ -10,6 +10,9 @@
 #include <QDate>
 #include <QTime>
 
+#include "calendar.h"
+#include "timepopup.h"
+
 #include "app_logprint.h"
 #include "store_filter.h"
 #include "ui_store_filter.h"
