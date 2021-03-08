@@ -9,6 +9,7 @@
 
 #include <QDate>
 #include <QTime>
+#include <QMessageBox>
 
 #include "calendar.h"
 #include "timepopup.h"
@@ -29,6 +30,7 @@
 
 #define TIME_MASK "HH:mm:ss"
 #define DATE_MASK "yyyy-MM-dd"
+#define DATETIME_MASK "yyyy/MM/dd_HH:mm:ss"
 
 
 /**
@@ -69,18 +71,29 @@ store_filter::store_filter(QWidget *parent) :
  */
 void store_filter::reload()
 {
+    fprintf(stderr, "store_filter: Store Date Start: [%s] Date End: [%s]\n",  StoreInit, StoreFinal);
     // Init dei tempi di riferimento
-    filterStart = QDateTime::fromString(QString(StoreInit), "yyyy/MM/dd_HH:mm:ss");
-    filterEnd = QDateTime::fromString(QString(StoreFinal), "yyyy/MM/dd_HH:mm:ss");
+    filterStart = QDateTime::fromString(QString(StoreInit), "yyyy/MM/dd_hh:mm:ss");     // Caution: "yyyy/MM/dd_HH:mm:ss" is only for .toSting()...
+    filterEnd = QDateTime::fromString(QString(StoreFinal), "yyyy/MM/dd_hh:mm:ss");
 
-    if (not filterStart.isValid())      filterStart = QDateTime(QDate::currentDate(), QTime(0,0,0));
-    if (not filterEnd.isValid())        filterEnd   = QDateTime(QDate::currentDate(), QTime(23,59,0));
+    // Check Dates
+    if (not filterStart.isValid())  {
+        filterStart = QDateTime(QDate::currentDate(), QTime(0,0,0));
+    }
+    if (not filterEnd.isValid())  {
+        filterEnd = QDateTime(QDate::currentDate(), QTime(23,59,0));
+    }
 
     ui->pushButtonTimeStart->setText(filterStart.time().toString(TIME_MASK));
     ui->pushButtonDateStart->setText(filterStart.date().toString(DATE_MASK));
 
     ui->pushButtonTimeEnd->setText(filterEnd.time().toString(TIME_MASK));
     ui->pushButtonDateEnd->setText(filterEnd.date().toString(DATE_MASK));
+    fprintf(stderr, "store_filter: Store Date Start: [%s] Time Start [%s] -  Date End: [%s] Time End [%s]\n",
+            ui->pushButtonDateStart->text().toLatin1().data(),
+            ui->pushButtonTimeStart->text().toLatin1().data(),
+            ui->pushButtonDateEnd->text().toLatin1().data(),
+            ui->pushButtonTimeStart->text().toLatin1().data());
 }
 
 
@@ -127,29 +140,25 @@ void store_filter::on_pushButtonCancel_clicked()
 
 void store_filter::on_pushButtonOk_clicked()
 {
-//    sprintf(StoreInit, "%d/%02d/%02d_%02d:%02d:%02d",
-//            ui->spinBoxYearIn->value(),
-//            ui->spinBoxMonthIn->value(),
-//            ui->spinBoxDayIn->value(),
-//            ui->spinBoxHoursIn->value(),
-//            ui->spinBoxMinutesIn->value(),
-//            ui->spinBoxSecondsIn->value()
-//            );
-//    sprintf(StoreFinal, "%d/%02d/%02d_%02d:%02d:%02d",
-//            ui->spinBoxYearFin->value(),
-//            ui->spinBoxMonthFin->value(),
-//            ui->spinBoxDayFin->value(),
-//            ui->spinBoxHoursFin->value(),
-//            ui->spinBoxMinutesFin->value(),
-//            ui->spinBoxSecondsFin->value()
-//            );
-    goto_page("store",false);
+    // Check Date Range
+    if (not filterStart.isValid() ||
+        not filterEnd.isValid() ||
+        filterStart > filterEnd)  {
+        // Invalid Date Range
+        QMessageBox::warning(this, trUtf8("Date Filter Range"), trUtf8("Invalid Date/Time Range!"));
+
+    }
+    else  {
+        strcpy(StoreInit, filterStart.toString(DATETIME_MASK).toAscii().data());
+        strcpy(StoreFinal, filterEnd.toString(DATETIME_MASK).toAscii().data());
+        goto_page("store",false);
+    }
 }
 
 void store_filter::on_pushButtonReset_clicked()
 {
-    strcpy(StoreInit, QDateTime(QDate::currentDate(), QTime(0,0,0)).toString("yyyy/MM/dd_HH:mm:ss").toAscii().data());
-    strcpy(StoreFinal, QDateTime(QDate::currentDate(), QTime(23,59,59)).toString("yyyy/MM/dd_HH:mm:ss").toAscii().data());
+    strcpy(StoreInit, QDateTime(QDate::currentDate(), QTime(0,0,0)).toString(DATETIME_MASK).toAscii().data());
+    strcpy(StoreFinal, QDateTime(QDate::currentDate(), QTime(23,59,59)).toString(DATETIME_MASK).toAscii().data());
     reload();
 }
 
@@ -157,12 +166,15 @@ void store_filter::on_pushButtonDateStart_clicked()
 {
     if (calendarpopup) {
         QDate d = filterStart.date();
+        QTime t = filterStart.time();
         if (d.isValid()) {
             calendarpopup->setDate(d);
             calendarpopup->setModal(true);
             calendarpopup->movePosition(ui->pushButtonDateStart->geometry().x(),ui->pushButtonDateStart->geometry().y());
             if (calendarpopup->exec() == QDialog::Accepted) {
-                ui->pushButtonDateStart->setText(calendarpopup->getDate().toString(DATE_MASK));
+                d = calendarpopup->getDate();
+                ui->pushButtonDateStart->setText(d.toString(DATE_MASK));
+                filterStart = QDateTime(d, t);
             }
         }
     }
@@ -172,12 +184,15 @@ void store_filter::on_pushButtonDateEnd_clicked()
 {
     if (calendarpopup) {
         QDate d = filterEnd.date();
+        QTime t = filterEnd.time();
         if (d.isValid()) {
             calendarpopup->setDate(d);
             calendarpopup->setModal(true);
             calendarpopup->movePosition(ui->pushButtonDateEnd->geometry().x(),ui->pushButtonDateEnd->geometry().y());
             if (calendarpopup->exec() == QDialog::Accepted) {
-                ui->pushButtonDateEnd->setText(calendarpopup->getDate().toString(DATE_MASK));
+                d = calendarpopup->getDate();
+                ui->pushButtonDateEnd->setText(d.toString(DATE_MASK));
+                filterEnd = QDateTime(d, t);
             }
         }
     }
@@ -186,14 +201,16 @@ void store_filter::on_pushButtonDateEnd_clicked()
 void store_filter::on_pushButtonTimeStart_clicked()
 {
     if (timepopup) {
+        QDate d = filterStart.date();
         QTime t = filterStart.time();
         if (t.isValid()) {
             timepopup->setTime(t);
             timepopup->setModal(true);
             timepopup->movePosition(ui->pushButtonTimeStart->geometry().x(),ui->pushButtonTimeStart->geometry().y());
             if (timepopup->exec() == QDialog::Accepted) {
-                // ui->timeEdit->setTime(timepop->getTime());
-                ui->pushButtonTimeStart->setText(timepopup->getTime().toString(TIME_MASK));
+                t = timepopup->getTime();
+                ui->pushButtonTimeStart->setText(t.toString(TIME_MASK));
+                filterStart = QDateTime(d, t);
             }
         }
     }
@@ -202,14 +219,16 @@ void store_filter::on_pushButtonTimeStart_clicked()
 void store_filter::on_pushButtonTimeEnd_clicked()
 {
     if (timepopup) {
+        QDate d = filterEnd.date();
         QTime t = filterEnd.time();
         if (t.isValid()) {
             timepopup->setTime(t);
             timepopup->setModal(true);
             timepopup->movePosition(ui->pushButtonTimeEnd->geometry().x(),ui->pushButtonTimeEnd->geometry().y());
             if (timepopup->exec() == QDialog::Accepted) {
-                // ui->timeEdit->setTime(timepop->getTime());
-                ui->pushButtonTimeEnd->setText(timepopup->getTime().toString(TIME_MASK));
+                t = timepopup->getTime();
+                ui->pushButtonTimeEnd->setText(t.toString(TIME_MASK));
+                filterEnd = QDateTime(d, t);
             }
         }
     }

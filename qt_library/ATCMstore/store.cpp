@@ -149,7 +149,6 @@ void store::updateData()
     if (status == 1)
     {
         disableButtons();
-
         status = 0;
         fpin = NULL;
         {
