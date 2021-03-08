@@ -71,7 +71,6 @@ store_filter::store_filter(QWidget *parent) :
  */
 void store_filter::reload()
 {
-    fprintf(stderr, "store_filter: Store Date Start: [%s] Date End: [%s]\n",  StoreInit, StoreFinal);
     // Init dei tempi di riferimento
     filterStart = QDateTime::fromString(QString(StoreInit), "yyyy/MM/dd_hh:mm:ss");     // Caution: "yyyy/MM/dd_HH:mm:ss" is only for .toSting()...
     filterEnd = QDateTime::fromString(QString(StoreFinal), "yyyy/MM/dd_hh:mm:ss");
@@ -89,11 +88,6 @@ void store_filter::reload()
 
     ui->pushButtonTimeEnd->setText(filterEnd.time().toString(TIME_MASK));
     ui->pushButtonDateEnd->setText(filterEnd.date().toString(DATE_MASK));
-    fprintf(stderr, "store_filter: Store Date Start: [%s] Time Start [%s] -  Date End: [%s] Time End [%s]\n",
-            ui->pushButtonDateStart->text().toLatin1().data(),
-            ui->pushButtonTimeStart->text().toLatin1().data(),
-            ui->pushButtonDateEnd->text().toLatin1().data(),
-            ui->pushButtonTimeStart->text().toLatin1().data());
 }
 
 
