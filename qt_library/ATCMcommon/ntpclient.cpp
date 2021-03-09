@@ -16,7 +16,7 @@
 NtpClient * ntpclient = NULL;
 
 NtpClient::NtpClient(QObject *parent) :
-    QObject(parent)
+    QThread(parent)
 {
     QSettings  *objSettings = new QSettings(NTP_FILE, QSettings::IniFormat);
     objSettings->beginGroup("NTP-Server");
@@ -35,6 +35,7 @@ NtpClient::NtpClient(QObject *parent) :
         requestNTPSync();
         ntpSyncTimer.start();
     }
+    setTimeChanged(false);
 }
 
 QString     NtpClient::getNtpServer()
@@ -55,6 +56,16 @@ int       NtpClient::getOffset_h()
 int         NtpClient::getPeriod_h()
 {
     return ntpPeriod;
+}
+
+void        NtpClient::setTimeChanged(bool timeChanged)
+{
+    this->timeChanged = timeChanged;
+}
+
+bool        NtpClient::getTimeChanged()
+{
+    return timeChanged;
 }
 
 void        NtpClient::setNtpParams(const QString &ntpServer, int ntpTimeout_s, int ntpOffset_h, int ntpPeriod_h )
@@ -91,6 +102,7 @@ void        NtpClient::requestNTPSync()
 {
     newDateTime = invalidDateTime;
     doSync = true;
+    ntpSem.release(1);
 }
 
 void        NtpClient::requestDateTimeChange(QDateTime newTime)
@@ -98,6 +110,7 @@ void        NtpClient::requestDateTimeChange(QDateTime newTime)
 {
     newDateTime = newTime;
     doSync = false;
+    ntpSem.release(1);
 }
 
 bool        NtpClient::ntpSyncOrChangeRequested()
@@ -159,8 +172,11 @@ void        NtpClient::doSyncOrChange()
             fflush(stderr);
             goto endManual;
         }
+
         // Update RTC from system
+        mutex.lock();
         system("/sbin/hwclock -wu");
+        mutex.unlock();
         manualOK = true;
     endManual:
         newDateTime = invalidDateTime;
@@ -444,7 +460,9 @@ bool NtpClient::ntpClientProcedure()
         /*
          * salvataggio in RTC
          */
+        mutex.lock();
         system("hwclock --systohc");
+        mutex.unlock();
     }
 
 exit_function:
@@ -454,4 +472,28 @@ exit_function:
         theUdpSocket = -1;
     }
     return fRes;
+}
+
+QDateTime NtpClient::getTimeBefore()
+{
+    return timeBeforeChange;
+}
+
+void NtpClient::run()
+{
+    while (1) {
+        if(ntpPeriodms > 0 && ntpSyncTimer.elapsed() > ntpPeriodms) {
+            //check for NTP autosync
+            doSync = true;
+            ntpSem.release(1);
+        }
+        if (ntpSem.tryAcquire(1, ntpPeriodms)) {
+            // resource grabbed, do NTP things
+            timeBeforeChange = QDateTime::currentDateTime();
+            doSyncOrChange();
+            setTimeChanged(true);
+        } else {
+            // cant grab resource;
+        }
+    }
 }

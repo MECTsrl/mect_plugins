@@ -35,6 +35,7 @@
 
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QMutex>
 
 #define UNCHANGED '\0'
 #define CHANGED   '\1'
@@ -46,7 +47,6 @@ pthread_mutex_t alarmevents_list_mutex = PTHREAD_MUTEX_INITIALIZER;
 int removeTheOldestLog(const char * dir, FILE *current);
 
 // Variabili introdotte per gestire il cambio di tempo via NTP Server o in manuale
-bool            timeChanged = false;                    // Rilevato un cambio di data e ora genera una riga vuota nei log per segnare il cambio di tempo
 QDateTime       lastDumpTime = QDateTime();             // Ultimo dump di Logger effettuato (a parte riga vuota di marcatura cambio di Tempo)
 #if 0
 /**
@@ -318,16 +318,19 @@ void Logger::run()
     sem_init(&theLoggingSem, 0, 0);
 
     logger_start = false;
+    QDateTime timeBefore;
+    QDateTime timeAfter ;
+    ntpclient->start();
 
     while (1)        
     {
-        timeChanged = false;
         // Check ntp sync requested
-        if (ntpclient->ntpSyncOrChangeRequested())  {
-            QDateTime timeBefore = QDateTime::currentDateTime();
-            ntpclient->doSyncOrChange();
-            QDateTime timeAfter = QDateTime::currentDateTime();
+        if(ntpclient->getTimeChanged() && logger_start) {
+            //gestione chiusura file
+            ntpclient->setTimeChanged(false);
             // Verifica sull'entità della correzione
+            timeBefore = ntpclient->getTimeBefore();
+            timeAfter = QDateTime::currentDateTime();
             if (
                 (lastDumpTime.isValid() && timeAfter < lastDumpTime) ||     // Nuova Ora precedente all'ultima scrittura di Log
                 timeAfter.daysTo(timeBefore) != 0                           // Nuova Ora in un giorno differente
@@ -342,15 +345,15 @@ void Logger::run()
             }
             time(&Now);
             timeinfo = localtime (&Now);
+
             if (not openStorageFile()) {
                 LOG_PRINT(error_e, "cannot open the store\n");
                 logger_shot = false;
                 return;
             }
-            timeChanged = true;
             dumpStorage();
-            timeChanged = false;
         }
+
         if (recompute_abstime) {
             recompute_abstime = false;
             clock_gettime(CLOCK_REALTIME, &abstime); // sem_timedwait
@@ -1184,12 +1187,13 @@ bool Logger::dumpStorage()
 #ifdef ENABLE_TREND
     timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
 #endif
-
-    if (timeChanged) {
+    if (ntpclient->getTimeChanged()) {
+        QMutex mutex;
+        mutex.lock();
         for (int i = 0; i < (store_elem_nb_S + store_elem_nb_F + store_elem_nb_V + store_elem_nb_X); i++) {
             fprintf(storefp, "; -");
         }
-
+        mutex.unlock();
     } else {
 
         if (logger_shot || (store_elem_nb_S > 0  && (counterS * _period_msec) >= (LogPeriodSecS * 1000)))

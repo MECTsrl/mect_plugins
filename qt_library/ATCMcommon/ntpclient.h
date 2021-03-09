@@ -2,19 +2,21 @@
 #define NTPCLIENT_H
 
 #include "hmi_logger.h"
+#include <QThread>
+#include <QMutex>
 #include <QSettings>
 #include <QCoreApplication>
 #include <QObject>
 #include <QString>
 #include <QElapsedTimer>
 #include <QDateTime>
+#include <QSemaphore>
 #include <sys/types.h>
 
 #define THE_NTP_MAX_PERIOD_H    2982       // Massimo numero di ore convertite in ms per Int32
 #define THE_NTP_SERVER     "tempo.ien.it"
 
-
-class NtpClient : public QObject
+class NtpClient : public QThread
 {
     Q_OBJECT
     friend class Logger;
@@ -38,6 +40,10 @@ public slots:
 protected:
     bool            ntpSyncOrChangeRequested();     // check if a Clock change is requested
     void            doSyncOrChange();               // do a Clock change
+    virtual void run();
+    bool        getTimeChanged();
+    void        setTimeChanged(bool timeChanged);
+    QDateTime   getTimeBefore();
 
 private:
     int64_t         getTimestamp();
@@ -55,6 +61,11 @@ private:
     int             ntpOffset;
     int             ntpPeriod;
     qint64          ntpPeriodms;
+
+    bool            timeChanged;            // Rilevato un cambio di data e ora genera una riga vuota nei log per segnare il cambio di tempo
+    QDateTime       timeBeforeChange;
+    QMutex          mutex;
+    QSemaphore      ntpSem;
 
 };
 
