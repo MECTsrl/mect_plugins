@@ -250,7 +250,6 @@ private:
     varTypes                m_vtAlarmVarType;       // Tipo della variabile SX in un espressione Allarme/Evento
     int                     m_nAlarmDecimals;       // Numero di Decimali della Variabile SX di un Allarme
     bool                    m_fSkipLine;            // Se vero non devono essere fatti controlli sulla riga in uscita
-    bool                    m_fMultiSelect;         // Flag di stato Selezione multipla
     bool                    m_fMultiEdit;           // Flag per abilitare il MultiEdit di righe (da CheckBox)
     QList<int>              lstEditableFields;      // Lista delle colonne editabili in MultiLineEdit
     // Gestione nodi su MPNC

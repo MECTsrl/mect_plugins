@@ -139,7 +139,7 @@ ctedit::ctedit(QWidget *parent) :
     lstMPNE100105.clear();              // Lista delle posizioni di un modulo MPNE100105 (dovrebbe al più contenere 1 solo Item)
     // Colore Frame Editing
     colorNormalEdit = ui->fraEdit->palette().background().color();
-    szColorNormalEdit =QString::fromLatin1("color: rgb(%1, %2, %3);")
+    szColorNormalEdit = QString::fromLatin1("color: rgb(%1, %2, %3);")
             .arg(colorNormalEdit.red()) .arg(colorNormalEdit.green()) .arg(colorNormalEdit.blue());
     //------------------------
     // Riempimento liste
@@ -405,7 +405,6 @@ ctedit::ctedit(QWidget *parent) :
     theNodesNumber = 0;
     thePlcVarsNumber = 0;
     theBlocksNumber = 0;
-    m_fMultiSelect = false;
     m_fMultiEdit = false;
     ui->lblEditableFields->setVisible(false);
     ui->lstEditableFields->setVisible(false);
@@ -760,7 +759,6 @@ bool    ctedit::selectCTFile(QString szFileCT)
         // Cursore Normale
         this->setCursor(Qt::ArrowCursor);
         // Abilita interfaccia
-        m_fMultiSelect = false;
         enableInterface();
         // Controllo errori globali su Crosstable
         nErr = globalChecks();
@@ -790,7 +788,6 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
     this->setCursor(Qt::WaitCursor);
     // Reset Show Flag && Current Row Index
     m_fShowAllRows = true;
-    m_fMultiSelect = false;
     lstSelectedRows.clear();
     m_nGridRow = -1;
     // Opening File
@@ -1101,6 +1098,7 @@ bool ctedit::values2Iface(QStringList &lstRecValues, int nRow)
     }
     // Abilitazione campi
     enableFields();
+    ui->fraEdit->update();
     return true;
 }
 bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
@@ -1384,7 +1382,6 @@ void ctedit::on_cmdBlocchi_clicked()
         warnUser(this, szMectTitle, m_szMsg);
     }
     // Refresh abilitazioni interfaccia
-    m_fMultiSelect = false;
     enableInterface();
 }
 
@@ -1584,6 +1581,7 @@ void ctedit::enableFields()
     int     nType = ui->cboType->currentIndex();
     // bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
+    qDebug("enableFields(): Row: [%d] MultiLine: [%d] colUpdate: %d", m_nGridRow + 1, m_fMultiEdit, lstEditableFields.indexOf(colUpdate));
     // Disabilita tutti i campi
     ui->cboPriority->setEnabled(false);
     ui->cboUpdate->setEnabled(false);
@@ -1604,10 +1602,9 @@ void ctedit::enableFields()
     if (m_nGridRow >= MIN_DIAG -1)  {
         bool fDecimal = false;
         if (nProtocol != -1)  {
-            // Update Sempre abilitato
-            ui->cboUpdate->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
+            ui->cboUpdate->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colUpdate) >= 0): true);
             ui->txtName->setEnabled(not m_fMultiEdit);
-            ui->txtComment->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colComment) >= 0);
+            ui->txtComment->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colComment) >= 0) : true);
         }
         // Abilitazione dei Decimal per Input Analogiche se abilitati
         if (panelConfig.analogIN > 0 && panelConfig.analogINrowCT > 0)  {
@@ -1621,19 +1618,19 @@ void ctedit::enableFields()
                 fDecimal = true;
             }
         }
-        fDecimal = not m_fMultiEdit ? fDecimal : (fDecimal && lstEditableFields.indexOf(colDecimal) >= 0);
+        fDecimal = m_fMultiEdit ? (fDecimal && (lstEditableFields.indexOf(colDecimal) >= 0)) : fDecimal;
         ui->txtDecimal->setEnabled(fDecimal);
     }
     else  {
         // Campi comuni (Edit Singolo o campo abilitato in MultiEdit
-        ui->cboPriority->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colPriority) >= 0);
-        ui->cboUpdate->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colUpdate) >= 0);
+        ui->cboPriority->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colPriority) >= 0) : true);
+        ui->cboUpdate->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colUpdate) >= 0) : true);
         ui->txtName->setEnabled(not m_fMultiEdit);  // Nome abilitato solo se no selezione multipla
-        ui->cboType->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colType) >= 0);
-        ui->txtDecimal->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colDecimal) >= 0);
-        ui->cboProtocol->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colProtocol) >= 0);
-        ui->txtComment->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colComment) >= 0);
-        ui->cboBehavior->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colBehavior) >= 0);
+        ui->cboType->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colType) >= 0) : true);
+        ui->txtDecimal->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colDecimal) >= 0) : true);
+        ui->cboProtocol->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colProtocol) >= 0) : true);
+        ui->txtComment->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colComment) >= 0) : true);
+        ui->cboBehavior->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colBehavior) >= 0) : true);
         // Abilitazione dei campi in funzione del Tipo
         // Tipo BIT -> Blocca decimali
         if (nType == BIT)  {
@@ -1654,18 +1651,18 @@ void ctedit::enableFields()
         getFirstPortFromProtocol(nProtocol, nDefPort, nTotalPorts);
         // Abilitazione dei campi se non PLC
         if (nProtocol != PLC)  {
-            ui->txtNode->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colNodeID) >= 0);
+            ui->txtNode->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colNodeID) >= 0) : true);
             // ui->txtRegister->setEnabled(! fMultiEdit);
-            ui->txtRegister->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colRegister) >= 0);
+            ui->txtRegister->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colRegister) >= 0) : true);
             // IP abilitato solo per protocolli Client TCP, TCPRTU
             if (nProtocol == TCP || nProtocol == TCPRTU)  {
-                ui->txtIP->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colIP) >= 0);
+                ui->txtIP->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colIP) >= 0) : true);
             }
             // Porta Abilitata per tutti i protocolli di Network
             // TCP, TCPRTU, TCP_SRV, TCPRTU_SRV
             if (nProtocol == TCP || nProtocol == TCPRTU ||
                 nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV    )  {
-                ui->txtPort->setEnabled(not m_fMultiEdit ? true : lstEditableFields.indexOf(colPort) >= 0);
+                ui->txtPort->setEnabled(m_fMultiEdit ? (lstEditableFields.indexOf(colPort) >= 0) : true);
             }
         }
         // Visibilità Combo Port per Protocolli Seriali di ogni tipo
@@ -1838,134 +1835,142 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
 void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSelection & deselected)
 // Slot attivato ad ogni cambio di riga in Table CT
 {
-    int         nRow = -1;
     int         nItem = -1;
-    int         nLastSelectedRow = -1;
+    int         nNewSelectedRow = -1;       // Ultima riga selezionata in ordine di tempo e non di posizione
     QStringList lstFields;
     bool        fRes = true;
+    int         lastUsedInRange = -1;       // Ultima riga attiva nel gruppo delle selezionate
 
-    // Recupera righe selezionate
-    QModelIndexList selection = ui->tblCT->selectionModel()->selectedRows();
+//    // Recupera righe selezionate
+    QModelIndexList selectedRows = ui->tblCT->selectionModel()->selectedRows();
 
     if (ui->tblCT->rowCount() == 0)  {
         return;
     }
-    if (selected.count())  {
-        int nCount = selected.indexes().count();
-        nLastSelectedRow = selected.indexes().at(nCount - 1).row();
-    }
-    else  {
-        // Nessuna riga selezionata, prova con l'ultima di un Multiselect
-        if (lstSelectedRows.count() > 0)  {
-            nLastSelectedRow = lstSelectedRows.last();
-        }
-    }
-    qDebug("tableCTItemChanged(): Rows: %d Selected Items: %d Deselected Items: %d - Last Selected Row: %d",
-           ui->tblCT->rowCount(), selected.count(), deselected.count(), nLastSelectedRow + 1);
     // Il cambio riga corrente è dovuto a operazioni di tipo cut-paste.
     // Per evitare duplicazioni accidentali di righe ripulisce il buffer di editing ed esce
     if (m_fCutOrPaste)  {
         clearEntryForm();
         ui->fraEdit->setEnabled(false);
         ui->cboSections->setCurrentIndex(-1);
-        m_fMultiSelect = false;
+        qDebug("tableCTItemChanged(): CutOrPaste, Exit");
         return;
     }
-    // Si sta uscendo dalla selezione di una riga sola
-    if (deselected.count() == 1 && not m_fMultiSelect && not m_fMultiEdit)  {
-        // Considera sempre la prima riga della lista
-        nRow = deselected.indexes().at(0).row();
+    //-------------------------------------------------------------------------
+    // Determinazione dell'ultima riga selezionata (in ordine di tempo e non di posizione)
+    //-------------------------------------------------------------------------
+    if (selectedRows.count())  {
+        int nCount = selectedRows.count();
+        nCount = selectedRows.at(nCount - 1).row();
+        if (nCount >= 0 && nCount < lstCTRecords.count())  {
+            nNewSelectedRow = nCount;
+        }
+    }
+    qDebug("tableCTItemChanged(): Enter with Selected Rows: %d Selected Items: %d Deselected Items: %d - Last Selected Row: %d",
+           selectedRows.count(), selected.count(), deselected.count(), nNewSelectedRow + 1);
+    //-------------------------------------------------------------------------
+    // Si sta uscendo dalla selezione di una riga sola Editing di una riga sola
+    //-------------------------------------------------------------------------
+    if (deselected.count() == 1 && not m_fMultiEdit && lstSelectedRows.count() == 1)  {
+        // Considera sempre la prima riga della lista dei Deselezionati
+        int nLastRow = deselected.indexes().at(0).row();
         // Se la riga corrente è stata modificata, salva il contenuto
-        if (nRow >= 0 && nRow < lstCTRecords.count())  {
+        if (nLastRow >= 0 && nLastRow < lstCTRecords.count())  {
             // Il contenuto viene aggiornato solo se la linea risulta modificata e il form non è vuoto
-            fRes = updateRow(nRow, false);
+            fRes = updateRow(nLastRow, false);
             // Cambio riga Ko
             if (not fRes)    {
                 // disconnect segnale per evitare ricorsione
                 bool wasBlocked = ui->tblCT->selectionModel()->blockSignals(true);
                 // Cambia Selezione (ritorna a riga precedente)
-                ui->tblCT->selectRow(nRow);
-                m_nGridRow = nRow;
+                ui->tblCT->selectRow(nLastRow);
+                m_nGridRow = nLastRow;
                 // Riconnette slot gestione
                 ui->tblCT->selectionModel()->blockSignals(wasBlocked);
                 return;
             }
         }
     }
+    //-------------------------------------------------------------------------
     // Nessuna Nuova Riga selezionata
-    m_fMultiSelect = false;
+    //-------------------------------------------------------------------------
     clearStatusMessage();
     clearEntryForm();
-    if (selection.count() == 0)  {
+    if (selectedRows.count() == 0)  {
         lstSelectedRows.clear();
         qDebug("tableCTItemChanged(): Clear Selection");
     }
+    //-------------------------------------------------------------------------
     // Una sola riga selezionata
-    else if (selection.count() == 1)  {
+    //-------------------------------------------------------------------------
+    else if (selectedRows.count() == 1)  {
         lstSelectedRows.clear();
-        nRow = selection.at(0).row();
-        lstSelectedRows.append(nRow);
-        // qDebug() << "New Row: " << nRow;
-        if (nRow >= 0 && nRow < lstCTRecords.count())  {
-            // Cambia riga corrente
-            m_nGridRow = nRow;
-        }
-    }
-    // Selezionate più righe
-    if (selection.count() > 1)  {
-        m_szMsg = QString::fromAscii("Selected Rows: %1") .arg(selection.count());
-        displayStatusMessage(m_szMsg, STD_DISPLAY_TIME);
-        lstSelectedRows.clear();
-        for (nItem = 0; nItem < selection.count(); nItem++)  {
-            int newRow = selection.at(nItem).row();
-            if (lstSelectedRows.indexOf(newRow) < 0)  {
-                lstSelectedRows.append(newRow);
+        if (nNewSelectedRow >= 0)  {
+            lstSelectedRows.append(nNewSelectedRow);
+            if (lstCTRecords[nNewSelectedRow].UsedEntry)  {
+                lastUsedInRange = nNewSelectedRow;
             }
         }
-        qSort(lstSelectedRows.begin(), lstSelectedRows.end());
-        ui->fraCondition->setVisible(false);
-        m_fMultiSelect = true;
+        qDebug("tableCTItemChanged(): Single Selection: Row: %d Used: %d", nNewSelectedRow + 1, lstCTRecords[nNewSelectedRow].UsedEntry);
+        // Cambia riga corrente
+        m_nGridRow = nNewSelectedRow;
     }
-    // Elenco delle variabili selezionate
-    bool fLoaded = false;
-    for (nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
-        qDebug("tableCTItemChanged(): Selected Item %d @Row: %d", nItem + 1, lstSelectedRows.at(nItem) + 1);
-        nRow = lstSelectedRows[nItem];
-        // Prova a caricare da CT i valori presenti nella lista dati se la variabile è definita
-        if (not fLoaded && lstCTRecords[nRow].UsedEntry && nRow == nLastSelectedRow)  {
-            // Solo se c'è qualcosa da editare (singolo Record o MultiEdit  m_fMultiSelect
-            if (not m_fMultiSelect || (m_fMultiSelect && m_fMultiEdit))  {
-                // Convert CT Record 2 User Values
-                fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
-                // Se la conversione è Ok, aggiorna interfaccia
-                if (fRes)  {
-                    fRes = values2Iface(lstFields, nRow);
-                    if (fRes)  {
-                        fLoaded = true;
-                        // Cambia riga corrente
-                        m_nGridRow = nRow;
-                    }
+    //-------------------------------------------------------------------------
+    // Selezionate più righe
+    //-------------------------------------------------------------------------
+    if (selectedRows.count() > 1)  {
+        m_szMsg = QString::fromAscii("Selected Rows: %1") .arg(selectedRows.count());
+        displayStatusMessage(m_szMsg, STD_DISPLAY_TIME);
+        lstSelectedRows.clear();
+        QString szItemsRow = QString::fromLatin1("Multiple Selection, selected Rows [%1] Last Selected Row: %2 ") .arg(selectedRows.count()) .arg(nNewSelectedRow + 1);
+        // Aggiornamento dell'elenco delle righe selezionate
+        for (nItem = 0; nItem < selectedRows.count(); nItem++)  {
+            int newRow = selectedRows.at(nItem).row();
+            // Controllo dei duplicati
+            if (lstSelectedRows.indexOf(newRow) < 0)  {
+                lstSelectedRows.append(newRow);
+                // To show native selection Order
+                // szItemsRow.append(QString::fromLatin1("<%1>") .arg(newRow + 1));
+                if (lstCTRecords[newRow].UsedEntry)  {
+                    // Marca la selezione
+                    lastUsedInRange = newRow;
                 }
             }
         }
-        // Imposta Sezione in cboSections
-        setSectionArea(nRow);
+        // Ordinamento delle righe selezionate (necessario per MultiEdit)
+        qSort(lstSelectedRows.begin(), lstSelectedRows.end());
+        qDebug("tableCTItemChanged(): %s", szItemsRow.toLatin1().data());
     }
-    // La Cella è abilitata se ne è stata letta almeno una o se la riga corrente è vuota (No MultiEdit in corso)
-    // ui->fraEdit->setEnabled(fLoaded || (! m_fMultiSelect && ! m_fMultiEdit));
-    ui->fraEdit->setEnabled(fLoaded || (not m_fMultiSelect && not m_fMultiEdit));
-    // Si può cambiare riga, legge contenuto
-    if (not fLoaded)  {
+    //-------------------------------------------------------------------------
+    // Bisogna aggiornare il Frame di Editing
+    //-------------------------------------------------------------------------
+    bool fLoaded = false;
+    // Single Line Edit e selezione multipla
+    if (not m_fMultiEdit && lstSelectedRows.count() > 1)       // Single Line Edit e selezione multipla
+        {
+        fLoaded = false;
         clearEntryForm();
+        qDebug("tableCTItemChanged(): Clear Form");
     }
-
-//    if (! selected.isEmpty() && selected.count() == 1)  {
-//    }
-//    else  {
-//    }
+    else if (lastUsedInRange >= 0)  {
+        // Ricarica interfaccia da CT
+        fLoaded = recCT2FieldsValues(lstCTRecords, lstFields, lastUsedInRange);
+        if (fLoaded)  {
+            fLoaded = values2Iface(lstFields, lastUsedInRange);
+            qDebug("tableCTItemChanged(): Loaded Row: %d", lastUsedInRange + 1);
+        }
+    }
+    else {
+        fLoaded = true;
+    }
+    // Imposta Sezione in cboSections
+    setSectionArea(nNewSelectedRow);
+    // Abilitazione Frame di editing
+    ui->fraEdit->setEnabled(fLoaded);
     // Refresh abilitazioni interfaccia
     enableInterface();
 }
+
 void ctedit::clearEntryForm()
 // Svutamento elementi Form Data Entry
 {
@@ -2288,7 +2293,6 @@ int ctedit::copySelected(bool fClearSelection)
     selection.clear();
     m_szMsg = QString::fromAscii("Rows Copied: %1") .arg(nCopied);
     displayStatusMessage(m_szMsg);
-    m_fMultiSelect = false;
     enableInterface();
     // Return value
     return nCopied;
@@ -2365,7 +2369,6 @@ void ctedit::pasteSelected()
         m_szMsg = QString::fromAscii("Error Pasting Rows: %1") .arg(lstPastedRecords.count());
     }
     displayStatusMessage(m_szMsg);
-    m_fMultiSelect = false;
     enableInterface();
 }
 
@@ -2440,7 +2443,6 @@ void ctedit::insertRows()
     if (nCurPos >= 0)  {
         jumpToGridRow(nCurPos, true);
     }
-    m_fMultiSelect = false;
     enableInterface();
 }
 void ctedit::emptySelected()
@@ -2494,7 +2496,6 @@ void ctedit::emptySelected()
     m_szMsg = QString::fromAscii("Rows Removed: %1") .arg(nRemoved);
     displayStatusMessage(m_szMsg);
     // Update Iface
-    m_fMultiSelect = false;
     enableInterface();
 }
 
@@ -2558,7 +2559,6 @@ void ctedit::removeSelected()
     m_szMsg = QString::fromAscii("Rows Removed: %1") .arg(nRemoved);
     displayStatusMessage(m_szMsg);
     // Update Iface
-    m_fMultiSelect = false;
     enableInterface();
 }
 void ctedit::cutSelected()
@@ -2622,12 +2622,11 @@ bool ctedit::isLineModified(int nRow)
     int     nModif = 0;
     int     nProtocol = ui->cboProtocol->currentIndex();
     QString szTemp(szEMPTY);
-    bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
     // Confronto tra Form Editing e riga Grid
     if(nRow >= 0 && nRow < lstCTRecords.count())  {
         // Se è attivo il MultiSelect NON si salva all'interno di righe vuote
-        if (fMultiEdit && ui->tblCT->item(nRow, colName)->text().trimmed().isEmpty())  {
+        if (m_fMultiEdit && ui->tblCT->item(nRow, colName)->text().trimmed().isEmpty())  {
             nModif = 0;
         }
         else  {
@@ -2635,7 +2634,7 @@ bool ctedit::isLineModified(int nRow)
             nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colUpdate)->text().trimmed());
             // La Colonna Group non ha inpatto in calcolo modifiche
             // nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colGroup)->text().trimmed());
-            nModif += (not fMultiEdit && (ui->txtName->text().trimmed() != ui->tblCT->item(nRow, colName)->text().trimmed()));
+            nModif += (not m_fMultiEdit && (ui->txtName->text().trimmed() != ui->tblCT->item(nRow, colName)->text().trimmed()));
             nModif += (ui->cboType->currentText().trimmed() != ui->tblCT->item(nRow, colType)->text().trimmed());
             nModif += (ui->txtDecimal->text().trimmed() != ui->tblCT->item(nRow, colDecimal)->text().trimmed());
             nModif += (ui->cboProtocol->currentText().trimmed() != ui->tblCT->item(nRow, colProtocol)->text().trimmed());
@@ -2651,13 +2650,13 @@ bool ctedit::isLineModified(int nRow)
                 nModif += (szTemp != ui->tblCT->item(nRow, colInputReg)->text().trimmed());
             }
             // Offset Register
-            nModif += (not fMultiEdit && (ui->txtRegister->text().trimmed() != ui->tblCT->item(nRow, colRegister)->text().trimmed()));
+            nModif += (not m_fMultiEdit && (ui->txtRegister->text().trimmed() != ui->tblCT->item(nRow, colRegister)->text().trimmed()));
             // nModif += (ui->txtBlock->text().trimmed() != ui->tblCT->item(nRow, colBlock)->text().trimmed());
             // nModif += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(nRow, colBlockSize)->text().trimmed());
             nModif += (ui->txtComment->text().trimmed() != ui->tblCT->item(nRow, colComment)->text().trimmed());
             nModif += (ui->cboBehavior->currentText().trimmed() != ui->tblCT->item(nRow, colBehavior)->text().trimmed());
             // Frame Allarmi
-            if ((not fMultiEdit) && ui->cboBehavior->currentIndex() >= behavior_alarm)  {
+            if ((not m_fMultiEdit) && ui->cboBehavior->currentIndex() >= behavior_alarm)  {
                 nModif += (ui->cboVariable1->currentText().trimmed() != ui->tblCT->item(nRow, colSourceVar)->text().trimmed());
                 nModif += (ui->cboCondition->currentText().trimmed() != ui->tblCT->item(nRow, colCondition)->text().trimmed());
                 if (ui->optFixedVal->isChecked())  {
@@ -2817,9 +2816,9 @@ void ctedit::showAllRows(bool fShowAll)
             m_nGridRow = nFirstVisible;
         }
     }
-    // Trucco per centrare la riga...
     nRow = m_nGridRow;
-    jumpToGridRow(0, true);
+    // Trucco per centrare la riga...
+    // jumpToGridRow(0, true);
     if (nRow >= 0 && nRow < DimCrossTable)
         jumpToGridRow(nRow, true);
     // ui->tblCT->setFocus();
@@ -3100,7 +3099,6 @@ void ctedit::on_cmdUndo_clicked()
         m_isCtModified = true;
         m_rebuildDeviceTree = true;
         m_rebuildTimingTree = true;
-        m_fMultiSelect = false;
         enableInterface();
     }
 }
@@ -3139,7 +3137,6 @@ void ctedit::tabSelected(int nTab)
         // Jump n+1
         jumpToGridRow(nOldRow + 1, true);
         jumpToGridRow(nOldRow, true);
-        m_fMultiSelect = false;
         enableInterface();
     }
     else if (nPrevTab == TAB_MPNE)  {
@@ -3160,7 +3157,6 @@ void ctedit::tabSelected(int nTab)
         // Jump n+1
         jumpToGridRow(nOldRow + 1, true);
         jumpToGridRow(nOldRow, true);
-        m_fMultiSelect = false;
         enableInterface();
     }
     //---------------------------------
@@ -3262,37 +3258,46 @@ void ctedit::enableInterface()
     ui->fraCondition->setEnabled(not m_fMultiEdit);
     ui->tblCT->setEnabled(true);
     m_fCutOrPaste = false;
-    // Abilitazione dei Tab Secondari
-    if (lstSelectedRows.count() <= 1)  {
-        // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
-        m_nMPNC = -1;
-        if (isSerialPortEnabled && not m_fMultiEdit && lstSelectedRows.count() <= 1)  {
-            bool enableMPNC = searchIOModules(szMPNC006, lstCTRecords, lstMPNC006_Vars, lstMPNC);
-            bool enableMPNE = searchIOModules(szMPNE1001, lstCTRecords, lstMPNE_Vars, lstMPNE);
-            m_nMPNC = 0;
-            m_nMPNE = 0;
-            ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
-            ui->tabWidget->setTabEnabled(TAB_MPNE, enableMPNE);
-            m_fMPNE100105_Present = false;
-            // Verifica MPNE_05 (TPX1070 only)
-            if (panelConfig.modelName.startsWith(szTPX1070)) {
-                m_fMPNE100105_Present = searchIOModules(szMPNE100105, lstCTRecords, lstMPNE100105_Vars, lstMPNE100105);
+    // Tab MPNC, MPNE, LOG non abilitati in MultiEdit
+    if (m_fMultiEdit)  {
+        ui->tabWidget->setTabEnabled(TAB_MPNC, false);
+        ui->tabWidget->setTabEnabled(TAB_MPNE, false);
+        ui->tabWidget->setTabEnabled(TAB_LOG, false);
+        ui->fraCondition->setVisible(false);
+    }
+    else {
+        // Riabilitazione dei Tab Secondari (ricalcolo se è cambiato qualcosa, non necessario se ci sono selezioni multiple in corso)
+        if (lstSelectedRows.count() <= 1)  {
+            // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
+            m_nMPNC = -1;
+            if (isSerialPortEnabled && not m_fMultiEdit && lstSelectedRows.count() <= 1)  {
+                bool enableMPNC = searchIOModules(szMPNC006, lstCTRecords, lstMPNC006_Vars, lstMPNC);
+                bool enableMPNE = searchIOModules(szMPNE1001, lstCTRecords, lstMPNE_Vars, lstMPNE);
+                m_nMPNC = 0;
+                m_nMPNE = 0;
+                ui->tabWidget->setTabEnabled(TAB_MPNC, enableMPNC);
+                ui->tabWidget->setTabEnabled(TAB_MPNE, enableMPNE);
+                m_fMPNE100105_Present = false;
+                // Verifica MPNE_05 (TPX1070 only)
+                if (panelConfig.modelName.startsWith(szTPX1070)) {
+                    m_fMPNE100105_Present = searchIOModules(szMPNE100105, lstCTRecords, lstMPNE100105_Vars, lstMPNE100105);
+                }
             }
-        }
-        else {
-            ui->tabWidget->setTabEnabled(TAB_MPNC, false);
-            ui->tabWidget->setTabEnabled(TAB_MPNE, false);
-        }
-        // Tab Logged Vars
-        int nFast = 0;
-        int nSlow = 0;
-        int nVar = 0;
-        int nShot = 0;
-        if (countLoggedVars(lstCTRecords, nFast, nSlow, nVar, nShot) > 0)  {
-            ui->tabWidget->setTabEnabled(TAB_LOG, not m_fMultiEdit);
-        }
-        else  {
-            ui->tabWidget->setTabEnabled(TAB_LOG, false);
+            else {
+                ui->tabWidget->setTabEnabled(TAB_MPNC, false);
+                ui->tabWidget->setTabEnabled(TAB_MPNE, false);
+            }
+            // Tab Logged Vars
+            int nFast = 0;
+            int nSlow = 0;
+            int nVar = 0;
+            int nShot = 0;
+            if (countLoggedVars(lstCTRecords, nFast, nSlow, nVar, nShot) > 0)  {
+                ui->tabWidget->setTabEnabled(TAB_LOG, true);
+            }
+            else  {
+                ui->tabWidget->setTabEnabled(TAB_LOG, false);
+            }
         }
     }
 }
@@ -3593,7 +3598,6 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     QString     szIP;
     QString     szVar1;
     QString     szNodeID;
-    bool        fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
     // Form per Display Errori
     cteErrorList    *errWindow;
@@ -3602,7 +3606,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     if (fSingleLine)
         lstCTErrors.clear();
     // Recupero Variable Name (Per finestra errore)
-    if (fMultiEdit)  {
+    if (m_fMultiEdit)  {
         szVarName = ui->tblCT->item(nRow, colName)->text().trimmed();
     }
     else  {
@@ -3851,7 +3855,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     //---------------------------------------
     // Controlli Univocità Server (MODBUS) [NO MULTIEDIT]
     //---------------------------------------
-    if (not fMultiEdit)  {
+    if (not m_fMultiEdit)  {
         if (nProtocol == TCP_SRV)  {
             // Non esiste ancora un Server TCP definito
             if (serverModBus[srvTCP].nPort < 0)  {
@@ -3939,7 +3943,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     //---------------------------------------
     // Controllo per Register (MODBUS) [NO MULTIEDIT]
     //---------------------------------------
-    if (not fMultiEdit)  {
+    if (not m_fMultiEdit)  {
         szTemp = lstValues[colRegister];
         nRegister = szTemp.isEmpty() ? -1 : szTemp.toInt(&fOk);
         nRegister = fOk && nRegister != -1 ? nRegister : -1;
@@ -4705,7 +4709,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
 // Gestore Event Handler
 {
     static      int nPrevKey = 0;
-    bool        fMultiEdit = m_fMultiEdit && m_fMultiSelect && m_nCurTab == TAB_CT;
+    bool        fMultiEdit = m_fMultiEdit && m_nCurTab == TAB_CT;
 
     // Evento Key Press
     if (event->type() == QEvent::KeyPress) {
@@ -7646,7 +7650,7 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         nRow = lstSelectedRows.last();
         // Svuota lista elementi selezionati e toglie flag di MultiSelect
         lstSelectedRows.clear();
-        m_fMultiSelect = false;
+        lstSelectedRows.append(nRow);
         qDebug("Cancelling MultiEdit: GotoRow: %d", nRow + 1);
         // Seleziona Riga corrente
         jumpToGridRow(nRow);
@@ -7656,16 +7660,14 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         m_rebuildTimingTree = true;
         // Cambia Tooltip del Bottone
         ui->cmdMultiEdit->setToolTip(QLatin1String("Switch to Multiline Edit Mode"));
+        m_fMultiEdit = false;
     }
     else  {
         // Attiva Multiline Edit
         // Cambia Tooltip del Bottone
         ui->cmdMultiEdit->setToolTip(QLatin1String("Back to Single Line Edit Mode"));
-    }
-    // Aggiorna stato del Multiline Edit
-    m_fMultiEdit = checked;
-    // Passaggio da Single a Multiedit
-    if (m_fMultiEdit)  {
+        // Aggiorna stato del Multiline Edit
+        m_fMultiEdit = true;
         nRow = m_nGridRow;
         // Cerca l'ultima riga attiva del set delle selezionate
         for (int lastRow = lstSelectedRows.count() - 1; lastRow >= 0; lastRow--)  {
@@ -7676,22 +7678,22 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
                 break;
             }
         }
-        ui->tblCT->setFocus();
-    }
-    // Se la riga selezionata è una riga in area utente
-    // ed è una riga usata, aggiorna il frame di Editing
-    if (lstCTRecords[nRow].UsedEntry) {
-        QStringList lstFields;
-        bool fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
-        if (fRes)  {
-            fRes = values2Iface(lstFields, nRow);
+        // Se la riga selezionata è una riga in area utente
+        // ed è una riga usata, aggiorna il frame di Editing
+        if (lstCTRecords[nRow].UsedEntry) {
+            QStringList lstFields;
+            bool fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
+            if (fRes)  {
+                fRes = values2Iface(lstFields, nRow);
+            }
+        }
+        else  {
+            // Clear Editing From
+            clearEntryForm();
         }
     }
-    else  {
-        // Clear Editing From
-        clearEntryForm();
-    }
     enableInterface();
+    ui->tblCT->setFocus();
 }
 
 void ctedit::on_lstEditableFields_itemClicked(QListWidgetItem *itemClicked)
