@@ -7639,6 +7639,7 @@ void ctedit::on_cmdApply_clicked()
     m_rebuildTimingTree = true;
     // Aggiorna abilitazioni (per Bottone UNDO)
     enableInterface();
+    ui->tabCT->setFocus();
 }
 
 void ctedit::on_cmdMultiEdit_clicked(bool checked)
@@ -7694,6 +7695,7 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
     }
     enableInterface();
     ui->tblCT->setFocus();
+    ui->fraEdit->setEnabled(true);
 }
 
 void ctedit::on_lstEditableFields_itemClicked(QListWidgetItem *itemClicked)

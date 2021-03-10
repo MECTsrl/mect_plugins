@@ -78,6 +78,8 @@ void    setGridParams(QTableWidget *table, QStringList &lstHeadCols, QList<int> 
 
 bool    isValidVarName(QString szName);                                                                                         // Controllo del Nome Variabile
 bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecords, QList<CrossTableRecord> &CT_IOModule, QList<int> &lstRootRows);     // Ricerca di un Modulo I/O in CT
+bool    isAlarm(QList<CrossTableRecord> &CTRecords, int nItem);
+bool    isEvent(QList<CrossTableRecord> &CTRecords, int nItem);
 
 QString priority2String(int nPriority);     // Formattazione stringa per nome priorità
 QString getSerialPortSpeed(int nPort);      // Restituisce in forma leggibile i parametri della porta seriale selezionata

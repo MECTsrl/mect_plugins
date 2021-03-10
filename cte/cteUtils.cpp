@@ -1211,3 +1211,26 @@ QString getSerialPortSpeed(int nPort)
     // Return value
     return szSpeed;
 }
+
+bool    isAlarm(QList<CrossTableRecord> &CTRecords, int nItem)
+{
+    bool fRes = false;
+    if (CTRecords[nItem].UsedEntry)  {
+        if (CTRecords[nItem].Behavior == behavior_alarm)  {
+            fRes = true;
+        }
+    }
+    return fRes;
+}
+
+bool    isEvent(QList<CrossTableRecord> &CTRecords, int nItem)
+{
+    bool fRes = false;
+    if (CTRecords[nItem].UsedEntry)  {
+        if (CTRecords[nItem].Behavior == behavior_event)  {
+            fRes = true;
+        }
+    }
+    return fRes;
+}
+
