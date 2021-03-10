@@ -1601,6 +1601,7 @@ void ctedit::enableFields()
     int     nTotalPorts = 0;
     int     nProtocol = ui->cboProtocol->currentIndex();
     int     nType = ui->cboType->currentIndex();
+    int     nBehavior = ui->cboBehavior->currentIndex();
     // bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
     qDebug("enableFields(): Row: [%d] MultiLine: [%d] colUpdate: %d", m_nGridRow + 1, m_fMultiEdit, lstEditableFields.indexOf(colUpdate));
@@ -3299,7 +3300,7 @@ void ctedit::enableInterface()
         if (lstSelectedRows.count() <= 1)  {
             // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
             m_nMPNC = -1;
-            if (isSerialPortEnabled && not m_fMultiEdit && lstSelectedRows.count() <= 1)  {
+            if (isSerialPortEnabled)  {
                 bool enableMPNC = searchIOModules(szMPNC006, lstCTRecords, lstMPNC006_Vars, lstMPNC);
                 bool enableMPNE = searchIOModules(szMPNE1001, lstCTRecords, lstMPNE_Vars, lstMPNE);
                 m_nMPNC = 0;
@@ -7720,6 +7721,7 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         // Cambia Tooltip del Bottone
         ui->cmdMultiEdit->setToolTip(QLatin1String("Switch to Multiline Edit Mode"));
         m_fMultiEdit = false;
+        qDebug("Exiting MultiEdit, Restore LastRow: %d", nRow + 1);
     }
     else  {
         // Attiva Multiline Edit
@@ -7737,23 +7739,23 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
                 break;
             }
         }
-        // Se la riga selezionata è una riga in area utente
-        // ed è una riga usata, aggiorna il frame di Editing
-        if (lstCTRecords[nRow].UsedEntry) {
-            QStringList lstFields;
-            bool fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
-            if (fRes)  {
-                fRes = values2Iface(lstFields, nRow);
-            }
+    }
+    // Aggiorna il frame di Editing
+    if (lstCTRecords[nRow].UsedEntry) {
+        QStringList lstFields;
+        bool fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
+        if (fRes)  {
+            fRes = values2Iface(lstFields, nRow);
         }
-        else  {
-            // Clear Editing From
-            clearEntryForm();
-        }
+    }
+    else  {
+        // Clear Editing From
+        clearEntryForm();
     }
     enableInterface();
     ui->tblCT->setFocus();
     ui->fraEdit->setEnabled(true);
+
 }
 
 void ctedit::on_lstEditableFields_itemClicked(QListWidgetItem *itemClicked)
