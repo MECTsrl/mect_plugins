@@ -22,6 +22,7 @@
 #include <QComboBox>
 #include <QPoint>
 #include <QColor>
+#include <QBrush>
 #include <QTimer>
 #include <QTreeWidgetItem>
 
@@ -201,6 +202,8 @@ private:
     QString     m_szFormatTime;
     QString     m_szMsg;                            // Variabile di servizio per Messaggi
     QTimer      *tmrMessage;                        // Timer per la gestione Messaggi
+    QBrush      brushRed;                           // Colore per Input Register ed Allarmi
+    QBrush      brushBlue;                          // Colore per Eventi
 
 
     // Record CrossTable

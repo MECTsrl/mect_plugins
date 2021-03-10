@@ -141,6 +141,10 @@ ctedit::ctedit(QWidget *parent) :
     colorNormalEdit = ui->fraEdit->palette().background().color();
     szColorNormalEdit = QString::fromLatin1("color: rgb(%1, %2, %3);")
             .arg(colorNormalEdit.red()) .arg(colorNormalEdit.green()) .arg(colorNormalEdit.blue());
+    brushRed = QBrush(Qt::SolidPattern);    // Colore per Input Register ed Allarmi
+    brushRed.setColor(Qt::red);
+    brushBlue= QBrush(Qt::SolidPattern);    // Colore per Eventi
+    brushBlue.setColor(QColor(0, 0, 205));  // (MediumBlue)
     //------------------------
     // Riempimento liste
     //------------------------
@@ -223,7 +227,9 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
     lstErrorMessages[errCTNoBit] = trUtf8("Alarm/Event Variables must be of BIT type");
     lstErrorMessages[errCTBadPriorityUpdate] = trUtf8("Wrong Priority or Update for Alarm/Event Variable");
+    lstErrorMessages[errCTNoProtocolPLC] = trUtf8("Alarm Variables must use PLC Protocol Only");
     lstErrorMessages[errCTNoVar1] = trUtf8("Empty or Invalid Left Condition Variable");
+    lstErrorMessages[errCTVarxEqVarName] = trUtf8("Left or Right Condition Variable Equal to Variable Name");
     lstErrorMessages[errCTNoCondition] = trUtf8("Empty or Invalid Alarm/Event Condition");
     lstErrorMessages[errCTRiseFallNotBit] = trUtf8("Rising/Falling Variable must be of BIT Type");
     lstErrorMessages[errCTInvalidNum] = trUtf8("Invalid Numeric Value in Alarm/Event Condition");;
@@ -289,7 +295,7 @@ ctedit::ctedit(QWidget *parent) :
     // Combo Update
     szToolTip.clear();
     szToolTip.append(QLatin1String("PLC Refresh Rate:\n"));
-    szToolTip.append(QLatin1String("H - Only in current page\n"));
+    szToolTip.append(QLatin1String("H - Only if in variableList\n"));
     szToolTip.append(QLatin1String("P - Permanent\n"));
     szToolTip.append(QLatin1String("S - Permanent Slow Logging\n"));
     szToolTip.append(QLatin1String("F - Permanent Fast Logging\n"));
@@ -824,14 +830,12 @@ bool    ctedit::ctable2Grid()
     int             nCur = 0;
     QStringList     lstFields;                      // Buffer di riga CT
     QStringList     lstRowNumbers;                  // Intestazione Verticale delle Righe (#riga in prima colonna)
-    QBrush          brushRed(Qt::SolidPattern);     // Colore per gli Input Registers
 
 
     lstFields.clear();
     lstRowNumbers.clear();
     lstUsedVarNames.clear();
     lstLoggedVars.clear();
-    brushRed.setColor(Qt::red);
     // Preparazione tabella
     this->setCursor(Qt::WaitCursor);
     disableAndBlockSignals(ui->tblCT);
@@ -853,6 +857,17 @@ bool    ctedit::ctable2Grid()
             // Evidenzia gli Input Registers in Rosso
             if (lstFields[colInputReg] == szTRUE)  {
                 setCellForeground(brushRed, ui->tblCT->model(), nCur, colRegister);
+            }
+            // Evidenzia gli Allarmi ed eventi
+            if (isAlarm(lstCTRecords, nCur))  {
+                for (int nCol = colPriority; nCol < colTotals; nCol++)  {
+                    setCellForeground(brushRed, ui->tblCT->model(), nCur, nCol);
+                }
+            }
+            else if (isEvent(lstCTRecords, nCur))  {
+                for (int nCol = colPriority; nCol < colTotals; nCol++)  {
+                    setCellForeground(brushBlue, ui->tblCT->model(), nCur, nCol);
+                }
             }
         }
     }
@@ -1111,6 +1126,8 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     int     nProtocol = -1;
     int     nType = -1;
     bool    userVar = nRow < MIN_DIAG -1;
+    bool    fRenameVar = false;
+    QString szPrevVarName = ui->tblCT->item(nRow, colName)->text().trimmed();
 
     // Pulizia Buffers
     szTemp.clear();
@@ -1151,14 +1168,19 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     if (not fMultiEdit)  {
         szTemp = ui->txtName->text().trimmed();
         lstRecValues[colName] = szTemp;
+        // Cambio Nome Variabile
+        if (szTemp != szPrevVarName)  {
+            fRenameVar = true;
+        }
     }
     else  {
         // Mantiene il nome della variabile originale
         szTemp.clear();
-        lstRecValues[colName] = ui->tblCT->item(nRow, colName)->text().trimmed();
+        lstRecValues[colName] = szPrevVarName;
     }
-    // Update Used and Logged Variable List
-    if (not szTemp.isEmpty() && not fMultiEdit)  {
+    // If Renamed Update Used and Logged Variable List
+    if (not szTemp.isEmpty() && not fMultiEdit && fRenameVar)  {
+        qDebug("iface2values(): Variable name changed from [%s] to: [%s]", szPrevVarName.toLatin1().data(), szTemp.toLatin1().data());
         // Aggiorna la lista delle variabili utilizzate
         nPos = lstUsedVarNames.indexOf(szTemp);
         if (nPos < 0)  {
@@ -1713,8 +1735,8 @@ void ctedit::on_cboType_currentIndexChanged(int index)
     if (index == BIT)  {
         ui->txtDecimal->setText(szZERO);
         ui->txtDecimal->setEnabled(false);
-        // Abilita possibilità di rendere la variabile un allarme/evento solo se Priority > H
-        if (ui->cboPriority->currentIndex() > 0 && ui->cboUpdate->currentIndex() > Htype)  {
+        // Abilita possibilità di rendere la variabile un allarme/evento solo se Priority > H e Protocollo PLC
+        if (ui->cboPriority->currentIndex() > 0 && ui->cboUpdate->currentIndex() > Htype && ui->cboProtocol->currentIndex() == PLC)  {
             enableComboItem(ui->cboBehavior, behavior_alarm);
             enableComboItem(ui->cboBehavior, behavior_event);
         }
@@ -1783,6 +1805,8 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     }
     fPortOk = isValidPort(nCurrentPort, index);
     // PLC
+    disableComboItem(ui->cboBehavior, behavior_alarm);
+    disableComboItem(ui->cboBehavior, behavior_event);
     if (index == PLC)  {
         // All Data Entry Cleared
         ui->txtIP->setText(szEMPTY);
@@ -1790,7 +1814,12 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         ui->txtNode->setText(szEMPTY);
         ui->cboPort->setCurrentIndex(-1);
         ui->chkInputRegister->setChecked(false);
-        ui->txtRegister->setText(szEMPTY);       
+        ui->txtRegister->setText(szEMPTY);
+        // Abilita la gestione degli allarmi
+        if (ui->cboType->currentIndex() == BIT)  {
+            enableComboItem(ui->cboBehavior, behavior_alarm);
+            enableComboItem(ui->cboBehavior, behavior_event);
+        }
     }
     // RTU vari - MECT - CANOPEN
     else if (index == RTU || index == RTU_SRV || index == MECT_PTC || index == CANOPEN)  {
@@ -3521,6 +3550,7 @@ int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &
     lstVars.clear();
 
     for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
+        QString szVarName = QString::fromLatin1(lstCTRecords[nRow].Tag).trimmed();
         if (lstCTRecords[nRow].Enable)  {
             // Filter on Var Type
             if (fTypeFilter)  {
@@ -3542,16 +3572,18 @@ int ctedit::fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &
                     f2Add = false;
                 }
             }
+            // Controllo dei Duplicati
+            if (lstVars.indexOf(szVarName) >= 0)  {
+                f2Add = false;
+            }
             // If Var is defined and of a correct type, insert in list
             if (f2Add && fUpdateOk)  {
-                lstVars.append(QLatin1String(lstCTRecords[nRow].Tag));
+                lstVars.append(szVarName);
             }
         }
     }
     // Ordimanento Alfabetico della Lista
     lstVars.sort();
-    // Rimozione di eventuali duplicati dalla lista
-    lstVars.removeDuplicates();
     // Return value
     // qDebug() << "Items Added to List:" << lstVars.count();
     return lstVars.count();
@@ -3562,6 +3594,8 @@ int ctedit::fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<i
 {
     QStringList lstVars;
     int         nItem = 0;
+    int         nOldIndex = comboBox->currentIndex();
+    QString     szOldText = comboBox->currentText().trimmed();
     bool        oldState = comboBox->blockSignals(true);
 
     lstVars.clear();
@@ -3570,9 +3604,12 @@ int ctedit::fillComboVarNames(QComboBox *comboBox, QList<int> &lstTypes, QList<i
     if (fillVarList(lstVars, lstTypes, lstUpdates, fSkipVarDecimal) > 0)
     {
         for (nItem = 0; nItem < lstVars.count(); nItem++)  {
-            comboBox->addItem(lstVars[nItem]);
+            comboBox->addItem(lstVars[nItem], lstVars[nItem]);
+            if (! szOldText.isEmpty() && szOldText == lstVars[nItem])  {
+                nOldIndex = nItem;
+            }
         }
-        comboBox->setCurrentIndex(-1);
+        comboBox->setCurrentIndex(nOldIndex);
     }
     comboBox->blockSignals(oldState);
     return lstVars.count();
@@ -4023,13 +4060,25 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             lstCTErrors.append(errCt);
             nErrors++;
         }
+        // Variabili di Allarme devono usare protocollo PLC
+        if (nProtocol != PLC)  {
+            fillErrorMessage(nRow, colProtocol, errCTNoProtocolPLC, szVarName, szVarName, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
         // Controllo che la variabile selezionata come Var1 sia NON H
         fillVarList(lstAlarmVars, lstAllVarTypes, lstNoHUpdates, true);
         // Variable 1
-        szVar1 = lstValues[colSourceVar];
+        szVar1 = lstValues[colSourceVar].trimmed();
         nPos = szVar1.isEmpty() ? -1 : lstAlarmVars.indexOf(szVar1);
         if (nPos < 0)  {
             fillErrorMessage(nRow, colSourceVar, errCTNoVar1, szVarName, szVar1, chSeverityError, &errCt);
+            lstCTErrors.append(errCt);
+            nErrors++;
+        }
+        // Controllo che la variabile stessa non possa far parte della sua condizione
+        if (szVar1 == szVarName)  {
+            fillErrorMessage(nRow, colSourceVar, errCTVarxEqVarName, szVarName, szVar1, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
         }
@@ -4062,7 +4111,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
         // Altri Operatori
         else if (nPos >= 0 && nPos < oper_rising)  {
             // Espressione vuota
-            szTemp = lstValues[colCompare];
+            szTemp = lstValues[colCompare].trimmed();
             if (szTemp.isEmpty())  {
                 fillErrorMessage(nRow, colCompare, errCTEmptyCondExpression, szVarName, szTemp, chSeverityError, &errCt);
                 lstCTErrors.append(errCt);
@@ -4110,6 +4159,12 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
                             lstCTErrors.append(errCt);
                             nErrors++;
                         }
+                    }
+                    // Variable Name eq Var2
+                    if (szTemp == szVarName)  {
+                        fillErrorMessage(nRow, colSourceVar, errCTVarxEqVarName, szTemp, szVar1, chSeverityError, &errCt);
+                        lstCTErrors.append(errCt);
+                        nErrors++;
                     }
                 }
             }
@@ -5096,18 +5151,15 @@ void ctedit::on_txtName_editingFinished()
             // Se il nome della variabile è cambiato rispetto al valore precedente
             //----------------------------------------
             if (szVarName != szOldVarName && (not szVarName.isEmpty()))  {
-                // Forza inserimento in lista Undo (al limite ci saranno 2 entry in lista Undo se esistono anche altre modifiche sulla riga corrente)
-                // lstUndo.append(lstCTRecords);
-                // Aggiorna il nome della variabile in CT (Inibisce l'aggiornamento della lista Undo)
-                // strcpy(lstCTRecords[m_nGridRow].Tag, szVarName.toAscii().data());
                 //----------------------------------------
                 // Controlla che la variabile non sia presente nei valori SX e DX di un allarme
                 //----------------------------------------
                 for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
                     // Test solo per righe diverse dalla riga corrente e utilizzate
-                    if (nRow != m_nGridRow && lstCTRecords[nRow].UsedEntry)  {
+                    if (nRow != m_nGridRow && lstCTRecords[nRow].UsedEntry &&
+                            (isAlarm(lstCTRecords, nRow) || isEvent(lstCTRecords, nRow)))  {
                         // Alarm Source Variable
-                        if (szOldVarName == QLatin1String(lstCTRecords[nRow].ALSource))  {
+                        if (szOldVarName == QString::fromLatin1(lstCTRecords[nRow].ALSource).trimmed())  {
                             strcpy(lstCTRecords[nRow].ALSource, szVarName.toAscii().data());
                             // Aggiornamento diretto delle variabile in Grid
                             tItem = ui->tblCT->item(nRow, colSourceVar);
@@ -5115,7 +5167,7 @@ void ctedit::on_txtName_editingFinished()
                             // qDebug() << QString::fromAscii("Replaced Source Var [%1] to [%2] @Row: <%3>") .arg(szOldVarName) .arg(szVarName) .arg(nRow);
                         }
                         // Alarm Compare Variable
-                        if (szOldVarName == QLatin1String(lstCTRecords[nRow].ALCompareVar))  {
+                        if (szOldVarName == QString::fromLatin1(lstCTRecords[nRow].ALCompareVar).trimmed())  {
                             strcpy(lstCTRecords[nRow].ALCompareVar, szVarName.toAscii().data());
                             // Aggiornamento diretto delle variabile in Grid
                             tItem = ui->tblCT->item(nRow, colCompare);
@@ -5807,7 +5859,6 @@ bool ctedit::updateRow(int nRow, bool fMultiEdit)
     QStringList lstFields;
     int         nErrors = 0;
     bool        fIsSaved = false;
-    QBrush      brushInputReg(Qt::SolidPattern);
 
     if (not isFormEmpty() && isLineModified(nRow))  {
         // Nel caso di mulitselect si sta cercando di scrivere su una riga vuota
@@ -5832,14 +5883,21 @@ bool ctedit::updateRow(int nRow, bool fMultiEdit)
             // Aggiorna Grid Utente per riga corrente
             if (fIsSaved)  {
                 fRes = list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nRow);
-                // Input Register
+                // Registro Input Register
                 if (lstFields[colInputReg] == szTRUE) {
-                    brushInputReg.setColor(Qt::red);
+                    setCellForeground(brushRed, ui->tblCT->model(), nRow, colRegister);
                 }
-                else  {
-                    brushInputReg.setColor(Qt::black);
+                if (isAlarm(lstCTRecords, nRow))  {
+                    for (int nCol = colPriority; nCol < colTotals; nCol++)  {
+                        setCellForeground(brushRed, ui->tblCT->model(), nRow, nCol);
+                    }
                 }
-                setCellForeground(brushInputReg, ui->tblCT->model(), nRow, colRegister);
+                // Variabile Evento
+                else if (isEvent(lstCTRecords, nRow))  {
+                    for (int nCol = colPriority; nCol < colTotals; nCol++)  {
+                        setCellForeground(brushBlue, ui->tblCT->model(), nRow, nCol);
+                    }
+                }
                 m_isCtModified = true;
                 m_rebuildDeviceTree = true;
                 m_rebuildTimingTree = true;
