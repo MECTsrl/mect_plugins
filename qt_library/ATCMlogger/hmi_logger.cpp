@@ -1130,15 +1130,14 @@ bool Logger::checkVariation()
 {
     bool retval = false;
     char svalue [42] = "";
-    register int *p = (int *)IODataAreaI;
+    int ivalue = 0;
 
     for (int i = 0; i < store_elem_nb_V; i++)
     {
         register int ctIndex = StoreArrayV[i].CtIndex;
-        register char status = pIODataStatusAreaI[ctIndex];
+        register char status = readFromDbQuick(ctIndex, &ivalue);
 
         if (status == DONE or status == BUSY) {
-            register int ivalue = p[ctIndex]; // atomic, quick and dirty, without locking
             register int decimal = getVarDecimalByCtIndex(ctIndex); // locks only if it's from another variable
 
             /* dump only if the last value was different */

@@ -54,9 +54,6 @@
 #include "recipe_select.h"
 #endif
 
-#define RETRY_NB 5
-
-
 /** @brief variables used for the change page management */
 QStack<QString> History;
 QHash<QString, page *> ScreenHash;
@@ -927,7 +924,8 @@ int page::countLine(const char * filename)
 bool page::isBlockFullUsed(int block, QStringList variablelist)
 {
     int i;
-    for (i = 0; i < DB_SIZE_ELEM && varNameArray[i].block != block; i++);
+    for (i = 0; i < DB_SIZE_ELEM && varNameArray[i].block != block; i++)
+        ;
     for (; i < DB_SIZE_ELEM && varNameArray[i].block == block; i++)
     {
         if (variablelist.indexOf(varNameArray[i].tag) == -1)

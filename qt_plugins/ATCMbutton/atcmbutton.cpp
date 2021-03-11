@@ -30,8 +30,6 @@ extern char _actual_store_[FILENAME_MAX];
 #endif
 #endif
 
-#define RETRY_NB 20
-
 ATCMbutton::ATCMbutton(QWidget * parent):
     QPushButton(parent)
 {

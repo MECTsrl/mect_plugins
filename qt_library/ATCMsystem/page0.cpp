@@ -92,9 +92,9 @@ void page0::changePage()
             QProcess *myProcess = new QProcess();
             myProcess->start(RUNTIME);
         }
-        if(CommStart() == false)
+        if (CommStart() == false)
         {
-            LOG_PRINT(error_e, "cannot find start the communication with the the run-time.\n");
+            LOG_PRINT(error_e, "cannot start the communication with the the run-time.\n");
             exit(0);
         }
         first_time = false;

@@ -15,8 +15,20 @@
 #include "io_layer_comm.h"
 #include "cross_table_utility.h"
 
+#include "hmi_plc.h"
+
+#ifdef USE_HMI_PLC
+
+extern HmiPlcBlock plcBlock;
+extern HmiPlcBlock hmiBlock;
+static HmiClient *hmiClient; // can't change the class :(
+
+#define VAR_VALUE(n)  plcBlock.values[n].u32
+#define VAR_STATE(n)  plcBlock.states[n]
+
+#endif
+
 #define TIMEOUT_MS 100
-#define RETRY_NB 3
 
 pthread_cond_t theWritingCondvar;
 pthread_mutex_t theWritingMutex;
@@ -70,6 +82,9 @@ io_layer_comm::io_layer_comm( pthread_mutex_t * send_mutex, pthread_mutex_t * re
     the_send_mutex = send_mutex;
     the_recv_mutex = recv_mutex;
 
+#ifdef USE_HMI_PLC
+    hmiClient = newHmiClient(NULL); // LOCAL_SERVER_ADDR
+#else
     iServerSocketData = -1;
     iClientSocketData = -1;
 
@@ -78,6 +93,7 @@ io_layer_comm::io_layer_comm( pthread_mutex_t * send_mutex, pthread_mutex_t * re
 
     _setStatusIO = DONE;
     _getStatusIO = DONE;
+#endif
 }
 
 /**
@@ -90,6 +106,12 @@ io_layer_comm::~io_layer_comm()
 
 void io_layer_comm::run()
 {
+#ifdef USE_HMI_PLC
+    if (not hmiClient) {
+        LOG_PRINT(error_e, "plc is not connected\n");
+        return;
+    }
+#else
     if (iServerSocketData <= 0 || iClientSocketData <= 0)
     {
         LOG_PRINT(error_e, "ioLayer is not connected: server %d client %d\n", iServerSocketData, iClientSocketData);
@@ -101,7 +123,7 @@ void io_layer_comm::run()
         LOG_PRINT(error_e, "ioLayer is not connected: server %d client %d\n", iServerSocketSyncro, iClientSocketSyncro);
         return;
     }
-
+#endif
     /* set the absolute time */
     bool recompute_abstime = true;
     struct timespec abstime;
@@ -140,6 +162,38 @@ void io_layer_comm::run()
 
             pthread_mutex_lock(the_recv_mutex);
             {
+#ifdef USE_HMI_PLC
+                // set/reset the DO_READ for active and visible "H" variables
+                for (int addr = 1; addr <= DimCrossTable; ++addr) {
+                    if (varNameArray[addr].active == TAG_ONDEMAND) {
+                        if (varNameArray[addr].visible) {
+                            if (hmiBlock.states[addr] == varStatus_NOP) {
+                                hmiBlock.states[addr] = varStatus_DO_READ;
+                            } else {
+                                // varStatus_PREPARING, varStatus_DO_WRITE
+                            }
+                        } else {
+                            if (hmiBlock.states[addr] == varStatus_DO_READ) {
+                                hmiBlock.states[addr] = varStatus_NOP;
+                            } else {
+                                // varStatus_PREPARING, varStatus_DO_WRITE
+                            }
+                        }
+                    }
+                }
+
+                // send and receive blocks
+                if (hmiClientPoll(hmiClient, &hmiBlock, &plcBlock, TIMEOUT_MS) <= 0) {
+                    LOG_PRINT(error_e, "communication error with plc\n");
+                }
+
+                // reset the DO_WRITE
+                for (int addr = 1; addr <= DimCrossTable; ++addr) {
+                    if (hmiBlock.states[addr] == varStatus_DO_WRITE) {
+                        hmiBlock.states[addr] = varStatus_NOP;
+                    }
+                }
+#else
                 // send
                 notifySetData();
                 notifySetSyncro();
@@ -150,7 +204,7 @@ void io_layer_comm::run()
 
                 // update sync queue
                 compactSyncWrites();
-
+#endif
                 // update local variables
                 update_all(); // readFromDb
             }
@@ -158,8 +212,11 @@ void io_layer_comm::run()
         }
         pthread_mutex_unlock(the_send_mutex);
 
+#ifdef USE_HMI_PLC
+#else
         // another loop for the BUSY cases
         writeVarQueuedByCtIndex();
+#endif
 
         // call the setup() and loop()
         if (recompute_abstime) {
@@ -170,6 +227,15 @@ void io_layer_comm::run()
 
 bool io_layer_comm::initializeData(const char * RemoteAddress, const int iUdpRxPort, const int iUdpTxPort, void * ioAreaI, size_t ioAreaSizeI, void * ioAreaO, size_t ioAreaSizeO)
 {
+#ifdef USE_HMI_PLC
+    (void)RemoteAddress;
+    (void)iUdpRxPort;
+    (void)iUdpTxPort;
+    (void)ioAreaI;
+    (void)ioAreaSizeI;
+    (void)ioAreaO;
+    (void)ioAreaSizeO;
+#else
     if ((ioAreaI == NULL || ioAreaSizeI == 0) && (ioAreaO == NULL || ioAreaSizeO == 0))
     {
         LOG_PRINT(error_e, "No data to synchonize ioAreaI %p ioAreaSizeI %d, ioAreaO %p ioAreaSizeO %d.\n", ioAreaI, ioAreaSizeI, ioAreaO, ioAreaSizeO);
@@ -254,11 +320,21 @@ bool io_layer_comm::initializeData(const char * RemoteAddress, const int iUdpRxP
 
         LOG_PRINT(verbose_e, "client socket creation done\n");
     }
+#endif
     return true;
 }
 
 bool io_layer_comm::initializeSyncro(const char * RemoteAddress, const int iUdpRxPort, const int iUdpTxPort, void * ioAreaI, size_t ioAreaSizeI, void * ioAreaO, size_t ioAreaSizeO)
 {
+#ifdef USE_HMI_PLC
+    (void)RemoteAddress;
+    (void)iUdpRxPort;
+    (void)iUdpTxPort;
+    (void)ioAreaI;
+    (void)ioAreaSizeI;
+    (void)ioAreaO;
+    (void)ioAreaSizeO;
+#else
     if ((ioAreaI == NULL || ioAreaSizeI == 0) && (ioAreaO == NULL || ioAreaSizeO == 0))
     {
         LOG_PRINT(error_e, "No data to synchonize ioAreaI %p ioAreaSizeI %d, ioAreaO %p ioAreaSizeO %d.\n", ioAreaI, ioAreaSizeI, ioAreaO, ioAreaSizeO);
@@ -343,11 +419,16 @@ bool io_layer_comm::initializeSyncro(const char * RemoteAddress, const int iUdpR
 
         LOG_PRINT(verbose_e, "client socket creation done\n");
     }
+#endif
     return true;
 }
 
 bool io_layer_comm::finalize(void)
 {
+#ifdef USE_HMI_PLC
+    deleteHmiClient(hmiClient);
+    hmiClient = NULL;
+#else
     LOG_PRINT(verbose_e, "ioLayer Finalyze\n");
     close(iServerSocketData);
     close(iClientSocketData);
@@ -360,12 +441,15 @@ bool io_layer_comm::finalize(void)
 
     iServerSocketSyncro = -1;
     iClientSocketSyncro = -1;
-
+#endif
     return true;
 }
 
 bool io_layer_comm::notifyGetData(void)
 {
+#ifdef USE_HMI_PLC
+    return false;
+#else
     _getStatusIO = BUSY;
 
     // wait on server socket, only until timeout
@@ -414,10 +498,14 @@ bool io_layer_comm::notifyGetData(void)
         fprintf(stderr, ".");
     }
     return  (_getStatusIO == DONE);
+#endif
 }
 
 bool io_layer_comm::notifySetData(void)
 {
+#ifdef USE_HMI_PLC
+    return false;
+#else
     size_t iByteNum;
     _setStatusIO = BUSY;
     size_t received = 0;
@@ -448,10 +536,14 @@ bool io_layer_comm::notifySetData(void)
     }
 #endif
     return (_setStatusIO == DONE);
+#endif
 }
 
 bool io_layer_comm::notifyGetSyncro(void)
 {
+#ifdef USE_HMI_PLC
+    return false;
+#else
     _getStatusIO = BUSY;
 
     // wait on server socket, only until timeout
@@ -500,10 +592,14 @@ bool io_layer_comm::notifyGetSyncro(void)
         fprintf(stderr, ".");
     }
     return  (_getStatusIO == DONE);
+#endif
 }
 
 bool io_layer_comm::notifySetSyncro(void)
 {
+#ifdef USE_HMI_PLC
+    return false;
+#else
     size_t iByteNum;
     _setStatusIO = BUSY;
     size_t received = 0;
@@ -534,14 +630,23 @@ bool io_layer_comm::notifySetSyncro(void)
     }
 #endif
     return (_setStatusIO == DONE);
+#endif
 }
 
 int io_layer_comm::getStatusIO()
 {
+#ifdef USE_HMI_PLC
+    return 0;
+#else
     return _getStatusIO;
+#endif
 }
 
 int io_layer_comm::setStatusIO()
 {
+#ifdef USE_HMI_PLC
+    return 0;
+#else
     return _setStatusIO;
+#endif
 }

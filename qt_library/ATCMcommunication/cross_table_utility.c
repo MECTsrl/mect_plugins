@@ -22,7 +22,17 @@
 #include "cross_table_utility.h"
 #include "utility.h"
 
-#define RETRY_NB 10
+#include "hmi_plc.h"
+
+#ifdef USE_HMI_PLC
+
+HmiPlcBlock plcBlock; // actual values from plc
+HmiPlcBlock hmiBlock; // doWrite(), addWrite(), activateVar(), disactivateVar()
+
+#define VAR_VALUE(n)  plcBlock.values[n].u32
+#define VAR_STATE(n)  plcBlock.states[n]
+
+#else
 
 BYTE IODataAreaI[STATUS_BASE_BYTE + DB_SIZE_BYTE];
 BYTE * pIODataAreaI = &(IODataAreaI[4]);
@@ -40,6 +50,8 @@ WORD IOSyncroAreaI[SYNCRO_DB_SIZE_ELEM + 1];
 WORD * pIOSyncroAreaI = &(IOSyncroAreaI[1]);
 
 size_t SyncroAreaSize = 0;
+
+#endif
 
 variable_t varNameArray[DB_SIZE_ELEM + 1];
 #if defined(ENABLE_STORE) || defined(ENABLE_TREND)
@@ -61,15 +73,20 @@ static int ActualNreg = 0;
 static int LastNreg = 0;
 static int blockSize = 1;
 
+#ifdef USE_HMI_PLC
+#else
 int cmpSyncroCtIndex(WORD address, int CtIndex);
 int setSyncroCtIndex(WORD * address, int CtIndex);
 int setStatusVar(const char * varname, char Status);
-
+#endif
 pthread_mutex_t datasync_recv_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t datasync_send_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#ifdef USE_HMI_PLC
+#else
 pthread_mutex_t write_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 static write_queue_elem_t * queue_head = NULL, * queue_tail = NULL;
+#endif
 
 /**
  * Open the cross table and fill the syncro vector with the Mirror variables and the PLC variables
@@ -103,12 +120,6 @@ size_t fillSyncroArea(void)
     int bytebitperblock = 0;
     int wordbitperblock = 0;
     int dwordbitperblock = 0;
-#if defined(ENABLE_STORE) || defined(ENABLE_TREND)
-    int isstores = 0;
-    int isstoref = 0;
-    int isstorev = 0;
-    int isstorex = 0;
-#endif
 
     fp = fopen(CROSS_TABLE, "r");
     if (fp == NULL)
@@ -118,10 +129,14 @@ size_t fillSyncroArea(void)
         return -1;
     }
 
+#ifdef USE_HMI_PLC
+    resetHmiPlcBlocks(&hmiBlock, &plcBlock);
+#else
     memset (pIOSyncroAreaI, 0x0, SYNCRO_DB_SIZE_ELEM);
     memset (pIOSyncroAreaO, 0x0, SYNCRO_DB_SIZE_ELEM);
     memset (pIODataAreaI, 0x0, STATUS_BASE_BYTE + DB_SIZE_BYTE);
     memset (pIODataAreaO, 0x0, STATUS_BASE_BYTE + DB_SIZE_BYTE);
+#endif
 
     // workaround for theValue() when using old Crosstables
 
@@ -155,7 +170,7 @@ size_t fillSyncroArea(void)
             continue;
         }
 
-        /* extract PLC flag */
+        /* extract Update flag */
         p = strtok_csv(NULL, SEPARATOR, &r);
         if (p == NULL || p[0] == '\0')
         {
@@ -163,34 +178,38 @@ size_t fillSyncroArea(void)
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
-
-#if defined(ENABLE_STORE) || defined(ENABLE_TREND)
-        isstores = 0;
-        isstoref = 0;
-        isstorev = 0;
-        isstorex = 0;
-#endif
-        if (p[0] == TAG_PLC || p[0] == TAG_STORED_SLOW || p[0] == TAG_STORED_FAST || p[0] == TAG_STORED_ON_VAR || p[0] == TAG_STORED_ON_SHOT || IS_MIRROR(elem_nb))
-        {
-            LOG_PRINT(verbose_e, "%s ELEMENT %d [%s]\n", (IS_MIRROR(elem_nb) == 1) ? "MIRROR": "PLC", elem_nb, line);
-#if defined(ENABLE_STORE) || defined(ENABLE_TREND)
-            if (p[0] == TAG_STORED_SLOW)
-            {
-                isstores = 1;
-            }
-            if (p[0] == TAG_STORED_FAST)
-            {
-                isstoref = 1;
-            }
-            if (p[0] == TAG_STORED_ON_VAR)
-            {
-                isstorev = 1;
-            }
-            if (p[0] == TAG_STORED_ON_SHOT)
-            {
-                isstorex = 1;
-            }
-#endif
+        varNameArray[elem_nb].active = p[0];
+        varNameArray[elem_nb].visible = 1;
+        switch (p[0]) {
+        case TAG_ONDEMAND:
+            varNameArray[elem_nb].visible = 0;
+            break;
+        case TAG_PLC:
+            break;
+        case TAG_STORED_SLOW:
+            strcpy(StoreArrayS[store_elem_nb_S].tag, varNameArray[elem_nb].tag);
+            StoreArrayS[store_elem_nb_S].CtIndex = elem_nb;
+            store_elem_nb_S++;
+            break;
+        case TAG_STORED_FAST:
+            strcpy(StoreArrayF[store_elem_nb_F].tag, varNameArray[elem_nb].tag);
+            StoreArrayF[store_elem_nb_F].CtIndex = elem_nb;
+            store_elem_nb_F++;
+            break;
+        case TAG_STORED_ON_VAR:
+            strcpy(StoreArrayV[store_elem_nb_V].tag, varNameArray[elem_nb].tag);
+            StoreArrayV[store_elem_nb_V].CtIndex = elem_nb;
+            store_elem_nb_V++;
+            break;
+        case TAG_STORED_ON_SHOT:
+            strcpy(StoreArrayX[store_elem_nb_X].tag, varNameArray[elem_nb].tag);
+            StoreArrayX[store_elem_nb_X].CtIndex = elem_nb;
+            store_elem_nb_X++;
+            break;
+        default:
+            sprintf(CrossTableErrorMsg, "Malformed element 'update'='%c'", p[0]);
+            LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
+            return elem_nb;            ;
         }
 
         /* Tag */
@@ -329,12 +348,10 @@ size_t fillSyncroArea(void)
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
             return elem_nb;
         }
-        if (
-                varNameArray[elem_nb].type == bit_e ||
-                varNameArray[elem_nb].type == bytebit_e ||
-                varNameArray[elem_nb].type == wordbit_e ||
-                varNameArray[elem_nb].type == dwordbit_e
-                )
+        if (varNameArray[elem_nb].type == bit_e ||
+            varNameArray[elem_nb].type == bytebit_e ||
+            varNameArray[elem_nb].type == wordbit_e ||
+            varNameArray[elem_nb].type == dwordbit_e )
         {
             varNameArray[elem_nb].decimal = 0;
         }
@@ -353,7 +370,7 @@ size_t fillSyncroArea(void)
             return elem_nb;
         }
 
-        if(strcmp(TAG_RTU, p) == 0)
+        if (strcmp(TAG_RTU, p) == 0)
         {
             varNameArray[elem_nb].protocol = prot_rtu_e;
         }
@@ -584,63 +601,6 @@ size_t fillSyncroArea(void)
             }
         }
 
-#if defined(ENABLE_STORE) || defined(ENABLE_TREND)
-        if (isstores == 1)
-        {
-            strcpy(StoreArrayS[store_elem_nb_S].tag, varNameArray[elem_nb].tag);
-            if (Tag2CtIndex(StoreArrayS[store_elem_nb_S].tag, &(StoreArrayS[store_elem_nb_S].CtIndex)) != 0)
-            {
-                LOG_PRINT(error_e, "cannot find variable '%s'", StoreArrayS[store_elem_nb_S].tag);
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "a new store variable is inserted '%s' at position %d\n", StoreArrayS[store_elem_nb_S].tag, store_elem_nb_S);
-                store_elem_nb_S++;
-            }
-        }
-        else if (isstoref == 1)
-        {
-            strcpy(StoreArrayF[store_elem_nb_F].tag, varNameArray[elem_nb].tag);
-            if (Tag2CtIndex(StoreArrayF[store_elem_nb_F].tag, &(StoreArrayF[store_elem_nb_F].CtIndex)) != 0)
-            {
-                LOG_PRINT(error_e, "cannot find variable '%s'", StoreArrayF[store_elem_nb_F].tag);
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "a new store variable is inserted '%s' at position %d\n", StoreArrayF[store_elem_nb_F].tag, store_elem_nb_F);
-                store_elem_nb_F++;
-            }
-        }
-        else if (isstorev == 1)
-        {
-            strcpy(StoreArrayV[store_elem_nb_V].tag, varNameArray[elem_nb].tag);
-            if (Tag2CtIndex(StoreArrayV[store_elem_nb_V].tag, &(StoreArrayV[store_elem_nb_V].CtIndex)) != 0)
-            {
-                LOG_PRINT(error_e, "cannot find variable '%s'", StoreArrayV[store_elem_nb_V].tag);
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "a new store variable is inserted '%s' at position %d\n", StoreArrayV[store_elem_nb_V].tag, store_elem_nb_V);
-                store_elem_nb_V++;
-            }
-        }
-        else if (isstorex == 1)
-        {
-            strcpy(StoreArrayX[store_elem_nb_X].tag, varNameArray[elem_nb].tag);
-            if (Tag2CtIndex(StoreArrayX[store_elem_nb_X].tag, &(StoreArrayX[store_elem_nb_X].CtIndex)) != 0)
-            {
-                LOG_PRINT(error_e, "cannot find variable '%s'", StoreArrayX[store_elem_nb_X].tag);
-            }
-            else
-            {
-                LOG_PRINT(verbose_e, "a new store variable is inserted '%s' at position %d\n", StoreArrayX[store_elem_nb_X].tag, store_elem_nb_X);
-                store_elem_nb_X++;
-            }
-        }
-#endif
-
-        LOG_PRINT(verbose_e, "'%s' %d\n", varNameArray[elem_nb].tag, elem_nb);
-
         elem_nb++;
     }
     fclose(fp);
@@ -667,7 +627,8 @@ int cmpCrossTableBlock(int i, int j)
     return (varNameArray[i].block != varNameArray[j].block);
 }
 
-
+#ifdef USE_HMI_PLC
+#else
 /** @brief Compare a cross table index and a syncro element
  * @param WORD address :  syncro table element
  * @param int CtIndex :  cross table index
@@ -700,13 +661,14 @@ int setSyncroCtIndex(WORD * address, int CtIndex)
 int getSyncroCtIndex(WORD address, int * CtIndex)
 {
     *CtIndex = (int)(address & ADDRESS_MASK);
-    if (*CtIndex < 0 || *CtIndex > DB_SIZE_ELEM)
+    if (*CtIndex <= 0 || *CtIndex > DB_SIZE_ELEM)
     {
         *CtIndex = -1;
         return 1;
     }
     return 0;
 }
+#endif
 
 /** @brief Extract the cross table index of the variable tagget as 'Tag'
  * @param const char * Tag : variable tag
@@ -757,14 +719,20 @@ int CtIndex2Type(int CtIndex)
 
 char readFromDbQuick(int ctIndex, int * ivaluep)
 {
-    register int *p = (int *)IODataAreaI;
     register int ivalue;
     register char status;
 
     pthread_mutex_lock(&datasync_recv_mutex);
     {
+#ifdef USE_HMI_PLC
+        ivalue = plcBlock.values[ctIndex].i32;
+        status = plcBlock.states[ctIndex];
+#else
+        register int *p = (int *)IODataAreaI;
+
         ivalue = p[ctIndex];
         status = pIODataStatusAreaI[ctIndex];
+#endif
     }
     pthread_mutex_unlock(&datasync_recv_mutex);
 
@@ -792,20 +760,65 @@ int readFromDbLock(int ctIndex, void * value)
 int readFromDb(int ctIndex, void * value)
 {
     int retval = 0;
+
     if (value == NULL)
     {
         LOG_PRINT(error_e, "NULL value pointer\n");
         return -1;
     }
-
-    if (ctIndex < 0 || ctIndex > DB_SIZE_ELEM)
+    if (ctIndex <= 0 || ctIndex > DB_SIZE_ELEM)
     {
         LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
         return -1;
     }
-
+#ifdef USE_HMI_PLC
+    switch(varNameArray[ctIndex].type)
+    {
+    case uintab_e:
+    case uintba_e:
+        memcpy(value, &plcBlock.values[ctIndex].u16, sizeof(uint16_t));
+        break;
+    case intab_e:
+    case intba_e:
+        memcpy(value, &plcBlock.values[ctIndex].i16, sizeof(int16_t));
+        break;
+    case udint_abcd_e:
+    case udint_badc_e:
+    case udint_cdab_e:
+    case udint_dcba_e:
+        memcpy(value, &plcBlock.values[ctIndex].u32, sizeof(uint32_t));
+        break;
+    case dint_abcd_e:
+    case dint_badc_e:
+    case dint_cdab_e:
+    case dint_dcba_e:
+        memcpy(value, &plcBlock.values[ctIndex].i32, sizeof(int32_t));
+        break;
+    case fabcd_e:
+    case fbadc_e:
+    case fcdab_e:
+    case fdcba_e:
+        memcpy(value, &plcBlock.values[ctIndex].f, sizeof(float));
+        break;
+    case byte_e:
+        memcpy(value, &plcBlock.values[ctIndex].u8, sizeof(uint8_t));
+        break;
+    case bit_e:
+    case bytebit_e:
+    case wordbit_e:
+    case dwordbit_e:
+        if (plcBlock.values[ctIndex].u8) {
+            *((int *)value) = 1;
+        } else {
+            *((int *)value) = 0;
+        }
+        break;
+    default:
+        LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
+        retval = -1;
+    }
+#else
     int byte_nb = (ctIndex - 1) * 4;
-    LOG_PRINT(verbose_e, "'%s': %X\n", varNameArray[ctIndex].tag, pIODataAreaI[byte_nb]);
 
     switch(varNameArray[ctIndex].type)
     {
@@ -859,6 +872,7 @@ int readFromDb(int ctIndex, void * value)
         LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
         retval = -1;
     }
+#endif
     return retval;
 }
 
@@ -945,18 +959,11 @@ inline void sprintf_fromUnsigned(char * s, unsigned uvalue, int decimal, int bas
 
 void sprintf_fromValue(char *s, int ctIndex, int value, int decimal, int base)
 {
-    // 0. variables
-    union {
-        uint8_t  uint8_var;
-        uint16_t uint16_var;
-        uint32_t uint32_var;
-        int16_t  int16_var;
-        int32_t  int32_var;
-        float    float_var;
-    } var;
+    // 0. variables    
+    varUnion var;
 
     // 1. memcpy
-    var.int32_var = value;
+    var.i32 = value;
 
     // 2. sprintf
     if (s == NULL) {
@@ -967,18 +974,18 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal, int base)
     case uintab_e:
     case uintba_e:
         if (decimal > 0 && base == 10) {
-            sprintf_fromFloat(s, (float)var.uint16_var, decimal, decimal);
+            sprintf_fromFloat(s, (float)var.u16, decimal, decimal);
         } else {
-            sprintf_fromUnsigned(s, var.uint16_var, decimal, base, 16);
+            sprintf_fromUnsigned(s, var.u16, decimal, base, 16);
         }
         break;
 
     case intab_e:
     case intba_e:
         if (decimal > 0 && base == 10) {
-            sprintf_fromFloat(s, (float)var.int16_var, decimal, decimal);
+            sprintf_fromFloat(s, (float)var.i16, decimal, decimal);
         } else {
-            sprintf_fromSigned(s, var.int16_var, decimal, base, 16);
+            sprintf_fromSigned(s, var.i16, decimal, base, 16);
         }
         break;
 
@@ -987,9 +994,9 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal, int base)
     case udint_cdab_e:
     case udint_dcba_e:
         if (decimal > 0 && base == 10) {
-            sprintf_fromFloat(s, (float)var.uint32_var, decimal, decimal);
+            sprintf_fromFloat(s, (float)var.u32, decimal, decimal);
         } else {
-            sprintf_fromUnsigned(s, var.uint32_var, decimal, base, 32);
+            sprintf_fromUnsigned(s, var.u32, decimal, base, 32);
         }
         break;
 
@@ -998,9 +1005,9 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal, int base)
     case dint_cdab_e:
     case dint_dcba_e:
         if (decimal > 0 && base == 10) {
-            sprintf_fromFloat(s, (float)var.int32_var, decimal, decimal);
+            sprintf_fromFloat(s, (float)var.i32, decimal, decimal);
         } else {
-            sprintf_fromSigned(s, var.int32_var, decimal, base, 32);
+            sprintf_fromSigned(s, var.i32, decimal, base, 32);
         }
         break;
 
@@ -1009,14 +1016,14 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal, int base)
     case fcdab_e:
     case fdcba_e:
         // ignore base
-        sprintf_fromFloat(s, var.float_var, decimal, 0); // no fixedpoint
+        sprintf_fromFloat(s, var.f, decimal, 0); // no fixedpoint
         break;
 
     case byte_e:
         if (decimal > 0 && base == 10) {
-            sprintf_fromFloat(s, (float)var.uint8_var, decimal, decimal);
+            sprintf_fromFloat(s, (float)var.u8, decimal, decimal);
         } else {
-            sprintf_fromUnsigned(s, var.uint8_var, decimal, base, 8);
+            sprintf_fromUnsigned(s, var.u8, decimal, base, 8);
         }
         break;
 
@@ -1025,7 +1032,7 @@ void sprintf_fromValue(char *s, int ctIndex, int value, int decimal, int base)
     case wordbit_e:
     case dwordbit_e:
         // ignore decimal
-        if (var.uint8_var == 0) {
+        if (var.u8 == 0) {
             sprintf_fromUnsigned(s, 0, 0, base, 1);
         } else {
             sprintf_fromUnsigned(s, 1, 0, base, 1);
@@ -1063,28 +1070,21 @@ float float_fromValue(int ctIndex, int value, int decimal)
     float retval;
 
     // 0. variables
-    union {
-        uint8_t  uint8_var;
-        uint16_t uint16_var;
-        uint32_t uint32_var;
-        int16_t  int16_var;
-        int32_t  int32_var;
-        float    float_var;
-    } var;
+    varUnion var;
 
     // 1. memcpy
-    var.int32_var = value;
+    var.i32 = value;
     switch(varNameArray[ctIndex].type) {
     case uintab_e:
     case uintba_e:
-        retval = (float)var.uint16_var;
+        retval = (float)var.u16;
         if (decimal > 0) {
             retval = retval / powf(10, decimal);
         }
         break;
     case intab_e:
     case intba_e:
-        retval = (float)var.int16_var;
+        retval = (float)var.i16;
         if (decimal > 0) {
             retval = retval / powf(10, decimal);
         }
@@ -1093,7 +1093,7 @@ float float_fromValue(int ctIndex, int value, int decimal)
     case udint_badc_e:
     case udint_cdab_e:
     case udint_dcba_e:
-        retval = (float)var.uint32_var;
+        retval = (float)var.u32;
         if (decimal > 0) {
             retval = retval / powf(10, decimal);
         }
@@ -1102,7 +1102,7 @@ float float_fromValue(int ctIndex, int value, int decimal)
     case dint_badc_e:
     case dint_cdab_e:
     case dint_dcba_e:
-        retval = (float)var.int32_var;
+        retval = (float)var.i32;
         if (decimal > 0) {
             retval = retval / powf(10, decimal);
         }
@@ -1111,11 +1111,11 @@ float float_fromValue(int ctIndex, int value, int decimal)
     case fbadc_e:
     case fcdab_e:
     case fdcba_e:
-        retval = var.float_var;
+        retval = var.f;
         // no fixed point adjustment
         break;
     case byte_e:
-        retval = (float)var.uint8_var;
+        retval = (float)var.u8;
         if (decimal > 0) {
             retval = retval / powf(10, decimal);
         }
@@ -1124,7 +1124,7 @@ float float_fromValue(int ctIndex, int value, int decimal)
     case bytebit_e:
     case wordbit_e:
     case dwordbit_e:
-        if (var.uint8_var == 0) {
+        if (var.u8 == 0) {
             retval = 0.0;
         } else {
             retval = 1.0;
@@ -1144,28 +1144,21 @@ int int_fromValue(int ctIndex, int value, int decimal)
     int n;
 
     // 0. variables
-    union {
-        uint8_t  uint8_var;
-        uint16_t uint16_var;
-        uint32_t uint32_var;
-        int16_t  int16_var;
-        int32_t  int32_var;
-        float    float_var;
-    } var;
+    varUnion var;
 
     // 1. memcpy
-    var.int32_var = value;
+    var.i32 = value;
     switch(varNameArray[ctIndex].type) {
     case uintab_e:
     case uintba_e:
-        retval = (int)var.uint16_var;
+        retval = (int)var.u16;
         for (n = decimal; n > 0; --n) {
             retval = retval / 10;
         }
         break;
     case intab_e:
     case intba_e:
-        retval = (int)var.int16_var;
+        retval = (int)var.i16;
         for (n = decimal; n > 0; --n) {
             retval = retval / 10;
         }
@@ -1174,7 +1167,7 @@ int int_fromValue(int ctIndex, int value, int decimal)
     case udint_badc_e:
     case udint_cdab_e:
     case udint_dcba_e:
-        retval = (int)var.uint32_var;
+        retval = (int)var.u32;
         for (n = decimal; n > 0; --n) {
             retval = retval / 10;
         }
@@ -1183,7 +1176,7 @@ int int_fromValue(int ctIndex, int value, int decimal)
     case dint_badc_e:
     case dint_cdab_e:
     case dint_dcba_e:
-        retval = (int)var.int32_var;
+        retval = (int)var.i32;
         for (n = decimal; n > 0; --n) {
             retval = retval / 10;
         }
@@ -1192,11 +1185,11 @@ int int_fromValue(int ctIndex, int value, int decimal)
     case fbadc_e:
     case fcdab_e:
     case fdcba_e:
-        retval = (int)var.float_var;
+        retval = (int)var.f;
         // no fixed point adjustment
         break;
     case byte_e:
-        retval = (int)var.uint8_var;
+        retval = (int)var.u8;
         for (n = decimal; n > 0; --n) {
             retval = retval / 10;
         }
@@ -1205,7 +1198,7 @@ int int_fromValue(int ctIndex, int value, int decimal)
     case bytebit_e:
     case wordbit_e:
     case dwordbit_e:
-        if (var.uint8_var == 0) {
+        if (var.u8 == 0) {
             retval = 0;
         } else {
             retval = 1;
@@ -1221,6 +1214,9 @@ int int_fromValue(int ctIndex, int value, int decimal)
 
 void writeVarInQueueByCtIndex(int ctIndex, int value)
 {
+#ifdef USE_HMI_PLC
+    (void)prepareWriteVarByCtIndex(ctIndex, value, 1);
+#else
     switch (prepareWriteVarByCtIndex(ctIndex, value, 1))
     {
     case DONE:
@@ -1250,10 +1246,13 @@ void writeVarInQueueByCtIndex(int ctIndex, int value)
     default:
         ;
     }
+#endif
 }
 
 void writeVarQueuedByCtIndex(void)
 {
+#ifdef USE_HMI_PLC
+#else
     pthread_mutex_lock(&write_queue_mutex);
     {
         // get items from queue head
@@ -1293,6 +1292,7 @@ void writeVarQueuedByCtIndex(void)
         }
     }
     pthread_mutex_unlock(&write_queue_mutex);
+#endif
 }
 
 /**
@@ -1303,10 +1303,22 @@ int writePendingInorder()
 #ifdef AVOID_RECIPES
     return 0;
 #else
-    unsigned int SynIndex;
     int do_signal = 0;
+
     pthread_mutex_lock(&datasync_send_mutex);
     {
+#ifdef USE_HMI_PLC
+        int addr;
+
+        for (addr = 1; addr <= DimCrossTable; ++addr) {
+            if (hmiBlock.states[addr] == varStatus_PREPARING) {
+                hmiBlock.states[addr] = varStatus_DO_WRITE;
+                do_signal = 1;
+            }
+        }
+#else
+        unsigned int SynIndex;
+
         for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
         {
             if (IS_PREPARE_SYNCRO_FLAG(SynIndex))
@@ -1317,13 +1329,13 @@ int writePendingInorder()
                 do_signal = 1;
             }
         }
+#endif
         if (do_signal)
         {
             pthread_cond_signal(&theWritingCondvar);
         }
     }
     pthread_mutex_unlock(&datasync_send_mutex);
-    LOG_PRINT(verbose_e, "Set writing flag  pIOSyncroAreaO[%d] '%X'\n",SynIndex, pIOSyncroAreaO[SynIndex]);
     return 0;
 #endif
 }
@@ -1336,17 +1348,24 @@ int writePendingInorder()
 char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
 {
     char retval = ERROR;
-    unsigned i;
 
     if (ctIndex <= 0 || ctIndex > DB_SIZE_ELEM)
     {
         LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
         return retval;
     }
-
-    LOG_PRINT(verbose_e, "Writing '%d'\n", ctIndex);
     pthread_mutex_lock(&datasync_send_mutex);
     {
+#ifdef USE_HMI_PLC
+        hmiBlock.values[ctIndex].i32 = value;
+        if (execwrite) {
+            hmiBlock.states[ctIndex] = varStatus_DO_WRITE; // NB: even if it was varStatus_PREPARING
+        } else {
+            hmiBlock.states[ctIndex] = varStatus_PREPARING;
+        }
+        retval = DONE;
+#else
+        unsigned i;
         uint16_t oper;
         uint16_t addr;
         int already_present = 0;
@@ -1400,6 +1419,7 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
         p[ctIndex] = value;
         retval = DONE;
 exit_function:
+#endif
         if (retval == DONE && execwrite)
         {
             pthread_cond_signal(&theWritingCondvar);
@@ -1467,8 +1487,6 @@ int getHeadBlockName(const char * varname, char * varblockhead)
 int activateVar(const char * varname)
 {
     int CtIndex;
-    int found = 0;
-    unsigned i;
 
     if (varname[0] == '\0')
     {
@@ -1485,9 +1503,19 @@ int activateVar(const char * varname)
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
         return 1;
     }
+    if (! varNameArray[CtIndex].active != TAG_ONDEMAND)
+    {
+        LOG_PRINT(error_e, "'%s' has not '%c' update type\n", varname, TAG_ONDEMAND);
+        return 1;
+    }
     pthread_mutex_lock(&datasync_send_mutex);
     {
-        for (i = 0; i < SyncroAreaSize; i++)
+#ifdef USE_HMI_PLC
+        varNameArray[CtIndex].visible = 1; // hmiBlock.states[CtIndex] = varStatus_DO_READ;
+#else
+        int found = 0;
+
+        for (int i = 0; i < SyncroAreaSize; i++)
         {
             if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 && IS_READ_SYNCRO_FLAG(i))
             {
@@ -1501,6 +1529,7 @@ int activateVar(const char * varname)
             SyncroAreaSize++;
             varNameArray[CtIndex].visible = 1;
         }
+#endif
     }
     pthread_mutex_unlock(&datasync_send_mutex);
     return 0;
@@ -1512,7 +1541,6 @@ int activateVar(const char * varname)
 int deactivateVar(const char * varname)
 {
     int CtIndex;
-    unsigned i;
 
     if (varname[0] == '\0')
     {
@@ -1529,22 +1557,34 @@ int deactivateVar(const char * varname)
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
         return 1;
     }
+    if (! varNameArray[CtIndex].active != TAG_ONDEMAND)
+    {
+        LOG_PRINT(error_e, "'%s' has not '%c' update type\n", varname, TAG_ONDEMAND);
+        return 1;
+    }
     pthread_mutex_lock(&datasync_send_mutex);
     {
+#ifdef USE_HMI_PLC
+        varNameArray[CtIndex].visible = 0; // hmiBlock.states[CtIndex] = varStatus_NOP;
+#else
+        unsigned i;
+
         for (i = 0; i < SyncroAreaSize; i++)
         {
             if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 && IS_READ_SYNCRO_FLAG(i))
             {
                 CLR_SYNCRO_FLAG(i);
-                varNameArray[CtIndex].visible = 0;
                 break;
             }
         }
+#endif
     }
     pthread_mutex_unlock(&datasync_send_mutex);
     return 0;  // it's ok even if not found
 }
 
+#ifdef USE_HMI_PLC
+#else
 /**
  * @brief set the actual status.
  * The status could be:
@@ -1554,9 +1594,12 @@ int deactivateVar(const char * varname)
  */
 int setStatusVar(const char * varname, char Status)
 {
+    (void)varname;
+    (void)Status;
     LOG_PRINT(error_e, "called  int setStatusVar()\n");
     return 1;
 }
+#endif
 
 /**
  * @brief check the syncro data input to verify if a pending write finish,
@@ -1564,6 +1607,8 @@ int setStatusVar(const char * varname, char Status)
  */
 void compactSyncWrites(void)
 {
+#ifdef USE_HMI_PLC
+#else
     unsigned  SynIndex;
 
     // already locked both for send and recv
@@ -1589,6 +1634,7 @@ void compactSyncWrites(void)
             break;
         }
     }
+#endif
 }
 
 int getVarDecimalByCtIndex(const int ctIndex)
@@ -1745,6 +1791,7 @@ inline int theValue_string(int ctIndex, char * valuep)
 int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
 {
     int value = theValue_string(ctIndex, formattedVar);
+
     writeVarInQueueByCtIndex(ctIndex, value);
     return 0;
 }
@@ -1762,7 +1809,11 @@ int doWrite(int ctIndex, void * valuep)
 
 int getStatus(int CtIndex)
 {
+#ifdef USE_HMI_PLC
+    return plcBlock.states[CtIndex];
+#else
     return pIODataStatusAreaI[CtIndex];
+#endif
 }
 
 int addWrite(int ctIndex, void * valuep)

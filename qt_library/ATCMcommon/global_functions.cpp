@@ -19,7 +19,7 @@
 #include <QMetaObject>
 //#include "app_config.h"
 #include "pthread.h"
-
+#include "hmi_plc.h"
 /**
  * @brief load the passwords
  */
@@ -395,8 +395,6 @@ int readRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 
 int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 {
-    int busy = 0;
-
     if (step >= MAX_RCP_STEP)
     {
         return -1;
@@ -411,7 +409,10 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         writeVarInQueueByCtIndex(ctIndex, value);
     }
 #else
-    beginWrite();
+#ifdef USE_HMI_PLC
+#else
+    int busy = 0;
+
     pthread_mutex_lock(&datasync_send_mutex);
     {
         uint16_t oper;
@@ -437,12 +438,12 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         }
     }
     pthread_mutex_unlock(&datasync_send_mutex);
-
     if (busy)
     {
         return 1;
     }
-
+#endif
+    beginWrite();
     for (int i = 0; i < table[step].count(); i++)
     {
         char retval;
@@ -507,8 +508,8 @@ int checkRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
 
 bool CommStart()
 {
-    /* Load the cross-table in order to allocate the ioArea to the right size (should be fixed size) and fill the syncro table */
     int elem_read = fillSyncroArea();
+
     if (elem_read < 0)
     {
         LOG_PRINT(error_e, "cannot find the Crosstable [%s]\n", CROSS_TABLE);
@@ -523,7 +524,7 @@ bool CommStart()
     }
     else if (elem_read > DB_SIZE_ELEM)
     {
-        LOG_PRINT(error_e, "Too many variable into the Crosstable [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
+        LOG_PRINT(error_e, "Too many variables into the Crosstable [%dvs%d]\n", elem_read, DB_SIZE_ELEM);
         QMessageBox::critical(0,QApplication::trUtf8("Crosstable Check"), QApplication::trUtf8("Syntax error into the Crosstable at line %1\nMSG: '%2'").arg(elem_read).arg(CrossTableErrorMsg));
         return false;
     }
@@ -538,7 +539,8 @@ bool CommStart()
     /* start the io layers */
     ioComm = new io_layer_comm(&datasync_send_mutex, &datasync_recv_mutex);
     LOG_PRINT(verbose_e, "Starting IOLayer Data\n");
-
+#ifdef USE_HMI_PLC
+#else
     if (ioComm->initializeData(LOCAL_SERVER_ADDR, LOCAL_SERVER_DATA_RX_PORT, LOCAL_SERVER_DATA_TX_PORT, IODataAreaI, STATUS_BASE_BYTE + DB_SIZE_BYTE, IODataAreaO, STATUS_BASE_BYTE + DB_SIZE_BYTE) == false)
     {
         LOG_PRINT(error_e, "cannot connect to the Data IOLayer\n");
@@ -552,6 +554,7 @@ bool CommStart()
         QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
         return false;
     }
+#endif
     ioComm->start();
     LOG_PRINT(verbose_e, "IOLayer Syncro Started\n");
 
