@@ -171,12 +171,12 @@ void recipe::updateData()
         // Clear Table and disabling Column Resize
         ui->tableWidget->setVisible(false);
         ui->tableWidget->setEnabled(false);
-        ui->tableWidget->clearSelection();
+        ui->tableWidget->clear();
         ui->tableWidget->setRowCount(0);
         ui->tableWidget->setColumnCount(0);
-        ui->tableWidget->clearContents();
-        ui->tableWidget->clear();
         ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Fixed);
+        ui->tableWidget->horizontalHeader()->reset();
+        ui->tableWidget->setHorizontalHeaderLabels(QStringList());
         // Next step
         state = 3;
     }
