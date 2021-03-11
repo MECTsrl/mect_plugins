@@ -321,39 +321,10 @@ void Logger::run()
     QDateTime timeBefore;
     QDateTime timeAfter ;
     ntpclient->start();
+    QMutex *ntpMutex = ntpclient->getNTPMutex();
 
     while (1)        
     {
-        // Check ntp sync requested
-        if(ntpclient->getTimeChanged() && logger_start) {
-            //gestione chiusura file
-            ntpclient->setTimeChanged(false);
-            // Verifica sull'entità della correzione
-            timeBefore = ntpclient->getTimeBefore();
-            timeAfter = QDateTime::currentDateTime();
-            if (
-                (lastDumpTime.isValid() && timeAfter < lastDumpTime) ||     // Nuova Ora precedente all'ultima scrittura di Log
-                timeAfter.daysTo(timeBefore) != 0                           // Nuova Ora in un giorno differente
-                )  {
-                // Chiudere Log Attuale
-#ifdef ENABLE_ALARMS
-                closeAlarmsFile();
-#endif
-#ifdef ENABLE_STORE
-                closeStorageFile();
-#endif
-            }
-            time(&Now);
-            timeinfo = localtime (&Now);
-
-            if (not openStorageFile()) {
-                LOG_PRINT(error_e, "cannot open the store\n");
-                logger_shot = false;
-                return;
-            }
-            dumpStorage();
-        }
-
         if (recompute_abstime) {
             recompute_abstime = false;
             clock_gettime(CLOCK_REALTIME, &abstime); // sem_timedwait
@@ -380,6 +351,39 @@ void Logger::run()
         } else {
             recompute_abstime = true;
         }
+
+        // Check ntp sync requested
+        ntpMutex->lock();
+        {
+            if (ntpclient->isTimeChanged() && logger_start) {
+                // Gestione chiusura file
+                // Verifica sull'entità della correzione
+                timeBefore = ntpclient->getTimeBefore();
+                timeAfter = QDateTime::currentDateTime();
+                dumpStorage(true, timeBefore);
+                if (
+                    (lastDumpTime.isValid() && timeAfter < lastDumpTime) ||     // Nuova Ora precedente all'ultima scrittura di Log
+                    timeAfter.daysTo(timeBefore) != 0                           // Nuova Ora in un giorno differente
+                    )  {
+                    // Chiudere Log Attuale
+#ifdef ENABLE_ALARMS
+                    closeAlarmsFile();
+#endif
+#ifdef ENABLE_STORE
+                    closeStorageFile();
+#endif
+                }
+                time(&Now);
+                timeinfo = localtime (&Now);
+
+                if (not openStorageFile()) {
+                    LOG_PRINT(error_e, "cannot open the store\n");
+                    logger_shot = false;
+                    return;
+                }
+            }
+        }
+        ntpMutex->unlock();
 
         /* get the actual time */
         time(&Now);
@@ -441,35 +445,39 @@ void Logger::run()
         /* if the logger is started */
         if (logger_start)
         {
-            if (logger_shot)
+            ntpMutex->lock();
             {
-                variation = false;
-            }
-            else
-            {
-                variation = checkVariation();
-            }
-            /* if there is something to dump */
-            if (
-                    logger_shot || variation
-                    ||
-                    (LogPeriodSecS > 0 && store_elem_nb_S > 0 && (counterS * _period_msec) >= (LogPeriodSecS * 1000))
-                    ||
-                    (LogPeriodSecF > 0 && store_elem_nb_F > 0 && (counterF * _period_msec) >= (LogPeriodSecF * 1000))
-                    )
-            {
-                /* if the file is not open, open it */
-                if (openStorageFile() == false)
+                if (logger_shot)
                 {
-                    LOG_PRINT(error_e, "cannot open the store\n");
-                    logger_shot = false;
-                    return;
+                    variation = false;
                 }
-                LOG_PRINT(verbose_e, "store opened\n");
-                /* log the store variables */
-                dumpStorage();
-                logger_shot = false;
+                else
+                {
+                    variation = checkVariation();
+                }
+                /* if there is something to dump */
+                if (
+                        logger_shot || variation
+                        ||
+                        (LogPeriodSecS > 0 && store_elem_nb_S > 0 && (counterS * _period_msec) >= (LogPeriodSecS * 1000))
+                        ||
+                        (LogPeriodSecF > 0 && store_elem_nb_F > 0 && (counterF * _period_msec) >= (LogPeriodSecF * 1000))
+                        )
+                {
+                    /* if the file is not open, open it */
+                    if (openStorageFile() == false)
+                    {
+                        LOG_PRINT(error_e, "cannot open the store\n");
+                        logger_shot = false;
+                        return;
+                    }
+                    LOG_PRINT(verbose_e, "store opened\n");
+                    /* log the store variables */
+                    dumpStorage();
+                    logger_shot = false;
+                }
             }
+            ntpMutex->unlock();
         }
         else
         {
@@ -1147,7 +1155,7 @@ bool Logger::checkVariation()
     return retval;
 }
 
-bool Logger::dumpStorage()
+bool Logger::dumpStorage(bool timeChanged, QDateTime timeBefore)
 {
     char buffer [FILENAME_MAX] = "";
     char value [42] = "";
@@ -1181,20 +1189,21 @@ bool Logger::dumpStorage()
         return false;
     }
 
-    /* prepare the event item */
-    strftime (buffer, FILENAME_MAX, "%Y/%m/%d; %H:%M:%S", timeinfo);
-    fprintf(storefp, "%s", buffer);
 #ifdef ENABLE_TREND
     timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
 #endif
-    if (ntpclient->getTimeChanged()) {
-        QMutex mutex;
-        mutex.lock();
+    if (timeChanged && timeBefore.isValid()) {
+        QString timeStamp = timeBefore.toString("yyyy/MM/dd; HH:mm:ss");
+        fprintf(storefp, "%s", timeStamp.toLatin1().data());
+
         for (int i = 0; i < (store_elem_nb_S + store_elem_nb_F + store_elem_nb_V + store_elem_nb_X); i++) {
             fprintf(storefp, "; -");
         }
-        mutex.unlock();
     } else {
+        // Memorizzo l'ultimo timestamp di scrittura
+        lastDumpTime = QDateTime::currentDateTime();
+        QString timeStamp = lastDumpTime.toString("yyyy/MM/dd; HH:mm:ss");
+        fprintf(storefp, "%s", timeStamp.toLatin1().data());
 
         if (logger_shot || (store_elem_nb_S > 0  && (counterS * _period_msec) >= (LogPeriodSecS * 1000)))
         {
@@ -1298,9 +1307,6 @@ bool Logger::dumpStorage()
                 fprintf(storefp, "; -");
             }
         }
-
-        // only if (not timeChanged)
-        lastDumpTime = QDateTime::currentDateTime();
     }
 
     fprintf(storefp, "\n");

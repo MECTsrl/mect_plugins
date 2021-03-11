@@ -28,6 +28,7 @@ public:
     int         getOffset_h();
     int         getPeriod_h();
     void        setNtpParams(const QString &ntpServer, int ntpTimeout_s, int ntpOffset_h, int ntpPeriod_h);
+    QMutex*     getNTPMutex();
 
 signals:
     void        ntpSyncFinish(bool timeOut);                    // ntp Sync Ended
@@ -40,10 +41,10 @@ public slots:
 protected:
     bool            ntpSyncOrChangeRequested();     // check if a Clock change is requested
     void            doSyncOrChange();               // do a Clock change
-    virtual void run();
-    bool        getTimeChanged();
-    void        setTimeChanged(bool timeChanged);
-    QDateTime   getTimeBefore();
+    virtual void    run();
+    bool            isTimeChanged();
+    QDateTime       getTimeBefore();
+
 
 private:
     int64_t         getTimestamp();
@@ -64,7 +65,7 @@ private:
 
     bool            timeChanged;            // Rilevato un cambio di data e ora genera una riga vuota nei log per segnare il cambio di tempo
     QDateTime       timeBeforeChange;
-    QMutex          mutex;
+    QMutex          mutexNTP;
     QSemaphore      ntpSem;
 
 };

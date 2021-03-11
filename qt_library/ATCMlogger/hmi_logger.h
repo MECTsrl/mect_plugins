@@ -126,7 +126,7 @@ private:
     bool closeAlarmsFile();
 #endif
 #ifdef ENABLE_STORE
-    bool dumpStorage();
+    bool dumpStorage(bool timeChanged = false, QDateTime timeBefore = QDateTime());
     bool openStorageFile();
     bool closeStorageFile();
 #endif
