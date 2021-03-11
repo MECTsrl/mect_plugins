@@ -68,7 +68,7 @@ HmiClient *newHmiClient(const char *hostname)
         }
         if (! hostname ) {
             hostname = DEFAULT_HOSTNAME;
-            fprintf(stderr, "%s() using default plc hostname '%s'\n", __func__, hostname);
+            // fprintf(stderr, "%s() using default plc hostname '%s'\n", __func__, hostname);
         }
         client->hostname = strdup(hostname);
         if (! client->hostname ) {

@@ -21,10 +21,14 @@
 
 extern HmiPlcBlock plcBlock;
 extern HmiPlcBlock hmiBlock;
-static HmiClient *hmiClient; // can't change the class :(
 
 #define VAR_VALUE(n)  plcBlock.values[n].u32
 #define VAR_STATE(n)  plcBlock.states[n]
+
+extern uint16_t writingCount;
+extern uint16_t writingList[DimCrossTable]; // NB: zero based
+
+static HmiClient *hmiClient; // can't change the class :(
 
 #endif
 
@@ -164,35 +168,26 @@ void io_layer_comm::run()
             {
 #ifdef USE_HMI_PLC
                 // set/reset the DO_READ for active and visible "H" variables
-                for (int addr = 1; addr <= DimCrossTable; ++addr) {
-                    if (varNameArray[addr].active == TAG_ONDEMAND) {
-                        if (varNameArray[addr].visible) {
-                            if (hmiBlock.states[addr] == varStatus_NOP) {
-                                hmiBlock.states[addr] = varStatus_DO_READ;
-                            } else {
-                                // varStatus_PREPARING, varStatus_DO_WRITE
-                            }
-                        } else {
-                            if (hmiBlock.states[addr] == varStatus_DO_READ) {
-                                hmiBlock.states[addr] = varStatus_NOP;
-                            } else {
-                                // varStatus_PREPARING, varStatus_DO_WRITE
-                            }
-                        }
-                    }
-                }
+                // is already done by activateVar() and deactivateVar()
+                // except when there was a write, see below
 
                 // send and receive blocks
                 if (hmiClientPoll(hmiClient, &hmiBlock, &plcBlock, TIMEOUT_MS) <= 0) {
                     LOG_PRINT(error_e, "communication error with plc\n");
                 }
 
-                // reset the DO_WRITE
-                for (int addr = 1; addr <= DimCrossTable; ++addr) {
-                    if (hmiBlock.states[addr] == varStatus_DO_WRITE) {
+                // reset the DO_WRITE, checking for "H" variables too
+                for (int n = 0; n < writingCount; ++n) {
+                    int addr = writingList[n];
+
+                    if (varNameArray[addr].active == TAG_ONDEMAND and varNameArray[addr].visible) {
+                        hmiBlock.states[addr] = varStatus_DO_READ;
+                    } else {
                         hmiBlock.states[addr] = varStatus_NOP;
                     }
+                    writingList[n] = 0;
                 }
+                writingCount = 0;
 #else
                 // send
                 notifySetData();

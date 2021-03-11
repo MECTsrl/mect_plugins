@@ -32,6 +32,9 @@ HmiPlcBlock hmiBlock; // doWrite(), addWrite(), activateVar(), disactivateVar()
 #define VAR_VALUE(n)  plcBlock.values[n].u32
 #define VAR_STATE(n)  plcBlock.states[n]
 
+uint16_t writingCount;
+uint16_t writingList[DimCrossTable]; // NB: zero based
+
 #else
 
 BYTE IODataAreaI[STATUS_BASE_BYTE + DB_SIZE_BYTE];
@@ -138,12 +141,14 @@ size_t fillSyncroArea(void)
     memset (pIODataAreaO, 0x0, STATUS_BASE_BYTE + DB_SIZE_BYTE);
 #endif
 
-    // workaround for theValue() when using old Crosstables
-
     for (n = 1; n <= DB_SIZE_ELEM; ++n)
     {
-        varNameArray[n].type = udint_abcd_e;
+        varNameArray[n].type = udint_abcd_e; // workaround for theValue() when using old Crosstables
+#ifdef USE_HMI_PLC
+        writingList[n] = 0;
+#endif
     }
+    writingCount = 0;
 
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
@@ -183,6 +188,7 @@ size_t fillSyncroArea(void)
         switch (p[0]) {
         case TAG_ONDEMAND:
             varNameArray[elem_nb].visible = 0;
+            hmiBlock.states[elem_nb] = varStatus_NOP;
             break;
         case TAG_PLC:
             break;
@@ -1313,6 +1319,12 @@ int writePendingInorder()
         for (addr = 1; addr <= DimCrossTable; ++addr) {
             if (hmiBlock.states[addr] == varStatus_PREPARING) {
                 hmiBlock.states[addr] = varStatus_DO_WRITE;
+                if (writingCount < DimCrossTable) {
+                    writingList[writingCount] = addr;
+                    ++writingCount;
+                } else {
+                    LOG_PRINT(error_e, "the writing list is full\n");
+                }
                 do_signal = 1;
             }
         }
@@ -1360,6 +1372,12 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
         hmiBlock.values[ctIndex].i32 = value;
         if (execwrite) {
             hmiBlock.states[ctIndex] = varStatus_DO_WRITE; // NB: even if it was varStatus_PREPARING
+            if (writingCount < DimCrossTable) {
+                writingList[writingCount] = ctIndex;
+                ++writingCount;
+            } else {
+                LOG_PRINT(error_e, "the writing list is full\n");
+            }
         } else {
             hmiBlock.states[ctIndex] = varStatus_PREPARING;
         }
@@ -1511,7 +1529,12 @@ int activateVar(const char * varname)
     pthread_mutex_lock(&datasync_send_mutex);
     {
 #ifdef USE_HMI_PLC
-        varNameArray[CtIndex].visible = 1; // hmiBlock.states[CtIndex] = varStatus_DO_READ;
+        varNameArray[CtIndex].visible = 1;
+        // NB: may be varStatus_PREPARING or varStatus_DO_WRITE
+        // see also io_layer_comm::run()
+        if (hmiBlock.states[CtIndex] == varStatus_NOP) {
+            hmiBlock.states[CtIndex] = varStatus_DO_READ;
+        }
 #else
         int found = 0;
 
@@ -1565,7 +1588,12 @@ int deactivateVar(const char * varname)
     pthread_mutex_lock(&datasync_send_mutex);
     {
 #ifdef USE_HMI_PLC
-        varNameArray[CtIndex].visible = 0; // hmiBlock.states[CtIndex] = varStatus_NOP;
+        varNameArray[CtIndex].visible = 0;
+        // NB: may be varStatus_PREPARING or varStatus_DO_WRITE
+        // see also io_layer_comm::run()
+        if (hmiBlock.states[CtIndex] == varStatus_DO_READ) {
+            hmiBlock.states[CtIndex] = varStatus_NOP;
+        }
 #else
         unsigned i;
 
