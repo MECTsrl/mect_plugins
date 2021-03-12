@@ -185,37 +185,22 @@ size_t fillSyncroArea(void)
         }
         varNameArray[elem_nb].active = p[0];
         varNameArray[elem_nb].visible = 1;
-        switch (p[0]) {
+        switch (varNameArray[elem_nb].active) {
         case TAG_ONDEMAND:
             varNameArray[elem_nb].visible = 0;
             hmiBlock.states[elem_nb] = varStatus_NOP;
             break;
         case TAG_PLC:
-            break;
         case TAG_STORED_SLOW:
-            strcpy(StoreArrayS[store_elem_nb_S].tag, varNameArray[elem_nb].tag);
-            StoreArrayS[store_elem_nb_S].CtIndex = elem_nb;
-            store_elem_nb_S++;
-            break;
         case TAG_STORED_FAST:
-            strcpy(StoreArrayF[store_elem_nb_F].tag, varNameArray[elem_nb].tag);
-            StoreArrayF[store_elem_nb_F].CtIndex = elem_nb;
-            store_elem_nb_F++;
-            break;
         case TAG_STORED_ON_VAR:
-            strcpy(StoreArrayV[store_elem_nb_V].tag, varNameArray[elem_nb].tag);
-            StoreArrayV[store_elem_nb_V].CtIndex = elem_nb;
-            store_elem_nb_V++;
-            break;
         case TAG_STORED_ON_SHOT:
-            strcpy(StoreArrayX[store_elem_nb_X].tag, varNameArray[elem_nb].tag);
-            StoreArrayX[store_elem_nb_X].CtIndex = elem_nb;
-            store_elem_nb_X++;
+            // ok, fill below after reading the tag
             break;
         default:
             sprintf(CrossTableErrorMsg, "Malformed element 'update'='%c'", p[0]);
             LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
-            return elem_nb;            ;
+            return elem_nb;
         }
 
         /* Tag */
@@ -244,6 +229,33 @@ size_t fillSyncroArea(void)
             }
         }
         strcpy(varNameArray[elem_nb].tag, p);
+        switch (varNameArray[elem_nb].active) {
+        case TAG_ONDEMAND:
+        case TAG_PLC:
+            break;
+        case TAG_STORED_SLOW:
+            strcpy(StoreArrayS[store_elem_nb_S].tag, varNameArray[elem_nb].tag);
+            StoreArrayS[store_elem_nb_S].CtIndex = elem_nb;
+            store_elem_nb_S++;
+            break;
+        case TAG_STORED_FAST:
+            strcpy(StoreArrayF[store_elem_nb_F].tag, varNameArray[elem_nb].tag);
+            StoreArrayF[store_elem_nb_F].CtIndex = elem_nb;
+            store_elem_nb_F++;
+            break;
+        case TAG_STORED_ON_VAR:
+            strcpy(StoreArrayV[store_elem_nb_V].tag, varNameArray[elem_nb].tag);
+            StoreArrayV[store_elem_nb_V].CtIndex = elem_nb;
+            store_elem_nb_V++;
+            break;
+        case TAG_STORED_ON_SHOT:
+            strcpy(StoreArrayX[store_elem_nb_X].tag, varNameArray[elem_nb].tag);
+            StoreArrayX[store_elem_nb_X].CtIndex = elem_nb;
+            store_elem_nb_X++;
+            break;
+        default:
+            ;
+        }
 
         /* type */
         p = strtok_csv(NULL, SEPARATOR, &r);
