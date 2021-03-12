@@ -16,7 +16,7 @@
 		<h1>Changelog</h1>
 		<hr color="#e6e8e6">
 		MectSuite release notes.
-		<h1>[v3.3.1] - 2021-03-03</h1>
+		<h1>[v3.3.2] - 2021-03-12</h1>
 		<hr color="#e6e8e6">
 		<ul>
 			<li>
@@ -45,11 +45,10 @@
                                                 <dd>- New empty line '-;-;-' in logs when date and time is manually changed and when NTP sync happens (#97).</dd>
 					<dt>MectApps:</dt>
 						<dd>- New 4C_TestSuite (#90).</dd>
-						<dd>- Added VoIP_caller project for TPX1070_03_E (#244).</dd>
 					<dt>Utilities:</dt>
 						<dd>- New Sysupdates for IP and touch screen calibration reset (#19).</dd>
 						<dd>- New get_trends.cgi (#31).</dd>
-						<dd>- First &micro;Python release.</dd>
+						<dd>- First &micro;Python sysupdate release. (#)</dd>
 				</dl>
 			</li>
 			<li>
@@ -71,7 +70,6 @@
                                         <dt>System:</dt>
                                             <dd>- Avoided CMD_GETCHILDREN crash (#82).</dd>
                                             <dd>- Fixed Timers (ex: TON) overflow (#87).</dd>
-                                            <dd>- In Store Page, HMI is no longer freezed while saving logs in USB (#51).</dd>
                                             <dd>- ATCM animation now accepts PNG with uppercase extension (#47).</dd>
                                             <dd>- Splash screen now is correctly closed if the RTC battery is down and date and time is set in Time Set page (#108).</dd>
                                             <dd>- Workaround for next line while ATCMButton is Pressed (#17).</dd>
@@ -86,7 +84,7 @@
 				<hr color="#e6e8e6">
 				<dl>
                                         <dt>Crosstable Editor:</dt>
-                                            <dd>- Max logs size is set by default to 4096 MB (#65).</dd>
+                                            <dd>- Max logs size can grow up to 4096 MB (for SDCard) (#65).</dd>
                                             <dd>- Input Registers can be defined in Modbus TCP, TCP_SRV and RTU_SRV (#113).</dd>
                                             <dd>- RTU_SRV node number can be modified (#101).</dd>
                                             <dd>- RTU0 fields are no longer editable by users in TPAC100803XX (#73).</dd>
@@ -102,12 +100,13 @@
                                         <dt>System:</dt>
                                             <dd>- HMI Network page is now able to connect to hidden wifi networks (#66).</dd>
                                             <dd>- HMI Time Set page Review (#307).</dd>
+                                            <dd>- HMI Store Page review  (#387).</dd>
                                             <dd>- CGI Review (#222).</dd>
                                             <dd>- Minor internal changes (#56).</dd>
 				</dl>
 			</li>
 			<li>
-                                <h2>Deprecated</h2>
+                                <h2>Removed</h2>
 				<hr color="#e6e8e6">
 				<dl>
                                         <dt>Models:</dt>
@@ -116,16 +115,19 @@
                                             <dd>- TP1043_01_B (#34).</dd>
                                             <dd>- TPAC1006 (#34).</dd>
                                             <dd>- TPAC1008_01 (#34).</dd>
-				</dl>
-			</li>
-			<li>
-				<h2>Removed Features</h2>	
-				<hr color="#e6e8e6">
-				<dl>
                                     <dt>Crosstable Editor:</dt>
                                         <dd>- Disabled RTU3 for TPAC1007_LV and TPAC1007_04_AE (#80).</dd>
                                     <dt>System:</dt>
                                         <dd>- Removed old emails from source code (#102).</dd>
+
+				</dl>
+			</li>
+			<li>
+                                <h2>Know Issues</h2>
+				<hr color="#e6e8e6">
+				<dl>
+                                    <dt>System:</dt>
+                                        <dd>- Numpad on UDINT values can write a number up to 429496729.</dd>
 
 				</dl>
 			</li>
