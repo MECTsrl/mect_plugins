@@ -72,11 +72,11 @@
     if (db.isOpen())
         db.close();</pre>
 		
-	<p class="western" >Moreover a &ldquo;sqldrivers&rdquo; folder must be added on TPAC to contain the symbolic link to the interface DB plugins:</p>
+	<p class="western" >Moreover (for target versions minor of MectSuite 3.3.3) a &ldquo;sqldrivers&rdquo; folder must be added on TPAC to contain the symbolic link to the interface DB plugins:</p>
 	<pre class="western" >
 	mkdir sqldrivers
 	cd sqldrivers
-	ln –s /usr/lib/libsqlite* ./
+	ln –s /usr/lib/libsq* ./
 	ln –s /usr/lib/libqsqlite* ./
 	cd</pre>
 	<br/>
