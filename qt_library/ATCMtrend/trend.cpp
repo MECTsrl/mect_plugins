@@ -713,8 +713,8 @@ void trend::refreshEvent(trend_msg_t item_trend)
 
 void trend::on_pushButtonPen_clicked()
 {
-    disableUpdate();
-    goto_page("trend_option");
+    //    disableUpdate();
+    //    goto_page("trend_option");
 }
 
 void trend::on_pushButtonSelect_clicked()
