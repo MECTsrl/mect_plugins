@@ -3089,7 +3089,7 @@ QString ctedit::getModelInfo(int nModel)
         szText.append(QString::fromAscii("Analog IN: \t\t%1\n") .arg(lstTargets[nModel].analogIN));
         szText.append(QString::fromAscii("Analog OUT: \t\t%1\n") .arg(lstTargets[nModel].analogOUT));
         if (lstTargets[nModel].fastIn)  {
-            szText.append(QString::fromAscii("Fast IN: \t\t%1\n") .arg(lstTargets[nModel].fastIn));
+            szText.append(QString::fromAscii("Fast IN: \t\t\t%1\n") .arg(lstTargets[nModel].fastIn));
         }
         if (lstTargets[nModel].fastOut)  {
             szText.append(QString::fromAscii("Fast OUT: \t\t%1\n") .arg(lstTargets[nModel].fastOut));
@@ -3098,7 +3098,7 @@ QString ctedit::getModelInfo(int nModel)
             szText.append(QString::fromAscii("PWM-PTO: \t\t%1\n") .arg(lstTargets[nModel].pwm));
         }
         if (lstTargets[nModel].rpmPorts)  {
-            szText.append(QString::fromAscii("RPM In: \t\t%1\n") .arg(lstTargets[nModel].rpmPorts));
+            szText.append(QString::fromAscii("RPM In: \t\t\t%1\n") .arg(lstTargets[nModel].rpmPorts));
         }
         if (lstTargets[nModel].loadCells)  {
             szText.append(QString::fromAscii("Load Cells: \t\t%1\n") .arg(lstTargets[nModel].loadCells));

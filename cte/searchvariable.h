@@ -39,6 +39,8 @@ private slots:
     void rowChanged();
 
 
+    void on_cboUpdate_currentIndexChanged(int index);
+
 private:
     bool    filterCTVars();
     bool    rec2show(QStringList &lstFields, int nRow);

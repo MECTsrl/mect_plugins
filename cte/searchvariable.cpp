@@ -23,9 +23,16 @@ SearchVariable::SearchVariable(QWidget *parent) :
     ui->cboSections->setCurrentIndex(-1);
     // Combo Priority
     for  (nCol = 0; nCol < nNumPriority; nCol++)   {
-        ui->cboPriority->addItem(lstPriority[nCol], lstPriority[nCol]);
+        ui->cboPriority->addItem(lstPriority[nCol], nCol);
+        ui->cboPriority->setItemData(nCol, Qt::AlignCenter, Qt::TextAlignmentRole);
     }
     ui->cboPriority->setCurrentIndex(-1);
+    // Combo Updates
+    for (nCol = Htype; nCol < UPDATE_TOTALS; nCol++)  {
+        ui->cboUpdate->addItem(lstUpdateNames[nCol], nCol);
+        ui->cboUpdate->setItemData(nCol, Qt::AlignCenter, Qt::TextAlignmentRole);
+    }
+    ui->cboUpdate->setCurrentIndex(-1);
     // Combo Types
     for  (nCol=0; nCol<lstTipi.count(); nCol++)   {
         ui->cboType->addItem(lstTipi[nCol], lstTipi[nCol]);
@@ -265,6 +272,12 @@ bool    SearchVariable::rec2show(QStringList &lstFields, int nRow)
             goto endCheck;
         }
     }
+    // Controllo su Update
+    if (ui->cboUpdate->currentIndex() >= 0)  {
+        if (lstFields[colSearchUpdate] != ui->cboUpdate->currentText())  {
+            goto endCheck;
+        }
+    }
     // Controllo sul Tipo
     if (ui->cboType->currentIndex() >= 0)  {
         if (lstFields[colSearchType] != ui->cboType->currentText())  {
@@ -328,8 +341,9 @@ void SearchVariable::resetFilters()
     isResettingFilter = true;
     ui->cboSections->setCurrentIndex(-1);
     ui->cboPriority->setCurrentIndex(-1);
+    ui->cboUpdate->setCurrentIndex(-1);
     ui->cboType->setCurrentIndex(-1);
-    ui->cboProtocol->setCurrentIndex(-1);
+    ui->cboProtocol->setCurrentIndex(-1);    
     ui->txtPort->clear();
     ui->txtNode->clear();
     ui->txtVarname->clear();
@@ -346,6 +360,19 @@ void SearchVariable::on_cboPriority_currentIndexChanged(int index)
     if (! isResettingFilter)  {
         if (index >= 0)  {
             qDebug("New Filter on Priority: %s", lstPriority[index].toLatin1().data());
+        }
+        else  {
+            qDebug("Cleared Priority Filter");
+        }
+        filterCTVars();
+    }
+}
+
+void SearchVariable::on_cboUpdate_currentIndexChanged(int index)
+{
+    if (! isResettingFilter)  {
+        if (index >= 0)  {
+            qDebug("New Filter on Update: %s", lstUpdateNames[index].toLatin1().data());
         }
         else  {
             qDebug("Cleared Priority Filter");
@@ -482,4 +509,5 @@ void SearchVariable::rowChanged()
     }
     qDebug("rowChanged(): Row %d", nRow);
 }
+
 
