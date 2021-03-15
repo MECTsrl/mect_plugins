@@ -58,6 +58,7 @@
 #include <QTreeWidgetItem>
 #include <QtAlgorithms>
 #include <QElapsedTimer>
+#include <QToolTip>
 #include <math.h>
 
 
@@ -143,8 +144,10 @@ ctedit::ctedit(QWidget *parent) :
             .arg(colorNormalEdit.red()) .arg(colorNormalEdit.green()) .arg(colorNormalEdit.blue());
     brushRed = QBrush(Qt::SolidPattern);    // Colore per Input Register ed Allarmi
     brushRed.setColor(Qt::red);
-    brushBlue= QBrush(Qt::SolidPattern);    // Colore per Eventi
+    brushBlue = QBrush(Qt::SolidPattern);   // Colore per Eventi
     brushBlue.setColor(QColor(0, 0, 205));  // (MediumBlue)
+    brushGreen = QBrush(Qt::SolidPattern);  // Colore per Eventi
+    brushGreen.setColor(QColor(0, 100, 0));  // (DarkGreen)
     //------------------------
     // Riempimento liste
     //------------------------
@@ -658,7 +661,26 @@ bool    ctedit::selectCTFile(QString szFileCT)
             // nModel = lstProductNames.indexOf(m_szCurrentModel);
             // qDebug() << QString::fromAscii("Model in List: %1") .arg(nModel);
             nModel = searchModelInList(m_szCurrentModel);
-            ui->lblModel->setStyleSheet(QLatin1String("background-color: LightCyan"));
+            QString szModelStyle;
+            szModelStyle.append(QLatin1String("QLabel {"));
+            szModelStyle.append(QLatin1String("color: black;"));
+            szModelStyle.append(QLatin1String("background-color: LightCyan;"));
+            szModelStyle.append(QLatin1String("font-family: Ubuntu;"));
+            szModelStyle.append(QLatin1String("font-size: 12pt ;"));
+            szModelStyle.append(QLatin1String("font-style: italic;"));
+            szModelStyle.append(QLatin1String("font-weight: bold;"));
+            szModelStyle.append(QLatin1String("}"));
+            szModelStyle.append(QLatin1String("QToolTip {"));
+            szModelStyle.append(QLatin1String("background-color: LightCyan;"));
+            szModelStyle.append(QLatin1String("font-family: Ubuntu;"));
+            szModelStyle.append(QLatin1String("font-size: 10pt;"));
+            szModelStyle.append(QLatin1String("border: 1px solid Blue;"));
+            szModelStyle.append(QLatin1String("border-radius: 5px;"));
+            szModelStyle.append(QLatin1String("padding: 15px;"));
+            szModelStyle.append(QLatin1String("min-width:  280px;"));//
+            szModelStyle.append(QLatin1String("min-height: 360px;"));//
+            szModelStyle.append(QLatin1String("}"));
+            ui->lblModel->setStyleSheet(szModelStyle);
             ui->lblModel->setToolTip(getModelInfo(nModel));
             qDebug() << QString::fromAscii("selectCTFile: Model Code: <%1> Model No <%2>") .arg(m_szCurrentModel) .arg(nModel);
             m_szTemplateCTFile = QString(szTemplateCTFile) .arg(m_szCurrentModel);
@@ -775,6 +797,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         }
         m_isCtModified = false;
         // Porta in primo piano il Tab delle Variabili
+        jumpToGridRow(m_nGridRow, true);
         ui->tabWidget->setCurrentIndex(TAB_CT);
     }
     return fRes;
@@ -1601,7 +1624,6 @@ void ctedit::enableFields()
     int     nTotalPorts = 0;
     int     nProtocol = ui->cboProtocol->currentIndex();
     int     nType = ui->cboType->currentIndex();
-    int     nBehavior = ui->cboBehavior->currentIndex();
     // bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
     qDebug("enableFields(): Row: [%d] MultiLine: [%d] colUpdate: %d", m_nGridRow + 1, m_fMultiEdit, lstEditableFields.indexOf(colUpdate));
@@ -1724,6 +1746,9 @@ void ctedit::enableFields()
                     ui->txtNode->setEnabled(false);
                     ui->chkInputRegister->setEnabled(false);
                     ui->txtRegister->setEnabled(false);
+                    ui->cboType->setEnabled(false);
+                    ui->cboBehavior->setEnabled(false);
+                    ui->txtDecimal->setEnabled(nType == INT16);
             }
         }
     }
@@ -2849,8 +2874,9 @@ void ctedit::showAllRows(bool fShowAll)
     nRow = m_nGridRow;
     // Trucco per centrare la riga...
     // jumpToGridRow(0, true);
-    if (nRow >= 0 && nRow < DimCrossTable)
+    if (nRow >= 0 && nRow < DimCrossTable)  {
         jumpToGridRow(nRow, true);
+    }
     // ui->tblCT->setFocus();
 }
 void ctedit::gotoRow()
@@ -2904,7 +2930,7 @@ void ctedit::jumpToGridRow(int nRow, bool fCenter)
     ui->tblCT->selectRow(nRow);
     // Se vero il flag fCenter, centra la riga selezionata rispetto alla finestra di scroll
     if (fCenter)  {
-        ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtCenter);
+        ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtTop);
     }
     enableFields();
     ui->tblCT->setFocus();
@@ -3053,7 +3079,7 @@ QString ctedit::getModelInfo(int nModel)
         szText.append(QString::fromAscii("Model: \t%1\n\n") .arg(lstTargets[nModel].modelName ));
         // Structural Parameters
         szText.append(QString::fromAscii("Display Width: \t\t%1\n") .arg(lstTargets[nModel].displayWidth));
-        szText.append(QString::fromAscii("Display Height: \t%1\n") .arg(lstTargets[nModel].displayHeight));
+        szText.append(QString::fromAscii("Display Height: \t\t%1\n") .arg(lstTargets[nModel].displayHeight));
         szText.append(QString::fromAscii("USB Ports: \t\t%1\n") .arg(lstTargets[nModel].usbPorts));
         szText.append(QString::fromAscii("Ethernet Ports: \t\t%1\n") .arg(lstTargets[nModel].ethPorts));
         szText.append(QString::fromAscii("SD Cards: \t\t%1\n") .arg(lstTargets[nModel].sdCards));
@@ -3080,12 +3106,13 @@ QString ctedit::getModelInfo(int nModel)
         // Bus Interfaces
         // Serial X
         for (nPort = 0; nPort < _serialMax; nPort++)  {
-            szText.append(QString::fromAscii("Serial %1 Enabled: \t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].serialPorts[nPort].portEnabled)));
+            szText.append(QString::fromAscii("Serial %1 Enabled: \t\t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].serialPorts[nPort].portEnabled)));
         }
         // CanX
         for (nPort = 0; nPort < _canMax; nPort++)  {
-            szText.append(QString::fromAscii("Can %1 Enabled: \t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].canPorts[nPort].portEnabled)));
+            szText.append(QString::fromAscii("Can %1 Enabled: \t\t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].canPorts[nPort].portEnabled)));
         }
+        szText.append(QString::fromAscii("\n"));
     }
     return szText;
 }
@@ -6973,8 +7000,9 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     QString         szTimings(szEMPTY);
     int             nProtocol = theDevices[nDevice].nProtocol;
     int             nTotalReadTime = 0;
+    bool            fDeviceOk = true;
 
-    if (nDevice <0)  {
+    if (nDevice < 0)  {
         szName = QString::fromLatin1("PLC");
         szInfo = QString::fromAscii("Total Variables: %1") .arg(thePlcVarsNumber);
     }
@@ -6982,24 +7010,28 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         // Colonna Nome
         szName = theDevices[nDevice].szDeviceName;
         // Colonna Info
-        szInfo = QString::fromAscii("Device Variables: %1\t") .arg(theDevices[nDevice].nVars, 10, 10);
-        szInfo.append(QString::fromAscii("Max Block Size: %1\t").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
+        szInfo = QString::fromAscii("Device Variables: %1 - ") .arg(theDevices[nDevice].nVars, 10, 10);
+        szInfo.append(QString::fromAscii("Max Block Size: %1 - ").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
         // TimeOut
         if (theDevices[nDevice].nTimeOut >= 0)
-            szInfo.append(QString::fromAscii("TimeOut: %1 ms \t") .arg(theDevices[nDevice].nTimeOut, 6, 10));
+            szInfo.append(QString::fromAscii("TimeOut: %1 ms - ") .arg(theDevices[nDevice].nTimeOut, 6, 10));
         else
             szInfo.append(QLatin1String("\t\t"));
         // Silence
         if (theDevices[nDevice].nSilence >= 0)
-            szInfo.append(QString::fromAscii("Silence: %1 ms \t") .arg(theDevices[nDevice].nSilence, 6, 10));
+            szInfo.append(QString::fromAscii("Silence: %1 ms - ") .arg(theDevices[nDevice].nSilence, 6, 10));
         else
             szInfo.append(QLatin1String("\t\t"));
         if (nProtocol == RTU || nProtocol == RTU_SRV)  {
-            szInfo.append(QString::fromAscii("Min.Silence: %1 ms \t") .arg(theDevices[nDevice].dMinSilence));
-            if ((double) theDevices[nDevice].nSilence >= theDevices[nDevice].dMinSilence)
-                szInfo.append(QLatin1String("OK\t"));
-            else
-                szInfo.append(QLatin1String("Too Short\t"));
+            szInfo.append(QString::fromAscii("Min.Silence: %1 ms - ") .arg(theDevices[nDevice].dMinSilence));
+            if ((double) theDevices[nDevice].nSilence >= theDevices[nDevice].dMinSilence)  {
+                szInfo.append(QLatin1String("[OK]"));
+                fDeviceOk = true;
+            }
+            else  {
+                szInfo.append(QLatin1String("[Too Short]"));
+                fDeviceOk = false;
+            }
             // Total Read Time
             // szInfo.append(QString::fromAscii("Dev.Read Time: %1 ms\t").arg(theDevices[nDevice].nDeviceReadTime, 6, 10));
         }
@@ -7030,6 +7062,15 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     }
     // Adding Device Item to tree
     tCurrentDevice = addItem2Tree(tParent, treeDevice, szName, szInfo, szTimings, szToolTip);
+    // No PLC Vars
+    if (nDevice >= 0)  {
+        if (fDeviceOk)  {
+            tCurrentDevice->setForeground(colTreeInfo, brushGreen);
+        }
+        else  {
+            tCurrentDevice->setForeground(colTreeInfo, brushRed);
+        }
+    }
     // Return Value
     return tCurrentDevice;
 }

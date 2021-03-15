@@ -204,6 +204,7 @@ private:
     QTimer      *tmrMessage;                        // Timer per la gestione Messaggi
     QBrush      brushRed;                           // Colore per Input Register ed Allarmi
     QBrush      brushBlue;                          // Colore per Eventi
+    QBrush      brushGreen;                         // Colore per Device Ok
 
 
     // Record CrossTable
