@@ -190,6 +190,7 @@
         <files>
 			<file>*.png</file>
 			<file>*.html</file>	
+			<file>*.gif</file>
 	    </files>
     </filterSection>
 </QtHelpProject>
