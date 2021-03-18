@@ -192,6 +192,7 @@ private:
     QString     m_szCurrentProjectPath;             // Project Path corrente
     QString     m_szCurrentProjectName;             // Project Name senza Path
     QString     m_szCurrentModel;                   // Modello TPAC del progetto
+    int         m_nCurrentModel;                    // Indice Modello TPAC del progetto
     QString     m_szTemplateCTFile;                 // Nome del file di CT originale da Template
     // Liste varie per prompt colonne e valori Combo Box (per traduzioni)
     QList<bool> lstBusEnabler;

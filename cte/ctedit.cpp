@@ -406,6 +406,7 @@ ctedit::ctedit(QWidget *parent) :
     m_szCurrentCTPath.clear();
     m_szCurrentCTName.clear();
     m_szCurrentModel.clear();
+    m_nCurrentModel = NoModel;
     m_szCurrentProjectPath.clear();
     m_nGridRow = 0;
     theServersNumber = 0;
@@ -644,6 +645,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
     }
     // Retrieving Path and Name of Crosstable file
     m_szCurrentModel.clear();
+    m_nCurrentModel = NoModel;
     m_szCurrentCTPath.clear();
     m_szCurrentCTName.clear();
     m_szTemplateCTFile.clear();
@@ -688,6 +690,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         else  {
             nModel = NoModel;
         }
+        m_nCurrentModel = nModel;
         //----------------------------------
         // Verifica della configurazione delle porte
         //----------------------------------
@@ -800,6 +803,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         jumpToGridRow(m_nGridRow, true);
         ui->tabWidget->setCurrentIndex(TAB_CT);
     }
+    qDebug("Size of CT Record %d", sizeof(CrossTableRecord));
     return fRes;
 }
 bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid)
@@ -3106,11 +3110,17 @@ QString ctedit::getModelInfo(int nModel)
         // Bus Interfaces
         // Serial X
         for (nPort = 0; nPort < _serialMax; nPort++)  {
-            szText.append(QString::fromAscii("Serial %1 Enabled: \t\t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].serialPorts[nPort].portEnabled)));
+            if (lstTargets[nModel].serialPorts[nPort].portEnabled)  {
+                szText.append(QString::fromAscii("Serial %1 Enabled: \t\t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].serialPorts[nPort].portEnabled)));
+                szText.append(QString::fromAscii("Serial %1 Editable: \t\t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].serialPorts[nPort].portEditable)));
+                szText.append(QString::fromAscii("Serial %1 Available: \t\t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].serialPorts[nPort].portAvailable)));
+            }
         }
         // CanX
         for (nPort = 0; nPort < _canMax; nPort++)  {
-            szText.append(QString::fromAscii("Can %1 Enabled: \t\t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].canPorts[nPort].portEnabled)));
+            if (lstTargets[nModel].canPorts[nPort].portEnabled)  {
+                szText.append(QString::fromAscii("Can %1 Enabled: \t\t%2\n") .arg(nPort) .arg(bool2String(lstTargets[nModel].canPorts[nPort].portEnabled)));
+            }
         }
         szText.append(QString::fromAscii("\n"));
     }
@@ -7001,6 +7011,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     int             nProtocol = theDevices[nDevice].nProtocol;
     int             nTotalReadTime = 0;
     bool            fDeviceOk = true;
+    bool            fIgnoreTimings = false;
 
     if (nDevice < 0)  {
         szName = QString::fromLatin1("PLC");
@@ -7013,27 +7024,37 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         szInfo = QString::fromAscii("Device Variables: %1 - ") .arg(theDevices[nDevice].nVars, 10, 10);
         szInfo.append(QString::fromAscii("Max Block Size: %1 - ").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
         // TimeOut
-        if (theDevices[nDevice].nTimeOut >= 0)
+        if (theDevices[nDevice].nTimeOut >= 0)  {
             szInfo.append(QString::fromAscii("TimeOut: %1 ms - ") .arg(theDevices[nDevice].nTimeOut, 6, 10));
-        else
+        }
+        else  {
             szInfo.append(QLatin1String("\t\t"));
+        }
         // Silence
-        if (theDevices[nDevice].nSilence >= 0)
-            szInfo.append(QString::fromAscii("Silence: %1 ms - ") .arg(theDevices[nDevice].nSilence, 6, 10));
-        else
+        if (theDevices[nDevice].nSilence >= 0)  {
+            szInfo.append(QString::fromAscii("Silence: %1 ms") .arg(theDevices[nDevice].nSilence, 6, 10));
+        }
+        else  {
             szInfo.append(QLatin1String("\t\t"));
+        }
         if (nProtocol == RTU || nProtocol == RTU_SRV)  {
-            szInfo.append(QString::fromAscii("Min.Silence: %1 ms - ") .arg(theDevices[nDevice].dMinSilence));
-            if ((double) theDevices[nDevice].nSilence >= theDevices[nDevice].dMinSilence)  {
-                szInfo.append(QLatin1String("[OK]"));
-                fDeviceOk = true;
+            // Silence - Silence Checking
+            if (theDevices[nDevice].nBaudRate >= 225000 && not panelConfig.serialPorts[theDevices[nDevice].nPort].portEditable)  {
+                fIgnoreTimings = true;
             }
             else  {
-                szInfo.append(QLatin1String("[Too Short]"));
-                fDeviceOk = false;
+                // Min Silence
+                szInfo.append(QString::fromAscii(" - Min.Silence: %1 ms - ") .arg(theDevices[nDevice].dMinSilence));
+                // Silence Checking
+                if ((double) theDevices[nDevice].nSilence >= theDevices[nDevice].dMinSilence)  {
+                    szInfo.append(QLatin1String("[OK]"));
+                    fDeviceOk = true;
+                }
+                else  {
+                    szInfo.append(QLatin1String("[Too Short]"));
+                    fDeviceOk = false;
+                }
             }
-            // Total Read Time
-            // szInfo.append(QString::fromAscii("Dev.Read Time: %1 ms\t").arg(theDevices[nDevice].nDeviceReadTime, 6, 10));
         }
         // ToolTip
         szToolTip.append(QString::fromAscii("Device ID:\t%1\n") .arg(nDevice, 8, 10));
@@ -7063,7 +7084,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     // Adding Device Item to tree
     tCurrentDevice = addItem2Tree(tParent, treeDevice, szName, szInfo, szTimings, szToolTip);
     // No PLC Vars
-    if (nDevice >= 0)  {
+    if (nDevice >= 0 && not fIgnoreTimings)  {
         if (fDeviceOk)  {
             tCurrentDevice->setForeground(colTreeInfo, brushGreen);
         }
