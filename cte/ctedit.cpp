@@ -490,6 +490,7 @@ ctedit::ctedit(QWidget *parent) :
     m_szFormatTime = QLatin1String("hh:mm:ss");
     // Variabili di stato globale dell'editor
     m_isCtModified = false;
+    m_isLastLineModified = false;
     m_isConfModified = false;
     m_isTrendModified = false;
     m_fShowAllRows = true;
@@ -1937,7 +1938,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         if (nLastRow >= 0 && nLastRow < lstCTRecords.count())  {
             // Il contenuto viene aggiornato solo se la linea risulta modificata e il form non è vuoto
             fRes = updateRow(nLastRow, false);
-            // Cambio riga Ko
+            // Cambio riga non a buon fine, non cambia riga
             if (not fRes)    {
                 // disconnect segnale per evitare ricorsione
                 bool wasBlocked = ui->tblCT->selectionModel()->blockSignals(true);
@@ -1977,7 +1978,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
     //-------------------------------------------------------------------------
     // Selezionate più righe
     //-------------------------------------------------------------------------
-    if (selectedRows.count() > 1)  {
+    else if (selectedRows.count() > 1)  {
         m_szMsg = QString::fromAscii("Selected Rows: %1") .arg(selectedRows.count());
         displayStatusMessage(m_szMsg, STD_DISPLAY_TIME);
         lstSelectedRows.clear();
@@ -2004,7 +2005,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
     // Bisogna aggiornare il Frame di Editing
     //-------------------------------------------------------------------------
     bool fLoaded = false;
-    // Single Line Edit e selezione multipla
+    // Single Line Edit e selezione multipla ---> Clear Frame
     if (not m_fMultiEdit && lstSelectedRows.count() > 1)       // Single Line Edit e selezione multipla
         {
         fLoaded = false;
@@ -2012,7 +2013,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         qDebug("tableCTItemChanged(): Clear Form");
     }
     else if (lastUsedInRange >= 0)  {
-        // Ricarica interfaccia da CT
+        // Riga cambiata --> Aggiorna Frame da CT
         fLoaded = recCT2FieldsValues(lstCTRecords, lstFields, lastUsedInRange);
         if (fLoaded)  {
             fLoaded = values2Iface(lstFields, lastUsedInRange);
@@ -2022,7 +2023,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
     else {
         fLoaded = true;
     }
-    // Imposta Sezione in cboSections
+    // Aggiorna la Sezione in cboSections
     setSectionArea(nNewSelectedRow);
     // Abilitazione Frame di editing
     ui->fraEdit->setEnabled(fLoaded);
@@ -2689,50 +2690,78 @@ bool ctedit::isLineModified(int nRow)
             nModif = 0;
         }
         else  {
-            nModif += (ui->cboPriority->currentText().trimmed() != ui->tblCT->item(nRow, colPriority)->text().trimmed());
-            nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colUpdate)->text().trimmed());
-            // La Colonna Group non ha inpatto in calcolo modifiche
-            // nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colGroup)->text().trimmed());
-            nModif += (not m_fMultiEdit && (ui->txtName->text().trimmed() != ui->tblCT->item(nRow, colName)->text().trimmed()));
-            nModif += (ui->cboType->currentText().trimmed() != ui->tblCT->item(nRow, colType)->text().trimmed());
-            nModif += (ui->txtDecimal->text().trimmed() != ui->tblCT->item(nRow, colDecimal)->text().trimmed());
-            nModif += (ui->cboProtocol->currentText().trimmed() != ui->tblCT->item(nRow, colProtocol)->text().trimmed());
-            nModif += (ui->txtIP->text().trimmed() != ui->tblCT->item(nRow, colIP)->text().trimmed());
-            if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)
-                nModif += ui->cboPort->currentText().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed();
-            else
-                nModif += (ui->txtPort->text().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed());
-            nModif += (ui->txtNode->text().trimmed() != ui->tblCT->item(nRow, colNodeID)->text().trimmed());
-            // Input Register
-            if (ui->chkInputRegister->isVisible()) {
-                szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
-                nModif += (szTemp != ui->tblCT->item(nRow, colInputReg)->text().trimmed());
+            // Valido per tutte le righe della CT: Update, Nome, Decimali, Commento
+            if (ui->cboUpdate->isEnabled())  {
+                nModif += (ui->cboUpdate->currentText().trimmed() != ui->tblCT->item(nRow, colUpdate)->text().trimmed());
             }
-            // Offset Register
-            nModif += (not m_fMultiEdit && (ui->txtRegister->text().trimmed() != ui->tblCT->item(nRow, colRegister)->text().trimmed()));
-            // nModif += (ui->txtBlock->text().trimmed() != ui->tblCT->item(nRow, colBlock)->text().trimmed());
-            // nModif += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(nRow, colBlockSize)->text().trimmed());
-            nModif += (ui->txtComment->text().trimmed() != ui->tblCT->item(nRow, colComment)->text().trimmed());
-            nModif += (ui->cboBehavior->currentText().trimmed() != ui->tblCT->item(nRow, colBehavior)->text().trimmed());
-            // Frame Allarmi
-            if ((not m_fMultiEdit) && ui->cboBehavior->currentIndex() >= behavior_alarm)  {
-                nModif += (ui->cboVariable1->currentText().trimmed() != ui->tblCT->item(nRow, colSourceVar)->text().trimmed());
-                nModif += (ui->cboCondition->currentText().trimmed() != ui->tblCT->item(nRow, colCondition)->text().trimmed());
-                if (ui->optFixedVal->isChecked())  {
-                    // Confronto tra Real arrotondati a 4 decimali
-                    bool    fIfVal = false;
-                    bool    fTbVal = false;
-                    double dblIfaceVal = ui->txtFixedValue->text().toDouble(&fIfVal);
-                    dblIfaceVal = fIfVal ? myRound(dblIfaceVal, nCompareDecimals) : 0.0;
-                    double dblTableVal = ui->tblCT->item(nRow, colCompare)->text().toDouble(&fTbVal);
-                    dblTableVal = fIfVal ? myRound(dblTableVal, nCompareDecimals) : 0.0;
-                    // Entrambi convertiti, valori diversi, oppure Uno dei due non convertibile
-                    if ((fIfVal && fTbVal && dblIfaceVal != dblTableVal) || (fIfVal != fTbVal))
-                        nModif++;
-    //                nModif += (ui->txtFixedValue->text().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+            if (not m_fMultiEdit && ui->txtName->isEnabled())  {
+                nModif += (not m_fMultiEdit && (ui->txtName->text().trimmed() != ui->tblCT->item(nRow, colName)->text().trimmed()));
+            }
+            if (ui->txtDecimal->isEnabled())  {
+                nModif += (ui->txtDecimal->text().trimmed() != ui->tblCT->item(nRow, colDecimal)->text().trimmed());
+            }
+            if (ui->txtComment->isEnabled())  {
+                nModif += (ui->txtComment->text().trimmed() != ui->tblCT->item(nRow, colComment)->text().trimmed());
+            }
+            // Controlli applicabili all'area Utente della CT
+            if (nRow < MAX_NONRETENTIVE)  {
+                if (ui->cboPriority->isEnabled())  {
+                    nModif += (ui->cboPriority->currentText().trimmed() != ui->tblCT->item(nRow, colPriority)->text().trimmed());
                 }
-                else
-                    nModif += (ui->cboVariable2->currentText().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+                if (ui->cboType->isEnabled())  {
+                    nModif += (ui->cboType->currentText().trimmed() != ui->tblCT->item(nRow, colType)->text().trimmed());
+                }
+                if (ui->cboProtocol->isEnabled()) {
+                    nModif += (ui->cboProtocol->currentText().trimmed() != ui->tblCT->item(nRow, colProtocol)->text().trimmed());
+                }
+                if (ui->txtIP->isEnabled())  {
+                    nModif += (ui->txtIP->text().trimmed() != ui->tblCT->item(nRow, colIP)->text().trimmed());
+                }
+                if (nProtocol == RTU || nProtocol == MECT_PTC || nProtocol == RTU_SRV)  {
+                    if (ui->cboPort->isEnabled())  {
+                        nModif += ui->cboPort->currentText().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed();
+                    }
+                }
+                else  {
+                    if (ui->txtPort->isEnabled())  {
+                        nModif += (ui->txtPort->text().trimmed() != ui->tblCT->item(nRow, colPort)->text().trimmed());
+                    }
+                }
+                if (ui->txtNode->isEnabled())  {
+                    nModif += (ui->txtNode->text().trimmed() != ui->tblCT->item(nRow, colNodeID)->text().trimmed());
+                }
+                // Input Register
+                if (ui->chkInputRegister->isVisible() && ui->chkInputRegister->isEnabled()) {
+                    szTemp = ui->chkInputRegister->isChecked() ? szTRUE : szFALSE;
+                    nModif += (szTemp != ui->tblCT->item(nRow, colInputReg)->text().trimmed());
+                }
+                // Offset Register
+                nModif += (not m_fMultiEdit && (ui->txtRegister->text().trimmed() != ui->tblCT->item(nRow, colRegister)->text().trimmed()));
+                // nModif += (ui->txtBlock->text().trimmed() != ui->tblCT->item(nRow, colBlock)->text().trimmed());
+                // nModif += (ui->txtBlockSize->text().trimmed() != ui->tblCT->item(nRow, colBlockSize)->text().trimmed());
+                if (ui->cboBehavior->isEnabled())  {
+                    nModif += (ui->cboBehavior->currentText().trimmed() != ui->tblCT->item(nRow, colBehavior)->text().trimmed());
+                    // Frame Allarmi
+                    if ((not m_fMultiEdit) && ui->cboBehavior->currentIndex() >= behavior_alarm)  {
+                        nModif += (ui->cboVariable1->currentText().trimmed() != ui->tblCT->item(nRow, colSourceVar)->text().trimmed());
+                        nModif += (ui->cboCondition->currentText().trimmed() != ui->tblCT->item(nRow, colCondition)->text().trimmed());
+                        if (ui->optFixedVal->isChecked())  {
+                            // Confronto tra Real arrotondati a 4 decimali
+                            bool    fIfVal = false;
+                            bool    fTbVal = false;
+                            double dblIfaceVal = ui->txtFixedValue->text().toDouble(&fIfVal);
+                            dblIfaceVal = fIfVal ? myRound(dblIfaceVal, nCompareDecimals) : 0.0;
+                            double dblTableVal = ui->tblCT->item(nRow, colCompare)->text().toDouble(&fTbVal);
+                            dblTableVal = fIfVal ? myRound(dblTableVal, nCompareDecimals) : 0.0;
+                            // Entrambi convertiti, valori diversi, oppure Uno dei due non convertibile
+                            if ((fIfVal && fTbVal && dblIfaceVal != dblTableVal) || (fIfVal != fTbVal))
+                                nModif++;
+            //                nModif += (ui->txtFixedValue->text().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+                        }
+                        else
+                            nModif += (ui->cboVariable2->currentText().trimmed() != ui->tblCT->item(nRow, colCompare)->text().trimmed());
+                    }
+                }
             }
         }
     }
@@ -3163,7 +3192,7 @@ void ctedit::on_cmdUndo_clicked()
         // Refresh List
         ctable2Grid();
         // Force Marker to Updated
-        m_isCtModified = true;
+        m_isCtModified = not lstUndo.isEmpty();
         m_rebuildDeviceTree = true;
         m_rebuildTimingTree = true;
         enableInterface();
@@ -3334,7 +3363,7 @@ void ctedit::enableInterface()
     }
     else {
         // Riabilitazione dei Tab Secondari (ricalcolo se è cambiato qualcosa, non necessario se ci sono selezioni multiple in corso)
-        if (lstSelectedRows.count() <= 1)  {
+        if (lstSelectedRows.count() <= 1 && m_isLastLineModified)  {
             // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
             m_nMPNC = -1;
             if (isSerialPortEnabled)  {
@@ -5904,6 +5933,7 @@ bool ctedit::updateRow(int nRow, bool fMultiEdit)
             qDebug("updateRow(MultiSelect) - Row: [%d] Skipped as not used", nRow + 1);
             goto exitSave;
         }
+        m_isLastLineModified = true;
         qDebug("updateRow() - Updating Row: %d", nRow + 1);
         // Valori da interfaccia a Lista Stringhe
         fRes = iface2values(lstFields, fMultiEdit, nRow);
@@ -5955,6 +5985,7 @@ exitSave:
     // Return Value
     return fRes;
 }
+
 int ctedit::findNextVisibleRow(int nRow)
 // Cerca la prossima riga visibile cui saltare
 {
