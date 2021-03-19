@@ -1,7 +1,7 @@
 #ifndef ATCMSTYLE_H
 #define ATCMSTYLE_H
 
-/* this define enable the example stilesheet */
+/* this define enable the example stylesheet */
 #undef ENABLE_STYLESHEET
 
 #include <QMotifStyle>

@@ -19,17 +19,21 @@ NtpClient::NtpClient(QObject *parent) :
     QThread(parent)
 {
     QSettings  *objSettings = new QSettings(NTP_FILE, QSettings::IniFormat);
+
     objSettings->beginGroup("NTP-Server");
     ntpServerName = objSettings->value("serverName", THE_NTP_SERVER).toString();
     ntpTimeout = objSettings->value("serverTimeOut", "10").toInt();
     ntpOffset = objSettings->value("serverOffset", "1").toInt();
+    ntpDst = objSettings->value("clientDst", false).toBool();
     ntpPeriod = objSettings->value("serverPeriod", "0").toInt();
     ntpPeriodms = ntpPeriod * 1000 * 3600;
     objSettings->endGroup();
+
     // Default values to stop automatic sync
     doSync = false;
     invalidDateTime = QDateTime();
     newDateTime = invalidDateTime;
+
     // Attiva il timer NTP
     if (ntpPeriod > 0)  {
         requestNTPSync();
@@ -53,6 +57,11 @@ int       NtpClient::getOffset_h()
     return ntpOffset;
 }
 
+bool       NtpClient::getDst()
+{
+    return ntpDst;
+}
+
 int         NtpClient::getPeriod_h()
 {
     return ntpPeriod;
@@ -70,28 +79,49 @@ bool        NtpClient::isTimeChanged()
     return fRes;
 }
 
-void        NtpClient::setNtpParams(const QString &ntpServer, int ntpTimeout_s, int ntpOffset_h, int ntpPeriod_h )
+void        NtpClient::setNtpParams(const QString &server, int timeout_s, int offset_h, int period_h , bool dst)
 {
     QSettings  *objSettings = new QSettings(NTP_FILE, QSettings::IniFormat);
+    bool dstChanged = false;
+
+    // ntp.ini
     objSettings->beginGroup("NTP-Server");
-    // Server
-    ntpServerName = ntpServer.trimmed();
+
+    ntpServerName = server.trimmed();
     ntpServerName = ntpServerName.isEmpty() ? QString(THE_NTP_SERVER) : ntpServerName;
     objSettings->setValue("serverName", ntpServerName);
-    // TimeOut
-    ntpTimeout = ntpTimeout_s;
+
+    ntpTimeout = timeout_s;
     ntpTimeout = ntpTimeout > 0 ? ntpTimeout : 1;
     objSettings->setValue("serverTimeOut", ntpTimeout);
-    // Offset
-    ntpOffset = ntpOffset_h;
+
+    ntpOffset = offset_h;
     ntpOffset = (ntpOffset > 12 || ntpOffset < -12) ? 1 : ntpOffset;
     objSettings->setValue("serverOffset", ntpOffset);
-    // Period
-    ntpPeriod = ntpPeriod_h;
+
+    dstChanged = (ntpDst != dst);
+    ntpDst = dst;
+    objSettings->setValue("clientDst", ntpDst);
+
+    ntpPeriod = period_h;
     ntpPeriod = (ntpPeriod < 0 || (ntpPeriod > THE_NTP_MAX_PERIOD_H)) ? 0 : ntpPeriod;
     ntpPeriodms = ntpPeriod * 1000 * 3600;
     objSettings->setValue("serverPeriod", ntpPeriod);
+
     objSettings->endGroup();
+
+    // cambio d'ora se è cambiato DST
+    if (dstChanged) {
+        QDateTime dateTime;
+
+        if (ntpDst) {
+            dateTime = QDateTime::currentDateTime().addSecs(3600);
+        } else {
+            dateTime = QDateTime::currentDateTime().addSecs(-3600);
+        }
+        requestDateTimeChange(dateTime);
+    }
+
     // Attiva il timer NTP
     if (ntpPeriod > 0)  {
         // no requestNTPSync();
@@ -283,9 +313,11 @@ void NtpClient::setTimestamp(int64_t TargetTimestamp)
 
     //qDebug("set time = 0x%08lx s, ntp 0x%016llx\n", target.tv_sec, TargetTimestamp);
 
-    // time zone correction
-    //target.tv_sec += 3600 * TimeZone;
+    // time zone correction: utc offset and daylight saving time
     target.tv_sec += 3600 * ntpOffset;
+    if (ntpDst) {
+        target.tv_sec += 3600;
+    }
 
     // set time
     clock_settime(CLOCK_REALTIME, &target);

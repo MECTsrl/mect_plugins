@@ -26,8 +26,9 @@ public:
     QString     getNtpServer();
     int         getTimeout_s();
     int         getOffset_h();
+    bool        getDst();
     int         getPeriod_h();
-    void        setNtpParams(const QString &ntpServer, int ntpTimeout_s, int ntpOffset_h, int ntpPeriod_h);
+    void        setNtpParams(const QString &server, int timeout_s, int offset_h, int period_h, bool dst = false);
     QMutex*     getNTPMutex();
 
 signals:
@@ -60,6 +61,7 @@ private:
     QString         ntpServerName;          // ntp params
     int             ntpTimeout;
     int             ntpOffset;
+    bool            ntpDst;
     int             ntpPeriod;
     qint64          ntpPeriodms;
 

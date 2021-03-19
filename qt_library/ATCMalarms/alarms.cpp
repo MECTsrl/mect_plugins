@@ -24,7 +24,7 @@
 #define SET_ALARMS_STYLE() { \
     QString mystyle; \
     mystyle.append(this->styleSheet()); \
-    /* add there the page stilesheet customization */ \
+    /* add there the page stylesheet customization */ \
     mystyle.append(""); \
     this->setStyleSheet(mystyle); \
     }

@@ -23,17 +23,6 @@
 
 #define TIME_MASK "HH:mm:ss"
 #define DATE_MASK "yyyy-MM-dd"
-/**
- * @brief this macro is used to set the current page style.
- * the syntax is html stylesheet-like
- */
-#define SET_TIME_SET_STYLE() { \
-QString mystyle; \
-mystyle.append(this->styleSheet()); \
-/* add there the page stilesheet customization */ \
-mystyle.append(""); \
-this->setStyleSheet(mystyle); \
-}
 
 time_set::time_set(QWidget *parent) :
     page(parent),
@@ -57,9 +46,6 @@ time_set::time_set(QWidget *parent) :
     	labelTitle = ui->labelTitle;
 	}
 
-    //setStyle::set(this);
-    SET_TIME_SET_STYLE();
-
     /* connect the label that show the date and the time to the timer of the parent updateData */
     labelDataOra = ui->labelDataOra;
     // Running Flags
@@ -77,6 +63,7 @@ void time_set::reload()
 {
     /* Load data and time 1*/
     nOffset = ntpclient->getOffset_h();
+    isDst = ntpclient->getDst();
     nTimeOut = ntpclient->getTimeout_s();
     nPeriod = ntpclient->getPeriod_h();
     szTimeServer = ntpclient->getNtpServer();    
@@ -182,7 +169,7 @@ void time_set::on_pushButtonNTPSync_clicked()
         lockInterface = true;
         lockUI(lockInterface);
         ui->progressBarElapsed->setMaximum(nTimeOut);
-        ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod);
+        ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod, isDst);
         QObject::connect(ntpclient, SIGNAL(ntpSyncFinish(bool )), this, SLOT(ntpSyncDone(bool)));
         ntpclient->requestNTPSync();
         ntpSyncRunning = true;
@@ -195,7 +182,7 @@ void time_set::on_pushButtonNTPServer_clicked()
     char value [64];
     alphanumpad tastiera_alfanum(value,ui->pushButtonNTPServer->text().toAscii().data());
     tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted)
+    if (tastiera_alfanum.exec()==QDialog::Accepted)
     {
         szTimeServer = QString(value);
         updateIface();
@@ -230,6 +217,18 @@ void time_set::on_pushButtonNTPOffset_clicked()
     {
         nOffset = value;
         updateIface();
+    }
+}
+
+void time_set::on_checkBoxDst_stateChanged(int state)
+{
+    switch (state) {
+    case Qt::Checked:
+        isDst = true;
+        break;
+    case Qt::Unchecked:
+    default:
+        isDst = false;
     }
 }
 
@@ -270,25 +269,26 @@ void time_set::on_pushButtonNTPPeriod_clicked()
 void time_set::on_pushButtonNTPSet_clicked()
 {
     if (! szTimeServer.isEmpty())  {
-        ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod);
+        ntpclient->setNtpParams(szTimeServer, nTimeOut, nOffset, nPeriod, isDst);
     }
 }
 
-void time_set::on_pushButtonNTPDefualts_clicked()
+void time_set::on_pushButtonNTPDefaults_clicked()
 {
     // Restore default values
     szTimeServer = QString(THE_NTP_SERVER);
     nTimeOut = 10;
     nPeriod = 0;
     nOffset = 1;
+    isDst = false;
     updateIface();
-
 }
 
 void time_set::updateIface()
 {
     ui->pushButtonNTPServer->setText(szTimeServer);
     ui->pushButtonNTPOffset->setText(QString("%1 h") .arg(nOffset,2,10));
+    ui->checkBoxDst->setCheckState(isDst ? Qt::Checked : Qt::Unchecked);
     ui->pushButtonNTPTimeOut->setText(QString("%1 s") .arg(nTimeOut,2,10));
     ui->pushButtonNTPPeriod->setText(QString("%1 h") .arg(nPeriod,4,10));
     ui->pushButtonTime->setText(QTime::currentTime().toString(TIME_MASK));
@@ -304,8 +304,9 @@ void time_set::lockUI(bool setLocked)
     ui->pushButtonSetManual->setEnabled(! setLocked);
     ui->pushButtonNTPSet->setEnabled(! setLocked);
     ui->pushButtonNTPSync->setEnabled(! setLocked);
-    ui->pushButtonNTPDefualts->setEnabled(! setLocked);
+    ui->pushButtonNTPDefaults->setEnabled(! setLocked);
     ui->pushButtonNTPOffset->setEnabled(! setLocked);
+    ui->checkBoxDst->setEnabled(! setLocked);
     ui->pushButtonNTPTimeOut->setEnabled(! setLocked);
     ui->pushButtonNTPPeriod->setEnabled(! setLocked);
 }

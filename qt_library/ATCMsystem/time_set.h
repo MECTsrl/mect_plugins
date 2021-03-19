@@ -41,10 +41,11 @@ private slots:
     void on_pushButtonNTPSync_clicked();
     void on_pushButtonNTPServer_clicked();
     void on_pushButtonNTPOffset_clicked();
+    void on_checkBoxDst_stateChanged(int state);
     void on_pushButtonNTPTimeOut_clicked();
     void on_pushButtonNTPPeriod_clicked();
     void on_pushButtonNTPSet_clicked();
-    void on_pushButtonNTPDefualts_clicked();
+    void on_pushButtonNTPDefaults_clicked();
     void ntpSyncDone(bool timeOut);
     void ntpManualSetDone(bool setOk);
     void lockUI(bool setLocked);
@@ -54,6 +55,7 @@ private:
 
     Ui::time_set    *ui;
     int             nOffset;
+    bool            isDst;
     int             nTimeOut;
     int             nPeriod;
     QString         szTimeServer;
