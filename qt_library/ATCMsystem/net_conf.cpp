@@ -50,6 +50,7 @@ net_conf::net_conf(QWidget *parent) :
     ui->comboBox_wlan0_essid->addItem(NONE);
     ui->pushButton_hidden_wlan0->setText(NONE);
     ui->checkBox_hiddenESSID->setChecked(false);
+    ui->pushButton_hidden_wlan0->setVisible(false);
     is_eth0_enabled = (system("grep -c INTERFACE0 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
     is_eth1_enabled = (system("grep -c INTERFACE1 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
     ui->tab_eth0->setEnabled(is_eth0_enabled);
@@ -1107,7 +1108,6 @@ void net_conf::on_pushButton_wlan0_DNS2_clicked()
 void net_conf::on_pushButton_wlan0_scan_clicked()
 {
     char line[256];
-
     ui->comboBox_wlan0_essid->clear();
     ui->comboBox_wlan0_essid->addItem(NONE);
 
@@ -1311,7 +1311,11 @@ bool net_conf::checkUSBwlanKey()
 void net_conf::on_pushButton_hidden_wlan0_clicked()
 {
     char value [64];
-    alphanumpad tastiera_alfanum(value, wlan0_essid.toAscii().data());
+    QString currentText = ui->pushButton_hidden_wlan0->text();
+    if(currentText.isEmpty()) {
+       currentText = NONE;
+    }
+    alphanumpad tastiera_alfanum(value, currentText.toAscii().data());
     tastiera_alfanum.showFullScreen();
     if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
@@ -1325,12 +1329,14 @@ void net_conf::on_checkBox_hiddenESSID_toggled(bool checked)
 {
     if (checked)  {
         ui->comboBox_wlan0_essid->setEnabled(false);
-        ui->pushButton_hidden_wlan0->setEnabled(true);
+        ui->pushButton_hidden_wlan0->setVisible(true);
         ui->pushButton_wlan0_scan->setEnabled(false);
+        wlan0_essid = ui->pushButton_hidden_wlan0->text();
     }
     else  {
         ui->comboBox_wlan0_essid->setEnabled(true);
-        ui->pushButton_hidden_wlan0->setEnabled(false);
+        ui->pushButton_hidden_wlan0->setVisible(false);
         ui->pushButton_wlan0_scan->setEnabled(true);
+        wlan0_essid = ui->comboBox_wlan0_essid->currentText();
     }
 }
