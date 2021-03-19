@@ -225,6 +225,7 @@ ctedit::ctedit(QWidget *parent) :
     lstErrorMessages[errCTRegisterTooBig] = trUtf8("Register Number too big for TCP Server");
     lstErrorMessages[errCTRegisterUsedTwice] = trUtf8("Register Number or Bit Position (Decimal) already used in Other Variables");
     lstErrorMessages[errCTRegisterOverlapping] = trUtf8("Register Overlapping with Previous Register");
+    lstErrorMessages[errCTPortAlreadyInServer] = trUtf8("Port is already used in a RTU Server");
     lstErrorMessages[errCTInputOnlyModbus]  = trUtf8("Input Register allowed only on Modbus Client/Server");
     lstErrorMessages[errCTModBusServerDuplicate] = trUtf8("Server Already present with different Port/Node");
     lstErrorMessages[errCTNoBehavior] = trUtf8("Empty or Invalid Behavior");
@@ -490,7 +491,7 @@ ctedit::ctedit(QWidget *parent) :
     m_szFormatTime = QLatin1String("hh:mm:ss");
     // Variabili di stato globale dell'editor
     m_isCtModified = false;
-    m_isLastLineModified = false;
+    m_isLastLineModified = true;        // Per attivare il controllo TAB MPNE-MPNC all'avvio
     m_isConfModified = false;
     m_isTrendModified = false;
     m_fShowAllRows = true;
@@ -779,7 +780,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
                         // Clessidra
                         this->setCursor(Qt::WaitCursor);
                         doEvents();
-                        lstUndo.append(lstCTRecords);
+                        appendCT2UndoList();
                         nDiff = compareCTwithTemplate(lstCTRecords, lstTemplateRecs, panelConfig, lstDifferences, lstActions, true);
                         qDebug() << QLatin1String("Applied Differences to CT from Template");
                         ctable2Grid();
@@ -1518,8 +1519,7 @@ bool    ctedit::riassegnaBlocchi()
     ui->cmdBlocchi->setEnabled(false);
     this->setCursor(Qt::WaitCursor);
     // Copia l'attuale CT nella lista Undo
-    lstUndo.append(lstCTRecords);
-    qDebug("riassegnaBlocchi() - lstUndo added");
+    appendCT2UndoList();
     for (nRow = 0; nRow < MIN_DIAG - 1; nRow++)  {
         // Ignora le righe con Priority == 0
         if (lstCTRecords[nRow].Enable > 0)  {
@@ -2452,8 +2452,7 @@ void ctedit::insertRows()
     nCurPos = m_nGridRow;
     if (nCurPos + selection.count() < MAX_NONRETENTIVE - 1)  {
         // Append to Undo List
-        lstUndo.append(lstCTRecords);
-        qDebug("insertRows() - lstUndo added");
+        appendCT2UndoList();
         // Enter in Paste Mode
         m_fCutOrPaste = true;
         // Ricerca del Punto di Inserzione
@@ -2523,8 +2522,7 @@ void ctedit::emptySelected()
         selection.clear();
         return;
     }
-    lstUndo.append(lstCTRecords);
-    qDebug("emptySelected() - lstUndo added");
+    appendCT2UndoList();
     // Compile Selected Row List
     m_fCutOrPaste = true;
     for (nCur = 0; nCur < selection.count(); nCur++)  {
@@ -2579,8 +2577,7 @@ void ctedit::removeSelected()
         selection.clear();
         return;
     }
-    lstUndo.append(lstCTRecords);
-    qDebug() << "removeSelected() - lstUndo added";
+    appendCT2UndoList();
     // Compile Selected Row List
     m_fCutOrPaste = true;
     for (nCur = 0; nCur < selection.count(); nCur++)  {
@@ -2787,8 +2784,7 @@ void ctedit::on_cmdImport_clicked()
             szMsg = QString::fromAscii("Rows from %1 to %2 will be overwritten !!\nDo you want to continue?") .arg(MIN_RETENTIVE) .arg(MAX_NONRETENTIVE);
             if (queryUser(this, szMectTitle, szMsg))  {
                 // Copia di Salvataggio
-                lstUndo.append(lstCTRecords);
-                qDebug("on_cmdImport_clicked() - lstUndo added");
+                appendCT2UndoList();
                 lstNewRecs.clear();
                 // Caricamento della nuova Crosstable (a questo livello non vengono fatti checks sulle righe caricate)
                 if (loadCTFile(szSourceFile, lstNewRecs, false))  {
@@ -3187,12 +3183,13 @@ void ctedit::on_cmdUndo_clicked()
 // Retrieve a CT Block from Undo List
 {
     if (not lstUndo.isEmpty())  {
+        qDebug("on_cmdUndo_clicked() - Retrieved Item [%d] in lstUndo List", lstUndo.count() - 1);
         lstCTRecords.clear();
         lstCTRecords = lstUndo.takeLast();
         // Refresh List
         ctable2Grid();
         // Force Marker to Updated
-        m_isCtModified = not lstUndo.isEmpty();
+        m_isCtModified = true;
         m_rebuildDeviceTree = true;
         m_rebuildTimingTree = true;
         enableInterface();
@@ -3220,7 +3217,7 @@ void ctedit::tabSelected(int nTab)
         int nOldRow = m_nGridRow;
         if (configMPNC->isUpdated())  {
             ui->tblCT->selectionModel()->clearSelection();
-            lstUndo.append(lstCTRecords);
+            appendCT2UndoList();
             lstCTRecords = configMPNC->localCTRecords;
             // Rinumera Blocchi con i cambiamenti selezionati (e ricarica griglia)
             if (not riassegnaBlocchi())  {
@@ -3240,7 +3237,7 @@ void ctedit::tabSelected(int nTab)
         int nOldRow = m_nGridRow;
         if (configMPNE->isUpdated())  {
             ui->tblCT->selectionModel()->clearSelection();
-            lstUndo.append(lstCTRecords);
+            appendCT2UndoList();
             lstCTRecords = configMPNE->localCTRecords;
             // Rinumera Blocchi con i cambiamenti selezionati (e ricarica griglia)
             if (not riassegnaBlocchi())  {
@@ -3330,7 +3327,7 @@ void ctedit::enableInterface()
     ui->cmdSearch->setVisible(not m_fMultiEdit);
     ui->cmdImport->setVisible(not m_fMultiEdit);
     ui->cmdUndo->setVisible(true);
-    ui->cmdUndo->setEnabled(lstUndo.count() > 0);
+    ui->cmdUndo->setEnabled(not lstUndo.isEmpty());
     ui->cmdBlocchi->setVisible(false);
     ui->cmdBlocchi->setEnabled(false);
     ui->cmdSave->setVisible(not m_fMultiEdit);
@@ -3395,6 +3392,7 @@ void ctedit::enableInterface()
                 ui->tabWidget->setTabEnabled(TAB_LOG, false);
             }
         }
+        m_isLastLineModified = false;
     }
 }
 void    ctedit::enableProtocolsFromModel()
@@ -3512,6 +3510,7 @@ int ctedit::globalChecks()
         warnUser(this, szMectTitle, m_szMsg);
         return 1;
     }
+
     qDebug("globalChecks(): checkServersDevicesAndNodes Done");
     // Ripulitura Array Server ModBus (1 per ogni Seriale + Protocolli TCP_SRV e TCPRTU_SRV
     for (nRow = 0; nRow < srvTotals; nRow++)  {
@@ -3578,6 +3577,20 @@ int ctedit::globalChecks()
                     nPrevRegister = -1;
                     nPrevSize = 0;
                 }
+                // Controllo che la porta di una variabile RTU non sia già utilizzata come Server RTU
+                if (lstCTRecords[nRow].Protocol == RTU) {
+                    for (int nServer = 0; nServer < nMAX_SERVERS; nServer++)  {
+                        if (theServers[nServer].nProtocol == RTU_SRV &&
+                            theServers[nServer].nPort == lstCTRecords[nRow].Port)  {
+                            szTemp = QString::fromLatin1("Port [%1]") .arg(lstCTRecords[nRow].Port);
+                            QString szVarName = QString::fromAscii(lstCTRecords[nRow].Tag);
+                            fillErrorMessage(nRow, colPort, errCTPortAlreadyInServer, szVarName, szTemp, chSeverityError, &errCt);
+                            lstCTErrors.append(errCt);
+                            nErrors++;
+
+                        }
+                    }
+                }
             }
         }
         else {
@@ -3587,6 +3600,7 @@ int ctedit::globalChecks()
             nPrevRegister = -1;
             nPrevSize = 0;
         }
+
     }
     // Display finestra errore
     if (nErrors)  {
@@ -4645,36 +4659,60 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
         if (m_nGridRow > 0 && lstCTRecords[m_nGridRow - 1].UsedEntry)  {
             // Copia da precedente se definita
             // Update
-            ui->cboUpdate->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Update);
+            if (ui->cboUpdate->currentIndex() < 0)  {
+                ui->cboUpdate->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Update);
+            }
             // Type
-            ui->cboType->setCurrentIndex(lstCTRecords[m_nGridRow - 1].VarType);
+            if (ui->cboType->currentIndex() < 0)  {
+                ui->cboType->setCurrentIndex(lstCTRecords[m_nGridRow - 1].VarType);
+            }
             // Decimals
-            ui->txtDecimal->setText(QString::number(lstCTRecords[m_nGridRow - 1].Decimal));
+            if (ui->txtDecimal->text().trimmed().isEmpty())  {
+                ui->txtDecimal->setText(QString::number(lstCTRecords[m_nGridRow - 1].Decimal));
+            }
             // Protocol
-            ui->cboProtocol->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Protocol);
+            if (ui->cboProtocol->currentIndex() < 0)  {
+                ui->cboProtocol->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Protocol);
+            }
             // Port
             ui->txtPort->setText(QString::number(lstCTRecords[m_nGridRow - 1].Port));
             // Node id
-            ui->txtNode->setText(QString::number(lstCTRecords[m_nGridRow - 1].NodeId));
+            if (ui->txtNode->text().trimmed().isEmpty())  {
+                ui->txtNode->setText(QString::number(lstCTRecords[m_nGridRow - 1].NodeId));
+            }
             // Input Register
             // ui->chkInputRegister->setChecked(lstCTRecords[m_nGridRow - 1].InputReg == 1);
             // Register
-            ui->txtRegister->setText(QString::number(lstCTRecords[m_nGridRow - 1].Offset + varSizeInBlock(lstCTRecords[m_nGridRow - 1].VarType)));
+            if (ui->txtRegister->text().trimmed().isEmpty())  {
+                ui->txtRegister->setText(QString::number(lstCTRecords[m_nGridRow - 1].Offset + varSizeInBlock(lstCTRecords[m_nGridRow - 1].VarType)));
+            }
             // Behavior
-            ui->cboBehavior->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Behavior);
+            if (ui->cboBehavior->currentIndex() < 0)  {
+                ui->cboBehavior->setCurrentIndex(lstCTRecords[m_nGridRow - 1].Behavior);
+            }
         }
         else  {
             // Valori di default se non definita
             // Update
-            ui->cboUpdate->setCurrentIndex(Ptype);
+            if (ui->cboUpdate->currentIndex() < 0)  {
+                ui->cboUpdate->setCurrentIndex(Ptype);
+            }
             // Type
-            ui->cboType->setCurrentIndex(BIT);
+            if (ui->cboType->currentIndex() < 0)  {
+                ui->cboType->setCurrentIndex(BIT);
+            }
             // Decimals
-            ui->txtDecimal->setText(szZERO);
+            if (ui->txtDecimal->text().trimmed().isEmpty())  {
+                ui->txtDecimal->setText(szZERO);
+            }
             // Protocol
-            ui->cboProtocol->setCurrentIndex(PLC);
+            if (ui->cboProtocol->currentIndex() < 0)  {
+                ui->cboProtocol->setCurrentIndex(PLC);
+            }
             // Behavior
-            ui->cboBehavior->setCurrentIndex(behavior_readwrite);
+            if (ui->cboBehavior->currentIndex() < 0)  {
+                ui->cboBehavior->setCurrentIndex(behavior_readwrite);
+            }
         }
         // Block && Block Size (invisibili....)
         if (ui->txtBlock->text().trimmed().isEmpty())  {
@@ -5943,7 +5981,7 @@ bool ctedit::updateRow(int nRow, bool fMultiEdit)
             // Copia l'attuale CT nella lista Undo
             //(Se MultiEdit viene fatto una volta sola PRIMA di salvare tutte le righe modificate)
             if (not fMultiEdit)  {
-                lstUndo.append(lstCTRecords);
+                appendCT2UndoList();
                 qDebug("updateRow() - lstUndo added");
             }
             // Salva Record
@@ -6326,7 +6364,7 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
     int     nDestRow = 0;
 
     // Append to Undo List
-    lstUndo.append(lstCTRecords);
+    appendCT2UndoList();
     qDebug() << "addRowsToCT() - lstUndo added";
     // Mark first destination row
     nCur = nRow;
@@ -7765,7 +7803,7 @@ void ctedit::on_cmdApply_clicked()
     bool    fRes = false;
 
     // Salva l'attuale CT il lista Undo
-    lstUndo.append(lstCTRecords);
+    appendCT2UndoList();
     // Cerca il primo Item utilizzato della lista delle variabili selezionate
     for (int nItem = 0; nItem < lstSelectedRows.count(); nItem++)  {
         int nCurRow = lstSelectedRows.at(nItem);
@@ -7933,4 +7971,15 @@ bool    ctedit::isMPNE05_Row(int nRow)
     }
     return isMPNE05;
 
+}
+
+void    ctedit::appendCT2UndoList()
+// Aggiunta controllata di Entry in Lista di undo (Max 128 Items = ~288MB)
+{
+    // Check Max Size of Undo List
+    if (lstUndo.count() > nMaxUndoElements)  {
+        lstUndo.removeFirst();
+    }
+    lstUndo.append(lstCTRecords);
+    qDebug("appendCT2UndoList() - lstUndo added. Items in List: %d", lstUndo.count());
 }

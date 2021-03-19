@@ -114,6 +114,7 @@ private:
     void    setRowsColor();                         // Imposta il colore di sfondo di tutte le righe senza cambiare riga corrente
     void    jumpToGridRow(int nRow, bool fCenter = false);                // Salto alla riga nRow del Grid
     void    enableInterface();                      // Abilita l'interfaccia in funzione dello stato del sistema
+    void    appendCT2UndoList();                    // Aggiunta controllata di Entry in Lista di undo (Max 128 Items)
 
     void    setSectionArea(int nRow);               // Set Current item in combo cboSection from current Row
     int     fillVarList(QStringList &lstVars, QList<int> &lstTypes, QList<int> &lstUpdates, bool fSkipVarDecimal = false); // Fill sorted List of Variables Names for Types in lstTypes and Update Type in lstUpdates
@@ -210,7 +211,7 @@ private:
 
     // Record CrossTable
     QList<CrossTableRecord> lstCopiedRecords;       // Lista di Record per copia/incolla
-    QList<QList<CrossTableRecord> > lstUndo;        // Lista degli Undo di elementi di Crosstable Editor
+    QList<QList<CrossTableRecord> > lstUndo;        // Lista degli Undo di elementi di Crosstable Editor: ogni Entry pesa 2309 KByte circa
     CrossTableRecord        CrossTable[1 + DimCrossTable];	 // campi sono riempiti a partire dall'indice 1
 
     // System Configuration

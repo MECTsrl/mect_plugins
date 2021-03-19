@@ -44,7 +44,7 @@ TP_Config   panelConfig;                // Configurazione corrente del Target le
 
 
 // Crosstable Records
-QList<CrossTableRecord> lstCTRecords;   // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE)
+QList<CrossTableRecord> lstCTRecords;   // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE): Dimensione circa 2309 kByte
 QList<CrossTableRecord> lstTemplateRecs; // Lista completa di Record da Template (per confronto con CT)
 QList<CrossTableRecord> lstMPNC006_Vars;// Lista delle Variabili MPNC006
 QList<CrossTableRecord> lstTPLC050_Vars;// Lista delle Variabili TPLC050
@@ -820,6 +820,8 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
 {
     int     nDifferences = 0;
     int     nRow = 0;
+    bool    hasAnIn = configTP.analogIN > 0;
+    bool    hasAnOut = configTP.analogOUT > 0;
     int     nAnInStart = configTP.analogINrowCT - 1;
     int     nAnInEnd = nAnInStart + configTP.analogIN;
     int     nAnOutStart = configTP.analogOUTrowCT - 1;
@@ -832,7 +834,7 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
     // Clear List
     lstDiff.clear();
     lstActions.clear();
-    int nStart = MIN_DIAG - 1;
+    int nStart = MAX_NONRETENTIVE;
     // Compare CT Area starting from 5000
     if (configTP.modelName == QLatin1String(product_name[TPAC1008_03_AC]) ||
         configTP.modelName == QLatin1String(product_name[TPAC1008_03_AD]))  {
@@ -890,9 +892,13 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
             }
         }
         // Decimali Cambiati (Salvo analogiche)
-        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
-            (CTTemplate[nRow].Decimal != CTProject[nRow].Decimal &&
-             ! ((nRow >= nAnInStart && nRow <= nAnInEnd) ||  (nRow >= nAnOutStart && nRow <= nAnOutEnd))))  {
+        if ((CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
+            (CTTemplate[nRow].Decimal != CTProject[nRow].Decimal)) &&
+            not (
+                    (hasAnIn  && nRow >= nAnInStart && nRow < nAnInEnd) ||
+                    (hasAnOut && nRow >= nAnOutStart && nRow < nAnOutEnd)
+                )
+            )  {
             nDifferences++;
             lstDiff.append(nRow);
             lstActions.append(QLatin1String("Changed Decimals"));

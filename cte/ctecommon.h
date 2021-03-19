@@ -28,6 +28,7 @@ const int nMaxInputRegister = nStartInputRegister + nMax_Int16;
 const int nMaxRegister = 49999;
 const int nCompareDecimals = 4;
 const int nRowColWidth = 5;
+const int nMaxUndoElements = 1024;
 
 // Priority
 const int nNumPriority = 4;

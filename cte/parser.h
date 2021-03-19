@@ -150,7 +150,7 @@ enum tabSettings_e
     tabTotals
 };
 
-
+// Versione 3.3.4: La dimensione del singolo record è 432 bytes
 struct  CrossTableRecord {
     int16_t     Enable;
     int         UsedEntry;
