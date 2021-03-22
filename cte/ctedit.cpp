@@ -148,6 +148,8 @@ ctedit::ctedit(QWidget *parent) :
     brushBlue.setColor(QColor(0, 0, 205));  // (MediumBlue)
     brushGreen = QBrush(Qt::SolidPattern);  // Colore per Eventi
     brushGreen.setColor(QColor(0, 100, 0));  // (DarkGreen)
+    brushDodgerBlue = QBrush(Qt::SolidPattern);  // Colore per Input Registers
+    brushDodgerBlue.setColor(QColor(QLatin1String("DodgerBlue")));
     //------------------------
     // Riempimento liste
     //------------------------
@@ -491,7 +493,7 @@ ctedit::ctedit(QWidget *parent) :
     m_szFormatTime = QLatin1String("hh:mm:ss");
     // Variabili di stato globale dell'editor
     m_isCtModified = false;
-    m_isLastLineModified = true;        // Per attivare il controllo TAB MPNE-MPNC all'avvio
+    m_fRefreshSerialConf = true;        // Per attivare il controllo TAB MPNE-MPNC all'avvio
     m_isConfModified = false;
     m_isTrendModified = false;
     m_fShowAllRows = true;
@@ -841,6 +843,7 @@ bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs,
             fRes = ctable2Grid();
             m_rebuildDeviceTree = true;
             m_rebuildTimingTree = true;
+            m_fRefreshSerialConf = true;
         }
         else
             fRes = true;
@@ -883,9 +886,9 @@ bool    ctedit::ctable2Grid()
             fRes = list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nCur);
             // Imposta Numero Riga
             lstRowNumbers.append(QString::fromAscii("%1") .arg(nCur + 1, 5, 10));
-            // Evidenzia gli Input Registers in Rosso
+            // Evidenzia gli Input Registers in Verde
             if (lstFields[colInputReg] == szTRUE)  {
-                setCellForeground(brushRed, ui->tblCT->model(), nCur, colRegister);
+                setCellForeground(brushDodgerBlue, ui->tblCT->model(), nCur, colRegister);
             }
             // Evidenzia gli Allarmi ed eventi
             if (isAlarm(lstCTRecords, nCur))  {
@@ -2224,8 +2227,9 @@ void ctedit::displayUserMenu(const QPoint &pos)
             qryPort->setModal(true);
             int nResPort = qryPort->exec();
             if (nResPort == QDialog::Accepted)  {
-                qryPort->getPortNode(nPort, nNode);
+                qryPort->getPortNode(nPort, nNode);                
                 addModelVars(szMPNC006, m_nGridRow, nPort, nNode);
+                m_fRefreshSerialConf = true;
                 ui->tabWidget->setCurrentIndex(TAB_MPNC);
             }
             qryPort->deleteLater();
@@ -2245,6 +2249,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
             if (nResPort == QDialog::Accepted)  {
                 qryPort->getPortNode(nPort, nNode);
                 addModelVars(szMPNE1001, m_nGridRow, nPort, nNode);
+                m_fRefreshSerialConf = true;
                 ui->tabWidget->setCurrentIndex(TAB_MPNE);
             }
             qryPort->deleteLater();
@@ -2258,6 +2263,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
             int nPort = 3;
             int nNode = 1;
             addModelVars(szTPLC050, m_nGridRow, nPort, nNode);
+            m_fRefreshSerialConf = true;
         }
     }
     // Add MPNE100105
@@ -2268,6 +2274,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
             int nPort = 2;
             int nNode = 1;
             addModelVars(szMPNE100105, m_nGridRow, nPort, nNode);
+            m_fRefreshSerialConf = true;
             // Allowed One Shot Only...
             actMenu->setEnabled(false);
             m_fMPNE100105_Present = true;
@@ -3360,7 +3367,7 @@ void ctedit::enableInterface()
     }
     else {
         // Riabilitazione dei Tab Secondari (ricalcolo se è cambiato qualcosa, non necessario se ci sono selezioni multiple in corso)
-        if (lstSelectedRows.count() <= 1 && m_isLastLineModified)  {
+        if (lstSelectedRows.count() <= 1 || m_fRefreshSerialConf)  {
             // Abilitazione del Tab MPNC e MPNE solo se esiste una Seriale disponibile nel sistema
             m_nMPNC = -1;
             if (isSerialPortEnabled)  {
@@ -3392,7 +3399,7 @@ void ctedit::enableInterface()
                 ui->tabWidget->setTabEnabled(TAB_LOG, false);
             }
         }
-        m_isLastLineModified = false;
+        m_fRefreshSerialConf = false;
     }
 }
 void    ctedit::enableProtocolsFromModel()
@@ -4855,13 +4862,13 @@ void ctedit::on_chkInputRegister_stateChanged(int state)
         QString szStyle;
 
         if (state == Qt::Checked)  {
-            szStyle = QLatin1String("color: Red");
+            szStyle = QLatin1String("color: DodgerBlue");
         }
         else  {
             szStyle = QLatin1String("color: Black");
         }
-        ui->chkInputRegister->setStyleSheet(szStyle);
         ui->lblInputRegister->setStyleSheet(szStyle);
+        ui->lblInputRegister->update();
     }
 }
 
@@ -5971,7 +5978,7 @@ bool ctedit::updateRow(int nRow, bool fMultiEdit)
             qDebug("updateRow(MultiSelect) - Row: [%d] Skipped as not used", nRow + 1);
             goto exitSave;
         }
-        m_isLastLineModified = true;
+        m_fRefreshSerialConf = true;
         qDebug("updateRow() - Updating Row: %d", nRow + 1);
         // Valori da interfaccia a Lista Stringhe
         fRes = iface2values(lstFields, fMultiEdit, nRow);
@@ -5991,7 +5998,7 @@ bool ctedit::updateRow(int nRow, bool fMultiEdit)
                 fRes = list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nRow);
                 // Registro Input Register
                 if (lstFields[colInputReg] == szTRUE) {
-                    setCellForeground(brushRed, ui->tblCT->model(), nRow, colRegister);
+                    setCellForeground(brushDodgerBlue, ui->tblCT->model(), nRow, colRegister);
                 }
                 if (isAlarm(lstCTRecords, nRow))  {
                     for (int nCol = colPriority; nCol < colTotals; nCol++)  {

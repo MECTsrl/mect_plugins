@@ -1662,8 +1662,22 @@
                   <property name="layoutDirection">
                    <enum>Qt::LeftToRight</enum>
                   </property>
+                  <property name="styleSheet">
+                   <string notr="true">QCheckBox::indicator:unchecked {
+	color : LightGrey;
+}
+QCheckBox::indicator:checked {
+	color: Red;
+}</string>
+                  </property>
                   <property name="text">
                    <string/>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>

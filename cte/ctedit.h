@@ -207,6 +207,7 @@ private:
     QBrush      brushRed;                           // Colore per Input Register ed Allarmi
     QBrush      brushBlue;                          // Colore per Eventi
     QBrush      brushGreen;                         // Colore per Device Ok
+    QBrush      brushDodgerBlue;                      // Colore per Input Registers
 
 
     // Record CrossTable
@@ -246,7 +247,7 @@ private:
     // Variabili di stato ad uso globale
     int                     m_nCurTab;              // Tab corrente in interfaccia
     bool                    m_isCtModified;         // Flag dati modificato
-    bool                    m_isLastLineModified;   // Flag ultima riga modificata
+    bool                    m_fRefreshSerialConf;   // Flag rileggi configurazione
     bool                    m_isConfModified;       // Flag Configurazione modificata
     bool                    m_isTrendModified;      // Flag Trend Modificato
     bool                    m_rebuildDeviceTree;    // Flag Vero se l'albero dei Device deve essere ricostruito
