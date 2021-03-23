@@ -5455,18 +5455,18 @@
 1;P;PLC_FastIO_15                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5449;10  ;[RW]HW Key 02
 1;P;PLC_FastIO_16                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5449;10  ;[RW]HW Key 10
 1;P;PLC_FastIO_17                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5449;10  ;[RW]HW Key 03
-1;P;PLC_FastIO_18                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5449;10  ;[RW]Not available
-0;P;PLC_FastIO_19                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_20                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_21                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_22                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_23                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_24                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_25                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_26                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_27                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_28                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_29                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_30                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_31                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
-0;P;PLC_FastIO_32                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5458;15  ;[RW]Not available
+1;P;PLC_FastIO_18                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5449;10  ;[RW]
+0;P;PLC_FastIO_19                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_20                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_21                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_22                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_23                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_24                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_25                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_26                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_27                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_28                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_29                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_30                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_31                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
+0;P;PLC_FastIO_32                  ;BIT      ;0   ;PLC       ;               ;    ;    ;      ;5459;14  ;[RW]Not available
