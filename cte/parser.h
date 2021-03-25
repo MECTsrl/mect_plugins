@@ -111,7 +111,7 @@ enum productId {
         /*24*/ TPAC1008_03_AC,
         /*25*/ TPAC1008_03_AD,
         /*26*/ TP1070_02_F,
-        /*27*/ TPX1043_03_A,
+        /*27*/ TPX1043_03_C,
         /*28*/ TPX1070_03_D,
         /*29*/ TPX1070_03_E,
                MODEL_TOTALS
