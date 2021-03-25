@@ -390,6 +390,7 @@ void info::refreshNTPInfo()
     ui->ntp_text->appendPlainText(QString("NTP Offset: \t%1 [Hours]") .arg(ntpclient->getOffset_h(), 4, 10));
     ui->ntp_text->appendPlainText(QString("NTP TimeOut:\t%1 [Seconds]") .arg(ntpclient->getTimeout_s(), 4, 10));
     ui->ntp_text->appendPlainText(QString("NTP Period: \t%1 [Hours, 0=Sync disabled]") .arg(ntpclient->getPeriod_h(), 4, 10));
+    ui->ntp_text->appendPlainText(QString("NTP DST:    \t%1") .arg(ntpclient->getDst() ? QString("ON") : QString("OFF")));
     ui->ntp_text->moveCursor(QTextCursor::Start);
 }
 
