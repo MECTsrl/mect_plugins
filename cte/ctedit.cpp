@@ -5900,7 +5900,24 @@ void ctedit::initTargetList()
     lstTargets[TP1070_02_F].serialPorts[_serial0].portEnabled = true;
     lstTargets[TP1070_02_F].serialPorts[_serial0].portEditable  = true;
     lstTargets[TP1070_02_F].serialPorts[_serial0].portAvailable = true;
-    // 27 TPX1070_03_D
+    // 27 TPX1043_03_A
+    lstTargets[TPX1043_03_A].modelName =  QLatin1String(product_name[TPX1043_03_A]);
+    lstTargets[TPX1043_03_A].displayWidth =  480;
+    lstTargets[TPX1043_03_A].displayHeight = 272;
+    lstTargets[TPX1043_03_A].usbPorts = 1;
+    lstTargets[TPX1043_03_A].sdCards = 1;
+    lstTargets[TPX1043_03_A].nEncoders = 0;
+    lstTargets[TPX1043_03_A].fastIn = 4;
+    lstTargets[TPX1043_03_A].fastOut = 4;
+    lstTargets[TPX1043_03_A].serialPorts[_serial0].portEnabled = true;
+    lstTargets[TPX1043_03_A].serialPorts[_serial0].portEditable  = true;
+    lstTargets[TPX1043_03_A].serialPorts[_serial0].portAvailable = true;
+    lstTargets[TPX1043_03_A].serialPorts[_serial2].portEnabled = true;      // Internal For MPNE_0X
+    lstTargets[TPX1043_03_A].serialPorts[_serial2].BaudRate = 19200;        // Fixed
+    lstTargets[TPX1043_03_A].serialPorts[_serial3].portEnabled = true;
+    lstTargets[TPX1043_03_A].serialPorts[_serial3].portEditable  = true;
+    lstTargets[TPX1043_03_A].serialPorts[_serial3].portAvailable = true;
+    // 28 TPX1070_03_D
     lstTargets[TPX1070_03_D].modelName =  QLatin1String(product_name[TPX1070_03_D]);
     lstTargets[TPX1070_03_D].displayWidth =  800;
     lstTargets[TPX1070_03_D].displayHeight = 480;
