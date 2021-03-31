@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html>
 	<head>
 	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
@@ -10,184 +10,422 @@
 		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
 		a:link { color: #0000ff }
 		a.cjk:visited { so-language: zh-CN }
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		#table {
+			border-top: 1px solid #000000; 
+			border-bottom: 1px solid #000000; 
+			border-left: 1px solid #000000; 
+			border-right: none; 
+			padding-top: 0cm; 
+			padding-bottom: 0cm; 
+			padding-left: 0.19cm; 
+			padding-right: 0cm
+		}
 	</style>
 	</head>	
 	<body>
 		<h3 class="western">Descrizione della Crosstable</h3>
+		<ul>
+		
+			<li><h2>Sezioni</h2>
 		<p class="western">La Crosstable &egrave; divisa in sezioni, alcune a disposizione dell&rsquo;utente ed altre bloccate e precompilate con le variabili del dispositivo.</p>
-		<p class="western">Sezione &ldquo;Retentive&rdquo;, le variabili di questa sezione non perdono il loro valore dopo aver spento e riacceso il dispositivo Mect.</p> 
-		<p class="western">Sezione &ldquo;Non Retentive&rdquo;, ampia sezione a disposizione per tutte le variabili del Vostro progetto che non necessitano di essere &ldquo;ricordate&rdquo; dopo lo spegnimento del dispositivo.</p> 
-		<p class="western">Sezione &ldquo;Diagnostic&rdquo;, &ldquo;Local I/O&rdquo; e &ldquo;System&rdquo; sono parzialmente modificabili dall&rsquo;utente e utilizzabili nei Vostri progetti, esse, oltre a permettere di muovere 
-		gli I/O, forniscono importanti informazioni sul funzionamento interno del dispositivo Mect.</p>
 		<br/>
-		<center>
-		<table width="675" cellpadding="7" cellspacing="0">
-			<col width="76">
-			<col width="568">
+		<table width="675" cellpadding="7" cellspacing="0" class="table">
+		<tr>
+			<td width="76" height="4" style="border: 1px solid #000000;" align ="center">
+				<p class="western"><strong>Sezione</strong></p>
+			</td>
+			<td width="568" style="border: 1px solid #000000;" align ="center">
+				<p class="western"><strong>Descrizione</strong></p>
+			</td>
+		</tr>
+		<tr>
+			<td width="76" height="4" style="border: 1px solid #000000;" align ="center">
+				<p class="western"><strong>Retentive</strong></p>
+			</td>
+			<td width="568" style="border: 1px solid #000000;" align ="center">
+				<p class="western">Le variabili non perdono il loro valore dopo aver spento e riacceso il dispositivo Mect.</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="76" height="4" style="border: 1px solid #000000;" align ="center">
+				<p class="western"><strong>Non Retentive</strong></p>
+			</td>
+			<td width="568" style="border: 1px solid #000000;" align ="center">
+				<p class="western">Ampia sezione a disposizione per tutte le variabili del Vostro progetto che non necessitano di essere &ldquo;ricordate&rdquo; dopo lo spegnimento del dispositivo.</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="76" height="4" style="border: 1px solid #000000;" align ="center">
+				<p class="western"><strong>Diagnostic</strong></p>
+				<p class="western"><strong>Local I/O</strong></p>
+				<p class="western"><strong>System</strong></p>
+			</td>
+			<td width="568" style="border: 1px solid #000000;" align ="center">
+				<p class="western">Sono parzialmente modificabili dall&rsquo;utente e utilizzabili nei Vostri progetti, esse, oltre a permettere di muovere 
+		gli I/O, forniscono importanti informazioni sul funzionamento interno del dispositivo Mect.</p>
+			</td>
+		</tr>
+		</table>
+		</li>	
+		<br/>
+		<li><h2>Campi</h2>
+		<dl>
+		<dt><p class="western"><strong>Priority:</strong> Abilitazione allo scambio dati con dispositivi remoti.</p></dt>
+			<dd><table width="675" cellpadding="7" cellspacing="0" class="table">
 			<tr>
-				<td width="76" height="4" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western"><strong>Campo</strong></p>
+				<td align ="center">
+					<p class="western"><strong>Value</strong></p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm" align ="center">
+				<td align ="center">
 					<p class="western"><strong>Descrizione</strong></p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Priority</p>
+				<td  align ="center">
+					<p class="western">0</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Abilitazione allo scambio dati con dispositivi remoti.</p>
-					<p class="western">- 0: Non abilitato;</p>
-					<p class="western">- 1: Abilitato con priorit&agrave; alta; preferibilmente per variabili con Protocollo &ldquo;<strong>PLC</strong>&rdquo; </p>
-					<p class="western">- 2: Abilitato con priorit&agrave; media; preferibilmente per variabili con Protocollo &ldquo;<strong>RTU</strong>&rdquo;</p>
-					<p class="western">- 3: Abilitato con priorit&agrave; bassa. preferibilmente per variabili con Protocollo &ldquo;<strong>TCP</strong>&rdquo;</p>
+				<td  align ="center">
+					<p class="western">Non abilitato</p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Update</p>
+				<td align ="center">
+					<p class="western">1</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Definisce la tipologia di scambio dati attivata con i dispositivi remoti.</p>
-					<p class="western">-H: la variabile viene aggiornata solo se visualizzata nella pagina corrente; </p>
-					<p class="western">-P: la variabile viene sempre aggiornata;</p>
-					<p class="western">-S: la variabile viene sempre aggiornata e storicizzata lentamente con un tempo &ldquo;Slow Log Period&rdquo;
-					(parametro del System Editor);</p>
-					<p class="western">-F: come &ldquo;S&rdquo; ma velocemente e con un tempo &ldquo;Fast Log Period&rdquo; (parametro del System
-					Editor);</p>
-					<p class="western">-V: la variabile &egrave; acquisita e storicizzata solo alla variazione;</p>
-					<p class="western">-X: la variabile &egrave; storicizzata quando viene richiamata dalla funzione logShot().</p>
+				<td align ="center">
+					<p class="western">Abilitato con priorit&agrave; alta; preferibilmente per variabili con Protocollo <strong>PLC</strong></p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Var.Name</p>
+				<td align ="center">
+					<p class="western">2</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Nome della variabile. Non pu&ograve; avere pi&ugrave; di 30 caratteri.</p>
-				</td>
-			</tr>
-			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Type</p>
-				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Sono definiti i seguenti tipi:</p>
-					<p class="western">-BIT: booleano;</p>
-					<p class="western">-BYTE: byte;</p>
-					<p class="western">-BYTE_BIT: seleziona un BIT all&rsquo;interno di un byte;</p>
-					<p class="western">-WORD_BIT: seleziona un BIT all&rsquo;interno di una word (16bit);</p>
-					<p class="western">-DWORD_BIT: seleziona un BIT all&rsquo;interno di una double word(32 bit);</p>
-					<p class="western">-UINT: intero senza segno a 16 bit;</p>
-					<p class="western">-UINTBA: intero senza segno a 16 bit con byte invertiti;</p>
-					<p class="western">-INT: intero con segno a 16 bit;</p>
-					<p class="western">-INTBA: intero con segno a 16 bit con byte invertiti;</p>
-					<p class="western">-UDINT: intero senza segno a 32 bit;</p>
-					<p class="western">-UDINT....: intero senza segno a 32 bit con byte invertiti;</p>
-					<p class="western">-DINT: intero con segno a 32 bit;</p>
-					<p class="western">-DINT....: intero con segno a 32 bit con byte invertiti;</p>
-					<p class="western">-REAL: reale;</p>
-					<p class="western">-REAL...: reale con byte invertiti.</p>
+				<td align ="center">
+					<p class="western">Abilitato con priorit&agrave; media; preferibilmente per variabili con Protocollo <strong>RTU</strong></p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Decimal</p>
+				<td align ="center">
+					<p class="western">3</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Per le variabili di tipo intero o reale indica il numero di decimali dopo la virgola con cui viene
-					rappresentata la variabile. Nel caso in cui la variabile sia di	tipo BYTE_BIT, WORD_BIT o DWORD_BIT indica la posizione del BIT
-					a partire da 1.</p>
+				<td align ="center">
+					<p class="western">Abilitato con priorit&agrave; bassa. preferibilmente per variabili con Protocollo<strong>TCP</strong></p>
+				</td>
+			</tr>
+			</table>
+			</dd>
+			</br>
+			<dt><p class="western"><strong>Update:</strong> Definisce la tipologia di scambio dati attivata con i dispositivi remoti.</p></dt>
+			<dd><table width="675" cellpadding="7" cellspacing="0" class="table">
+			<tr>
+				<td align ="center">
+					<p class="western"><strong>Value</strong></p>
+				</td>
+				<td align ="center">
+					<p class="western"><strong>Descrizione</strong></p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Protocol</p>
+				<td  align ="center">
+					<p class="western">H</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Indica il protocollo con cui viene scambiata	la variabile:</p>
-					<p class="western">-PLC: variabile di interscambio tra PLC e HMI</p>
-					<p class="western">-RTU: variabile presente su un dispositivo remoto su Modbus RTU</p>
-					<p class="western">-TCP: variabile presente su un dispositivo remoto su Modbus TCP</p>
-					<p class="western">-TCPRTU: variabile presente su un dispositivo remoto su Modbus   TCPRTU</p>
-					<p class="western">-CANOPEN: variabile presente su un dispositivo remoto CANopen</p>
-					<p class="western">-RTU_SRV: variabile che risponde ad una richiesta di un master Modbus RTU</p>
-					<p class="western">-TCP_SRV: variabile che risponde ad una richiesta di un master Modbus    TCP</p>
-					<p class="western">-TCPRTU_SRV: variabile che risponde ad una richiesta di un master Modbus TCPRTU</p>
-					<p class="western">-MECT: variabile su protocollo MECT</p>
+				<td  align ="center">
+					<p class="western">La variabile viene aggiornata solo se visualizzata nella pagina corrente</p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">IP Address</p>
+				<td align ="center">
+					<p class="western">P</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Indirizzo IP per modbus TCP e TCPRTU, ad	esempio: 192.168.0.42</p>
-				</td>
-			</tr>
-			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Port</p>
-				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">In caso di variabili NON PLC indica quale porta di comunicazione utilizzare: la porta di comunicazione dipende dal dispositivo
-					utilizzato.</p>
+				<td align ="center">
+					<p class="western">La variabile viene sempre aggiornata</p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Node ID</p>
+				<td align ="center">
+					<p class="western">S</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Indirizzo del nodo del dispositivo remoto. Nel caso di indirizzo 0 la scrittura &egrave; di tipo Broadcast.</p>
-				</td>
-			</tr>
-			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Register</p>
-				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Indirizzo Modbus del registro a cui fare	accesso.</p>
+				<td align ="center">
+					<p class="western">La variabile viene sempre aggiornata e storicizzata lentamente con un tempo &ldquo;Slow Log Period&rdquo;
+	(parametro del System Editor);</p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Block</p>
+				<td align ="center">
+					<p class="western">F</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Indirizzo del primo registro del blocco. Per	registri facenti parte di un blocco la lettura viene richiesta
-					accorpata.</p>
+				<td align ="center">
+					<p class="western">Come &ldquo;S&rdquo; ma velocemente e con un tempo &ldquo;Fast Log Period&rdquo; (parametro del System
+	Editor)</p>
+			</td>
+			</tr>
+			<tr>
+				<td align ="center">
+					<p class="western">V </p>
+				</td>
+				<td align ="center">
+					<p class="western">La variabile &egrave; acquisita e storicizzata solo alla variazione</p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Comment</p>
+				<td align ="center">
+					<p class="western">X</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Utilizzato come campo di commento per la	variabile. Non viene utilizzato dal sistema.</p>
+				<td align ="center">
+					<p class="western">La variabile &egrave; storicizzata quando viene richiamata dalla funzione logShot().</p>
+				</td>
+			</tr>
+			</table>
+			</dd>
+			<br/>
+			<dt><p class="western"><strong>Var.Name:</strong> Nome della variabile. Non pu&ograve; avere pi&ugrave; di 30 caratteri.</p></dt>
+			</br>
+			<dt><p class="western"><strong>Type:</strong> Sono definiti i seguenti tipi:</p></dt>
+			<dd><table width="675" cellpadding="7" cellspacing="0" class="table">
+			<tr>
+				<td align ="center">
+					<p class="western"><strong>Value</strong></p>
+				</td>
+				<td align ="center">
+					<p class="western"><strong>Descrizione</strong></p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Behavior</p>
+				<td  align ="center">
+					<p class="western">BIT</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Definisce se la variabile &egrave; di tipo &ldquo;lettura&rdquo;, &ldquo;lettura/scrittura&rdquo;,
-					&ldquo;allarme&rdquo; o &ldquo;evento&rdquo;.</p>
+				<td  align ="center">
+					<p class="western">Booleano.</p>
 				</td>
 			</tr>
 			<tr>
-				<td width="76" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: none; padding-top: 0cm; padding-bottom: 0cm; padding-left: 0.19cm; padding-right: 0cm" align ="center">
-					<p class="western">Blk Size</p>
+				<td  align ="center">
+					<p class="western">BYTE</p>
 				</td>
-				<td width="568" style="border: 1px solid #000000; padding: 0cm 0.19cm">
-					<p class="western">Numero di registri presenti nel blocco, massimo 64 registri.</p>
+				<td  align ="center">
+					<p class="western">Byte.</p>
 				</td>
 			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">BYTE_BIT</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Seleziona un BIT all&rsquo;interno di un byte.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">WORD_BIT</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Seleziona un BIT all&rsquo;interno di una word (16bit).</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">DWORD_BIT</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Seleziona un BIT all&rsquo;interno di una double word(32 bit).</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">UINT</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Intero senza segno a 16 bit.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">UINTBA</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Intero senza segno a 16 bit con byte invertiti.</p>
+				</td>
+			</tr>			
+			<tr>
+				<td  align ="center">
+					<p class="western">INT</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Intero con segno a 16 bit.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">INTBA</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Intero con segno a 16 bit con byte invertiti.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">UDINT</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Intero senza segno a 32 bit.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">UDINT.... </p>
+				</td>
+				<td  align ="center">
+					<p class="western">Intero senza segno a 32 bit con byte invertiti.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">DINT</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Intero con segno a 32 bit.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">DINT....</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Intero con segno a 32 bit con byte invertiti.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">REAL</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Reale.</p>
+				</td>
+			</tr>
+			<tr>
+				<td  align ="center">
+					<p class="western">REAL...</p>
+				</td>
+				<td  align ="center">
+					<p class="western">Reale con byte invertiti.</p>
+				</td>
+			</tr>
+			</dd>
+			</br>
+		</dl>
 		</table>
-	</center>
-	
-	<br/>
+		<br/>
+		<dt><p class="western"><strong>Decimal:</strong> Per le variabili di tipo intero o reale indica il numero di decimali dopo la virgola con cui viene
+					rappresentata la variabile. Nel caso in cui la variabile sia di	tipo BYTE_BIT, WORD_BIT o DWORD_BIT indica la posizione del BIT
+					a partire da 1.</p></dt>
+		</br>
+		<dt><p class="western"><strong>Protocol:</strong> Indica il protocollo con cui viene scambiata la variabile:</p></dt>
+		<dd><table width="675" cellpadding="7" cellspacing="0" class="table">
+		<tr>
+			<td align ="center">
+				<p class="western"><strong>Value</strong></p>
+			</td>
+			<td align ="center">
+				<p class="western"><strong>Descrizione</strong></p>
+			</td>
+		</tr>
+		<tr>
+			<td align ="center">
+				<p class="western">PLC</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile di interscambio tra PLC e HMI</p>
+			</td>
+		</tr>
+		<tr>
+			<td align ="center">
+				<p class="western">RTU</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile presente su un dispositivo remoto su Modbus RTU</p>
+			</td>
+		</tr>
+		<tr>
+			<td align ="center">
+				<p class="western">TCP</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile presente su un dispositivo remoto su Modbus TCP</p>
+			</td>
+		</tr>
+				<tr>
+			<td align ="center">
+				<p class="western">TCPRTU</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile presente su un dispositivo remoto su Modbus TCPRTU</p>
+			</td>
+		</tr>
+		<tr>
+			<td align ="center">
+				<p class="western">CANOPEN</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile presente su un dispositivo remoto CANopen</p>
+			</td>
+		</tr>
+				<tr>
+			<td align ="center">
+				<p class="western">RTU_SRV</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile che risponde ad una richiesta di un master Modbus RTU</p>
+			</td>
+		</tr>
+				<tr>
+			<td align ="center">
+				<p class="western">TCP_SRV</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile che risponde ad una richiesta di un master Modbus TCP</p>
+			</td>
+		</tr>
+				<tr>
+			<td align ="center">
+				<p class="western">TCPRTU_SRV</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile che risponde ad una richiesta di un master Modbus TCPRTU</p>
+			</td>
+		</tr>
+				<tr>
+			<td align ="center">
+				<p class="western">MECT</p>
+			</td>
+			<td align ="center">
+				<p class="western">Variabile su protocollo MECT</p>
+			</td>
+		</tr>
+		</dd>	
+		</table>
+		</br>				
+		<dt><p class="western"><strong>IP Address:</strong> Indirizzo IP per modbus TCP e TCPRTU, ad	esempio: 192.168.0.42.</p></dt>
+		</br>
+		<dt><p class="western"><strong>Port:</strong> In caso di variabili NON PLC indica quale porta di comunicazione utilizzare: la porta di comunicazione dipende dal dispositivo
+					utilizzato.</p></dt>
+		</br>
+		<dt><p class="western"><strong>Node ID:</strong> Indirizzo del nodo del dispositivo remoto. Nel caso di indirizzo 0 la scrittura &egrave; di tipo Broadcast.</p></dt>
+		</br>
+		<dt><p class="western"><strong>Register:</strong> Indirizzo Modbus del registro a cui fare	accesso..</p></dt>
+		</br>
+		<dt><p class="western"><strong>Block:</strong> Indirizzo del primo registro del blocco. Per	registri facenti parte di un blocco la lettura viene richiesta
+					accorpata.</p></dt>
+		</br>
+		<dt><p class="western"><strong>Comment:</strong> Utilizzato come campo di commento per la	variabile. Non viene utilizzato dal sistema.</p></dt>
+		</br>
+		<dt><p class="western"><strong>Behavior:</strong> Definisce se la variabile &egrave; di tipo &ldquo;lettura&rdquo;, &ldquo;lettura/scrittura&rdquo;,
+					&ldquo;allarme&rdquo; o &ldquo;evento&rdquo;.</p></dt>
+		</br>
+		<dt><p class="western"><strong>Blk Size:</strong> Numero di registri presenti nel blocco, massimo 64 registri.</p></dt>
+		</br>	
 	</body>
 </html>
