@@ -718,14 +718,16 @@ bool TrendEditor::isModified()
     int             nRow = 0;
     bool            fEqual = true;
 
-
-    // Prepare Interface Fields
-    iface2MemList(lstIfaceRows);
-    for (nRow = 0; nRow < lstIfaceRows.count(); nRow ++)  {
-        if (nRow >= lstSourceRows.count() || lstIfaceRows[nRow] != lstSourceRows[nRow]) {
-            qDebug() << tr("Source: %1 Interface: %2") .arg(lstSourceRows[nRow]) .arg(lstIfaceRows[nRow]);
-            fEqual = false;
-            break;
+    // Controllo che esista almeno un Trend definito nell'applicazione
+    if (ui->cboTrendName->count() > 0)  {
+        // Prepare Interface Fields
+        iface2MemList(lstIfaceRows);
+        for (nRow = 0; nRow < lstIfaceRows.count(); nRow ++)  {
+            if (nRow >= lstSourceRows.count() || lstIfaceRows[nRow] != lstSourceRows[nRow]) {
+                qDebug() << tr("Source: %1 Interface: %2") .arg(lstSourceRows[nRow]) .arg(lstIfaceRows[nRow]);
+                fEqual = false;
+                break;
+            }
         }
     }
     // qDebug() << tr("Trends Modified (Rows %2):  %1") .arg(!fEqual) .arg(nRow);
