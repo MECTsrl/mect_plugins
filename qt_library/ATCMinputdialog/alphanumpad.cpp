@@ -74,7 +74,37 @@
     this->setStyleSheet(mystyle); \
     }
 
+
 alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent):
+    QDialog(parent),
+    ui(new Ui::alphanumpad)
+{
+    ui->setupUi(this);
+    //SET_DIALOG_STYLE();
+    SET_ALPHANUMPAD_STYLE();
+
+    _value = value;
+
+    if (password)
+    {
+        ui->lineEditVal->setEchoMode(QLineEdit::Password);
+    }
+    else
+    {
+        ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+        if (def != NULL)
+        {
+            ui->lineEditVal->setText(def);
+        }
+    }
+
+    capsLock = false;
+    reload();
+}
+
+
+
+alphanumpad::alphanumpad(char* value, bool showSpecialChars, char* def, bool password, QWidget *parent):
     QDialog(parent),
     ui(new Ui::alphanumpad)
 {
@@ -83,6 +113,10 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
     SET_ALPHANUMPAD_STYLE();
     
     _value = value;
+
+
+    // Abilitazione del bottone per visualizzare i caratteri speciali
+    ui->showSymbols->setVisible(showSpecialChars);
 
     if (password)
     {

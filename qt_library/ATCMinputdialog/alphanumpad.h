@@ -22,6 +22,7 @@ class alphanumpad : public QDialog
     
 public:
     explicit alphanumpad(char* value, char* def = NULL, bool password = false, QWidget *parent = 0);
+    explicit alphanumpad(char* value, bool showSpecialChars, char* def = NULL, bool password = false, QWidget *parent = 0);
 
     ~alphanumpad();
     void reload();
