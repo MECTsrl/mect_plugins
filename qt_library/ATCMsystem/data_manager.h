@@ -26,23 +26,15 @@ public:
     virtual void updateData();
 
 private slots:
-#ifdef TRANSLATION
     void changeEvent(QEvent * event);
-#endif
+
     void on_pushButtonAlarms_clicked();
-
     void on_pushButtonStore_clicked();
-
     void on_pushButtonRecipe_clicked();
-
     void on_pushButtonTrend_clicked();
-
     void on_pushButtonHome_clicked();
-
     void on_pushButtonBack_clicked();
-
     void on_pushButtonLogStart_clicked();
-
     void on_pushButtonLogStop_clicked();
 
 private:

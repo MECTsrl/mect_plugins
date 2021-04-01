@@ -28,9 +28,8 @@ public:
     virtual void updateData();
 
 private slots:
-#ifdef TRANSLATION
     void changeEvent(QEvent * event);
-#endif
+
     void on_pushButtonHome_clicked();
     void on_pushButtonBack_clicked();
     void on_pushButtonUp_clicked();

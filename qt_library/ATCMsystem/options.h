@@ -26,23 +26,15 @@ public:
     virtual void updateData();
     
 private slots:
-#ifdef TRANSLATION
     void changeEvent(QEvent * event);
-#endif
+
     void on_pushButtonDateAndTime_clicked();
-    
     void on_pushButtonModbus_clicked();
-    
     void on_pushButtonPasswords_clicked();
-        
     void on_pushButtonHome_clicked();
-    
     void on_pushButtonBack_clicked();
-        
     void on_pushButtonDisplaySettings_clicked();
-    
     void on_pushButtonLanguage_clicked();
-    
     void on_pushButtonNetworkCfg_clicked();
 
 private:

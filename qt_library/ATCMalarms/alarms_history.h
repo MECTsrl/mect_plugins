@@ -26,25 +26,13 @@ public:
     virtual void updateData();
 
 private slots:
-#ifdef TRANSLATION
     void changeEvent(QEvent * event);
-#endif
+
     void on_pushButtonHome_clicked();
-
     void on_pushButtonBack_clicked();
-
     void on_pushButtonPrevious_clicked();
-
     void on_pushButtonNext_clicked();
-
-#ifdef LEVEL_TYPE
-    void on_comboBoxLevel_currentIndexChanged(int index);
-
-    void on_comboBoxType_currentIndexChanged(int index);
-#endif
-
     void on_comboBoxDate_currentIndexChanged(int index);
-
     void on_pushButtonSave_clicked();
 
 private:

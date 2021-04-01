@@ -27,13 +27,9 @@
 #include "setstyle.h"
 #include "common.h"
 #include "cross_table_utility.h"
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 #include "hmi_logger.h"
-#endif
-#ifdef ENABLE_INPUTPAD
 #include "numpad.h"
 #include "alphanumpad.h"
-#endif
 
 #ifdef TARGET
 #define SHOW showFullScreen
@@ -122,7 +118,6 @@ protected:
     bool zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir = false, QString basedir = "");
     bool signFile(QString srcfile, QString destfile);
 
-#ifdef ENABLE_ALARMS
     char * getDescription(char* tag);
     void setAlarmsBuzzer(int period_ms = ERROR_LABEL_PERIOD_MS);
     void sequentialShowError(QLineEdit * line, int period_ms = ERROR_LABEL_PERIOD_MS);
@@ -131,7 +126,6 @@ protected slots:
     void rotateShowErrorSlot();
 signals:
     void new_ack(event_msg_t * msg);
-#endif
 protected:
     QTimer * refresh_timer;
     QLabel * labelIcon;

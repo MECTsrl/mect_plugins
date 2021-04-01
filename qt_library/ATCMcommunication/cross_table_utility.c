@@ -17,14 +17,11 @@
 #include <time.h>
 
 #include "app_logprint.h"
-#include "app_var_list.h"
 #include "common.h"
 #include "cross_table_utility.h"
 #include "utility.h"
 
 #include "hmi_plc.h"
-
-#ifdef USE_HMI_PLC
 
 HmiPlcBlock plcBlock; // actual values from plc
 HmiPlcBlock hmiBlock; // doWrite(), addWrite(), activateVar(), disactivateVar()
@@ -35,29 +32,8 @@ HmiPlcBlock hmiBlock; // doWrite(), addWrite(), activateVar(), disactivateVar()
 uint16_t writingCount;
 uint16_t writingList[DimCrossTable]; // NB: zero based
 
-#else
-
-BYTE IODataAreaI[STATUS_BASE_BYTE + DB_SIZE_BYTE];
-BYTE * pIODataAreaI = &(IODataAreaI[4]);
-
-BYTE IODataAreaO[STATUS_BASE_BYTE + DB_SIZE_BYTE];
-BYTE * pIODataAreaO = &(IODataAreaO[4]);
-
-BYTE * pIODataStatusAreaI  = (BYTE *)&(IODataAreaI[STATUS_BASE_BYTE + 1]);
-BYTE * pIODataStatusAreaO  = (BYTE *)&(IODataAreaO[STATUS_BASE_BYTE + 1]);
-
-WORD IOSyncroAreaO[SYNCRO_DB_SIZE_ELEM + 1];
-WORD * pIOSyncroAreaO = &(IOSyncroAreaO[1]);
-
-WORD IOSyncroAreaI[SYNCRO_DB_SIZE_ELEM + 1];
-WORD * pIOSyncroAreaI = &(IOSyncroAreaI[1]);
-
-size_t SyncroAreaSize = 0;
-
-#endif
-
 variable_t varNameArray[DB_SIZE_ELEM + 1];
-#if defined(ENABLE_STORE) || defined(ENABLE_TREND)
+
 store_t StoreArrayS[DB_SIZE_ELEM];
 store_t StoreArrayF[DB_SIZE_ELEM];
 store_t StoreArrayV[DB_SIZE_ELEM];
@@ -66,7 +42,6 @@ int store_elem_nb_S = 0;
 int store_elem_nb_F = 0;
 int store_elem_nb_V = 0;
 int store_elem_nb_X = 0;
-#endif
 
 char CrossTableErrorMsg[256];
 
@@ -76,20 +51,8 @@ static int ActualNreg = 0;
 static int LastNreg = 0;
 static int blockSize = 1;
 
-#ifdef USE_HMI_PLC
-#else
-int cmpSyncroCtIndex(WORD address, int CtIndex);
-int setSyncroCtIndex(WORD * address, int CtIndex);
-int setStatusVar(const char * varname, char Status);
-#endif
 pthread_mutex_t datasync_recv_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t datasync_send_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-#ifdef USE_HMI_PLC
-#else
-pthread_mutex_t write_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
-static write_queue_elem_t * queue_head = NULL, * queue_tail = NULL;
-#endif
 
 /**
  * Open the cross table and fill the syncro vector with the Mirror variables and the PLC variables
@@ -132,21 +95,11 @@ size_t fillSyncroArea(void)
         return -1;
     }
 
-#ifdef USE_HMI_PLC
     resetHmiPlcBlocks(&hmiBlock, &plcBlock);
-#else
-    memset (pIOSyncroAreaI, 0x0, SYNCRO_DB_SIZE_ELEM);
-    memset (pIOSyncroAreaO, 0x0, SYNCRO_DB_SIZE_ELEM);
-    memset (pIODataAreaI, 0x0, STATUS_BASE_BYTE + DB_SIZE_BYTE);
-    memset (pIODataAreaO, 0x0, STATUS_BASE_BYTE + DB_SIZE_BYTE);
-#endif
-
     for (n = 1; n <= DB_SIZE_ELEM; ++n)
     {
         varNameArray[n].type = udint_abcd_e; // workaround for theValue() when using old Crosstables
-#ifdef USE_HMI_PLC
         writingList[n] = 0;
-#endif
     }
     writingCount = 0;
 
@@ -188,7 +141,7 @@ size_t fillSyncroArea(void)
         switch (varNameArray[elem_nb].active) {
         case TAG_ONDEMAND:
             varNameArray[elem_nb].visible = 0;
-            hmiBlock.states[elem_nb] = varStatus_NOP;
+            hmiBlock.states[elem_nb] = varStatus_NOP; // NB: now hmiBlock.first = hmiBlock.last = 0
             break;
         case TAG_PLC:
         case TAG_STORED_SLOW:
@@ -623,11 +576,7 @@ size_t fillSyncroArea(void)
     }
     fclose(fp);
     elem_nb--;
-#if defined(ENABLE_STORE) || defined(ENABLE_TREND)
     LOG_PRINT(verbose_e, "Loaded %d record stored record S: %d F: %d V: %d\n", elem_nb, store_elem_nb_S, store_elem_nb_F, store_elem_nb_V);
-#else
-    LOG_PRINT(verbose_e, "Loaded %d record\n", elem_nb);
-#endif
     CrossTableErrorMsg[0] = '\0';
 
     return elem_nb;
@@ -644,49 +593,6 @@ int cmpCrossTableBlock(int i, int j)
 {
     return (varNameArray[i].block != varNameArray[j].block);
 }
-
-#ifdef USE_HMI_PLC
-#else
-/** @brief Compare a cross table index and a syncro element
- * @param WORD address :  syncro table element
- * @param int CtIndex :  cross table index
- * @return 0 if the cross table index and a syncro element are the same
- * @return 1 if the cross table index and a syncro element are different
- */
-int cmpSyncroCtIndex(WORD address, int CtIndex)
-{
-    LOG_PRINT(verbose_e, "CtIndex: %X address %X - %X\n", CtIndex, (int) (address & ADDRESS_MASK), address);
-    return !(CtIndex == ((int)(address & ADDRESS_MASK)));
-}
-
-/** @brief Set the cross table index into a syncro table element
- * @param WORD * address :  syncro table element
- * @param int CtIndex :  cross table index
- */
-int setSyncroCtIndex(WORD * address, int CtIndex)
-{
-    LOG_PRINT(verbose_e, "CtIndex: %d, address %d\n", CtIndex, *address);
-    *address = (WORD)CtIndex;
-    LOG_PRINT(verbose_e, "CtIndex: %d, address %d\n", CtIndex, *address);
-
-    return 0;
-}
-
-/** @brief Extract the cross table index from a syncro table element
- * @param WORD address :  syncro table element
- * @param int CtIndex :  cross table index
- */
-int getSyncroCtIndex(WORD address, int * CtIndex)
-{
-    *CtIndex = (int)(address & ADDRESS_MASK);
-    if (*CtIndex <= 0 || *CtIndex > DB_SIZE_ELEM)
-    {
-        *CtIndex = -1;
-        return 1;
-    }
-    return 0;
-}
-#endif
 
 /** @brief Extract the cross table index of the variable tagget as 'Tag'
  * @param const char * Tag : variable tag
@@ -723,8 +629,12 @@ int Tag2CtIndex(const char * Tag, int * CtIndex)
  */
 int CtIndex2Tag(int CtIndex, char * Tag)
 {
-    strcpy(Tag, varNameArray[CtIndex].tag);
-    return 0;
+    if (Tag && CtIndex >= 1 && CtIndex <= DimCrossTable) {
+        strcpy(Tag, varNameArray[CtIndex].tag);
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 /**
@@ -732,7 +642,11 @@ int CtIndex2Tag(int CtIndex, char * Tag)
  */
 int CtIndex2Type(int CtIndex)
 {
-    return varNameArray[CtIndex].type;
+    if (CtIndex >= 1 && CtIndex <= DimCrossTable) {
+        return varNameArray[CtIndex].type;
+    } else {
+        return -1;
+    }
 }
 
 char readFromDbQuick(int ctIndex, int * ivaluep)
@@ -742,15 +656,8 @@ char readFromDbQuick(int ctIndex, int * ivaluep)
 
     pthread_mutex_lock(&datasync_recv_mutex);
     {
-#ifdef USE_HMI_PLC
         ivalue = plcBlock.values[ctIndex].i32;
         status = plcBlock.states[ctIndex];
-#else
-        register int *p = (int *)IODataAreaI;
-
-        ivalue = p[ctIndex];
-        status = pIODataStatusAreaI[ctIndex];
-#endif
     }
     pthread_mutex_unlock(&datasync_recv_mutex);
 
@@ -789,7 +696,6 @@ int readFromDb(int ctIndex, void * value)
         LOG_PRINT(error_e, "invalid Ctindex %d\n", ctIndex);
         return -1;
     }
-#ifdef USE_HMI_PLC
     switch(varNameArray[ctIndex].type)
     {
     case uintab_e:
@@ -835,62 +741,6 @@ int readFromDb(int ctIndex, void * value)
         LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
         retval = -1;
     }
-#else
-    int byte_nb = (ctIndex - 1) * 4;
-
-    switch(varNameArray[ctIndex].type)
-    {
-    case uintab_e:
-    case uintba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(unsigned short));
-        LOG_PRINT(verbose_e, "uint_e: %d\n", *((unsigned short*)value));
-        break;
-    case intab_e:
-    case intba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(short));
-        LOG_PRINT(verbose_e, "int_e: %d\n", *((short*)value));
-        break;
-    case udint_abcd_e:
-    case udint_badc_e:
-    case udint_cdab_e:
-    case udint_dcba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(unsigned int));
-        LOG_PRINT(verbose_e, "udint_e: %d\n", *((unsigned int*)value));
-        break;
-    case dint_abcd_e:
-    case dint_badc_e:
-    case dint_cdab_e:
-    case dint_dcba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(int));
-        LOG_PRINT(verbose_e, "dint_e: %d\n", *((int*)value));
-        break;
-    case fabcd_e:
-    case fbadc_e:
-    case fcdab_e:
-    case fdcba_e:
-        memcpy(value, &(pIODataAreaI[byte_nb]), sizeof(float));
-        LOG_PRINT(verbose_e, "FLOAT: %f\n", *((float*)value));
-        break;
-    case byte_e:
-        *((BYTE*)value) = pIODataAreaI[byte_nb];
-        LOG_PRINT(verbose_e, "BYTE: %d\n", *((BYTE*)value));
-        break;
-    case bit_e:
-    case bytebit_e:
-    case wordbit_e:
-    case dwordbit_e:
-        if (pIODataAreaI[byte_nb]) {
-            *((int *)value) = 1;
-        } else {
-            *((int *)value) = 0;
-        }
-        LOG_PRINT(verbose_e, "...BIT: %d\n", *((int *)value));
-        break;
-    default:
-        LOG_PRINT(error_e, "Unknown type '%d'\n", varNameArray[ctIndex].type);
-        retval = -1;
-    }
-#endif
     return retval;
 }
 
@@ -1230,107 +1080,20 @@ int int_fromValue(int ctIndex, int value, int decimal)
     return retval;
 }
 
-void writeVarInQueueByCtIndex(int ctIndex, int value)
-{
-#ifdef USE_HMI_PLC
-    (void)prepareWriteVarByCtIndex(ctIndex, value, 1);
-#else
-    switch (prepareWriteVarByCtIndex(ctIndex, value, 1))
-    {
-    case DONE:
-        break;
-    case BUSY:
-        pthread_mutex_lock(&write_queue_mutex);
-        {
-            write_queue_elem_t * queue_elem = (write_queue_elem_t *)calloc(1, sizeof(write_queue_elem_t));
-            queue_elem->next = NULL;
-            queue_elem->ctIndex = ctIndex;
-            queue_elem->value = value;
-
-            // put item to queue tail
-            if (queue_tail == NULL || queue_head == NULL)
-            {
-                queue_head = queue_tail = queue_elem;
-            }
-            else
-            {
-                queue_tail->next = queue_elem;
-                queue_tail = queue_elem;
-            }
-        }
-        pthread_mutex_unlock(&write_queue_mutex);
-        break;
-    case ERROR:
-    default:
-        ;
-    }
-#endif
-}
-
-void writeVarQueuedByCtIndex(void)
-{
-#ifdef USE_HMI_PLC
-#else
-    pthread_mutex_lock(&write_queue_mutex);
-    {
-        // get items from queue head
-        write_queue_elem_t * queue_elem = queue_head;
-        write_queue_elem_t * queue_prev = NULL;
-
-        while (queue_elem != NULL)
-        {
-            if (prepareWriteVarByCtIndex(queue_elem->ctIndex, queue_elem->value, 1) == BUSY)
-            {
-                // BUSY: rimane in coda
-                queue_prev = queue_elem;
-                queue_elem = queue_elem->next;
-            }
-            else
-            {
-                // DONE, ERROR: toglie dalla coda
-                if (queue_head == queue_elem)
-                {
-                    // toglie dalla testa
-                    queue_head = queue_elem->next;
-                    if (queue_head == NULL)
-                    {
-                        queue_tail = NULL;
-                    }
-                    free(queue_elem);
-                    queue_elem = queue_head;
-                }
-                else
-                {
-                    // toglie da in mezzo
-                    queue_prev->next = queue_elem->next;
-                    free(queue_elem);
-                    queue_elem = queue_prev->next;
-                }
-            }
-        }
-    }
-    pthread_mutex_unlock(&write_queue_mutex);
-#endif
-}
-
 /**
  * @brief perform a block write request
  */
 int writePendingInorder()
 {
-#ifdef AVOID_RECIPES
-    return 0;
-#else
     int do_signal = 0;
 
     pthread_mutex_lock(&datasync_send_mutex);
     {
-#ifdef USE_HMI_PLC
         int addr;
 
         for (addr = 1; addr <= DimCrossTable; ++addr) {
             if (hmiBlock.states[addr] == varStatus_PREPARING) {
-                hmiBlock.states[addr] = varStatus_DO_WRITE;
+                changeStatusHmiBlock(&hmiBlock, addr, varStatus_DO_WRITE);
                 if (writingCount < DimCrossTable) {
                     writingList[writingCount] = addr;
                     ++writingCount;
@@ -1340,20 +1103,6 @@ int writePendingInorder()
                 do_signal = 1;
             }
         }
-#else
-        unsigned int SynIndex;
-
-        for (SynIndex = 0; SynIndex < SyncroAreaSize; SynIndex++)
-        {
-            if (IS_PREPARE_SYNCRO_FLAG(SynIndex))
-            {
-                LOG_PRINT(verbose_e, "Clear the PREPARE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
-                SET_SYNCRO_FLAG(SynIndex, WRITE_RCP_MASK);
-                LOG_PRINT(verbose_e, "Writing the RCP_WRITE FLAG %d -> %X\n", SynIndex, pIOSyncroAreaO[SynIndex]);
-                do_signal = 1;
-            }
-        }
-#endif
         if (do_signal)
         {
             pthread_cond_signal(&theWritingCondvar);
@@ -1361,7 +1110,6 @@ int writePendingInorder()
     }
     pthread_mutex_unlock(&datasync_send_mutex);
     return 0;
-#endif
 }
 
 /**
@@ -1380,10 +1128,9 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
     }
     pthread_mutex_lock(&datasync_send_mutex);
     {
-#ifdef USE_HMI_PLC
         hmiBlock.values[ctIndex].i32 = value;
         if (execwrite) {
-            hmiBlock.states[ctIndex] = varStatus_DO_WRITE; // NB: even if it was varStatus_PREPARING
+            changeStatusHmiBlock(&hmiBlock, ctIndex, varStatus_DO_WRITE); // NB: even if it was varStatus_PREPARING
             if (writingCount < DimCrossTable) {
                 writingList[writingCount] = ctIndex;
                 ++writingCount;
@@ -1391,65 +1138,9 @@ char prepareWriteVarByCtIndex(int ctIndex, int value, int execwrite)
                 LOG_PRINT(error_e, "the writing list is full\n");
             }
         } else {
-            hmiBlock.states[ctIndex] = varStatus_PREPARING;
+            changeStatusHmiBlock(&hmiBlock, ctIndex, varStatus_PREPARING);
         }
         retval = DONE;
-#else
-        unsigned i;
-        uint16_t oper;
-        uint16_t addr;
-        int already_present = 0;
-
-        /* search for pending writes on the same variable */
-        for (i = 0; i < SyncroAreaSize; i++)
-        {
-            addr = pIOSyncroAreaO[i] & ADDRESS_MASK;
-            oper = pIOSyncroAreaO[i] & OPER_MASK;
-               /* marked               all writes             prepare            empty */
-            if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
-            {
-                // register char dataStatus = pIODataStatusAreaI[ctIndex];
-                register u_int16_t syncroStatus = pIOSyncroAreaI[i];
-
-                if (syncroStatus == 0) { // QUEUE_EMPTY
-                    LOG_PRINT(warning_e, "overwriting variable #%d %s\n", ctIndex, varNameArray[ctIndex].tag);
-                    already_present = 1; /* both execwrite and ! execwrite */
-                    break;
-                } else { // QUEUE_BUSY_WRITE QUEUE_BUSY_READ
-                    if (execwrite) {
-                        LOG_PRINT(warning_e, "busy variable(doWrite) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
-                    } else {
-                        LOG_PRINT(warning_e, "busy variable(addWrite) #%d (%u/%u) %s\n", ctIndex, i, SyncroAreaSize, varNameArray[ctIndex].tag);
-                    }
-                    retval = BUSY;
-                    goto exit_function;
-                }
-            }
-        }
-
-        /* create a new item in Syncro area */
-        if (! already_present) {
-            if (SyncroAreaSize >= SYNCRO_DB_SIZE_ELEM)
-            {
-                LOG_PRINT(error_e, "full area while writing %d\n", ctIndex);
-                retval = BUSY;
-                goto exit_function;
-            }
-            pIOSyncroAreaO[SyncroAreaSize] = ctIndex & ADDRESS_MASK;
-            if (execwrite) {
-                SET_SYNCRO_FLAG(SyncroAreaSize, WRITE_MASK);
-            } else {
-                SET_SYNCRO_FLAG(SyncroAreaSize, PREPARE_MASK);
-            }
-            SyncroAreaSize++;
-        }
-
-        /* update the value into the Data area */
-        int *p = (int *)IODataAreaO;
-        p[ctIndex] = value;
-        retval = DONE;
-exit_function:
-#endif
         if (retval == DONE && execwrite)
         {
             pthread_cond_signal(&theWritingCondvar);
@@ -1540,31 +1231,12 @@ int activateVar(const char * varname)
     }
     pthread_mutex_lock(&datasync_send_mutex);
     {
-#ifdef USE_HMI_PLC
         varNameArray[CtIndex].visible = 1;
         // NB: may be varStatus_PREPARING or varStatus_DO_WRITE
         // see also io_layer_comm::run()
         if (hmiBlock.states[CtIndex] == varStatus_NOP) {
-            hmiBlock.states[CtIndex] = varStatus_DO_READ;
+            changeStatusHmiBlock(&hmiBlock, CtIndex, varStatus_DO_READ);
         }
-#else
-        int found = 0;
-
-        for (int i = 0; i < SyncroAreaSize; i++)
-        {
-            if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 && IS_READ_SYNCRO_FLAG(i))
-            {
-                found = 1;
-                break;
-            }
-        }
-        if (! found) {
-            setSyncroCtIndex(&(pIOSyncroAreaO[SyncroAreaSize]), CtIndex);
-            SET_SYNCRO_FLAG(SyncroAreaSize, READ_MASK);
-            SyncroAreaSize++;
-            varNameArray[CtIndex].visible = 1;
-        }
-#endif
     }
     pthread_mutex_unlock(&datasync_send_mutex);
     return 0;
@@ -1599,82 +1271,15 @@ int deactivateVar(const char * varname)
     }
     pthread_mutex_lock(&datasync_send_mutex);
     {
-#ifdef USE_HMI_PLC
         varNameArray[CtIndex].visible = 0;
         // NB: may be varStatus_PREPARING or varStatus_DO_WRITE
         // see also io_layer_comm::run()
         if (hmiBlock.states[CtIndex] == varStatus_DO_READ) {
-            hmiBlock.states[CtIndex] = varStatus_NOP;
+            changeStatusHmiBlock(&hmiBlock, CtIndex, varStatus_NOP);
         }
-#else
-        unsigned i;
-
-        for (i = 0; i < SyncroAreaSize; i++)
-        {
-            if (cmpSyncroCtIndex(pIOSyncroAreaO[i], CtIndex) == 0 && IS_READ_SYNCRO_FLAG(i))
-            {
-                CLR_SYNCRO_FLAG(i);
-                break;
-            }
-        }
-#endif
     }
     pthread_mutex_unlock(&datasync_send_mutex);
     return 0;  // it's ok even if not found
-}
-
-#ifdef USE_HMI_PLC
-#else
-/**
- * @brief set the actual status.
- * The status could be:
- * - ERROR:  error flag is set to 1
- * - DONE:   error flag is set to 0
- * - BUSY:   error flag is set to 0
- */
-int setStatusVar(const char * varname, char Status)
-{
-    (void)varname;
-    (void)Status;
-    LOG_PRINT(error_e, "called  int setStatusVar()\n");
-    return 1;
-}
-#endif
-
-/**
- * @brief check the syncro data input to verify if a pending write finish,
- * if yes, update the syncro data output.
- */
-void compactSyncWrites(void)
-{
-#ifdef USE_HMI_PLC
-#else
-    unsigned  SynIndex;
-
-    // already locked both for send and recv
-    // (Wadr,0) --> (0Adr,0)
-    // (0Adr,0) --> (0,0)
-    for (SynIndex = 0; SynIndex < SyncroAreaSize; ++SynIndex)
-    {
-        if (IS_WRITE_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 1)) // QUEUE_BUSY_WRITE
-        {
-            CLR_SYNCRO_FLAG(SynIndex);
-        }
-        else if (IS_EMPTY_SYNCRO_FLAG(SynIndex) && (pIOSyncroAreaI[SynIndex] == 0))
-        {
-            pIOSyncroAreaO[SynIndex] = 0x0000;
-        }
-    }
-    // (0000,0) --> --SyncroAreaSize
-    while (SyncroAreaSize > 0) {
-        SynIndex = SyncroAreaSize - 1;
-        if (pIOSyncroAreaO[SynIndex] == 0x0000 && pIOSyncroAreaI[SynIndex] == 0) {
-            --SyncroAreaSize;
-        } else {
-            break;
-        }
-    }
-#endif
 }
 
 int getVarDecimalByCtIndex(const int ctIndex)
@@ -1832,7 +1437,7 @@ int setFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
 {
     int value = theValue_string(ctIndex, formattedVar);
 
-    writeVarInQueueByCtIndex(ctIndex, value);
+    prepareWriteVarByCtIndex(ctIndex, value, 1);
     return 0;
 }
 
@@ -1843,24 +1448,17 @@ int intFormattedVarByCtIndex(const int ctIndex, char * formattedVar)
 
 int doWrite(int ctIndex, void * valuep)
 {
-    writeVarInQueueByCtIndex(ctIndex, theValue(ctIndex, valuep));
+    prepareWriteVarByCtIndex(ctIndex, theValue(ctIndex, valuep), 1);
     return 0;
 }
 
 int getStatus(int CtIndex)
 {
-#ifdef USE_HMI_PLC
     return plcBlock.states[CtIndex];
-#else
-    return pIODataStatusAreaI[CtIndex];
-#endif
 }
 
 int addWrite(int ctIndex, void * valuep)
 {
-#ifdef AVOID_RECIPES
-    return doWrite(ctIndex, valuep);
-#else
     char retval;
 
     retval = prepareWriteVarByCtIndex(ctIndex, theValue(ctIndex, valuep), 0);
@@ -1877,5 +1475,4 @@ int addWrite(int ctIndex, void * valuep)
     default:
         return 1;
     }
-#endif
 }

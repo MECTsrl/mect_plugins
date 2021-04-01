@@ -15,9 +15,6 @@
 #include "app_logprint.h"
 #include "pagebrowser.h"
 #include "app_config.h"
-#ifdef ENABLE_AUTODUMP
-#include "app_usb.h"
-#endif
 
 #include "ATCMsystem/system_ini.h"
 #include "ATCMsystem/net_conf.h"
@@ -32,27 +29,19 @@
 #include "defines.h"
 #include "global_functions.h"
 
-#ifdef ENABLE_ALARMS
 #include "alarms.h"
 #include "alarms_history.h"
-#endif
 
-#ifdef ENABLE_STORE
 #include "store.h"
 #include "store_filter.h"
-#endif
 
-#ifdef ENABLE_TREND
 #include "trend.h"
 #include "trend_other.h"
 #include "trend_option.h"
 #include "trend_range.h"
-#endif
 
-#ifdef ENABLE_RECIPE
 #include "recipe.h"
 #include "recipe_select.h"
-#endif
 
 /** @brief variables used for the change page management */
 QStack<QString> History;
@@ -195,9 +184,7 @@ void page::updateData()
         }
     }
 
-#ifdef ENABLE_ALARMS
     setAlarmsBuzzer();
-#endif
 
     int buzzerOn;
 
@@ -220,54 +207,6 @@ void page::updateData()
         }
     }
 
-#ifdef ENABLE_AUTODUMP
-    {
-        static bool inserted = false;
-        /* Check USB key */
-        if (USBCheck())
-        {
-            if ( inserted == false)
-            {
-                inserted = true;
-                if (USBmount() == false)
-                {
-                    LOG_PRINT(error_e, "cannot mount the usb key\n");
-                    QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
-                    return;
-                }
-                
-                char srcfilename[FILENAME_MAX];
-                char dstfilename[FILENAME_MAX];
-                /* compose the source file name ans the destination file name */
-                sprintf(srcfilename, "%s", STORE_DIR);
-                sprintf(dstfilename, "%s/%s.zip",
-                        usb_mnt_point,
-                        QDateTime::currentDateTime().toString("yy_MM_dd_hh_mm_ss").toAscii().data());
-                
-                /* zip the file, the sign file and delete them */
-                if (zipAndSave(QStringList() << srcfilename, QString(dstfilename), true) == false)
-                {
-                    USBumount();
-                    QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(srcfilename));
-                    return;
-                }
-                
-                //QFile::remove(dstfilename);
-                //QFile::remove(QString("%1.sign").arg(dstfilename));
-                
-                /* unmount USB key */
-                USBumount();
-                LOG_PRINT(verbose_e, "DOWNLOADED\n");
-                QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(dstfilename));
-            }
-        }
-        else
-        {
-            LOG_PRINT(verbose_e, "USB REMOVED\n");
-            inserted = false;
-        }
-    }
-#endif
     /* check the password timeout in order to logout */
     if (PwdTimeoutSec > 0 && active_password != pwd_operator_e)
     {
@@ -291,10 +230,6 @@ void page::updateData()
     {
         labelUserName->setText(trUtf8("User: %1").arg(PasswordsString[active_password]));
     }
-
-#ifdef DUMPSCREEN
-    QPixmap::grabWidget(this).save(this->windowTitle().append(".png").prepend("/local/root/"));
-#endif
 }
 
 /**
@@ -356,7 +291,6 @@ bool page::goto_page(const char * page_name, bool remember)
     refresh_timer->stop();
     LOG_PRINT(verbose_e, " %s TIMER STOP\n", this->windowTitle().toAscii().data());
     
-#ifdef ENABLE_TREND
     /* destroy trend page */
     if (strcmp(page_name, "trend") == 0 && _last_layout_ != _layout_)
     {
@@ -369,7 +303,6 @@ bool page::goto_page(const char * page_name, bool remember)
             p = NULL;
         }
     }
-#endif
 
     /*prepare the next page */
     if(!ScreenHash.contains(page_name))
@@ -467,9 +400,7 @@ exit_failure:
 bool page::go_home(void)
 {
     History.clear();
-#ifdef ENABLE_TREND
     _trend_data_reload_ = true;
-#endif
     if (goto_page(HomePage) == false)
     {
         return goto_page(HOMEPAGE_DEF);
@@ -714,7 +645,7 @@ bool page::setAsStartPage(char * window)
     settings.sync();
     return true;
 }
-#ifdef ENABLE_ALARMS
+
 void page::setAlarmsBuzzer(int period_ms)
 {
     int index = 0;
@@ -902,7 +833,6 @@ char * page::getDescription(char* tag)
     }
     return NULL;
 }
-#endif
 
 int page::countLine(const char * filename)
 {
@@ -1328,7 +1258,6 @@ bool page::create_next_page(page ** p, const char * t)
         {
             *p = (page *)(new time_set);
         }
-#ifdef ENABLE_ALARMS
         else if (strcmp(t, "alarms") == 0)
         {
             *p = (page *)(new alarms);
@@ -1337,8 +1266,6 @@ bool page::create_next_page(page ** p, const char * t)
         {
             *p = (page *)(new alarms_history);
         }
-#endif
-#ifdef ENABLE_STORE
         else if (strcmp(t, "store") == 0)
         {
             *p = (page *)(new store);
@@ -1347,8 +1274,6 @@ bool page::create_next_page(page ** p, const char * t)
         {
             *p = (page *)(new store_filter);
         }
-#endif
-#ifdef ENABLE_TREND
         else if (strcmp(t, "trend") == 0)
         {
             *p = (page *)(new trend);
@@ -1365,8 +1290,6 @@ bool page::create_next_page(page ** p, const char * t)
         {
             *p = (page *)(new trend_range);
         }
-#endif
-#ifdef ENABLE_RECIPE
         else if (strcmp(t, "recipe") == 0)
         {
             *p = (page *)(new recipe);
@@ -1375,7 +1298,6 @@ bool page::create_next_page(page ** p, const char * t)
         {
             *p = (page *)(new recipe_select);
         }
-#endif
         else
         {
             LOG_PRINT(error_e, "cannot create special page %s\n", t);

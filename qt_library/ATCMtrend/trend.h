@@ -132,12 +132,11 @@ public:
     void incrementValue(int direction);
 
 private slots:
-#ifdef TRANSLATION
     void changeEvent(QEvent * event);
-#endif
     void refreshEvent(trend_msg_t item_trend);
     void moved(const QPoint &pos);
     void selected(const QPolygon &pol);
+
     void on_pushButtonPen_clicked();
     void on_pushButtonSelect_clicked();
     void on_pushButtonZoom_toggled(bool checked);

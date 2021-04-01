@@ -109,27 +109,21 @@ public:
     explicit Logger(const char * alarms_dir = NULL, const char * store_dir = NULL, int period_msec = ALARMS_PERIOD_MS, QObject *parent = 0);
     ~Logger();
     virtual void run();
-#ifdef ENABLE_ALARMS
     bool connectToPage(QWidget * p);
     bool logstart();
     bool logstop();
     bool logshot();
     bool logreset();
-#endif
 private:
     FILE * openFile(bool daily, int * newfile, const char * basedir, const char * subdir = NULL);
-#ifdef ENABLE_ALARMS
     int getElemAlarmStyleIndex(event_descr_t * event_msg);
     size_t loadAlarmsTable();
     bool dumpEvent(QString varname, event_t * item, alarm_event_e alarm_event);
     bool openAlarmsFile();
     bool closeAlarmsFile();
-#endif
-#ifdef ENABLE_STORE
     bool dumpStorage(bool timeChanged = false, QDateTime timeBefore = QDateTime());
     bool openStorageFile();
     bool closeStorageFile();
-#endif
     bool checkVariation();
     int checkSpace( void );
     int removeOldest(const char * dir);
@@ -144,30 +138,20 @@ private:
     int _period_msec;
     char AlarmsDir[FILENAME_MAX];
     char StorageDir[FILENAME_MAX];
-#ifdef ENABLE_STORE
     int counterS;
     int counterF;
     bool logger_start;
     bool logger_shot;
-#endif
     bool variation;
-#ifdef ENABLE_ALARMS
 private slots:
     bool dumpAck(event_msg_t * info_msg);
-#endif
 signals:
-#ifdef ENABLE_ALARMS
     void new_event(char * tag);
     void new_alarm(char * tag);
-#endif
-#ifdef ENABLE_TREND
     void new_trend(trend_msg_t msg);
-#endif
 };
 
-#ifdef ENABLE_ALARMS
 extern QHash<QString, event_t *> EventHash;
-#endif
 
 extern Logger * logger;
 extern sem_t theLoggingSem;

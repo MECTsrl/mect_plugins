@@ -38,18 +38,10 @@ my @ui_keyword = (
 my @cppfiles =  bsd_glob( $srcdirname . '/*.cpp' );
 my @cpp_keyword = (
 "getHeadBlockName",
-"disconnectDeviceByVarname",
-"connectDeviceByVarname",
-"isDeviceConnectedByVarname",
 "setFormattedVar",
-"getString",
-"setString",
 "deactivateVar",
 "activateVar",
-"prepareWriteBlock",
-"writeBlock",
 "getVarDecimalByName",
-"getVarDivisor",
 "getVarDecimalByCtIndex"
 );
 

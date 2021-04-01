@@ -117,19 +117,13 @@ data_manager::~data_manager()
 
 void data_manager::on_pushButtonAlarms_clicked()
 {
-#if defined(ENABLE_ALARMS)
     ui->labelStatus->setText(trUtf8("Loading alarm..."));
     ui->labelStatus->repaint();
     goto_page("alarms");
-#else
-    ui->labelStatus->setText(trUtf8("Funtionality not enabled"));
-    ui->labelStatus->repaint();
-#endif
 }
 
 void data_manager::on_pushButtonStore_clicked()
 {
-#if defined(ENABLE_STORE)
     ui->labelStatus->setText(trUtf8("Loading store..."));
     ui->labelStatus->repaint();
     /* select a new item */
@@ -166,36 +160,23 @@ void data_manager::on_pushButtonStore_clicked()
         _actual_store_[0]='\0';
         goto_page("store");
     }
-#else
-    ui->labelStatus->setText(trUtf8("Funtionality not enabled"));
-    ui->labelStatus->repaint();
-#endif
 }
 
 void data_manager::on_pushButtonRecipe_clicked()
 {
-#if defined(ENABLE_RECIPE)
     ui->labelStatus->setText(trUtf8("Loading recipe..."));
     ui->labelStatus->repaint();
     goto_page("recipe_select");
-#else
-    ui->labelStatus->setText(trUtf8("Funtionality not enabled"));
-#endif
 }
 
 void data_manager::on_pushButtonTrend_clicked()
 {
-#if defined(ENABLE_TREND)
     ui->labelStatus->setText(trUtf8("Loading trend..."));
     ui->labelStatus->repaint();
     strcpy(_actual_trend_, ""); // strcpy(_actual_trend_, "trend1");
     _trend_data_reload_ = true  ;
     LOG_PRINT(verbose_e, "_trend_data_reload_ %d\n",  _trend_data_reload_);
     goto_page("trend");
-#else
-    ui->labelStatus->setText(trUtf8("Funtionality not enabled"));
-    ui->labelStatus->repaint();
-#endif
 }
 
 void data_manager::on_pushButtonHome_clicked()

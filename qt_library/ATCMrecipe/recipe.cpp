@@ -20,8 +20,6 @@
 #include "utility.h"
 #include "ui_recipe.h"
 
-#define ENABLE_DESCR
-
 QList<u_int16_t> testsIndexes;
 QList<u_int32_t> testsTable[MAX_RCP_STEP];
 int stepNbMax;
@@ -265,9 +263,7 @@ void recipe::on_pushButtonRead_clicked()
     ui->pushButtonRead->setEnabled(true);
     ui->pushButtonSave->setEnabled(true);
 
-#ifdef ENABLE_DESCR
     ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
-#endif
     ui->labelStatus->setText("");
     ui->labelStatus->repaint();
 
@@ -291,9 +287,7 @@ void recipe::on_pushButtonLoad_clicked()
     ui->pushButtonRead->setEnabled(true);
     ui->pushButtonSave->setEnabled(true);
     ui->labelStatus->setText("");
-#ifdef ENABLE_DESCR
     ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
-#endif
     ui->labelStatus->repaint();
 
     return;
@@ -347,9 +341,7 @@ void recipe::on_pushButtonSave_clicked()
             LOG_PRINT(info_e, "Saved '%s'\n", fullfilename);
 
             getFamilyRecipe(fullfilename, _familyName, _recipeName);
-#ifdef ENABLE_DESCR
             ui->labelStatus->setText(QString("%1/%2").arg(_familyName).arg(_recipeName));
-#endif
         }
     }
     else
@@ -443,9 +435,6 @@ bool recipe::getFamilyRecipe(const char * filename, char * familyName, char * re
     }
     familyName[0] = '\0';
     recipeName[0] = '\0';
-#ifndef ENABLE_DESCR
-    return false;
-#endif
 
     strcpy(familyName, filename);
     /* if exists, cut the extension */
@@ -480,10 +469,10 @@ bool recipe::showRecipe(const char * familyName, const char * recipeName)
 {
     QStringList         lstRowNames;
     QStringList         lstColNames;
-#ifdef ENABLE_DESCR
-    ui->labelStatus->setText(QString("%1/%2").arg(familyName).arg(recipeName));
-#endif
     int     nColSize = 0;
+
+    ui->labelStatus->setText(QString("%1/%2").arg(familyName).arg(recipeName));
+
     /* reset the current colum/row */
     current_row = 0;
     current_column = 0;

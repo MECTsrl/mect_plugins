@@ -102,7 +102,6 @@ extern QHash<QString, QString> TagTable;
 
 extern unsigned short int FirstCy;
 
-#ifdef ENABLE_ALARMS
 typedef struct event_descr_e
 {
     char tag[TAG_LEN];
@@ -119,27 +118,18 @@ typedef struct event_descr_e
 extern QList<event_descr_e *> _active_alarms_events_;
 extern bool HornACK;
 extern bool ForceResetAlarmBanner;
-#endif //ENABLE_ALARMS
 
 /* USB */
 #ifdef ENABLE_USB
 extern char usb_mnt_point[FILENAME_MAX];
 #endif //ENABLE_USB
 
-#ifdef ENABLE_TRANSLATION
 #include <QTranslator>
-#ifndef TRANSLATION
-#define TRANSLATION
-#endif
 extern char _language_[3];
 extern QTranslator* translator;
-#endif //ENABLE_TRANSLATION
 
-#ifdef ENABLE_STORE
 extern char _actual_store_[FILENAME_MAX];
-#endif //ENABLE_STORE
 
-#ifdef ENABLE_TREND
 #include "qwt_plot_curve.h"
 
 /* Trend */
@@ -176,22 +166,14 @@ extern QDateTime actualTzero;
 /* windows size in seconds of visible data actually */
 extern int actualVisibleWindowSec;
 extern bool _trend_data_reload_;
-#endif //ENABLE_TREND
-
-#ifdef ENABLE_RECIPE
 
 #define MAX_RCP_STEP 64
 #define MAX_RCP_VAR  200
-
 extern char _actual_recipe_[FILENAME_MAX];
-#endif //ENABLE_RECIPE
 
-#ifdef ENABLE_SCREENSAVER
 extern int ScreenSaverSec;
-#endif //ENABLE_SCREENSAVER
 
 /* Logger */
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 
 //extern Logger * logger;
 extern int LogPeriodSecS;
@@ -199,7 +181,6 @@ extern int LogPeriodSecF;
 extern char StoreInit[32];
 extern char StoreFinal[32];
 extern int MaxLogUsageMb;
-#endif //defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 
 extern QStringList userPageList;
 

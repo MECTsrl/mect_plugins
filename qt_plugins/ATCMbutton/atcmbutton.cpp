@@ -21,13 +21,9 @@
 #include "app_logprint.h"
 #include "cross_table_utility.h"
 #include "global_functions.h"
-#ifdef ENABLE_TREND
 extern bool _trend_data_reload_;
 extern char _actual_trend_[FILENAME_MAX];
-#endif
-#ifdef ENABLE_STORE
 extern char _actual_store_[FILENAME_MAX];
-#endif
 #endif
 
 ATCMbutton::ATCMbutton(QWidget * parent):
@@ -689,7 +685,6 @@ void  ATCMbutton::goToPage()
 #ifdef TARGET_ARM
     if (m_pagename.length() > 0)
     {
-#ifdef ENABLE_TREND
         if (m_pagename.startsWith("trend"))
         {
             strncpy(_actual_trend_, m_pagename.toAscii().data(), FILENAME_MAX);
@@ -697,17 +692,13 @@ void  ATCMbutton::goToPage()
             LOG_PRINT(verbose_e, "Going to page 'trend' loading file '%s'\n", m_pagename.toAscii().data());
             emit newPage("trend", m_remember);
         }
-        else
-#endif
-#ifdef ENABLE_STORE
-            if (m_pagename.startsWith("store"))
+        else if (m_pagename.startsWith("store"))
         {
             strncpy(_actual_store_, m_pagename.toAscii().data(), FILENAME_MAX);
             LOG_PRINT(verbose_e, "Going to page 'store' loading file '%s'\n", m_pagename.toAscii().data());
             emit newPage("store", m_remember);
         }
         else
-#endif
         {
             LOG_PRINT(verbose_e, "Going to page %s\n", m_pagename.toAscii().data());
             this->setDown(false); // in case the page doesn't exist

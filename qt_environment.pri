@@ -32,19 +32,3 @@ INCLUDEPATH  += .
 INCLUDEPATH  += $$QT_ROOTFS/usr/include
 INCLUDEPATH  += $$QT_ROOTFS/usr/src/linux/include
 QMAKE_LIBDIR += $$QT_ROOTFS/usr/lib
-
-store {
-        DEFINES+=ENABLE_STORE
-}
-
-alarms {
-        DEFINES+=ENABLE_ALARMS
-}
-
-trend {
-        DEFINES+=ENABLE_TREND
-}
-
-recipe {
-        DEFINES+=ENABLE_RECIPE
-}

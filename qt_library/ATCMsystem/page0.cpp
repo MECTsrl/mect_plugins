@@ -16,9 +16,7 @@
 #include "ui_page0.h"
 #include "global_functions.h"
 #ifdef TARGET
-#ifdef ENABLE_SCREENSAVER
 #include "screensaver.h"
-#endif
 #endif
 
 #define RUNTIME "fcrts.sh"

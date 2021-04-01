@@ -29,11 +29,9 @@ public:
     virtual void reload(void);
 
 private slots:
-#ifdef TRANSLATION
     void changeEvent(QEvent * event);
-#endif
-    void on_pushButtonBack_clicked();
 
+    void on_pushButtonBack_clicked();
     void on_listWidget_itemClicked(QListWidgetItem *item);
 
 private:

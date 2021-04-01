@@ -126,10 +126,7 @@ int main(int argc, char *argv[])
 
     pthread_mutex_init(&datasync_send_mutex, NULL);
     pthread_mutex_init(&datasync_recv_mutex, NULL);
-#ifdef USE_HMI_PLC
-#else
-    pthread_mutex_init(&write_queue_mutex, NULL);
-#endif
+
     pthread_condattr_t attr;
     pthread_condattr_init(&attr);
     pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);

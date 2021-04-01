@@ -93,7 +93,6 @@ int readIniFile(void)
     BuzzerTouch = settings.value(BUZZER_TOUCH_TAG, BUZZER_TOUCH_DEF).toBool();
     LOG_PRINT(verbose_e, "'%s' = %d\n", BUZZER_TOUCH_TAG, BuzzerTouch);
 
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     LogPeriodSecS = settings.value(LOG_PERIOD_SLOW_TAG, LOG_PERIOD_SLOW_DEF).toInt();
     LOG_PRINT(verbose_e, "'%s' = %d\n", LOG_PERIOD_SLOW_TAG, LogPeriodSecS);
 
@@ -110,12 +109,9 @@ int readIniFile(void)
         LOG_PRINT(warning_e, "No space available for logs [%d]. No logs will be recorded.\n", MaxLogUsageMb);
     }
     LOG_PRINT(verbose_e, "'%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
-#endif
 
-#ifdef ENABLE_SCREENSAVER
     ScreenSaverSec = settings.value(SCREENSAVER_TAG, SCREENSAVER_DEFAULT_TIME/1000).toInt();
     LOG_PRINT(verbose_e, "'%s' = %d\n", SCREENSAVER_TAG, ScreenSaverSec);
-#endif
 
     PwdTimeoutSec = settings.value(PWD_TIMEOUT_SEC_TAG, PWD_TIMEOUT_SEC_DEF).toInt();
     LOG_PRINT(verbose_e, "'%s' = %d\n", PWD_TIMEOUT_SEC_TAG, PwdTimeoutSec);
@@ -145,16 +141,12 @@ int writeIniFile(void)
     settings.setValue(BUZZER_ALARM_TAG, BuzzerAlarm);
     settings.setValue(BUZZER_TOUCH_TAG, BuzzerTouch);
 
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     settings.setValue(LOG_PERIOD_SLOW_TAG, LogPeriodSecS);
     settings.setValue(LOG_PERIOD_FAST_TAG, LogPeriodSecF);
     settings.setValue(WINDOW_SEC_TAG, MaxWindowSec);
     settings.setValue(MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);
-#endif
 
-#ifdef ENABLE_SCREENSAVER
     settings.setValue(SCREENSAVER_TAG, ScreenSaverSec);
-#endif
 
     settings.setValue(PWD_TIMEOUT_SEC_TAG, PwdTimeoutSec);
     settings.setValue(PWD_LOGOUT_PAGE_TAG, PwdLogoutPage);
@@ -400,49 +392,7 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         return -1;
     }
     LOG_PRINT(info_e, "writeRecipe() %d (step=%d,indexes=%p) .....\n", table[step].count(), step, indexes);
-#ifdef AVOID_RECIPES
-    for (int i = 0; i < table[step].count(); i++)
-    {
-        u_int16_t ctIndex = indexes->at(i);
-        u_int32_t value = table[step].at(i);
 
-        writeVarInQueueByCtIndex(ctIndex, value);
-    }
-#else
-#ifdef USE_HMI_PLC
-#else
-    int busy = 0;
-
-    pthread_mutex_lock(&datasync_send_mutex);
-    {
-        uint16_t oper;
-        uint16_t addr;
-
-        /* search for pending writes on the recipe variables */
-        for (int i = 0; i < table[step].count() && ! busy; ++i)
-        {
-            u_int16_t ctIndex = indexes->at(i);
-
-            for (unsigned j = 0; j < SyncroAreaSize; ++j)
-            {
-                addr = pIOSyncroAreaO[j] & ADDRESS_MASK;
-                oper = pIOSyncroAreaO[j] & OPER_MASK;
-                   /* marked               all writes             prepare            empty */
-                if ((addr == ctIndex) && (oper & 0x8000 || oper == 0x2000 || oper == 0x0000))
-                {
-                    busy = 1;
-                    LOG_PRINT(error_e, "busy variable '%s'\n", varNameArray[ctIndex].tag);
-                    break;
-                }
-            }
-        }
-    }
-    pthread_mutex_unlock(&datasync_send_mutex);
-    if (busy)
-    {
-        return 1;
-    }
-#endif
     beginWrite();
     for (int i = 0; i < table[step].count(); i++)
     {
@@ -466,7 +416,7 @@ int writeRecipe(int step, QList<u_int16_t> *indexes, QList<u_int32_t> table[])
         }
     }
     endWrite();
-#endif
+
     LOG_PRINT(info_e, "..... %d (step=%d,indexes=%p)\n", table[step].count(), step, indexes);
     return 0;
 }
@@ -532,37 +482,14 @@ bool CommStart()
     calendarpopup  = new Calendar(NULL);
     ntpclient = new NtpClient(NULL);
 
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     logger = new Logger(NULL, NULL, LogPeriodSecS*1000);
-#endif
 
-    /* start the io layers */
+    /* start the udp communication */
     ioComm = new io_layer_comm(&datasync_send_mutex, &datasync_recv_mutex);
-    LOG_PRINT(verbose_e, "Starting IOLayer Data\n");
-#ifdef USE_HMI_PLC
-#else
-    if (ioComm->initializeData(LOCAL_SERVER_ADDR, LOCAL_SERVER_DATA_RX_PORT, LOCAL_SERVER_DATA_TX_PORT, IODataAreaI, STATUS_BASE_BYTE + DB_SIZE_BYTE, IODataAreaO, STATUS_BASE_BYTE + DB_SIZE_BYTE) == false)
-    {
-        LOG_PRINT(error_e, "cannot connect to the Data IOLayer\n");
-        QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
-        return false;
-    }
-
-    if (ioComm->initializeSyncro(LOCAL_SERVER_ADDR, LOCAL_SERVER_SYNCRO_RX_PORT, LOCAL_SERVER_SYNCRO_TX_PORT, IOSyncroAreaI, SYNCRO_SIZE_BYTE, IOSyncroAreaO, SYNCRO_SIZE_BYTE) == false)
-    {
-        LOG_PRINT(error_e, "cannot connect to the Syncro IOLayer\n");
-        QMessageBox::critical(0,QApplication::trUtf8("Connection"), QApplication::trUtf8("Cannot connect to the Data IOLayer"));
-        return false;
-    }
-#endif
     ioComm->start();
-    LOG_PRINT(verbose_e, "IOLayer Syncro Started\n");
 
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     /* start the logger thread */
     logger->start();
-    LOG_PRINT(verbose_e, "Logger Started\n");
-#endif
 
     /* load the passwords */
     loadPasswords();
@@ -593,32 +520,24 @@ int initialize()
 #endif
 
     /* prepare the directory tree */
-#ifdef ENABLE_ALARMS
     mkdir(ALARMS_DIR, S_IRWXU | S_IRWXG);
-#endif
-#if defined(ENABLE_TREND) || defined(ENABLE_STORE)
     mkdir(STORE_DIR, S_IRWXU | S_IRWXG);
     mkdir(CUSTOM_STORE_DIR, S_IRWXU | S_IRWXG);
     mkdir(CUSTOM_TREND_DIR, S_IRWXU | S_IRWXG);
-#endif
-#if defined(ENABLE_TREND)
     mkdir(SCREENSHOT_DIR, S_IRWXU | S_IRWXG);
-#endif
-#ifdef RECIPE_DIR
     mkdir(RECIPE_DIR, S_IRWXU | S_IRWXG);
-#endif
+
     /* initialize the usb API */
 #ifdef ENABLE_USB
     app_usb_init();
 #endif
 
-#if defined(TARGET) && defined(ENABLE_SCREENSAVER)
+#if defined(TARGET)
     /* Set up screen saver */
     QWSServer::setScreenSaver( new ScreenSaver );
     QWSServer::setScreenSaverInterval(ScreenSaverSec * 1000); //msec
     QWSServer::setScreenSaverBlockLevel(0);
 #endif
-#ifdef ENABLE_TRANSLATION
     /* if a language is not set, set italian as default */
     if (strlen(_language_) == 0)
     {
@@ -640,7 +559,6 @@ int initialize()
     {
         LOG_PRINT(error_e, "loading language file\n");
     }
-#endif
 
     /*load font into resource file */
     QDirIterator it(":", QDirIterator::Subdirectories);
@@ -661,11 +579,9 @@ int initialize()
 
 int finalize()
 {
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
     /* finalyze and free the logger */
     logger->exit();
     delete logger;
-#endif
 
     /* finalyze and free the io Layers */
     ioComm->finalize();

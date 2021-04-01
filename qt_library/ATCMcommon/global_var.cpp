@@ -12,10 +12,8 @@
 
 #ifdef TARGET
 #include <QWSServer>
-#ifdef ENABLE_SCREENSAVER
 #include "screensaver.h"
 int ScreenSaverSec = 0;
-#endif //ENABLE_SCREENSAVER
 #endif //TARGET
 
 /** @brief io layer to syncronize the data with the PLC */
@@ -36,20 +34,16 @@ char PasswordsString[PASSWORD_NB + 1][TAG_LEN] = {"Admin", "SuperUser", "User", 
 int active_password = pwd_operator_e;
 
 /* Logger */
-#if defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 int LogPeriodSecS = LOG_PERIOD_MS / 1000;
 int LogPeriodSecF = LOG_PERIOD_MS / 1000;
 int MaxWindowSec = 60;
 char StoreInit[32];
 char StoreFinal[32];
 int MaxLogUsageMb = MAX_SPACE_AVAILABLE_DEF;
-#endif //defined(ENABLE_ALARMS) || defined(ENABLE_TREND) || defined(ENABLE_STORE)
 
-#ifdef ENABLE_ALARMS
 QList<event_descr_e *> _active_alarms_events_;
 bool HornACK = false;
 bool ForceResetAlarmBanner = false;
-#endif //ENABLE_ALARMS
 
 /* Buzzer */
 int Buzzerfd = -1;
@@ -58,11 +52,9 @@ bool BuzzerAlarm = true;
 QElapsedTimer LastTouch;
 
 /* Trend */
-#ifdef ENABLE_TREND
 char _layout_ = LANDSCAPE;
 char _last_layout_ = LANDSCAPE;
 bool _trend_data_reload_ = true;
-#endif
 
 /* Tag table */
 QHash<QString, QString> TagTable;
@@ -77,16 +69,11 @@ char usb_mnt_point[FILENAME_MAX] = "";
 /* global variables */
 unsigned short int FirstCy = 0;
 
-#ifdef ENABLE_TRANSLATION
 char _language_[3] = DEFAULT_LANGUAGE;
 QTranslator* translator;
-#endif //ENABLE_TRANSLATION
 
-#ifdef ENABLE_STORE
 char _actual_store_[FILENAME_MAX] = "";
-#endif //ENABLE_STORE
 
-#ifdef ENABLE_TREND
 QStringList _current_trend_variables_;
 char _actual_trend_[FILENAME_MAX] = "";
 pen_t pens[PEN_NB + 1];
@@ -96,11 +83,8 @@ bool _online_ = true;
 QDateTime actualTzero;
 /* windows size in seconds of visible data actually */
 int actualVisibleWindowSec = 0;
-#endif // ENABLE_TREND
 
-#ifdef ENABLE_RECIPE
 char _actual_recipe_[FILENAME_MAX] = "";
-#endif // ENABLE_RECIPE
 
 QHash<char *, int *> NameMap;
 

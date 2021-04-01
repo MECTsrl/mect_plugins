@@ -26,43 +26,25 @@ public:
     virtual void updateData();
 
 private slots:
-#ifdef TRANSLATION
     void changeEvent(QEvent * event);
-#endif
+
     void on_pushButtonHome_clicked();
-    
     void on_pushButtonBack_clicked();
-    
     void on_pushButtonLayout_clicked();
-    
     void on_pushButtonChangeTrend_clicked();
-    
     void on_checkBoxVisible_clicked(bool checked);
-    
     void on_pushButtonYmin_clicked();
-    
     void on_pushButtonYmax_clicked();
-    
     void on_pushButtonDescription_clicked();
-    
     void on_pushButtonChangePen_clicked();
-    
     void on_pushButtonDeletePen_clicked();
-    
     void on_pushButtonSaveAs_clicked();
-    
     void on_pushButtonSave_clicked();
-    
     void on_comboBoxColor_currentIndexChanged(int index);
-
     void on_pushButtonSaveUSB_clicked();
-
     void on_pushButtonPrev_clicked();
-
     void on_pushButtonNext_clicked();
-
     void on_pushButtonChangeNew_clicked();
-
     void on_pushButtonDeleteTrend_clicked();
 
 private:

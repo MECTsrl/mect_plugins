@@ -64,14 +64,6 @@ alarms::alarms(QWidget *parent) :
     /* connect the label that show the actual user name */
     //labelUserName = ui->labelUserName;
     
-#ifdef LEVEL_TYPE
-    ui->comboBoxLevel->clear();
-    for (int i = level_all_e; i < nb_of_level_e; i++)
-    {
-        ui->comboBoxLevel->addItem(QString("%1").arg(i));
-    }
-#endif
-    
     reload();
     /*
        connect(logger, SIGNAL(new_alarm(info_msg_e *)), this, SLOT(addEvent(info_msg_e *)));
@@ -326,18 +318,6 @@ void alarms::on_pushButtonHistory_clicked()
 {
     goto_page("alarms_history");
 }
-
-#ifdef LEVEL_TYPE
-void alarms::on_comboBoxLevel_currentIndexChanged(int index)
-{
-    /* 0 is all level */
-    if (_level != index && index < nb_of_level_e)
-    {
-        _level = index;
-        refreshEvent();
-    }
-}
-#endif
 
 void alarms::on_comboBoxType_currentIndexChanged(int index)
 {

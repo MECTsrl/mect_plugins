@@ -121,9 +121,7 @@ char StatusBannerColorTable[nb_of_alarm_status_e][DESCR_LEN] =
     INVISIBLE,         /* not active alarm not latched acknowledged */
 };
 
-#ifdef ENABLE_ALARMS
 QHash<QString, event_t *> EventHash;
-#endif
 
 unsigned long int totalBytes = 0;
 
@@ -167,12 +165,10 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
         StoreArrayV[i].value[0] = '\0';
     }
 
-#ifdef ENABLE_ALARMS
     if (loadAlarmsTable() <= 0)
     {
         LOG_PRINT(warning_e, "No event/error found.\n");
     }
-#endif	
     /* check the available space */
     if (MaxLogUsageMb == 0)
     {
@@ -208,10 +204,8 @@ Logger::Logger(const char * alarms_dir, const char * store_dir, int period_msec,
             }
         }
     }
-#ifdef ENABLE_STORE
     counterS = 0;
     counterF = 0;
-#endif
 }
 
 FILE * Logger::openFile(bool daily, int * newfile, const char * basedir, const char * subdir)
@@ -269,7 +263,6 @@ FILE * Logger::openFile(bool daily, int * newfile, const char * basedir, const c
     return fp;
 }
 
-#ifdef ENABLE_ALARMS
 bool Logger::openAlarmsFile()
 {
     int newfile = 0;
@@ -289,7 +282,6 @@ bool Logger::openAlarmsFile()
     LOG_PRINT(verbose_e, "Opened log file\n");
     return true;
 }
-#endif
 
 Logger::~Logger()
 {
@@ -297,7 +289,6 @@ Logger::~Logger()
     closeAlarmsFile();
 }
 
-#ifdef ENABLE_ALARMS
 bool Logger::connectToPage(QWidget * p)
 {
     if (p != NULL)
@@ -306,13 +297,10 @@ bool Logger::connectToPage(QWidget * p)
     }
     return false;
 }
-#endif
 
 void Logger::run()
 {
-#ifdef ENABLE_ALARMS
     QHash<QString, event_t *>::const_iterator i;
-#endif
     int recompute_abstime = true;
     struct timespec abstime;
     sem_init(&theLoggingSem, 0, 0);
@@ -366,12 +354,8 @@ void Logger::run()
                     timeAfter.daysTo(timeBefore) != 0                           // Nuova Ora in un giorno differente
                     )  {
                     // Chiudere Log Attuale
-#ifdef ENABLE_ALARMS
                     closeAlarmsFile();
-#endif
-#ifdef ENABLE_STORE
                     closeStorageFile();
-#endif
                 }
                 time(&Now);
                 timeinfo = localtime (&Now);
@@ -394,15 +378,10 @@ void Logger::run()
         if (CurrentTimeInfo.tm_year < timeinfo->tm_year || CurrentTimeInfo.tm_yday < timeinfo->tm_yday)
         {
             memcpy(&CurrentTimeInfo, timeinfo, sizeof(struct tm));
-#ifdef ENABLE_ALARMS
             closeAlarmsFile();
-#endif
-#ifdef ENABLE_STORE
             closeStorageFile();
-#endif
         }
 
-#ifdef ENABLE_ALARMS
         /* check each event */
         for ( i = EventHash.begin(); i != EventHash.end() && i.value() != NULL ; i++)
         {
@@ -440,8 +419,6 @@ void Logger::run()
                 LOG_PRINT(error_e, "cannot read variable '%s'\n", i.key().toAscii().data());
             }
         }
-#endif
-#ifdef ENABLE_STORE
         /* if the logger is started */
         if (logger_start)
         {
@@ -484,7 +461,6 @@ void Logger::run()
             closeStorageFile();
             logger_shot = false;
         }
-#endif
     }   // end infinite loop
 }
 
@@ -533,7 +509,6 @@ bool Logger::logreset()
     return system(command) == 0;
 }
 
-#ifdef ENABLE_ALARMS
 size_t Logger::loadAlarmsTable()
 {
     FILE * fp;
@@ -929,17 +904,6 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
             LOG_PRINT(verbose_e, "DUMP event: '%s' isack %d status %d\n", event, info_descr->isack, info_descr->status);
 
             /* prepare the event item */
-#ifdef LEVEL_TYPE
-            /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
-            sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
-                    item->type,
-                    item->level,
-                    varname.toAscii().data(),
-                    event,
-                    buffer,
-                    item->description
-                    );
-#else
             /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
             sprintf(msg, "%s;%s;%s;%s\n",
                     varname.toAscii().data(),
@@ -947,7 +911,6 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
                     buffer,
                     item->description
                     );
-#endif
 
             /* dump the item into log file */
             if (openAlarmsFile() && alarmsfp)
@@ -979,17 +942,7 @@ exit_function:
                 if (item != EventHash.end())
                 {
                     event_t * event_data = item.value();
-#ifdef LEVEL_TYPE
-                    /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
-                    sprintf(msg, "%d;%d;%s;%s;%s;%s\n",
-                            event_msg->type,
-                            event_msg->level,
-                            event_msg->tag,
-                            TAG_ACK,
-                            event_msg->ack->toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
-                            event_data->description
-                            );
-#else
+
                     /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
                     sprintf(msg, "%s;%s;%s;%s\n",
                             event_msg->tag,
@@ -997,7 +950,6 @@ exit_function:
                             _active_alarms_events_.at(i)->ack.toString("yyyy/MM/dd,HH:mm:ss").toAscii().data(),
                             event_data->description
                             );
-#endif
                     /* dump the event into log file */
                     if (openAlarmsFile() && alarmsfp)
                     {
@@ -1076,9 +1028,7 @@ bool Logger::dumpAck(event_msg_e * info_msg)
 
     return true;
 }
-#endif
 
-#ifdef ENABLE_STORE
 bool Logger::openStorageFile()
 {
     int newfile;
@@ -1158,10 +1108,8 @@ bool Logger::dumpStorage(bool timeChanged, QDateTime timeBefore)
 {
     char buffer [FILENAME_MAX] = "";
     char value [42] = "";
-#ifdef ENABLE_TREND
     QDateTime timestamp;
     trend_msg_t info_msg;
-#endif
     
     /* before dump a new event, check the available space */
     if (checkSpace() == 1)
@@ -1188,9 +1136,7 @@ bool Logger::dumpStorage(bool timeChanged, QDateTime timeBefore)
         return false;
     }
 
-#ifdef ENABLE_TREND
     timestamp = QDateTime::fromString(buffer,"yyyy/MM/dd; HH:mm:ss");
-#endif
     if (timeChanged && timeBefore.isValid()) {
         QString timeStamp = timeBefore.toString("yyyy/MM/dd; HH:mm:ss");
         fprintf(storefp, "%s", timeStamp.toLatin1().data());
@@ -1212,12 +1158,10 @@ bool Logger::dumpStorage(bool timeChanged, QDateTime timeBefore)
                 float fvalue = sprintf_fromDb(value, StoreArrayS[i].CtIndex);
 
                 fprintf(storefp, "; %s", value);
-#ifdef ENABLE_TREND
                 info_msg.CtIndex = StoreArrayS[i].CtIndex;
                 info_msg.timestamp = timestamp;
                 info_msg.value = fvalue;
                 emit new_trend(info_msg);
-#endif
             }
         }
         else if (variation || (store_elem_nb_F > 0  || (counterF * _period_msec) >= (LogPeriodSecF * 1000)))
@@ -1235,12 +1179,10 @@ bool Logger::dumpStorage(bool timeChanged, QDateTime timeBefore)
                 float fvalue = sprintf_fromDb(value, StoreArrayF[i].CtIndex);
 
                 fprintf(storefp, "; %s", value);
-#ifdef ENABLE_TREND
                 info_msg.CtIndex = StoreArrayF[i].CtIndex;
                 info_msg.timestamp = timestamp;
                 info_msg.value = fvalue;
                 emit new_trend(info_msg);
-#endif
             }
         }
         else if (variation || (store_elem_nb_S > 0  || (counterS * _period_msec) >= (LogPeriodSecS * 1000)))
@@ -1270,12 +1212,10 @@ bool Logger::dumpStorage(bool timeChanged, QDateTime timeBefore)
                     fprintf(storefp, "; -");
 
                 }
-#ifdef ENABLE_TREND
                 info_msg.CtIndex = StoreArrayV[i].CtIndex;
                 info_msg.timestamp = timestamp;
                 info_msg.value = fvalue;
                 emit new_trend(info_msg);
-#endif
             }
         }
         else
@@ -1292,12 +1232,10 @@ bool Logger::dumpStorage(bool timeChanged, QDateTime timeBefore)
                 float fvalue = sprintf_fromDb(value, StoreArrayX[i].CtIndex);
 
                 fprintf(storefp, "; %s", value);
-#ifdef ENABLE_TREND
                 info_msg.CtIndex = StoreArrayX[i].CtIndex;
                 info_msg.timestamp = timestamp;
                 info_msg.value = fvalue;
                 emit new_trend(info_msg);
-#endif
             }
         }
         else
@@ -1312,7 +1250,6 @@ bool Logger::dumpStorage(bool timeChanged, QDateTime timeBefore)
     fflush(storefp);
     return true;
 }
-#endif
 
 int sum(__attribute__((unused)) const char *fpath, const struct stat *sb, __attribute__((unused)) int typeflag) {
     totalBytes += sb->st_size;

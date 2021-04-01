@@ -73,14 +73,6 @@ alarms_history::alarms_history(QWidget *parent) :
     _level = level_all_e;
     _file_nb = 0; // unused
     
-#ifdef LEVEL_TYPE
-    ui->comboBoxLevel->clear();
-    for (int i = level_all_e; i < nb_of_level_e; i++)
-    {
-        ui->comboBoxLevel->addItem(QString("%1").arg(i));
-    }
-#endif
-    
     reload();
 }
 
@@ -209,47 +201,10 @@ bool alarms_history::loadLogFile(const char * filename, bool alarm, bool event, 
     ui->listWidget->clear();
     while (fgets(line, LINE_SIZE, fp) != NULL)
     {
-        /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
-#ifdef LEVEL_TYPE
-        /* type */
-        p = strtok(line, ";");
-        if (p == NULL)
-        {
-            LOG_PRINT(verbose_e, "Skip empty line'%s'\n", line);
-            continue;
-        }
-        /* skip the alarms */
-        if (atoi(p) == ALARM && alarm == false)
-        {
-            LOG_PRINT(verbose_e, "Skip alarm '%s'\n", line);
-            continue;
-        }
-        /* skip the events */
-        if (atoi(p) == EVENT && event == false)
-        {
-            LOG_PRINT(verbose_e, "Skip event '%s'\n", line);
-            continue;
-        }
+        /* tag;event;YYYY/MM/DD,HH:mm:ss;description */
 
-        /* level */
-        p = strtok(NULL, ";");
-        if (p == NULL)
-        {
-            LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", fileName, line);
-            return false;
-        }
-        /* skip the level */
-        if (atoi(p) < level)
-        {
-            LOG_PRINT(verbose_e, "Skip level '%d %d'\n", atoi(p), level);
-            continue;
-        }
-        /* tag */
-        p = strtok(NULL, ";");
-#else
         /* tag */
         p = strtok(line, ";");
-#endif
         if (p == NULL)
         {
             LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", fileName, line);
@@ -352,56 +307,6 @@ void alarms_history::on_pushButtonNext_clicked()
     ui->comboBoxDate->setCurrentIndex(_current);
 }
 
-#ifdef LEVEL_TYPE
-void alarms_history::on_comboBoxLevel_currentIndexChanged(int index)
-{
-    LOG_PRINT(verbose_e, "_level %d\n", _level);
-    /* 0 is all level */
-    if (_level != index && index < nb_of_level_e)
-    {
-        _level = index;
-        LOG_PRINT(verbose_e, "_level %d\n", _level);
-        if (_file_nb == 0) return;
-        if (loadLogFile(_current, _alarm, _event, _level) == false)
-        {
-            LOG_PRINT(error_e, "Cannot open log file %d\n", _current);
-        }
-    }
-}
-
-void alarms_history::on_comboBoxType_currentIndexChanged(int index)
-{
-    /* 0 is all
-     * 1 is alarm
-     * 2 is event
-     */
-    switch(index)
-    {
-    case 0:
-        _alarm = true;
-        _event = true;
-        break;
-    case 1:
-        _alarm = true;
-        _event = false;
-        break;
-    case 2:
-        _alarm = false;
-        _event = true;
-        break;
-    default:
-        _alarm = true;
-        _event = true;
-        break;
-    }
-    LOG_PRINT(verbose_e, "_current %d\n", _current);
-    if (_file_nb == 0) return;
-    if (loadLogFile(_current, _alarm, _event, _level) == false)
-    {
-        LOG_PRINT(error_e, "Cannot open log file %d\n", _current);
-    }
-}
-#endif
 void alarms_history::on_comboBoxDate_currentIndexChanged(int index)
 {
     if (index < 0 || ui->comboBoxDate->count() < 1)
@@ -430,96 +335,6 @@ void alarms_history::on_pushButtonSave_clicked()
         char line[LINE_SIZE];
         FILE * fp;
         FILE * fpout;
-
-#ifdef LEVEL_TYPE
-        char srcfilename [MAX_LINE] = "";
-        char dstfilename [MAX_LINE] = "";
-
-        /* compose the source file name ans the destination file name */
-        sprintf(srcfilename, "%s/%s", ALARMS_DIR, logFileList.at(_current).toAscii().data());
-        sprintf(dstfilename, "%s/%s",
-                usb_mnt_point,
-                logFileList.at(_current).toAscii().data());
-
-        /* prepare the alarm filtered file */
-        
-        /* open the source alarm file */
-        fp = fopen(srcfilename, "r");
-        if (fp == NULL)
-        {
-            LOG_PRINT(error_e, "cannot open '%s'\n", srcfilename);
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot open the alarm file '%1'").arg(srcfilename));
-            return;
-        }
-        /* open the dest alarm file */
-        fpout = fopen(dstfilename, "w");
-        if (fpout == NULL)
-        {
-            LOG_PRINT(error_e, "cannot open '%s'\n", dstfilename);
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot write the alarm file '%1'").arg(srcfilename));
-            return;
-        }
-        char lineout[LINE_SIZE];
-        char * p;
-        /* read from source and filter the level an the type of alarm and dump the dest alarm file */
-        while (fgets(line, LINE_SIZE, fp) != NULL)
-        {
-            strcpy(lineout,line);
-            /* type;level;tag;event;YYYY/MM/DD,HH:mm:ss;description */
-            /* type */
-            p = strtok(line, ";");
-            if (p == NULL)
-            {
-                LOG_PRINT(verbose_e, "Skip empty line'%s'\n", line);
-                continue;
-            }
-            /* skip the alarms */
-            if (atoi(p) == ALARM && _alarm == false)
-            {
-                LOG_PRINT(verbose_e, "Skip alarm '%s'\n", line);
-                continue;
-            }
-            /* skip the events */
-            if (atoi(p) == EVENT && _event == false)
-            {
-                LOG_PRINT(verbose_e, "Skip event '%s'\n", line);
-                continue;
-            }
-            /* level */
-            p = strtok(NULL, ";");
-            if (p == NULL)
-            {
-                LOG_PRINT(error_e, "Malformed log file '%s' [%s]\n", srcfilename, line);
-                return;
-            }
-            /* skip the level */
-            if (atoi(p) < _level)
-            {
-                LOG_PRINT(verbose_e, "Skip level '%d %d'\n", atoi(p), _level);
-                continue;
-            }
-            fprintf(fpout, "%s", lineout);
-        }
-        fclose(fp);
-        fclose(fpout);
-
-        if (signFile(dstfilename, QString("%1.sign").arg(dstfilename)) == false)
-        {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(dstfilename));
-            USBumount();
-            return;
-        }
-
-        /* zip the file, the sign file and delete them */
-        if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(dstfilename), QString("%1.zip").arg(dstfilename), true) == false)
-        {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save the zip file '%1.zip'").arg(dstfilename));
-            USBumount();
-            return;
-        }
-        
-        QFile::remove(dstfilename);
-#else
         char srcfilename [MAX_LINE] = "";
         char dstfilename [MAX_LINE] = "";
 
@@ -577,7 +392,6 @@ void alarms_history::on_pushButtonSave_clicked()
             return;
         }
 
-#endif
         QFile::remove(QString("%1.sign").arg(dstfilename));
         
         /* unmount USB key */

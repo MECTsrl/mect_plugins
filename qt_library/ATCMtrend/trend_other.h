@@ -32,9 +32,8 @@ public:
     void enableButtonRight(bool status);
 
 private slots:
-#ifdef TRANSLATION
     void changeEvent(QEvent * event);
-#endif
+
     void on_pushButtonOnline_clicked();
     void on_pushButtonScreenshot_clicked();
     void on_pushButtonUp_clicked();
