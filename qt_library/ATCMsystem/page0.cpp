@@ -44,10 +44,6 @@ page0::page0(QWidget *parent) :
     first_time = true;
 }
 
-#ifdef TRANSLATION
-/**
- * @brief This is the event slot to detect new language translation.
- */
 void page0::changeEvent(QEvent * event)
 {
     if (event->type() == QEvent::LanguageChange)
@@ -55,7 +51,6 @@ void page0::changeEvent(QEvent * event)
         ui->retranslateUi(this);
     }
 }
-#endif
 
 page0::~page0()
 {

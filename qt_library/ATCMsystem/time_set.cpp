@@ -89,10 +89,6 @@ void time_set::updateData()
     page::updateData();
 }
 
-#ifdef TRANSLATION
-/**
- * @brief This is the event slot to detect new language translation.
- */
 void time_set::changeEvent(QEvent * event)
 {
     if (event->type() == QEvent::LanguageChange)
@@ -100,7 +96,6 @@ void time_set::changeEvent(QEvent * event)
         ui->retranslateUi(this);
     }
 }
-#endif
 
 time_set::~time_set()
 {

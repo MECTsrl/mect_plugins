@@ -1,16 +1,23 @@
 #include "ntpclient.h"
 
-#include "common.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
 #include <byteswap.h>
 #include <netdb.h> // getaddrinfo()
 #include <arpa/inet.h> // inet_ntop()
-#include <time.h>
 #include <unistd.h>
 
 
+#ifndef LOCAL_ETC_DIR
+#define LOCAL_ETC_DIR      "/local/etc/sysconfig"
+#endif
+#ifndef NTP_FILE
+#define NTP_FILE           LOCAL_ETC_DIR"/ntp.ini"
+#endif
+
 #define THE_NTP_PORT       123
-// #define THE_NTP_TIMEOUT_ms 9000
 #define THE_MAX_TRIPTIME_s 1LL
 
 NtpClient * ntpclient = NULL;

@@ -1,7 +1,6 @@
 #ifndef NTPCLIENT_H
 #define NTPCLIENT_H
 
-#include "hmi_logger.h"
 #include <QThread>
 #include <QMutex>
 #include <QSettings>

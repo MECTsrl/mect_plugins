@@ -655,10 +655,6 @@ void trend::updateData()
     ++tic;
 }
 
-#ifdef TRANSLATION
-/**
- * @brief This is the event slot to detect new language translation.
- */
 void trend::changeEvent(QEvent * event)
 {
     if (event->type() == QEvent::LanguageChange)
@@ -666,7 +662,6 @@ void trend::changeEvent(QEvent * event)
         ui->retranslateUi(this);
     }
 }
-#endif
 
 /**
  * @brief This is the distructor member. The operation written here, are executed only one time when the page will be deleted.

@@ -11,12 +11,10 @@
 #include "options.h"
 #include "ui_options.h"
 #include <QMessageBox>
-#ifdef TRANSLATION
 #include "item_selector.h"
 #include <QDirIterator>
 #include <QHash>
 #include <QSettings>
-#endif
 
 /* this define set the window title */
 #define WINDOW_TITLE "CONFIGURATION"
@@ -98,10 +96,6 @@ void options::updateData()
     page::updateData();
 }
 
-#ifdef TRANSLATION
-/**
- * @brief This is the event slot to detect new language translation.
- */
 void options::changeEvent(QEvent * event)
 {
     if (event->type() == QEvent::LanguageChange)
@@ -109,7 +103,6 @@ void options::changeEvent(QEvent * event)
         ui->retranslateUi(this);
     }
 }
-#endif
 
 /**
  * @brief This is the distructor member. The operation written here, are executed only one time when the page will be deleted.
@@ -182,7 +175,6 @@ void options::on_pushButtonDisplaySettings_clicked()
 
 void options::on_pushButtonLanguage_clicked()
 {
-#ifdef TRANSLATION
     /* load the map of the language and his locale abbreviation */
     QHash<QString, QString> LanguageMap;
     FILE * fp = fopen(LANGUAGE_MAP_FILE, "r");
@@ -264,9 +256,6 @@ void options::on_pushButtonLanguage_clicked()
         QMessageBox::critical(this,trUtf8("Language"), trUtf8("No language translation are available"));
         LOG_PRINT(error_e, "No language to show\n");
     }
-#else
-    QMessageBox::critical(this,trUtf8("Language"), trUtf8("No language translation are available"));
-#endif
 }
 
 void options::on_pushButtonNetworkCfg_clicked()
