@@ -3496,11 +3496,12 @@ int ctedit::globalChecks()
     Err_CT      errCt;
     // Form per Display Errori
     cteErrorList    *errWindow;
-    int nPrevProtocol = PLC;
-    int nPrevPort = -1;
-    int nPrevNode = -1;
-    int nPrevRegister = -1;
-    int nPrevSize = 0;
+    int         nPrevProtocol = PLC;
+    int         nPrevPort = -1;
+    int         nPrevNode = -1;
+    int         nPrevRegister = -1;
+    int         nPrevSize = 0;
+    int         nPrevBlock = -1;
 
     // Condizione di sicurezza per file CT non aperto
     if (lstCTRecords.count() <= 0)  {
@@ -3556,6 +3557,7 @@ int ctedit::globalChecks()
                     if (lstCTRecords[nRow].Protocol == nPrevProtocol    &&
                         lstCTRecords[nRow].Port     == nPrevPort        &&
                         lstCTRecords[nRow].nNode    == nPrevNode        &&
+                        lstCTRecords[nRow].nBlock   == nPrevBlock       &&
                         not isBitField(lstCTRecords[nRow].VarType)    )  {
                             // Controllo di registri in Overlapping
                             int nActRegister = lstCTRecords[nRow].Offset;
@@ -3572,8 +3574,9 @@ int ctedit::globalChecks()
                     }
                     nPrevProtocol = lstCTRecords[nRow].Protocol;
                     nPrevPort = lstCTRecords[nRow].Port;
-                    nPrevNode = lstCTRecords[nRow].nNode;
+                    nPrevNode = lstCTRecords[nRow].nNode;                    
                     nPrevRegister = lstCTRecords[nRow].Offset;
+                    nPrevBlock = lstCTRecords[nRow].Block;
                     nPrevSize = nVarSize;
                 }
                 else {
@@ -3582,6 +3585,7 @@ int ctedit::globalChecks()
                     nPrevPort = -1;
                     nPrevNode = -1;
                     nPrevRegister = -1;
+                    nPrevBlock = -1;
                     nPrevSize = 0;
                 }
                 // Controllo che la porta di una variabile RTU non sia già utilizzata come Server RTU
@@ -3605,6 +3609,7 @@ int ctedit::globalChecks()
             nPrevPort = -1;
             nPrevNode = -1;
             nPrevRegister = -1;
+            nPrevBlock = -1;
             nPrevSize = 0;
         }
 
