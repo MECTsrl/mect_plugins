@@ -549,28 +549,17 @@ void ATCMlabel::writeAction()
         {
         case intab_e:
         case intba_e:
-        case uintab_e:
-        case uintba_e:
         case dint_abcd_e:
         case dint_badc_e:
         case dint_cdab_e:
         case dint_dcba_e:
-        case udint_abcd_e:
-        case udint_badc_e:
-        case udint_cdab_e:
-        case udint_dcba_e:
-        case byte_e:
         {
             if (decimal == 0)
             {
                 int value  = 0, min = m_min.toInt(), max = m_max.toInt();
-//                if (m_format == input_hex)  {
-//                    unsigned int uValue = m_value.toInt(0, 16);
-//                    value = uValue;
-//                }
+
                 dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
                 dk->showFullScreen();
-
                 if (dk->exec() == QDialog::Accepted)
                 {
                     if (min < max && (value < min || value > max))
@@ -587,9 +576,9 @@ void ATCMlabel::writeAction()
             else
             {
                 float value  = 0, min = m_min.toFloat(), max = m_max.toFloat();
+
                 dk = new numpad(&value, m_value.toFloat(), decimal, min, max);
                 dk->showFullScreen();
-
                 if (dk->exec() == QDialog::Accepted)
                 {
                     if (min < max && (value < min || value > max))
@@ -602,6 +591,54 @@ void ATCMlabel::writeAction()
                     }
                 }
                 LOG_PRINT(verbose_e,"decimale %s = %f decimali %d\n", m_variable.toAscii().data(), value,decimal);
+            }
+        }
+            break;
+        case byte_e:
+        case uintab_e:
+        case uintba_e:
+        case udint_abcd_e:
+        case udint_badc_e:
+        case udint_cdab_e:
+        case udint_dcba_e:
+        {
+            if (decimal == 0)
+            {
+                unsigned value  = 0, min = m_min.toUInt(), max = m_max.toUInt();
+
+                dk = new numpad(&value, m_value.toUInt(), min, max, (enum  input_fmt_e)m_format);
+                dk->showFullScreen();
+                if (dk->exec() == QDialog::Accepted)
+                {
+                    if (min < max && (value < min || value > max))
+                    {
+                        QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
+                    }
+                    else
+                    {
+                        strvalue = QString::number(value);
+                    }
+                }
+                LOG_PRINT(verbose_e,"unsigned %s = %u\n", m_variable.toAscii().data(), value);
+            }
+            else
+            {
+                float value  = 0, min = m_min.toFloat(), max = m_max.toFloat();
+
+                dk = new numpad(&value, m_value.toFloat(), decimal, min, max);
+                dk->showFullScreen();
+                if (dk->exec() == QDialog::Accepted)
+                {
+                    if (min < max && (value < min || value > max))
+                    {
+                        QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
+                    }
+                    else
+                    {
+                        strvalue = QString::number(value);
+                    }
+                }
+                LOG_PRINT(verbose_e,"decimale %s = %f decimali %d\n", m_variable.toAscii().data(), value, decimal);
             }
         }
             break;

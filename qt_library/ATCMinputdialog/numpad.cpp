@@ -104,6 +104,8 @@ numpad::numpad(float* value, float def, int decimal, float min, float max, bool 
     inputtype = DECIMAL;
     _mini = 0;
     _maxi = 0;
+    _minuint = 0;
+    _maxuint = 0;
     _minf = 0;
     _maxf = 0;
 
@@ -165,6 +167,8 @@ numpad::numpad(int* value, int def, int min, int max, enum input_fmt_e fmt, bool
     inputtype = INTEGER;
     _mini = 0;
     _maxi = 0;
+    _minuint = 0;
+    _maxuint = 0;
     _minf = 0;
     _maxf = 0;
 
@@ -191,6 +195,72 @@ numpad::numpad(int* value, int def, int min, int max, enum input_fmt_e fmt, bool
     reload();
 }
 
+numpad::numpad(unsigned * value, unsigned  def, unsigned  min, unsigned  max, enum input_fmt_e fmt, bool password, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::numpad)
+{
+    ui->setupUi(this);
+
+    //SET_DIALOG_STYLE();
+    SET_NUMPAD_STYLE();
+
+    ui->pushButtonA->setVisible(fmt == input_hex);
+    ui->pushButtonB->setVisible(fmt == input_hex);
+    ui->pushButtonC->setVisible(fmt == input_hex);
+    ui->pushButtonD->setVisible(fmt == input_hex);
+    ui->pushButtonE->setVisible(fmt == input_hex);
+    ui->pushButtonF->setVisible(fmt == input_hex);
+    ui->pushButtonMinus->setEnabled(false);
+
+    switch (fmt)
+    {
+    case input_dec:
+        base = 10;
+        break;
+    case input_hex:
+        base = 16;
+        break;
+    case input_bin:
+        base = 2;
+        break;
+    default:
+        base = 10;
+        break;
+    }
+
+    inputtype = UINTEGER;
+    _mini = 0;
+    _maxi = 0;
+    _minuint = 0;
+    _maxuint = 0;
+    _minf = 0;
+    _maxf = 0;
+
+    if (password)
+    {
+        ui->lineEditVal->setEchoMode(QLineEdit::Password);
+        _minuint = 0;
+        _maxuint = 0;
+        _valueuint = value;
+        *_valueuint = ERROR_VALUE;
+    }
+    else
+    {
+        ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+        _minuint = min;
+        _maxuint = max;
+        _valueuint = value;
+        if (def != NO_UINTDEFAULT)
+        {
+            ui->lineEditVal->setText(QString("%1").setNum(def, base));
+        }
+    }
+
+    reload();
+
+}
+
+
 numpad::numpad(char* value, char* def, char* min, char* max, bool password, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::numpad)
@@ -212,6 +282,8 @@ numpad::numpad(char* value, char* def, char* min, char* max, bool password, QWid
     inputtype = STRING;
     _mini = 0;
     _maxi = 0;
+    _minuint = 0;
+    _maxuint = 0;
     _minf = 0;
     _maxf = 0;
 
@@ -307,6 +379,8 @@ numpad::numpad(char*  value, int type, char* def, QWidget *parent) :
     base = 10;
     _mini = 0;
     _maxi = 0;
+    _minuint = 0;
+    _maxuint = 0;
     _minf = 0;
     _maxf = 0;
 
@@ -321,12 +395,17 @@ numpad::numpad(char*  value, int type, char* def, QWidget *parent) :
 
 void numpad::reload()
 {
-    if (_mini < _maxi || _minf < _maxf)
+    if (_mini < _maxi || _minf < _maxf || _minuint < _maxuint)
     {
         if (inputtype == INTEGER)
         {
             ui->lineEditMax->setText(QString("%1").arg(_maxi));
             ui->lineEditMin->setText(QString("%1").arg(_mini));
+        }
+        else if (inputtype == UINTEGER)
+        {
+            ui->lineEditMax->setText(QString("%1").arg(_maxuint));
+            ui->lineEditMin->setText(QString("%1").arg(_minuint));
         }
         else if (inputtype == DECIMAL)
         {
@@ -422,13 +501,6 @@ void numpad::on_pushButtonEsc_clicked()
 
 void numpad::on_pushButtonEnter_clicked()
 {
-#if 0
-    if (ui->lineEditVal->text().toFloat() < _min || ui->lineEditVal->text().toFloat() > _max)
-    {
-        reject();
-    }
-    else
-#endif
         if (ui->lineEditVal->text().length() == 0)
         {
             reject();
@@ -443,6 +515,10 @@ void numpad::on_pushButtonEnter_clicked()
             else if (inputtype == INTEGER && _valuei != NULL)
             {
                 *_valuei = ui->lineEditVal->text().toInt(&ok, base);
+            }
+            else if (inputtype == UINTEGER && _valueuint != NULL)
+            {
+                *_valueuint = ui->lineEditVal->text().toUInt(&ok, base);
             }
             else if (inputtype == IPADDR)
             {

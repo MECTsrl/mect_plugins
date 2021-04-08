@@ -12,6 +12,7 @@
 #define NUMPAD_H
 
 #include <QDialog>
+#include <stdint.h>
 
 #include "common.h"
 #include <math.h>
@@ -25,7 +26,9 @@ class numpad;
 #define STRING  2
 #define IPADDR  3
 #define DIALNB  4
+#define UINTEGER 5
 #define NO_DEFAULT 0xFFFF
+#define NO_UINTDEFAULT 0xFFFFFFFF
 
 enum input_fmt_e
 {
@@ -41,6 +44,7 @@ class numpad : public QDialog
 public:
     explicit numpad(float* value, float def = NO_DEFAULT, int decimal = 4   , float min = 0.0 , float max = 0.0, bool password = false, QWidget *parent = 0);
     explicit numpad(int*   value, int   def = NO_DEFAULT, int     min = 0   , int   max = 0   , enum input_fmt_e fmt = input_dec, bool password = false, QWidget *parent = 0);
+    explicit numpad(unsigned* value, unsigned def = NO_UINTDEFAULT, unsigned     min = 0, unsigned  max = 0   , enum input_fmt_e fmt = input_dec, bool password = false, QWidget *parent = 0);
     explicit numpad(char*  value, char* def = NULL      , char   *min = NULL, char *max = NULL, bool password = false, QWidget *parent = 0);
     explicit numpad(char*  value, int type, char* def = NULL, QWidget *parent = 0);
 
@@ -49,45 +53,25 @@ public:
 
 private slots:
     void on_pushButton0_clicked();
-
     void on_pushButton1_clicked();
-
     void on_pushButton2_clicked();
-
     void on_pushButton3_clicked();
-
     void on_pushButton4_clicked();
-
     void on_pushButton5_clicked();
-
     void on_pushButton6_clicked();
-
     void on_pushButton7_clicked();
-
     void on_pushButton8_clicked();
-
     void on_pushButton9_clicked();
-
     void on_pushButtonClear_clicked();
-
     void on_pushButtonEnter_clicked();
-
     void on_pushButtonEsc_clicked();
-
     void on_pushButtonDot_clicked();
-
     void on_pushButtonMinus_clicked();
-
     void on_pushButtonA_clicked();
-
     void on_pushButtonB_clicked();
-
     void on_pushButtonC_clicked();
-
     void on_pushButtonD_clicked();
-
     void on_pushButtonE_clicked();
-
     void on_pushButtonF_clicked();
 
 private:
@@ -98,6 +82,9 @@ private:
     int _mini;
     int _maxi;
     int* _valuei;
+    unsigned _minuint;
+    unsigned _maxuint;
+    unsigned *_valueuint;
     char _mins[DESCR_LEN];
     char _maxs[DESCR_LEN];
     char * _values;
