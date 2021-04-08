@@ -16,6 +16,8 @@ extern "C" {
 #include "common.h"
 #include <semaphore.h>
 
+extern char * pIODataAreaI; // only for back compatibility (vedi https://github.com/MECTsrl/mect_apps/tree/mect_suite_3.0/AnyTPAC/DemoDumpVariables)
+
 size_t fillSyncroArea(void);
 int Tag2CtIndex(const char * Tag, int * CtIndex);
 int CtIndex2Tag(int CtIndex, char * Tag);

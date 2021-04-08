@@ -26,6 +26,8 @@
 HmiPlcBlock plcBlock; // actual values from plc
 HmiPlcBlock hmiBlock; // doWrite(), addWrite(), activateVar(), disactivateVar()
 
+char *pIODataAreaI = (char *)&(plcBlock.values[1]); // only for back compatibility (vedi https://github.com/MECTsrl/mect_apps/tree/mect_suite_3.0/AnyTPAC/DemoDumpVariables)
+
 #define VAR_VALUE(n)  plcBlock.values[n].u32
 #define VAR_STATE(n)  plcBlock.states[n]
 
