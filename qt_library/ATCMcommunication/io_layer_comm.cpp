@@ -129,10 +129,14 @@ void io_layer_comm::run()
                 // is already done by activateVar() and deactivateVar()
                 // except when there was a write, see below
 
+                // increment the sequence number, it's ok to overflow
+                ++hmiBlock.seqnum;
+
                 // send and receive blocks
                 if (hmiClientPoll(hmiClient, &hmiBlock, &plcBlock, TIMEOUT_MS) <= 0) {
                     LOG_PRINT(error_e, "communication error with plc\n");
-                    // skip resetting
+                    // skip resetting, i.e. keep the writingList filled
+
                 } else {
                     // reset the DO_WRITE, checking for "H" variables too
                     clearHmiBlock(&hmiBlock);
