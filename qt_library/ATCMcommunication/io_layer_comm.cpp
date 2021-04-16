@@ -16,6 +16,10 @@
 
 #include "hmi_plc.h"
 
+#include <QDebug>
+#include <QSettings>
+#include <QProcess>
+
 #define TIMEOUT_MS 100
 
 // ---------------------------------------------------------------------------
@@ -59,11 +63,31 @@ void *automation_thread(void *arg)
 
 // ---------------------------------------------------------------------------
 
-io_layer_comm::io_layer_comm(pthread_mutex_t *send_mutex, pthread_mutex_t *recv_mutex)
+io_layer_comm::io_layer_comm(pthread_mutex_t *send_mutex, pthread_mutex_t *recv_mutex) :
+    the_send_mutex(send_mutex),
+    the_recv_mutex(recv_mutex)
 {
-    the_send_mutex = send_mutex;
-    the_recv_mutex = recv_mutex;
-    hmiClient = newHmiClient(NULL); // ex LOCAL_SERVER_ADDR
+    QSettings *options = new QSettings(HMI_INI_FILE, QSettings::IniFormat);
+    QString plc_host = "";
+
+    if (options) {
+        plc_host = options->value("plc_host", "").toString();
+    }
+
+    if (not plc_host.isEmpty() and plc_host != "127.0.0.1") {
+        qDebug() << QString("connecting to remote plc engine at '%1'").arg(plc_host);
+        hmiClient = newHmiClient(plc_host.toLatin1().data());
+
+    } else {
+        if (system("PID=`pidof fcrts` && test $PID != '' && test \"`grep -c zombie /proc/$PID/status`\" -eq 0")) {
+            QProcess *myProcess = new QProcess();
+
+            qDebug() << QString("starting local plc engine");
+            myProcess->start("fcrts.sh");
+        }
+        qDebug() << QString("connecting to local plc engine");
+        hmiClient = newHmiClient(NULL);
+    }
 }
 
 io_layer_comm::~io_layer_comm()

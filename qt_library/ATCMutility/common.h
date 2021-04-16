@@ -73,11 +73,11 @@ extern "C" {
 #define SCREENSHOT_DIR     LOCAL_DATA_DIR"/screenshot"
 
 #define PASSFILE           LOCAL_ETC_DIR"/.pwd"
-#define TAG_TABLE          LOCAL_ETC_DIR"/Tags_Table.csv"
-
 #define CROSS_TABLE        LOCAL_ETC_DIR"/Crosstable.csv"
 #define CONFIG_FILE        LOCAL_ETC_DIR"/system.ini"
 #define NTP_FILE           LOCAL_ETC_DIR"/ntp.ini"
+
+#define HMI_INI_FILE       LOCAL_ROOT_DIR"/hmi.ini"
 
 #define BACKLIGHT_FILE_SYSTEM "/sys/devices/platform/mxs-bl.0/backlight/mxs-bl/brightness"
 

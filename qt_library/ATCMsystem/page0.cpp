@@ -8,7 +8,6 @@
  */
 #include <QTimer>
 #include <QMessageBox>
-#include <QProcess>
 #include <QCoreApplication>
 
 #include "page0.h"
@@ -18,8 +17,6 @@
 #ifdef TARGET
 #include "screensaver.h"
 #endif
-
-#define RUNTIME "fcrts.sh"
 
 page0::page0(QWidget *parent) :
     page(parent),
@@ -75,17 +72,10 @@ void page0::reload()
 
 void page0::changePage()
 {
-    if (first_time == true)
+    if (first_time)
     {
         ui->label->update();
-        /* if fcrts is not running or if it is in Zombie status, start it */
-        if (system("PID=`pidof fcrts` && test $PID != '' && test \"`grep -c zombie /proc/$PID/status`\" -eq 0"))
-        {
-            LOG_PRINT(info_e, "Cannot find the run-time active process. Start it [%s].\n", RUNTIME);
-            QProcess *myProcess = new QProcess();
-            myProcess->start(RUNTIME);
-        }
-        if (CommStart() == false)
+        if (not CommStart())
         {
             LOG_PRINT(error_e, "cannot start the communication with the the run-time.\n");
             exit(0);

@@ -90,4 +90,4 @@ QHash<char *, int *> NameMap;
 
 QStringList userPageList;
 
-QString HMIversion;
+QString HMIversion = QString("mect_plugins v%1.%2.%3").arg(MECT_BUILD_MAJOR).arg(MECT_BUILD_MINOR).arg(MECT_BUILD_BUILD);

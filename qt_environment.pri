@@ -3,6 +3,10 @@ QMAKE_CXXFLAGS_DEBUG   += -Wno-psabi
 
 DEFINES += LOG_LEVEL=error_e
 
+DEFINES += MECT_BUILD_MAJOR=\"$(MECT_BUILD_MAJOR)\" \
+           MECT_BUILD_MINOR=\"$(MECT_BUILD_MINOR)\" \
+           MECT_BUILD_BUILD=\"$(MECT_BUILD_BUILD)\"
+
 CONFIG += store alarms recipe trend
 
 contains(QMAKE_HOST.os,Windows){

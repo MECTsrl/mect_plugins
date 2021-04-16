@@ -62,7 +62,7 @@ static int application_options(int argc, char *argv[])
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1) {
         switch (c) {
         case 'v':
-            printf("%s version: %s\n", argv[0], VERSION);
+            printf("mect_plugins version: %d.%d.%d\n", MECT_BUILD_MAJOR, MECT_BUILD_MINOR, MECT_BUILD_BUILD);
             exit(0);
             break;
         default:
@@ -73,6 +73,9 @@ static int application_options(int argc, char *argv[])
     return 0;
 }
 
+#undef DO_FILTER_SIGNALS
+
+#ifdef DO_FILTER_SIGNALS
 // Define the function to be called when ctrl-c (SIGINT) signal is sent to process
 void
 signal_callback_handler(int signum)
@@ -93,6 +96,7 @@ signal_callback_handler(int signum)
 
     raise(signum);
 }
+#endif
 
 /**
  * @brief main
@@ -112,18 +116,15 @@ int main(int argc, char *argv[])
         LOG_PRINT(error_e, "%s: command line option error.\n", __func__);
         return 1;
     }
+    LOG_PRINT_NO_INFO(info_e, "Version: %d.%d.%d\n", MECT_BUILD_MAJOR, MECT_BUILD_MINOR, MECT_BUILD_BUILD);
     
-    /* print the version */
-    LOG_PRINT_NO_INFO(info_e, "#######################\n");
-    LOG_PRINT_NO_INFO(info_e, "# Version: %10s #\n", VERSION);
-    LOG_PRINT_NO_INFO(info_e, "#######################\n");
-    
+#ifdef DO_FILTER_SIGNALS
     /* Register signal and signal handler */
     for (int i = 0; i < _NSIG; i++)
     {
         signal(i, signal_callback_handler);
     }
-
+#endif
     pthread_mutex_init(&datasync_send_mutex, NULL);
     pthread_mutex_init(&datasync_recv_mutex, NULL);
 
@@ -138,7 +139,7 @@ int main(int argc, char *argv[])
 
     /* instantiate the GUI application object */
 
-    char vncDisplay[64];
+    char vncDisplay[128];
     printVncDisplayString(vncDisplay);
 
     int myargc = 4;

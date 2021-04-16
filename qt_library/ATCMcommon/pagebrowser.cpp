@@ -3,7 +3,6 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <math.h>
-#include <QProcess>
 #include <QFile>
 #include <QSettings>
 #include <QDebug>
@@ -935,33 +934,9 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir, Q
             return false;
         }
     }
-#if 0 /* this code have some problem to catch the finished() signal*/
-    QProcess process;
-    if (junkdir)
-    {
-        process.start(ZIP_BIN, QStringList() << "-r" << "-j" << destfile << sourcefiles);
-    }
-    else
-    {
-        process.start(ZIP_BIN, QStringList() << "-r"  << destfile << sourcefiles);
-    }
-    process.terminate();
-    if (!process.waitForStarted())
-    {
-        LOG_PRINT(error_e, "cannot start command: '%s'\n", process.errorString().toAscii().data());
-        process.close();
-        return false;
-    }
 
-    if (!process.waitForFinished())
-    {
-        LOG_PRINT(error_e, "cannot execute command: '%s'\n", process.errorString().toAscii().data());
-        process.close();
-        return false;
-    }
-    process.close();
-#else
     char command[1024];
+
     if (basedir.length())
     {
         if (junkdir)
@@ -990,7 +965,6 @@ bool page::zipAndSave(QStringList sourcefiles, QString destfile, bool junkdir, Q
         LOG_PRINT(error_e, "cannot execute command: '%s'\n", command);
         return false;
     }
-#endif
     return true;
 }
 
