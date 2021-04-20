@@ -183,8 +183,9 @@ int hmiClientPoll(const HmiClient *client, const HmiPlcBlock *hmiBlock, HmiPlcBl
                         retval = -4; // size error
 
                     } else if (plcBlock->seqnum != hmiBlock->seqnum) {
-                        fprintf(stderr, "%s() recvfrom failure: seqnum=0x%08x (0x%08x)\n", __func__,
-                                plcBlock->seqnum, hmiBlock->seqnum);
+                        // fprintf(stderr, "%s() recvfrom failure: seqnum=0x%08x (0x%08x)\n", __func__,
+                        //        plcBlock->seqnum, hmiBlock->seqnum);
+                        fputc('#', stderr);
                         retval = -5; // sequence error
 
                     } else if (udpAddress.sin_addr.s_addr != client->plcAddress.sin_addr.s_addr

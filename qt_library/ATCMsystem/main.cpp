@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
 
 
     /* instantiate the GUI application object */
+    // multi: transformed:linuxfb:rot270:mmHeight=152:mmWidth=91:0 vnc:qvfb:size=480x800:0
 
     char vncDisplay[128];
     printVncDisplayString(vncDisplay);

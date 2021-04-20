@@ -158,7 +158,8 @@ void io_layer_comm::run()
 
                 // send and receive blocks
                 if (hmiClientPoll(hmiClient, &hmiBlock, &plcBlock, TIMEOUT_MS) <= 0) {
-                    LOG_PRINT(error_e, "communication error with plc\n");
+                    //LOG_PRINT(error_e, "communication error with plc\n");
+                    fputc('.', stderr);
                     // skip resetting, i.e. keep the writingList filled
 
                 } else {
