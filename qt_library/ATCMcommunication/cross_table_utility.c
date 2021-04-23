@@ -1226,7 +1226,7 @@ int activateVar(const char * varname)
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
         return 1;
     }
-    if (! varNameArray[CtIndex].active != TAG_ONDEMAND)
+    if (varNameArray[CtIndex].active != TAG_ONDEMAND)
     {
         LOG_PRINT(error_e, "'%s' has not '%c' update type\n", varname, TAG_ONDEMAND);
         return 1;
@@ -1266,7 +1266,7 @@ int deactivateVar(const char * varname)
         LOG_PRINT(error_e, "'%s' is not BlockHead\n", varname);
         return 1;
     }
-    if (! varNameArray[CtIndex].active != TAG_ONDEMAND)
+    if (varNameArray[CtIndex].active != TAG_ONDEMAND)
     {
         LOG_PRINT(error_e, "'%s' has not '%c' update type\n", varname, TAG_ONDEMAND);
         return 1;
