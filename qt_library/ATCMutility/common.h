@@ -92,6 +92,10 @@ extern "C" {
 #define TAG_STORED_ON_SHOT 'X'
 
 #define MAX_DEVICE_NB 64
+#define MIN_RTU_NODEID   1
+#define MAX_RTU_NODEID 247
+#define MIN_TCP_NODEID   0
+#define MAX_TCP_NODEID 255
 
 #define TAG_RTU    	"RTU"
 #define TAG_TCP    	"TCP"
