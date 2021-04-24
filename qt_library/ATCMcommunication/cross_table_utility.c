@@ -409,9 +409,10 @@ size_t fillSyncroArea(void)
             else
             {
                 varNameArray[elem_nb].node = atoi(p);
-                if (varNameArray[elem_nb].node <= 0 || varNameArray[elem_nb].node > MAX_DEVICE_NB)
+                if ((varNameArray[elem_nb].protocol == prot_tcp_e && (varNameArray[elem_nb].node < MIN_TCP_NODEID || varNameArray[elem_nb].node > MAX_TCP_NODEID))
+                   || (varNameArray[elem_nb].protocol == prot_rtu_e && (varNameArray[elem_nb].node < MIN_RTU_NODEID || varNameArray[elem_nb].node > MAX_RTU_NODEID)))
                 {
-                    sprintf(CrossTableErrorMsg, "invalid node %d for variable '%s'\n", varNameArray[elem_nb].node, varNameArray[elem_nb].tag);
+                    sprintf(CrossTableErrorMsg, "Invalid node %d for variable '%s'\n", varNameArray[elem_nb].node, varNameArray[elem_nb].tag);
                     LOG_PRINT(error_e, "%s at line %d.\n", CrossTableErrorMsg, elem_nb);
                     return elem_nb;
                 }
