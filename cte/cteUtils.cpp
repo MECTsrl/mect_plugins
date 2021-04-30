@@ -1219,6 +1219,35 @@ QString getSerialPortSpeed(int nPort)
     return szSpeed;
 }
 
+bool    canInsertRows(QList<CrossTableRecord> &CTRecords, int nPos, int nRows2Insert)
+{
+    bool canInsert = false;
+    if (nPos + nRows2Insert < MAX_NONRETENTIVE)  {
+        // Ricerca dell'ultima variabile libera nell'area
+        int nFree = 0;
+        int nLast = -1;
+        int nFirst = -1;
+        if (nPos < MAX_RETENTIVE)  {
+            nFirst = 0;
+            nLast = MAX_RETENTIVE - 1;
+        }
+        else {
+            nFirst = MIN_NONRETENTIVE -1;
+            nLast = MAX_NONRETENTIVE - 1;
+        }
+        for (int nRow = nLast; nFree < nRows2Insert && nRow >= nFirst; nRow--)  {
+            if (CTRecords.at(nRow).UsedEntry)  {
+                break;
+            }
+            nFree++;
+        }
+        canInsert = (nFree >= nRows2Insert);
+        qDebug("canInsertRows: Free:[%d] - Rows 2Insert:[%d] - Insert Enabled: [%d]", nFree, nRows2Insert, canInsert);
+    }
+    // Return value
+    return canInsert;
+}
+
 bool    isAlarm(QList<CrossTableRecord> &CTRecords, int nItem)
 {
     bool fRes = false;

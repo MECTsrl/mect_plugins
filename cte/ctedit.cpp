@@ -2350,14 +2350,14 @@ int ctedit::copySelected(bool fClearSelection)
     clipboard->setText(szClipBuffer);
     // If only Copy, Set Current index Row to first of Selection
     if (fClearSelection)  {
-        ui->tblCT->selectionModel()->clearSelection();
+        lstSelectedRows.clear();
+        ui->tblCT->clearSelection();
         if (nFirstRow >= 0)  {
             jumpToGridRow(nFirstRow, false);
             // recCT2List(lstFields, nFirstRow);
             // values2Iface(lstFields);
         }
     }
-    selection.clear();
     m_szMsg = QString::fromAscii("Rows Copied: %1") .arg(nCopied);
     displayStatusMessage(m_szMsg);
     enableInterface();
@@ -2427,7 +2427,7 @@ void ctedit::pasteSelected()
             nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows);
         }
         else  {
-            m_szMsg = QLatin1String("The Copy Buffer Excedes System Variables Limit. Rows not copied");
+            m_szMsg = QLatin1String("The Copy Buffer exceedes System Variables Limit. Rows not pasted");
             warnUser(this, szMectTitle, m_szMsg);
         }
         m_szMsg = QString::fromAscii("Rows Pasted: %1") .arg(nPasted);
@@ -2451,19 +2451,26 @@ void ctedit::insertRows()
     int             nCur = 0;
     int             nStart = 0;
     int             nCurPos = 0;
+    int             nSelected = selection.count();
 
-    if (selection.count() <= 0 )  {
+    nCurPos = m_nGridRow;
+    // Controllo che lo spazio per l'inserimento esista
+    if (nSelected <= 0 || nCurPos >=  MAX_NONRETENTIVE || ! canInsertRows(lstCTRecords, nCurPos, nSelected))  {
+        qWarning("insertRows: No insertion allowed at row: %d", nCurPos);
+        m_szMsg = QString::fromAscii("No insertion of [%1] rows allowed at row: %2") .arg(nSelected) .arg(nCurPos + 1);
+        displayStatusMessage(m_szMsg);
         return;
     }
-    // Controllo di restare nei Bounding delle variabili utente
-    nCurPos = m_nGridRow;
-    if (nCurPos + selection.count() < MAX_NONRETENTIVE - 1)  {
+    qDebug("insertRows: Row: %d Selected: %d", nCurPos, nSelected);
+    if ( (nCurPos <  MAX_RETENTIVE && (nCurPos + nSelected) < MAX_RETENTIVE) ||
+         (nCurPos >= MAX_RETENTIVE && (nCurPos + nSelected) < MAX_NONRETENTIVE))
+    {
         // Append to Undo List
         appendCT2UndoList();
         // Enter in Paste Mode
         m_fCutOrPaste = true;
         // Ricerca del Punto di Inserzione
-        for (nCur = 0; nCur < selection.count(); nCur++)  {
+        for (nCur = 0; nCur < nSelected; nCur++)  {
             // Reperisce l'Item Row Number dall'elenco degli elementi selezionati
             QModelIndex index = selection.at(nCur);
             nRow = index.row();
@@ -2474,16 +2481,16 @@ void ctedit::insertRows()
             }
         }
         // Insert New Recs
-        for (nCur = 0; nCur < selection.count(); nCur++)  {
+        for (nCur = 0; nCur < nSelected; nCur++)  {
             lstCTRecords.insert(nFirstRow, emptyRecord);
             freeCTrec(lstCTRecords, nFirstRow);
             nInserted ++;
         }
         // Search the right place 2 remove extra records
-        if (nFirstRow >= 0 && nFirstRow < MAX_RETENTIVE - 1)
-            nStart = MAX_RETENTIVE - 1;
-        else if (nFirstRow >= MIN_NONRETENTIVE -1 && nFirstRow < MAX_NONRETENTIVE - 1)
-            nStart = MAX_NONRETENTIVE - 1;
+        if (nFirstRow >= 0 && nFirstRow < MAX_RETENTIVE)
+            nStart = MAX_RETENTIVE;
+        else if (nFirstRow >= MAX_RETENTIVE && nFirstRow < MAX_NONRETENTIVE - 1)
+            nStart = MAX_NONRETENTIVE;
         else    // Should never happen....
             nStart = 0;
         // Remove extra Rec to readjust positions
@@ -2504,7 +2511,7 @@ void ctedit::insertRows()
         selection.clear();
         return;
     }
-    m_szMsg = QString::fromAscii("Rows Inserted: %1") .arg(selection.count());
+    m_szMsg = QString::fromAscii("Rows Inserted: %1") .arg(nSelected);
     displayStatusMessage(m_szMsg);
     if (nCurPos >= 0)  {
         jumpToGridRow(nCurPos, true);
@@ -2521,9 +2528,10 @@ void ctedit::emptySelected()
     int             nCur = 0;
     int             nRemoved = 0;
     int             nFirstRow = -1;
+    int             nSelected = selection.count();
 
     // Check Modif. and append data to Undo List
-    if (selection.isEmpty() || m_nGridRow >= MIN_DIAG - 1)  {
+    if (selection.isEmpty() || m_nGridRow >= MAX_NONRETENTIVE)  {
         m_szMsg = QLatin1String("Can't remove rows in System Area");
         displayStatusMessage(m_szMsg);
         selection.clear();
@@ -2532,13 +2540,14 @@ void ctedit::emptySelected()
     appendCT2UndoList();
     // Compile Selected Row List
     m_fCutOrPaste = true;
-    for (nCur = 0; nCur < selection.count(); nCur++)  {
+    for (nCur = 0; nCur < nSelected; nCur++)  {
         // Reperisce l'Item Row Number dall'elenco degli elementi selezionati
         QModelIndex index = selection.at(nCur);
         nRow = index.row();
         // Remember first row of selection
-        if (nFirstRow < 0)
+        if (nFirstRow < 0)  {
             nFirstRow = nRow;
+        }
         // Free Row
         if (nRow < MAX_NONRETENTIVE)  {
             freeCTrec(lstCTRecords, nRow);
@@ -2576,9 +2585,10 @@ void ctedit::removeSelected()
     int             nRemoved = 0;
     int             nFirstRow = -1;
     CrossTableRecord emptyRecord;
+    int             nSelected = selection.count();
 
     // Check Modif. and append data to Undo List
-    if (selection.isEmpty() || m_nGridRow >= MIN_DIAG - 1)  {
+    if (selection.isEmpty() || m_nGridRow >= MAX_NONRETENTIVE)  {
         m_szMsg = QLatin1String("Can't remove rows in System Area");
         displayStatusMessage(m_szMsg);
         selection.clear();
@@ -2587,13 +2597,14 @@ void ctedit::removeSelected()
     appendCT2UndoList();
     // Compile Selected Row List
     m_fCutOrPaste = true;
-    for (nCur = 0; nCur < selection.count(); nCur++)  {
+    for (nCur = 0; nCur < nSelected; nCur++)  {
         // Reperisce l'Item Row Number dall'elenco degli elementi selezionati
         QModelIndex index = selection.at(nCur);
         nRow = index.row();
         // Remember first row of selection
-        if (nFirstRow < 0)
+        if (nFirstRow < 0)  {
             nFirstRow = nRow;
+        }
         // Removing Row from list
         if (nRow < MAX_NONRETENTIVE)  {
             lstCTRecords.removeAt(nRow - nRemoved);
@@ -2603,10 +2614,10 @@ void ctedit::removeSelected()
     // Refresh Grid
     if (nRemoved)  {
         // Search the right place 2 insert empty records
-        if (nFirstRow >= 0 && nFirstRow < MAX_RETENTIVE - 1)
-            nStart = MAX_RETENTIVE - nRemoved - 1;
-        else if (nFirstRow >= MIN_NONRETENTIVE -1 && nFirstRow < MAX_NONRETENTIVE - 1)
-            nStart = MAX_NONRETENTIVE - nRemoved - 1;
+        if (nFirstRow >= 0 && nFirstRow < MAX_RETENTIVE)
+            nStart = MAX_RETENTIVE - nRemoved;
+        else if (nFirstRow >= MAX_RETENTIVE && nFirstRow < MAX_NONRETENTIVE - 1)
+            nStart = MAX_NONRETENTIVE - nRemoved;
         else    // Should never happen....
             nStart = 0;
         // Insert empty Rec to readjust positions
@@ -2642,8 +2653,12 @@ void ctedit::cutSelected()
     // Copia Righe
     nCopied = copySelected(false);
     // Elimina Righe
-    if(nCopied > 0)
+    if(nCopied > 0)  {
         emptySelected();
+    }
+    lstSelectedRows.clear();
+    ui->tblCT->clearSelection();
+    ui->tblCT->selectRow(m_nGridRow);
     // Result
     m_szMsg = QString::fromAscii("Rows Cutted: %1") .arg(nCopied);
     displayStatusMessage(m_szMsg);
@@ -5214,6 +5229,8 @@ void ctedit::on_cboSections_currentIndexChanged(int index)
         m_fShowAllRows = true;
         ui->cmdHideShow->setChecked(m_fShowAllRows);
     }
+    lstSelectedRows.clear();
+    ui->tblCT->clearSelection();
     // Jump to Row
     jumpToGridRow(nRow, true);
 }
@@ -6305,8 +6322,10 @@ bool ctedit::checkFreeArea(int nStartRow, int nRows)
     int         nUsed = 0;
     bool        fRes = false;
 
-    if (nStartRow + nRows > MAX_NONRETENTIVE)  {
-        m_szMsg = QLatin1String("Pasted Rows could overlap to System Area");
+    if (! canInsertRows(lstCTRecords, nStartRow, nRows - 1))  {
+        qWarning("insertRows: No insertion allowed at row: %d", nStartRow);
+        m_szMsg = QString::fromAscii("No insertion of [%1] rows allowed at row: %2") .arg(nRows) .arg(nStartRow + 1);
+        displayStatusMessage(m_szMsg);
         warnUser(this, szMectTitle, m_szMsg);
     }
     else  {

@@ -47,6 +47,7 @@
         <file>img/MPNC02002.png</file>
         <file>img/table_multirow_64.png</file>
         <file>img/table_singlerow_64.png</file>
+        <file>img/Restart_64.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>
