@@ -1195,9 +1195,28 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
     return (lstRootRows.count() > 0);
 }
 
-QString     priority2String(int nPriority){
+QString     priority2String(int nPriority)
+// Formattazione stringa per nome priorità
+{
     return (QString::fromAscii("Priority %1 - %2") .arg(nPriority) .arg(lstPriorityDesc[nPriority]));
 }
+
+int priority2ReadTime(int nPriority)
+// Restituisce il Read Period in funzione della priorità
+{
+    int nReadms = -1;
+    if (nPriority == nPriorityHigh)  {
+        nReadms = panelConfig.readPeriod1;
+    }
+    else if (nPriority == nPriorityMedium)  {
+        nReadms = panelConfig.readPeriod2;
+    }
+    else if (nPriority == nPriorityLow)  {
+        nReadms = panelConfig.readPeriod3;
+    }
+    return nReadms;
+}
+
 
 QString getSerialPortSpeed(int nPort)
 // Restituisce in forma leggibile i parametri della porta seriale selezionata

@@ -83,5 +83,6 @@ bool    isEvent(QList<CrossTableRecord> &CTRecords, int nItem);
 bool    canInsertRows(QList<CrossTableRecord> &CTRecords, int nPos, int nRows2Insert);
 
 QString priority2String(int nPriority);     // Formattazione stringa per nome priorità
+int     priority2ReadTime(int nPriority);   // Restituisce il Read Period in funzione della priorità
 QString getSerialPortSpeed(int nPort);      // Restituisce in forma leggibile i parametri della porta seriale selezionata
 #endif // CTEUTILS_H

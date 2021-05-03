@@ -7126,6 +7126,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     int             nTotalReadTime = 0;
     bool            fDeviceOk = true;
     bool            fIgnoreTimings = false;
+    bool            deviceTimingsOk = true;
 
     if (nDevice < 0)  {
         szName = QString::fromLatin1("PLC");
@@ -7194,6 +7195,10 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         for (nCur = nPriorityHigh; nCur <= nPriorityLow; nCur++)  {
             if (theDevices[nDevice].nDeviceReadTime[nCur] > 0)  {
                 nTotalReadTime += theDevices[nDevice].nDeviceReadTime[nCur];
+                // Controllo dei Timings
+                if (theDevices[nDevice].nDeviceReadTime[nCur] > priority2ReadTime(nCur))  {
+                    deviceTimingsOk = false;
+                }
                 szTimings.append(QString::fromAscii(" - %1: %2 ms") .arg(lstPriorityDesc[nCur]) .arg(theDevices[nDevice].nDeviceReadTime[nCur], 6, 10));
             }
         }
@@ -7208,6 +7213,15 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         }
         else  {
             tCurrentDevice->setForeground(colTreeInfo, brushRed);
+        }
+        // Timing Control
+        if (nProtocol == RTU || nProtocol == RTU_SRV)  {
+            if (deviceTimingsOk)  {
+                tCurrentDevice->setForeground(colTreeTimings, brushGreen);
+            }
+            else {
+                tCurrentDevice->setForeground(colTreeTimings, brushRed);
+            }
         }
     }
     // Return Value
@@ -7404,6 +7418,7 @@ void    ctedit::fillDeviceTree(int nCurRow)
             tCurrentNode = searchTreeChild(tCurrentDevice, colTreeName, szName);
             // Adding Node
             if (tCurrentNode == 0)  {
+                bool nodeTimingOk = true;
                 tCurrentNode = addNode2Tree(tCurrentDevice, nNode);
                 // Calcolo del Read Time Complessivo per il Nodo
                 if (nProtocol == RTU || nProtocol == RTU_SRV)  {
@@ -7413,10 +7428,21 @@ void    ctedit::fillDeviceTree(int nCurRow)
                         if (theNodes[nNode].nNodeReadTime[nCur] > 0)  {
                             nReadTime += theNodes[nNode].nNodeReadTime[nCur];
                             szTimings.append(QString::fromAscii(" - %1: %2 ms") .arg(lstPriorityDesc[nCur]) .arg(theNodes[nNode].nNodeReadTime[nCur], 6, 10));
+                            // Check Node Read Time
+                            if (theNodes[nNode].nNodeReadTime[nCur] > priority2ReadTime(nCur))  {
+                               nodeTimingOk = false;
+                            }
                         }
                     }
                     szTimings.prepend(QString::fromAscii("Read Time: %1 ms") .arg(nReadTime, 6, 10));
                     tCurrentNode->setText(colTreeTimings, szTimings);
+                    // Check Read Time
+                    if (nodeTimingOk)  {
+                        tCurrentNode->setForeground(colTreeTimings, brushGreen);
+                    }
+                    else  {
+                        tCurrentNode->setForeground(colTreeTimings, brushRed);
+                    }
                 }
             }
             tCurrentNode->setExpanded(true);
@@ -7433,6 +7459,12 @@ void    ctedit::fillDeviceTree(int nCurRow)
                 if (nProtocol == RTU || nProtocol == RTU_SRV)  {
                     szTimings = QString::fromAscii("Read Time: %1 ms") .arg(theNodes[nNode].nNodeReadTime[nPriority], 6, 10);
                     tCurrentPriority->setText(colTreeTimings, szTimings);
+                    if (theNodes[nNode].nNodeReadTime[nPriority] <= priority2ReadTime(nPriority))  {
+                        tCurrentPriority->setForeground(colTreeTimings, brushGreen);
+                    }
+                    else  {
+                        tCurrentPriority->setForeground(colTreeTimings, brushRed);
+                    }
                 }
             }
             tCurrentPriority->setExpanded(false);
@@ -7484,7 +7516,7 @@ addVariable:
     ui->deviceTree->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->deviceTree->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->deviceTree->header()->resizeSection(colTreeName, (ui->deviceTree->width() / 5) - 12);
-    ui->deviceTree->header()->resizeSection(colTreeInfo, (ui->deviceTree->width() / 5) * 3 - 12);
+    ui->deviceTree->header()->resizeSection(colTreeInfo, (ui->deviceTree->width() / 5) * 2 - 12);
     ui->deviceTree->header()->resizeSections(QHeaderView::Interactive);
     m_rebuildDeviceTree = false;
 }
@@ -7575,6 +7607,13 @@ void    ctedit::fillTimingsTree(int nCurRow)
                         if (nProtocol == RTU || nProtocol == RTU_SRV)  {
                             szTimings = QString::fromAscii("Read Time: %1 ms") .arg(theDevices[nDevice].nDeviceReadTime[nPriority], 6, 10);
                             tCurrentPriority->setText(colTreeTimings, szTimings);
+                            if (theDevices[nNode].nDeviceReadTime[nPriority] <= priority2ReadTime(nPriority))  {
+                                tCurrentPriority->setForeground(colTreeTimings, brushGreen);
+                            }
+                            else  {
+                                tCurrentPriority->setForeground(colTreeTimings, brushRed);
+                            }
+
                         }
                     }
                     tCurrentPriority->setExpanded(true);
@@ -7596,6 +7635,12 @@ void    ctedit::fillTimingsTree(int nCurRow)
                         if (nProtocol == RTU || nProtocol == RTU_SRV)  {
                             szTimings = QString::fromAscii("Read Time: %1 ms") .arg(theNodes[nNode].nNodeReadTime[nPriority], 6, 10);
                             tCurrentNode->setText(colTreeTimings, szTimings);
+                            if (theNodes[nNode].nNodeReadTime[nPriority] <= priority2ReadTime(nPriority))  {
+                                tCurrentNode->setForeground(colTreeTimings, brushGreen);
+                            }
+                            else  {
+                                tCurrentNode->setForeground(colTreeTimings, brushRed);
+                            }
                         }
                     }
                     tCurrentNode->setExpanded(nRow == nCurRow);
@@ -7650,7 +7695,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     ui->timingTree->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->timingTree->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->timingTree->header()->resizeSection(colTreeName, (ui->timingTree->width() / 5) - 12);
-    ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 5) * 3 - 12);
+    ui->timingTree->header()->resizeSection(colTreeInfo, (ui->timingTree->width() / 5) * 2 - 12);
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
     m_rebuildTimingTree = false;
 }
