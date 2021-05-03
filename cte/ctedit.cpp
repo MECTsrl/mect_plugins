@@ -2423,12 +2423,10 @@ void ctedit::pasteSelected()
         qDebug() << QString::fromAscii("Pasted Rows Count: %1") .arg(lstPastedRecords.count());
     }
     if (fClipSourceOk)  {
-        if (nRow + lstPastedRecords.count() < MAX_NONRETENTIVE)  {
+        if (nRow + lstPastedRecords.count() <= MAX_NONRETENTIVE)  {
             nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows);
         }
         else  {
-            m_szMsg = QLatin1String("The Copy Buffer exceedes System Variables Limit. Rows not pasted");
-            warnUser(this, szMectTitle, m_szMsg);
         }
         m_szMsg = QString::fromAscii("Rows Pasted: %1") .arg(nPasted);
     }
@@ -2457,8 +2455,9 @@ void ctedit::insertRows()
     // Controllo che lo spazio per l'inserimento esista
     if (nSelected <= 0 || nCurPos >=  MAX_NONRETENTIVE || ! canInsertRows(lstCTRecords, nCurPos, nSelected))  {
         qWarning("insertRows: No insertion allowed at row: %d", nCurPos);
-        m_szMsg = QString::fromAscii("No insertion of [%1] rows allowed at row: %2") .arg(nSelected) .arg(nCurPos + 1);
+        m_szMsg = QString::fromAscii("No insertion of [%1] rows allowed at row: [%2]") .arg(nSelected) .arg(nCurPos + 1);
         displayStatusMessage(m_szMsg);
+        warnUser(this, szMectTitle, m_szMsg);
         return;
     }
     qDebug("insertRows: Row: %d Selected: %d", nCurPos, nSelected);
@@ -6322,11 +6321,11 @@ bool ctedit::checkFreeArea(int nStartRow, int nRows)
     int         nUsed = 0;
     bool        fRes = false;
 
-    if (! canInsertRows(lstCTRecords, nStartRow, nRows - 1))  {
-        qWarning("insertRows: No insertion allowed at row: %d", nStartRow);
-        m_szMsg = QString::fromAscii("No insertion of [%1] rows allowed at row: %2") .arg(nRows) .arg(nStartRow + 1);
+    if (nStartRow + nRows - 1 >= MAX_NONRETENTIVE)  {
+        m_szMsg = QString::fromLatin1("The Copy Buffer exceedes System Variables limit. Rows not pasted\nStarting from [%1] for [%2] Elements") .arg(nStartRow + 1) .arg(nRows);
         displayStatusMessage(m_szMsg);
         warnUser(this, szMectTitle, m_szMsg);
+        qWarning("insertRows: No insertion allowed at row: %d for Items: %d", nStartRow + 1, nRows);
     }
     else  {
         for (nCur = nStartRow; nCur < nStartRow + nRows; nCur++)  {
