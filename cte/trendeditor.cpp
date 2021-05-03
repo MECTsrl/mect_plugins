@@ -493,7 +493,6 @@ void TrendEditor::on_cmdLoad_clicked()
                 // Aggiorna il nome del File corrente ma non il path
                 QFileInfo infoSource(szSourceFile);
                 m_szTrendFile = infoSource.fileName();
-                fillTrendsCombo(m_szTrendPath);
             }
         }
     }
@@ -542,8 +541,12 @@ void TrendEditor::setTrendsParameters(const QString szModel, const QString &szTr
     m_szTrendFile = szNewFile;
     m_szTemplateFile = szTemplateFile;
     // If is the received trend file name is empty, set it to default
-    if (m_szTrendFile.isEmpty())  {
+    if (szNewFile.isEmpty())  {
         m_szTrendFile = szTREND1FILE;
+    }
+    if (QFile::exists(m_szTrendPath + m_szTrendFile))  {
+        QString szTrendFile = m_szTrendPath + m_szTrendFile;
+        trendFile2Iface(szTrendFile);
     }
     // Fills Trends Combo
     ui->cboTrendName->clear();
@@ -789,8 +792,10 @@ void TrendEditor::fillTrendsCombo(const QString szTrendsPath)
     QDir            dirTrends(szTrendsPath);
     QStringList     lstTrendFilters;
     QFileInfoList   lstInfoTrendFiles;
-    QString         szCurrentTrend = m_szTrendFile;
+    QString         szCurrentTrend;
 
+
+    qDebug("fillTrendsCombo: TrendsPath=[%s] CurrentTrend: [%s]", szTrendsPath.toLatin1().data(), m_szTrendFile.toLatin1().data());
     // Preparazione della Lista di file trends presente in directory
     lstTrendFilters.clear();
     lstInfoTrendFiles.clear();
@@ -798,27 +803,24 @@ void TrendEditor::fillTrendsCombo(const QString szTrendsPath)
         lstTrendFilters << szTRENDMASK;
         lstInfoTrendFiles = dirTrends.entryInfoList(lstTrendFilters, QDir::Files | QDir::NoDotAndDotDot | QDir::Writable, QDir::Name);
     }
-
-    // Memorizza posizione del Trend corrente nella Combo
-    szCurrentTrend = m_szTrendFile;
-    szCurrentTrend = szCurrentTrend.replace(szTrendExt, szEMPTY);
-    nPos = ui->cboTrendName->currentIndex();
-    // qDebug() << tr("Prev Trend Index: %1") .arg(nPos);
     // caricamento dei nomi files nella combo
     ui->cboTrendName->clear();
     for (i = 0; i < lstInfoTrendFiles.count(); i ++)  {
         QFileInfo fInfo = lstInfoTrendFiles[i];
         ui->cboTrendName->addItem(fInfo.completeBaseName());
     }
+    // Memorizza posizione del Trend corrente nella Combo
+    // Verifica esistenza Trend Corrente
+    if (QFile::exists(szTrendsPath + m_szTrendFile))  {
+        szCurrentTrend = m_szTrendFile;
+        szCurrentTrend = szCurrentTrend.replace(szTrendExt, szEMPTY);
+        nPos = ui->cboTrendName->findText(szCurrentTrend);
+        if (nPos >= 0 && nPos < ui->cboTrendName->count())  {
+            ui->cboTrendName->setCurrentIndex(nPos);
+        }
+    }
     // Riattiva Segnali Combo
     ui->cboTrendName->blockSignals(oldState);
-    // Ricerca trend corrente nella combo ed eventualmente riapre il file
-    if (nPos < 0 || nPos != ui->cboTrendName->findText(szCurrentTrend))  {
-        nPos = ui->cboTrendName->findText(szCurrentTrend);
-        // qDebug() << tr("Current Trend Index: %1") .arg(nPos);
-        on_cboTrendName_currentIndexChanged(nPos);
-    }
-
 }
 
 void TrendEditor::on_cboTrendName_currentIndexChanged(int index)

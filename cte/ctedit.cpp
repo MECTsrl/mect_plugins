@@ -7137,6 +7137,10 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
         // Colonna Info
         szInfo = QString::fromAscii("Device Variables: %1 - ") .arg(theDevices[nDevice].nVars, 10, 10);
         szInfo.append(QString::fromAscii("Max Block Size: %1 - ").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
+        // IP Address Info
+        if (! theDevices[nDevice].szIpAddress.isEmpty() && (theDevices[nDevice].nProtocol == TCP || theDevices[nDevice].nProtocol == TCPRTU))  {
+            szInfo.append(QString::fromAscii("Ip Address: [%1] - ") .arg(theDevices[nDevice].szIpAddress));
+        }
         // TimeOut
         if (theDevices[nDevice].nTimeOut >= 0)  {
             szInfo.append(QString::fromAscii("TimeOut: %1 ms - ") .arg(theDevices[nDevice].nTimeOut, 6, 10));
