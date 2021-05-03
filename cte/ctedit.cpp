@@ -7699,6 +7699,7 @@ void    ctedit::fillTimingsTree(int nCurRow)
     ui->timingTree->header()->resizeSections(QHeaderView::Interactive);
     m_rebuildTimingTree = false;
 }
+
 void    ctedit::fillLogTree(int nCurRow)
 // Riempimento Albero delle variabili raggruppate per Log Period
 {
@@ -7719,6 +7720,7 @@ void    ctedit::fillLogTree(int nCurRow)
     int             nRow = 0;
     int             nLogLevel = Ptype;
     int             nUsedVariables = 0;
+    int             nLoggedVars = 0;
     int             nFast = 0;
     int             nSlow = 0;
     int             nVar = 0;
@@ -7789,6 +7791,7 @@ void    ctedit::fillLogTree(int nCurRow)
                     tParent = tOnShot;
                 }
                 // Add Variable
+                nLoggedVars++;
                 tNewVariable = 0;
                 if (tParent != 0)  {
                     tNewVariable = addVariable2Tree(tParent, nRow, treeNode);
@@ -7803,6 +7806,7 @@ void    ctedit::fillLogTree(int nCurRow)
     // Aggiornamento delle Informazioni del Nodo Principale
     tRoot->setExpanded(true);
     szInfo = QString::fromAscii("Total Variables: %1\t") .arg(nUsedVariables, 6, 10);
+    szInfo.append(QString::fromAscii("Logged: %1\t") .arg(nLoggedVars, 6, 10));
     szInfo.append(QString::fromAscii("Fast: %1\t") .arg(nFast, 6, 10));
     szInfo.append(QString::fromAscii("Slow: %1\t") .arg(nSlow, 6, 10));
     szInfo.append(QString::fromAscii("On Var: %1\t") .arg(nVar, 6, 10));
