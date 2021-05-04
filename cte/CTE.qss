@@ -1,28 +1,46 @@
 QPushButton { 
-  border: 2px solid teal;
-  border-radius: 10px;
-  color: teal;
-  background: lightGray;
-  background-repeat: no-repeat;
-  background-position: center center;
-  image-position: top center;
-  min-width: 72px;
-  min-height: 48px;
-  max-width: 72px;
-  max-height: 48px;
+    border: 2px solid teal;
+    border-radius: 10px;
+    color: teal;
+    background: lightGray;
+    background-repeat: no-repeat;
+    background-position: center center;
+    image-position: top center;
+    min-width: 72px;
+    min-height: 48px;
+    max-width: 72px;
+    max-height: 48px;
 }
 QPushButton:disabled {
-  border: 2px solid darkGray;
+    border: 2px solid darkGray;
 }
 QPushButton:enabled {
-  border: 2px solid navy;
+    border: 2px solid navy;
 }
 QPushButton:selected, QPushButton:hover { 
-  border: 2px solid DarkOrange;
+    border: 2px solid DarkOrange;
 }
 QPushButton:pressed { 
-  border: 2px solid red;
+    border: 2px solid red;
 }
 QPushButton:default { 
-  border: 2px solid steelblue;
+    border: 2px solid steelblue;
 }
+QCheckBox::indicator {
+    width: 20px;
+    height: 20px;
+}
+QCheckBox::indicator:unchecked {
+    image: url(":/cteicons/img/Unchecked_32.png");
+}
+QCheckBox::indicator::checked:enabled  {
+    image: url(":/cteicons/img/Checked_32.png");
+}
+QCheckBox::indicator::checked:disabled  {
+    image: url(":/cteicons/img/Checked_32_Disabled.png");
+}
+/* Input fields enabled */
+QLineEdit:enabled, QComboBox:enabled, QCheckBox::indicator:enabled {
+    border: 1px solid DodgerBlue;
+}
+

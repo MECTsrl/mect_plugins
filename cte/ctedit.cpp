@@ -95,6 +95,9 @@ const QString szPLCExt = QLatin1String(".4cp");
 const QString szPLCDir = QLatin1String("plc");
 const QString szINIFILE = QLatin1String("system.ini");
 const QString szFileQSS = QLatin1String(":/qss/CTE.qss");
+const QString szNODE_Dev = QLatin1String("NODE_%1_DEV_NODE");
+const QString szNODE_Status = QLatin1String("NODE_%1_STATUS");
+
 // CrossTable originale del Modello corrente
 const QString szTemplateCTFile = QLatin1String("C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
 
@@ -560,7 +563,6 @@ ctedit::ctedit(QWidget *parent) :
     ui->txtBlock->setVisible(false);
     ui->lblBlockSize->setVisible(false);
     ui->txtBlockSize->setVisible(false);
-    ui->cmdBlocchi->setVisible(false);
     ui->cboPort->setVisible(false);
     ui->txtPort->setVisible(true);
     ui->lblPort_RTU->setVisible(false);
@@ -1429,7 +1431,7 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
     return true;
 }
 
-void ctedit::on_cmdBlocchi_clicked()
+void ctedit::on_cmdDiags_clicked()
 {
     if (not riassegnaBlocchi())  {
         m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
@@ -1519,7 +1521,6 @@ bool    ctedit::riassegnaBlocchi()
     int16_t         curBSize = (int16_t) 0;
     int             nItemsInBlock = 0;
 
-    ui->cmdBlocchi->setEnabled(false);
     this->setCursor(Qt::WaitCursor);
     // Copia l'attuale CT nella lista Undo
     appendCT2UndoList();
@@ -1594,7 +1595,6 @@ bool    ctedit::riassegnaBlocchi()
     m_rebuildDeviceTree = true;
     m_rebuildTimingTree = true;
     // qDebug() << "Reload finished";
-    ui->cmdBlocchi->setEnabled(true);
     this->setCursor(Qt::ArrowCursor);
     return fRes;
 }
@@ -3349,8 +3349,8 @@ void ctedit::enableInterface()
     ui->cmdImport->setVisible(not m_fMultiEdit);
     ui->cmdUndo->setVisible(true);
     ui->cmdUndo->setEnabled(not lstUndo.isEmpty());
-    ui->cmdBlocchi->setVisible(false);
-    ui->cmdBlocchi->setEnabled(false);
+    ui->cmdDiags->setVisible(not m_fMultiEdit);
+    ui->cmdDiags->setEnabled(not m_fMultiEdit);
     ui->cmdSave->setVisible(not m_fMultiEdit);
     ui->cmdCompile->setVisible(not m_fMultiEdit);
     ui->cmdCompile->setEnabled(not m_isCtModified && not m_szCurrentModel.isEmpty());
@@ -6601,7 +6601,7 @@ bool ctedit::checkServersDevicesAndNodes()
         for (nPriority = 0; nPriority < nNumPriority; nPriority++)  {
             theNodes[nCur].nNodeReadTime[nPriority] = 0;
         }
-        theNodes[nCur].diagnosticAddr = 0;
+        theNodes[nCur].diagnosticAddr = -1;
         theNodes[nCur].diagnosticVarName.clear();
     }
     // Clean Blocks
@@ -6914,12 +6914,38 @@ bool ctedit::checkServersDevicesAndNodes()
                     theNodes[nNod].nDevice = lstCTRecords[nCur].nDevice;
                     theNodes[nNod].nNodeId = lstCTRecords[nCur].NodeId;
                     // Ricerca Variabile Diag
-                    szDiagName = QLatin1String("NODE_") + int2PaddedString(nNod+1, 2);
-                    szDiagName.append(QLatin1String("_STATUS"));
+                    QString szPaddedNum = int2PaddedString(nNod+1, 2);
+                    szDiagName = QString::fromLatin1("NODE_%1_STATUS") .arg(szPaddedNum);
                     nDiag = varName2Row(szDiagName, lstCTRecords);
+                    // Variabile non trovata, prova ad inserire le due variabili di Diagnostica del Nodo XX
+                    if (nDiag < 0)  {
+                        nDiag = MIN_NODE + (nNod * 2) - 1;
+                        int nBaseBlock = nDiag + 1;
+                        // NODE_XX_DEV_NODE
+                        if (! lstCTRecords[nDiag].UsedEntry) {
+                            QString szDiagNode = QString::fromLatin1("NODE_%1_DEV_NODE") .arg(szPaddedNum);
+                            fRes = insertRowInCT(lstCTRecords, nDiag, nPriorityHigh, Ptype, szDiagNode, UDINT, 0,
+                                                 PLC, nBaseBlock, 2, behavior_readwrite);
+                            nDiag++;
+                        }
+                        // NODE_XX_STATUS
+                        if (fRes && ! lstCTRecords[nDiag].UsedEntry)  {
+                            fRes = insertRowInCT(lstCTRecords, nDiag, nPriorityHigh, Ptype, szDiagName, UDINT, 0,
+                                                 PLC, nBaseBlock, 2, behavior_readwrite);
+                        }
+                        // check Insertion result
+                        if (! fRes)  {
+                            nDiag = -1;
+                        }
+                    }
+                    // Esito di Ricerca o inserzione
                     if (nDiag >= 0)  {
-                        theNodes[nNod].diagnosticAddr = nDiag + 1;
+                        theNodes[nNod].diagnosticAddr = nDiag;
                         theNodes[nNod].diagnosticVarName = szDiagName;
+                    }
+                    else  {
+                        qDebug() << QLatin1String("checkServersDevicesAndNodes(): ERROR: too many Nodes or Diag Var already used");
+                        fRes = false;
                     }
                     theNodes[nNod].szNodeName = QString::fromAscii("%1 = %2 (%3)" ) .arg(lstHeadCols[colNodeID]) .arg(lstCTRecords[nCur].NodeId) .arg(szDiagName);
                     // Ricerca la riga corrente nell'elenco dei marcatori MPNx
@@ -7243,7 +7269,7 @@ QTreeWidgetItem *ctedit::addNode2Tree(QTreeWidgetItem *tParent, int nNode)
         szToolTip = QString::fromAscii("Device:\t%1\n") .arg(theDevices[theNodes[nNode].nDevice].szDeviceName,-20);
         szToolTip.append(QString::fromAscii("Node Id:\t%1\n") .arg(theNodes[nNode].nNodeId));
         szToolTip.append(QString::fromAscii("Node Variables:\t%1\n") .arg(theNodes[nNode].nVars, 12, 10));
-        szToolTip.append(QString::fromAscii("Diag Variable Id:\t%1\n") .arg(theNodes[nNode].diagnosticAddr, 12, 10));
+        szToolTip.append(QString::fromAscii("Diag Variable Id:\t%1\n") .arg(theNodes[nNode].diagnosticAddr + 1, 12, 10));
         szToolTip.append(QString::fromAscii("Diag Variable Name:\t%1") .arg(theNodes[nNode].diagnosticVarName, -20));
     }
     else  {

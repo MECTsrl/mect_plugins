@@ -81,6 +81,7 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
 bool    isAlarm(QList<CrossTableRecord> &CTRecords, int nItem);
 bool    isEvent(QList<CrossTableRecord> &CTRecords, int nItem);
 bool    canInsertRows(QList<CrossTableRecord> &CTRecords, int nPos, int nRows2Insert);
+bool    insertRowInCT(QList<CrossTableRecord> &CTRecords, int nRow, int nPriority, UpdateType nUpdate, QString &szVarName, varTypes nType, int nDecimals, FieldbusType nProtocol, int nBlock, int nSize, int nBehavior);
 
 QString priority2String(int nPriority);     // Formattazione stringa per nome priorità
 int     priority2ReadTime(int nPriority);   // Restituisce il Read Period in funzione della priorità

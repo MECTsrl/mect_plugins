@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/cteicons">
         <file>img/Logo_Mect.png</file>
-        <file>img/Blocks.png</file>
         <file>img/Compile.ico</file>
         <file>img/Go to.png</file>
         <file>img/Import.png</file>
@@ -48,6 +47,9 @@
         <file>img/table_multirow_64.png</file>
         <file>img/table_singlerow_64.png</file>
         <file>img/Restart_64.png</file>
+        <file>img/Checked_32.png</file>
+        <file>img/Unchecked_32.png</file>
+        <file>img/Checked_32_Disabled.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>

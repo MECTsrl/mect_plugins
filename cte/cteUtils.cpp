@@ -1267,6 +1267,27 @@ bool    canInsertRows(QList<CrossTableRecord> &CTRecords, int nPos, int nRows2In
     return canInsert;
 }
 
+bool    insertRowInCT(QList<CrossTableRecord> &CTRecords, int nRow, int nPriority, UpdateType nUpdate, QString &szVarName,
+                      varTypes nType, int nDecimals, FieldbusType nProtocol, int nBlock, int nSize, int nBehavior)
+{
+    bool fRes = false;
+    if (not CTRecords[nRow].UsedEntry && not szVarName.isEmpty())  {
+        freeCTrec(CTRecords, nRow);
+        lstCTRecords[nRow].UsedEntry = 1;
+        lstCTRecords[nRow].Enable = nPriority;
+        lstCTRecords[nRow].Update = nUpdate;
+        strcpy(lstCTRecords[nRow].Tag, szVarName.toAscii().data());
+        lstCTRecords[nRow].VarType = nType;
+        lstCTRecords[nRow].Decimal = nDecimals;
+        lstCTRecords[nRow].Protocol = nProtocol;
+        lstCTRecords[nRow].Block = nBlock;
+        lstCTRecords[nRow].BlockSize = nSize;
+        lstCTRecords[nRow].Behavior = nBehavior;
+        fRes = true;
+    }
+    return fRes;
+}
+
 bool    isAlarm(QList<CrossTableRecord> &CTRecords, int nItem)
 {
     bool fRes = false;

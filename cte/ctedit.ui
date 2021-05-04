@@ -724,51 +724,6 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="cmdBlocchi">
-              <property name="minimumSize">
-               <size>
-                <width>72</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>72</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>MS Shell Dlg 2</family>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>Reorder Blocks Assignment</string>
-              </property>
-              <property name="text">
-               <string notr="true"/>
-              </property>
-              <property name="icon">
-               <iconset resource="qtc.qrc">
-                <normaloff>:/cteicons/img/Blocks.png</normaloff>:/cteicons/img/Blocks.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <property name="autoDefault">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="cmdSave">
               <property name="enabled">
                <bool>true</bool>
@@ -910,6 +865,51 @@
               <property name="icon">
                <iconset resource="qtc.qrc">
                 <normaloff>:/cteicons/img/PLC.ico</normaloff>:/cteicons/img/PLC.ico</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="autoDefault">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="cmdDiags">
+              <property name="minimumSize">
+               <size>
+                <width>72</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>72</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>MS Shell Dlg 2</family>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string>Simplify Diagnostic Variables</string>
+              </property>
+              <property name="text">
+               <string notr="true"/>
+              </property>
+              <property name="icon">
+               <iconset resource="qtc.qrc">
+                <normaloff>:/cteicons/img/Restart_64.png</normaloff>:/cteicons/img/Restart_64.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -2312,11 +2312,15 @@ QCheckBox::indicator:checked {
   <tabstop>cboSections</tabstop>
   <tabstop>cmdHideShow</tabstop>
   <tabstop>cmdSearch</tabstop>
+  <tabstop>lstEditableFields</tabstop>
   <tabstop>cmdImport</tabstop>
+  <tabstop>cmdApply</tabstop>
+  <tabstop>cmdMultiEdit</tabstop>
   <tabstop>cmdUndo</tabstop>
   <tabstop>cmdSave</tabstop>
   <tabstop>cmdCompile</tabstop>
   <tabstop>cmdPLC</tabstop>
+  <tabstop>cmdDiags</tabstop>
   <tabstop>txtRow</tabstop>
   <tabstop>cboPriority</tabstop>
   <tabstop>cboUpdate</tabstop>
@@ -2341,7 +2345,9 @@ QCheckBox::indicator:checked {
   <tabstop>cboVariable2</tabstop>
   <tabstop>txtComment</tabstop>
   <tabstop>tblCT</tabstop>
-  <tabstop>cmdBlocchi</tabstop>
+  <tabstop>deviceTree</tabstop>
+  <tabstop>timingTree</tabstop>
+  <tabstop>logTree</tabstop>
  </tabstops>
  <resources>
   <include location="qtc.qrc"/>
