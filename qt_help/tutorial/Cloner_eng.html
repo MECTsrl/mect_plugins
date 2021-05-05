@@ -1,4 +1,3 @@
-
 <html>
 	<head>
 	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
@@ -14,66 +13,42 @@
 	</head>	
 	<body>
 		<h3 class="western">Cloner</h3>
-		<p class="western">The &ldquo;Cloner&rdquo; is used to make a copy of an application. It could be a backup copy and/or it could be used to update other devices (of the same model). </p>
-		<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Cloner_1.png" name="Immagine1212" align="bottom" width="474" height="268" border="0"/></p>
-	<p class="western"><strong><u>BACKUP procedure</u>:</strong></p>
+
+		<p class="western">"Cloner" is a recovery utility for the Mect panels. </p>
+
+	<p class="western"><strong><u>Recovery startup procedure</u>:</strong></p>
 	<ul>		
-		<li/>
-			<p class="western">Copy <strong>img_cloner_3.x.x.ext2</strong> and <strong>sysupdate_cloner_3.x.x.sh</strong> files in a USB pen drive (FAT32 with one and only one ms-dos MBR partition).  <br>
-			<u>Warning</u>: Do NOT use &ldquo;Edge&rdquo; browser because it changes the file extension. <br>
-			<u>Warning</u>: There must not be any other update files: sysupdate_....
+		<li>
+			<p class="western">Copy <strong>img_cloner_3.x.x.ext2</strong>, <strong>sysupdate_cloner_3.x.x.sh</strong>  and <strong>_ysupdate_img_3.x.x.sh</strong> in the main directory of a USB pen drive (It must be a single partition FAT32 - ms-dos MBR). <br>
+			<u>Warning</u>: No others "sysupdate_" file must be on the USB drive.
 			</p>
-		<li/>
-			<p class="western">Turn off the device.</p>			
-		<li/>
-			<p class="western">Plug in the USB pen drive (if the device has a micro-USB port, use a micro-USB (A type) &#8594; USB adaptor).</p>
-		<li/>
-			<p class="western">Turn on the device.</p>
-		<li/>
-			<p class="western">Press the <strong>&ldquo;BACKUP&rdquo;</strong> button.</p>
-		<li/>
-			<p class="western">Write the name you want and press <img src="Cloner_2.png" align="bottom" width="44" height="44" border="0"/> </p>
-		<li/>
-			<p class="western">BACKUP process is ended when &ldquo;Operation &lsquo;Local file system&rsquo; completed.&rdquo; appears.</p>
-		<li/>
-			<p class="western">Turn off the device.</p>
-		<li/>
-			<p class="western">Take off the USB pen drive.</p>
+		<li>
+			<p class="western">Shutdown the device.</p>			
+		<li>
+			<p class="western">Plug in the USB drive (If the device have the micro-USB connector, use the micro-USB (type A) --> USB adapter).</p>
+		<li>
+			<p class="western">Power on the device.</p>
 	</ul>
-	<p class="western">The BACKUP copy will be in the <strong>&ldquo;cloner&rdquo;</strong> folder in the pen drive.</p>
-	<br/>
-	<p class="western"><strong><u>INSTALL procedure</u>:</strong></p>
-	<ul>		
-		<li/>
-			<p class="western">Copy in a USB pen drive (FAT32 with one and only one ms-dos MBR partition):</p>
-			<ul>
-				<li/>
-				<p class="western">the <strong>img_cloner_3.x.x.ext2</strong> and <strong>sysupdate_cloner_3.x.x.sh</strong> files.<br>
-				<u>Warning</u>: Do NOT use &ldquo;Edge&rdquo; browser because it changes the file extension.</p>
-				<li/>
-				<p class="western">the <strong>&ldquo;cloner&rdquo;</strong> folder.<br>
-				<u>Warning</u>: Inside the &ldquo;cloner&rdquo; folder there must be a folder with the name of the &ldquo;backup&rdquo; that was done in the BACKUP procedure. The file &ldquo;localfs.tar&rdquo; must be located in this folder.</p>
-				<p class="western"><img src="Cloner_3_a.png" align="bottom" width="208" height="84" border="0"/>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<img src="Cloner_4.png" align="bottom" width="147" height="70" border="0"/></p>
-			</ul>
-		<li/>	
-			<p class="western">There must be no other update files: sysupdate_…</p>				
-		<li/>
-			<p class="western">Turn off the device.</p>			
-		<li/>
-			<p class="western">Plug in the USB pen drive (if the device has a micro-USB port, use a micro-USB (A type) &#8594; USB adaptor).</p>
-		<li/>
-			<p class="western">Turn on the device.</p>
-		<li/>
-			<p class="western">Select the version you want to install from the drop-down menu.</p>	
-		<li/>
-			<p class="western">Press the <strong>&ldquo;INSTALL&rdquo;</strong> button.</p>
-		<li/>
-			<p class="western">Install process is ended when  &ldquo;Operation &lsquo;Local file system&rsquo; completed.&rdquo; appears.</p>
-		<li/>
-			<p class="western">Turn off the device.</p>
-		<li/>
-			<p class="western">Take off the USB pen drive.</p>
-	</ul>	
+	<p lang="it-IT" class="western" style="margin-bottom: 0cm"><img src="Cloner.png" name="Cloner_Main" align="bottom"  border="0"/></p>
+	
+	<p class="western">The backup images will be copied on the <strong>"cloner"</strong> directory over the pen drive.</p>
+	<br/>	
+		<ul>
+			<li><p class="western" style="margin-bottom: 0cm"><img src="Cloner_Backup.png" align="bottom" width="90" height="80" border="0" style="float=left;vertical-align:middle;"/> It backups the application and current settings. The backup file will be saved on the "cloner" directory over the pen drive.</p>
+			
+			<li><p class="western" style="margin-bottom: 0cm"><img src="Cloner_Restore.png" align="bottom" width="90" height="80" border="0" style="float=left;vertical-align:middle;"/> It restores the application and the settings. The restore file must be on the "cloner" directory of the pen drive. For retentive, hmi.ini and log files it is possible to choose if restore ("Restore"), reset ("Zero") or ignore ("Ignore") these files during the restore. </p>
+			
+			<li><p class="western" style="margin-bottom: 0cm"><img src="Cloner_Update.png" align="bottom" width="90" height="80" border="0" style="float=left;vertical-align:middle;"/> It starts the Mect Suite update. The update image (ex: img_sysupdate-3.x.x-TP1043_01_A.ext2) must be inserted on the main directory of the USB drive and must be the aligned with the device model. The icon will be grey if no updates are available.</p>
+			
+			<li><p class="western" style="margin-bottom: 0cm"><img src="Cloner_Factory.png" align="bottom" width="90" height="80" border="0" style="float=left;vertical-align:middle;"/> Factory Reset. Install the "Simple" application and reset the default settings.</p>
+			
+			<li><p class="western" style="margin-bottom: 0cm"><img src="Cloner_VPN.png" align="bottom" width="90" height="80" border="0" style="float=left;vertical-align:middle;"/> VPN menu. (Disabled)</p>
+			
+			<li><p class="western" style="margin-bottom: 0cm"><img src="Cloner_SSH.png" align="bottom" width="90" height="80" border="0" style="float=left;vertical-align:middle;"/> SSH menu. A menu for transfer or remove the SSH keys. The keys must be in the <strong>"keys"</strong> over the USB Drive. If the directory does not exist it can be created in the main directory of the USB Drive.</p>
+
+			<li><p class="western" style="margin-bottom: 0cm"><img src="Cloner_Time.png" align="bottom" width="90" height="80" border="0" style="float=left;vertical-align:middle;"/> Time Set menu. (Disabled)</p>			
+			
+			<li><p class="western" style="margin-bottom: 0cm"><img src="Cloner_Network.png" align="bottom" width="90" height="80" border="0" style="float=left;vertical-align:middle;"/> Network menu . Menu settings for wifi, ethernet and mobile.</p>
+		</ul>
 	</body>
 </html>
