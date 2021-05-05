@@ -65,7 +65,7 @@ private slots:
     void clearStatusMessage();                      // Clear message in ui->lblMessage
     void tabSelected(int nTab);                     // Change current Tab
     void gotoRow();                                 // Show Dialog Goto Row n
-    void on_cmdDiags_clicked();                   // Riordino Blocchi
+    void on_cmdDiags_clicked();                     // Simplify Diagnostic Variables
     void on_cmdSave_clicked();                      // Salvataggio file
     void on_cmdImport_clicked();                    // Import Rows from Another CT File
     void on_cmdSearch_clicked();                    // Search Variable by Name

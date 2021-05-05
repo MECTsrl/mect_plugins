@@ -42,6 +42,10 @@ bool        isSerialPortEnabled;        // Vero se almeno una porta seriale è a
 int         nPresentSerialPorts;        // Numero di porte Seriali utilizzabili a bordo
 TP_Config   panelConfig;                // Configurazione corrente del Target letta da Form mectSettings
 
+// Variabili di diagnostica dei Bus
+QStringList lstSerialBusVars;                   // Lista delle variabili di diagnostica per i BUS Seriali (RTUx e CANOPENx)
+QStringList lstTCPBusVars;                      // Lista delle variabili di diagnostica per i BUS TCP (TCPS e TPCx)
+
 
 // Crosstable Records
 QList<CrossTableRecord> lstCTRecords;   // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE): Dimensione circa 2309 kByte
@@ -261,7 +265,8 @@ void initLists()
     }
     lstRegions[regRetentive]    = QLatin1String("Retentive\t[1 -  192]");
     lstRegions[regNonRetentive] = QLatin1String("Non Retentive\t[193 - 4999]");
-    lstRegions[regDiagnostic]   = QLatin1String("Diagnostic\t[5000 - 5299]");
+    lstRegions[regDiagnostic]   = QLatin1String("Diagnostic\t[5000 - 5171]");
+    lstRegions[regNodes]        = QLatin1String("Node Status\t[5172 - 5299]");
     lstRegions[regLocalIO]      = QLatin1String("Local I/O\t[5300 - 5389]");
     lstRegions[regSystem]       = QLatin1String("System\t[5390 - 5472]");
     // Descrizione Tipi Variabili
@@ -279,7 +284,33 @@ void initLists()
     for (nCol = PLC; nCol < FIELDBUS_TOTAL; nCol++)  {
         lstProtocol.append(QLatin1String(fieldbusName[nCol]));
     }
-    // Costanti per i colori di sfondo
+    // Variabili di diagnostica dei Bus
+    // Variabili per BUS Seriali
+    lstSerialBusVars.clear();
+    lstSerialBusVars.append(QLatin1String("_TYPE_PORT"));
+    lstSerialBusVars.append(QLatin1String("_BAUDRATE"));
+    lstSerialBusVars.append(QLatin1String("_STATUS"));
+    lstSerialBusVars.append(QLatin1String("_READS"));
+    lstSerialBusVars.append(QLatin1String("_WRITES"));
+    lstSerialBusVars.append(QLatin1String("_TIMEOUTS"));
+    lstSerialBusVars.append(QLatin1String("_COMM_ERRORS"));
+    lstSerialBusVars.append(QLatin1String("_LAST_ERROR"));
+    lstSerialBusVars.append(QLatin1String("_WRITE_QUEUE"));
+    lstSerialBusVars.append(QLatin1String("_BUS_LOAD"));
+    // Variabili per BUS TPC (TCPS e TCPx)
+    lstTCPBusVars.clear();
+    lstTCPBusVars.append(QLatin1String("_TYPE_PORT"));
+    lstTCPBusVars.append(QLatin1String("_IP_ADDRESS"));
+    lstTCPBusVars.append(QLatin1String("_STATUS"));
+    lstTCPBusVars.append(QLatin1String("_READS"));
+    lstTCPBusVars.append(QLatin1String("_WRITES"));
+    lstTCPBusVars.append(QLatin1String("_TIMEOUTS"));
+    lstTCPBusVars.append(QLatin1String("_COMM_ERRORS"));
+    lstTCPBusVars.append(QLatin1String("_LAST_ERROR"));
+    lstTCPBusVars.append(QLatin1String("_WRITE_QUEUE"));
+    lstTCPBusVars.append(QLatin1String("_BUS_LOAD"));
+
+            // Costanti per i colori di sfondo
     colorRetentive[0] = QColor(170,255,255,255);           // Azzurro Dark
     colorRetentive[1] = QColor(210,255,255,255);           // Azzurro
     colorNonRetentive[0] = QColor(255,255,190,255);        // Giallino Dark
@@ -853,7 +884,8 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
             }
         }
         // Variabile Template con priorità differente --> ha la priorità il Template
-        if (CTTemplate[nRow].Enable > 0 && strlen(CTTemplate[nRow].Tag) > 0 && strlen(CTProject[nRow].Tag) > 0 && CTProject[nRow].Enable != CTTemplate[nRow].Enable )  {
+        // Solo per le variabili > 5300
+        if (nRow >= MAX_NODE && CTTemplate[nRow].Enable > 0 && strlen(CTTemplate[nRow].Tag) > 0 && strlen(CTProject[nRow].Tag) > 0 && CTProject[nRow].Enable != CTTemplate[nRow].Enable )  {
             nDifferences++;
             lstDiff.append(nRow);
             lstActions.append(QString::fromAscii("Forced Priority to %1") .arg(CTTemplate[nRow].Enable));
@@ -906,8 +938,9 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
                 CTProject[nRow].Decimal = CTTemplate[nRow].Decimal;
             }
         }
-        // Modificato il Behavior della Variabile
-        if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
+        // Modificato il Behavior della Variabile (non per i NODE_INFO)
+        if ((nRow < MIN_NODE -1  || nRow > MAX_NODE - 1) &&
+            CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
             CTTemplate[nRow].Behavior != CTProject[nRow].Behavior)  {
             nDifferences++;
             lstDiff.append(nRow);
@@ -916,7 +949,7 @@ int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTab
                 CTProject[nRow].Behavior = CTTemplate[nRow].Behavior;
             }
         }
-        // Commento diverso in Template ---> Copiato in Progetto
+        // Commento diverso in Template ---> Copiato in Progetto se in Progetto è vuoto
         if (CTTemplate[nRow].UsedEntry && CTProject[nRow].UsedEntry &&
             strlen(CTTemplate[nRow].Comment) > 0 &&
             strlen(CTProject[nRow].Comment) == 0)  {
@@ -1267,23 +1300,28 @@ bool    canInsertRows(QList<CrossTableRecord> &CTRecords, int nPos, int nRows2In
     return canInsert;
 }
 
-bool    insertRowInCT(QList<CrossTableRecord> &CTRecords, int nRow, int nPriority, UpdateType nUpdate, QString &szVarName,
+bool    insertRowInCT(QTableWidget *table, QList<CrossTableRecord> &CTRecords, int nRow, int nPriority, UpdateType nUpdate, QString &szVarName,
                       varTypes nType, int nDecimals, FieldbusType nProtocol, int nBlock, int nSize, int nBehavior)
 {
+    QStringList     lstCampi;
+
     bool fRes = false;
     if (not CTRecords[nRow].UsedEntry && not szVarName.isEmpty())  {
         freeCTrec(CTRecords, nRow);
-        lstCTRecords[nRow].UsedEntry = 1;
-        lstCTRecords[nRow].Enable = nPriority;
-        lstCTRecords[nRow].Update = nUpdate;
-        strcpy(lstCTRecords[nRow].Tag, szVarName.toAscii().data());
-        lstCTRecords[nRow].VarType = nType;
-        lstCTRecords[nRow].Decimal = nDecimals;
-        lstCTRecords[nRow].Protocol = nProtocol;
-        lstCTRecords[nRow].Block = nBlock;
-        lstCTRecords[nRow].BlockSize = nSize;
-        lstCTRecords[nRow].Behavior = nBehavior;
-        fRes = true;
+        CTRecords[nRow].UsedEntry = 1;
+        CTRecords[nRow].Enable = nPriority;
+        CTRecords[nRow].Update = nUpdate;
+        strcpy(CTRecords[nRow].Tag, szVarName.toAscii().data());
+        CTRecords[nRow].VarType = nType;
+        CTRecords[nRow].Decimal = nDecimals;
+        CTRecords[nRow].Protocol = nProtocol;
+        CTRecords[nRow].Block = nBlock;
+        CTRecords[nRow].BlockSize = nSize;
+        CTRecords[nRow].Behavior = nBehavior;
+        // Record 2 Grid
+        if (recCT2FieldsValues(CTRecords, lstCampi, nRow))  {
+            fRes = list2GridRow(table, lstCampi, lstHeadLeftCols, nRow);
+        }
     }
     return fRes;
 }

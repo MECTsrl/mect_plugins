@@ -1432,11 +1432,74 @@ bool ctedit::iface2values(QStringList &lstRecValues, bool fMultiEdit, int nRow)
 }
 
 void ctedit::on_cmdDiags_clicked()
+// Simplify Diagnostic Variables
 {
+    int     nNode = 0;
+    int     nDevice = 0;
+    int     nRow = 0;
+
+    // Rebuild Block assignment (Add CT in Undo List)
     if (not riassegnaBlocchi())  {
         m_szMsg = QLatin1String("Found Errors in Reassigning Blocks");
         warnUser(this, szMectTitle, m_szMsg);
+        return;
     }
+    qDebug("cmdDiags: riassegnaBlocchi() ended");
+    // Rebuild Server-Device-Nodes structures (Fills all NODE Variables needed)
+    if (not checkServersDevicesAndNodes())  {
+        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure!") .arg(QLatin1String("Devices"));
+        warnUser(this, szMectTitle, m_szMsg);
+        return;
+    }
+    qDebug("cmdDiags: checkServersDevicesAndNodes() ended");
+    // Disable ALL Diags Vars
+    for (nRow = MIN_DIAG - 1; nRow < MAX_DIAG -1; nRow++)  {
+        if (lstCTRecords.at(nRow).UsedEntry)  {
+            lstCTRecords[nRow].Enable = nPriorityNone;
+        }
+    }
+    // Enable only Used Device
+    for (nDevice = 0; nDevice < theDevicesNumber; nDevice++)  {
+        if (theDevices[nDevice].diagnosticAddr >= 0)  {
+            int nStartRow = theDevices[nDevice].diagnosticAddr - 2;
+            for (nRow = nStartRow; nRow < nStartRow + DIAG_VAR_SIZE; nRow++)  {
+                if (lstCTRecords.at(nRow).UsedEntry)  {
+                    // Force Priority to 0
+                    lstCTRecords[nRow].Enable = nPriorityHigh;
+                    qDebug("cmdDiags: Device: %d Device Name: [%s] Row: %d Switched ON", nDevice,
+                           theDevices[nDevice].szDeviceName.toLatin1().data(), nRow + 1);
+                }
+            }
+        }
+    }
+    // Cheching Diagnostic Nodes informations for all 64 Max Nodes
+    for (nNode = 0; nNode < nMAX_NODES; nNode++) {
+        // Find the diagnostic line associated with the Node
+        nRow = MIN_NODE + (nNode * 2) - 1;
+        qDebug("cmdDiags: Node: %d Row: %d", nNode + 1, nRow + 1);
+        if (nNode < theNodesNumber)  {
+            // Node present and active
+            // Force R/W Behavior
+            lstCTRecords[nRow].Behavior = behavior_readwrite;
+            lstCTRecords[nRow + 1].Behavior = behavior_readwrite;
+            qDebug("cmdDiags: Node: %d Used - Forced RW", nNode + 1);
+        }
+        else {
+            // Node NOT active at the moment
+            if (lstCTRecords.at(nRow).UsedEntry)  {
+                // Force Priority to 0
+                lstCTRecords[nRow].Enable = nPriorityNone;
+                qDebug("cmdDiags: Node: %d Row: %d Switched OFF", nNode + 1, nRow + 1);
+            }
+            if (lstCTRecords.at(nRow + 1).UsedEntry)  {
+                // Force Priority to 0
+                lstCTRecords[nRow + 1].Enable = nPriorityNone;
+            }
+        }
+    }
+    // Reload Crosstable
+    ctable2Grid();
+    m_isCtModified = true;
     // Refresh abilitazioni interfaccia
     enableInterface();
 }
@@ -3362,6 +3425,7 @@ void ctedit::enableInterface()
     else  {
         ui->cmdSave->setStyleSheet(QLatin1String("border: 2px solid green;"));
     }
+    ui->cmdSave->update();
     ui->cmdPLC->setVisible(not m_fMultiEdit);
     ui->cmdPLC->setEnabled(not m_isCtModified && not m_szCurrentModel.isEmpty());
     // Frame MultiEdit
@@ -5193,8 +5257,10 @@ void ctedit::setSectionArea(int nRow)
         nIndex = regRetentive;
     else if (nRow >= (MIN_NONRETENTIVE - 1) && nRow <= (MAX_NONRETENTIVE - 1))
         nIndex = regNonRetentive;
-    else if (nRow >= (MIN_DIAG - 1) && nRow <= (MAX_NODE - 1))
+    else if (nRow >= (MIN_DIAG - 1) && nRow < (MIN_NODE - 1))
         nIndex = regDiagnostic;
+    else if (nRow >= (MIN_NODE - 1) && nRow < (MAX_NODE - 1))
+        nIndex = regNodes;
     else if (nRow >= (MIN_LOCALIO - 1) && nRow <= (MAX_LOCALIO - 1))
         nIndex = regLocalIO;
     else if (nRow >= (MIN_SYSTEM - 1) && nRow <= (DimCrossTable - 1))
@@ -5219,6 +5285,8 @@ void ctedit::on_cboSections_currentIndexChanged(int index)
         nRow = MIN_NONRETENTIVE - 1;
     else if (index == regDiagnostic)
         nRow = MIN_DIAG - 1;
+    else if (index == regNodes)
+        nRow = MIN_NODE - 1;
     else if (index == regLocalIO)
         nRow = MIN_LOCALIO - 1;
     else if (index == regSystem)
@@ -6779,6 +6847,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     qDebug() << QLatin1String("checkServersDevicesAndNodes(): ERROR: too many Servers");
                     fRes = false;
                 } else {
+                    // Add New Device
                     QString szDeviceName;
                     QString szIpAddr;
                     // new device entry
@@ -6799,9 +6868,7 @@ bool ctedit::checkServersDevicesAndNodes()
                         theDevices[nDev].nMaxBlockSize = MAXBLOCKSIZE;
                         break;
                     case RTU:
-                        szDeviceName.append(QString::number(theDevices[nDev].nPort));
-                        // Aggiunge al Nome Device anche le info Baud Rate
-                        szDeviceName.append(QString::fromAscii("\t%1") .arg(getSerialPortSpeed(theDevices[nDev].nPort)));
+                        szDeviceName.append(QString::number(theDevices[nDev].nPort).trimmed());
                         nRTUPort = theDevices[nDev].nPort;
                         if (nRTUPort >= _serial0 && nRTUPort < _serialMax)  {
                             theDevices[nDev].nMaxBlockSize = panelConfig.serialPorts[nRTUPort].BlockSize;
@@ -6818,7 +6885,7 @@ bool ctedit::checkServersDevicesAndNodes()
                         theDevices[nDev].nTimeOut = 0;
                         break;
                     case TCP:
-                        szDeviceName.append(QString::number(theTcpDevicesNumber));
+                        szDeviceName.append(QString::number(theTcpDevicesNumber).trimmed());
                         ++theTcpDevicesNumber;
                         theDevices[nDev].szIpAddress = szIpAddr;
                         theDevices[nDev].nMaxBlockSize = panelConfig.tpcPort.BlockSize;
@@ -6832,7 +6899,8 @@ bool ctedit::checkServersDevicesAndNodes()
                         theDevices[nDev].nTimeOut = panelConfig.tpcPort.TimeOut;
                         break;
                     case CANOPEN:
-                        szDeviceName.append(QString::number(theDevices[nDev].nPort));
+                        szDeviceName = QLatin1String("CAN");
+                        szDeviceName.append(QString::number(theDevices[nDev].nPort).trimmed());
                         nCANPort = theDevices[nDev].nPort;
                         if (nCANPort >= 0 && nCANPort < _canMax)  {
                             theDevices[nDev].nMaxBlockSize = panelConfig.canPorts[nCANPort].BlockSize;
@@ -6844,8 +6912,6 @@ bool ctedit::checkServersDevicesAndNodes()
                     case RTU_SRV:
                         szDeviceName = QLatin1String("RTU");
                         szDeviceName.append(QString::number(theDevices[nDev].nPort));
-                        // Aggiunge al Nome Device anche le info Baud Rate
-                        szDeviceName.append(QString::fromAscii("\t%1") .arg(getSerialPortSpeed(theDevices[nDev].nPort)));
                         theDevices[nDev].nServer = nSer; // searched before
                         nRTUPort = theDevices[nDev].nPort;
                         if (nRTUPort >= _serial0 && nRTUPort < _serialMax)  {
@@ -6857,8 +6923,10 @@ bool ctedit::checkServersDevicesAndNodes()
                             theDevices[nDev].nStopBits = panelConfig.serialPorts[nRTUPort].StopBits;
                         }
                         break;
-                    case TCP_SRV:
                     case TCPRTU_SRV:
+                        szDeviceName = QLatin1String("TCRTU_S");        // Fake Device Name, TCPRTU_SRV has no Diagniostic Vars
+                        // no break;
+                    case TCP_SRV:
                         szDeviceName = QLatin1String("TCPS");
                         theDevices[nDev].szIpAddress = szIpAddr;
                         theDevices[nDev].nServer = nSer; // searched before
@@ -6875,7 +6943,7 @@ bool ctedit::checkServersDevicesAndNodes()
                     szDiagName.append(QLatin1String("_STATUS"));
                     nDiag = varName2Row(szDiagName, lstCTRecords);
                     if (nDiag >= 0)  {
-                        theDevices[nDev].diagnosticAddr = nDiag + 1;
+                        theDevices[nDev].diagnosticAddr = nDiag;
                         theDevices[nDev].diagnosticVarName = szDiagName;
                     }
                     // Calcolo del Char Time in ms
@@ -6924,13 +6992,13 @@ bool ctedit::checkServersDevicesAndNodes()
                         // NODE_XX_DEV_NODE
                         if (! lstCTRecords[nDiag].UsedEntry) {
                             QString szDiagNode = QString::fromLatin1("NODE_%1_DEV_NODE") .arg(szPaddedNum);
-                            fRes = insertRowInCT(lstCTRecords, nDiag, nPriorityHigh, Ptype, szDiagNode, UDINT, 0,
+                            fRes = insertRowInCT(ui->tblCT, lstCTRecords, nDiag, nPriorityHigh, Ptype, szDiagNode, UDINT, 0,
                                                  PLC, nBaseBlock, 2, behavior_readwrite);
                             nDiag++;
                         }
                         // NODE_XX_STATUS
                         if (fRes && ! lstCTRecords[nDiag].UsedEntry)  {
-                            fRes = insertRowInCT(lstCTRecords, nDiag, nPriorityHigh, Ptype, szDiagName, UDINT, 0,
+                            fRes = insertRowInCT(ui->tblCT, lstCTRecords, nDiag, nPriorityHigh, Ptype, szDiagName, UDINT, 0,
                                                  PLC, nBaseBlock, 2, behavior_readwrite);
                         }
                         // check Insertion result
@@ -6942,6 +7010,15 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (nDiag >= 0)  {
                         theNodes[nNod].diagnosticAddr = nDiag;
                         theNodes[nNod].diagnosticVarName = szDiagName;
+                        // Nodo eventualmente disabilitato --> Riaccende Nodo
+                        if (lstCTRecords[nDiag - 1].Enable == nPriorityNone)  {
+                            lstCTRecords[nDiag - 1].Enable = nPriorityHigh;
+                            ui->tblCT->item(nDiag - 1, colPriority)->setText(QString::number(nPriorityHigh));
+                        }
+                        if (lstCTRecords[nDiag].Enable == nPriorityNone)  {
+                            lstCTRecords[nDiag].Enable = nPriorityHigh;
+                            ui->tblCT->item(nDiag, colPriority)->setText(QString::number(nPriorityHigh));
+                        }
                     }
                     else  {
                         qDebug() << QLatin1String("checkServersDevicesAndNodes(): ERROR: too many Nodes or Diag Var already used");
@@ -7151,18 +7228,19 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     int             nProtocol = theDevices[nDevice].nProtocol;
     int             nTotalReadTime = 0;
     bool            fDeviceOk = true;
-    bool            fIgnoreTimings = false;
+    bool            fIgnoreTimings = true;
     bool            deviceTimingsOk = true;
 
     if (nDevice < 0)  {
         szName = QString::fromLatin1("PLC");
         szInfo = QString::fromAscii("Total Variables: %1") .arg(thePlcVarsNumber);
+        nProtocol = PLC;
     }
     else if (nDevice >= 0 && nDevice < theDevicesNumber)  {
         // Colonna Nome
         szName = theDevices[nDevice].szDeviceName;
         // Colonna Info
-        szInfo = QString::fromAscii("Device Variables: %1 - ") .arg(theDevices[nDevice].nVars, 10, 10);
+        szInfo.append(QString::fromAscii("Device Variables: %1 - ") .arg(theDevices[nDevice].nVars, 10, 10));
         szInfo.append(QString::fromAscii("Max Block Size: %1 - ").arg(theDevices[nDevice].nMaxBlockSize, 6, 10));
         // IP Address Info
         if (! theDevices[nDevice].szIpAddress.isEmpty() && (theDevices[nDevice].nProtocol == TCP || theDevices[nDevice].nProtocol == TCPRTU))  {
@@ -7188,6 +7266,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
                 fIgnoreTimings = true;
             }
             else  {
+                fIgnoreTimings = false;
                 // Min Silence
                 szInfo.append(QString::fromAscii(" - Min.Silence: %1 ms - ") .arg(theDevices[nDevice].dMinSilence));
                 // Silence Checking
@@ -7202,15 +7281,21 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
             }
         }
         // ToolTip
-        szToolTip.append(QString::fromAscii("Device ID:\t%1\n") .arg(nDevice, 8, 10));
+        szToolTip.append(QString::fromAscii("Device ID:\t\t%1\n") .arg(nDevice, 8, 10));
         szToolTip.append(QString::fromAscii("Protocol:\t%1\n") .arg(lstProtocol[theDevices[nDevice].nProtocol]));
         if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
             szToolTip.append(QString::fromAscii("Ip Address:\t%1\n") .arg(theDevices[nDevice].szIpAddress));
         }
         szToolTip.append(QString::fromAscii("Port:\t%1\n") .arg(theDevices[nDevice].nPort));
+        // Baud Rate
+        if (nProtocol == RTU || nProtocol == RTU_SRV)  {
+            szToolTip.append(QString::fromAscii("Port Speed:\t[%1]\n") .arg(getSerialPortSpeed(theDevices[nDevice].nPort)));
+        }
         szToolTip.append(QString::fromAscii("Device Variables:\t%1\n") .arg(theDevices[nDevice].nVars, 8, 10));
-        szToolTip.append(QString::fromAscii("Diag Variable Id:\t%1\n") .arg(theDevices[nDevice].diagnosticAddr, 8, 10));
-        szToolTip.append(QString::fromAscii("Diag Variable Name:\t%1") .arg(theDevices[nDevice].diagnosticVarName, -60));
+        if (theDevices[nDevice].diagnosticAddr >= MIN_DIAG -1 && theDevices[nDevice].diagnosticAddr < 5299)  {
+            szToolTip.append(QString::fromAscii("Diag Variable Id:\t%1\n") .arg(theDevices[nDevice].diagnosticAddr + 1, 8, 10));
+            szToolTip.append(QString::fromAscii("Diag Variable Name:\t%1") .arg(theDevices[nDevice].diagnosticVarName, -60));
+        }
     }
     else  {
         szName = QLatin1String("UNDEFINED");
@@ -7233,7 +7318,9 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     // Adding Device Item to tree
     tCurrentDevice = addItem2Tree(tParent, treeDevice, szName, szInfo, szTimings, szToolTip);
     // No PLC Vars
-    if (nDevice >= 0 && not fIgnoreTimings)  {
+    qDebug("addDevice2Tree Name: [%s] nDevice:%d nProtocol:%d IgnoreTiming:%d", szName.toLatin1().data(), nDevice, nProtocol, fIgnoreTimings);
+    if (nProtocol != PLC && (! fIgnoreTimings))  {
+        // Info Device
         if (fDeviceOk)  {
             tCurrentDevice->setForeground(colTreeInfo, brushGreen);
         }

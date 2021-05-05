@@ -36,6 +36,10 @@ extern bool        isSerialPortEnabled; // Vero se almeno una porta seriale è a
 extern int         nPresentSerialPorts; // Numero di porte Seriali utilizzabili a bordo
 extern TP_Config   panelConfig;         // Configurazione corrente del Target letta da Form mectSettings
 
+// Variabili di diagnostica dei Bus
+extern QStringList lstSerialBusVars;                   // Lista delle variabili di diagnostica per i BUS Seriali (RTUx e CANOPENx)
+extern QStringList lstTCPBusVars;                      // Lista delle variabili di diagnostica per i BUS TCP (TCPS e TPCx)
+
 // Crosstable Records
 extern QList<CrossTableRecord> lstCTRecords;    // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE)
 extern QList<CrossTableRecord> lstTemplateRecs; // Lista completa di Record da Template (per confronto con CT)
@@ -81,7 +85,7 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
 bool    isAlarm(QList<CrossTableRecord> &CTRecords, int nItem);
 bool    isEvent(QList<CrossTableRecord> &CTRecords, int nItem);
 bool    canInsertRows(QList<CrossTableRecord> &CTRecords, int nPos, int nRows2Insert);
-bool    insertRowInCT(QList<CrossTableRecord> &CTRecords, int nRow, int nPriority, UpdateType nUpdate, QString &szVarName, varTypes nType, int nDecimals, FieldbusType nProtocol, int nBlock, int nSize, int nBehavior);
+bool    insertRowInCT(QTableWidget *table, QList<CrossTableRecord> &CTRecords, int nRow, int nPriority, UpdateType nUpdate, QString &szVarName, varTypes nType, int nDecimals, FieldbusType nProtocol, int nBlock, int nSize, int nBehavior);
 
 QString priority2String(int nPriority);     // Formattazione stringa per nome priorità
 int     priority2ReadTime(int nPriority);   // Restituisce il Read Period in funzione della priorità

@@ -10,12 +10,19 @@
 #define MAX_RETENTIVE 192
 #define MIN_NONRETENTIVE 193
 #define MAX_NONRETENTIVE 4999
-#define MIN_DIAG 5000
-#define MAX_DIAG 5171
-#define MIN_NODE 5172
-#define MAX_NODE 5299
-#define MIN_SYSTEM  5390
-#define COMMANDLINE 2048
+#define MIN_DIAG                5000
+#define MAX_DIAG                5171
+#define MIN_NODE                5172
+#define MAX_NODE                5299
+#define RTU0_STATUS             5000
+#define CAN0_STATUS             5030
+#define TCP_SERVER_STATUS       5050
+#define TCP0_STATUS             5060
+#define MIN_SYSTEM              5390
+#define COMMANDLINE             2048
+#define DIAG_VAR_POS            2
+#define DIAG_VAR_SIZE           10
+
 #define MAX_TCPSRV_REGS 4095
 
 // Int Constants
@@ -172,6 +179,7 @@ enum regions_e
     regRetentive = 0,
     regNonRetentive,
     regDiagnostic,
+    regNodes,
     regLocalIO,
     regSystem,
     regTotals

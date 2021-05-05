@@ -50,6 +50,7 @@
         <file>img/Checked_32.png</file>
         <file>img/Unchecked_32.png</file>
         <file>img/Checked_32_Disabled.png</file>
+        <file>img/Nodes_64.png</file>
     </qresource>
     <qresource prefix="/ctecsv">
         <file>others/lang_table.csv</file>
