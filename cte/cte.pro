@@ -41,7 +41,7 @@ FORMS += \
     queryportnode.ui \
     searchvariable.ui
 
-ATCM_VERSION = 3.3.6
+ATCM_VERSION = 3.3.7
 
 # Qt Creator linking
 
