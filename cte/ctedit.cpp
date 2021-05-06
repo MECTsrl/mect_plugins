@@ -6945,6 +6945,17 @@ bool ctedit::checkServersDevicesAndNodes()
                     if (nDiag >= 0)  {
                         theDevices[nDev].diagnosticAddr = nDiag;
                         theDevices[nDev].diagnosticVarName = szDiagName;
+                        // Restarting the device Diagnostic variables if needed
+                        if (lstCTRecords[nDiag].Enable == nPriorityNone)  {
+                            for (int nVar = nDiag - 2; nVar < nDiag -2 + lstTCPBusVars.count(); nVar++)  {
+                                QStringList lstFields;
+                                lstCTRecords[nVar].Enable = nPriorityHigh;
+                                recCT2FieldsValues(lstCTRecords, lstFields, nVar);
+                                list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nVar);
+                                qDebug("Enabling Device Diagnostic Var: [%s] @Row: [%d]", lstCTRecords[nVar].Tag, nVar + 1);
+                            }
+                        }
+
                     }
                     // Calcolo del Char Time in ms
                     if (theDevices[nDev].nProtocol == RTU || theDevices[nDev].nProtocol == RTU_SRV)  {
@@ -7008,16 +7019,19 @@ bool ctedit::checkServersDevicesAndNodes()
                     }
                     // Esito di Ricerca o inserzione
                     if (nDiag >= 0)  {
+                        QStringList lstFields;
                         theNodes[nNod].diagnosticAddr = nDiag;
                         theNodes[nNod].diagnosticVarName = szDiagName;
-                        // Nodo eventualmente disabilitato --> Riaccende Nodo
+                        // Node disabled ---> Turn Node back on
                         if (lstCTRecords[nDiag - 1].Enable == nPriorityNone)  {
                             lstCTRecords[nDiag - 1].Enable = nPriorityHigh;
-                            ui->tblCT->item(nDiag - 1, colPriority)->setText(QString::number(nPriorityHigh));
+                            recCT2FieldsValues(lstCTRecords, lstFields, nDiag - 1);
+                            list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nDiag - 1);
                         }
                         if (lstCTRecords[nDiag].Enable == nPriorityNone)  {
                             lstCTRecords[nDiag].Enable = nPriorityHigh;
-                            ui->tblCT->item(nDiag, colPriority)->setText(QString::number(nPriorityHigh));
+                            recCT2FieldsValues(lstCTRecords, lstFields, nDiag);
+                            list2GridRow(ui->tblCT, lstFields, lstHeadLeftCols, nDiag);
                         }
                     }
                     else  {
@@ -7318,7 +7332,7 @@ QTreeWidgetItem *ctedit::addDevice2Tree(QTreeWidgetItem *tParent, int nDevice)
     // Adding Device Item to tree
     tCurrentDevice = addItem2Tree(tParent, treeDevice, szName, szInfo, szTimings, szToolTip);
     // No PLC Vars
-    qDebug("addDevice2Tree Name: [%s] nDevice:%d nProtocol:%d IgnoreTiming:%d", szName.toLatin1().data(), nDevice, nProtocol, fIgnoreTimings);
+    // qDebug("addDevice2Tree Name: [%s] nDevice:%d nProtocol:%d IgnoreTiming:%d", szName.toLatin1().data(), nDevice, nProtocol, fIgnoreTimings);
     if (nProtocol != PLC && (! fIgnoreTimings))  {
         // Info Device
         if (fDeviceOk)  {

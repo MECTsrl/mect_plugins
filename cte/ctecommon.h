@@ -14,6 +14,7 @@
 #define MAX_DIAG                5171
 #define MIN_NODE                5172
 #define MAX_NODE                5299
+#define MAX_TCP_DEVICES           10
 #define RTU0_STATUS             5000
 #define CAN0_STATUS             5030
 #define TCP_SERVER_STATUS       5050
