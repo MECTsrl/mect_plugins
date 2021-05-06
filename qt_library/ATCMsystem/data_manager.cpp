@@ -193,3 +193,13 @@ void data_manager::on_pushButtonLogStop_clicked()
 {
     logStop();
 }
+
+void data_manager::on_pushButtonReboot_clicked()
+{
+    system("reboot");
+}
+
+void data_manager::on_pushButtonReload_clicked()
+{
+    system("/etc/rc.d/init.d/autoexec restart");
+}
