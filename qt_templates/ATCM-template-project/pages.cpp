@@ -13,6 +13,7 @@
 #include "global_var.h"
 #include "utility.h"
 #include "pages.h"
+#include <QFile>
 
 void printVncDisplayString(char * vncString)
 {
