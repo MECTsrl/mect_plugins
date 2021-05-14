@@ -140,7 +140,7 @@ void system_ini::reload()
         ui->comboBox_Baudrate_SERIAL_PORT_0->setCurrentIndex(index);
     }
     else  {
-        // Disable all Tab
+        // Disable whole tab
         ui->tabWidget->setTabEnabled(1, false);
     }
 
@@ -197,7 +197,7 @@ void system_ini::reload()
         ui->comboBox_Baudrate_SERIAL_PORT_1->setCurrentIndex(index);
     }
     else  {
-        // Disable all Tab
+        // Disable whole tab
         ui->tabWidget->setTabEnabled(2, false);
     }
 
@@ -254,7 +254,7 @@ void system_ini::reload()
         ui->comboBox_Baudrate_SERIAL_PORT_2->setCurrentIndex(index);
     }
     else  {
-        // Disable all Tab
+        // Disable whole tab
         ui->tabWidget->setTabEnabled(3, false);
     }
 
@@ -311,7 +311,7 @@ void system_ini::reload()
         ui->comboBox_Baudrate_SERIAL_PORT_3->setCurrentIndex(index);
     }
     else  {
-        // Disable all Tab
+        // Disable whole tab
         ui->tabWidget->setTabEnabled(4, false);
     }
 
@@ -325,10 +325,6 @@ void system_ini::reload()
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'databits' parameter for SERIAL_PORT_3 have an invalid value: %1. it will be set it as %2.").arg(value).arg(ui->comboBox_Databits_SERIAL_PORT_3->itemText(index)));
         }
         ui->comboBox_Databits_SERIAL_PORT_3->setCurrentIndex(index);
-    }
-    else  {
-        // Disable all Tab
-        ui->tabWidget->setTabEnabled(1, false);
     }
 
     value = settings.value("SERIAL_PORT_3/parity").toString();
@@ -379,7 +375,7 @@ void system_ini::reload()
         ui->lineEdit_MaxBlockSize_CANOPEN_0->setEnabled(false);
     }
     else  {
-        // Disable all Tab
+        // Disable whole tab
         ui->tabWidget->setTabEnabled(6, false);
     }
 
@@ -397,7 +393,7 @@ void system_ini::reload()
         ui->lineEdit_MaxBlockSize_CANOPEN_1->setEnabled(false);
     }
     else  {
-        // Disable all Tab
+        // Disable whole tab
         ui->tabWidget->setTabEnabled(7, false);
     }
 }
