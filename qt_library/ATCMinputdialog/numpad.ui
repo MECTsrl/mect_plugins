@@ -197,46 +197,91 @@
     </layout>
    </item>
    <item>
-    <widget class="QLineEdit" name="lineEditVal">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>100</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>40</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>DejaVu Sans Mono</family>
-      </font>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="echoMode">
-      <enum>QLineEdit::Normal</enum>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLineEdit" name="lineEditVal">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>DejaVu Sans Mono</family>
+        </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="echoMode">
+        <enum>QLineEdit::Normal</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonPassword">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>60</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	border: 2px solid  rgb(94, 94, 94);
+	border-radius: 8px;
+	image-position: center; 
+	image: url(:/libicons/img/eye_invisible_32.png); 
+	qproperty-focusPolicy: NoFocus;
+}
+
+QPushButton:checked
+{
+	image: url(:/libicons/img/eye_visible_32.png);
+}
+</string>
+       </property>
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
@@ -266,7 +311,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -297,7 +342,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -337,7 +382,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -377,7 +422,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -472,7 +517,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -503,7 +548,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -592,7 +637,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -632,7 +677,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -675,7 +720,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -761,7 +806,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -801,7 +846,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -841,7 +886,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -888,7 +933,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -928,7 +973,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -968,7 +1013,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -1008,7 +1053,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -1048,7 +1093,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>
@@ -1088,7 +1133,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>26</pointsize>
+         <pointsize>20</pointsize>
          <weight>50</weight>
          <italic>false</italic>
          <bold>false</bold>

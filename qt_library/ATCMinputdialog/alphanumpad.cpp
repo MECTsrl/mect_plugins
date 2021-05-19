@@ -23,7 +23,7 @@
     mystyle.append("background-color: rgb(255,255,255);"); \
     mystyle.append("color: rgb(0, 0, 0);"); \
     mystyle.append("background-repeat: no-repeat;"); \
-    mystyle.append("font: 12pt \"DejaVu Sans Mono\";"); \
+    mystyle.append("font: 30pt \"DejaVu Sans Mono\";"); \
     mystyle.append("}"); \
     mystyle.append("QMessageBox"); \
     mystyle.append("{"); \
@@ -39,37 +39,12 @@
     mystyle.append("background-color: rgb(255, 255, 255);"); \
     mystyle.append("color: rgb(81, 81, 81);"); \
     mystyle.append("background-repeat: no-repeat;"); \
-    mystyle.append("font: 26pt \"DejaVu Sans Mono\";"); \
+    mystyle.append("font: 22pt \"DejaVu Sans Mono\";"); \
     mystyle.append("}"); \
     mystyle.append("QPushButton:pressed"); \
     mystyle.append("{"); \
     mystyle.append("border: 2px solid  rgb(194, 194, 194);"); \
     mystyle.append("background-color:  rgb(255, 255, 127);"); \
-    mystyle.append("}"); \
-    mystyle.append("QLabel#labelMax"); \
-    mystyle.append("{"); \
-    mystyle.append("    font: 12pt \"DejaVu Sans Mono\";"); \
-    mystyle.append("    color: rgb(255,255,255);"); \
-    mystyle.append("}"); \
-    mystyle.append(""); \
-    mystyle.append("QLineEdit#lineEditMax"); \
-    mystyle.append("{"); \
-    mystyle.append("    color: rgb(255,0,0);"); \
-    mystyle.append("}"); \
-    mystyle.append(""); \
-    mystyle.append("QLabel#labelMin"); \
-    mystyle.append("{"); \
-    mystyle.append("    font: 12pt \"DejaVu Sans Mono\";"); \
-    mystyle.append("    color: rgb(255,255,255);"); \
-    mystyle.append("}"); \
-    mystyle.append(""); \
-    mystyle.append("QLineEdit#lineEditMin"); \
-    mystyle.append("{"); \
-    mystyle.append("    color: rgb(255,0,0);"); \
-    mystyle.append("}"); \
-    mystyle.append("QLineEdit#lineEditVal"); \
-    mystyle.append("{"); \
-    mystyle.append("    font: 32pt \"DejaVu Sans Mono\";"); \
     mystyle.append("}"); \
     this->setStyleSheet(mystyle); \
     }
@@ -85,13 +60,16 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
 
     _value = value;
 
+    ui->pushButtonPassword->setChecked(false);
     if (password)
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Password);
+        ui->pushButtonPassword->setVisible(true);
     }
     else
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+        ui->pushButtonPassword->setVisible(false);
         if (def != NULL)
         {
             ui->lineEditVal->setText(def);
@@ -117,14 +95,16 @@ alphanumpad::alphanumpad(char* value, bool showSpecialChars, char* def, bool pas
 
     // Abilitazione del bottone per visualizzare i caratteri speciali
     ui->showSymbols->setVisible(showSpecialChars);
-
+    ui->pushButtonPassword->setChecked(false);
     if (password)
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Password);
+        ui->pushButtonPassword->setVisible(true);
     }
     else
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+        ui->pushButtonPassword->setVisible(false);
         if (def != NULL)
         {
             ui->lineEditVal->setText(def);
@@ -603,4 +583,14 @@ void alphanumpad::on_pushButtonBacktick_clicked()
 void alphanumpad::on_pushButtonDoubleQuote_clicked()
 {
     ui->lineEditVal->insert(QString(QChar::fromAscii(34)));
+}
+
+void alphanumpad::on_pushButtonPassword_clicked(bool checked)
+{
+    if (checked)  {
+        ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+    }
+    else  {
+        ui->lineEditVal->setEchoMode(QLineEdit::Password);
+    }
 }

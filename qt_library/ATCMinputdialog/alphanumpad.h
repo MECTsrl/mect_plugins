@@ -84,61 +84,35 @@ private slots:
     void on_pushButtonDot_clicked();
     void on_pushButtonMinus_clicked();
     void on_pushButtonPlus_clicked();
-
     void on_pushButtonColon_clicked();
-
     void on_pushButtonAsterisk_clicked();
-
     void on_pushButtonEquals_clicked();
-
-
     void on_pushButtonDollar_clicked();
-
     void on_pushButtonCaret_clicked();
-
     void on_pushButtonPipe_clicked();
-
     void on_pushButtonSemicolon_clicked();
-
     void on_pushButtonQuestionMark_clicked();
-
     void on_pushButtonExclamationMark_clicked();
-
     void on_pushButtonAtSign_clicked();
-
     void on_pushButtonPercent_clicked();
-
     void on_pushButtonLessThan_clicked();
-
     void on_pushButtonMoreThan_clicked();
-
     void on_pushButtonHash_clicked();
-
     void on_pushButtonAmpersand_clicked();
-
     void on_pushButtonSlash_clicked();
-
     void on_pushButtonComma_clicked();
-
     void on_pushButtonBackSlash_clicked();
-
     void on_pushButtonOpenGraph_clicked();
-
     void on_pushButtonCloseGraph_clicked();
-
     void on_pushButtonOpenSquare_clicked();
-
     void on_pushButtonCloseSquare_clicked();
-
     void on_pushButtonOpenBracket_clicked();
-
     void on_pushButtonCloseBracket_clicked();
-
     void on_pushButtonTilde_clicked();
-
     void on_pushButtonBacktick_clicked();
-
     void on_pushButtonDoubleQuote_clicked();
+
+    void on_pushButtonPassword_clicked(bool checked);
 
 private:
     Ui::alphanumpad *ui;

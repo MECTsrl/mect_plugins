@@ -241,5 +241,7 @@
         <file>img/Yellow_tag.png</file>
         <file>img/Yes.png</file>
         <file>img/Zoom.png</file>
+        <file>img/eye_invisible_32.png</file>
+        <file>img/eye_visible_32.png</file>
     </qresource>
 </RCC>

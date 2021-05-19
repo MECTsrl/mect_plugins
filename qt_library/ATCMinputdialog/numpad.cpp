@@ -44,7 +44,7 @@
     mystyle.append("background-color: rgb(255, 255, 255);"); \
     mystyle.append("color: rgb(81, 81, 81);"); \
     mystyle.append("background-repeat: no-repeat;"); \
-    mystyle.append("font: 26pt \""FONT_TYPE"\";"); \
+    mystyle.append("font: 20pt \""FONT_TYPE"\";"); \
     mystyle.append("}"); \
     mystyle.append("QPushButton:pressed"); \
     mystyle.append("{"); \
@@ -74,7 +74,7 @@
     mystyle.append("}"); \
     mystyle.append("QLineEdit#lineEditVal"); \
     mystyle.append("{"); \
-    mystyle.append("    font: 32pt \""FONT_TYPE"\";"); \
+    mystyle.append("    font: 30pt \""FONT_TYPE"\";"); \
     mystyle.append("    color: rgb(0,0,0);"); \
     mystyle.append("}"); \
     this->setStyleSheet(mystyle); \
@@ -109,9 +109,11 @@ numpad::numpad(float* value, float def, int decimal, float min, float max, bool 
     _minf = 0;
     _maxf = 0;
 
+    ui->pushButtonPassword->setChecked(false);
     if (password)
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Password);
+        ui->pushButtonPassword->setVisible(true);
         _minf = 0;
         _maxf = 0;
         _valuef = value;
@@ -120,6 +122,7 @@ numpad::numpad(float* value, float def, int decimal, float min, float max, bool 
     else
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+        ui->pushButtonPassword->setVisible(false);
         _minf = min;
         _maxf = max;
         _valuef = value;
@@ -172,9 +175,11 @@ numpad::numpad(int* value, int def, int min, int max, enum input_fmt_e fmt, bool
     _minf = 0;
     _maxf = 0;
 
+    ui->pushButtonPassword->setChecked(false);
     if (password)
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Password);
+        ui->pushButtonPassword->setVisible(true);
         _mini = 0;
         _maxi = 0;
         _valuei = value;
@@ -183,6 +188,7 @@ numpad::numpad(int* value, int def, int min, int max, enum input_fmt_e fmt, bool
     else
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+        ui->pushButtonPassword->setVisible(false);
         _mini = min;
         _maxi = max;
         _valuei = value;
@@ -236,9 +242,11 @@ numpad::numpad(unsigned * value, unsigned  def, unsigned  min, unsigned  max, en
     _minf = 0;
     _maxf = 0;
 
+    ui->pushButtonPassword->setChecked(false);
     if (password)
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Password);
+        ui->pushButtonPassword->setVisible(true);
         _minuint = 0;
         _maxuint = 0;
         _valueuint = value;
@@ -247,6 +255,7 @@ numpad::numpad(unsigned * value, unsigned  def, unsigned  min, unsigned  max, en
     else
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+        ui->pushButtonPassword->setVisible(false);
         _minuint = min;
         _maxuint = max;
         _valueuint = value;
@@ -287,9 +296,11 @@ numpad::numpad(char* value, char* def, char* min, char* max, bool password, QWid
     _minf = 0;
     _maxf = 0;
 
+    ui->pushButtonPassword->setChecked(false);
     if (password)
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Password);
+        ui->pushButtonPassword->setVisible(true);
         if (min == NULL)
         {
             strcpy(_mins, "");
@@ -321,6 +332,7 @@ numpad::numpad(char* value, char* def, char* min, char* max, bool password, QWid
     else
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+        ui->pushButtonPassword->setVisible(false);
         if (min == NULL)
         {
             strcpy(_mins, "");
@@ -626,3 +638,14 @@ void numpad::on_pushButtonF_clicked()
 {
     ui->lineEditVal->insert("F");
 }
+
+void numpad::on_pushButtonPassword_clicked(bool checked)
+{
+    if (checked)  {
+        ui->lineEditVal->setEchoMode(QLineEdit::Normal);
+    }
+    else  {
+        ui->lineEditVal->setEchoMode(QLineEdit::Password);
+    }
+}
+

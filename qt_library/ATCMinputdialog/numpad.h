@@ -73,6 +73,7 @@ private slots:
     void on_pushButtonD_clicked();
     void on_pushButtonE_clicked();
     void on_pushButtonF_clicked();
+    void on_pushButtonPassword_clicked(bool checked);
 
 private:
     Ui::numpad *ui;
