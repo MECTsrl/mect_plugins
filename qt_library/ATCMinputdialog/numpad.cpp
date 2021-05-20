@@ -377,6 +377,7 @@ numpad::numpad(char*  value, int type, char* def, QWidget *parent) :
 
     inputtype = type;
 
+    ui->pushButtonPassword->setVisible(false);
     if (inputtype == DIALNB)
     {
         ui->pushButtonMinus->setText("*");
