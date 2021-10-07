@@ -352,7 +352,6 @@ static int newAlarmEvent(int isAlarm, uint16_t addr, char *expr, size_t len)
         else  {
             // Trying to convert string in float
             f = strtof(p, &s);
-            fprintf(stderr, "Row %d - Fixed Alarm Value:%f\n", addr, f);
             if (s == p) {
                 // Error in Conversion, maybe identifier (check later on)
                 strncpy(ALCrossTable[lastAlarmEvent].ALCompareVar, p, MAX_IDNAME_LEN);
@@ -363,6 +362,7 @@ static int newAlarmEvent(int isAlarm, uint16_t addr, char *expr, size_t len)
                 ALCrossTable[lastAlarmEvent].ALCompareVal = f;
             }
         }
+        fprintf(stderr, "Alarm/Event Expr. @Row %d - f:[%0.4f] ALCompareVar:[%s] ALCompareVal:[%0.4f]\n", addr, f, ALCrossTable[lastAlarmEvent].ALCompareVar, ALCrossTable[lastAlarmEvent].ALCompareVal);
         // fprintf(stderr, "Voice:%d - Compare Value: %s Estimated Value: %f Compare Var: %s\n", addr, p, f, ALCrossTable[lastAlarmEvent].ALCompareVar);
     }
     return 0;
@@ -737,23 +737,23 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
     }
 
     // check alarms and events
-    fprintf(stderr, "\nalarms/events:\n");
+    fprintf(stderr, "\nalarms/events: [%d]\n", lastAlarmEvent);
     for (indx = 1; indx <= lastAlarmEvent; ++indx) {
         float fvalue = 0;
         int compatible = TRUE;
         // retrieve the source variable address (Name ---> Pos)
-        addr = tagAddr(ALCrossTable[indx].ALSource, CrossTable);
-        if (addr == 0) {
+        int leftAddr = tagAddr(ALCrossTable[indx].ALSource, CrossTable);
+        if (leftAddr == 0) {
             ERR = TRUE;
             break;
         }
-        ALCrossTable[indx].SourceAddr = addr;
-        CrossTable[addr].usedInAlarmsEvents = TRUE;
-        fprintf(stderr, "\t%2d: %s", indx, CrossTable[ALCrossTable[indx].TagAddr].Tag);
-        fprintf(stderr, " = %s", CrossTable[ALCrossTable[indx].SourceAddr].Tag);
+        ALCrossTable[indx].SourceAddr = leftAddr;
+        CrossTable[leftAddr].usedInAlarmsEvents = TRUE;
+        fprintf(stderr, "\t%2d: @%d - %s", indx, ALCrossTable[indx].TagAddr, CrossTable[ALCrossTable[indx].TagAddr].Tag);
+        fprintf(stderr, "\tCondition: [%s", CrossTable[leftAddr].Tag);
 
         // which comparison?
-        switch (CrossTable[addr].VarType) {
+        switch (CrossTable[leftAddr].VarType) {
             case BIT:
             case BYTE_BIT:
             case WORD_BIT:
@@ -790,7 +790,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
             default:
                 ; // FIXME: assert
         }
-
+        // Operatore di confronto trovato
         switch (ALCrossTable[indx].ALOperator)  {
             case oper_greater       : fprintf(stderr, " %s", logic_operators[oper_greater]); break;
             case oper_greater_eq    : fprintf(stderr, " %s", logic_operators[oper_greater_eq]); break;
@@ -802,29 +802,29 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
             case oper_falling       : fprintf(stderr, " %s", logic_operators[oper_falling]); break;
             default             : ;
         }
-
-        if (ALCrossTable[lastAlarmEvent].ALOperator != oper_falling
-            && ALCrossTable[lastAlarmEvent].ALOperator != oper_rising) {
+        // Tutti i casi in cui controllare il lato Destro dell'espressione
+        if (ALCrossTable[indx].ALOperator != oper_falling  &&
+            ALCrossTable[indx].ALOperator != oper_rising) {
             // if the comparison is with a variable
-            if (ALCrossTable[indx].ALCompareVar[0] != 0) {
+            if (strlen(ALCrossTable[indx].ALCompareVar))  {
                 // then retrieve the compare variable address
-                addr = tagAddr(ALCrossTable[indx].ALCompareVar, CrossTable);
-                if (addr == 0) {
+                int rigthAddr = tagAddr(ALCrossTable[indx].ALCompareVar, CrossTable);
+                if (rigthAddr == 0) {
                     ERR = TRUE;
                     break;
                 }
-                ALCrossTable[indx].CompareAddr = addr;
-                CrossTable[addr].usedInAlarmsEvents = TRUE;
-                fprintf(stderr, " %s", CrossTable[addr].Tag);
+                ALCrossTable[indx].CompareAddr = rigthAddr;
+                CrossTable[rigthAddr].usedInAlarmsEvents = TRUE;
+                fprintf(stderr, " %s (@%d)", CrossTable[rigthAddr].Tag, rigthAddr);
 
                 // check for incompatibles types
-                switch (CrossTable[ALCrossTable[indx].SourceAddr].VarType) {
+                switch (CrossTable[leftAddr].VarType) {
 
                     case BIT:
                     case BYTE_BIT:
                     case WORD_BIT:
                     case DWORD_BIT:
-                        switch (CrossTable[ALCrossTable[indx].CompareAddr].VarType) {
+                        switch (CrossTable[rigthAddr].VarType) {
                             case BIT:
                             case BYTE_BIT:
                             case WORD_BIT:
@@ -865,7 +865,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                     case DINTDCBA:
                     case DINTCDAB:
                     case DINTBADC:
-                        switch (CrossTable[ALCrossTable[indx].CompareAddr].VarType) {
+                        switch (CrossTable[rigthAddr].VarType) {
                             case BIT:
                             case BYTE_BIT:
                             case WORD_BIT:
@@ -878,7 +878,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                             case DINTDCBA:
                             case DINTCDAB:
                             case DINTBADC:
-                                compatible = (CrossTable[ALCrossTable[indx].SourceAddr].Decimal == CrossTable[ALCrossTable[indx].CompareAddr].Decimal);
+                                compatible = (CrossTable[leftAddr].Decimal == CrossTable[rigthAddr].Decimal);
                                 break;
                             case UINT8:
                             case UINT16:
@@ -887,7 +887,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                             case UDINTDCBA:
                             case UDINTCDAB:
                             case UDINTBADC:
-                                // compatible = (CrossTable[ALCrossTable[indx].SourceAddr].Decimal == CrossTable[ALCrossTable[indx].CompareAddr].Decimal);
+                                // compatible = (CrossTable[leftAddr].Decimal == CrossTable[rigthAddr].Decimal);
                                 compatible = FALSE;
                                 break;
                             case REAL:
@@ -908,7 +908,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                     case UDINTDCBA:
                     case UDINTCDAB:
                     case UDINTBADC:
-                        switch (CrossTable[ALCrossTable[indx].CompareAddr].VarType) {
+                        switch (CrossTable[rigthAddr].VarType) {
                             case BIT:
                             case BYTE_BIT:
                             case WORD_BIT:
@@ -921,7 +921,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                             case DINTDCBA:
                             case DINTCDAB:
                             case DINTBADC:
-                                // compatible = (CrossTable[ALCrossTable[indx].SourceAddr].Decimal == CrossTable[ALCrossTable[indx].CompareAddr].Decimal);
+                                // compatible = (CrossTable[leftAddr].Decimal == CrossTable[rigthAddr].Decimal);
                                 compatible = FALSE;
                                 break;
                             case UINT8:
@@ -931,7 +931,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                             case UDINTDCBA:
                             case UDINTCDAB:
                             case UDINTBADC:
-                                compatible = (CrossTable[ALCrossTable[indx].SourceAddr].Decimal == CrossTable[ALCrossTable[indx].CompareAddr].Decimal);
+                                compatible = (CrossTable[leftAddr].Decimal == CrossTable[rigthAddr].Decimal);
                                 break;
                             case REAL:
                             case REALDCBA:
@@ -948,7 +948,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                     case REALDCBA:
                     case REALCDAB:
                     case REALBADC:
-                        switch (CrossTable[ALCrossTable[indx].CompareAddr].VarType) {
+                        switch (CrossTable[rigthAddr].VarType) {
                             case BIT:
                             case BYTE_BIT:
                             case WORD_BIT:
@@ -990,14 +990,15 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                     fprintf(stderr, " [WARNING: comparison between incompatible types]");
                 }
 
-            } else {
+            }
+            else {
                 // the comparison CrossTableis with a fixed value, now check for the vartype
                 // since we saved the value as float before and we wish to check
                 // directly afterwards using uint32_t values
                 // float fvalue = *(float *)&ALCrossTable[indx].ALCompareVal;
                 fvalue = ALCrossTable[indx].ALCompareVal;
-
-                switch (CrossTable[addr].VarType) {
+                fprintf(stderr, " Fixed Value: [%0.4f] ---> ", fvalue);
+                switch (CrossTable[leftAddr].VarType) {
                     case BIT:
                     case BYTE_BIT:
                     case WORD_BIT:
@@ -1016,7 +1017,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
                     case DINTDCBA:
                     case DINTCDAB:
                     case DINTBADC:
-//                        for (n = 0; n < CrossTable[addr].Decimal; ++n) {
+//                        for (n = 0; n < CrossTable[leftAddr].Decimal; ++n) {
 //                            fvalue *= 10;&
 //                        }
                         // NB this may either overflow or underflow
@@ -1032,7 +1033,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
 //                        if (fvalue <= 0) {
 //                            fvalue = 0; // why check unsigned with a negative value?
 //                        } else {
-//                            for (n = 0; n < CrossTable[addr].Decimal; ++n) {
+//                            for (n = 0; n < CrossTable[leftAddr].Decimal; ++n) {
 //                                fvalue *= 10;
 //                            }
 //                        }
@@ -1052,7 +1053,7 @@ int LoadXTable(char *crossTableFile, struct CrossTableRecord *CrossTable, int *n
             }
 
         }
-        fprintf(stderr, "\n");
+        fprintf(stderr, "]\n");
         // Saving CrossTable Alarm Values
         CrossTable[ALCrossTable[indx].TagAddr].usedInAlarmsEvents = TRUE;
         CrossTable[ALCrossTable[indx].TagAddr].ALComparison = ALCrossTable[indx].comparison;
@@ -1202,6 +1203,7 @@ int SaveXTable(char *crossTableFile, struct CrossTableRecord *CrossTable)
                         strcat(row, CrossTable[addr].ALCompareVar);
                     }
                     else  {
+                        fprintf(stderr, "Row: [%d] Compare Value: %0.4f", addr, CrossTable[addr].ALCompareVal);
                         sprintf(token, "%0.4f", CrossTable[addr].ALCompareVal);
                         strcat(row, token);
                     }
