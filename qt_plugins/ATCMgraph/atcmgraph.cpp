@@ -969,7 +969,7 @@ bool ATCMgraph::setVariable(QString variable, QString * destination, int * CtInd
         if (Tag2CtIndex(variable.trimmed().toAscii().data(), &myCtIndex) != 0)
         {
             *CtIndex = 0;
-            LOG_PRINT(error_e,"variable '%s', CtIndex %d\n", destination->toAscii().data(), *CtIndex);
+            LOG_PRINT(error_e,"variable '%s', CtIndex %d\n", variable.trimmed().toAscii().data(), *CtIndex);
             return false;
         }
         *destination = variable.trimmed();
