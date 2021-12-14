@@ -20,6 +20,10 @@
 #endif
 #include "pthread.h"
 
+#include <QString>
+#include <QFile>
+#include <QDebug>
+
 #include "main.h"
 #include "app_logprint.h"
 #include "page0.h"
@@ -153,6 +157,17 @@ int main(int argc, char *argv[])
     };
 
     QApplication app(myargc, myargv);
+
+    // Loading Application QSS
+    QFile fileQSS("/local/root/hmi.qss");
+    if (fileQSS.exists())  {
+        fileQSS.open(QFile::ReadOnly);
+        QString styleSheet = QString(fileQSS.readAll());
+        fileQSS.close();
+        app.setStyleSheet(styleSheet);
+        qDebug("Loaded hmi.qss");
+    }
+
 
     /* load the library icons */
     Q_INIT_RESOURCE(atcmicons);
