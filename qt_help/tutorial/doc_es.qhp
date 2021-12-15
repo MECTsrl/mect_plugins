@@ -179,7 +179,6 @@
 				<section title="Inserción de la tarjeta micro SD" ref="SD_card_es.html"/>
 				<section title="Activación VNC" ref="VNC_es.html"/>	
 				<section title="Configuración CAN" ref="Can_es.html"/>
-				<section title="Changelog" ref="Changelog.html"/>		
             </section>
         </toc>
         <keywords>

@@ -178,8 +178,7 @@
 				<section title="Cloner" ref="Cloner_fr.html"/>
 				<section title="Insertion de la carte micro SD" ref="SD_card_fr.html"/>
 				<section title="Activation VNC" ref="VNC_fr.html"/>	
-				<section title="Configuration CAN" ref="Can_fr.html"/>
-				<section title="Changelog" ref="Changelog.html"/>						
+				<section title="Configuration CAN" ref="Can_fr.html"/>				
             </section>
         </toc>
         <keywords>
