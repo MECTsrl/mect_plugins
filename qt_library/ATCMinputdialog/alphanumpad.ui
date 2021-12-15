@@ -86,20 +86,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton
-{
-	border: 2px solid  rgb(94, 94, 94);
-	border-radius: 8px;
-	image-position: center; 
-	image: url(:/libicons/img/eye_invisible_32.png); 
-	qproperty-focusPolicy: NoFocus;
-}
-
-QPushButton:checked
-{
-	image: url(:/libicons/img/eye_visible_32.png);
-}
-</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string notr="true"/>
@@ -3132,23 +3119,9 @@ QPushButton:checked
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton
-{
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Delete.png);
+        <string notr="true">qproperty-icon: url(:/libicons/img/Delete.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
-}
 </string>
        </property>
        <property name="text">
@@ -3389,23 +3362,9 @@ border: 2px solid  rgb(194, 194, 194);
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton
-{
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/OK.png);
+        <string notr="true">qproperty-icon: url(:/libicons/img/OK.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
-}
 </string>
        </property>
        <property name="text">

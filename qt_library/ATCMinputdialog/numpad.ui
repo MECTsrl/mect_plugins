@@ -230,7 +230,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string/>
+        <string notr="true"/>
        </property>
        <property name="echoMode">
         <enum>QLineEdit::Normal</enum>
@@ -255,20 +255,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton
-{
-	border: 2px solid  rgb(94, 94, 94);
-	border-radius: 8px;
-	image-position: center; 
-	image: url(:/libicons/img/eye_invisible_32.png); 
-	qproperty-focusPolicy: NoFocus;
-}
-
-QPushButton:checked
-{
-	image: url(:/libicons/img/eye_visible_32.png);
-}
-</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string notr="true"/>

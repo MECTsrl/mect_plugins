@@ -19,10 +19,12 @@
     mystyle.append("{"); \
     mystyle.append("text-align: center;"); \
     mystyle.append("border-radius: 0px;"); \
-    mystyle.append("border: 2px solid  rgb(0,0,255);"); \
-    mystyle.append("background-color: rgb(255,255,255);"); \
-    mystyle.append("color: rgb(0, 0, 0);"); \
+    mystyle.append("border: 2px solid  LemonChiffon;"); \
+    mystyle.append("color: Cornsilk;"); \
+    mystyle.append("background-color: DimGray;"); \
     mystyle.append("background-repeat: no-repeat;"); \
+    mystyle.append("selection-background-color: rgb(87, 130, 193);"); \
+    mystyle.append("selection-color: red;"); \
     mystyle.append("font: 30pt \"DejaVu Sans Mono\";"); \
     mystyle.append("}"); \
     mystyle.append("QMessageBox"); \
@@ -35,16 +37,27 @@
     mystyle.append("{"); \
     mystyle.append("text-align: center;"); \
     mystyle.append("border-radius: 8px;"); \
-    mystyle.append("border: 2px solid  rgb(121,121,121);"); \
-    mystyle.append("background-color: rgb(255, 255, 255);"); \
-    mystyle.append("color: rgb(81, 81, 81);"); \
+    mystyle.append("border: 2px solid  LemonChiffon;"); \
+    mystyle.append("background-color: rgb(70,70,80);"); \
+    mystyle.append("color: LemonChiffon;"); \
     mystyle.append("background-repeat: no-repeat;"); \
     mystyle.append("font: 22pt \"DejaVu Sans Mono\";"); \
     mystyle.append("}"); \
     mystyle.append("QPushButton:pressed"); \
     mystyle.append("{"); \
-    mystyle.append("border: 2px solid  rgb(194, 194, 194);"); \
-    mystyle.append("background-color:  rgb(255, 255, 127);"); \
+    mystyle.append("border: 2px solid  Red;"); \
+    mystyle.append("background-color:  SlateGray;"); \
+    mystyle.append("color: rgb(70,70,80);;"); \
+    mystyle.append("}"); \
+    mystyle.append("QPushButton#pushButtonPassword"); \
+    mystyle.append("{"); \
+    mystyle.append("	image-position: center; "); \
+    mystyle.append("	image: url(:/libicons/img/eye_invisible_32.png); "); \
+    mystyle.append("	qproperty-focusPolicy: NoFocus;"); \
+    mystyle.append("}"); \
+    mystyle.append("QPushButton#pushButtonPassword:checked"); \
+    mystyle.append("{"); \
+    mystyle.append("	image: url(:/libicons/img/eye_visible_32.png);"); \
     mystyle.append("}"); \
     this->setStyleSheet(mystyle); \
     }

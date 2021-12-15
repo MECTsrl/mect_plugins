@@ -26,7 +26,12 @@
    <string>trend_option</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QCheckBox::indicator {
+	width: 16px;
+	height:16px;
+}
+
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -714,11 +719,7 @@ border: 2px solid  rgb(194, 194, 194);
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true"> QCheckBox::indicator {
-     width: 25px;
-     height: 25px;
- }
-
+        <string notr="true">
 </string>
        </property>
        <property name="text">

@@ -20,7 +20,14 @@
    <string>system_ini</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QCheckBox::indicator {
+	width: 16px;
+	height:16px;
+}
+QCheckBox::indicator:checked:enabled {
+    image: url(:/libicons/img/Yes.png);
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_10">
    <property name="spacing">

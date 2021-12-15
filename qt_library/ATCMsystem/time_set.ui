@@ -192,6 +192,9 @@
          <pointsize>12</pointsize>
         </font>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="text">
         <string>YYYY:MM:DD</string>
        </property>
@@ -216,6 +219,9 @@
          <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string>HH:MM:SS</string>
@@ -403,6 +409,9 @@ border: 2px solid  rgb(194, 194, 194);
          <pointsize>12</pointsize>
         </font>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="text">
         <string>tempo.ien.it</string>
        </property>
@@ -433,6 +442,9 @@ border: 2px solid  rgb(194, 194, 194);
          <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string>1</string>
@@ -495,6 +507,9 @@ border: 2px solid  rgb(194, 194, 194);
          <family>DejaVu Sans</family>
          <pointsize>12</pointsize>
         </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
         <string>60</string>
@@ -600,6 +615,9 @@ border: 2px solid  rgb(194, 194, 194);
          <pointsize>12</pointsize>
         </font>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="text">
         <string>24</string>
        </property>
@@ -675,15 +693,17 @@ border: 2px solid  rgb(194, 194, 194);
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
         <string notr="true">QCheckBox::indicator {
 	width: 32px;
 	height:32px;
 }
+
 QCheckBox::indicator:checked:enabled {
-
     image: url(:/libicons/img/Yes.png);
-
 }
 </string>
        </property>
