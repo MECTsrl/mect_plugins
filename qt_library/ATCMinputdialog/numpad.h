@@ -49,6 +49,7 @@ public:
     explicit numpad(char*  value, int type, char* def = NULL, QWidget *parent = 0);
 
     ~numpad();
+    static int  baseOfInputFormat(enum input_fmt_e fmt);
     void reload();
 
 private slots:

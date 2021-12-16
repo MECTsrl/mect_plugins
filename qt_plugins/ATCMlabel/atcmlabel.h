@@ -98,6 +98,7 @@ class
             Hex,
             Bin
         };
+        static int  baseOfInputFormat(enum ATCMLabelFormat fmt);
         ATCMlabel(QWidget *parent = 0);
 		~ATCMlabel();
         enum ATCMLabelFormat format() const

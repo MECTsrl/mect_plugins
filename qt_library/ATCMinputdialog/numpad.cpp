@@ -662,3 +662,24 @@ void numpad::on_pushButtonPassword_clicked(bool checked)
     }
 }
 
+int numpad::baseOfInputFormat(enum input_fmt_e fmt)
+{
+    int retVal = 10;
+
+    switch (fmt)
+    {
+    case input_dec:
+        retVal = 10;
+        break;
+    case input_hex:
+        retVal = 16;
+        break;
+    case input_bin:
+        retVal = 2;
+        break;
+    default:
+        retVal = 10;
+        break;
+    }
+    return retVal;
+}

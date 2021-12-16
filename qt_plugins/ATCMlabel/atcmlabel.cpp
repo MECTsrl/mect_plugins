@@ -556,9 +556,9 @@ void ATCMlabel::writeAction()
         {
             if (decimal == 0)
             {
-                int value  = 0, min = m_min.toInt(), max = m_max.toInt();
+                int value  = 0, min = m_min.toInt(0, baseOfInputFormat(m_format)), max = m_max.toInt(0, baseOfInputFormat(m_format));
 
-                dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
+                dk = new numpad(&value, m_value.toInt(0, baseOfInputFormat(m_format)), min, max, (enum  input_fmt_e)m_format);
                 dk->showFullScreen();
                 if (dk->exec() == QDialog::Accepted)
                 {
@@ -604,9 +604,9 @@ void ATCMlabel::writeAction()
         {
             if (decimal == 0)
             {
-                unsigned value  = 0, min = m_min.toUInt(), max = m_max.toUInt();
+                unsigned value  = 0, min = m_min.toUInt(0, baseOfInputFormat(m_format)), max = m_max.toUInt(0, baseOfInputFormat(m_format));
 
-                dk = new numpad(&value, m_value.toUInt(), min, max, (enum  input_fmt_e)m_format);
+                dk = new numpad(&value, m_value.toUInt(0, baseOfInputFormat(m_format)), min, max, (enum  input_fmt_e)m_format);
                 dk->showFullScreen();
                 if (dk->exec() == QDialog::Accepted)
                 {
@@ -771,4 +771,26 @@ void ATCMlabel::setFormat(const enum ATCMLabelFormat format)
 {
     m_format = format;
     update();
+}
+
+int ATCMlabel::baseOfInputFormat(enum ATCMLabelFormat fmt)
+{
+    int retVal = 10;
+
+    switch (fmt)
+    {
+    case Dec:
+        retVal = 10;
+        break;
+    case Hex:
+        retVal = 16;
+        break;
+    case Bin:
+        retVal = 2;
+        break;
+    default:
+        retVal = 10;
+        break;
+    }
+    return retVal;
 }

@@ -1399,10 +1399,6 @@ inline int theValue_string(int ctIndex, char * valuep)
         case uintba_e:
         case intab_e:
         case intba_e:
-        case udint_abcd_e:
-        case udint_badc_e:
-        case udint_cdab_e:
-        case udint_dcba_e:
         case dint_abcd_e:
         case dint_badc_e:
         case dint_cdab_e:
@@ -1416,9 +1412,25 @@ inline int theValue_string(int ctIndex, char * valuep)
 
             if (decimal > 0) {
                 fvalue = atof(valuep) * powf(10, decimal);
-                value = (float)fvalue;
+                value = (int)fvalue;
             } else {
                 value = atoi(valuep);
+            }
+        }   break;
+        case udint_abcd_e:
+        case udint_badc_e:
+        case udint_cdab_e:
+        case udint_dcba_e: {
+            int decimal = getVarDecimalByCtIndex(ctIndex); // for *bit is set to 0
+
+            if (decimal > 0) {
+                fvalue = atof(valuep) * powf(10, decimal);
+                value = (int)fvalue;
+            } else {
+                unsigned uvalue = 0;
+
+                uvalue = strtoul(valuep, NULL, 10); // NB: also for hex and bin
+                value = *((int *)&uvalue);
             }
         }   break;
         case fabcd_e:
