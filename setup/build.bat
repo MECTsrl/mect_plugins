@@ -1,7 +1,7 @@
 @echo off
 
 rem memento cte/cte.pro:ATCM_VERSION (cte/CTE.pluginspec)
-SET REV=3.3.8
+SET REV=3.3.9
 SET REVISION="%REV%"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
