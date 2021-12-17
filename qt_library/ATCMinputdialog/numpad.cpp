@@ -20,6 +20,10 @@
 #define SET_NUMPAD_STYLE() { \
     QString mystyle; \
     mystyle.append(this->styleSheet()); \
+    mystyle.append("QWidget"); \
+    mystyle.append("{"); \
+    mystyle.append("    background-color: rgb(10, 10, 10);"); \
+    mystyle.append("}"); \
     mystyle.append("QLineEdit"); \
     mystyle.append("{"); \
     mystyle.append("text-align: center;"); \
@@ -34,9 +38,9 @@
     mystyle.append("}"); \
     mystyle.append("QMessageBox"); \
     mystyle.append("{"); \
-    mystyle.append("font: 18pt \""FONT_TYPE"\";"); \
-    mystyle.append("background-color: rgb(0, 0, 0);"); \
-    mystyle.append("color: red;"); \
+    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
+    mystyle.append("    background-color: rgb(10, 10, 10);"); \
+    mystyle.append("    color: red;"); \
     mystyle.append("}"); \
     mystyle.append("QPushButton"); \
     mystyle.append("{"); \
