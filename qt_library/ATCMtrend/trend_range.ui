@@ -102,6 +102,9 @@
            <height>64</height>
           </size>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>yyyy-MM-dd</string>
          </property>
@@ -126,6 +129,9 @@
            <family>DejaVu Sans Mono</family>
            <pointsize>14</pointsize>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>HH:MM:SS</string>
@@ -162,7 +168,7 @@
           </font>
          </property>
          <property name="focusPolicy">
-          <enum>Qt::ClickFocus</enum>
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="styleSheet">
           <string notr="true">QSpinBox {
@@ -238,6 +244,9 @@
            <family>DejaVu Sans Mono</family>
            <pointsize>14</pointsize>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="text">
           <string>HH:MM:SS</string>
@@ -488,7 +497,7 @@ border: 2px solid  rgb(194, 194, 194);
           </size>
          </property>
          <property name="focusPolicy">
-          <enum>Qt::ClickFocus</enum>
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -553,7 +562,7 @@ border: 2px solid  rgb(194, 194, 194);
           </size>
          </property>
          <property name="focusPolicy">
-          <enum>Qt::ClickFocus</enum>
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
