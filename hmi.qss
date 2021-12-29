@@ -1,6 +1,6 @@
 /* System Pages Background */
 page#alarms, page#alarms_history, page#recipe, page#recipe_select, page#store, page#store_filter, page#data_manager, page#display_settings, 
-page#info, page#menu, page#options, page#net_conf, page#system_ini, page#time_set, page#trend_option, page#trend_other, page#trend_range,
+page#info, page#menu, page#options, page#net_conf, page#system_ini, page#time_set, page#trend, page#trend_option, page#trend_other, page#trend_range,
 QDialog#item_selector, QDialog#item_selector, QDialog#Calendar, QDialog#TimePopup, QDialog#alphanumpad, QDialog#numpad, QDialog#qrcode	{
 	background-color: rgb(0, 0, 0);
 }
@@ -13,7 +13,7 @@ QDialog#item_selector QLabel, QDialog#item_selector QLabel, QDialog#Calendar QLa
 }
 /* System Pages QPushButton Background and Color */
 page#alarms QPushButton, page#alarms_history QPushButton, page#recipe QPushButton, page#recipe_select QPushButton, page#store QPushButton, page#store_filter QPushButton, page#data_manager QPushButton, page#display_settings QPushButton, 
-page#info QPushButton, page#menu QPushButton, page#options QPushButton, page#net_conf QPushButton, page#system_ini QPushButton, page#time_set QPushButton, page#trend_option QPushButton, page#trend_other QPushButton, page#trend_range QPushButton, 
+page#info QPushButton, page#menu QPushButton, page#options QPushButton, page#net_conf QPushButton, page#system_ini QPushButton, page#time_set QPushButton, page#trend QPushButton, page#trend_option QPushButton, page#trend_other QPushButton, page#trend_range QPushButton,
 QDialog#item_selector QPushButton, QDialog#item_selector QPushButton, QDialog#Calendar QPushButton, QDialog#TimePopup QPushButton, QDialog#alphanumpad QPushButton, QDialog#numpad QPushButton	{
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DimGray, stop:1 rgb(30, 30, 30));
 	color: rgb(255, 170, 0);
@@ -28,11 +28,22 @@ page#info QPlainTextEdit {
 }
 /* QProgressBar in page0 (startup), recipe  */
 page#page0 QProgressBar, page#recipe QProgressBar {
-    border: 2px solid 	Red;
+    border: 2px solid 	DeepSkyBlue;
     text-align: center;
-	color: Green;
+    color: black;
 }
 page#page0 QProgressBar::chunk, page#recipe QProgressBar::chunk {
     background-color: LightSkyBlue;
 	margin: 1px;
+}
+/* trend QLabel, Qwt */
+page#trend QLabel, page#trend QwtPlotCanvas  {
+    background-color: rgb(192, 192, 192);
+}
+page#trend QwtScaleWidget {
+    color: rgb(255, 192, 0);
+}
+/* trend_range QSpinBox */
+page#trend_range QSpinBox, page#trend_range QDoubleSpinBox {
+    color: rgb(255, 170, 0);
 }
