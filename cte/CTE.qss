@@ -42,5 +42,8 @@ QCheckBox::indicator::checked:disabled  {
 /* Input fields enabled */
 QLineEdit:enabled, QComboBox:enabled, QCheckBox::indicator:enabled {
     border: 1px solid DodgerBlue;
+    border-radius: 2px;
 }
-
+QComboBox {
+    min-width: 24px;
+}
