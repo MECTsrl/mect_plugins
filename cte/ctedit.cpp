@@ -4226,7 +4226,9 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             nErrors++;
         }
         // Controllo che la variabile impostata come Alarm/Event abbia priority > 0 e non sia Update=H
-        if (nPriority <= 0 || nUpdate <= Htype)  {
+        // if (nPriority <= 0 || nUpdate <= Htype)  {
+        // Fix 3.3.9 Checking only Update, setting Priority to 0 is allowed to disable Alarm
+        if (nUpdate <= Htype)  {
             fillErrorMessage(nRow, colPriority, errCTBadPriorityUpdate, szVarName, szVarName, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
