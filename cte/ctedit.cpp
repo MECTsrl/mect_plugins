@@ -1697,7 +1697,7 @@ void ctedit::enableFields()
     int     nType = ui->cboType->currentIndex();
     // bool    fMultiEdit = m_fMultiEdit && m_fMultiSelect;
 
-    qDebug("enableFields(): Row: [%d] MultiLine: [%d] colUpdate: %d", m_nGridRow + 1, m_fMultiEdit, lstEditableFields.indexOf(colUpdate));
+    qDebug("enableFields(): Row: [%d] MultiLine: [%d]", m_nGridRow + 1, m_fMultiEdit);
     // Disabilita tutti i campi
     ui->cboPriority->setEnabled(false);
     ui->cboUpdate->setEnabled(false);
@@ -1824,6 +1824,7 @@ void ctedit::enableFields()
         }
     }
 }
+
 void ctedit::on_cboType_currentIndexChanged(int index)
 // Cambio di tipo della variabile
 {
@@ -1878,6 +1879,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     int         nTotalFree = 0;
     bool        fPortOk = false;
 
+    qDebug("on_cboProtocol_currentIndexChanged(): Index: [%d]", index);
     szTemp.clear();
     // No Index
     if (index == -1)  {
@@ -1886,6 +1888,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
         ui->txtNode->setText(szEMPTY);
         ui->chkInputRegister->setChecked(false);
         ui->txtRegister->setText(szEMPTY);
+        return;
     }
     // Calcola la porta di default in funzione del protocollo (if any available)
     getFirstPortFromProtocol(index, nDefaultPort, nTotalFree);
@@ -1992,7 +1995,7 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
             nNewSelectedRow = nCount;
         }
     }
-    qDebug("tableCTItemChanged(): Enter with Selected Rows: %d Selected Items: %d Deselected Items: %d - Last Selected Row: %d",
+    qDebug("tableCTItemChanged(): Enter with Selected Rows: %d Selected Items: %d Deselected Items: %d - Target Row: %d",
            selectedRows.count(), selected.count(), deselected.count(), nNewSelectedRow + 1);
     //-------------------------------------------------------------------------
     // Si sta uscendo dalla selezione di una riga sola Editing di una riga sola
@@ -2087,7 +2090,9 @@ void ctedit::tableCTItemChanged(const QItemSelection & selected, const QItemSele
         }
     }
     else {
+        // Riga non usata, single line edit
         fLoaded = true;
+        enableFields();
     }
     // Aggiorna la Sezione in cboSections
     setSectionArea(nNewSelectedRow);
@@ -3040,21 +3045,23 @@ void ctedit::jumpToGridRow(int nRow, bool fCenter, bool fClearSelection)
 // Salto alla riga nRow del Grid
 {
     // Seleziona la riga nRow
+    qDebug("jumpToGridRow(): Jump to Row: %d - Center: [%d] - Clear Selection: [%d]", nRow + 1, fCenter, fClearSelection);
     if (nRow >= 0 && nRow < ui->tblCT->rowCount())  {
+        // Se vero il flag fClearSelection, svuota l'elenco delle righe selezionate e seleziona solamente la riga corrente
+        if (fClearSelection)  {
+            ui->tblCT->selectionModel()->clearSelection();
+            ui->tblCT->clearSelection();
+            lstSelectedRows.clear();
+            lstSelectedRows.append(nRow);
+        }
         ui->tblCT->selectRow(nRow);
         // Se vero il flag fCenter, centra la riga selezionata rispetto alla finestra di scroll
         if (fCenter)  {
             ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtTop);
         }
-        // Se vero il flag fClearSelection, svuota l'elenco delle righe selezionate e seleziona solamente la riga corrente
-        if (fClearSelection)  {
-            lstSelectedRows.clear();
-            lstSelectedRows.append(nRow);
-            qDebug("jumpToGridRow(): Selected Row: %d", nRow);
-        }
-        enableFields();
-        ui->tblCT->setFocus();
         m_nGridRow = nRow;
+        ui->tblCT->setFocus();
+        enableFields();
     }
 }
 
@@ -4751,8 +4758,9 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
 // Trucco per impostare il valore del #Blocco e altri valori nel caso di nuova riga
 {
 
-    if (lstCTRecords.count() <= 0 ||  index < 0 || m_nGridRow < 0)
+    if (lstCTRecords.count() <= 0 ||  index < 0 || m_nGridRow < 0)  {
         return;
+    }
     // Applicazione dei valori di default nel caso di una riga vuota
     if (not lstCTRecords[m_nGridRow].UsedEntry && index >= 0 && m_nGridRow < MAX_NONRETENTIVE -1)  {
         // qDebug() << QString::fromAscii("Adding Row: %1") .arg(m_nGridRow);
@@ -4824,8 +4832,9 @@ void ctedit::on_cboPriority_currentIndexChanged(int index)
 void ctedit::on_cboUpdate_currentIndexChanged(int index)
 {
 
-    if (lstCTRecords.count() <= 0 ||  index < 0)
+    if (lstCTRecords.count() <= 0 ||  index < 0)  {
         return;
+    }
     // Per variabili di tipo H spegne la possibilità di essere un allarme
     if (index == Htype)  {
         // qDebug() << QLatin1String("Clear Alarm");
@@ -5047,22 +5056,6 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                     int nextRow = findNextVisibleRow(m_nGridRow);
                     // Salto a riga successiva
                     jumpToGridRow(nextRow, false, true);
-//                    bool fRowOk = false;
-//                    // Enter su Editing Form
-//                    // qDebug() << QLatin1String("Enter in Form");
-//                    if (not isFormEmpty() && isLineModified(m_nGridRow)) {
-//                        fRowOk = updateRow(m_nGridRow);
-//                        if (fRowOk)  {
-//                            int nextRow = findNextVisibleRow(m_nGridRow);
-//                            // Salto a riga successiva
-//                            jumpToGridRow(nextRow, false);
-//                            // Eventuale Cambio Area utente
-//                            setSectionArea(nextRow);
-//                            m_isCtModified = true;
-//                            // Aggiornamento interfaccia
-//                            enableInterface();
-//                        }
-//                    }
                     // QKeyEvent newEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier, szEMPTY);
                     ui->tblCT->setFocus();
                     return true;
@@ -5071,7 +5064,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                     // Enter su Grid
                     // qDebug() << QLatin1String("Enter in Grid");
                     // Salto a riga successiva
-                    jumpToGridRow(findNextVisibleRow(m_nGridRow), false);
+                    jumpToGridRow(findNextVisibleRow(m_nGridRow), false, true);
                     return true;
                 }
             }
