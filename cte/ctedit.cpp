@@ -806,7 +806,7 @@ bool    ctedit::selectCTFile(QString szFileCT)
         }
         m_isCtModified = false;
         // Porta in primo piano il Tab delle Variabili
-        jumpToGridRow(m_nGridRow, true);
+        jumpToGridRow(m_nGridRow, true, true);
         ui->tabWidget->setCurrentIndex(TAB_CT);
     }
     qDebug("Size of CT Record %d", sizeof(CrossTableRecord));
@@ -1566,7 +1566,7 @@ void ctedit::saveCTFile()
         m_isCtModified = false;
     }
     // Return to Row
-    jumpToGridRow(nCurRow, false);
+    jumpToGridRow(nCurRow, false, false);
     // Refresh abilitazioni interfaccia
     enableInterface();
 
@@ -2346,7 +2346,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Jump to MPNE100105
     else if (actMenu == jump2MPNE100105)  {
         if (not isMPNE05_Row(m_nGridRow) && lstMPNE100105.count() > 0)  {
-            jumpToGridRow(lstMPNE100105.at(0));
+            jumpToGridRow(lstMPNE100105.at(0), false, true);
         }
     }
     // Edit MPNC
@@ -2416,7 +2416,7 @@ int ctedit::copySelected(bool fClearSelection)
         lstSelectedRows.clear();
         ui->tblCT->clearSelection();
         if (nFirstRow >= 0)  {
-            jumpToGridRow(nFirstRow, false);
+            jumpToGridRow(nFirstRow, false, true);
             // recCT2List(lstFields, nFirstRow);
             // values2Iface(lstFields);
         }
@@ -2576,7 +2576,7 @@ void ctedit::insertRows()
     m_szMsg = QString::fromAscii("Rows Inserted: %1") .arg(nSelected);
     displayStatusMessage(m_szMsg);
     if (nCurPos >= 0)  {
-        jumpToGridRow(nCurPos, true);
+        jumpToGridRow(nCurPos, true, true);
     }
     enableInterface();
 }
@@ -2627,7 +2627,7 @@ void ctedit::emptySelected()
     }
     // Riposiziona alla riga corrente
     if (nRemoved > 0 && nFirstRow >= 0)  {
-        jumpToGridRow(nFirstRow, true);
+        jumpToGridRow(nFirstRow, true, true);
     }
     m_szMsg = QString::fromAscii("Rows Removed: %1") .arg(nRemoved);
     displayStatusMessage(m_szMsg);
@@ -2988,7 +2988,7 @@ void ctedit::showAllRows(bool fShowAll)
     // Trucco per centrare la riga...
     // jumpToGridRow(0, true);
     if (nRow >= 0 && nRow < DimCrossTable)  {
-        jumpToGridRow(nRow, true);
+        jumpToGridRow(nRow, true, false);
     }
     // ui->tblCT->setFocus();
 }
@@ -3015,7 +3015,7 @@ void ctedit::gotoRow()
                 ui->cmdHideShow->setChecked(true);
             }
         }
-        jumpToGridRow(nRow, true);
+        jumpToGridRow(nRow, true, true);
     }
 }
 void ctedit::on_cmdSearch_clicked()
@@ -3029,25 +3029,33 @@ void ctedit::on_cmdSearch_clicked()
         nRow = searchForm->getSelectedVariable();
         qDebug("on_cmdSearch_clicked(): Selected Row: %d", nRow);
         if (nRow > 0 && nRow <= lstCTRecords.count())  {
-            jumpToGridRow(nRow - 1, true);
+            jumpToGridRow(nRow - 1, true, true);
         }
     }
     else {
         qCritical("Search Cancelled");
     }
 }
-void ctedit::jumpToGridRow(int nRow, bool fCenter)
+void ctedit::jumpToGridRow(int nRow, bool fCenter, bool fClearSelection)
 // Salto alla riga nRow del Grid
 {
     // Seleziona la riga nRow
-    ui->tblCT->selectRow(nRow);
-    // Se vero il flag fCenter, centra la riga selezionata rispetto alla finestra di scroll
-    if (fCenter)  {
-        ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtTop);
+    if (nRow >= 0 && nRow < ui->tblCT->rowCount())  {
+        ui->tblCT->selectRow(nRow);
+        // Se vero il flag fCenter, centra la riga selezionata rispetto alla finestra di scroll
+        if (fCenter)  {
+            ui->tblCT->scrollToItem(ui->tblCT->currentItem(), QAbstractItemView::PositionAtTop);
+        }
+        // Se vero il flag fClearSelection, svuota l'elenco delle righe selezionate e seleziona solamente la riga corrente
+        if (fClearSelection)  {
+            lstSelectedRows.clear();
+            lstSelectedRows.append(nRow);
+            qDebug("jumpToGridRow(): Selected Row: %d", nRow);
+        }
+        enableFields();
+        ui->tblCT->setFocus();
+        m_nGridRow = nRow;
     }
-    enableFields();
-    ui->tblCT->setFocus();
-    m_nGridRow = nRow;
 }
 
 void ctedit::on_cmdCompile_clicked()
@@ -3312,8 +3320,8 @@ void ctedit::tabSelected(int nTab)
             m_rebuildTimingTree = true;
         }
         // Jump n+1
-        jumpToGridRow(nOldRow + 1, true);
-        jumpToGridRow(nOldRow, true);
+        jumpToGridRow(nOldRow + 1, false);
+        jumpToGridRow(nOldRow, true, true);
         enableInterface();
     }
     else if (nPrevTab == TAB_MPNE)  {
@@ -3332,8 +3340,8 @@ void ctedit::tabSelected(int nTab)
             m_rebuildTimingTree = true;
         }
         // Jump n+1
-        jumpToGridRow(nOldRow + 1, true);
-        jumpToGridRow(nOldRow, true);
+        jumpToGridRow(nOldRow + 1, false);
+        jumpToGridRow(nOldRow, true, true);
         enableInterface();
     }
     //---------------------------------
@@ -3702,7 +3710,7 @@ int ctedit::globalChecks()
         if (errWindow->exec() == QDialog::Accepted)  {
             nRow = errWindow->currentRow();
             if (nRow >= 0 && nRow < DimCrossTable)
-                jumpToGridRow(nRow, true);
+                jumpToGridRow(nRow, true, true);
         }
         delete errWindow;
     }
@@ -5038,7 +5046,7 @@ bool ctedit::eventFilter(QObject *obj, QEvent *event)
                 if (obj == ui->fraEdit)  {
                     int nextRow = findNextVisibleRow(m_nGridRow);
                     // Salto a riga successiva
-                    jumpToGridRow(nextRow, false);
+                    jumpToGridRow(nextRow, false, true);
 //                    bool fRowOk = false;
 //                    // Enter su Editing Form
 //                    // qDebug() << QLatin1String("Enter in Form");
@@ -5268,8 +5276,9 @@ void ctedit::setSectionArea(int nRow)
     else if (nRow >= (MIN_SYSTEM - 1) && nRow <= (DimCrossTable - 1))
         nIndex = regSystem;
     // Set Item in Combo
-    if (nIndex >= -1 && nIndex < lstRegions.count())
+    if (nIndex >= -1 && nIndex < lstRegions.count())  {
         ui->cboSections->setCurrentIndex(nIndex);
+    }
     // Sblocca la propagazione dei segnali della cboSection
     enableAndUnlockSignals(ui->cboSections);
 
@@ -5301,7 +5310,7 @@ void ctedit::on_cboSections_currentIndexChanged(int index)
     lstSelectedRows.clear();
     ui->tblCT->clearSelection();
     // Jump to Row
-    jumpToGridRow(nRow, true);
+    jumpToGridRow(nRow, true, true);
 }
 void ctedit::on_txtName_editingFinished()
 // Modificato nome della variabile
@@ -6526,8 +6535,8 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
     m_isCtModified = true;
     m_rebuildDeviceTree = true;
     m_rebuildTimingTree = true;
-    jumpToGridRow(nCur + 1, true);
-    jumpToGridRow(nCur, true);
+    jumpToGridRow(nCur + 1, false);
+    jumpToGridRow(nCur, true, true);
     // Return value
     return (nPasted);
 }
@@ -6545,7 +6554,7 @@ void ctedit::treeItemDoubleClicked(const QModelIndex &index)
     if (fOk && nRow >= 0 && nRow < lstCTRecords.count())  {
         // Che fare ??
         ui->tabWidget->setCurrentIndex(TAB_CT);
-        jumpToGridRow(nRow, true);
+        jumpToGridRow(nRow, true, true);
     }
 }
 
@@ -8071,7 +8080,7 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         lstSelectedRows.append(nRow);
         qDebug("Cancelling MultiEdit: GotoRow: %d", nRow + 1);
         // Seleziona Riga corrente
-        jumpToGridRow(nRow);
+        jumpToGridRow(nRow, false, true);
         m_nGridRow = nRow;
         // m_isCtModified = true;
         m_rebuildDeviceTree = true;

@@ -112,7 +112,7 @@ private:
     bool    riassegnaBlocchi();                     // Riassegnazione blocchi variabili
     void    showAllRows(bool fShowAll);             // Visualizza o nascondi tutte le righe
     void    setRowsColor();                         // Imposta il colore di sfondo di tutte le righe senza cambiare riga corrente
-    void    jumpToGridRow(int nRow, bool fCenter = false);                // Salto alla riga nRow del Grid
+    void    jumpToGridRow(int nRow, bool fCenter = false, bool fClearSelection = false);                // Salto alla riga nRow del Grid
     void    enableInterface();                      // Abilita l'interfaccia in funzione dello stato del sistema
     void    appendCT2UndoList();                    // Aggiunta controllata di Entry in Lista di undo (Max 128 Items)
 
