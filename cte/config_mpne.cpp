@@ -823,9 +823,13 @@ void    Config_MPNE::on_RenameVars()
         // Validazione del risultato
         m_szMsg.clear();
         szNewPrefix = szNewPrefix.trimmed();
-        qDebug() << QString::fromAscii("on_RenameVars(): New Var Prefix: [%1]") .arg(szNewPrefix);
+        int newPrefixLen = szNewPrefix.length();
+        int oldPrefixLen = m_szVarNamePrefix.length();
+        m_szMsg = QString::fromAscii("on_RenameVars(): New Var Prefix:[%1] Len:[%2] Max Var Name:[%3] Prev Prefix:[%4]")
+                .arg(szNewPrefix) .arg(newPrefixLen) .arg(m_nMaxVarName) .arg(m_szVarNamePrefix);
+        qDebug("%s", m_szMsg.toLatin1().data());
         // Controllo sulla lunghezza complessiva delle variabili rinominate
-        if (szNewPrefix.length() + m_nMaxVarName > MAX_IDNAME_LEN)  {
+        if ((newPrefixLen + m_nMaxVarName - oldPrefixLen) > MAX_IDNAME_LEN)  {
             fOk = false;
             m_szMsg.append(QString::fromAscii("The Prefix [%1] is Too Long.\nThe resulting length of the Variable Names exceeds the limit of [%2] characters\n")
                     .arg(szNewPrefix) .arg(MAX_IDNAME_LEN));
