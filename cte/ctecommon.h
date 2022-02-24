@@ -85,6 +85,7 @@ const QString szTRUE = QString::fromAscii("1");
 const QString szFALSE = QString::fromAscii("0");
 const QString szMectTitle = QString::fromAscii("Mect Editor");
 const QString szPathIMG = QString::fromAscii(":/cteicons/img/");
+const QString szCopyPrefix = QString::fromAscii("C_");              // Prefisso aggiunto al nome variabili durante le operazioni di Copia-Incolla
 
 // Constanti per gestione XML di transito tra variabili e lettura Modello MPNx
 const QString szXMLCTENAME = QString::fromAscii("Mect_CTE");

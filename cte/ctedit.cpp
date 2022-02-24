@@ -2492,7 +2492,7 @@ void ctedit::pasteSelected()
     }
     if (fClipSourceOk)  {
         if (nRow + lstPastedRecords.count() <= MAX_NONRETENTIVE)  {
-            nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows);
+            nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows, true);
         }
         else  {
         }
@@ -6449,7 +6449,7 @@ bool ctedit::addModelVars(const QString szModelName, int nRow, int nPort, int nN
                     lstModelRows[nCur][colNodeID] = szNode;
                 }
                 // Aggiunta righe in blocco a CT
-                nAdded = addRowsToCT(nRow, lstModelRows, lstDestRows, checkRTUPort);
+                nAdded = addRowsToCT(nRow, lstModelRows, lstDestRows, false, checkRTUPort);
                 // Rinumera i Blocchi
                 if (nAdded > 0)  {
                     riassegnaBlocchi();
@@ -6474,7 +6474,7 @@ bool ctedit::addModelVars(const QString szModelName, int nRow, int nPort, int nN
     // Return Value
     return (nAdded > 0);
 }
-int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool checkRTU)
+int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool adjustVarName, bool checkRTU)
 {
     int     nCur = 0;
     int     nPasted = 0;
@@ -6493,6 +6493,12 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
             nDestRow = lstDestRows[nPasted];
         }
         // qDebug("addRowsToCT(): Add Row Source: [%s] @ Row: [%d]", lstRecords2Add[nPasted][colName].toLatin1().data(),  nDestRow + 1);
+        // Aggiunge un prefisso al nome della variabile da copiare
+        if (adjustVarName)  {
+            QString szNewVarName = lstRecords2Add[nPasted][colName].trimmed();
+            szNewVarName.prepend(szCopyPrefix);
+            lstRecords2Add[nPasted][colName] = szNewVarName.left(MAX_IDNAME_LEN);
+        }
         // Force Block address to Row Number
         lstRecords2Add[nPasted][colBlock] = QString::number(nDestRow + 1);
         // Paste element

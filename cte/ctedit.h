@@ -105,7 +105,7 @@ private:
     void    initTargetList();                       // Init della lista dei Target definiti
     void    exportTargetList(const QString &szFileName);    // Estrazione della lista dei Target definiti
     bool    updateRow(int nRow, bool fMultiEdit);   // Gestisce l'aggiornamento del grid con i valori letti da interfaccia di editing
-    int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool checkRTU = true);
+    int     addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int> &lstDestRows, bool adjustVarName = false, bool checkRTU = true);
     // Gestione interfaccia
     void    enableFields();                         // Abilitazione dei campi form in funzione di Protocollo
     bool    isLineModified(int nRow);               // Check se linea corrente Grid è diversa da Form in Editing
