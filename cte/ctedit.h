@@ -163,7 +163,7 @@ private:
     int     searchBlock(int nBlock);                // Ricerca in theBlocks del blocco nBlock
     // Import dati in XML
     bool    getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList> &lstPastedRecords, QList<int> &lstSourceRows, QList<int> &lstDestRows); // Funzione per leggere da Buffer Clipboard o da una QString (caricata da file XML) delle righe di CT
-    bool    readModelVars(const QString szModelName, QList<CrossTableRecord> &lstModelVars);            // Lettura da XML delle variabili CT precaricate per modelli
+    bool    readModelVars(const QString szModelName, QList<CrossTableRecord> &lstModelVars, bool fUpdateColSizes = false);            // Lettura da XML delle variabili CT precaricate per modelli
     bool    checkFreeArea(int nStartRow, int nRows);                                                // Controlla che l'area di destinazione per inserire variabili sia sufficientemente capiente
 
     bool    addModelVars(const QString szModelName, int nRow, int nPort, int nNode);

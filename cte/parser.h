@@ -156,7 +156,7 @@ struct  CrossTableRecord {
     int16_t     Enable;
     int         UsedEntry;
     int         Group;                                  // Logical grouping of CT variables (Used for Modules Config)
-    int         Module;                                 // Physical interface module
+    int         Module;                                 // Physical interface module (for MPNE-MPNC Modules)
     enum UpdateType Update;
     char Tag[2 * MAX_IDNAME_LEN + 1];
     enum varTypes VarType;

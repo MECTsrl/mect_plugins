@@ -16,6 +16,7 @@ public:
     explicit queryPortNode(const QString &szTitle, QString &szMessage, QWidget *parent = 0);
     ~queryPortNode();
     void getPortNode(int &nPort, int&nNode);
+    void setFirstNode(int nNode);
 
 private slots:
     void validatePort();

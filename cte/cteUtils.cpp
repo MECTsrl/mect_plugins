@@ -49,11 +49,12 @@ QStringList lstTCPBusVars;                      // Lista delle variabili di diag
 
 // Crosstable Records
 QList<CrossTableRecord> lstCTRecords;   // Lista completa di record per tabella (condivisa tra vari Oggetti di CTE): Dimensione circa 2309 kByte
-QList<CrossTableRecord> lstTemplateRecs; // Lista completa di Record da Template (per confronto con CT)
+QList<CrossTableRecord> lstTemplateRecs;// Lista completa di Record da Template (per confronto con CT)
 QList<CrossTableRecord> lstMPNC006_Vars;// Lista delle Variabili MPNC006
 QList<CrossTableRecord> lstTPLC050_Vars;// Lista delle Variabili TPLC050
 QList<CrossTableRecord> lstMPNE_Vars;   // Lista delle Variabili MPNE
 QList<CrossTableRecord> lstMPNE100105_Vars; // Lista delle Variabili MPNE - Modulo 05
+QList<CrossTableRecord> lstMPSN100_Vars;// Lista delle Variabili Sensori Temperatura MPSN100
 
 // Colori per sfondi grid
 QColor      colorRetentive[2];

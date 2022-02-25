@@ -163,8 +163,9 @@ ctedit::ctedit(QWidget *parent) :
     lstMPNC006_Vars.clear();
     lstTPLC050_Vars.clear();
     lstMPNE_Vars.clear();
+    lstMPSN100_Vars.clear();
     // MPNC006
-    if (readModelVars(szMPNC006, lstMPNC006_Vars))  {
+    if (readModelVars(szMPNC006, lstMPNC006_Vars, true))  {
         qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
                     .arg(szMPNC006) .arg(lstMPNC006_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
@@ -173,14 +174,14 @@ ctedit::ctedit(QWidget *parent) :
     }
     // TPLC050
     if (readModelVars(szTPLC050, lstTPLC050_Vars))  {
-        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
-                    .arg(szMPNC006) .arg(lstTPLC050_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2")
+                    .arg(szTPLC050) .arg(lstTPLC050_Vars.count());
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szTPLC050);
         lstTPLC050_Vars.clear();
     }
     // MPNE10
-    if (readModelVars(szMPNE1001, lstMPNE_Vars))  {
+    if (readModelVars(szMPNE1001, lstMPNE_Vars, true))  {
         qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
                     .arg(szMPNE1001) .arg(lstMPNE_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
@@ -188,12 +189,20 @@ ctedit::ctedit(QWidget *parent) :
         lstMPNE_Vars.clear();
     }
     // MPNE_05  Modulo Analogico
-    if (readModelVars(szMPNE100105, lstMPNE100105_Vars))  {
+    if (readModelVars(szMPNE100105, lstMPNE100105_Vars, true))  {
         qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2 - Max Var Len: %3 - Max Comment Len: %4")
                     .arg(szMPNE100105) .arg(lstMPNE100105_Vars.count()) .arg(lstMPNxHeadSizes[colMPNxName]) .arg(lstMPNxHeadSizes[colMPNxComment]);
     }  else  {
         qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPNE100105);
         lstMPNE100105_Vars.clear();
+    }
+    // MPSN100 Sensori di Temperatura, etc
+    if (readModelVars(szMPSN100, lstMPSN100_Vars))  {
+        qDebug() << QString::fromAscii("Read Variables for Model: %1 - Variables: %2")
+                    .arg(szMPSN100) .arg(lstMPSN100_Vars.count());
+    }  else  {
+        qDebug() << QString::fromAscii("Error Reading Variables for Model: %1") .arg(szMPSN100);
+        lstMPSN100_Vars.clear();
     }
 
     //------------------------
@@ -1879,7 +1888,7 @@ void ctedit::on_cboProtocol_currentIndexChanged(int index)
     int         nTotalFree = 0;
     bool        fPortOk = false;
 
-    qDebug("on_cboProtocol_currentIndexChanged(): Index: [%d]", index);
+    // qDebug("on_cboProtocol_currentIndexChanged(): Index: [%d]", index);
     szTemp.clear();
     // No Index
     if (index == -1)  {
@@ -2144,6 +2153,7 @@ void ctedit::displayUserMenu(const QPoint &pos)
     QList<int>      lstDestRows;
     QList<int>      lstSourceRows;
     QLatin1String   szModuleMessage("Enter the RTU port and node ID for the device [%1].\n You can later change these settings in the configuration form");
+    QLatin1String   szModuleMPSN100("Enter the RTU port and node ID for the device [%1].\n Node ID should be greater than 41");
 
 
 
@@ -2212,30 +2222,41 @@ void ctedit::displayUserMenu(const QPoint &pos)
     // Sep 3
     gridMenu.addSeparator();
     // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale
+    // Moduli MPNC
     QAction *addMPNC006 = gridMenu.addAction(cIco, trUtf8("Paste MPNC006 Modules"));
     addMPNC006->setEnabled(isSerialPortEnabled
-                           && (m_nGridRow + lstMPNC006_Vars.count()) < MIN_DIAG - 1);
+                                && lstMPNC006_Vars.count() > 0
+                                && (m_nGridRow + lstMPNC006_Vars.count()) < MIN_DIAG - 1);
+    // Modulo MPNE
     QAction *addMPNE1001 = gridMenu.addAction(cIco, trUtf8("Paste MPNE1001 Module"));
     addMPNE1001->setEnabled(isSerialPortEnabled
-                          && (m_nGridRow + lstMPNE_Vars.count()) < MIN_DIAG - 1);
-    // Menu per importazione delle variabili per modelli MECT connessi su Bus Seriale (solo per TPLC050)
+                                && lstMPNE_Vars.count() > 0
+                                && (m_nGridRow + lstMPNE_Vars.count()) < MIN_DIAG - 1);
+    // Modulo MPSN100
+    QAction *addMPSN100 = gridMenu.addAction(cIco, trUtf8("Paste MPSN100 Module"));
+    addMPSN100->setEnabled(isSerialPortEnabled
+                                && lstMPSN100_Vars.count() > 0
+                                && (m_nGridRow + lstMPSN100_Vars.count()) < MIN_DIAG - 1);
+    // Definizione variabili TPLC050 (solo per TPLC050)
     QAction *addTPLC050 = gridMenu.addAction(cIco, trUtf8("Paste TPLC050 Modules"));
     addTPLC050->setVisible(panelConfig.modelName.contains(szTPLC050)
-                           && (m_nGridRow + lstTPLC050_Vars.count()) < MIN_DIAG - 1);
+                                && lstTPLC050_Vars.count() > 0
+                                && (m_nGridRow + lstTPLC050_Vars.count()) < MIN_DIAG - 1);
     addTPLC050->setEnabled(addTPLC050->isVisible());
-    // Menu per importazione delle variabili per il modulo aggiuntivo MPNE_05 (solo su TPX1070_03)
+    // Modulo aggiuntivo MPNE_05 (solo su TPX1070_03)
     QAction *addMPNE100105 = gridMenu.addAction(cIco, trUtf8("Paste MPNE100105 Module"));
     addMPNE100105->setVisible(isSerialPortEnabled
-                           && panelConfig.modelName.startsWith(szTPX1070)
-                           && (m_nGridRow + lstMPNE100105_Vars.count()) < MIN_DIAG - 1);
+                                && panelConfig.modelName.startsWith(szTPX1070)
+                                && lstMPNE100105_Vars.count() > 0
+                                && (m_nGridRow + lstMPNE100105_Vars.count()) < MIN_DIAG - 1);
     addMPNE100105->setEnabled(addMPNE100105->isVisible() && not m_fMPNE100105_Present);
-    // Menu per Salto a variabili  per il modulo aggiuntivo MPNE_05 (solo su TPX1070_03)
+    // Modulo aggiuntivo MPNE_05 (solo su TPX1070_03)
     QAction *jump2MPNE100105 = gridMenu.addAction(cIco, trUtf8("Jump to MPNE100105 Module"));
     jump2MPNE100105->setVisible(isSerialPortEnabled
-                           && panelConfig.modelName.startsWith(szTPX1070) );
+                                && panelConfig.modelName.startsWith(szTPX1070) );
     jump2MPNE100105->setEnabled(jump2MPNE100105->isVisible() && m_fMPNE100105_Present &&
                                 not isMPNE05_Row(m_nGridRow));
-    // Menù Grafico per MPNC // MPNE
+    // Jump a menù Grafico per MPNC // MPNE
     QAction *editMPNC = 0;
     QAction *editMPNE = 0;
     if (isSerialPortEnabled)  {
@@ -2319,6 +2340,26 @@ void ctedit::displayUserMenu(const QPoint &pos)
                 addModelVars(szMPNE1001, m_nGridRow, nPort, nNode);
                 m_fRefreshSerialConf = true;
                 ui->tabWidget->setCurrentIndex(TAB_MPNE);
+            }
+            qryPort->deleteLater();
+        }
+    }
+    // Add MPSN100
+    else if (actMenu == addMPSN100)  {
+        // Controllo dell'area di destinazione
+        if (checkFreeArea(nRow, lstMPSN100_Vars.count()))  {
+            // Richiesta Porta e Nodo di destinazione
+            int nPort = -1;
+            int nNode = -1;
+            QString szMsg = QString(szModuleMPSN100) .arg(szMPSN100);
+            queryPortNode *qryPort = new queryPortNode(szMectTitle, szMsg, this);
+            qryPort->setFirstNode(nMPSN100FirstNode);
+            qryPort->setModal(true);
+            int nResPort = qryPort->exec();
+            if (nResPort == QDialog::Accepted)  {
+                qryPort->getPortNode(nPort, nNode);
+                addModelVars(szMPSN100, m_nGridRow, nPort, nNode);
+                m_fRefreshSerialConf = true;
             }
             qryPort->deleteLater();
         }
@@ -6340,7 +6381,7 @@ bool ctedit::getRowsFromXMLBuffer(QString &szBuffer, QList<QStringList> &lstPast
     // Return value
     return fClipSourceOk;
 }
-bool ctedit::readModelVars(const QString szModelName, QList<CrossTableRecord> &lstModelVars)
+bool ctedit::readModelVars(const QString szModelName, QList<CrossTableRecord> &lstModelVars, bool fUpdateColSizes)
 {
     QString     szFileName = szModelName + szXMLExt;
     bool        fRes = false;
@@ -6371,14 +6412,17 @@ bool ctedit::readModelVars(const QString szModelName, QList<CrossTableRecord> &l
                     lstModelVars.append(ctRec);
                     freeCTrec(lstModelVars, nRow);
                     fieldValues2CTrecList(lstModelFields[nRow], lstModelVars, nRow);
-                    // Aggiorna la larghezza della colonna VarName
-                    // lstMPNxHeadSizes[colMPNxName];
-                    if (lstModelFields[nRow][colName].length() > lstMPNxHeadSizes[colMPNxName])  {
-                        lstMPNxHeadSizes[colMPNxName] = lstModelFields[nRow][colName].length();
-                    }
-                    // Aggiorna la larghezza della colonna commento
-                    if (lstModelFields[nRow][colComment].length() > lstMPNxHeadSizes[colMPNxComment])  {
-                        lstMPNxHeadSizes[colMPNxComment] = lstModelFields[nRow][colComment].length();
+                    // Calcolo delle massime larghezze della colonna Nome e Commento, utili per disegnare il form di MPNx
+                    if (fUpdateColSizes)  {
+                        // Aggiorna la larghezza della colonna VarName
+                        // lstMPNxHeadSizes[colMPNxName];
+                        if (lstModelFields[nRow][colName].length() > lstMPNxHeadSizes[colMPNxName])  {
+                            lstMPNxHeadSizes[colMPNxName] = lstModelFields[nRow][colName].length();
+                        }
+                        // Aggiorna la larghezza della colonna commento
+                        if (lstModelFields[nRow][colComment].length() > lstMPNxHeadSizes[colMPNxComment])  {
+                            lstMPNxHeadSizes[colMPNxComment] = lstModelFields[nRow][colComment].length();
+                        }
                     }
                 }
             }

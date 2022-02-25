@@ -104,6 +104,8 @@ const QString szMPNE1001 = QString::fromAscii("MPNE1001");
 const QString szTPLC050  = QString::fromAscii("TPLC050");
 const QString szMPNE100105  = QString::fromAscii("MPNE100105");
 const QString szTPX1070  = QString::fromAscii("TPX1070_03");
+const QString szMPSN100  = QString::fromAscii("MPSN100");
+const int     nMPSN100FirstNode = 42;
 
 enum colonne_e
 {

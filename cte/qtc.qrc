@@ -60,6 +60,7 @@
         <file>models/MPNC006.xml</file>
         <file>models/MPNE1001.xml</file>
         <file>models/MPNE100105.xml</file>
+        <file>models/MPSN100.xml</file>
     </qresource>
     <qresource prefix="/qss">
         <file>CTE.qss</file>

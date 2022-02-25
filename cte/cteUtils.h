@@ -47,6 +47,7 @@ extern QList<CrossTableRecord> lstMPNC006_Vars; // Lista delle Variabili MPNC006
 extern QList<CrossTableRecord> lstTPLC050_Vars; // Lista delle Variabili TPLC050
 extern QList<CrossTableRecord> lstMPNE_Vars;    // Lista delle Variabili MPNE
 extern QList<CrossTableRecord> lstMPNE100105_Vars;  // Lista delle Variabili MPNE - Modulo 05
+extern QList<CrossTableRecord> lstMPSN100_Vars; // Lista delle Variabili Sensori Temperatura MPSN100
 
 
 // Colori per sfondi grid

@@ -34,9 +34,7 @@ queryPortNode::queryPortNode(const QString &szTitle, QString &szMessage, QWidget
     }
     ui->cboPort->setEnabled(nPorts > 1);
     // Default Node to 1
-    ui->txtNode->setText(QLatin1String("1"));
-    // Int Validator
-    ui->txtNode->setValidator(new QIntValidator(1, nMaxRTUNodeID, this));
+    setFirstNode(1);
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(validatePort()));
 }
 
@@ -55,7 +53,6 @@ void queryPortNode::getPortNode(int &nPort, int&nNode)
 }
 
 void queryPortNode::validatePort()
-
 {
     QString szTemp;
     bool    fOk = false;
@@ -70,3 +67,11 @@ void queryPortNode::validatePort()
         this->reject();
     }
 }
+
+void queryPortNode::setFirstNode(int nNode)
+{
+    ui->txtNode->setText(QString::number(nNode));
+    // Int Validator
+    ui->txtNode->setValidator(new QIntValidator(nNode, nMaxRTUNodeID, this));
+}
+
