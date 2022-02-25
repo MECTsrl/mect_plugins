@@ -103,9 +103,14 @@ int readIniFile(void)
     LOG_PRINT(verbose_e, "'%s' = %d\n", WINDOW_SEC_TAG, MaxWindowSec);
 
     MaxLogUsageMb = settings.value(MAX_SPACE_AVAILABLE_TAG, MAX_SPACE_AVAILABLE_DEF).toInt();
-    MaxLogUsageMb = (MaxLogUsageMb < 0) ? 0 : MaxLogUsageMb;
-    if (MaxLogUsageMb == 0)
+    // Bug #1303
+    if (MaxLogUsageMb > MAX_SPACE_AVAILABLE_MAX) {
+        LOG_PRINT(warning_e, "Reserved Log Space of [%d]MB exceeds limit. Forced to:[%d].\n", MaxLogUsageMb, MAX_SPACE_AVAILABLE_MAX);
+        MaxLogUsageMb = MAX_SPACE_AVAILABLE_MAX;
+    }
+    else if (MaxLogUsageMb <= 0)
     {
+        MaxLogUsageMb = 0;
         LOG_PRINT(warning_e, "No space available for logs [%d]. No logs will be recorded.\n", MaxLogUsageMb);
     }
     LOG_PRINT(verbose_e, "'%s' = %d\n", MAX_SPACE_AVAILABLE_TAG, MaxLogUsageMb);

@@ -577,14 +577,16 @@ void system_ini::save_all()
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be greater than 'Fast Log Period' parameter."));
             return;
         }
-        if (ui->pushButton_MaxLogSpace->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be greater than 0."));
-            return;
+        int nLogSize = ui->pushButton_MaxLogSpace->text().toInt(&OK);
+        if(OK)  {
+            if (nLogSize < 1 || nLogSize > MAX_SPACE_AVAILABLE_MAX)
+            {
+                QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be between [%d] and [%d].") .arg(1) .arg(MAX_SPACE_AVAILABLE_MAX));
+                return;
+            }
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
+        /* Controllo che il valore inserito non sia diverso da un numero */
+        else {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be a number."));
             return;
         }
