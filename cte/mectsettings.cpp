@@ -42,7 +42,7 @@ MectSettings::MectSettings(QWidget *parent) :
     ui->lineEdit_SlowLogPeriod->setValidator(new QIntValidator(2, nMax_Int16, this));
     ui->lineEdit_FastLogPeriod->setValidator(new QIntValidator(1, nMax_Int16, this));
     ui->lineEdit_MaxLogSpace->setValidator(new QIntValidator(1, MAX_LOG_SPACE_AVAILABLE, this));
-    ui->lineEdit_TraceWindow->setValidator(new QIntValidator(0, TREND_WINDOW_MAX, this));
+    ui->lineEdit_TraceWindow->setValidator(new QIntValidator(3, TREND_WINDOW_MAX, this));
     /* SERIAL 0 */
     ui->lineEdit_Silence_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_Timeout_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
@@ -55,6 +55,10 @@ MectSettings::MectSettings(QWidget *parent) :
     ui->lineEdit_Silence_SERIAL_PORT_2->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_Timeout_SERIAL_PORT_2->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
+    /* SERIAL 3 */
+    ui->lineEdit_Silence_SERIAL_PORT_3->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Timeout_SERIAL_PORT_3->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* TCP_IP */
     ui->lineEdit_Silence_TCP_IP_PORT->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_Timeout_TCP_IP_PORT->setValidator(new QIntValidator(0, nMax_Int16, this));
@@ -541,12 +545,14 @@ void MectSettings::on_cmdSave_clicked()
 {
 
     // Controllo del contenuto dei campi
-    if (! checkFields())
+    if (! checkFields())  {
         return;
-    if (fileBackUp(m_szFileSettings))
+    }
+    if (fileBackUp(m_szFileSettings))  {
         saveOrCheckAll(m_szFileSettings, false);
-    else
+    }  else  {
         QMessageBox::critical(0,trUtf8("Error"),trUtf8("Error creating back up copy of file: %1") .arg(m_szFileSettings));
+    }
 
 }
 bool MectSettings::checkOrSet(QSettings &settings, QString szKey, QString szValue, bool checkOnly, bool isChanged)
@@ -706,6 +712,7 @@ bool MectSettings::saveOrCheckAll(QString szFileName, bool checkOnly)
     notifyUser(this, szMectTitle, m_szMsg);
     return true;
 }
+
 bool MectSettings::checkFields()
 // Controllo del contenuto dei campi
 {
@@ -713,196 +720,108 @@ bool MectSettings::checkFields()
     bool    OK = false;
     int     nVal = 0;
 
-
     //------------------------
     // Tab System
     //------------------------
-    if (ui->lineEdit_Retries->text().toInt(&OK) < 0 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Retries' parameter must be greater than or egual 0."));
+    // Retries
+    nVal = ui->lineEdit_Retries->text().toInt(&OK);
+    if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Retries' parameter must be between [0] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Retries' parameter must be a number."));
+    // Blacklist
+    nVal = ui->lineEdit_Blacklist->text().toInt(&OK);
+    if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Blacklist' parameter must be between [0] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-    if (ui->lineEdit_Blacklist->text().toInt(&OK) < 0 && OK == true)
+    // Read Period1
+    nVal = ui->lineEdit_ReadPeriod1->text().toInt(&OK);
+    if (nVal < 1 || nVal > nMax_Int16 || ! OK)  {
     {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Blacklist' parameter must be greater than or egual 0."));
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 1' parameter must between [1] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Blacklist' parameter must be a number."));
+    // Read Period2
+    nVal = ui->lineEdit_ReadPeriod2->text().toInt(&OK);
+    if (nVal < 1 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must between [1] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if (ui->lineEdit_ReadPeriod1->text().toInt(&OK) < 1 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 1' parameter must be greater than 0."));
+    // Read Period3
+    nVal = ui->lineEdit_ReadPeriod3->text().toInt(&OK);
+    if (nVal < 1 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must between [1] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 1' parameter must be a number."));
-        goto exitCheck;
-    }
-
-    if (ui->lineEdit_ReadPeriod2->text().toInt(&OK) < 2 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must be greater than 1."));
-        goto exitCheck;
-    }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must be a number."));
-        goto exitCheck;
-    }
-
-    if (ui->lineEdit_ReadPeriod3->text().toInt(&OK) < 3 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must be greater than 2."));
-        goto exitCheck;
-    }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must be a number."));
-        goto exitCheck;
-    }
-
-    if (ui->lineEdit_ReadPeriod3->text().toInt() < ui->lineEdit_ReadPeriod2->text().toInt())
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must be greater than 'Read Period 2' parameter."));
-        goto exitCheck;
-    }
-
-    if (ui->lineEdit_ReadPeriod2->text().toInt() < ui->lineEdit_ReadPeriod1->text().toInt())
-    {
+    // RP2 > RP1 || - RP3??
+    if (ui->lineEdit_ReadPeriod2->text().toInt() < ui->lineEdit_ReadPeriod1->text().toInt()) {
         QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must be greater than 'Read Period 1' parameter."));
         goto exitCheck;
     }
-    if (ui->lineEdit_PwdTimeout->text().toInt(&OK) < 0 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Pwd Timeout' parameter must be greater than or egual 0."));
+    // PwdTimeout
+    nVal = ui->lineEdit_PwdTimeout->text().toInt(&OK);
+    if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Pwd Timeout' parameter must be between [0] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Pwd Timeout' parameter must be a number."));
+    // Screen Saver
+    nVal = ui->lineEdit_ScreenSaver->text().toInt(&OK);
+    if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Screen Saver' parameter must be between [0] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if (ui->lineEdit_ScreenSaver->text().toInt(&OK) < 0 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Screen Saver' parameter must be greater than or egual 0."));
+    // Slow Log Period
+    nVal = ui->lineEdit_SlowLogPeriod->text().toInt(&OK);
+    if (nVal < 2 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be between [2] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Screen Saver' parameter must be a number."));
+    // Fast Log
+    nVal = ui->lineEdit_FastLogPeriod->text().toInt(&OK);
+    if (nVal < 1 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Fast Log Period' parameter must be between [1] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if (ui->lineEdit_SlowLogPeriod->text().toInt(&OK) < 2 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be greater than 1."));
-        goto exitCheck;
-    }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be a number."));
-        goto exitCheck;
-    }
-
-    if (ui->lineEdit_FastLogPeriod->text().toInt(&OK) < 1 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Fast Log Period' parameter must be greater than 0."));
-        goto exitCheck;
-    }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Fast Log Period' parameter must be a number."));
-        goto exitCheck;
-    }
-
-    if (ui->lineEdit_SlowLogPeriod->text().toInt() < ui->lineEdit_FastLogPeriod->text().toInt())
-    {
+    // Slow Log > Fast Log
+    if (ui->lineEdit_SlowLogPeriod->text().toInt() < ui->lineEdit_FastLogPeriod->text().toInt())  {
         QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be greater than 'Fast Log Period' parameter."));
         goto exitCheck;
     }
-    if (ui->lineEdit_MaxLogSpace->text().toInt(&OK) <= 0 && ui->lineEdit_MaxLogSpace->text().toInt(&OK) > MAX_LOG_SPACE_AVAILABLE && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be greater than 0 and less than %1.").arg(MAX_LOG_SPACE_AVAILABLE));
+    // Max Log Space
+    nVal = ui->lineEdit_MaxLogSpace->text().toInt(&OK);
+    if (nVal < 1 || nVal > MAX_LOG_SPACE_AVAILABLE || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be between [1] and [%d]") .arg(MAX_LOG_SPACE_AVAILABLE));
         goto exitCheck;
     }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be a number."));
+    // Trace Window
+    nVal = ui->lineEdit_TraceWindow->text().toInt(&OK);
+    if (nVal < 3 || nVal > nMax_Int16 || ! OK)  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be between [3] and [%d]") .arg(nMax_Int16));
         goto exitCheck;
     }
-
-    if (ui->lineEdit_TraceWindow->text().toInt(&OK) < 3 && OK == true)
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be greater than 2."));
-        goto exitCheck;
-    }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be a number."));
-        goto exitCheck;
-    }
-
-    if (ui->lineEdit_TraceWindow->text().toInt() < (ui->lineEdit_FastLogPeriod->text().toInt()* 3))
-    {
+    // TraceWindow < 3 * FastLog
+    if (ui->lineEdit_TraceWindow->text().toInt() < (ui->lineEdit_FastLogPeriod->text().toInt()* 3))  {
         QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be at least three times 'Fast Log Period' parameter."));
         goto exitCheck;
     }
-
-    if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-    {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be a number."));
-        goto exitCheck;
-    }
     //------------------------
-    /* SERIAL 0 */
+    // SERIAL 0
     //------------------------
     if (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)  {
-        if (ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be greater than or egual 0."));
+        // Silence
+        nVal = ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be between [0] and [%d]") .arg(nMax_Int16));
             goto exitCheck;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be a number."));
+        // Timeout
+        nVal = ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be between [0] and [%d]") .arg(nMax_Int16));
             goto exitCheck;
         }
-
-        if (ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 0."));
-            goto exitCheck;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be a number."));
-            goto exitCheck;
-        }
-
+        // Silence vs Timeout
         if (ui->lineEdit_Timeout_SERIAL_PORT_0->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_0->text().toInt())
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
@@ -910,45 +829,28 @@ bool MectSettings::checkFields()
         }
         // Max Block Size
         nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->text().toInt(&OK);
-        if (OK == true && nVal < 1)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
-            goto exitCheck;
-        }
-        if (OK == true && nVal > MAXBLOCKSIZE)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+        if (nVal < 0 || nVal > MAXBLOCKSIZE || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Max Block Size' parameter must be between [1] and [%d]") .arg(MAXBLOCKSIZE));
             goto exitCheck;
         }
     }
     //------------------------
-    /* SERIAL 1 */
+    // SERIAL 1
     //------------------------
     if (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)  {
-        if (ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be greater than or egual 0."));
+        // Silence
+        nVal = ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be between [0] and [%d]") .arg(nMax_Int16));
             goto exitCheck;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be a number."));
+        // Timeout
+        nVal = ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be between [0] and [%d]") .arg(nMax_Int16));
             goto exitCheck;
         }
-
-        if (ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 0."));
-            goto exitCheck;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be a number."));
-            goto exitCheck;
-        }
-
+        // Silence vs Timeout
         if (ui->lineEdit_Timeout_SERIAL_PORT_1->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_1->text().toInt())
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
@@ -956,45 +858,28 @@ bool MectSettings::checkFields()
         }
         // Max Block Size
         nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->text().toInt(&OK);
-        if (OK == true && nVal < 1)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
-            goto exitCheck;
-        }
-        if (OK == true && nVal > MAXBLOCKSIZE)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+        if (nVal < 0 || nVal > MAXBLOCKSIZE || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Max Block Size' parameter must be between [1] and [%d]") .arg(MAXBLOCKSIZE));
             goto exitCheck;
         }
     }
     //------------------------
-    /* SERIAL 2 */
+    // SERIAL 2
     //------------------------
     if (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)  {
-        if (ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be greater than or egual 0."));
+        // Silence
+        nVal = ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be between [0] and [%d]") .arg(nMax_Int16));
             goto exitCheck;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be a number."));
+        // Timeout
+        nVal = ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be between [0] and [%d]") .arg(nMax_Int16));
             goto exitCheck;
         }
-
-        if (ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 0."));
-            goto exitCheck;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be a number."));
-            goto exitCheck;
-        }
-
+        // Silence vs Timeout
         if (ui->lineEdit_Timeout_SERIAL_PORT_2->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_2->text().toInt())
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
@@ -1002,45 +887,57 @@ bool MectSettings::checkFields()
         }
         // Max Block Size
         nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->text().toInt(&OK);
-        if (OK == true && nVal < 1)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
-            goto exitCheck;
-        }
-        if (OK == true && nVal > MAXBLOCKSIZE)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+        if (nVal < 0 || nVal > MAXBLOCKSIZE || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Max Block Size' parameter must be between [1] and [%d]") .arg(MAXBLOCKSIZE));
             goto exitCheck;
         }
     }
     //------------------------
-    /* TCP_IP */
+    // SERIAL 3
+    //------------------------
+    if (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)  {
+        // Silence
+        nVal = ui->lineEdit_Silence_SERIAL_PORT_3->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be between [0] and [%d]") .arg(nMax_Int16));
+            goto exitCheck;
+        }
+        // Timeout
+        nVal = ui->lineEdit_Timeout_SERIAL_PORT_3->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be between [0] and [%d]") .arg(nMax_Int16));
+            goto exitCheck;
+        }
+        // Silence vs Timeout
+        if (ui->lineEdit_Timeout_SERIAL_PORT_3->text().toInt() <= ui->lineEdit_Silence_SERIAL_PORT_3->text().toInt())
+        {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
+            goto exitCheck;
+        }
+        // Max Block Size
+        nVal = ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->text().toInt(&OK);
+        if (nVal < 0 || nVal > MAXBLOCKSIZE || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Max Block Size' parameter must be between [1] and [%d]") .arg(MAXBLOCKSIZE));
+            goto exitCheck;
+        }
+    }
+    //------------------------
+    // TCP_IP
     //------------------------
     if (m_tabEnabled[tabTCP])  {
-        if (ui->lineEdit_Silence_TCP_IP_PORT->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be greater than or egual 0."));
+        // Silence
+        nVal = ui->lineEdit_Silence_TCP_IP_PORT->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be be between [0] and [%d]") .arg(nMax_Int16));
             goto exitCheck;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be a number."));
-            goto exitCheck;
-        }
-
-        if (ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt(&OK) < 1 && OK == true)
-        {
+        // Timeout
+        nVal = ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt(&OK);
+        if (nVal < 0 || nVal > nMax_Int16 || ! OK)  {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 0."));
             goto exitCheck;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be a number."));
-            goto exitCheck;
-        }
-
+        // Silence vs Timeout
         if (ui->lineEdit_Timeout_TCP_IP_PORT->text().toInt() <= ui->lineEdit_Silence_TCP_IP_PORT->text().toInt())
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
@@ -1048,14 +945,8 @@ bool MectSettings::checkFields()
         }
         // Max Block Size
         nVal = ui->lineEdit_MaxBlockSize_TCP_IP_PORT->text().toInt(&OK);
-        if (OK == true && nVal < 1)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
-            goto exitCheck;
-        }
-        if (OK == true && nVal > MAXBLOCKSIZE)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+        if (nVal < 0 || nVal > MAXBLOCKSIZE || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Max Block Size' parameter must be between [1] and [%d]") .arg(MAXBLOCKSIZE));
             goto exitCheck;
         }
     }
@@ -1065,14 +956,8 @@ bool MectSettings::checkFields()
     if (m_tabEnabled[tabCan0])  {
         // Max Block Size
         nVal = ui->lineEdit_MaxBlockSize_CANOPEN_0->text().toInt(&OK);
-        if (OK == true && nVal < 1)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
-            goto exitCheck;
-        }
-        if (OK == true && nVal > MAXBLOCKSIZE)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+        if (nVal < 1 || nVal > MAXBLOCKSIZE || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be between [1] and [%d]") .arg(MAXBLOCKSIZE));
             goto exitCheck;
         }
     }
@@ -1082,14 +967,8 @@ bool MectSettings::checkFields()
     if (m_tabEnabled[tabCan1])  {
         // Max Block Size
         nVal = ui->lineEdit_MaxBlockSize_CANOPEN_1->text().toInt(&OK);
-        if (OK == true && nVal < 1)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be greater than or egual to 1."));
-            goto exitCheck;
-        }
-        if (OK == true && nVal > MAXBLOCKSIZE)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_0' tab, the 'Max Block Size' parameter must be smaller than or egual to %1.") .arg(MAXBLOCKSIZE));
+        if (nVal < 1 || nVal > MAXBLOCKSIZE || ! OK)  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'CAN_1' tab, the 'Max Block Size' parameter must be between [1] and [%d]") .arg(MAXBLOCKSIZE));
             goto exitCheck;
         }
     }
