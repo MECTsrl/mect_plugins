@@ -26,6 +26,7 @@ const  char     cFloat = 102;           // Carattere f per formattazione Floatin
     bool        queryUser(QWidget * parent, const QString &szTitle, const QString &szQueryMessage, bool fDefault = false);     // Domanda all'Utente se procedere, return True se Ok
     void        notifyUser(QWidget * parent, const QString &szTitle, const QString &szMessage);         // Notifica all'Utente il messaggio con solo il tasto Ok
     void        warnUser(QWidget * parent, const QString &szTitle, const QString &szMessage);           // Notifica all'Utente il messaggio con solo il tasto Ok e Icona Warning
+    bool        checkIntField(const QString szField, int nMin, int nMax);   // Controlla che il valore contenuto nella stringa sia un numero compreso tra Min e Max
     QString     num2Hex(int nValue, int nLen = 2);                          // Converte un numero in stringa Hex, con padding a 0 a Sx per nLen Chars
     QString     int2PaddedString(int nValue, int nLen, int nBase=10);       // Converte un numero in stringa Dec/Hex, con padding a 0 a Sx per nLen Chars
     QString     long2PaddedString(quint64 nValue, int nLen, int nBase=10);  // Converte un numero long in stringa Dec/Hex, con padding a 0 a Sx per nLen Chars

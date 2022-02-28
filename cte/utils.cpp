@@ -154,6 +154,22 @@ void warnUser(QWidget * parent, const QString &szTitle, const QString &szMessage
     QMessageBox::critical(parent, szTitle, szMessage);
 }
 
+bool    checkIntField(const QString szField, int nMin, int nMax)
+// Controlla che il valore contenuto nella stringa sia un numero compreso tra Min e Max
+{
+    bool    isOk = false;
+    int     nVal = 0;
+
+    nVal = szField.toInt(&isOk);
+    if (nVal < nMin || nVal > nMax || ! isOk)  {
+        isOk = false;
+    }
+    else {
+        isOk = true;
+    }
+    return isOk;
+}
+
 QString num2Hex(int nValue, int nLen)
 // Converte un numero in stringa Hex, con padding a 0 a Sx per nLen Chars
 {
