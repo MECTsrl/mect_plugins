@@ -125,6 +125,7 @@ private:
     void    fillDeviceTree(int nCurRow = 0);        // Riempimento Albero dei device collegati al TP
     void    fillTimingsTree(int nCurRow = 0);       // Riempimento Albero delle variabili raggruppate per Priorità (Timings)
     void    fillLogTree(int nCurRow = 0);           // Riempimento Albero delle variabili raggruppate per Log Period
+    void    fillAlarmTree(int nCurRow = 0);         // Riempimento Albero delle variabili in Allarmi o Eventi
     // Devices and Timing tree
     QTreeWidgetItem *addItem2Tree(QTreeWidgetItem *tParent, int nRole, const QString &szName, const QString &szInfo, const QString &szTimings, const QString &szToolTip);    // Aggiunta di un Item all'albero
     QTreeWidgetItem *addVariable2Tree(QTreeWidgetItem *tParent, int nRow, int nLevel = treeVariable);      // Aggiunge la variabile della riga nRow agganciandola al nodo tParent. Ritorna oggetto

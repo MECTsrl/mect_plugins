@@ -78,6 +78,7 @@
 #define TAB_MPNC 5
 #define TAB_MPNE 6
 #define TAB_LOG 7
+#define TAB_ALARMS 8
 
 #undef  WORD_BIT
 
@@ -543,6 +544,7 @@ ctedit::ctedit(QWidget *parent) :
     ui->tabWidget->setTabEnabled(TAB_MPNC, true);
     ui->tabWidget->setTabEnabled(TAB_MPNE, true);
     ui->tabWidget->setTabEnabled(TAB_LOG, true);
+    ui->tabWidget->setTabEnabled(TAB_ALARMS, true);
     ui->tabWidget->setCurrentIndex(TAB_CT);
 
     // Connessione Segnali - Slot
@@ -556,6 +558,7 @@ ctedit::ctedit(QWidget *parent) :
     connect(ui->deviceTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
     connect(ui->timingTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
     connect(ui->logTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
+    connect(ui->alarmTree, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeItemDoubleClicked(QModelIndex)));
     // Tab MPNC
     connect(configMPNC, SIGNAL(varClicked(int)), this, SLOT(return2GridRow(int)));
     connect(configMPNE, SIGNAL(varClicked(int)), this, SLOT(return2GridRow(int)));
@@ -3438,6 +3441,10 @@ void ctedit::tabSelected(int nTab)
         qDebug() << QString::fromAscii("Log Tab Selected %1") .arg(ui->logTree->columnCount());
         fillLogTree(m_nGridRow);
     }
+    else if (nTab == TAB_ALARMS)  {
+        qDebug() << QString::fromAscii("Alarms Tab Selected %1") .arg(ui->alarmTree->columnCount());
+        fillAlarmTree(m_nGridRow);
+    }
     // Set Current Tab
     m_nCurTab = nTab;
 }
@@ -3497,6 +3504,7 @@ void ctedit::enableInterface()
         ui->tabWidget->setTabEnabled(TAB_MPNC, false);
         ui->tabWidget->setTabEnabled(TAB_MPNE, false);
         ui->tabWidget->setTabEnabled(TAB_LOG, false);
+        ui->tabWidget->setTabEnabled(TAB_ALARMS, false);
         ui->fraCondition->setVisible(false);
     }
     else {
@@ -3531,6 +3539,15 @@ void ctedit::enableInterface()
             }
             else  {
                 ui->tabWidget->setTabEnabled(TAB_LOG, false);
+            }
+            // Tab Allarmi
+            int nAlarms = 0;
+            int nEvents = 0;
+            if (countAlarmEventVars(lstCTRecords, nAlarms, nEvents))  {
+                ui->tabWidget->setTabEnabled(TAB_ALARMS, true);
+            }
+            else  {
+                ui->tabWidget->setTabEnabled(TAB_ALARMS, false);
             }
         }
         m_fRefreshSerialConf = false;
@@ -7897,7 +7914,7 @@ void    ctedit::fillLogTree(int nCurRow)
     QString         szTimings;
     QString         szToolTip;
     QStringList     lstTreeHeads;
-    QFont           treeFont = ui->deviceTree->font();
+    QFont           treeFont = ui->logTree->font();
     int             nRow = 0;
     int             nLogLevel = Ptype;
     int             nUsedVariables = 0;
@@ -8010,6 +8027,115 @@ void    ctedit::fillLogTree(int nCurRow)
     ui->logTree->header()->resizeSection(colTreeName, (ui->logTree->width() / 5) - 12);
     ui->logTree->header()->resizeSection(colTreeInfo, (ui->logTree->width() / 5) * 3 - 12);
     ui->logTree->header()->resizeSections(QHeaderView::Interactive);
+}
+
+void    ctedit::fillAlarmTree(int nCurRow)
+// Riempimento Albero delle variabili in Allarmi o Eventi
+{
+    QTreeWidgetItem *tParent;
+    QTreeWidgetItem *tRoot;
+    QTreeWidgetItem *tNewVariable;
+    QTreeWidgetItem *tAlarm;
+    QTreeWidgetItem *tEvent;
+    QTreeWidgetItem *tCurrentVariable;
+    QString         szName;
+    QString         szInfo;
+    QString         szTimings;
+    QString         szToolTip;
+    QStringList     lstTreeHeads;
+    QFont           treeFont = ui->alarmTree->font();
+    int             nRow = 0;
+    int             nUsedVariables = 0;
+
+    int nAlarms = 0;
+    int nEvents = 0;
+    // Preparing Tree
+    ui->alarmTree->clear();
+    lstTreeHeads.clear();
+    lstTreeHeads.append(QLatin1String("Alarms / Events"));
+    lstTreeHeads.append(QLatin1String("Variables"));
+    lstTreeHeads.append(szEMPTY);
+    treeFont.setFixedPitch(true);
+    ui->alarmTree->setFont(treeFont);
+    ui->alarmTree->setColumnCount(colTreeTotals);
+    tRoot = new QTreeWidgetItem(ui->alarmTree, treeRoot);
+    tRoot->setText(colTreeName, m_szCurrentModel);
+    tCurrentVariable = 0;
+    // Check Elements
+    if (countAlarmEventVars(lstCTRecords, nAlarms, nEvents) <= 0)  {
+        return;
+    }
+    // Rebuild Server-Device-Nodes structures
+    if (not checkServersDevicesAndNodes())  {
+        m_szMsg = QString::fromAscii("Error checking Device and Nodes structure, cannot show %1 Tree !") .arg(QLatin1String("Devices"));
+        warnUser(this, szMectTitle, m_szMsg);
+        return;
+    }
+    // Crea i Nodi per i 2 Livelli di Allarme o Evento
+    szTimings.clear();
+    szToolTip.clear();
+    tParent = 0;
+    tNewVariable = 0;
+    // Fast Log
+    szName = QLatin1String("A\tAlarms");
+    szInfo = QString::fromAscii("Alarms: %1\t") .arg(nAlarms, 6, 10);
+    tAlarm = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
+    // Slow Log
+    szName = QLatin1String("E\tEvents");
+    szInfo = QString::fromAscii("Events: %1\t") .arg(nEvents, 6, 10);
+    tEvent = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
+    // Variables Loop
+    for (nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
+        // Considera solo le Variabili che devono essere Loggate
+        if (lstCTRecords[nRow].UsedEntry && lstCTRecords[nRow].Enable > 0)  {
+            nUsedVariables++;
+            tParent = 0;
+            szTimings.clear();
+            // Detect Alarms or Event
+            if (lstCTRecords[nRow].usedInAlarmsEvents > 0)  {
+                if (lstCTRecords[nRow].ALType == Alarm)  {
+                    tParent = tAlarm;
+                }
+                else if (lstCTRecords[nRow].ALType == Event)  {
+                    tParent = tEvent;
+                }
+            }
+            // Add Variable
+            tNewVariable = 0;
+            if (tParent != 0)  {
+                tNewVariable = addVariable2Tree(tParent, nRow, treeNode);
+                // Compose Condition Field in tree
+
+                // Seleziona la variabile se coincide con la riga corrente
+                if (nCurRow >= 0 && nRow == nCurRow && tNewVariable != 0)  {
+                    tCurrentVariable = tNewVariable;
+                }
+            }
+        }
+    }
+    // Aggiornamento delle Informazioni del Nodo Principale
+    tRoot->setExpanded(true);
+    szInfo = QString::fromAscii("Total Variables: %1\t") .arg(nUsedVariables, 6, 10);
+    szInfo.append(QString::fromAscii("Alarms: %1\t") .arg(nAlarms, 6, 10));
+    szInfo.append(QString::fromAscii("Events: %1\t") .arg(nEvents, 6, 10));
+    tRoot->setText(colTreeInfo, szInfo);
+    tRoot->setToolTip(colTreeName, ui->lblModel->toolTip());
+    tRoot->setSelected(true);
+    // Seleziona l'item corrispondente alla riga corrente
+    // Salto alla riga corrispondente alla variabile selezionata in griglia CT
+    if (tCurrentVariable != 0)  {
+        tCurrentVariable->setSelected(true);
+        ui->alarmTree->scrollToItem(tCurrentVariable, QAbstractItemView::PositionAtCenter);
+    }
+    else {
+    }
+    // Tree Header
+    ui->alarmTree->setHeaderLabels(lstTreeHeads);
+    ui->alarmTree->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->alarmTree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->alarmTree->header()->resizeSection(colTreeName, (ui->alarmTree->width() / 5) - 12);
+    ui->alarmTree->header()->resizeSection(colTreeInfo, (ui->alarmTree->width() / 5) * 3 - 12);
+    ui->alarmTree->header()->resizeSections(QHeaderView::Interactive);
 }
 
 void    ctedit::showTabMPNC()

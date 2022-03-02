@@ -996,6 +996,26 @@ int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSl
     return nLoggedVars;
 }
 
+int     countAlarmEventVars(QList<CrossTableRecord> &CTRecords, int &nAlarms, int &nEvents)
+// Conta il Numero delle Variabili CT legate ad allarmi o eventi
+{
+    int     nRow = 0;
+
+    nAlarms = 0;
+    nEvents = 0;
+    for (nRow = 0; nRow < CTRecords.count(); nRow++)  {
+        if (CTRecords[nRow].UsedEntry && CTRecords[nRow].Enable > 0 && CTRecords[nRow].usedInAlarmsEvents > 0)  {
+            if (CTRecords[nRow].ALType == Alarm)  {
+                ++nAlarms;
+            }
+            else if (CTRecords[nRow].ALType == Event)  {
+                ++nEvents;
+            }
+        }
+    }
+    return (nAlarms + nEvents);
+}
+
 bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int> &lstLeftCols, int nRow)
 // Inserimento o modifica elemento in Grid (valori -> GRID)
 {

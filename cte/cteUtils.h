@@ -72,7 +72,8 @@ bool    recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstR
 bool    recCT2SearchFieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecValues, int nRow);  // Conversione da CT Record a Lista Stringhe per Grid Search (REC -> Grid)
 bool    fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &lstCTRecs, int nRow);     // Conversione da Lista Stringhe a CT Record (Grid -> REC SINGOLO)
 void    freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow);                    // Marca il Record della CT come inutilizzato
-int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSlow, int &nOnVar, int &nOnShot);                 // Conta il Numero delle Variabili CT che sono Loggate
+int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSlow, int &nOnVar, int &nOnShot);         // Conta il Numero delle Variabili CT che sono Loggate
+int     countAlarmEventVars(QList<CrossTableRecord> &CTRecords, int &nAlarms, int &nEvents);                            // Conta il Numero delle Variabili CT legate ad allarmi o eventi
 int     compareCTwithTemplate(QList<CrossTableRecord> &CTProject, QList<CrossTableRecord> &CTTemplate, TP_Config &configTP, QList<int> &lstDiff, QStringList &lstActions, bool forceDiff);
 bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int> &lstLeftCols, int nRow);   // Inserimento o modifica elemento in Grid (valori -> GRID)
 
