@@ -27,12 +27,13 @@
 #define MAX_TCPSRV_REGS 4095
 
 // Int Constants
-const int nCTCols = 13;
-const int nMax_Int16 = 65535;
-const int nMaxNodeID = 255;
-const int nMaxRTUNodeID = 247;
+const int nCTCols           = 13;
+const int nMax_Int16        = 32767;
+const int nMax_UInt16       = 65535;
+const int nMaxNodeID        = 255;
+const int nMaxRTUNodeID     = 247;
 const int nStartInputRegister = 300000;
-const int nMaxInputRegister = nStartInputRegister + nMax_Int16;
+const int nMaxInputRegister = nStartInputRegister + nMax_UInt16;
 const int nMaxRegister = 49999;
 const int nCompareDecimals = 4;
 const int nRowColWidth = 5;

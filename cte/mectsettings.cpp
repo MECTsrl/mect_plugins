@@ -34,34 +34,34 @@ MectSettings::MectSettings(QWidget *parent) :
     // Impostazione degli opportuni Validator per i campi integers
     ui->lineEdit_Retries->setValidator(new QIntValidator(0, nMax_Int16, this));
     ui->lineEdit_Blacklist->setValidator(new QIntValidator(0, nMax_Int16, this));
-    ui->lineEdit_ReadPeriod1->setValidator(new QIntValidator(1, nMax_Int16, this));
-    ui->lineEdit_ReadPeriod2->setValidator(new QIntValidator(1, nMax_Int16, this));
-    ui->lineEdit_ReadPeriod3->setValidator(new QIntValidator(1, nMax_Int16, this));
-    ui->lineEdit_PwdTimeout->setValidator(new QIntValidator(0, nMax_Int16, this));
-    ui->lineEdit_ScreenSaver->setValidator(new QIntValidator(0, nMax_Int16, this));
-    ui->lineEdit_SlowLogPeriod->setValidator(new QIntValidator(2, nMax_Int16, this));
-    ui->lineEdit_FastLogPeriod->setValidator(new QIntValidator(1, nMax_Int16, this));
+    ui->lineEdit_ReadPeriod1->setValidator(new QIntValidator(1, nMax_UInt16, this));
+    ui->lineEdit_ReadPeriod2->setValidator(new QIntValidator(1, nMax_UInt16, this));
+    ui->lineEdit_ReadPeriod3->setValidator(new QIntValidator(1, nMax_UInt16, this));
+    ui->lineEdit_PwdTimeout->setValidator(new QIntValidator(0, nMax_UInt16, this));
+    ui->lineEdit_ScreenSaver->setValidator(new QIntValidator(0, nMax_UInt16, this));
+    ui->lineEdit_SlowLogPeriod->setValidator(new QIntValidator(2, nMax_UInt16, this));
+    ui->lineEdit_FastLogPeriod->setValidator(new QIntValidator(1, nMax_UInt16, this));
     ui->lineEdit_MaxLogSpace->setValidator(new QIntValidator(1, MAX_LOG_SPACE_AVAILABLE, this));
     ui->lineEdit_TraceWindow->setValidator(new QIntValidator(3, TREND_WINDOW_MAX, this));
     /* SERIAL 0 */
-    ui->lineEdit_Silence_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
-    ui->lineEdit_Timeout_SERIAL_PORT_0->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Silence_SERIAL_PORT_0->setValidator(new QIntValidator(1, nMax_UInt16, this));
+    ui->lineEdit_Timeout_SERIAL_PORT_0->setValidator(new QIntValidator(1, nMax_UInt16, this));
     ui->lineEdit_MaxBlockSize_SERIAL_PORT_0->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* SERIAL 1 */
-    ui->lineEdit_Silence_SERIAL_PORT_1->setValidator(new QIntValidator(0, nMax_Int16, this));
-    ui->lineEdit_Timeout_SERIAL_PORT_1->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Silence_SERIAL_PORT_1->setValidator(new QIntValidator(1, nMax_UInt16, this));
+    ui->lineEdit_Timeout_SERIAL_PORT_1->setValidator(new QIntValidator(1, nMax_UInt16, this));
     ui->lineEdit_MaxBlockSize_SERIAL_PORT_1->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* SERIAL 2 */
-    ui->lineEdit_Silence_SERIAL_PORT_2->setValidator(new QIntValidator(0, nMax_Int16, this));
-    ui->lineEdit_Timeout_SERIAL_PORT_2->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Silence_SERIAL_PORT_2->setValidator(new QIntValidator(1, nMax_UInt16, this));
+    ui->lineEdit_Timeout_SERIAL_PORT_2->setValidator(new QIntValidator(1, nMax_UInt16, this));
     ui->lineEdit_MaxBlockSize_SERIAL_PORT_2->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* SERIAL 3 */
-    ui->lineEdit_Silence_SERIAL_PORT_3->setValidator(new QIntValidator(0, nMax_Int16, this));
-    ui->lineEdit_Timeout_SERIAL_PORT_3->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Silence_SERIAL_PORT_3->setValidator(new QIntValidator(1, nMax_UInt16, this));
+    ui->lineEdit_Timeout_SERIAL_PORT_3->setValidator(new QIntValidator(1, nMax_UInt16, this));
     ui->lineEdit_MaxBlockSize_SERIAL_PORT_3->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* TCP_IP */
-    ui->lineEdit_Silence_TCP_IP_PORT->setValidator(new QIntValidator(0, nMax_Int16, this));
-    ui->lineEdit_Timeout_TCP_IP_PORT->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->lineEdit_Silence_TCP_IP_PORT->setValidator(new QIntValidator(0, nMax_UInt16, this));
+    ui->lineEdit_Timeout_TCP_IP_PORT->setValidator(new QIntValidator(0, nMax_UInt16, this));
     ui->lineEdit_MaxBlockSize_TCP_IP_PORT->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
     /* CAN 0*/
     ui->lineEdit_MaxBlockSize_CANOPEN_0->setValidator(new QIntValidator(1, MAXBLOCKSIZE, this));
@@ -72,8 +72,9 @@ MectSettings::MectSettings(QWidget *parent) :
     m_szModel.clear();
     m_isIniModified = false;
     // Tab Enabler
-    for (i = 0; i < tabTotals; i++)
+    for (i = 0; i < tabTotals; i++)  {
         m_tabEnabled[i] = true;
+    }
 
 }
 
@@ -734,20 +735,20 @@ bool MectSettings::checkFields()
         goto exitCheck;
     }
     // Read Period1
-    if (!checkIntField(ui->lineEdit_ReadPeriod1->text(), 1, nMax_Int16))  {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 1' parameter must between [1] and [%1]") .arg(nMax_Int16));
+    if (!checkIntField(ui->lineEdit_ReadPeriod1->text(), 1, nMax_UInt16))  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 1' parameter must between [1] and [%1]") .arg(nMax_UInt16));
         ui->lineEdit_ReadPeriod1->setFocus();
         goto exitCheck;
     }
     // Read Period2
-    if (!checkIntField(ui->lineEdit_ReadPeriod2->text(), 1, nMax_Int16))  {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must between [1] and [%1]") .arg(nMax_Int16));
+    if (!checkIntField(ui->lineEdit_ReadPeriod2->text(), 1, nMax_UInt16))  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must between [1] and [%1]") .arg(nMax_UInt16));
         ui->lineEdit_ReadPeriod2->setFocus();
         goto exitCheck;
     }
     // Read Period3
-    if (!checkIntField(ui->lineEdit_ReadPeriod3->text(), 1, nMax_Int16))  {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must between [1] and [%1]") .arg(nMax_Int16));
+    if (!checkIntField(ui->lineEdit_ReadPeriod3->text(), 1, nMax_UInt16))  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must between [1] and [%1]") .arg(nMax_UInt16));
         ui->lineEdit_ReadPeriod3->setFocus();
         goto exitCheck;
     }
@@ -764,26 +765,26 @@ bool MectSettings::checkFields()
         goto exitCheck;
     }
     // PwdTimeout
-    if (!checkIntField(ui->lineEdit_PwdTimeout->text(), 0, nMax_Int16))  {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Pwd Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+    if (!checkIntField(ui->lineEdit_PwdTimeout->text(), 0, nMax_UInt16))  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Pwd Timeout' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
         ui->lineEdit_PwdTimeout->setFocus();
         goto exitCheck;
     }
     // Screen Saver
-    if (!checkIntField(ui->lineEdit_ScreenSaver->text(), 0, nMax_Int16))  {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Screen Saver' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+    if (!checkIntField(ui->lineEdit_ScreenSaver->text(), 0, nMax_UInt16))  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Screen Saver' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
         ui->lineEdit_ScreenSaver->setFocus();
         goto exitCheck;
     }
     // Slow Log Period
-    if (!checkIntField(ui->lineEdit_SlowLogPeriod->text(), 2, nMax_Int16))  {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be between [2] and [%1]") .arg(nMax_Int16));
+    if (!checkIntField(ui->lineEdit_SlowLogPeriod->text(), 2, nMax_UInt16))  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be between [2] and [%1]") .arg(nMax_UInt16));
         ui->lineEdit_SlowLogPeriod->setFocus();
         goto exitCheck;
     }
     // Fast Log
-    if (!checkIntField(ui->lineEdit_FastLogPeriod->text(), 1, nMax_Int16))  {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Fast Log Period' parameter must be between [1] and [%1]") .arg(nMax_Int16));
+    if (!checkIntField(ui->lineEdit_FastLogPeriod->text(), 1, nMax_UInt16))  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Fast Log Period' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
         ui->lineEdit_FastLogPeriod->setFocus();
         goto exitCheck;
     }
@@ -800,8 +801,8 @@ bool MectSettings::checkFields()
         goto exitCheck;
     }
     // Trace Window
-    if (!checkIntField(ui->lineEdit_TraceWindow->text(), 3, nMax_Int16))  {
-        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be between [3] and [%1]") .arg(nMax_Int16));
+    if (!checkIntField(ui->lineEdit_TraceWindow->text(), 3, nMax_UInt16))  {
+        QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be between [3] and [%1]") .arg(nMax_UInt16));
         ui->lineEdit_TraceWindow->setFocus();
         goto exitCheck;
     }
@@ -816,14 +817,14 @@ bool MectSettings::checkFields()
     //------------------------
     if (m_tabEnabled[tabSerial0] && ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)  {
         // Silence
-        if (!checkIntField(ui->lineEdit_Silence_SERIAL_PORT_0->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Silence_SERIAL_PORT_0->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Silence_SERIAL_PORT_0->setFocus();
             goto exitCheck;
         }
         // Timeout
-        if (!checkIntField(ui->lineEdit_Timeout_SERIAL_PORT_0->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Timeout_SERIAL_PORT_0->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Timeout_SERIAL_PORT_0->setFocus();
             goto exitCheck;
         }
@@ -846,14 +847,14 @@ bool MectSettings::checkFields()
     //------------------------
     if (m_tabEnabled[tabSerial1] && ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)  {
         // Silence
-        if (!checkIntField(ui->lineEdit_Silence_SERIAL_PORT_1->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Silence_SERIAL_PORT_1->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Silence_SERIAL_PORT_1->setFocus();
             goto exitCheck;
         }
         // Timeout
-        if (!checkIntField(ui->lineEdit_Timeout_SERIAL_PORT_1->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Timeout_SERIAL_PORT_1->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Timeout_SERIAL_PORT_1->setFocus();
             goto exitCheck;
         }
@@ -876,14 +877,14 @@ bool MectSettings::checkFields()
     //------------------------
     if (m_tabEnabled[tabSerial2] && ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)  {
         // Silence
-        if (!checkIntField(ui->lineEdit_Silence_SERIAL_PORT_2->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Silence_SERIAL_PORT_2->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Silence_SERIAL_PORT_2->setFocus();
             goto exitCheck;
         }
         // Timeout
-        if (!checkIntField(ui->lineEdit_Timeout_SERIAL_PORT_2->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Timeout_SERIAL_PORT_2->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Timeout_SERIAL_PORT_2->setFocus();
             goto exitCheck;
         }
@@ -906,14 +907,14 @@ bool MectSettings::checkFields()
     //------------------------
     if (m_tabEnabled[tabSerial3] && ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)  {
         // Silence
-        if (!checkIntField(ui->lineEdit_Silence_SERIAL_PORT_3->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Silence_SERIAL_PORT_3->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Silence_SERIAL_PORT_3->setFocus();
             goto exitCheck;
         }
         // Timeout
-        if (!checkIntField(ui->lineEdit_Timeout_SERIAL_PORT_3->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Timeout_SERIAL_PORT_3->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Timeout_SERIAL_PORT_3->setFocus();
             goto exitCheck;
         }
@@ -936,14 +937,14 @@ bool MectSettings::checkFields()
     //------------------------
     if (m_tabEnabled[tabTCP])  {
         // Silence
-        if (!checkIntField(ui->lineEdit_Silence_TCP_IP_PORT->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Silence_TCP_IP_PORT->text(), 0, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be be between [0] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Silence_TCP_IP_PORT->setFocus();
             goto exitCheck;
         }
         // Timeout
-        if (!checkIntField(ui->lineEdit_Timeout_TCP_IP_PORT->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->lineEdit_Timeout_TCP_IP_PORT->text(), 0, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             ui->lineEdit_Timeout_TCP_IP_PORT->setFocus();
             goto exitCheck;
         }

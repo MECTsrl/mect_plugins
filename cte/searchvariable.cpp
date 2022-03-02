@@ -44,7 +44,7 @@ SearchVariable::SearchVariable(QWidget *parent) :
     }
     ui->cboProtocol->setCurrentIndex(-1);
     // Validator per txtPort - txtNode
-    ui->txtPort->setValidator(new QIntValidator(0, nMax_Int16, this));
+    ui->txtPort->setValidator(new QIntValidator(0, nMax_UInt16, this));
     ui->txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
     // Reset dei filtri a carattere
     ui->txtVarname->clear();

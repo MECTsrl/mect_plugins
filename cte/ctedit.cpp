@@ -437,9 +437,9 @@ ctedit::ctedit(QWidget *parent) :
     lstSelectedRows.clear();
     // Validator per Interi
     ui->txtDecimal->setValidator(new QIntValidator(nValMin, DimCrossTable, this));
-    ui->txtPort->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
+    ui->txtPort->setValidator(new QIntValidator(nValMin, nMax_UInt16, this));
     ui->txtNode->setValidator(new QIntValidator(0, nMaxNodeID, this));
-    ui->txtRegister->setValidator(new QIntValidator(nValMin, nMax_Int16, this));
+    ui->txtRegister->setValidator(new QIntValidator(nValMin, nMax_UInt16, this));
     ui->txtBlock->setValidator(new QIntValidator(nValMin, nValMax, this));
     ui->txtBlockSize->setValidator(new QIntValidator(nValMin, nValMax, this));
     // Validatori per Double
@@ -1869,7 +1869,7 @@ void ctedit::on_cboType_currentIndexChanged(int index)
 
 //    nVal = fOk ? nVal : 0;
 //    // Passaggio da valore normale a Input Register
-//    if (checked && (nVal >= 0 && nVal <= nMax_Int16))  {
+//    if (checked && (nVal >= 0 && nVal <= nMax_UInt16))  {
 //        nVal += nStartInputRegister;
 //    }
 //    if (! checked && nVal >= nStartInputRegister)  {
@@ -4064,7 +4064,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
     // Protocolli TCP
     else if (nProtocol == TCP || nProtocol == TCPRTU || nProtocol == TCP_SRV || nProtocol == TCPRTU_SRV)  {
         // # Porta fuori Range
-        if (nPort < 0 || nPort > nMax_Int16)  {
+        if (nPort < 0 || nPort > nMax_UInt16)  {
             fillErrorMessage(nRow, colPort, errCTNoPort, szVarName, szTemp, chSeverityError, &errCt);
             lstCTErrors.append(errCt);
             nErrors++;
@@ -4223,7 +4223,7 @@ int ctedit::checkFormFields(int nRow, QStringList &lstValues, bool fSingleLine)
             }
             else {
                 // Range allowed: 0..65535
-                if (nRegister < 0 || nRegister > nMax_Int16)  {
+                if (nRegister < 0 || nRegister > nMax_UInt16)  {
                     fillErrorMessage(nRow, colRegister, errCTNoRegister, szVarName, szTemp, chSeverityError, &errCt);
                     lstCTErrors.append(errCt);
                     nErrors++;
@@ -6221,7 +6221,7 @@ bool ctedit::isValidPort(int nPort, int nProtocol)
         case TCPRTU:
         case TCP_SRV:
         case TCPRTU_SRV:
-        if ((nPort > 0 && nPort <= nMax_Int16) && (panelConfig.ethPorts > 0)) {
+        if ((nPort > 0 && nPort <= nMax_UInt16) && (panelConfig.ethPorts > 0)) {
                 if (nPort != nPortFTPControl && nPort != nPortSFTP && nPort != nPortTELNET && nPort != nPortHTTP && nPort != nPortVNC)  {
                     fRes = true;
                 }

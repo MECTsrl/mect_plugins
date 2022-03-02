@@ -17,7 +17,8 @@
 #include <QDirIterator>
 
 #define MAXBLOCKSIZE 64
-
+#define nMax_UInt16 65535;
+#define nMax_Int16  32767;
 
 /**
  * @brief this macro is used to set the system_ini style.
@@ -430,86 +431,66 @@ system_ini::~system_ini()
     delete ui;
 }
 
+bool system_ini::checkIntField(const QString szField, int nMin, int nMax)
+// Controlla che il valore contenuto nella stringa sia un numero compreso tra Min e Max
+{
+    bool    isOk = false;
+    int     nVal = 0;
+
+    nVal = szField.toInt(&isOk);
+    if (nVal < nMin || nVal > nMax || ! isOk)  {
+        isOk = false;
+    }
+    else {
+        isOk = true;
+    }
+    return isOk;
+}
+
+
 //funzione salvataggio del file
 void system_ini::save_all()
 {
-    bool OK;
 
     QSettings settings(SYSTEM_INI, QSettings::IniFormat);
     QStringList groups = settings.childGroups();
 
     /* SYSTEM */
-    if (groups.indexOf("SYSTEM") >= 0)
-    {
-        if (ui->pushButton_Retries->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Retries' parameter must be greater than or egual 0."));
+    if (groups.indexOf("SYSTEM") >= 0) {
+        // Retries
+        if (!checkIntField(ui->pushButton_Retries->text(), 0, nMax_Int16))  {
+            QMessageBox::critical(0, trUtf8("Error"), trUtf8("'Retries' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+            return;
+        }
+        // Blacklist
+        if (!checkIntField(ui->pushButton_Blacklist->text(), 0, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Blacklist' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+            return;
+        }
+        // Read Period1
+        if (!checkIntField(ui->pushButton_ReadPeriod1->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 1' parameter must between [1] and [%1]") .arg(nMax_UInt16));
+            return;
+        }
+        // Read Period2
+        if (!checkIntField(ui->pushButton_ReadPeriod2->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must between [1] and [%1]") .arg(nMax_UInt16));
+            return;
+        }
+        // Read Period3
+        if (!checkIntField(ui->pushButton_ReadPeriod3->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
 
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Retries' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_Blacklist->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Blacklist' parameter must be greater than or egual 0."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Blacklist' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_ReadPeriod1->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 1' parameter must be greater than 0."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 1' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_ReadPeriod2->text().toInt(&OK) < 2 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must be greater than 1."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_ReadPeriod3->text().toInt(&OK) < 3 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must be greater than 2."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_ReadPeriod3->text().toInt() < ui->pushButton_ReadPeriod2->text().toInt())
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must be greater than 'Read Period 2' parameter."));
-            return;
-        }
-
-        if (ui->pushButton_ReadPeriod2->text().toInt() < ui->pushButton_ReadPeriod1->text().toInt())
-        {
+        // RP2 < RP1
+        if (ui->pushButton_ReadPeriod2->text().toInt() < ui->pushButton_ReadPeriod1->text().toInt())  {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 2' parameter must be greater than 'Read Period 1' parameter."));
+            return;
+        }
+        // RP3 < RP2
+        if (ui->pushButton_ReadPeriod3->text().toInt() < ui->pushButton_ReadPeriod2->text().toInt())  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Read Period 3' parameter must be greater than 'Read Period 2' parameter."));
             return;
         }
 
@@ -524,97 +505,47 @@ void system_ini::save_all()
                 return;
             }
         }*/
-        if (ui->pushButton_PwdTimeout->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Pwd Timeout' parameter must be greater than or egual 0."));
+        // PwdTimeout
+        if (!checkIntField(ui->pushButton_PwdTimeout->text(), 0, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Pwd Timeout' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             return;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Pwd Timeout' parameter must be a number."));
+        // Screen Saver
+        if (!checkIntField(ui->pushButton_ScreenSaver->text(), 0, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Screen Saver' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             return;
         }
-
-        if (ui->pushButton_ScreenSaver->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Screen Saver' parameter must be greater than or egual 0."));
+        // Slow Log Period
+        if (!checkIntField(ui->pushButton_SlowLogPeriod->text(), 2, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be between [2] and [%1]") .arg(nMax_UInt16));
             return;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Screen Saver' parameter must be a number."));
+        // Fast Log
+        if (!checkIntField(ui->pushButton_FastLogPeriod->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Fast Log Period' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
-
-        if (ui->pushButton_SlowLogPeriod->text().toInt(&OK) < 2 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be greater than 1."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_FastLogPeriod->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Fast Log Period' parameter must be greater than 0."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Fast Log Period' parameter must be a number."));
-            return;
-        }
-
+        // Slow Log > Fast Log
         if (ui->pushButton_SlowLogPeriod->text().toInt() < ui->pushButton_FastLogPeriod->text().toInt())
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Slow Log Period' parameter must be greater than 'Fast Log Period' parameter."));
             return;
         }
-        int nLogSize = ui->pushButton_MaxLogSpace->text().toInt(&OK);
-        if(OK)  {
-            if (nLogSize < 1 || nLogSize > MAX_SPACE_AVAILABLE_MAX)
-            {
-                QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be between [%d] and [%d].") .arg(1) .arg(MAX_SPACE_AVAILABLE_MAX));
-                return;
-            }
-        }
-        /* Controllo che il valore inserito non sia diverso da un numero */
-        else {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be a number."));
+        // Max Log Space
+        if (!checkIntField(ui->pushButton_MaxLogSpace->text(), 1, MAX_SPACE_AVAILABLE_MAX))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Max Log Space' parameter must be between [1] and [%1]") .arg(MAX_SPACE_AVAILABLE_MAX));
             return;
         }
-
-        if (ui->pushButton_TraceWindow->text().toInt(&OK) < 3 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be greater than 2."));
+        // Trace Window
+        if (!checkIntField(ui->pushButton_TraceWindow->text(), 3, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be between [3] and [%1]") .arg(nMax_UInt16));
             return;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_TraceWindow->text().toInt() < (ui->pushButton_FastLogPeriod->text().toInt()* 3))
-        {
+        // TraceWindow < 3 * FastLog
+        if (ui->pushButton_TraceWindow->text().toInt() < (ui->pushButton_FastLogPeriod->text().toInt()* 3))  {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("'Trace Window' parameter must be at least three times 'Fast Log Period' parameter."));
             return;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be a number."));
-            return;
-        }
-
         settings.setValue("SYSTEM/language", LanguageMap.key(ui->comboBoxLanguage->currentText(),DEFAULT_LANGUAGE));
         settings.setValue("SYSTEM/retries", ui->pushButton_Retries->text());
         settings.setValue("SYSTEM/blacklist", ui->pushButton_Blacklist->text());
@@ -635,28 +566,24 @@ void system_ini::save_all()
         settings.sync();
     }
     /* SERIAL 0 */
-    if (groups.indexOf("SERIAL_PORT_0") >= 0)
-    {
-        if (ui->pushButton_Timeout_SERIAL_PORT_0->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 0."));
+    if (groups.indexOf("SERIAL_PORT_0") >= 0)  {
+        // Silence
+        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_0->text(), 1, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be a number."));
+        // Timeout
+        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_0->text(), 1, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if (ui->pushButton_Timeout_SERIAL_PORT_0->text().toInt() <= ui->pushButton_Silence_SERIAL_PORT_0->text().toInt())
-        {
+        // Silence vs Timeout
+        if (ui->pushButton_Timeout_SERIAL_PORT_0->text().toInt() <= ui->pushButton_Silence_SERIAL_PORT_0->text().toInt())  {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
             return;
         }
-
-        if (ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)
-        {
+        // Baud Rate
+        if (ui->comboBox_Baudrate_SERIAL_PORT_0->currentIndex() > 0)  {
             settings.setValue("SERIAL_PORT_0/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_0->currentText());
             settings.setValue("SERIAL_PORT_0/databits", ui->comboBox_Databits_SERIAL_PORT_0->currentText());
             settings.setValue("SERIAL_PORT_0/parity", ui->comboBox_Parity_SERIAL_PORT_0->currentText());
@@ -664,47 +591,30 @@ void system_ini::save_all()
             settings.setValue("SERIAL_PORT_0/silence_ms", ui->pushButton_Silence_SERIAL_PORT_0->text());
             settings.setValue("SERIAL_PORT_0/timeout_ms", ui->pushButton_Timeout_SERIAL_PORT_0->text());
         }
-        else
-        {
+        else   {
             settings.remove("SERIAL_PORT_0");
         }
         settings.sync();
     }
     /* SERIAL 1 */
-    if (groups.indexOf("SERIAL_PORT_1") >= 0)
-    {
-        if (ui->pushButton_Silence_SERIAL_PORT_1->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be greater than or egual 0."));
+    if (groups.indexOf("SERIAL_PORT_1") >= 0)  {
+        // Silence
+        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_1->text(), 1, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be a number."));
+        // Timeout
+        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_1->text(), 1, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if (ui->pushButton_Timeout_SERIAL_PORT_1->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 0."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_Timeout_SERIAL_PORT_1->text().toInt() <= ui->pushButton_Silence_SERIAL_PORT_1->text().toInt())
-        {
+        // Silence vs Timeout
+        if (ui->pushButton_Timeout_SERIAL_PORT_1->text().toInt() <= ui->pushButton_Silence_SERIAL_PORT_1->text().toInt())  {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
             return;
         }
-
-        if (ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)
-        {
+        // Baud Rate
+        if (ui->comboBox_Baudrate_SERIAL_PORT_1->currentIndex() > 0)  {
             settings.setValue("SERIAL_PORT_1/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_1->currentText());
             settings.setValue("SERIAL_PORT_1/databits", ui->comboBox_Databits_SERIAL_PORT_1->currentText());
             settings.setValue("SERIAL_PORT_1/parity", ui->comboBox_Parity_SERIAL_PORT_1->currentText());
@@ -712,46 +622,30 @@ void system_ini::save_all()
             settings.setValue("SERIAL_PORT_1/silence_ms", ui->pushButton_Silence_SERIAL_PORT_1->text());
             settings.setValue("SERIAL_PORT_1/timeout_ms", ui->pushButton_Timeout_SERIAL_PORT_1->text());
         }
-        else
-        {
+        else  {
             settings.remove("SERIAL_PORT_1");
         }
         settings.sync();
     }
     /* SERIAL 2 */
-    if (groups.indexOf("SERIAL_PORT_2") >= 0)
-    {
-        if (ui->pushButton_Silence_SERIAL_PORT_2->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be greater than or egual 0."));
+    if (groups.indexOf("SERIAL_PORT_2") >= 0)  {
+        // Silence
+        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_2->text(), 1, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be a number."));
+        // Timeout
+        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_2->text(), 1, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if (ui->pushButton_Timeout_SERIAL_PORT_2->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 0."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_Timeout_SERIAL_PORT_2->text().toInt() <= ui->pushButton_Silence_SERIAL_PORT_2->text().toInt())
-        {
+        // Silence vs Timeout
+        if (ui->pushButton_Timeout_SERIAL_PORT_2->text().toInt() <= ui->pushButton_Silence_SERIAL_PORT_2->text().toInt())  {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
             return;
         }
-
-        if (ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)
-        {
+        // Baud Rate
+        if (ui->comboBox_Baudrate_SERIAL_PORT_2->currentIndex() > 0)  {
             settings.setValue("SERIAL_PORT_2/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_2->currentText());
             settings.setValue("SERIAL_PORT_2/databits", ui->comboBox_Databits_SERIAL_PORT_2->currentText());
             settings.setValue("SERIAL_PORT_2/parity", ui->comboBox_Parity_SERIAL_PORT_2->currentText());
@@ -759,47 +653,31 @@ void system_ini::save_all()
             settings.setValue("SERIAL_PORT_2/silence_ms", ui->pushButton_Silence_SERIAL_PORT_2->text());
             settings.setValue("SERIAL_PORT_2/timeout_ms", ui->pushButton_Timeout_SERIAL_PORT_2->text());
         }
-        else
-        {
+        else  {
             settings.remove("SERIAL_PORT_2");
         }
         settings.sync();
     }
     /* SERIAL 3 */
-    if (groups.indexOf("SERIAL_PORT_3") >= 0)
-    {
-        if (ui->pushButton_Silence_SERIAL_PORT_3->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be greater than or egual 0."));
+    if (groups.indexOf("SERIAL_PORT_3") >= 0)  {
+        // Silence
+        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_3->text(), 1, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be a number."));
+        // Timeout
+        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_3->text(), 1, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if (ui->pushButton_Timeout_SERIAL_PORT_3->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be greater than 0."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be a number."));
-            return;
-        }
-
+        // Silence vs Timeout
         if (ui->pushButton_Timeout_SERIAL_PORT_3->text().toInt() <= ui->pushButton_Silence_SERIAL_PORT_3->text().toInt())
         {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
             return;
         }
-
-        if (ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)
-        {
+        // Baud Rate
+        if (ui->comboBox_Baudrate_SERIAL_PORT_3->currentIndex() > 0)  {
             settings.setValue("SERIAL_PORT_3/baudrate", ui->comboBox_Baudrate_SERIAL_PORT_3->currentText());
             settings.setValue("SERIAL_PORT_3/databits", ui->comboBox_Databits_SERIAL_PORT_3->currentText());
             settings.setValue("SERIAL_PORT_3/parity", ui->comboBox_Parity_SERIAL_PORT_3->currentText());
@@ -807,76 +685,52 @@ void system_ini::save_all()
             settings.setValue("SERIAL_PORT_3/silence_ms", ui->pushButton_Silence_SERIAL_PORT_3->text());
             settings.setValue("SERIAL_PORT_3/timeout_ms", ui->pushButton_Timeout_SERIAL_PORT_3->text());
         }
-        else
-        {
+        else  {
             settings.remove("SERIAL_PORT_3");
         }
         settings.sync();
     }
     /* TCP_IP */
-    if (groups.indexOf("TCP_IP_PORT") >= 0)
-    {
-        if (ui->pushButton_Silence_TCP_IP_PORT->text().toInt(&OK) < 0 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be greater than or egual 0."));
+    if (groups.indexOf("TCP_IP_PORT") >= 0)  {
+        // Silence
+        if (!checkIntField(ui->pushButton_Silence_TCP_IP_PORT->text(), 0, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be a number."));
+        // Timeout
+        if (!checkIntField(ui->pushButton_Timeout_TCP_IP_PORT->text(), 0, nMax_Int16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
             return;
         }
-
-        if (ui->pushButton_Timeout_TCP_IP_PORT->text().toInt(&OK) < 1 && OK == true)
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 0."));
-            return;
-        }
-
-        if(OK == false)/*Controllo che il valore inserito non sia diverso da un numero*/
-        {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be a number."));
-            return;
-        }
-
-        if (ui->pushButton_Timeout_TCP_IP_PORT->text().toInt() <= ui->pushButton_Silence_TCP_IP_PORT->text().toInt())
-        {
+        // Silence vs Timeout
+        if (ui->pushButton_Timeout_TCP_IP_PORT->text().toInt() <= ui->pushButton_Silence_TCP_IP_PORT->text().toInt())  {
             QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be greater than 'Silence' parameter."));
             return;
         }
-
         settings.setValue("TCP_IP_PORT/silence_ms", ui->pushButton_Silence_TCP_IP_PORT->text());
         settings.setValue("TCP_IP_PORT/timeout_ms", ui->pushButton_Timeout_TCP_IP_PORT->text());
         settings.sync();
     }
     /* CANOPEN 0 */
-    if (groups.indexOf("CANOPEN_0") >= 0)
-    {
-        if (ui->comboBox_Baudrate_CANOPEN_0->currentIndex() > 0)
-        {
+    if (groups.indexOf("CANOPEN_0") >= 0)  {
+        if (ui->comboBox_Baudrate_CANOPEN_0->currentIndex() > 0)  {
             settings.setValue("CANOPEN_0/baudrate", ui->comboBox_Baudrate_CANOPEN_0->currentText());
         }
-        else
-        {
+        else  {
             settings.remove("CANOPEN_0");
         }
         settings.sync();
     }
     /* CANOPEN 1 */
-    if (groups.indexOf("CANOPEN_1") >= 0)
-    {
-        if (ui->comboBox_Baudrate_CANOPEN_1->currentIndex() > 0)
-        {
+    if (groups.indexOf("CANOPEN_1") >= 0)  {
+        if (ui->comboBox_Baudrate_CANOPEN_1->currentIndex() > 0)  {
             settings.setValue("CANOPEN_1/baudrate", ui->comboBox_Baudrate_CANOPEN_1->currentText());
         }
-        else
-        {
+        else  {
             settings.remove("CANOPEN_1");
         }
         settings.sync();
     }
-
     readIniFile();
 
     QMessageBox::information(0,trUtf8("Information"),trUtf8("Configuration has been successfully saved."));
@@ -885,9 +739,9 @@ void system_ini::save_all()
 void system_ini::on_pushButton_PwdLogoutPage_clicked()
 {
     char value_pwd [32];
-    alphanumpad tastiera_alfanum(value_pwd, ui->pushButton_PwdLogoutPage->text().toAscii().data());//alphanumpad=>tipo oggetto, value => destinazione e valore di default. toAscii().data()=>trasformazione da stringa a Char* xè la dialog box alphanumpad non vuole stringhe
-    tastiera_alfanum.showFullScreen();//schermata intera per la dialog box
-    if(tastiera_alfanum.exec()==QDialog::Accepted)//exec=>eseguo alphanumpad, se quando termina è uguale ad Accepted, ossia è stato premuto OK => devo considerare il nuovo valore da inserire nel bottone
+    alphanumpad tastiera_alfanum(value_pwd, ui->pushButton_PwdLogoutPage->text().toAscii().data());
+    tastiera_alfanum.showFullScreen();
+    if(tastiera_alfanum.exec()==QDialog::Accepted)
     {
         ui->pushButton_PwdLogoutPage->setText(value_pwd);
     }
@@ -933,9 +787,9 @@ void system_ini::on_pushButtonSave_clicked()
 void system_ini::on_pushButton_PwdTimeout_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_PwdTimeout->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_PwdTimeout->text().toInt(), 0, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_PwdTimeout->setText(QString::number(value));
     }
@@ -944,9 +798,9 @@ void system_ini::on_pushButton_PwdTimeout_clicked()
 void system_ini::on_pushButton_ScreenSaver_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_ScreenSaver->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_ScreenSaver->text().toInt(), 0, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_ScreenSaver->setText(QString::number(value));
     }
@@ -955,9 +809,9 @@ void system_ini::on_pushButton_ScreenSaver_clicked()
 void system_ini::on_pushButton_SlowLogPeriod_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_SlowLogPeriod->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_SlowLogPeriod->text().toInt(), 2, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_SlowLogPeriod->setText(QString::number(value));
     }
@@ -966,9 +820,9 @@ void system_ini::on_pushButton_SlowLogPeriod_clicked()
 void system_ini::on_pushButton_FastLogPeriod_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_FastLogPeriod->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_FastLogPeriod->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_FastLogPeriod->setText(QString::number(value));
     }
@@ -976,11 +830,11 @@ void system_ini::on_pushButton_FastLogPeriod_clicked()
 
 void system_ini::on_pushButton_MaxLogSpace_clicked()
 {
-    int value, minvalue = 0, maxvalue = MAX_SPACE_AVAILABLE_MAX;
+    int value;
 
-    numpad tatiera(&value, ui->pushButton_MaxLogSpace->text().toInt(),minvalue,maxvalue);
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_MaxLogSpace->text().toInt(), 1, MAX_SPACE_AVAILABLE_MAX);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_MaxLogSpace->setText(QString::number(value));
     }
@@ -989,9 +843,9 @@ void system_ini::on_pushButton_MaxLogSpace_clicked()
 void system_ini::on_pushButton_TraceWindow_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_TraceWindow->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_TraceWindow->text().toInt(), 3, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_TraceWindow->setText(QString::number(value));
     }
@@ -1000,9 +854,9 @@ void system_ini::on_pushButton_TraceWindow_clicked()
 void system_ini::on_pushButton_Retries_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Retries->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Retries->text().toInt(), 0, nMax_Int16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Retries->setText(QString::number(value));
     }
@@ -1011,9 +865,9 @@ void system_ini::on_pushButton_Retries_clicked()
 void system_ini::on_pushButton_Blacklist_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Blacklist->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Blacklist->text().toInt(), 0, nMax_Int16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Blacklist->setText(QString::number(value));
     }
@@ -1022,9 +876,9 @@ void system_ini::on_pushButton_Blacklist_clicked()
 void system_ini::on_pushButton_ReadPeriod1_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_ReadPeriod1->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_ReadPeriod1->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_ReadPeriod1->setText(QString::number(value));
     }
@@ -1033,9 +887,9 @@ void system_ini::on_pushButton_ReadPeriod1_clicked()
 void system_ini::on_pushButton_ReadPeriod2_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_ReadPeriod2->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_ReadPeriod2->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_ReadPeriod2->setText(QString::number(value));
     }
@@ -1044,9 +898,9 @@ void system_ini::on_pushButton_ReadPeriod2_clicked()
 void system_ini::on_pushButton_ReadPeriod3_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_ReadPeriod3->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_ReadPeriod3->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_ReadPeriod3->setText(QString::number(value));
     }
@@ -1055,9 +909,9 @@ void system_ini::on_pushButton_ReadPeriod3_clicked()
 void system_ini::on_pushButton_Timeout_SERIAL_PORT_0_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Timeout_SERIAL_PORT_0->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Timeout_SERIAL_PORT_0->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Timeout_SERIAL_PORT_0->setText(QString::number(value));
     }
@@ -1066,9 +920,9 @@ void system_ini::on_pushButton_Timeout_SERIAL_PORT_0_clicked()
 void system_ini::on_pushButton_Silence_SERIAL_PORT_0_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Silence_SERIAL_PORT_0->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Silence_SERIAL_PORT_0->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Silence_SERIAL_PORT_0->setText(QString::number(value));
     }
@@ -1077,9 +931,9 @@ void system_ini::on_pushButton_Silence_SERIAL_PORT_0_clicked()
 void system_ini::on_pushButton_Timeout_SERIAL_PORT_1_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Timeout_SERIAL_PORT_1->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Timeout_SERIAL_PORT_1->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Timeout_SERIAL_PORT_1->setText(QString::number(value));
     }
@@ -1088,9 +942,9 @@ void system_ini::on_pushButton_Timeout_SERIAL_PORT_1_clicked()
 void system_ini::on_pushButton_Silence_SERIAL_PORT_1_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Silence_SERIAL_PORT_1->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Silence_SERIAL_PORT_1->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Silence_SERIAL_PORT_1->setText(QString::number(value));
     }
@@ -1099,9 +953,9 @@ void system_ini::on_pushButton_Silence_SERIAL_PORT_1_clicked()
 void system_ini::on_pushButton_Timeout_SERIAL_PORT_2_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Timeout_SERIAL_PORT_2->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Timeout_SERIAL_PORT_2->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Timeout_SERIAL_PORT_2->setText(QString::number(value));
     }
@@ -1110,9 +964,9 @@ void system_ini::on_pushButton_Timeout_SERIAL_PORT_2_clicked()
 void system_ini::on_pushButton_Silence_SERIAL_PORT_2_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Silence_SERIAL_PORT_2->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Silence_SERIAL_PORT_2->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Silence_SERIAL_PORT_2->setText(QString::number(value));
     }
@@ -1121,9 +975,9 @@ void system_ini::on_pushButton_Silence_SERIAL_PORT_2_clicked()
 void system_ini::on_pushButton_Timeout_SERIAL_PORT_3_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Timeout_SERIAL_PORT_3->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Timeout_SERIAL_PORT_3->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Timeout_SERIAL_PORT_3->setText(QString::number(value));
     }
@@ -1132,9 +986,9 @@ void system_ini::on_pushButton_Timeout_SERIAL_PORT_3_clicked()
 void system_ini::on_pushButton_Silence_SERIAL_PORT_3_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Silence_SERIAL_PORT_3->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Silence_SERIAL_PORT_3->text().toInt(), 1, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Silence_SERIAL_PORT_3->setText(QString::number(value));
     }
@@ -1143,9 +997,9 @@ void system_ini::on_pushButton_Silence_SERIAL_PORT_3_clicked()
 void system_ini::on_pushButton_Timeout_TCP_IP_PORT_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Timeout_TCP_IP_PORT->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Timeout_TCP_IP_PORT->text().toInt(), 0, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Timeout_TCP_IP_PORT->setText(QString::number(value));
     }
@@ -1154,9 +1008,9 @@ void system_ini::on_pushButton_Timeout_TCP_IP_PORT_clicked()
 void system_ini::on_pushButton_Silence_TCP_IP_PORT_clicked()
 {
     int value;
-    numpad tatiera(&value, ui->pushButton_Silence_TCP_IP_PORT->text().toInt());
-    tatiera.showFullScreen();
-    if(tatiera.exec()==QDialog::Accepted)
+    numpad tastiera(&value, ui->pushButton_Silence_TCP_IP_PORT->text().toInt(), 0, nMax_UInt16);
+    tastiera.showFullScreen();
+    if(tastiera.exec()==QDialog::Accepted)
     {
         ui->pushButton_Silence_TCP_IP_PORT->setText(QString::number(value));
     }

@@ -552,14 +552,14 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
             lstRecValues[colUpdate] = lstUpdateNames[0];
         }
         // Campo Group
-        if (CTRecords[nRow].Group >= 0 && CTRecords[nRow].Group < nMax_Int16)  {
+        if (CTRecords[nRow].Group >= 0 && CTRecords[nRow].Group < nMax_UInt16)  {
             lstRecValues[colGroup] = QString::number(CTRecords[nRow].Group);
         }
         else  {
             lstRecValues[colGroup] = szZERO;
         }
         // Campo Module
-        if (CTRecords[nRow].Module >= 0 && CTRecords[nRow].Module < nMax_Int16)  {
+        if (CTRecords[nRow].Module >= 0 && CTRecords[nRow].Module < nMax_UInt16)  {
             lstRecValues[colModule] = QString::number(CTRecords[nRow].Module);
         }
         else  {
