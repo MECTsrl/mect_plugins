@@ -17,8 +17,8 @@
 #include <QDirIterator>
 
 #define MAXBLOCKSIZE 64
-#define nMax_UInt16 65535;
-#define nMax_Int16  32767;
+#define nMax_UInt16 65535
+#define nMax_Int16  32767
 
 /**
  * @brief this macro is used to set the system_ini style.
@@ -568,13 +568,13 @@ void system_ini::save_all()
     /* SERIAL 0 */
     if (groups.indexOf("SERIAL_PORT_0") >= 0)  {
         // Silence
-        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_0->text(), 1, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_0->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Silence' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Timeout
-        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_0->text(), 1, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_0->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 0' tab, the 'Timeout' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Silence vs Timeout
@@ -599,13 +599,13 @@ void system_ini::save_all()
     /* SERIAL 1 */
     if (groups.indexOf("SERIAL_PORT_1") >= 0)  {
         // Silence
-        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_1->text(), 1, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_1->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Silence' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Timeout
-        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_1->text(), 1, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_1->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 1' tab, the 'Timeout' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Silence vs Timeout
@@ -630,13 +630,13 @@ void system_ini::save_all()
     /* SERIAL 2 */
     if (groups.indexOf("SERIAL_PORT_2") >= 0)  {
         // Silence
-        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_2->text(), 1, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_2->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Silence' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Timeout
-        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_2->text(), 1, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_2->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 2' tab, the 'Timeout' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Silence vs Timeout
@@ -661,13 +661,13 @@ void system_ini::save_all()
     /* SERIAL 3 */
     if (groups.indexOf("SERIAL_PORT_3") >= 0)  {
         // Silence
-        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_3->text(), 1, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Silence_SERIAL_PORT_3->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Silence' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Timeout
-        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_3->text(), 1, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Timeout_SERIAL_PORT_3->text(), 1, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'SERIAL PORT 3' tab, the 'Timeout' parameter must be between [1] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Silence vs Timeout
@@ -693,13 +693,13 @@ void system_ini::save_all()
     /* TCP_IP */
     if (groups.indexOf("TCP_IP_PORT") >= 0)  {
         // Silence
-        if (!checkIntField(ui->pushButton_Silence_TCP_IP_PORT->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Silence_TCP_IP_PORT->text(), 0, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Silence' parameter must be be between [0] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Timeout
-        if (!checkIntField(ui->pushButton_Timeout_TCP_IP_PORT->text(), 0, nMax_Int16))  {
-            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_Int16));
+        if (!checkIntField(ui->pushButton_Timeout_TCP_IP_PORT->text(), 0, nMax_UInt16))  {
+            QMessageBox::critical(0,trUtf8("Error"),trUtf8("In the 'TCP_IP_PORT' tab, the 'Timeout' parameter must be between [0] and [%1]") .arg(nMax_UInt16));
             return;
         }
         // Silence vs Timeout
