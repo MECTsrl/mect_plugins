@@ -629,15 +629,18 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
                 lstRecValues[colCondition] = szEMPTY;
             // Source Var
             lstRecValues[colSourceVar] = QLatin1String(CTRecords[nRow].ALSource);
-            // Compare Var or Value
-            szTemp = QLatin1String(CTRecords[nRow].ALCompareVar);
-            if (szTemp.isEmpty())
-                lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
-            else
-                lstRecValues[colCompare] = szTemp;
             // Rising o Falling senza seconda parte
             if (CTRecords[nRow].ALOperator == oper_rising || CTRecords[nRow].ALOperator == oper_falling)
                 lstRecValues[colCompare] = szEMPTY;
+            else  {
+                // Right side of expression
+                // Compare Var or Value
+                szTemp = QLatin1String(CTRecords[nRow].ALCompareVar);
+                if (szTemp.isEmpty())
+                    lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
+                else
+                    lstRecValues[colCompare] = szTemp;
+            }
         }
         else   {
             // R/O o R/W
@@ -655,6 +658,36 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
     // qDebug() << QLatin1String("recCT2FieldsValues(): Processed Row=[%1]") .arg(nRow);
     // Return value
     return true;
+}
+
+QString getAlarmEventCondition(CrossTableRecord ctRec)
+// Calcolo dell'espressione di Allarme o Evento per display a video
+{
+    QString szCondition;
+    QString szRightVal;
+
+    // Source Var
+    szCondition = QLatin1String(ctRec.ALSource);
+    szCondition.append(szSpace(1));
+    // Operatore Logico
+    if (ctRec.ALOperator >= 0 && ctRec.ALOperator < oper_totals)
+        szCondition.append(lstCondition[ctRec.ALOperator]);
+    else
+        szCondition.append(szSpace(1));
+    szCondition.append(szSpace(1));
+    // Right side of expression
+    // Rising o Falling
+    if (ctRec.ALOperator == oper_rising || ctRec.ALOperator == oper_falling)
+        szRightVal = szEMPTY;
+    else  {
+        // Compare Var or Value
+        szRightVal = QLatin1String(ctRec.ALCompareVar);
+        if (szRightVal.isEmpty())  {
+            szRightVal = QString::number(ctRec.ALCompareVal, 'f', 4);
+        }
+    }
+    szCondition.append(szRightVal);
+    return szCondition;
 }
 
 void freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow)

@@ -8054,7 +8054,7 @@ void    ctedit::fillAlarmTree(int nCurRow)
     lstTreeHeads.clear();
     lstTreeHeads.append(QLatin1String("Alarms / Events"));
     lstTreeHeads.append(QLatin1String("Variables"));
-    lstTreeHeads.append(szEMPTY);
+    lstTreeHeads.append(QLatin1String("Condition"));
     treeFont.setFixedPitch(true);
     ui->alarmTree->setFont(treeFont);
     ui->alarmTree->setColumnCount(colTreeTotals);
@@ -8076,11 +8076,11 @@ void    ctedit::fillAlarmTree(int nCurRow)
     szToolTip.clear();
     tParent = 0;
     tNewVariable = 0;
-    // Fast Log
+    // Alarms tree
     szName = QLatin1String("A\tAlarms");
     szInfo = QString::fromAscii("Alarms: %1\t") .arg(nAlarms, 6, 10);
     tAlarm = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
-    // Slow Log
+    // Events tree
     szName = QLatin1String("E\tEvents");
     szInfo = QString::fromAscii("Events: %1\t") .arg(nEvents, 6, 10);
     tEvent = addItem2Tree(tRoot, treeDevice, szName, szInfo, szTimings, szToolTip);
@@ -8105,7 +8105,10 @@ void    ctedit::fillAlarmTree(int nCurRow)
             if (tParent != 0)  {
                 tNewVariable = addVariable2Tree(tParent, nRow, treeNode);
                 // Compose Condition Field in tree
-
+                szTimings = getAlarmEventCondition(lstCTRecords[nRow]);
+                if (! szTimings.isEmpty())  {
+                    tNewVariable->setText(colTreeTimings, szTimings);
+                }
                 // Seleziona la variabile se coincide con la riga corrente
                 if (nCurRow >= 0 && nRow == nCurRow && tNewVariable != 0)  {
                     tCurrentVariable = tNewVariable;
