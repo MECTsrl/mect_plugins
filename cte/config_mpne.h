@@ -101,7 +101,6 @@ private:
     // Gestione della testa selezionata e lista delle teste MPNC definite nel sistema
     int                     m_nCurrentCTRow;    // Riga di CT correntemente selezionata
     int                     m_nAbsPos;          // Posizione correntemente visualizzata
-    int                     m_nTotalRows;       // Elementi MPNE
     bool                    m_fUpdated;         // Vero se le info della finestra sono cambiate
     int                     m_nTesta;           // Testa selezionata, -1 se non presente
     QList<int >             lstCapofila;        // Lista con # Riga delle Teste

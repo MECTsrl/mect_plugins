@@ -8148,8 +8148,12 @@ void    ctedit::showTabMPNC()
         // Ricerca della riga corrente nella dimensione dei Blocchi trovati
         for (int nItem = 0; nItem < lstMPNC.count(); nItem++)  {
             if (m_nGridRow >= lstMPNC[nItem] && m_nGridRow < lstMPNC[nItem] + lstMPNC006_Vars.count())  {
-                m_nMPNC = nItem;
-                break;
+                int nPosMpnc = m_nGridRow - lstMPNC[nItem];
+                // Confronto in base al Registro del modello (per gestire elementi opzionali)
+                if (lstCTRecords[m_nGridRow].Offset == lstMPNC006_Vars[nPosMpnc].Offset)  {
+                    m_nMPNC = nItem;
+                    break;
+                }
             }
         }
         configMPNC->localCTRecords = lstCTRecords;
@@ -8160,11 +8164,15 @@ void    ctedit::showTabMPNE()
 {
     if (lstMPNE.count() > 0)  {
         m_nMPNE = 0;
-        // Ricerca della riga corrente nella dimensione dei Blocchi trovati
+        // Ricerca l'occorrenza di MPNE da evidenziare in base alla riga corrente, la Base degli MPNE trovati e le Dimensioni massime dell'MPNE
         for (int nItem = 0; nItem < lstMPNE.count(); nItem++)  {
             if (m_nGridRow >= lstMPNE[nItem] && m_nGridRow < lstMPNE[nItem] + lstMPNE_Vars.count())  {
-                m_nMPNE = nItem;
-                break;
+                int nPosMpne = m_nGridRow - lstMPNE[nItem];
+                // Confronto in base al Registro del modello (per gestire elementi opzionali)
+                if (lstCTRecords[m_nGridRow].Offset == lstMPNE_Vars[nPosMpne].Offset)  {
+                    m_nMPNE = nItem;
+                    break;
+                }
             }
         }
         configMPNE->localCTRecords = lstCTRecords;

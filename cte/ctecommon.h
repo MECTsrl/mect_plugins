@@ -107,7 +107,7 @@ const QString szMPNE100105  = QString::fromAscii("MPNE100105");
 const QString szTPX1070  = QString::fromAscii("TPX1070_03");
 const QString szMPSN100  = QString::fromAscii("MPSN100");
 const int     nMPSN100FirstNode = 42;
-
+const int     nOptionalVarGroup = 100;
 enum colonne_e
 {
     colPriority = 0,

@@ -1239,8 +1239,8 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
                  // CTRecords[nRow].Decimal == CTModel[nModelRow].Decimal &&
                  CTRecords[nRow].Protocol == CT_IOModule[nModelRow].Protocol &&
                  CTRecords[nRow].Offset == CT_IOModule[nModelRow].Offset &&
-                 CTRecords[nRow].Behavior == CT_IOModule[nModelRow].Behavior
-                )  {
+                 CTRecords[nRow].Behavior == CT_IOModule[nModelRow].Behavior )
+                {
                 // Il controllo del Numero Decimali è significativo solo nel caso dei vari Tipi Bit
                 if ((CTRecords[nRow].VarType == BIT ||
                      CTRecords[nRow].VarType == BYTE_BIT ||
@@ -1259,7 +1259,10 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
                 }
                 // Passa alla riga successiva del modello
                 nModelRow++;
+                //----------------------------
                 // Tutto il modello è Ok
+                // Modello trovato e aggiunto in lista
+                //----------------------------
                 if (nModelRow == nModelSize && nBaseRow >= 0)  {
                     // Aggiunge base alla Lista delle Basi modello
                     lstRootRows.append(nBaseRow);
@@ -1269,7 +1272,29 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
                 }
             }
             else  {
+                //----------------------------
+                // Confronto fallito
+                //----------------------------
+                // Se il Modello non è ancora terminato e la riga del Modello è opzionale (Group >= 100),
+                // il confronto prosegue sulla riga successiva del modello
+                // lasciando ferma la riga corrente sulla Cross Table
+                //----------------------------
+                if (nModelRow > 0 && CT_IOModule[nModelRow].Group >= nOptionalVarGroup)  {
+                    nModelRow++;
+                    // Tutto il modello è Ok (salvo le righe opzionali), confronto terminato
+                    // Modello trovato e aggiunto in lista
+                    if (nModelRow == nModelSize && nBaseRow >= 0)  {
+                        // Aggiunge base alla Lista delle Basi modello
+                        lstRootRows.append(nBaseRow);
+                        // Riporta all'inizio il confronto
+                        nModelRow = 0;
+                        // qDebug() << QString::fromAscii("searchIOModules() - Model Found %1 @ Row: %2") .arg(szModule) .arg(nBaseRow);
+                    }
+                    continue;
+                }
+                //----------------------------
                 // Riporta all'inizio il confronto
+                //----------------------------
                 nModelRow = 0;
                 nBaseRow = -1;
             }
