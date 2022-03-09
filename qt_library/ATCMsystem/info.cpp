@@ -511,4 +511,5 @@ void info::on_pushButtonRefresh_clicked()
     refreshSystemTab();
     refreshApplTab();
     refreshNetworkingTabs();
+    refreshNTPInfo();
 }
