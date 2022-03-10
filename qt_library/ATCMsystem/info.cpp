@@ -271,8 +271,11 @@ void info::refreshNetworkingTabs()
             // MAC 70:B3:D5:62:52:11
             // IP[1] 192.168.5.211/24
             // IP[2] 192.168.0.211/24
-            plainText->appendPlainText("MAC " + iface.hardwareAddress());
-            plainText->appendPlainText("");
+            // No MAC for tun0
+            if (plainText != ui->tun0_text)  {
+                plainText->appendPlainText("MAC " + iface.hardwareAddress());
+                plainText->appendPlainText("");
+            }
             for (int n = 0; n < allEntries.count(); ++n) {
                 plainText->appendPlainText(
                     QString("IP[%1] %2/%3")
