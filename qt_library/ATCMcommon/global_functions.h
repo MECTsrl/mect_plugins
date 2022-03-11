@@ -182,6 +182,14 @@ int set_backlight_level(int level);
  */
 int get_backlight_level(void);
 
+bool check_wifi_board();                // returns true if wifi board wlan0 is present
+
+bool check_usb_wan_board();             // returns true if wan board usb_wwan is present
+
+bool get_wifi_signal_level(int &nQuality, int &nSignalLevel);   // Returns true if wlan0 is present and Signal Quality (0..100) and Signal Level (dbm)
+
+bool getBoardGateway(const char * board_name, unsigned &boardGW);   // returns the ip address of default gateway for board <board_name>
+
 bool LoadTrend(const char * trend_name, QString * ErrorMsg);
 
 QObject *getPage(QObject *plugin);

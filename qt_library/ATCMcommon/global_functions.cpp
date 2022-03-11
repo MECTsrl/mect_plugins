@@ -17,9 +17,11 @@
 #include <QDirIterator>
 #include <QFontDatabase>
 #include <QMetaObject>
+#include <QProcess>
 //#include "app_config.h"
 #include "pthread.h"
 #include "hmi_plc.h"
+#include "linux/route.h"
 /**
  * @brief load the passwords
  */
@@ -842,6 +844,103 @@ int get_backlight_level(void)
     }
     fclose(fp);
     return level;
+}
+
+bool get_wifi_signal_level(int &nQuality, int &nSignalLevel)
+// Returns true if wlan0 is present and Signal Quality (0..100) and Signal Level (dbm)
+{
+    bool    fRes = false;
+    nSignalLevel = 0;
+    nQuality = 0;
+
+    if (check_wifi_board())  {
+        int     nRelQty = 0;
+        int     nMax = 0;
+        int     nRet = 0;
+        float   qtyPC = 0.0;
+        char tmp[STR_LEN];
+        const char *fmt = "Link Quality=%d/%d  Signal level=%d dBm";
+        QString szRes;
+        FILE * fp = popen("iwconfig wlan0 2> /dev/null | grep -i  quality", "r");
+        if (fp != NULL)
+        {
+            if(fgets(tmp, STR_LEN, fp) != NULL)        {
+                szRes = QString(tmp).trimmed();
+                nRet = sscanf(szRes.toLatin1().data(), fmt, &nRelQty, &nMax, &nSignalLevel);
+                if (nRet == 3)  {
+                    fRes = true;
+                    // Converting Quality to Percentage
+                    if (nMax > 0 && nRelQty > 0)  {
+                        qtyPC = ((float) nRelQty / (float) nMax) * 100.0;
+                        // Round to Int
+                        nQuality = (int) (qtyPC + 0.5);
+                    }
+                }
+            }
+        }
+        pclose(fp);
+    }
+    return fRes;
+}
+
+bool check_wifi_board()
+// returns true if wifi board wlan0 is present
+{
+    return system("ifconfig wlan0 >/dev/null 2>&1") == 0;
+}
+
+bool check_usb_wan_board()
+// returns true if wan board usb_wwan is present
+{
+    return system("lsmod | grep -q ^usb_wwan && test -e /dev/ttyUSB0") == 0;
+}
+
+bool getBoardGateway(const char * board_name, unsigned &boardGW)
+// returns the ip address of default gateway for board <board_name>
+{
+    bool    fRes = false;
+    FILE *fp = NULL;
+    char buff[1024];
+    boardGW = 0;
+
+    /*
+        $ cat /proc/net/route
+        Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+        tun_mrs 1500010A        00000000        0005    0       0       0       FFFFFFFF        0       0       0
+        eth0    0005A8C0        00000000        0001    0       0       0       00FFFFFF        0       0       0
+        tun_mrs 0000010A        1500010A        0003    0       0       0       0000FFFF        0       0       0
+        lo      0000007F        00000000        0001    0       0       0       000000FF        0       0       0
+        eth0    00000000        0A05A8C0        0003    0       0       0       00000000        0       0       0
+    */
+    fp = fopen(ROUTING_FILE, "r");
+    if (fp) {
+        char        Iface[16];
+        unsigned    Destination, Gateway;
+        int         Flags, RefCnt, Use, Metric;
+        unsigned    Mask;
+        int         MTU, Window, IRTT;
+        const char *fmt = "%16s %X %X %X %d %d %d %X %d %d %d";
+        while (fgets(buff, 1023, fp)) {
+            int num = sscanf(buff, fmt,
+                Iface, &Destination, &Gateway, &Flags, &RefCnt, &Use, &Metric, &Mask, &MTU, &Window, &IRTT);
+            if (num < 11) {
+                continue;
+            }
+            // Dumping routing info
+            if (strcmp(Iface, board_name) == 0)  {
+                if (Flags & RTF_UP) { // no RTF_GATEWAY
+                    if (Destination == 0 && Mask == 0) {
+                        boardGW = Gateway;
+                        fRes = true;
+                        break;
+                    }
+                }
+            }
+        }
+        fclose(fp);
+        fp = NULL;
+    }
+    return fRes;
 }
 
 bool LoadTrend(const char * trend_name, QString * ErrorMsg)
