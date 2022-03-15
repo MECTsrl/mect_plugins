@@ -946,6 +946,126 @@ bool getBoardGateway(const char * board_name, unsigned &boardGW)
     return fRes;
 }
 
+bool checkNetAddr(char * ipaddr)
+{
+    bool ok = false;
+
+    QStringList ipaddrStr = QString(ipaddr).split(".");
+
+    if (ipaddrStr.count() != 4)  {
+        return false;
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        int a = ipaddrStr.at(i).toInt(&ok);
+        if (! ok || a < 0 || a > 255)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+QString getMacAddr(QString interface)
+{
+    QString resultValue;
+
+    QString readResult;
+    QProcess readSettings;
+    readSettings.start("/bin/sh", QStringList() << "-c" << " ifconfig | grep " + interface);
+    readSettings.waitForFinished();
+
+    if (readSettings.exitCode() != 0) {
+        resultValue = NONE;
+    } else {
+        readResult = QString(readSettings.readAll());
+        if(readResult.isEmpty()) {
+            resultValue = NONE;
+        } else {
+            QStringList results = readResult.split(" ");
+            for (int i = 0;i < results.count();i++) {
+                if(results.at(i) == "HWaddr") {
+                    resultValue = results.at(i+1);
+                    break;
+                }
+            }
+            if (resultValue.isEmpty()) {
+                resultValue = NONE;
+            }
+        }
+    }
+    return resultValue;
+}
+
+QString getIPAddr(QString interface)
+{
+    QString resultValue;
+
+    QString readResult;
+    QProcess readSettings;
+    readSettings.start("/bin/sh", QStringList() << "-c" << " ip a | grep " + interface);
+    readSettings.waitForFinished();
+
+    if (readSettings.exitCode() != 0) {
+        resultValue = NONE;
+    } else {
+        readResult = QString(readSettings.readAll());
+        if(!readResult.isEmpty()) {
+            QStringList results = readResult.split(" ");
+            if (!results.isEmpty()) {
+                for (int i=0; i< results.count(); i++) {
+                    if (results.at(i) == "inet") {
+                        if (!results.at(i+1).isEmpty()) {
+                            resultValue = results.at(i+1);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (resultValue.isEmpty()) {
+        resultValue = NONE;
+    }
+    return resultValue;
+}
+
+bool isWlanOn(void)
+{
+    bool fRes = false;
+    QProcess readSettings;
+    //readSettings.start("/bin/sh", QStringList() << "-c" << "iwconfig wlan0 | grep 'Access Point: Not-Associate'");
+    readSettings.start("/bin/sh", QStringList() << "-c" << "ip addr show dev wlan0 | grep 'state UP'");
+    readSettings.waitForFinished();
+
+    if (readSettings.exitCode() == 0) {
+        ui->label_wifi_status->setText("ON");
+        fRes = true; // connected
+    } else {
+        ui->label_wifi_status->setText("off");
+        fRes = false; //  not connected
+    }
+    return fRes;
+}
+
+bool isWanOn()
+{
+    bool fRes = false;
+    QProcess readSettings;
+    readSettings.start("/bin/sh", QStringList() << "-c" << "ip addr show dev ppp0");
+    readSettings.waitForFinished();
+
+    if (readSettings.exitCode() == 0) {
+        ui->label_wan_status->setText("ON");
+        fRes = true; // connected
+    } else {
+        ui->label_wan_status->setText("off");
+        fRes = false; //  not connected
+    }
+    return fRes;
+}
+
 bool LoadTrend(const char * trend_name, QString * ErrorMsg)
 {
     FILE * fp;

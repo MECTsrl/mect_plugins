@@ -12,6 +12,9 @@
 #include "net_conf.h"
 #include "ui_net_conf.h"
 #include "app_config.h"
+
+#include "global_functions.h"
+
 #include <QMessageBox>
 
 #define NONE     "-"
@@ -831,7 +834,7 @@ void net_conf::updateData()
 
 void net_conf::updateIcons()
 {
-    if (checkUSBwanKey())
+    if (check_usb_wan_board())
     {
         ui->tab_wan0->setEnabled(true);
         is_wan_active = isWanOn();
@@ -860,7 +863,7 @@ void net_conf::updateIcons()
         ui->tab_wan0->setEnabled(false);
     }
 
-    if (checkUSBwlanKey())
+    if (check_wifi_board())
     {
         ui->tab_wlan0->setEnabled(true);
         is_wlan_active = isWlanOn();
@@ -1295,16 +1298,6 @@ void net_conf::on_pushButton_wan0_DNS2_clicked()
     {
         ui->pushButton_wan0_DNS2->setText(value);
     }
-}
-
-bool net_conf::checkUSBwanKey()
-{
-    return system("lsmod | grep -q ^usb_wwan && test -e /dev/ttyUSB0") == 0;
-}
-
-bool net_conf::checkUSBwlanKey()
-{
-    return system("ifconfig wlan0 >/dev/null 2>&1") == 0;
 }
 
 

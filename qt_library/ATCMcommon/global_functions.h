@@ -190,6 +190,16 @@ bool get_wifi_signal_level(int &nQuality, int &nSignalLevel);   // Returns true 
 
 bool getBoardGateway(const char * board_name, unsigned &boardGW);   // returns the ip address of default gateway for board <board_name>
 
+bool checkNetAddr(char * ipaddr);
+
+QString getMacAddr(QString interface);
+
+QString getIPAddr(QString interface);
+
+bool isWlanOn(void);
+
+bool isWanOn(void);
+
 bool LoadTrend(const char * trend_name, QString * ErrorMsg);
 
 QObject *getPage(QObject *plugin);

@@ -69,17 +69,10 @@ private slots:
     void on_checkBox_hiddenESSID_toggled(bool checked);
 
 private:
-    bool checkNetAddr(char * ipaddr);
     bool saveETH0cfg();
     bool saveETH1cfg();
     bool saveWLAN0cfg();
     bool saveWAN0cfg();
-
-    bool isWlanOn(void);
-    bool isWanOn(void);
-
-    bool checkUSBwanKey();
-    bool checkUSBwlanKey();
 
     void updateIcons();
 
