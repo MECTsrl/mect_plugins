@@ -20,6 +20,11 @@
 /** @brief io layer to syncronize the data with the PLC */
 extern io_layer_comm * ioComm;
 
+// IP
+#define NO_IP     "-"
+#define NO_IP_LEN 1
+#define ZERO_IP "0.0.0.0"
+
 /* Pages*/
 extern char StartPage[PAGE_NAME_LEN];
 extern char HomePage[PAGE_NAME_LEN];

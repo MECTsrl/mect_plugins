@@ -17,9 +17,6 @@
 
 #include <QMessageBox>
 
-#define NONE     "-"
-#define NONE_LEN 1
-#define ZEROIP "0.0.0.0"
 /**
  * @brief this macro is used to set the net_conf style.
  * the syntax is html stylesheet-like
@@ -50,8 +47,8 @@ net_conf::net_conf(QWidget *parent) :
     SET_NET_CONF_STYLE();
     translateFontSize(this);
     ui->comboBox_wlan0_essid->clear();
-    ui->comboBox_wlan0_essid->addItem(NONE);
-    ui->pushButton_hidden_wlan0->setText(NONE);
+    ui->comboBox_wlan0_essid->addItem(NO_IP);
+    ui->pushButton_hidden_wlan0->setText(NO_IP);
     ui->checkBox_hiddenESSID->setChecked(false);
     ui->pushButton_hidden_wlan0->setVisible(false);
     is_eth0_enabled = (system("grep -c INTERFACE0 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
@@ -107,17 +104,17 @@ bool net_conf::saveETH0cfg()
             return false;
         }
         /* IP */
-        if (ui->pushButton_eth0_IP->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_IP->text().toAscii().data(), "IPADDR0"))
+        if (ui->pushButton_eth0_IP->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth0_IP->text().toAscii().data(), "IPADDR0"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nIPADDR0"));
             return false;
         }
         /* GATEWAY */
-        if (ui->pushButton_eth0_GW->text().compare(NONE) != 0)
+        if (ui->pushButton_eth0_GW->text().compare(NO_IP) != 0)
         {
             QString     szGW = ui->pushButton_eth0_GW->text();
-            if (szGW == ZEROIP)
+            if (szGW == ZERO_IP)
                 szGW = "";
             if (app_netconf_item_set(szGW.toAscii().data(), "GATEWAY0"))
             {
@@ -127,21 +124,21 @@ bool net_conf::saveETH0cfg()
             }
         }
         /* NETMASK */
-        if (ui->pushButton_eth0_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_NM->text().toAscii().data(), "NETMASK0"))
+        if (ui->pushButton_eth0_NM->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth0_NM->text().toAscii().data(), "NETMASK0"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNETMASK0"));
             return false;
         }
         /* DNS1 */
-        if (ui->pushButton_eth0_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_DNS1->text().toAscii().data(), "NAMESERVER01"))
+        if (ui->pushButton_eth0_DNS1->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth0_DNS1->text().toAscii().data(), "NAMESERVER01"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER01"));
             return false;
         }
         /* DNS2 */
-        if (ui->pushButton_eth0_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth0_DNS2->text().toAscii().data(), "NAMESERVER02"))
+        if (ui->pushButton_eth0_DNS2->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth0_DNS2->text().toAscii().data(), "NAMESERVER02"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER02"));
@@ -183,17 +180,17 @@ bool net_conf::saveETH1cfg()
             return false;
         }
         /* IP */
-        if (ui->pushButton_eth1_IP->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_IP->text().toAscii().data(), "IPADDR1"))
+        if (ui->pushButton_eth1_IP->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth1_IP->text().toAscii().data(), "IPADDR1"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nIPADDR1"));
             return false;
         }
         /* GATEWAY */
-        if (ui->pushButton_eth1_GW->text().compare(NONE) != 0)
+        if (ui->pushButton_eth1_GW->text().compare(NO_IP) != 0)
         {
             QString     szGW = ui->pushButton_eth1_GW->text();
-            if (szGW == ZEROIP)
+            if (szGW == ZERO_IP)
                 szGW = "";
 
             if (app_netconf_item_set(szGW.toAscii().data(), "GATEWAY1"))
@@ -204,21 +201,21 @@ bool net_conf::saveETH1cfg()
             }
         }
         /* NETMASK */
-        if (ui->pushButton_eth1_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_NM->text().toAscii().data(), "NETMASK1"))
+        if (ui->pushButton_eth1_NM->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth1_NM->text().toAscii().data(), "NETMASK1"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNETMASK1"));
             return false;
         }
         /* DNS1 */
-        if (ui->pushButton_eth1_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_DNS1->text().toAscii().data(), "NAMESERVER11"))
+        if (ui->pushButton_eth1_DNS1->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth1_DNS1->text().toAscii().data(), "NAMESERVER11"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER11"));
             return false;
         }
         /* DNS2 */
-        if (ui->pushButton_eth1_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_eth1_DNS2->text().toAscii().data(), "NAMESERVER12"))
+        if (ui->pushButton_eth1_DNS2->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth1_DNS2->text().toAscii().data(), "NAMESERVER12"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER12"));
@@ -238,14 +235,14 @@ bool net_conf::saveETH1cfg()
 bool net_conf::saveWLAN0cfg()
 {
     /* ESSID */
-    if (wlan0_essid.compare(NONE) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_essid + QString("\"")).toAscii().data(), "ESSIDW0"))
+    if (wlan0_essid.compare(NO_IP) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_essid + QString("\"")).toAscii().data(), "ESSIDW0"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nESSIDW0"));
         return false;
     }
     /* PASSWORD */
-    if (wlan0_pwd.compare(NONE) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_pwd + QString("\"")).toAscii().data(), "PASSWORDW0"))
+    if (wlan0_pwd.compare(NO_IP) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_pwd + QString("\"")).toAscii().data(), "PASSWORDW0"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nPASSWORDW0"));
@@ -270,17 +267,17 @@ bool net_conf::saveWLAN0cfg()
             return false;
         }
         /* IP */
-        if (ui->pushButton_wlan0_IP->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_IP->text().toAscii().data(), "IPADDRW0"))
+        if (ui->pushButton_wlan0_IP->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wlan0_IP->text().toAscii().data(), "IPADDRW0"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nIPADDRW0"));
             return false;
         }
         /* GATEWAY */
-        if (ui->pushButton_wlan0_GW->text().compare(NONE) != 0)
+        if (ui->pushButton_wlan0_GW->text().compare(NO_IP) != 0)
         {
             QString     szGW = ui->pushButton_wlan0_GW->text();
-            if (szGW == ZEROIP)
+            if (szGW == ZERO_IP)
                 szGW = "";
             if(app_netconf_item_set(szGW.toAscii().data(), "GATEWAYW0"))
             {
@@ -290,21 +287,21 @@ bool net_conf::saveWLAN0cfg()
             }
         }
         /* NETMASK */
-        if (ui->pushButton_wlan0_NM->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_NM->text().toAscii().data(), "NETMASKW0"))
+        if (ui->pushButton_wlan0_NM->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wlan0_NM->text().toAscii().data(), "NETMASKW0"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNETMASKW0"));
             return false;
         }
         /* DNS1 */
-        if (ui->pushButton_wlan0_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_DNS1->text().toAscii().data(), "NAMESERVERW01"))
+        if (ui->pushButton_wlan0_DNS1->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wlan0_DNS1->text().toAscii().data(), "NAMESERVERW01"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERW01"));
             return false;
         }
         /* DNS2 */
-        if (ui->pushButton_wlan0_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wlan0_DNS2->text().toAscii().data(), "NAMESERVERW02"))
+        if (ui->pushButton_wlan0_DNS2->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wlan0_DNS2->text().toAscii().data(), "NAMESERVERW02"))
         {
             /* error */
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERW02"));
@@ -331,28 +328,28 @@ bool net_conf::saveWLAN0cfg()
 bool net_conf::saveWAN0cfg()
 {
     /* DIALNB */
-    if (ui->pushButton_wan0_dialnb->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_dialnb->text().toAscii().data(), "DIALNBP0"))
+    if (ui->pushButton_wan0_dialnb->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_dialnb->text().toAscii().data(), "DIALNBP0"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nDIALNBP0"));
         return false;
     }
     /* APN */
-    if (ui->pushButton_wan0_apn->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_apn->text().toAscii().data(), "APNP0"))
+    if (ui->pushButton_wan0_apn->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_apn->text().toAscii().data(), "APNP0"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nAPNP0"));
         return false;
     }
     /* DNS1 */
-    if (ui->pushButton_wan0_DNS1->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS1->text().toAscii().data(), "NAMESERVERP01"))
+    if (ui->pushButton_wan0_DNS1->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS1->text().toAscii().data(), "NAMESERVERP01"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERP01"));
         return false;
     }
     /* DNS2 */
-    if (ui->pushButton_wan0_DNS2->text().compare(NONE) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS2->text().toAscii().data(), "NAMESERVERP02"))
+    if (ui->pushButton_wan0_DNS2->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS2->text().toAscii().data(), "NAMESERVERP02"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERP02"));
@@ -442,7 +439,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth0_IP->setText(NONE);
+            ui->pushButton_eth0_IP->setText(NO_IP);
         }
         /* GATEWAY */
         if (app_netconf_item_get(&tmp, "GATEWAY0") != NULL && tmp[0] != '\0')
@@ -451,7 +448,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth0_GW->setText(NONE);
+            ui->pushButton_eth0_GW->setText(NO_IP);
         }
         /* NETMASK */
         if (app_netconf_item_get(&tmp, "NETMASK0") != NULL && tmp[0] != '\0')
@@ -460,7 +457,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth0_NM->setText(NONE);
+            ui->pushButton_eth0_NM->setText(NO_IP);
         }
         /* DNS1 */
         if (app_netconf_item_get(&tmp, "NAMESERVER01") != NULL && tmp[0] != '\0')
@@ -469,7 +466,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth0_DNS1->setText(NONE);
+            ui->pushButton_eth0_DNS1->setText(NO_IP);
         }
         /* DNS2 */
         if (app_netconf_item_get(&tmp, "NAMESERVER02") != NULL && tmp[0] != '\0')
@@ -478,7 +475,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth0_DNS2->setText(NONE);
+            ui->pushButton_eth0_DNS2->setText(NO_IP);
         }
         /* MAC */
 #if 0
@@ -488,7 +485,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->label_eth0_MAC->setText(NONE);
+            ui->label_eth0_MAC->setText(NO_IP);
         }
 #else
         char string[32];
@@ -498,7 +495,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->label_eth0_MAC->setText(NONE);
+            ui->label_eth0_MAC->setText(NO_IP);
         }
         if (ui->checkBox_eth0_DHCP->isChecked())
         {
@@ -508,7 +505,7 @@ void net_conf::reload()
             }
             else
             {
-                ui->pushButton_eth0_IP->setText(NONE);
+                ui->pushButton_eth0_IP->setText(NO_IP);
             }
         }
 #endif
@@ -535,7 +532,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth1_IP->setText(NONE);
+            ui->pushButton_eth1_IP->setText(NO_IP);
         }
         /* GATEWAY */
         if (app_netconf_item_get(&tmp, "GATEWAY1") != NULL && tmp[0] != '\0')
@@ -544,7 +541,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth1_GW->setText(NONE);
+            ui->pushButton_eth1_GW->setText(NO_IP);
         }
         /* NETMASK */
         if (app_netconf_item_get(&tmp, "NETMASK1") != NULL && tmp[0] != '\0')
@@ -553,7 +550,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth1_NM->setText(NONE);
+            ui->pushButton_eth1_NM->setText(NO_IP);
         }
         /* DNS1 */
         if (app_netconf_item_get(&tmp, "NAMESERVER11") != NULL && tmp[0] != '\0')
@@ -562,7 +559,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth1_DNS1->setText(NONE);
+            ui->pushButton_eth1_DNS1->setText(NO_IP);
         }
         /* DNS2 */
         if (app_netconf_item_get(&tmp, "NAMESERVER12") != NULL && tmp[0] != '\0')
@@ -571,7 +568,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->pushButton_eth1_DNS2->setText(NONE);
+            ui->pushButton_eth1_DNS2->setText(NO_IP);
         }
         /* MAC */
 #if 0
@@ -581,7 +578,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->label_eth1_MAC->setText(NONE);
+            ui->label_eth1_MAC->setText(NO_IP);
         }
 #else
         char string[32];
@@ -591,7 +588,7 @@ void net_conf::reload()
         }
         else
         {
-            ui->label_eth1_MAC->setText(NONE);
+            ui->label_eth1_MAC->setText(NO_IP);
         }
         if (ui->checkBox_eth1_DHCP->isChecked())
         {
@@ -601,7 +598,7 @@ void net_conf::reload()
             }
             else
             {
-                ui->pushButton_eth1_IP->setText(NONE);
+                ui->pushButton_eth1_IP->setText(NO_IP);
             }
         }
 #endif
@@ -662,7 +659,7 @@ void net_conf::reload()
     else
     {
         wlan0_pwd = tmp;
-        ui->pushButton_wlan0_pwd->setText(NONE);
+        ui->pushButton_wlan0_pwd->setText(NO_IP);
     }
 
     if (! wlan0_essid.isEmpty() && ! wlan0_pwd.isEmpty())
@@ -698,7 +695,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wlan0_IP->setText(NONE);
+        ui->pushButton_wlan0_IP->setText(NO_IP);
     }
     /* GATEWAY */
     if (app_netconf_item_get(&tmp, "GATEWAYW0") != NULL && tmp[0] != '\0')
@@ -707,7 +704,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wlan0_GW->setText(NONE);
+        ui->pushButton_wlan0_GW->setText(NO_IP);
     }
     /* NETMASK */
     if (app_netconf_item_get(&tmp, "NETMASKW0") != NULL && tmp[0] != '\0')
@@ -716,7 +713,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wlan0_NM->setText(NONE);
+        ui->pushButton_wlan0_NM->setText(NO_IP);
     }
     /* DNS1 */
     if (app_netconf_item_get(&tmp, "NAMESERVERW01") != NULL && tmp[0] != '\0')
@@ -725,7 +722,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wlan0_DNS1->setText(NONE);
+        ui->pushButton_wlan0_DNS1->setText(NO_IP);
     }
     /* DNS2 */
     if (app_netconf_item_get(&tmp, "NAMESERVERW02") != NULL && tmp[0] != '\0')
@@ -734,7 +731,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wlan0_DNS2->setText(NONE);
+        ui->pushButton_wlan0_DNS2->setText(NO_IP);
     }
     /* MAC */
 #if 0
@@ -744,7 +741,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->label_wlan0_MAC->setText(NONE);
+        ui->label_wlan0_MAC->setText(NO_IP);
     }
 #else
     char string[32];
@@ -754,7 +751,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->label_wlan0_MAC->setText(NONE);
+        ui->label_wlan0_MAC->setText(NO_IP);
     }
 #endif
 
@@ -766,7 +763,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wan0_dialnb->setText(NONE);
+        ui->pushButton_wan0_dialnb->setText(NO_IP);
     }
 
     /* APN */
@@ -776,7 +773,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wan0_apn->setText(NONE);
+        ui->pushButton_wan0_apn->setText(NO_IP);
     }
     /* IP */
 #if 0
@@ -788,7 +785,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wan0_DNS1->setText(NONE);
+        ui->pushButton_wan0_DNS1->setText(NO_IP);
     }
     /* DNS2 */
     if (app_netconf_item_get(&tmp, "NAMESERVERP02") != NULL && tmp[0] != '\0')
@@ -797,7 +794,7 @@ void net_conf::reload()
     }
     else
     {
-        ui->pushButton_wan0_DNS2->setText(NONE);
+        ui->pushButton_wan0_DNS2->setText(NO_IP);
     }
 }
 
@@ -849,13 +846,13 @@ void net_conf::updateIcons()
             }
             else
             {
-                ui->label_wan0_IP->setText(NONE);
+                ui->label_wan0_IP->setText(NO_IP);
             }
         }
         else
         {
             ui->pushButton_wan0_enable->setIcon(QIcon(":/libicons/img/GprsOff.png"));
-            ui->label_wan0_IP->setText(NONE);
+            ui->label_wan0_IP->setText(NO_IP);
         }
     }
     else
@@ -884,7 +881,7 @@ void net_conf::updateIcons()
             }
             else
             {
-                ui->label_wlan0_MAC->setText(NONE);
+                ui->label_wlan0_MAC->setText(NO_IP);
             }
         }
         else
@@ -892,9 +889,9 @@ void net_conf::updateIcons()
             ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOff.png"));
             if (ui->checkBox_wlan0_DHCP->isChecked())
             {
-                ui->pushButton_wlan0_IP->setText(NONE);
+                ui->pushButton_wlan0_IP->setText(NO_IP);
             }
-            ui->label_wlan0_MAC->setText(NONE);
+            ui->label_wlan0_MAC->setText(NO_IP);
         }
     }
     else
@@ -922,26 +919,6 @@ net_conf::~net_conf()
     delete ui;
 }
 
-bool net_conf::checkNetAddr(char * ipaddr)
-{
-    QStringList ipaddrStr = QString(ipaddr).split(".");
-
-    if (ipaddrStr.count() != 4)
-    {
-        return false;
-    }
-
-    bool ok;
-    for (int i = 0; i < 4; i++)
-    {
-        int a = ipaddrStr.at(i).toInt(&ok);
-        if (ok == false || a < 0 || a > 255)
-        {
-            return false;
-        }
-    }
-    return true;
-}
 
 void net_conf::on_pushButton_eth0_IP_clicked()
 {
@@ -1112,7 +1089,7 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
 {
     char line[256];
     ui->comboBox_wlan0_essid->clear();
-    ui->comboBox_wlan0_essid->addItem(NONE);
+    ui->comboBox_wlan0_essid->addItem(NO_IP);
 
     FILE * fp = popen("/usr/sbin/wifi.sh scan", "r");
     if (fp == NULL)
@@ -1145,10 +1122,6 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
     pclose(fp);
 }
 
-bool net_conf::isWlanOn(void)
-{
-    return system("iwconfig wlan0 2> /dev/null | grep -q 'Access Point: Not-Associate'");
-}
 
 void net_conf::on_pushButton_wlan0_enable_clicked()
 {
@@ -1250,12 +1223,6 @@ void net_conf::on_pushButton_wan0_enable_clicked()
     updateIcons();
 }
 
-bool net_conf::isWanOn(void)
-{
-    return system("test -e /var/pppd/up.stat && source /var/pppd/up.stat && test -e /proc/$PPPD_PID") == 0;
-}
-
-
 void net_conf::on_pushButton_wan0_dialnb_clicked()
 {
     char value [32];
@@ -1306,7 +1273,7 @@ void net_conf::on_pushButton_hidden_wlan0_clicked()
     char value [64];
     QString currentText = ui->pushButton_hidden_wlan0->text();
     if(currentText.isEmpty()) {
-       currentText = NONE;
+       currentText = NO_IP;
     }
     alphanumpad tastiera_alfanum(value, currentText.toAscii().data());
     tastiera_alfanum.showFullScreen();

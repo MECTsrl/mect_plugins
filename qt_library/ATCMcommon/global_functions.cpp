@@ -977,11 +977,11 @@ QString getMacAddr(QString interface)
     readSettings.waitForFinished();
 
     if (readSettings.exitCode() != 0) {
-        resultValue = NONE;
+        resultValue = NO_IP;
     } else {
         readResult = QString(readSettings.readAll());
         if(readResult.isEmpty()) {
-            resultValue = NONE;
+            resultValue = NO_IP;
         } else {
             QStringList results = readResult.split(" ");
             for (int i = 0;i < results.count();i++) {
@@ -991,7 +991,7 @@ QString getMacAddr(QString interface)
                 }
             }
             if (resultValue.isEmpty()) {
-                resultValue = NONE;
+                resultValue = NO_IP;
             }
         }
     }
@@ -1008,7 +1008,7 @@ QString getIPAddr(QString interface)
     readSettings.waitForFinished();
 
     if (readSettings.exitCode() != 0) {
-        resultValue = NONE;
+        resultValue = NO_IP;
     } else {
         readResult = QString(readSettings.readAll());
         if(!readResult.isEmpty()) {
@@ -1026,44 +1026,28 @@ QString getIPAddr(QString interface)
         }
     }
     if (resultValue.isEmpty()) {
-        resultValue = NONE;
+        resultValue = NO_IP;
     }
     return resultValue;
 }
 
 bool isWlanOn(void)
 {
-    bool fRes = false;
     QProcess readSettings;
     //readSettings.start("/bin/sh", QStringList() << "-c" << "iwconfig wlan0 | grep 'Access Point: Not-Associate'");
     readSettings.start("/bin/sh", QStringList() << "-c" << "ip addr show dev wlan0 | grep 'state UP'");
     readSettings.waitForFinished();
 
-    if (readSettings.exitCode() == 0) {
-        ui->label_wifi_status->setText("ON");
-        fRes = true; // connected
-    } else {
-        ui->label_wifi_status->setText("off");
-        fRes = false; //  not connected
-    }
-    return fRes;
+    return (readSettings.exitCode() == 0);
 }
 
 bool isWanOn()
 {
-    bool fRes = false;
     QProcess readSettings;
     readSettings.start("/bin/sh", QStringList() << "-c" << "ip addr show dev ppp0");
     readSettings.waitForFinished();
 
-    if (readSettings.exitCode() == 0) {
-        ui->label_wan_status->setText("ON");
-        fRes = true; // connected
-    } else {
-        ui->label_wan_status->setText("off");
-        fRes = false; //  not connected
-    }
-    return fRes;
+    return (readSettings.exitCode() == 0);
 }
 
 bool LoadTrend(const char * trend_name, QString * ErrorMsg)
