@@ -80,7 +80,6 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     m_fUpdated = false;
     m_nRootPriority = nPriorityNone;
     m_nAbsPos = 0;
-    m_nTotalRows = lstMPNE_Vars.count();             // Numero di Variabili da gestire
     m_nShowMode = showAll;
     lblModuleLeft = 0;
     lblModuleRight = 0;
@@ -506,7 +505,7 @@ void Config_MPNE::showTestaNodi(int nTesta, QList<int> lstMPNE, int nCurRow)
     m_nCurrentCTRow = nCurRow;          // Riporta il Numero riga corrente ottenuto da Grid Principale CT
     m_nShowMode = showAll;
     txtNode->setModified(false);
-    qDebug() << QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2 - Riga Corrente: %3") .arg(nTesta) .arg(lstMPNE.count()) .arg(nCurRow);
+    qDebug("%s",(QString::fromAscii("showTestaNodi(): NTesta: %1 - Teste Totali: %2 - Riga Corrente: %3") .arg(nTesta) .arg(lstMPNE.count()) .arg(nCurRow)).toLatin1().data());
     if (nTesta < 0 || nTesta >= lstMPNE.count())  {
         for (nCur = 0; nCur < nTotalItems; nCur++)  {
             lstModuleUsage[nCur] = nUsageNone;
@@ -672,8 +671,9 @@ void    Config_MPNE::setFilterButton(int nNewMode)
     szNewStyle.append(QLatin1String("}"));
     cmdFilter->setStyleSheet(szNewStyle);
 }
+
 void    Config_MPNE::changeRootElement(int nItem)
-// Cambio di Item della Combo dei MPNC definiti
+// Cambio di Item della Combo dei MPNC definiti: Ricarica gli elementi del Modulo richiesto
 {
     m_nTesta = -1;
     if (nItem >= 0 && nItem < lstCapofila.count())  {
@@ -682,8 +682,8 @@ void    Config_MPNE::changeRootElement(int nItem)
         m_nTesta = nItem;
         m_nShowMode = showAll;
         setFilterButton(m_nShowMode);
-        // Determina il Protocollo, la Porta e il Nodo dell'elemento
-        if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
+        // Determina il Protocollo, la Porta e il Nodo dell'elemento (dalla prima riga delle variabili)
+        if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - lstMPNE_Vars.count())  {
             disableAndBlockSignals(cboPort);
             disableAndBlockSignals(txtNode);
             // Visualizzazione Protocollo
@@ -715,7 +715,7 @@ void    Config_MPNE::changeRootElement(int nItem)
             // Aggiornamento lista moduli
             getUsedModules(m_nBaseRow);
             // Riga corrente non compresa nella definizione del modulo
-            if (m_nCurrentCTRow < m_nBaseRow || m_nCurrentCTRow > m_nBaseRow + m_nTotalRows)  {
+            if (m_nCurrentCTRow < m_nBaseRow || m_nCurrentCTRow > m_nBaseRow + lstMPNE_Vars.count())  {
                 qDebug() << QString::fromAscii("changeRootElement(): Forced current Row[%1] To Base Element [%2]") .arg(m_nCurrentCTRow) .arg(m_nBaseRow);
                 m_nCurrentCTRow = m_nBaseRow;
             }
@@ -785,22 +785,26 @@ void    Config_MPNE::getUsedModules(int nBaseRow)
     for (nGroup = 0; nGroup < nTotalItems; nGroup ++)  {
         lstModuleUsage[nGroup] = nUsageNone;
     }
-    // Controlla che la Riga di Base Modulo MPNC non sia fuori Range
-    if (nBaseRow > 0 &&  nBaseRow < (localCTRecords.count() - m_nTotalRows))  {
+    // Controlla che la Riga di Base Modulo MPNE non sia fuori Range
+    if (nBaseRow > 0 &&  nBaseRow < (localCTRecords.count() - lstMPNE_Vars.count()))  {
         // Ricerca della prima funzionalità definita per il Modulo (SX o DX)
         for (nGroup = nModuleLeft; nGroup < nTotalItems; nGroup ++)  {
             nFunction = nUsageNone;
             // Ricerca della prima riga utilizzata del Modulo
-            for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-                int nItem = nBaseRow + nRow;
-                // La riga appartiene al modulo che stiamo cercando
-                if (nGroup == lstMPNE_Vars[nRow].Group)  {
-                    fUsed = localCTRecords[nItem].UsedEntry && localCTRecords[nItem].Enable > nPriorityNone;
-                    // Se la riga è utilizzata prende per buona la Funzione dal modello
-                    if (fUsed)  {
-                        qDebug() << QString::fromAscii("getUsedModules(): Row: %1 Used: %2 Priority: %3") .arg(nItem) .arg(localCTRecords[nItem].UsedEntry) .arg(localCTRecords[nItem].Enable);
-                        nFunction = lstMPNE_Vars[nRow].Module;
-                        break;
+            for (nRow = 0; nRow < lstMPNE_Vars.count(); nRow++)  {
+                // Il confronto tra modello e CT avviene in base al Registro (per le variabili opzionali)
+                if (localCTRecords[nBaseRow + nRow].Offset == lstMPNE_Vars[nRow].Offset)  {
+                    int nItem = nBaseRow + nRow;
+                    // La riga appartiene al modulo che stiamo cercando
+                    if (nGroup == lstMPNE_Vars[nRow].Group)  {
+                        // Controlla
+                        fUsed = localCTRecords[nItem].UsedEntry && localCTRecords[nItem].Enable > nPriorityNone;
+                        // Se la riga è utilizzata prende per buona la Funzione dal modello
+                        if (fUsed)  {
+                            qDebug() << QString::fromAscii("getUsedModules(): Row: %1 Used: %2 Priority: %3") .arg(nItem) .arg(localCTRecords[nItem].UsedEntry) .arg(localCTRecords[nItem].Enable);
+                            nFunction = lstMPNE_Vars[nRow].Module;
+                            break;
+                        }
                     }
                 }
             }
@@ -848,12 +852,15 @@ void    Config_MPNE::on_RenameVars()
             // Controlli superati, procedere al rename delle variabili
             QString szNewVarName(szEMPTY);
             int     nVar = 0;
-            for (nVar = 0; nVar < m_nTotalRows; nVar++)  {
-                // Generazione del nuovo nome variabile
-                szNewVarName = QLatin1String(localCTRecords[m_nBaseRow + nVar].Tag);
-                szNewVarName = szNewVarName.mid(m_szVarNamePrefix.length());
-                szNewVarName.prepend(szNewPrefix);
-                strcpy(localCTRecords[m_nBaseRow + nVar].Tag, szNewVarName.toAscii().data());
+            for (nVar = 0; nVar < lstMPNE_Vars.count(); nVar++)  {
+                // Generazione del nuovo nome variabile se la variabile è utilizzata e appartiene al modello
+                if (localCTRecords[m_nBaseRow + nVar].UsedEntry  &&
+                    localCTRecords[m_nBaseRow + nVar].Offset ==  lstMPNE_Vars[nVar].Offset)  {
+                    szNewVarName = QLatin1String(localCTRecords[m_nBaseRow + nVar].Tag);
+                    szNewVarName = szNewVarName.mid(m_szVarNamePrefix.length());
+                    szNewVarName.prepend(szNewPrefix);
+                    strcpy(localCTRecords[m_nBaseRow + nVar].Tag, szNewVarName.toAscii().data());
+                }
             }
             m_szVarNamePrefix = szNewPrefix;
             m_fUpdated = true;
@@ -874,13 +881,13 @@ bool    Config_MPNE::canRenameRows(int nBaseRow)
     int         nRow = 0;
     int         nCol = 0;
 
-    if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - m_nTotalRows)  {
+    if (m_nBaseRow >=  0 && m_nBaseRow < localCTRecords.count() - lstMPNE_Vars.count())  {
         lstVarNames.clear();
         m_nMinVarName = MAX_IDNAME_LEN;
         m_nMaxVarName = 0;
         m_szVarNamePrefix.clear();
         // Determinazione Minima e Massima lunghezza del nome Variabile
-        for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+        for (nRow = 0; nRow < lstMPNE_Vars.count(); nRow++)  {
             szVarName = QLatin1String(localCTRecords[nBaseRow + nRow].Tag);
             int nLen = szVarName.trimmed().length();
             if (nLen > 0)  {
@@ -959,7 +966,7 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
     tblCT->clearContents();
     tblCT->clear();
     // Ciclo di Lettura
-    for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
+    for (nRow = 0; nRow < lstMPNE_Vars.count(); nRow++)  {
         if ( (nPosition == nModuleBase && nFunction == nUsageNone)  ||
              (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module))  {
             bool    fShow = true;
@@ -981,8 +988,8 @@ void    Config_MPNE::filterVariables(int nPosition, int nFunction)
                         break;
                 }
             }
-            // La riga deve essere visualizzata
-            if (fShow)  {
+            // La riga deve essere visualizzata (se i registri sono uguali al modello, per registri opzionali)
+            if (fShow && localCTRecords[nRow + m_nBaseRow].Offset == lstMPNE_Vars[nRow].Offset)  {
                 // Decodifica dei valori di CT e conversione in stringa
                 fRes = recCT2MPNxFieldsValues(localCTRecords, lstLineValues, nRow + m_nBaseRow, lstMPNE_Vars, nRow);
                 // Aggiunta alla Table
@@ -1070,9 +1077,10 @@ void    Config_MPNE::setGroupVars(int nPosition, int nFunction, int16_t nPriorit
     int nRow = 0;
     int nUpdated = 0;
 
-    for (nRow = 0; nRow < m_nTotalRows; nRow++)  {
-        // Confronto tra Variabile corrente e variabile paradigma in Modello
-        if (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module) {
+    for (nRow = 0; nRow < lstMPNE_Vars.count(); nRow++)  {
+        // Confronto tra Variabile corrente e variabile paradigma in Modello (per Gruppo, Modulo e Registro)
+        if (nPosition == lstMPNE_Vars[nRow].Group && nFunction == lstMPNE_Vars[nRow].Module &&
+            localCTRecords[nRow + m_nBaseRow].Offset == lstMPNE_Vars[nRow].Offset) {
             localCTRecords[nRow + m_nBaseRow].Enable = nPriority;
             nUpdated++;
             m_fUpdated = true;
@@ -1088,10 +1096,9 @@ void    Config_MPNE::on_changePort(int nPort)
         m_szMsg = QString::fromAscii("Confirm Serial Port change from [%1] to [%2] ?") .arg(m_nPort) .arg(nPort);
         if (queryUser(this, szMectTitle, m_szMsg))  {
             // Ciclo per riassegnare la porta Seriale
-            int nRow = 0;
-            for (nRow = m_nBaseRow; nRow < m_nBaseRow + m_nTotalRows; nRow++)  {
-                if (nRow >= 0 && nRow < localCTRecords.count())  {
-                    localCTRecords[nRow].Port = nPort;
+            for (int nRow = 0; nRow < lstMPNE_Vars.count(); nRow++)  {
+                if (localCTRecords[nRow + m_nBaseRow].Offset == lstMPNE_Vars[nRow].Offset)  {
+                    localCTRecords[nRow + m_nBaseRow].Port = nPort;
                 }
             }
             m_nPort = nPort;
@@ -1107,11 +1114,11 @@ void    Config_MPNE::on_changePort(int nPort)
         if (m_nCurrentCTRow > 0 && m_nCurrentCTRow < localCTRecords.count())  {
             int nPosition = nModuleBase;
             int nFunction = nUsageNone;
-            int nRow = m_nCurrentCTRow - m_nBaseRow;
-            if (nRow >= 0 && nRow < m_nTotalRows)  {
-                nPosition = localCTRecords[nRow].Group;
-                nFunction = localCTRecords[nRow].Module;
-            }
+            // int nRow = m_nCurrentCTRow - m_nBaseRow;
+            // if (nRow >= 0 && nRow < m_nTotalRows)  {
+            //     nPosition = localCTRecords[nRow].Group;
+            //     nFunction = localCTRecords[nRow].Module;
+            // }
             filterVariables(nPosition, nFunction);
         }
     }
@@ -1128,11 +1135,10 @@ void    Config_MPNE::on_changeNode()
             if (fOk && nNode != m_nNodeId)  {
                 m_szMsg = QString::fromAscii("Confirm Node ID change from [%1] to [%2] ?") .arg(m_nNodeId) .arg(nNode);
                 if (queryUser(this, szMectTitle, m_szMsg))  {
-                    // Ciclo per riassegnare la porta Seriale
-                    int nRow = 0;
-                    for (nRow = m_nBaseRow; nRow < m_nBaseRow + m_nTotalRows; nRow++)  {
-                        if (nRow >= 0 && nRow < localCTRecords.count())  {
-                            localCTRecords[nRow].NodeId = nNode;
+                    // Ciclo per riassegnare il Node ID
+                    for (int nRow = 0; nRow < lstMPNE_Vars.count(); nRow++)  {
+                        if (localCTRecords[nRow + m_nBaseRow].Offset == lstMPNE_Vars[nRow].Offset)  {
+                            localCTRecords[nRow + m_nBaseRow].NodeId = nNode;
                         }
                     }
                     m_nNodeId = nNode;
@@ -1149,11 +1155,11 @@ void    Config_MPNE::on_changeNode()
         if (m_nCurrentCTRow > 0 && m_nCurrentCTRow < localCTRecords.count())  {
             int nPosition = nModuleBase;
             int nFunction = nUsageNone;
-            int nRow = m_nCurrentCTRow - m_nBaseRow;
-            if (nRow >= 0 && nRow < m_nTotalRows)  {
-                nPosition = localCTRecords[nRow].Group;
-                nFunction = localCTRecords[nRow].Module;
-            }
+            // int nRow = m_nCurrentCTRow - m_nBaseRow;
+            // if (nRow >= 0 && nRow < m_nTotalRows)  {
+            //     nPosition = localCTRecords[nRow].Group;
+            //     nFunction = localCTRecords[nRow].Module;
+            // }
             filterVariables(nPosition, nFunction);
         }
     }

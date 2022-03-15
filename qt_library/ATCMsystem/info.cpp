@@ -14,6 +14,7 @@
 #include "app_config.h"
 #include "qrcode.h"
 #include "ntpclient.h"
+#include "linux/route.h"
 
 #include <QList>
 #include <QString>
@@ -271,8 +272,11 @@ void info::refreshNetworkingTabs()
             // MAC 70:B3:D5:62:52:11
             // IP[1] 192.168.5.211/24
             // IP[2] 192.168.0.211/24
-            plainText->appendPlainText("MAC " + iface.hardwareAddress());
-            plainText->appendPlainText("");
+            // No MAC for tun0
+            if (plainText != ui->tun0_text)  {
+                plainText->appendPlainText("MAC " + iface.hardwareAddress());
+                plainText->appendPlainText("");
+            }
             for (int n = 0; n < allEntries.count(); ++n) {
                 plainText->appendPlainText(
                     QString("IP[%1] %2/%3")
@@ -333,17 +337,6 @@ void info::refreshNetworkingTabs()
                 plainText = ui->tun0_text;
             }
             if (plainText ) {
-                // /usr/include/linux/route.h
-#define	RTF_UP          0x0001		/* route usable		  	*/
-#define	RTF_GATEWAY     0x0002		/* destination is a gateway	*/
-#define	RTF_HOST        0x0004		/* host entry (net otherwise)	*/
-#define RTF_REINSTATE	0x0008		/* reinstate route after tmout	*/
-#define	RTF_DYNAMIC     0x0010		/* created dyn. (by redirect)	*/
-#define	RTF_MODIFIED	0x0020		/* modified dyn. (by redirect)	*/
-#define RTF_MTU         0x0040		/* specific MTU for this route	*/
-#define RTF_WINDOW      0x0080		/* per route window clamping	*/
-#define RTF_IRTT        0x0100		/* Initial round trip time	*/
-#define RTF_REJECT      0x0200		/* Reject route			*/
                 if (Flags & RTF_UP) { // no RTF_GATEWAY
                     if (Destination == 0 && Mask == 0) {
                         plainText->appendPlainText(
@@ -368,7 +361,20 @@ void info::refreshNetworkingTabs()
         fclose(fp);
         fp = NULL;
     }
-
+    // Signal Level in wlan0
+    if (check_wifi_board())  {
+        int nQuality = 0;
+        int nSignalLevel = 0;
+        ui->wlan0_text->appendPlainText("");
+        if (get_wifi_signal_level(nQuality, nSignalLevel))  {
+            ui->wlan0_text->appendPlainText(
+                QString("Signal Quality: %1% - Signal Level: %2 dBm")
+                                            .arg(nQuality) .arg(nSignalLevel));
+        }
+        else  {
+            ui->wlan0_text->appendPlainText("Signal Quality: --- - Signal Level: --- dBm");
+        }
+    }
     // newline per QRcode
     ui->eth0_text->appendPlainText("");
     ui->wlan0_text->appendPlainText("");
@@ -511,4 +517,5 @@ void info::on_pushButtonRefresh_clicked()
     refreshSystemTab();
     refreshApplTab();
     refreshNetworkingTabs();
+    refreshNTPInfo();
 }

@@ -1900,7 +1900,7 @@ QCheckBox::indicator:checked {
                      <widget class="QComboBox" name="cboVariable1">
                       <property name="minimumSize">
                        <size>
-                        <width>250</width>
+                        <width>252</width>
                         <height>0</height>
                        </size>
                       </property>
@@ -1916,6 +1916,12 @@ QCheckBox::indicator:checked {
                         <weight>50</weight>
                         <bold>false</bold>
                        </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QComboBox {
+    min-width: 250px;
+}
+</string>
                       </property>
                       <property name="insertPolicy">
                        <enum>QComboBox::InsertAlphabetically</enum>
@@ -2013,7 +2019,7 @@ QCheckBox::indicator:checked {
                      <widget class="QComboBox" name="cboCondition">
                       <property name="minimumSize">
                        <size>
-                        <width>80</width>
+                        <width>82</width>
                         <height>0</height>
                        </size>
                       </property>
@@ -2029,6 +2035,12 @@ QCheckBox::indicator:checked {
                         <weight>50</weight>
                         <bold>false</bold>
                        </font>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QComboBox {
+    min-width: 80px;
+}
+</string>
                       </property>
                      </widget>
                     </item>
@@ -2167,7 +2179,7 @@ QCheckBox::indicator:checked {
                    <widget class="QComboBox" name="cboVariable2">
                     <property name="minimumSize">
                      <size>
-                      <width>240</width>
+                      <width>242</width>
                       <height>0</height>
                      </size>
                     </property>
@@ -2183,6 +2195,12 @@ QCheckBox::indicator:checked {
                       <weight>50</weight>
                       <bold>false</bold>
                      </font>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QComboBox {
+    min-width: 240px;
+}
+</string>
                     </property>
                     <property name="insertPolicy">
                      <enum>QComboBox::InsertAlphabetically</enum>
@@ -2303,12 +2321,33 @@ QCheckBox::indicator:checked {
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tabAlarms">
+      <attribute name="title">
+       <string>Alarms-Events</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_11">
+       <item>
+        <widget class="QTreeWidget" name="alarmTree">
+         <property name="font">
+          <font>
+           <family>MS Shell Dlg 2</family>
+           <pointsize>8</pointsize>
+          </font>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
   <tabstop>cboSections</tabstop>
   <tabstop>cmdHideShow</tabstop>
   <tabstop>cmdSearch</tabstop>

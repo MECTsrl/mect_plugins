@@ -552,14 +552,14 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
             lstRecValues[colUpdate] = lstUpdateNames[0];
         }
         // Campo Group
-        if (CTRecords[nRow].Group >= 0 && CTRecords[nRow].Group < nMax_Int16)  {
+        if (CTRecords[nRow].Group >= 0 && CTRecords[nRow].Group < nMax_UInt16)  {
             lstRecValues[colGroup] = QString::number(CTRecords[nRow].Group);
         }
         else  {
             lstRecValues[colGroup] = szZERO;
         }
         // Campo Module
-        if (CTRecords[nRow].Module >= 0 && CTRecords[nRow].Module < nMax_Int16)  {
+        if (CTRecords[nRow].Module >= 0 && CTRecords[nRow].Module < nMax_UInt16)  {
             lstRecValues[colModule] = QString::number(CTRecords[nRow].Module);
         }
         else  {
@@ -629,15 +629,18 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
                 lstRecValues[colCondition] = szEMPTY;
             // Source Var
             lstRecValues[colSourceVar] = QLatin1String(CTRecords[nRow].ALSource);
-            // Compare Var or Value
-            szTemp = QLatin1String(CTRecords[nRow].ALCompareVar);
-            if (szTemp.isEmpty())
-                lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
-            else
-                lstRecValues[colCompare] = szTemp;
             // Rising o Falling senza seconda parte
             if (CTRecords[nRow].ALOperator == oper_rising || CTRecords[nRow].ALOperator == oper_falling)
                 lstRecValues[colCompare] = szEMPTY;
+            else  {
+                // Right side of expression
+                // Compare Var or Value
+                szTemp = QLatin1String(CTRecords[nRow].ALCompareVar);
+                if (szTemp.isEmpty())
+                    lstRecValues[colCompare] = QString::number(CTRecords[nRow].ALCompareVal, 'f', 4);
+                else
+                    lstRecValues[colCompare] = szTemp;
+            }
         }
         else   {
             // R/O o R/W
@@ -655,6 +658,36 @@ bool recCT2FieldsValues(QList<CrossTableRecord> &CTRecords, QStringList &lstRecV
     // qDebug() << QLatin1String("recCT2FieldsValues(): Processed Row=[%1]") .arg(nRow);
     // Return value
     return true;
+}
+
+QString getAlarmEventCondition(CrossTableRecord ctRec)
+// Calcolo dell'espressione di Allarme o Evento per display a video
+{
+    QString szCondition;
+    QString szRightVal;
+
+    // Source Var
+    szCondition = QLatin1String(ctRec.ALSource);
+    szCondition.append(szSpace(1));
+    // Operatore Logico
+    if (ctRec.ALOperator >= 0 && ctRec.ALOperator < oper_totals)
+        szCondition.append(lstCondition[ctRec.ALOperator]);
+    else
+        szCondition.append(szSpace(1));
+    szCondition.append(szSpace(1));
+    // Right side of expression
+    // Rising o Falling
+    if (ctRec.ALOperator == oper_rising || ctRec.ALOperator == oper_falling)
+        szRightVal = szEMPTY;
+    else  {
+        // Compare Var or Value
+        szRightVal = QLatin1String(ctRec.ALCompareVar);
+        if (szRightVal.isEmpty())  {
+            szRightVal = QString::number(ctRec.ALCompareVal, 'f', 4);
+        }
+    }
+    szCondition.append(szRightVal);
+    return szCondition;
 }
 
 void freeCTrec(QList<CrossTableRecord> &lstCTRecs, int nRow)
@@ -996,6 +1029,26 @@ int     countLoggedVars(QList<CrossTableRecord> &CTRecords, int &nFast, int &nSl
     return nLoggedVars;
 }
 
+int     countAlarmEventVars(QList<CrossTableRecord> &CTRecords, int &nAlarms, int &nEvents)
+// Conta il Numero delle Variabili CT legate ad allarmi o eventi
+{
+    int     nRow = 0;
+
+    nAlarms = 0;
+    nEvents = 0;
+    for (nRow = 0; nRow < CTRecords.count(); nRow++)  {
+        if (CTRecords[nRow].UsedEntry && CTRecords[nRow].Enable > 0 && CTRecords[nRow].usedInAlarmsEvents > 0)  {
+            if (CTRecords[nRow].ALType == Alarm)  {
+                ++nAlarms;
+            }
+            else if (CTRecords[nRow].ALType == Event)  {
+                ++nEvents;
+            }
+        }
+    }
+    return (nAlarms + nEvents);
+}
+
 bool    list2GridRow(QTableWidget *table,  QStringList &lstRecValues, QList<int> &lstLeftCols, int nRow)
 // Inserimento o modifica elemento in Grid (valori -> GRID)
 {
@@ -1186,8 +1239,8 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
                  // CTRecords[nRow].Decimal == CTModel[nModelRow].Decimal &&
                  CTRecords[nRow].Protocol == CT_IOModule[nModelRow].Protocol &&
                  CTRecords[nRow].Offset == CT_IOModule[nModelRow].Offset &&
-                 CTRecords[nRow].Behavior == CT_IOModule[nModelRow].Behavior
-                )  {
+                 CTRecords[nRow].Behavior == CT_IOModule[nModelRow].Behavior )
+                {
                 // Il controllo del Numero Decimali è significativo solo nel caso dei vari Tipi Bit
                 if ((CTRecords[nRow].VarType == BIT ||
                      CTRecords[nRow].VarType == BYTE_BIT ||
@@ -1206,7 +1259,10 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
                 }
                 // Passa alla riga successiva del modello
                 nModelRow++;
+                //----------------------------
                 // Tutto il modello è Ok
+                // Modello trovato e aggiunto in lista
+                //----------------------------
                 if (nModelRow == nModelSize && nBaseRow >= 0)  {
                     // Aggiunge base alla Lista delle Basi modello
                     lstRootRows.append(nBaseRow);
@@ -1216,7 +1272,29 @@ bool    searchIOModules(const QString szModule, QList<CrossTableRecord> &CTRecor
                 }
             }
             else  {
+                //----------------------------
+                // Confronto fallito
+                //----------------------------
+                // Se il Modello non è ancora terminato e la riga del Modello è opzionale (Group >= 100),
+                // il confronto prosegue sulla riga successiva del modello
+                // lasciando ferma la riga corrente sulla Cross Table
+                //----------------------------
+                if (nModelRow > 0 && CT_IOModule[nModelRow].Group >= nOptionalVarGroup)  {
+                    nModelRow++;
+                    // Tutto il modello è Ok (salvo le righe opzionali), confronto terminato
+                    // Modello trovato e aggiunto in lista
+                    if (nModelRow == nModelSize && nBaseRow >= 0)  {
+                        // Aggiunge base alla Lista delle Basi modello
+                        lstRootRows.append(nBaseRow);
+                        // Riporta all'inizio il confronto
+                        nModelRow = 0;
+                        // qDebug() << QString::fromAscii("searchIOModules() - Model Found %1 @ Row: %2") .arg(szModule) .arg(nBaseRow);
+                    }
+                    continue;
+                }
+                //----------------------------
                 // Riporta all'inizio il confronto
+                //----------------------------
                 nModelRow = 0;
                 nBaseRow = -1;
             }
