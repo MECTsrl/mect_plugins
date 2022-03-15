@@ -33,6 +33,15 @@
 	<p class="western">To set the first analogue output to the value of the product of the first 2 inputs write:</p>
 	<p class="western"><strong>doWrite_PLC_AnOut_1(PLC_AnIn_1 * PLC_AnIn_2);</strong></p>
 	<br/>
+	<p class="western">It is possible to use the following structure to write multiple variables at the same time:</p>
+	<p class="western"><strong>beginWrite();</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_1(Value);</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_2(Value);</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_N(Value);</strong></p>
+	<p class="western"><strong>endWrite();</strong></p>	
+	<p class="western"><strong>NOTE:</strong> <u>the writes with the functions <strong>doWrite</strong> and <strong>addWrite</strong> MUST NOT be called CONTINUALLY but only on the difference of the value</u>.</p>
+	<br/>
+	
 	<p class="western"><u><h3>WHOLE PROJECT</h3></u></p>
 	<p class="western">It is possible to write the application only using C++ code; to do so use the page <strong>automation.cpp</strong> presente in Edit
 	&#8594; Sources</p>

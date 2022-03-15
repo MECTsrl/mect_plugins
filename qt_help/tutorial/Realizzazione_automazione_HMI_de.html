@@ -35,6 +35,15 @@
 	<p class="western">Um dem ersten Analogausgang das Produkt aus den Werten der ersten beiden Analogeingänge zuzuordnen, schreiben Sie:</p>
 	<p class="western"><strong>doWrite_PLC_AnOut_1(PLC_AnIn_1 * PLC_AnIn_2);</strong></p>
 	<br/>
+	<p class="western">Es ist möglich, die folgende Struktur zu verwenden, um mehrere Variablen gleichzeitig zu schreiben:</p>
+	<p class="western"><strong>beginWrite();</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_1(Value);</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_2(Value);</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_N(Value);</strong></p>
+	<p class="western"><strong>endWrite();</strong></p>	
+	<p class="western"><strong>HINWEIS:</strong> <u>die Schreibvorgänge mit den Funktionen <strong>doWrite</strong> und <strong>addWrite</strong> DÜRFEN NICHT STÄNDIG aufgerufen werden, sondern nur auf die Differenz des Wertes</u>.</p>
+	<br/>
+	
 	<p class="western"><u><h3>GESAMTPROJEKT</h3></u></p>
 	<p class="western">Sie können Ihre eigene Anwendung nur mit C++-Code schreiben; dazu müssen Sie die Seite 
 	 <strong>automation.cpp</strong>  in Edit &#8594; Sources verwenden</p>

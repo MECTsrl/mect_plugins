@@ -47,6 +47,7 @@
 					<section title="Éditeur MPNC" ref="MPNC_Editor_fr.html"/>
 					<section title="Éditeur MPNE" ref="MPNE_Editor_fr.html"/>
 					<section title="Log" ref="Log_fr.html"/>
+					<section title="Alarms-Events" ref="Alarms_Events_fr.html"/>
 					<section title="Structure de projet vide" ref="Struttura_progetto_fr.html"/>
 					<section title="Pages de librairie" ref="Pagine_libreria_fr.html">	
 					<section title="Time Set" ref="Time_set_fr.html">
@@ -56,7 +57,9 @@
 					<section title="Ajouter une page" ref="Aggiungere_pagina_fr.html"/>
 					<section title="Supprimer une page" ref="Rimuovere_pagina_fr.html"/>
 					<section title="Renommer une page" ref="Rinominare_pagina_fr.html"/>										
-					<section title="Ajouter des images / polices" ref="Aggiungere_immagine_font_fr.html"/>
+					<section title="Ajouter des images / polices" ref="Aggiungere_immagine_font_fr.html">				
+					<section title="Polices" ref="Fonts_fr.html"/>
+					</section>
 					<section title="Personnaliser l'arrière-plan d'une page" ref="Personalizzare_sfondo_pagina_fr.html"/>
 					<section title="Ajouter des éléments graphiques" ref="Aggiungere_elementi_grafici_fr.html"/>
 					<section title="Association entre la variable et l'element grafique" ref="Associazione_variabile_oggetto_fr.html"/>
@@ -115,8 +118,7 @@
 					<section title="Fonctionnement des alarmes" ref="Funzionamento_allarmi_fr.html">	
 						<section title="Page alarms" ref="Pagina_alarms_fr.html"/>
 						<section title="Page alarms_history" ref="Pagina_alarms_history_fr.html"/>
-						</section>						
-					<section title="Polices" ref="Fonts_fr.html"/>
+						</section>		
 					<section title="Traduction des langues" ref="Traduzione_lingue_fr.html">	
 						<section title="Ajouter un nouveau fichier de langues" ref="Add_file_lingue_fr.html"/>
 						<section title="Utilisation de Qt Linguist" ref="Qt_Linguist_fr.html"/>

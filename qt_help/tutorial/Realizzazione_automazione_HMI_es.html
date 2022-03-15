@@ -34,6 +34,14 @@
 	<p class="western">Para asignar a la primera salida analógica el producto de los valores de las dos primeras entradas analógicas se debe escribir:</p>
 	<p class="western"><strong>doWrite_PLC_AnOut_1(PLC_AnIn_1 * PLC_AnIn_2);</strong></p>
 	<br/>
+	<p class="western">Es posible usar la siguiente estructura para escribir múltiples variables al mismo tiempo:</p>
+	<p class="western"><strong>beginWrite();</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_1(Value);</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_2(Value);</strong></p>
+	<p class="western"><strong>addWrite_Variable_Name_N(Value);</strong></p>
+	<p class="western"><strong>endWrite();</strong></p>	
+	<p class="western"><strong>NOTA:</strong> <u> las escrituras con las funciones <strong>doWrite</strong> y <strong>addWrite</strong> NO DEBEN ser llamadas CONTINUAMENTE sino solo en la diferencia del valor</u>.</p>
+	<br/>
 	<p class="western"><u><h3>PROYECTO COMPLETO</h3></u></p>
 	<p class="western">Puede escribir su propia aplicación usando sólo código C++; para ello  
 	necesita usar la página <strong>automation.cpp</strong> en Edit &#8594; Sources</p>
