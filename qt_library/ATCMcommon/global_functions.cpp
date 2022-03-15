@@ -923,22 +923,19 @@ bool getBoardGateway(const char * board_name, unsigned &boardGW)
         while (fgets(buff, 1023, fp)) {
             int num = sscanf(buff, fmt,
                 Iface, &Destination, &Gateway, &Flags, &RefCnt, &Use, &Metric, &Mask, &MTU, &Window, &IRTT);
-            if (num < 11) {
-                fprintf(stderr, "Error parsing Routing File:[%s] Line:[%s] Items: [%d]\n", ROUTING_FILE, buff, num);
-                continue;
-            }
-            // Dumping routing info
-            if (strcmp(Iface, board_name) == 0)  {
-                if (Flags & RTF_UP) { // no RTF_GATEWAY
-                    if (Destination == 0 && Mask == 0) {
-                        fprintf(stderr, "Board:[%s] GW:[%X]\n", board_name, boardGW);
-                        boardGW = Gateway;
-                        fRes = true;
-                        break;
+            if (num >= 11) {
+                // Dumping routing info
+                if (strcmp(Iface, board_name) == 0)  {
+                    if (Flags & RTF_UP) { // no RTF_GATEWAY
+                        if (Destination == 0 && Mask == 0) {
+                            // fprintf(stderr, "Found GW for Board:[%s] Destination:[%X] GW:[%X] Mask[%X]\n", board_name, Destination, Gateway, Mask);
+                            boardGW = Gateway;
+                            fRes = true;
+                            break;
+                        }
                     }
                 }
             }
-
         }
         fclose(fp);
         fp = NULL;
