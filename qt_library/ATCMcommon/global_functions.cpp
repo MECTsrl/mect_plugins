@@ -846,6 +846,38 @@ int get_backlight_level(void)
     return level;
 }
 
+u_int32_t getMectSuiteVersion()
+{
+    u_int32_t   msVersion = 0;
+
+    QFile file(ROOTFS_VERSION);
+    if(file.exists()) {
+        file.open(QIODevice::ReadOnly);
+        QTextStream in(&file);
+        while(!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (! line.isEmpty())  {
+                if (line.startsWith("Release:"))  {
+                    line.replace("Release:", "");
+                    line = line.trimmed();
+                    int     nMajor = 0;
+                    int     nMinor = 0;
+                    int     nBuild = 0;
+                    int     nPar   = sscanf(line.toLatin1().data(), "%d.%d.%d", &nMajor, &nMinor, &nBuild);
+                    if (nPar == 3)  {
+                        msVersion = nBuild | (nMinor << 8) | (nMajor << 16);
+                    }
+                    break;
+                }
+            }
+        }
+        file.close();
+    }
+    fprintf(stderr, "Mect Suite Version is: 0x%06X\n", msVersion);
+    return msVersion;
+}
+
+
 bool get_wifi_signal_level(int &nQuality, int &nSignalLevel)
 // Returns true if wlan0 is present and Signal Quality (0..100) and Signal Level (dbm)
 {

@@ -82,6 +82,7 @@ extern "C" {
 #define BACKLIGHT_FILE_SYSTEM "/sys/devices/platform/mxs-bl.0/backlight/mxs-bl/brightness"
 
 #define ROUTING_FILE       "/proc/net/route"
+#define ROOTFS_VERSION     "/rootfs_version"
 
 #define APP_SIGN           "/usr/bin/sign"
 #define ZIP_BIN            "/usr/bin/zip"

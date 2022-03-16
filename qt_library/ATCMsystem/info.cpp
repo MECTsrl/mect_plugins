@@ -12,6 +12,7 @@
 #include "global_functions.h"
 #include "ui_info.h"
 #include "app_config.h"
+#include "common.h"
 #include "qrcode.h"
 #include "ntpclient.h"
 #include "linux/route.h"
@@ -143,7 +144,7 @@ void info::refreshSystemTab()
     }
 
     ui->sys_text->appendPlainText(QString(""));
-    fp = fopen("/rootfs_version", "r");
+    fp = fopen(ROOTFS_VERSION, "r");
     if (fp) {
     /*
         $ cat /rootfs_version
