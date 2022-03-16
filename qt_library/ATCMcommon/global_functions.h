@@ -182,6 +182,8 @@ int set_backlight_level(int level);
  */
 int get_backlight_level(void);
 
+u_int32_t getMectSuiteVersion();
+
 bool check_wifi_board();                // returns true if wifi board wlan0 is present
 
 bool check_usb_wan_board();             // returns true if wan board usb_wwan is present
