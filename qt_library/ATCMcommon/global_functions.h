@@ -4,6 +4,11 @@
 #include "global_var.h"
 #include <unistd.h>
 
+#include <QNetworkInterface>
+#include <QNetworkAddressEntry>
+#include <QHostAddress>
+
+
 enum usb_mode_e
 {
     usb_host_e,
@@ -186,21 +191,21 @@ u_int32_t getMectSuiteVersion();
 
 bool check_wifi_board();                // returns true if wifi board wlan0 is present
 
-bool check_usb_wan_board();             // returns true if wan board usb_wwan is present
+bool check_usb_wan_board();             // returns true if wan board ppp0 is present
 
 bool get_wifi_signal_level(int &nQuality, int &nSignalLevel);   // Returns true if wlan0 is present and Signal Quality (0..100) and Signal Level (dbm)
 
 bool getBoardGateway(const char * board_name, unsigned &boardGW);   // returns the ip address of default gateway for board <board_name>
 
-bool checkNetAddr(char * ipaddr);
+bool checkNetAddr(char * ipaddr);       // Check format of an IP Address
 
-QString getMacAddr(QString interface);
+QString getMacAddr(QString interface);  // Returns MAC Address for board <interface> as a QString
 
-QString getIPAddr(QString interface);
+QString getIPAddr(QString interface);   // Returns IP Address for board <interface> as a QString
 
-bool isWlanOn(void);
+bool isWlanOn(void);                    // returns true if wifi board wlan0 is up and connected to an AP
 
-bool isWanOn(void);
+bool isWanOn(void);                     // returns true if WLan ppp0 board is up and connected
 
 bool LoadTrend(const char * trend_name, QString * ErrorMsg);
 

@@ -52,13 +52,7 @@ net_conf::net_conf(QWidget *parent) :
     ui->checkBox_hiddenESSID->setChecked(false);
     ui->pushButton_hidden_wlan0->setVisible(false);
     is_eth0_enabled = (system("grep -c INTERFACE0 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
-    is_eth1_enabled = (system("grep -c INTERFACE1 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
     ui->tab_eth0->setEnabled(is_eth0_enabled);
-    ui->tab_eth1->setEnabled(is_eth1_enabled);
-    if (!is_eth1_enabled)
-    {
-        ui->tabWidget->removeTab(1);
-    }
     if (!is_eth0_enabled)
     {
         ui->tabWidget->removeTab(0);
@@ -149,83 +143,6 @@ bool net_conf::saveETH0cfg()
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the eth0 network configuration."));
-        return false;
-    }
-    return true;
-}
-
-/* ETH1 */
-bool net_conf::saveETH1cfg()
-{
-    if (!is_eth1_enabled)
-    {
-        return true;
-    }
-    /* DHCP */
-    if (ui->checkBox_eth1_DHCP->isChecked())
-    {
-        if (app_netconf_item_set("[DHCP]", "BOOTPROTO1"))
-        {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTO1"));
-            return false;
-        }
-    }
-    else
-    {
-        if (app_netconf_item_set("[none]", "BOOTPROTO1"))
-        {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTO1"));
-            return false;
-        }
-        /* IP */
-        if (ui->pushButton_eth1_IP->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth1_IP->text().toAscii().data(), "IPADDR1"))
-        {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nIPADDR1"));
-            return false;
-        }
-        /* GATEWAY */
-        if (ui->pushButton_eth1_GW->text().compare(NO_IP) != 0)
-        {
-            QString     szGW = ui->pushButton_eth1_GW->text();
-            if (szGW == ZERO_IP)
-                szGW = "";
-
-            if (app_netconf_item_set(szGW.toAscii().data(), "GATEWAY1"))
-            {
-                /* error */
-                QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAY1"));
-                return false;
-            }
-        }
-        /* NETMASK */
-        if (ui->pushButton_eth1_NM->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth1_NM->text().toAscii().data(), "NETMASK1"))
-        {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNETMASK1"));
-            return false;
-        }
-        /* DNS1 */
-        if (ui->pushButton_eth1_DNS1->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth1_DNS1->text().toAscii().data(), "NAMESERVER11"))
-        {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER11"));
-            return false;
-        }
-        /* DNS2 */
-        if (ui->pushButton_eth1_DNS2->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_eth1_DNS2->text().toAscii().data(), "NAMESERVER12"))
-        {
-            /* error */
-            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVER12"));
-            return false;
-        }
-    }
-    if (system("/etc/rc.d/init.d/network restart >/dev/null 2>&1"))
-    {
-        /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the eth0 network configuration"));
         return false;
     }
     return true;
@@ -376,7 +293,6 @@ void net_conf::on_pushButtonSaveAll_clicked()
     /* save all pages */
     if (
             saveETH0cfg() &&
-            saveETH1cfg() &&
             saveWLAN0cfg() &&
             saveWAN0cfg()
             )
@@ -392,6 +308,8 @@ void net_conf::on_pushButtonSaveAll_clicked()
 void net_conf::reload()
 {
     char *tmp = NULL;
+    QString szTemp;
+
 
     setup = true;
     is_wlan_active = isWlanOn();
@@ -422,187 +340,61 @@ void net_conf::reload()
     {
         /* ETH0 */
         /* DHCP */
-        if (app_netconf_item_get(&tmp, "BOOTPROTO0") != NULL && strcmp(tmp, "[DHCP]") == 0)
-        {
+        if (app_netconf_item_get(&tmp, "BOOTPROTO0") != NULL && strcmp(tmp, "[DHCP]") == 0)  {
             ui->checkBox_eth0_DHCP->setChecked(true);
             on_checkBox_eth0_DHCP_clicked(true);
         }
-        else
-        {
+        else  {
             ui->checkBox_eth0_DHCP->setChecked(false);
             on_checkBox_eth0_DHCP_clicked(false);
         }
         /* IP */
-        if (app_netconf_item_get(&tmp, "IPADDR0") != NULL && tmp[0] != '\0')
-        {
+        if (app_netconf_item_get(&tmp, "IPADDR0") != NULL && tmp[0] != '\0')  {
             ui->pushButton_eth0_IP->setText(tmp);
         }
-        else
-        {
+        else  {
             ui->pushButton_eth0_IP->setText(NO_IP);
         }
         /* GATEWAY */
-        if (app_netconf_item_get(&tmp, "GATEWAY0") != NULL && tmp[0] != '\0')
-        {
+
+        if (app_netconf_item_get(&tmp, "GATEWAY0") != NULL && tmp[0] != '\0')  {
             ui->pushButton_eth0_GW->setText(tmp);
         }
-        else
-        {
+        else  {
             ui->pushButton_eth0_GW->setText(NO_IP);
         }
         /* NETMASK */
-        if (app_netconf_item_get(&tmp, "NETMASK0") != NULL && tmp[0] != '\0')
-        {
+        if (app_netconf_item_get(&tmp, "NETMASK0") != NULL && tmp[0] != '\0')  {
             ui->pushButton_eth0_NM->setText(tmp);
         }
-        else
-        {
+        else  {
             ui->pushButton_eth0_NM->setText(NO_IP);
         }
         /* DNS1 */
-        if (app_netconf_item_get(&tmp, "NAMESERVER01") != NULL && tmp[0] != '\0')
-        {
+        if (app_netconf_item_get(&tmp, "NAMESERVER01") != NULL && tmp[0] != '\0')  {
             ui->pushButton_eth0_DNS1->setText(tmp);
         }
-        else
-        {
+        else  {
             ui->pushButton_eth0_DNS1->setText(NO_IP);
         }
         /* DNS2 */
-        if (app_netconf_item_get(&tmp, "NAMESERVER02") != NULL && tmp[0] != '\0')
-        {
+        if (app_netconf_item_get(&tmp, "NAMESERVER02") != NULL && tmp[0] != '\0')  {
             ui->pushButton_eth0_DNS2->setText(tmp);
         }
-        else
-        {
+        else  {
             ui->pushButton_eth0_DNS2->setText(NO_IP);
         }
         /* MAC */
-#if 0
-        if (app_macconf_item_get(&tmp, "MAC0") != NULL && tmp[0] != '\0')
-        {
-            ui->label_eth0_MAC->setText(tmp);
+        ui->label_eth0_MAC->setText(getMacAddr("eth0"));
+        /* IP */
+        if (ui->checkBox_eth0_DHCP->isChecked())  {
+            ui->pushButton_eth0_IP->setText(getIPAddr("eth0"));
         }
-        else
-        {
-            ui->label_eth0_MAC->setText(NO_IP);
+        else  {
+            ui->pushButton_eth0_IP->setText(NO_IP);
         }
-#else
-        char string[32];
-        if (getMAC("eth0", string) == 0)
-        {
-            ui->label_eth0_MAC->setText(string);
-        }
-        else
-        {
-            ui->label_eth0_MAC->setText(NO_IP);
-        }
-        if (ui->checkBox_eth0_DHCP->isChecked())
-        {
-            if (getIP("eth0", string) == 0)
-            {
-                ui->pushButton_eth0_IP->setText(string);
-            }
-            else
-            {
-                ui->pushButton_eth0_IP->setText(NO_IP);
-            }
-        }
-#endif
     }
 
-    if (is_eth1_enabled)
-    {
-        /* ETH1 */
-        /* DHCP */
-        if (app_netconf_item_get(&tmp, "BOOTPROTO1") != NULL && strcmp(tmp, "[DHCP]") == 0)
-        {
-            ui->checkBox_eth1_DHCP->setChecked(true);
-            on_checkBox_eth1_DHCP_clicked(true);
-        }
-        else
-        {
-            ui->checkBox_eth1_DHCP->setChecked(false);
-            on_checkBox_eth1_DHCP_clicked(false);
-        }
-        /* IP */
-        if (app_netconf_item_get(&tmp, "IPADDR1") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_eth1_IP->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_eth1_IP->setText(NO_IP);
-        }
-        /* GATEWAY */
-        if (app_netconf_item_get(&tmp, "GATEWAY1") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_eth1_GW->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_eth1_GW->setText(NO_IP);
-        }
-        /* NETMASK */
-        if (app_netconf_item_get(&tmp, "NETMASK1") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_eth1_NM->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_eth1_NM->setText(NO_IP);
-        }
-        /* DNS1 */
-        if (app_netconf_item_get(&tmp, "NAMESERVER11") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_eth1_DNS1->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_eth1_DNS1->setText(NO_IP);
-        }
-        /* DNS2 */
-        if (app_netconf_item_get(&tmp, "NAMESERVER12") != NULL && tmp[0] != '\0')
-        {
-            ui->pushButton_eth1_DNS2->setText(tmp);
-        }
-        else
-        {
-            ui->pushButton_eth1_DNS2->setText(NO_IP);
-        }
-        /* MAC */
-#if 0
-        if (app_macconf_item_get(&tmp, "MAC1") != NULL && tmp[0] != '\0')
-        {
-            ui->label_eth1_MAC->setText(tmp);
-        }
-        else
-        {
-            ui->label_eth1_MAC->setText(NO_IP);
-        }
-#else
-        char string[32];
-        if (getMAC("eth1", string) == 0)
-        {
-            ui->label_eth1_MAC->setText(string);
-        }
-        else
-        {
-            ui->label_eth1_MAC->setText(NO_IP);
-        }
-        if (ui->checkBox_eth1_DHCP->isChecked())
-        {
-            if (getIP("eth1", string) == 0)
-            {
-                ui->pushButton_eth1_IP->setText(string);
-            }
-            else
-            {
-                ui->pushButton_eth1_IP->setText(NO_IP);
-            }
-        }
-#endif
-    }
 
     /* WLAN0 */
     /* ESSID */
@@ -689,14 +481,7 @@ void net_conf::reload()
         on_checkBox_wlan0_DHCP_clicked(false);
     }
     /* IP */
-    if (app_netconf_item_get(&tmp, "IPADDRW0") != NULL && tmp[0] != '\0')
-    {
-        ui->pushButton_wlan0_IP->setText(tmp);
-    }
-    else
-    {
-        ui->pushButton_wlan0_IP->setText(NO_IP);
-    }
+    ui->pushButton_wlan0_IP->setText(getIPAddr("wlan0"));
     /* GATEWAY */
     if (app_netconf_item_get(&tmp, "GATEWAYW0") != NULL && tmp[0] != '\0')
     {
@@ -734,16 +519,6 @@ void net_conf::reload()
         ui->pushButton_wlan0_DNS2->setText(NO_IP);
     }
     /* MAC */
-#if 0
-    if (app_macconf_item_get(&tmp, "MACW0") != NULL && tmp[0] != '\0')
-    {
-        ui->label_wlan0_MAC->setText(tmp);
-    }
-    else
-    {
-        ui->label_wlan0_MAC->setText(NO_IP);
-    }
-#else
     char string[32];
     if (getMAC("wlan0", string) == 0)
     {
@@ -753,7 +528,6 @@ void net_conf::reload()
     {
         ui->label_wlan0_MAC->setText(NO_IP);
     }
-#endif
 
     /* WAN0 */
     /* DIALNB */
@@ -975,61 +749,6 @@ void net_conf::on_pushButton_eth0_DNS2_clicked()
     }
 }
 
-void net_conf::on_pushButton_eth1_IP_clicked()
-{
-    char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_IP->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth1_IP->setText(value);
-    }
-}
-
-void net_conf::on_pushButton_eth1_NM_clicked()
-{
-    char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_NM->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth1_NM->setText(value);
-    }
-}
-
-void net_conf::on_pushButton_eth1_GW_clicked()
-{
-    char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_GW->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth1_GW->setText(value);
-    }
-}
-
-void net_conf::on_pushButton_eth1_DNS1_clicked()
-{
-    char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_DNS1->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth1_DNS1->setText(value);
-    }
-}
-
-void net_conf::on_pushButton_eth1_DNS2_clicked()
-{
-    char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth1_DNS2->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth1_DNS2->setText(value);
-    }
-}
-
 void net_conf::on_pushButton_wlan0_IP_clicked()
 {
     char value [32];
@@ -1172,11 +891,6 @@ void net_conf::on_pushButton_wlan0_pwd_clicked()
 void net_conf::on_checkBox_eth0_DHCP_clicked(bool checked)
 {
     ui->frame_eth0->setEnabled(!checked);
-}
-
-void net_conf::on_checkBox_eth1_DHCP_clicked(bool checked)
-{
-    ui->frame_eth1->setEnabled(!checked);
 }
 
 void net_conf::on_checkBox_wlan0_DHCP_clicked(bool checked)

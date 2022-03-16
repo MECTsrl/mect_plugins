@@ -18,10 +18,17 @@
 #include <QFontDatabase>
 #include <QMetaObject>
 #include <QProcess>
+#include <QNetworkInterface>
+#include <QNetworkAddressEntry>
+#include <QHostAddress>
+
+
 //#include "app_config.h"
 #include "pthread.h"
 #include "hmi_plc.h"
 #include "linux/route.h"
+
+
 /**
  * @brief load the passwords
  */
@@ -979,6 +986,7 @@ bool getBoardGateway(const char * board_name, unsigned &boardGW)
 }
 
 bool checkNetAddr(char * ipaddr)
+// Check format of an IP Address
 {
     bool ok = false;
 
@@ -1000,6 +1008,7 @@ bool checkNetAddr(char * ipaddr)
 }
 
 QString getMacAddr(QString interface)
+// Returns MAC Address for board <interface> as a QString
 {
     QString resultValue;
 
@@ -1031,39 +1040,30 @@ QString getMacAddr(QString interface)
 }
 
 QString getIPAddr(QString interface)
+// Returns IP Address for board <interface> as a QString
 {
-    QString resultValue;
+    QString resultValue(NO_IP);
 
-    QString readResult;
-    QProcess readSettings;
-    readSettings.start("/bin/sh", QStringList() << "-c" << " ip a | grep " + interface);
-    readSettings.waitForFinished();
+    QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
+    QNetworkInterface eth;
 
-    if (readSettings.exitCode() != 0) {
-        resultValue = NO_IP;
-    } else {
-        readResult = QString(readSettings.readAll());
-        if(!readResult.isEmpty()) {
-            QStringList results = readResult.split(" ");
-            if (!results.isEmpty()) {
-                for (int i=0; i< results.count(); i++) {
-                    if (results.at(i) == "inet") {
-                        if (!results.at(i+1).isEmpty()) {
-                            resultValue = results.at(i+1);
-                            break;
-                        }
-                    }
-                }
+    foreach(eth, allInterfaces) {
+        QList<QNetworkAddressEntry> allEntries = eth.addressEntries();
+        // eth0
+        if (eth.name() == interface)  {
+            // IP Definito solo se la scheda è collegata
+            if (allEntries.count() > 0)  {
+                resultValue = allEntries[0].ip().toString();
             }
+            break;
         }
     }
-    if (resultValue.isEmpty()) {
-        resultValue = NO_IP;
-    }
+    // Return Value
     return resultValue;
 }
 
 bool isWlanOn(void)
+// returns true if wifi board wlan0 is up and connected to an AP
 {
     QProcess readSettings;
     //readSettings.start("/bin/sh", QStringList() << "-c" << "iwconfig wlan0 | grep 'Access Point: Not-Associate'");
@@ -1074,6 +1074,7 @@ bool isWlanOn(void)
 }
 
 bool isWanOn()
+// returns true if WLan ppp0 board is up and connected
 {
     QProcess readSettings;
     readSettings.start("/bin/sh", QStringList() << "-c" << "ip addr show dev ppp0");
