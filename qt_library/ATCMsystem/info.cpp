@@ -275,12 +275,12 @@ void info::refreshNetworkingTabs()
             // IP[2] 192.168.0.211/24
             // No MAC for tun0
             if (plainText != ui->tun0_text)  {
-                plainText->appendPlainText("MAC " + iface.hardwareAddress());
+                plainText->appendPlainText("MAC:\t" + iface.hardwareAddress());
                 plainText->appendPlainText("");
             }
             for (int n = 0; n < allEntries.count(); ++n) {
                 plainText->appendPlainText(
-                    QString("IP[%1] %2/%3")
+                    QString("IP[%1]:\t%2/%3")
                     .arg(n + 1)
                     .arg(QString(allEntries[n].ip().toString()))
                     .arg(QString("%1").arg(allEntries[n].prefixLength()))

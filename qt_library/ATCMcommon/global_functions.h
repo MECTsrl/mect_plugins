@@ -8,7 +8,6 @@
 #include <QNetworkAddressEntry>
 #include <QHostAddress>
 
-
 enum usb_mode_e
 {
     usb_host_e,
@@ -202,6 +201,8 @@ bool checkNetAddr(char * ipaddr);       // Check format of an IP Address
 QString getMacAddr(QString interface);  // Returns MAC Address for board <interface> as a QString
 
 QString getIPAddr(QString interface);   // Returns IP Address for board <interface> as a QString
+
+bool    getBoardIPInfo(QString interface, QNetworkAddressEntry &netAddr);
 
 bool isWlanOn(void);                    // returns true if wifi board wlan0 is up and connected to an AP
 

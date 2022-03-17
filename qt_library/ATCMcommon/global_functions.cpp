@@ -1,9 +1,7 @@
-#include <QMessageBox>
-#include <QFile>
-#include <QSettings>
+#include "global_functions.h"
+
 #include <errno.h>
 #include <sys/time.h>
-#include "global_functions.h"
 #include "app_logprint.h"
 #include "screensaver.h"
 #include "hmi_logger.h"
@@ -14,13 +12,14 @@
 #include "utility.h"
 #include "timepopup.h"
 #include "calendar.h"
+
+#include <QMessageBox>
+#include <QFile>
+#include <QSettings>
 #include <QDirIterator>
 #include <QFontDatabase>
 #include <QMetaObject>
 #include <QProcess>
-#include <QNetworkInterface>
-#include <QNetworkAddressEntry>
-#include <QHostAddress>
 
 
 //#include "app_config.h"
@@ -1010,53 +1009,47 @@ bool checkNetAddr(char * ipaddr)
 QString getMacAddr(QString interface)
 // Returns MAC Address for board <interface> as a QString
 {
-    QString resultValue;
+    QString resultValue(NO_IP);;
+    QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
+    QNetworkInterface eth;
 
-    QString readResult;
-    QProcess readSettings;
-    readSettings.start("/bin/sh", QStringList() << "-c" << " ifconfig | grep " + interface);
-    readSettings.waitForFinished();
-
-    if (readSettings.exitCode() != 0) {
-        resultValue = NO_IP;
-    } else {
-        readResult = QString(readSettings.readAll());
-        if(readResult.isEmpty()) {
-            resultValue = NO_IP;
-        } else {
-            QStringList results = readResult.split(" ");
-            for (int i = 0;i < results.count();i++) {
-                if(results.at(i) == "HWaddr") {
-                    resultValue = results.at(i+1);
-                    break;
-                }
-            }
-            if (resultValue.isEmpty()) {
-                resultValue = NO_IP;
-            }
+    foreach(eth, allInterfaces) {
+        // eth0
+        if (eth.name() == interface)  {
+            resultValue = eth.hardwareAddress();
         }
     }
     return resultValue;
 }
 
-QString getIPAddr(QString interface)
-// Returns IP Address for board <interface> as a QString
+bool    getBoardIPInfo(QString interface, QNetworkAddressEntry &netAddr)
 {
-    QString resultValue(NO_IP);
+    bool fRes = false;
 
     QList<QNetworkInterface> allInterfaces = QNetworkInterface::allInterfaces();
     QNetworkInterface eth;
-
     foreach(eth, allInterfaces) {
-        QList<QNetworkAddressEntry> allEntries = eth.addressEntries();
         // eth0
         if (eth.name() == interface)  {
+            QList<QNetworkAddressEntry> allEntries = eth.addressEntries();
             // IP Definito solo se la scheda è collegata
             if (allEntries.count() > 0)  {
-                resultValue = allEntries[0].ip().toString();
+                // Restituisce solo il primo IP
+                netAddr = allEntries[0];
             }
             break;
         }
+    }
+    return fRes;
+}
+
+QString getIPAddr(QString interface)
+// Returns IP Address for board <interface> as a QString
+{
+    QString                 resultValue(NO_IP);
+    QNetworkAddressEntry    netAddr;
+    if(getBoardIPInfo(interface, netAddr))  {
+        resultValue = netAddr.ip().toString();
     }
     // Return Value
     return resultValue;
