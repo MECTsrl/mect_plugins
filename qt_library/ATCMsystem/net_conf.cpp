@@ -16,6 +16,8 @@
 #include "global_functions.h"
 
 #include <QMessageBox>
+#include <QNetworkAddressEntry>
+#include <QHostAddress>
 
 /**
  * @brief this macro is used to set the net_conf style.
@@ -51,12 +53,7 @@ net_conf::net_conf(QWidget *parent) :
     ui->pushButton_hidden_wlan0->setText(NO_IP);
     ui->checkBox_hiddenESSID->setChecked(false);
     ui->pushButton_hidden_wlan0->setVisible(false);
-    is_eth0_enabled = (system("grep -c INTERFACE0 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
-    ui->tab_eth0->setEnabled(is_eth0_enabled);
-    if (!is_eth0_enabled)
-    {
-        ui->tabWidget->removeTab(0);
-    }
+    ui->tabWidget->setCurrentIndex(0);      // Default on lan0
     wlan0_essid = "";
     wlan0_pwd = "";
 }
@@ -308,34 +305,22 @@ void net_conf::on_pushButtonSaveAll_clicked()
 void net_conf::reload()
 {
     char *tmp = NULL;
-    QString szTemp;
 
+    QNetworkAddressEntry    netAddr;
+    unsigned                myGW = 0;
 
-    setup = true;
+    // eth0
+    is_eth0_enabled = (system("grep -c INTERFACE0 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
+    ui->tab_eth0->setEnabled(is_eth0_enabled);
+    ui->tabWidget->setVisible(is_eth0_enabled);
+
+    // wlan0
     is_wlan_active = isWlanOn();
-    if (is_wlan_active)
-    {
-        ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOn.png"));
-    }
-    else
-    {
-        ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOff.png"));
-    }
 
+    // ppp0
     is_wan_active = isWanOn();
-    if (is_wan_active)
-    {
-        ui->pushButton_wan0_enable->setIcon(QIcon(":/libicons/img/GprsOn.png"));
-    }
-    else
-    {
-        ui->pushButton_wan0_enable->setIcon(QIcon(":/libicons/img/GprsOff.png"));
-    }
 
-    setup = false;
-
-    ui->tabWidget->setCurrentIndex(0);
-
+    // eth0
     if (is_eth0_enabled)
     {
         /* ETH0 */
@@ -348,27 +333,21 @@ void net_conf::reload()
             ui->checkBox_eth0_DHCP->setChecked(false);
             on_checkBox_eth0_DHCP_clicked(false);
         }
-        /* IP */
-        if (app_netconf_item_get(&tmp, "IPADDR0") != NULL && tmp[0] != '\0')  {
-            ui->pushButton_eth0_IP->setText(tmp);
+        // IP - NetMask
+        if (getBoardIPInfo("eth0", netAddr))  {
+            ui->pushButton_eth0_IP->setText(netAddr.ip().toString());
+            ui->pushButton_eth0_NM->setText(netAddr.netmask().toString());
         }
         else  {
             ui->pushButton_eth0_IP->setText(NO_IP);
+            ui->pushButton_eth0_NM->setText(NO_IP);
         }
         /* GATEWAY */
-
-        if (app_netconf_item_get(&tmp, "GATEWAY0") != NULL && tmp[0] != '\0')  {
-            ui->pushButton_eth0_GW->setText(tmp);
+        if (getBoardGateway("eth0", myGW))  {
+            ui->pushButton_eth0_GW->setText(QHostAddress(ntohl(myGW)).toString());
         }
         else  {
             ui->pushButton_eth0_GW->setText(NO_IP);
-        }
-        /* NETMASK */
-        if (app_netconf_item_get(&tmp, "NETMASK0") != NULL && tmp[0] != '\0')  {
-            ui->pushButton_eth0_NM->setText(tmp);
-        }
-        else  {
-            ui->pushButton_eth0_NM->setText(NO_IP);
         }
         /* DNS1 */
         if (app_netconf_item_get(&tmp, "NAMESERVER01") != NULL && tmp[0] != '\0')  {
@@ -386,13 +365,6 @@ void net_conf::reload()
         }
         /* MAC */
         ui->label_eth0_MAC->setText(getMacAddr("eth0"));
-        /* IP */
-        if (ui->checkBox_eth0_DHCP->isChecked())  {
-            ui->pushButton_eth0_IP->setText(getIPAddr("eth0"));
-        }
-        else  {
-            ui->pushButton_eth0_IP->setText(NO_IP);
-        }
     }
 
 
@@ -577,6 +549,8 @@ void net_conf::reload()
  */
 void net_conf::updateData()
 {
+    static int nLoop = 0;
+
     if (this->isVisible() == false)
     {
         return;
@@ -584,27 +558,50 @@ void net_conf::updateData()
     /* call the parent updateData member */
     page::updateData();
     
-    /* To read the cross table variable UINT TEST1:
-     *    uint_16 tmp = TEST1;
-     */
-    /* To write 5 into the the cross table variable UINT TEST1:
-     *    doWrite_TEST1(5);
-     */
-    int static count = 0;
-    if (REFRESH_MS * count > 1000)
-    {
+    // Refresh ogni 3s
+    if ((++nLoop % 6) == 0)  {
+        nLoop = 0;
         count = 0;
         updateIcons();
-    }
-    else
-    {
-        count ++;
     }
 
 }
 
 void net_conf::updateIcons()
 {
+    // wlan0
+    bool is_wlan_present = check_wifi_board();
+
+    ui->tab_wlan0->setEnabled(is_wlan_present);
+    if (is_wlan_present)  {
+        ui->label_wlan0_MAC->setText(getMacAddr("wlan0"));
+        is_wlan_active = isWlanOn();
+    }
+    else  {
+        is_wlan_active = false;
+        ui->label_wlan0_MAC->setText(NO_IP);
+    }
+    // wlan0 is connected, get connection info
+    if (is_wlan_present && is_wlan_active)  {
+        ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOn.png"));
+        ui->pushButton_wlan0_IP->setText(getIPAddr("wlan0"));
+        // Signal Level
+        int nQuality = 0;
+        int nSignalLevel = 0;
+        if (get_wifi_signal_level(nQuality, nSignalLevel))  {
+            ui->label_wlan0_signal->setText(QString("%1%") .arg(nQuality));
+        }
+        else  {
+            ui->label_wlan0_signal->setText(NO_IP);
+        }
+    }
+    else  {
+        ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOff.png"));
+        ui->pushButton_wlan0_IP->setText(NO_IP);
+        ui->label_wlan0_signal->setText(NO_IP);
+    }
+
+    // ppp0
     if (check_usb_wan_board())
     {
         ui->tab_wan0->setEnabled(true);
@@ -634,44 +631,6 @@ void net_conf::updateIcons()
         ui->tab_wan0->setEnabled(false);
     }
 
-    if (check_wifi_board())
-    {
-        ui->tab_wlan0->setEnabled(true);
-        is_wlan_active = isWlanOn();
-        if (is_wlan_active)
-        {
-            char string[32];
-            ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOn.png"));
-            if (ui->checkBox_wlan0_DHCP->isChecked())
-            {
-                if (getIP("wlan0", string) == 0)
-                {
-                    ui->pushButton_wlan0_IP->setText(string);
-                }
-            }
-            if (getMAC("wlan0", string) == 0)
-            {
-                ui->label_wlan0_MAC->setText(string);
-            }
-            else
-            {
-                ui->label_wlan0_MAC->setText(NO_IP);
-            }
-        }
-        else
-        {
-            ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOff.png"));
-            if (ui->checkBox_wlan0_DHCP->isChecked())
-            {
-                ui->pushButton_wlan0_IP->setText(NO_IP);
-            }
-            ui->label_wlan0_MAC->setText(NO_IP);
-        }
-    }
-    else
-    {
-        ui->tab_wlan0->setEnabled(false);
-    }
 }
 
 /**

@@ -1090,7 +1090,7 @@ bool LoadTrend(const char * trend_name, QString * ErrorMsg)
     }
     else
     {
-        sprintf(filename, "%s/%s.csv", CUSTOM_TREND_DIR, trend_name);
+        sprintf(filename, "%s/%s.csv", CUSTOM_TREND_DIis_wlan_activeR, trend_name);
     }
 
     fp = fopen(filename, "r");
@@ -1105,7 +1105,7 @@ bool LoadTrend(const char * trend_name, QString * ErrorMsg)
      * the file is formatted as
      * <Layout>
      * <Visible>;<Tag1>;<color>;<Ymin>;<Ymax>;<description>
-     * <Visible>;<Tag2>;<color>;<Ymin>;<Ymax>;<description>
+     * <Visible>;<Tag2>;<color>;<Ymin>;<Ymax>;<descripis_wlan_activetion>
      * <Visible>;<Tag3>;<color>;<Ymin>;<Ymax>;<description>
      * <Visible>;<Tag4>;<color>;<Ymin>;<Ymax>;<description>
      */

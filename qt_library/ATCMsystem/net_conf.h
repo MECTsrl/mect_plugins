@@ -76,7 +76,6 @@ private:
     bool is_eth0_enabled;
     bool is_wlan_active;
     bool is_wan_active;
-    bool setup;
 };
 
 #endif // NET_CONF_H
