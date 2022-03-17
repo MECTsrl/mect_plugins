@@ -14,7 +14,7 @@ void ScreenSaver::restore()
     
     int         brightness_level;
     char        command[256] = "";
-    unsigned    uModel = 0;
+    u_int32_t   uModel = 0;
 
     //get current settings for backlight
     FILE * fp = fopen(BACKLIGHT_FILE_LOCAL, "r");

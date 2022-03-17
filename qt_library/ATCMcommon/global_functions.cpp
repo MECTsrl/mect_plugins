@@ -1036,6 +1036,7 @@ bool    getBoardIPInfo(QString interface, QNetworkAddressEntry &netAddr)
             if (allEntries.count() > 0)  {
                 // Restituisce solo il primo IP
                 netAddr = allEntries[0];
+                fRes = true;
             }
             break;
         }
