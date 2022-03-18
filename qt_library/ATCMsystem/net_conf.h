@@ -66,7 +66,7 @@ private:
     bool saveETH0cfg();
     bool saveWLAN0cfg();
     bool saveWAN0cfg();
-
+    void setEnableWidgets(bool isEnabled);
     void updateIcons();
 
 private:
@@ -76,6 +76,8 @@ private:
     bool is_eth0_enabled;
     bool is_wlan_active;
     bool is_wan_active;
+    bool is_loading;
+    bool is_WifiScanning;
 };
 
 #endif // NET_CONF_H

@@ -1090,7 +1090,7 @@ bool LoadTrend(const char * trend_name, QString * ErrorMsg)
     }
     else
     {
-        sprintf(filename, "%s/%s.csv", CUSTOM_TREND_DIis_wlan_activeR, trend_name);
+        sprintf(filename, "%s/%s.csv", CUSTOM_TREND_DIR, trend_name);
     }
 
     fp = fopen(filename, "r");

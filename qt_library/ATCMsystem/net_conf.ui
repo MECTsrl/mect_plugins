@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>317</height>
+    <height>332</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -79,7 +79,7 @@ QComboBox
 }  </string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_eth0">
       <attribute name="title">
@@ -440,31 +440,6 @@ QComboBox
              </property>
             </widget>
            </item>
-           <item row="2" column="3">
-            <widget class="QCheckBox" name="checkBox_wlan0_DHCP">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
-             <property name="text">
-              <string>DHCP</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
            <item row="3" column="2" colspan="2">
             <widget class="QLabel" name="label_wlan0_MAC">
              <property name="sizePolicy">
@@ -504,11 +479,49 @@ QComboBox
              </property>
             </widget>
            </item>
+           <item row="1" column="3">
+            <widget class="QCheckBox" name="checkBox_wlan0_DHCP">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string>DHCP</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QLabel" name="label_wlan0_signal">
+             <property name="text">
+              <string>---</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <property name="spacing">
+            <number>1</number>
+           </property>
+           <property name="margin">
             <number>2</number>
            </property>
            <item alignment="Qt::AlignHCenter">
@@ -607,26 +620,55 @@ border: 2px solid  rgb(194, 194, 194);
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_wlan0_signal">
+            <widget class="QLabel" name="label_Wlan_connect">
              <property name="minimumSize">
               <size>
                <width>40</width>
-               <height>40</height>
+               <height>20</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
                <width>40</width>
-               <height>40</height>
+               <height>10</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <family>DejaVu Sans</family>
+               <pointsize>8</pointsize>
+               <weight>50</weight>
+               <italic>false</italic>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">        font: 8pt &quot;DejaVu Sans&quot;;
+</string>
+             </property>
              <property name="text">
-              <string>---</string>
+              <string>Connect</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::MinimumExpanding</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>1</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
