@@ -78,6 +78,10 @@ private:
     bool is_wan_active;
     bool is_loading;
     bool is_WifiScanning;
+    // Update Flags
+    bool saveEth0;
+    bool saveWlan0;
+    bool saveWan;
 };
 
 #endif // NET_CONF_H

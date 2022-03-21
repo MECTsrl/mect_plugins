@@ -54,11 +54,14 @@ net_conf::net_conf(QWidget *parent) :
     ui->pushButton_hidden_wlan0->setText(NO_IP);
     ui->checkBox_hiddenESSID->setChecked(false);
     ui->pushButton_hidden_wlan0->setVisible(false);
-    wlan0_essid = "";
-    wlan0_pwd = "";
+    wlan0_essid.clear();
+    wlan0_pwd.clear();
     is_loading = true;
     is_eth0_enabled = false;
     is_WifiScanning = false;
+    saveEth0 = false;
+    saveWlan0 = false;
+    saveWan = false;
 }
 
 void net_conf::on_pushButtonHome_clicked()
@@ -74,8 +77,9 @@ void net_conf::on_pushButtonBack_clicked()
 /* ETH0 */
 bool net_conf::saveETH0cfg()
 {
-    if (!is_eth0_enabled)
-    {
+    // check board enabled or update needed ---> Nothing to do
+    if (!is_eth0_enabled  || ! saveEth0)  {
+        fprintf(stderr, "Lan0: no update needed, return\n");
         return true;
     }
 
@@ -145,92 +149,93 @@ bool net_conf::saveETH0cfg()
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the eth0 network configuration."));
         return false;
     }
+    saveEth0 = false;
     return true;
 }
 
 /* WLAN0 */
 bool net_conf::saveWLAN0cfg()
 {
-    /* ESSID */
-    if (wlan0_essid.compare(NO_IP) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_essid + QString("\"")).toAscii().data(), "ESSIDW0"))
-    {
-        /* error */
-        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nESSIDW0"));
-        return false;
+
+    // check update needed ---> Nothing to do
+    if (! saveWlan0)  {
+        fprintf(stderr, "WLan0: no update needed, return\n");
+        return true;
+    }
+    QString szVal;
+    /* ESSID  (save only if not "-" )*/
+    if (! wlan0_essid.isEmpty() && wlan0_essid.compare(NO_IP) != 0)  {
+        szVal = QString("\"") + wlan0_essid.trimmed() + QString("\"");
+        if (app_netconf_item_set(szVal.toAscii().data(), "ESSIDW0"))  {
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nESSIDW0"));
+            return false;
+        }
     }
     /* PASSWORD */
-    if (wlan0_pwd.compare(NO_IP) != 0 && app_netconf_item_set(QString(QString("\"") + wlan0_pwd + QString("\"")).toAscii().data(), "PASSWORDW0"))
-    {
+    szVal = QString("\"") + wlan0_pwd.trimmed() + QString("\"");
+    if (app_netconf_item_set(szVal.toAscii().data(), "PASSWORDW0"))  {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nPASSWORDW0"));
         return false;
     }
     /* DHCP */
-    if (ui->checkBox_wlan0_DHCP->isChecked())
-    {
-        if (app_netconf_item_set("[DHCP]", "BOOTPROTOW0"))
-        {
-            /* error */
+    if (ui->checkBox_wlan0_DHCP->isChecked())  {
+        if (app_netconf_item_set("[DHCP]", "BOOTPROTOW0"))  {
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTOW0"));
             return false;
         }
     }
-    else
-    {
-        if (app_netconf_item_set("[none]", "BOOTPROTOW0"))
-        {
-            /* error */
+    else  {
+        // Static IP, disable DHCP
+        if (app_netconf_item_set("[none]", "BOOTPROTOW0"))  {
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nBOOTPROTOW0"));
             return false;
         }
-        /* IP */
-        if (ui->pushButton_wlan0_IP->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wlan0_IP->text().toAscii().data(), "IPADDRW0"))
-        {
-            /* error */
+        /* IP (save only if not "-" )*/
+        szVal = ui->pushButton_wlan0_IP->text().trimmed();
+        if (szVal.compare(NO_IP) != 0 && app_netconf_item_set(szVal.toAscii().data(), "IPADDRW0"))  {
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nIPADDRW0"));
             return false;
         }
         /* GATEWAY */
-        if (ui->pushButton_wlan0_GW->text().compare(NO_IP) != 0)
-        {
-            QString     szGW = ui->pushButton_wlan0_GW->text();
-            if (szGW == ZERO_IP)
-                szGW = "";
-            if(app_netconf_item_set(szGW.toAscii().data(), "GATEWAYW0"))
-            {
-                /* error */
-                QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAYW0"));
-                return false;
-            }
+        szVal = ui->pushButton_wlan0_GW->text().trimmed();
+        if (szVal== ZERO_IP)  {
+            szVal.clear();
         }
-        /* NETMASK */
-        if (ui->pushButton_wlan0_NM->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wlan0_NM->text().toAscii().data(), "NETMASKW0"))
-        {
-            /* error */
+        if (app_netconf_item_set(szVal.toAscii().data(), "GATEWAYW0"))  {
+            QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nGATEWAYW0"));
+            return false;
+        }
+        /* NETMASK (save only if not "-" )*/
+        szVal = ui->pushButton_wlan0_NM->text().trimmed();
+        if (szVal.compare(NO_IP) != 0 && app_netconf_item_set(szVal.toAscii().data(), "NETMASKW0"))  {
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNETMASKW0"));
             return false;
         }
-        /* DNS1 */
-        if (ui->pushButton_wlan0_DNS1->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wlan0_DNS1->text().toAscii().data(), "NAMESERVERW01"))
-        {
-            /* error */
+        /* DNS1 (save only if not "-" )*/
+        szVal = ui->pushButton_wlan0_DNS1->text().trimmed();
+        if (szVal.compare(NO_IP) != 0 && app_netconf_item_set(szVal.toAscii().data(), "NAMESERVERW01"))  {
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERW01"));
             return false;
         }
-        /* DNS2 */
-        if (ui->pushButton_wlan0_DNS2->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wlan0_DNS2->text().toAscii().data(), "NAMESERVERW02"))
-        {
-            /* error */
+        /* DNS2 (save only if not "-" )*/
+        szVal = ui->pushButton_wlan0_DNS2->text().trimmed();
+        if (szVal.compare(NO_IP) != 0 && app_netconf_item_set(szVal.toAscii().data(), "NAMESERVERW02"))  {
             QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERW02"));
             return false;
         }
     }
+    // Stop Service
     char command[256];
-    system("/usr/sbin/wifi.sh stop"); // do wait
-    sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\" >/dev/null 2>&1 &",
+    sprintf(command, "/usr/sbin/wifi.sh stop"); // do wait
+    system(command); // do wait
+    fprintf(stderr, "Net Command: [%s]\n", command);
+    sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
             wlan0_essid.toAscii().data(),
             wlan0_pwd.toAscii().data()
             );
+    fprintf(stderr, "Net Command: [%s]\n", command);
+    sleep(1);
     system(command);
 //    if (system(command))
 //    {
@@ -238,12 +243,16 @@ bool net_conf::saveWLAN0cfg()
 //        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the wifi network configuration for '%1'").arg(wlan0_essid));
 //        return false;
 //    }
+    saveWlan0 = false;
     return true;
 }
 
 /* WAN0 */
 bool net_conf::saveWAN0cfg()
 {
+    if (! saveWan)  {
+        fprintf(stderr, "Wan0: no update needed, return\n");
+    }
     /* DIALNB */
     if (ui->pushButton_wan0_dialnb->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_dialnb->text().toAscii().data(), "DIALNBP0"))
     {
@@ -285,6 +294,7 @@ bool net_conf::saveWAN0cfg()
 //        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the ppp network configuration for '%1'").arg(ui->pushButton_wan0_dialnb->text()));
 //        return false;
 //    }
+    saveWan = false;
     return true;
 }
 
@@ -424,7 +434,6 @@ void net_conf::reload()
         wlan0_pwd.clear();
         ui->pushButton_wlan0_pwd->setText(NO_IP);
     }
-
     //        if (! wlan0_essid.isEmpty() && ! wlan0_pwd.isEmpty())
     //        {
     //            char command[256];
@@ -554,6 +563,11 @@ void net_conf::reload()
     {
         ui->pushButton_wan0_DNS2->setText(NO_IP);
     }
+    // Reset Update flags
+    saveEth0 = false;
+    saveWlan0 = false;
+    saveWan = false;
+    // End of loading
     is_loading = false;
     updateIcons();
 }
@@ -581,7 +595,7 @@ void net_conf::updateData()
 
 void net_conf::updateIcons()
 {
-    // lan0 (refresh IP if DHCP enabled)
+    // lan0 (refresh IP only if DHCP enabled)
     if (is_eth0_enabled && ui->checkBox_eth0_DHCP->isChecked())  {
         ui->pushButton_eth0_IP->setText(getIPAddr("lan0"));
     }
@@ -598,33 +612,34 @@ void net_conf::updateIcons()
         }
     }
     else  {
-        is_wlan_active = false;
         ui->label_wlan0_MAC->setText(NO_IP);
     }
     // wlan0 is connected, get connection info
-    if (is_wlan_active)  {
-        ui->label_Wlan_connect->setText("Disconnect");
-        ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOn.png"));
-        // Signal Level
-        int nQuality = 0;
-        int nSignalLevel = 0;
-        if (get_wifi_signal_level(nQuality, nSignalLevel))  {
-            ui->label_wlan0_signal->setText(QString("%1%") .arg(nQuality));
+    if (! is_WifiScanning)  {
+        if (is_wlan_active)  {
+            ui->label_Wlan_connect->setText("Disconnect");
+            ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOn.png"));
+            // Signal Level
+            int nQuality = 0;
+            int nSignalLevel = 0;
+            if (get_wifi_signal_level(nQuality, nSignalLevel))  {
+                ui->label_wlan0_signal->setText(QString("%1%") .arg(nQuality));
+            }
+            else  {
+                ui->label_wlan0_signal->setText(NO_IP);
+            }
+            // Refresh IP
+            if (ui->checkBox_wlan0_DHCP->isChecked())  {
+                ui->pushButton_wlan0_IP->setText(getIPAddr("wlan0"));
+            }
         }
         else  {
+            ui->label_Wlan_connect->setText("Connect");
+            ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOff.png"));
             ui->label_wlan0_signal->setText(NO_IP);
-        }
-        // Refresh IP
-        if (ui->checkBox_wlan0_DHCP->isChecked())  {
-            ui->pushButton_wlan0_IP->setText(getIPAddr("wlan0"));
-        }
-    }
-    else  {
-        ui->label_Wlan_connect->setText("Connect");
-        ui->pushButton_wlan0_enable->setIcon(QIcon(":/libicons/img/WifiOff.png"));
-        ui->label_wlan0_signal->setText(NO_IP);
-        if (ui->checkBox_wlan0_DHCP->isChecked())  {
-            ui->pushButton_wlan0_IP->setText(NO_IP);
+            if (ui->checkBox_wlan0_DHCP->isChecked())  {
+                ui->pushButton_wlan0_IP->setText(NO_IP);
+            }
         }
     }
 
@@ -667,110 +682,140 @@ net_conf::~net_conf()
 void net_conf::on_pushButton_eth0_IP_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_IP->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth0_IP->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_eth0_IP->text().toAscii().data());
+
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_eth0_IP->text() != QString(value))  {
+            ui->pushButton_eth0_IP->setText(value);
+            saveEth0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_eth0_NM_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_NM->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth0_NM->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_eth0_NM->text().toAscii().data());
+
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_eth0_NM->text() != QString(value))  {
+            ui->pushButton_eth0_NM->setText(value);
+            saveEth0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_eth0_GW_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_GW->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth0_GW->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_eth0_GW->text().toAscii().data());
+
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_eth0_GW->text() != QString(value))  {
+            ui->pushButton_eth0_GW->setText(value);
+            saveEth0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_eth0_DNS1_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_DNS1->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth0_DNS1->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_eth0_DNS1->text().toAscii().data());
+
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_eth0_DNS1->text() != QString(value))  {
+            ui->pushButton_eth0_DNS1->setText(value);
+            saveEth0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_eth0_DNS2_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_eth0_DNS2->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_eth0_DNS2->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_eth0_DNS2->text().toAscii().data());
+
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_eth0_DNS2->text() != QString(value))  {
+            ui->pushButton_eth0_DNS2->setText(value);
+            saveEth0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_wlan0_IP_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_IP->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_wlan0_IP->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_wlan0_IP->text().toAscii().data());
+
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_wlan0_IP->text() != QString(value))  {
+            ui->pushButton_wlan0_IP->setText(value);
+            saveWlan0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_wlan0_NM_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_NM->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_wlan0_NM->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_wlan0_NM->text().toAscii().data());
+
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_wlan0_NM->text() != QString(value))  {
+            ui->pushButton_wlan0_NM->setText(value);
+            saveWlan0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_wlan0_GW_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_GW->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_wlan0_GW->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_wlan0_GW->text().toAscii().data());
+
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_wlan0_GW->text() != QString(value))  {
+            ui->pushButton_wlan0_GW->setText(value);
+            saveWlan0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_wlan0_DNS1_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_DNS1->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_wlan0_DNS1->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_wlan0_DNS1->text().toAscii().data());
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_wlan0_DNS1->text() != QString(value))  {
+            ui->pushButton_wlan0_DNS1->setText(value);
+            saveWlan0 = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_wlan0_DNS2_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wlan0_DNS2->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_wlan0_DNS2->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_wlan0_DNS2->text().toAscii().data());
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+            if (ui->pushButton_wlan0_DNS2->text() != QString(value))  {
+                ui->pushButton_wlan0_DNS2->setText(value);
+                saveWlan0 = true;
+            }
+        }
     }
 }
 
@@ -823,34 +868,57 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
 
 void net_conf::on_pushButton_wlan0_enable_clicked()
 {
-    ui->tab_wlan0->setEnabled(false);
+    QString icon;
+
+    is_WifiScanning = true;
+    setEnableWidgets(false);
     ui->tab_wlan0->repaint();
     // WiFi Current Cfg Update forced
-    saveWLAN0cfg();
-    if (!is_wlan_active)
-    {
-        if (app_netconf_item_set("1", "ONBOOTW0"))
-        {
+    if (isWlanOn()) {
+        // Disable WLan0 on next boot
+        if (app_netconf_item_set("0", "ONBOOTW0"))  {
+            fprintf(stderr, "Error updating ONBOOTW0 to 0 in [%s]\n", APP_CONFIG_IPADDR_FILE);
             /* error */
-            ui->tab_wlan0->setEnabled(true);
-            ui->tab_wlan0->repaint();
-            return;
+            goto endWlan0Set;
         }
-        system("/usr/sbin/wifi.sh start >/dev/null 2>&1 &");
-    }
-    else
-    {
-        if (app_netconf_item_set("0", "ONBOOTW0"))
-        {
-            /* error */
-            ui->tab_wlan0->setEnabled(true);
-            ui->tab_wlan0->repaint();
-            return;
-        }
+        // stop service
+        fprintf(stderr, "Stopping wlan0 service\n");
         system("/usr/sbin/wifi.sh stop >/dev/null 2>&1 &");
+        ui->label_Wlan_connect->setText("Connect");
+        icon = ":/libicons/img/wifi_connect.png";
     }
+    else {
+        // Update Wlan0 Config, stop and reconfigure service
+        saveWlan0 = true;
+        if (saveWLAN0cfg())  {
+            // Enable WLan0 on next boot
+            if (app_netconf_item_set("1", "ONBOOTW0"))  {
+                fprintf(stderr, "Error updating ONBOOTW0 to 1 in [%s]\n", APP_CONFIG_IPADDR_FILE);
+                /* error */
+                goto endWlan0Set;
+            }
+            // start service
+            fprintf(stderr, "Starting wlan0 service\n");
+            system("/usr/sbin/wifi.sh start >/dev/null 2>&1 &");
+            ui->label_Wlan_connect->setText("Disconnect");
+            icon = ":/libicons/img/disconnect.png";
+        }
+        else {
+            goto endWlan0Set;
+        }
+    }
+    // Pause 2 secs
+    sleep (2);
+    // Update IP
+    ui->pushButton_wlan0_IP->setText(getIPAddr(getIPAddr("wlan0")));
+    // Update Icon
+    ui->pushButton_wlan0_enable->setIcon(QIcon(QPixmap(icon)));
+    ui->pushButton_wlan0_enable->repaint();
 
-    ui->tab_wlan0->setEnabled(true);
+    // Exit point
+endWlan0Set:
+    is_WifiScanning = false;
+    setEnableWidgets(true);
     ui->tab_wlan0->repaint();
     updateIcons();
 }
@@ -858,28 +926,37 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
 void net_conf::on_pushButton_wlan0_pwd_clicked()
 {
     char value [32];
-    alphanumpad tastiera_alfanum(value, wlan0_pwd.toAscii().data(), true);
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted)
-    {
-        wlan0_pwd = value;
-        ui->pushButton_wlan0_pwd->setText(QString("*").repeated(wlan0_pwd.length()));
+
+    // Do not show current password !
+    alphanumpad pwdKeyboard(value, true, NULL, true);
+    pwdKeyboard.showFullScreen();
+    if(pwdKeyboard.exec() == QDialog::Accepted)  {
+        if (wlan0_pwd.compare(value) != 0)  {
+            wlan0_pwd = value;
+            ui->pushButton_wlan0_pwd->setText(QString("*").repeated(wlan0_pwd.length()));
+            saveWlan0 = true;
+        }
     }
 }
 
 void net_conf::on_checkBox_eth0_DHCP_clicked(bool checked)
 {
     ui->frame_eth0->setEnabled(!checked);
+    saveEth0 = true;
 }
 
 void net_conf::on_checkBox_wlan0_DHCP_clicked(bool checked)
 {
     ui->frame_wlan0->setEnabled(!checked);
+    saveWlan0 = true;
 }
 
 void net_conf::on_comboBox_wlan0_essid_currentIndexChanged(const QString &arg1)
 {
-    wlan0_essid = arg1;
+    if (arg1.compare(wlan0_essid) != 0)  {
+        saveWlan0 = true;
+        wlan0_essid = arg1;
+    }
 }
 
 void net_conf::on_pushButton_wan0_enable_clicked()
@@ -887,6 +964,7 @@ void net_conf::on_pushButton_wan0_enable_clicked()
     ui->tab_wan0->setEnabled(false);
     ui->tab_wan0->repaint();
     // Mobile Current Cfg Update forced
+    saveWan = true;
     saveWAN0cfg();
     if (!is_wan_active)
     {
@@ -919,44 +997,53 @@ void net_conf::on_pushButton_wan0_enable_clicked()
 void net_conf::on_pushButton_wan0_dialnb_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, DIALNB, ui->pushButton_wan0_dialnb->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted)
-    {
-        ui->pushButton_wan0_dialnb->setText(value);
+    numpad dialNumpad(value, DIALNB, ui->pushButton_wan0_dialnb->text().toAscii().data());
+    dialNumpad.showFullScreen();
+    if(dialNumpad.exec()==QDialog::Accepted)  {
+        if (ui->pushButton_wan0_dialnb->text() != QString(value))  {
+            ui->pushButton_wan0_dialnb->setText(value);
+            saveWan = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_wan0_apn_clicked()
 {
     char value [32];
-    alphanumpad tastiera_alfanum(value, ui->pushButton_wan0_apn->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted)
-    {
-        ui->pushButton_wan0_apn->setText(value);
+    alphanumpad apnKeyboard(value, true, ui->pushButton_wan0_apn->text().toAscii().data());
+
+    apnKeyboard.showFullScreen();
+    if(apnKeyboard.exec()==QDialog::Accepted)    {
+        if (ui->pushButton_wan0_apn->text() != QString(value))  {
+            ui->pushButton_wan0_apn->setText(value);
+            saveWan = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_wan0_DNS1_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wan0_DNS1->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_wan0_DNS1->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_wan0_DNS1->text().toAscii().data());
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_wan0_DNS1->text() != QString(value))  {
+            ui->pushButton_wan0_DNS1->setText(value);
+            saveWan = true;
+        }
     }
 }
 
 void net_conf::on_pushButton_wan0_DNS2_clicked()
 {
     char value [32];
-    numpad tastiera_alfanum(value, IPADDR, ui->pushButton_wan0_DNS2->text().toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted && checkNetAddr(value))
-    {
-        ui->pushButton_wan0_DNS2->setText(value);
+    numpad ipNumpad(value, IPADDR, ui->pushButton_wan0_DNS2->text().toAscii().data());
+    ipNumpad.showFullScreen();
+    if(ipNumpad.exec()==QDialog::Accepted && checkNetAddr(value))  {
+        if (ui->pushButton_wan0_DNS2->text() != QString(value))  {
+            ui->pushButton_wan0_DNS2->setText(value);
+            saveWan = true;
+        }
     }
 }
 
@@ -968,29 +1055,49 @@ void net_conf::on_pushButton_hidden_wlan0_clicked()
     if(currentText.isEmpty()) {
        currentText = NO_IP;
     }
-    alphanumpad tastiera_alfanum(value, currentText.toAscii().data());
-    tastiera_alfanum.showFullScreen();
-    if(tastiera_alfanum.exec()==QDialog::Accepted)
-    {
-        QString szValue = QString(value).trimmed();
-        ui->pushButton_hidden_wlan0->setText(szValue);
-        wlan0_essid = szValue;
+    alphanumpad hiddenLanKB(value, true, currentText.toAscii().data());
+    hiddenLanKB.showFullScreen();
+    if(hiddenLanKB.exec()==QDialog::Accepted)  {
+        if (currentText != QString(value))  {
+            wlan0_essid = QString(value);
+            ui->pushButton_hidden_wlan0->setText(wlan0_essid);
+            saveWlan0 = true;
+        }
     }
 }
 
 void net_conf::on_checkBox_hiddenESSID_toggled(bool checked)
 {
+    QString szVal;
+    QString szNewVal;
+
     if (checked)  {
         ui->comboBox_wlan0_essid->setEnabled(false);
         ui->pushButton_hidden_wlan0->setVisible(true);
         ui->pushButton_wlan0_scan->setEnabled(false);
-        wlan0_essid = ui->pushButton_hidden_wlan0->text();
+        szVal = ui->pushButton_hidden_wlan0->text().trimmed();
+        // Recuper ESSID da combo a Text
+        if (szVal == QString(NO_IP))  {
+            ui->pushButton_hidden_wlan0->text() = ui->comboBox_wlan0_essid->currentText().trimmed();
+        }
+        szNewVal = ui->pushButton_hidden_wlan0->text();
     }
     else  {
         ui->comboBox_wlan0_essid->setEnabled(true);
         ui->pushButton_hidden_wlan0->setVisible(false);
         ui->pushButton_wlan0_scan->setEnabled(true);
-        wlan0_essid = ui->comboBox_wlan0_essid->currentText();
+        // Recupera ESSID da Hidden a Combo
+        szVal = ui->pushButton_hidden_wlan0->text().trimmed();
+        if (! szVal.isEmpty() && szVal != QString(NO_IP) &&  ui->comboBox_wlan0_essid->findText(szVal) < 0)  {
+            ui->comboBox_wlan0_essid->addItem(szVal);
+            ui->comboBox_wlan0_essid->setCurrentIndex(ui->comboBox_wlan0_essid->count() - 1);
+        }
+        szNewVal = ui->comboBox_wlan0_essid->currentText();
+    }
+    // Set new value
+    if (szNewVal != wlan0_essid)  {
+        wlan0_essid = szNewVal;
+        saveWlan0 = true;
     }
 }
 

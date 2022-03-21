@@ -1060,7 +1060,6 @@ bool isWlanOn(void)
 // returns true if wifi board wlan0 is up and connected to an AP
 {
     QProcess readSettings;
-    //readSettings.start("/bin/sh", QStringList() << "-c" << "iwconfig wlan0 | grep 'Access Point: Not-Associate'");
     readSettings.start("/bin/sh", QStringList() << "-c" << "ip addr show dev wlan0 | grep 'state UP'");
     readSettings.waitForFinished();
 
@@ -1075,6 +1074,16 @@ bool isWanOn()
     readSettings.waitForFinished();
 
     return (readSettings.exitCode() == 0);
+}
+
+bool waitShellCommand(QString szCommand)
+// Shell a command and wait complection
+{
+    QProcess shellProcess;
+    shellProcess.start("/bin/sh", QStringList() << "-c" << szCommand);
+    shellProcess.waitForFinished();
+
+    return (shellProcess.exitCode() == 0);
 }
 
 bool LoadTrend(const char * trend_name, QString * ErrorMsg)

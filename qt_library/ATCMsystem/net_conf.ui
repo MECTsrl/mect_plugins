@@ -79,7 +79,7 @@ QComboBox
 }  </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_eth0">
       <attribute name="title">
@@ -521,8 +521,17 @@ QComboBox
            <property name="spacing">
             <number>1</number>
            </property>
-           <property name="margin">
-            <number>2</number>
+           <property name="leftMargin">
+            <number>1</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>1</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
            </property>
            <item alignment="Qt::AlignHCenter">
             <widget class="QPushButton" name="pushButton_wlan0_scan">
@@ -623,27 +632,27 @@ border: 2px solid  rgb(194, 194, 194);
             <widget class="QLabel" name="label_Wlan_connect">
              <property name="minimumSize">
               <size>
-               <width>40</width>
-               <height>20</height>
+               <width>42</width>
+               <height>10</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>40</width>
-               <height>10</height>
+               <width>42</width>
+               <height>15</height>
               </size>
              </property>
              <property name="font">
               <font>
                <family>DejaVu Sans</family>
-               <pointsize>8</pointsize>
+               <pointsize>7</pointsize>
                <weight>50</weight>
                <italic>false</italic>
                <bold>false</bold>
               </font>
              </property>
              <property name="styleSheet">
-              <string notr="true">        font: 8pt &quot;DejaVu Sans&quot;;
+              <string notr="true">        font: 7pt &quot;DejaVu Sans&quot;;
 </string>
              </property>
              <property name="text">

@@ -87,10 +87,11 @@ alphanumpad::alphanumpad(char* value, char* def, bool password, QWidget *parent)
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
         ui->pushButtonPassword->setVisible(false);
-        if (def != NULL)
-        {
-            ui->lineEditVal->setText(def);
-        }
+    }
+
+    if (def != NULL)
+    {
+        ui->lineEditVal->setText(def);
     }
 
     capsLock = false;
@@ -122,12 +123,12 @@ alphanumpad::alphanumpad(char* value, bool showSpecialChars, char* def, bool pas
     {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
         ui->pushButtonPassword->setVisible(false);
-        if (def != NULL)
-        {
-            ui->lineEditVal->setText(def);
-        }
     }
 
+    if (def != NULL)
+    {
+        ui->lineEditVal->setText(def);
+    }
     capsLock = false;
     reload();
 }

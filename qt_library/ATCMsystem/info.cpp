@@ -364,16 +364,21 @@ void info::refreshNetworkingTabs()
     }
     // Signal Level in wlan0
     if (check_wifi_board())  {
-        int nQuality = 0;
-        int nSignalLevel = 0;
-        ui->wlan0_text->appendPlainText("");
-        if (get_wifi_signal_level(nQuality, nSignalLevel))  {
-            ui->wlan0_text->appendPlainText(
-                QString("Signal Quality: %1% - Signal Level: %2 dBm")
-                                            .arg(nQuality) .arg(nSignalLevel));
+        if (isWlanOn())  {
+            ui->wlan0_text->appendPlainText("");
+            int nQuality = 0;
+            int nSignalLevel = 0;
+            if (get_wifi_signal_level(nQuality, nSignalLevel))  {
+                ui->wlan0_text->appendPlainText(
+                    QString("Signal Quality: %1% - Signal Level: %2 dBm")
+                                                .arg(nQuality) .arg(nSignalLevel));
+            }
+            else  {
+                ui->wlan0_text->appendPlainText("Signal Quality: --- - Signal Level: --- dBm");
+            }
         }
-        else  {
-            ui->wlan0_text->appendPlainText("Signal Quality: --- - Signal Level: --- dBm");
+        else {
+            ui->wlan0_text->appendPlainText("Wifi not associated");
         }
     }
     // newline per QRcode

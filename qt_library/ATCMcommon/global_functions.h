@@ -208,6 +208,8 @@ bool isWlanOn(void);                    // returns true if wifi board wlan0 is u
 
 bool isWanOn(void);                     // returns true if WLan ppp0 board is up and connected
 
+bool waitShellCommand(QString szCommand);   // Shell a command and wait complection
+
 bool LoadTrend(const char * trend_name, QString * ErrorMsg);
 
 QObject *getPage(QObject *plugin);
