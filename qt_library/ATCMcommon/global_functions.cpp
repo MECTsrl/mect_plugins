@@ -1014,7 +1014,7 @@ QString getMacAddr(QString interface)
     QNetworkInterface eth;
 
     foreach(eth, allInterfaces) {
-        // eth0
+        // check board name
         if (eth.name() == interface)  {
             resultValue = eth.hardwareAddress();
         }

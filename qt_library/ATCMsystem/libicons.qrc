@@ -243,5 +243,8 @@
         <file>img/Zoom.png</file>
         <file>img/eye_invisible_32.png</file>
         <file>img/eye_visible_32.png</file>
+        <file>img/4g_connect.png</file>
+        <file>img/Clock-icon.png</file>
+        <file>img/wifi_connect.png</file>
     </qresource>
 </RCC>

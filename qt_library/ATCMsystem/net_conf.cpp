@@ -49,6 +49,13 @@ net_conf::net_conf(QWidget *parent) :
     /* set the style described into the macro SET_net_conf_STYLE */
     SET_NET_CONF_STYLE();
     translateFontSize(this);
+    is_loading = true;
+    is_eth0_enabled = false;
+    is_WifiScanning = false;
+    is_WanStarting = false;
+    saveEth0 = false;
+    saveWlan0 = false;
+    saveWan = false;
     ui->comboBox_wlan0_essid->clear();
     ui->comboBox_wlan0_essid->addItem(NO_IP);
     ui->pushButton_hidden_wlan0->setText(NO_IP);
@@ -56,12 +63,6 @@ net_conf::net_conf(QWidget *parent) :
     ui->pushButton_hidden_wlan0->setVisible(false);
     wlan0_essid.clear();
     wlan0_pwd.clear();
-    is_loading = true;
-    is_eth0_enabled = false;
-    is_WifiScanning = false;
-    saveEth0 = false;
-    saveWlan0 = false;
-    saveWan = false;
 }
 
 void net_conf::on_pushButtonHome_clicked()
@@ -228,21 +229,16 @@ bool net_conf::saveWLAN0cfg()
     // Stop Service
     char command[256];
     sprintf(command, "/usr/sbin/wifi.sh stop"); // do wait
-    system(command); // do wait
     fprintf(stderr, "Net Command: [%s]\n", command);
+    system(command); // do wait
+    // Configure Service (Wait command)
     sprintf(command, "/usr/sbin/wifi.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
             wlan0_essid.toAscii().data(),
             wlan0_pwd.toAscii().data()
             );
     fprintf(stderr, "Net Command: [%s]\n", command);
-    sleep(1);
+    sleep(2);
     system(command);
-//    if (system(command))
-//    {
-//        /* error */
-//        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the wifi network configuration for '%1'").arg(wlan0_essid));
-//        return false;
-//    }
     saveWlan0 = false;
     return true;
 }
@@ -252,55 +248,56 @@ bool net_conf::saveWAN0cfg()
 {
     if (! saveWan)  {
         fprintf(stderr, "Wan0: no update needed, return\n");
+        return true;
     }
-    /* DIALNB */
+    /* DIALNB (save only if not "-" ) */
     if (ui->pushButton_wan0_dialnb->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_dialnb->text().toAscii().data(), "DIALNBP0"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nDIALNBP0"));
         return false;
     }
-    /* APN */
+    /* APN (save only if not "-" ) */
     if (ui->pushButton_wan0_apn->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_apn->text().toAscii().data(), "APNP0"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nAPNP0"));
         return false;
     }
-    /* DNS1 */
+    /* DNS1 (save only if not "-" ) */
     if (ui->pushButton_wan0_DNS1->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS1->text().toAscii().data(), "NAMESERVERP01"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERP01"));
         return false;
     }
-    /* DNS2 */
+    /* DNS2 (save only if not "-" ) */
     if (ui->pushButton_wan0_DNS2->text().compare(NO_IP) != 0 && app_netconf_item_set(ui->pushButton_wan0_DNS2->text().toAscii().data(), "NAMESERVERP02"))
     {
         /* error */
         QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot update the network configuration\nNAMESERVERP02"));
         return false;
     }
+    // Stop Service
     char command[256];
-    system("/usr/sbin/usb3g.sh stop"); // do wait
-    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\" >/dev/null 2>&1 ",
+    sprintf(command, "/usr/sbin/usb3g.sh stop");
+    system(command); // do wait
+    fprintf(stderr, "Net Command: [%s]\n", command);
+    // Configure Service (Wait command)
+    sprintf(command, "/usr/sbin/usb3g.sh setup \"%s\" \"%s\" >/dev/null 2>&1",
             ui->pushButton_wan0_dialnb->text().toAscii().data(),
             ui->pushButton_wan0_apn->text().toAscii().data()
             );
+    fprintf(stderr, "Net Command: [%s]\n", command);
+    sleep(2);
     system(command);
-//    if (system(command))
-//    {
-//        /* error */
-//        QMessageBox::critical(0,QApplication::trUtf8("Network configuration"), QApplication::trUtf8("Cannot setup the ppp network configuration for '%1'").arg(ui->pushButton_wan0_dialnb->text()));
-//        return false;
-//    }
     saveWan = false;
     return true;
 }
 
 void net_conf::on_pushButtonSaveAll_clicked()
 {
-    /* save all pages */
+    /* save all pages if needed */
     if (
             saveETH0cfg() &&
             saveWLAN0cfg() &&
@@ -323,6 +320,8 @@ void net_conf::reload()
     unsigned                myGW = 0;
 
     is_loading = true;
+    ui->comboBox_wlan0_essid->blockSignals(true);
+    ui->pushButton_wlan0_enable->blockSignals(true);
     // eth0
     is_eth0_enabled = (system("grep -c INTERFACE0 /etc/rc.d/rc.conf >/dev/null 2>&1") == 0);
     ui->tab_eth0->setEnabled(is_eth0_enabled);
@@ -568,6 +567,8 @@ void net_conf::reload()
     saveWlan0 = false;
     saveWan = false;
     // End of loading
+    ui->comboBox_wlan0_essid->blockSignals(false);
+    ui->pushButton_wlan0_enable->blockSignals(false);
     is_loading = false;
     updateIcons();
 }
@@ -646,17 +647,24 @@ void net_conf::updateIcons()
     // ppp0
     bool is_wan_present = check_usb_wan_board();
 
-    ui->tab_wan0->setEnabled(is_wan_present);
+    ui->tab_wan0->setEnabled(is_wan_present && ! is_WanStarting);
     is_wan_active = is_wan_present && isWanOn();
     // wan0 is connected, get connection info
-    if (is_wlan_active)  {
-        ui->pushButton_wan0_enable->setIcon(QIcon(":/libicons/img/GprsOn.png"));
-        ui->label_wan0_IP->setText(getIPAddr("ppp0"));
+    if (! is_WanStarting)  {
+        if (is_wan_active)  {
+            ui->pushButton_wan0_enable->setIcon(QIcon(":/libicons/img/GprsOn.png"));
+            ui->label_wan0_IP->setText(getIPAddr("ppp0"));
+            ui->label_wan_connect->setText("Disconnect");
+        }
+        else  {
+            ui->label_wan_connect->setText("Connect");
+            ui->pushButton_wan0_enable->setIcon(QIcon(":/libicons/img/GprsOff.png"));
+            ui->label_wan0_IP->setText(NO_IP);
+        }
     }
-    else  {
-        ui->pushButton_wan0_enable->setIcon(QIcon(":/libicons/img/GprsOff.png"));
-        ui->label_wan0_IP->setText(NO_IP);
-    }
+    // Status feedback
+    /* fprintf(stderr, "Update Icons: Lan Enabled:%d | WLan Present:%d - Active:%d | Wan Present:%d - Active:%d\n",
+                    is_eth0_enabled,  is_wlan_present, is_wlan_active, is_wan_present, is_wan_active); */
 }
 
 /**
@@ -826,6 +834,7 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
 
     is_WifiScanning = true;
     setEnableWidgets(false);
+    ui->comboBox_wlan0_essid->blockSignals(true);
     ui->comboBox_wlan0_essid->clear();
     ui->comboBox_wlan0_essid->addItem("...Scanning...");
 
@@ -839,7 +848,7 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
     ui->comboBox_wlan0_essid->addItem(NO_IP);
     if (wifiScan.exitCode() != 0)  {
         QMessageBox::critical(this,this->windowTitle(), "Wifi scanning failure!");
-        return;
+        goto endScanWlan;
     }
     else {
         wifiScanResult = QString(wifiScan.readAll());
@@ -850,17 +859,18 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
                 // First Column is AP Name
                 QString apName = wifiName.split('\t').at(0).trimmed();
                 if (! apName.isEmpty()) {
-                    qDebug("AP Found: [%s] vs [%s]", apName.toLatin1().data(), currentAP.toLatin1().data());
                     ui->comboBox_wlan0_essid->addItem(apName);
                     if (apName == currentAP)  {
                         newIndex = ui->comboBox_wlan0_essid->count() - 1;
-                        qDebug("Item Found: [%s] @ pos: [%d]", apName.toLatin1().data(), newIndex);
                     }
                 }
             }
         }
     }
     ui->comboBox_wlan0_essid->setCurrentIndex(newIndex);
+
+endScanWlan:
+    ui->comboBox_wlan0_essid->blockSignals(false);
     is_WifiScanning = false;
     setEnableWidgets(true);
 }
@@ -868,12 +878,9 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
 
 void net_conf::on_pushButton_wlan0_enable_clicked()
 {
-    QString icon;
-
     is_WifiScanning = true;
     setEnableWidgets(false);
     ui->tab_wlan0->repaint();
-    // WiFi Current Cfg Update forced
     if (isWlanOn()) {
         // Disable WLan0 on next boot
         if (app_netconf_item_set("0", "ONBOOTW0"))  {
@@ -884,11 +891,10 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
         // stop service
         fprintf(stderr, "Stopping wlan0 service\n");
         system("/usr/sbin/wifi.sh stop >/dev/null 2>&1 &");
-        ui->label_Wlan_connect->setText("Connect");
-        icon = ":/libicons/img/wifi_connect.png";
     }
     else {
         // Update Wlan0 Config, stop and reconfigure service
+        // WiFi Current Cfg Update forced
         saveWlan0 = true;
         if (saveWLAN0cfg())  {
             // Enable WLan0 on next boot
@@ -900,8 +906,6 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
             // start service
             fprintf(stderr, "Starting wlan0 service\n");
             system("/usr/sbin/wifi.sh start >/dev/null 2>&1 &");
-            ui->label_Wlan_connect->setText("Disconnect");
-            icon = ":/libicons/img/disconnect.png";
         }
         else {
             goto endWlan0Set;
@@ -909,12 +913,6 @@ void net_conf::on_pushButton_wlan0_enable_clicked()
     }
     // Pause 2 secs
     sleep (2);
-    // Update IP
-    ui->pushButton_wlan0_IP->setText(getIPAddr(getIPAddr("wlan0")));
-    // Update Icon
-    ui->pushButton_wlan0_enable->setIcon(QIcon(QPixmap(icon)));
-    ui->pushButton_wlan0_enable->repaint();
-
     // Exit point
 endWlan0Set:
     is_WifiScanning = false;
@@ -956,40 +954,62 @@ void net_conf::on_comboBox_wlan0_essid_currentIndexChanged(const QString &arg1)
     if (arg1.compare(wlan0_essid) != 0)  {
         saveWlan0 = true;
         wlan0_essid = arg1;
+        // Clear Password and previous settings
+        if (! is_loading)  {
+            wlan0_pwd.clear();
+            ui->pushButton_wlan0_pwd->setText(NO_IP);
+            if (isWlanOn())  {
+                on_pushButton_wlan0_enable_clicked();
+                if (ui->checkBox_wlan0_DHCP->isChecked())  {
+                    ui->pushButton_wlan0_IP->setText(NO_IP);
+                    ui->pushButton_wlan0_NM->setText(NO_IP);
+                    ui->pushButton_wlan0_GW->setText(NO_IP);
+                }
+            }
+        }
     }
 }
 
 void net_conf::on_pushButton_wan0_enable_clicked()
 {
-    ui->tab_wan0->setEnabled(false);
+    is_WanStarting = true;
+    setEnableWidgets(false);
     ui->tab_wan0->repaint();
-    // Mobile Current Cfg Update forced
-    saveWan = true;
-    saveWAN0cfg();
-    if (!is_wan_active)
+    if (isWanOn())
     {
-        if (app_netconf_item_set("1", "ONBOOTP0"))
-        {
-            /* error */
-            ui->tab_wan0->setEnabled(true);
-            ui->tab_wan0->repaint();
-            return;
+        // Disable WLan0 on next boot
+        if (app_netconf_item_set("0", "ONBOOTP0"))  {
+            fprintf(stderr, "Error updating ONBOOTP0 to 0 in [%s]\n", APP_CONFIG_IPADDR_FILE);
+            goto endWanSet;
         }
-        system("/usr/sbin/usb3g.sh start >/dev/null 2>&1 &");
+        // stop service
+        fprintf(stderr, "Stopping wan0 service\n");
+        system("/usr/sbin/usb3g.sh stop >/dev/null 2>&1 &");
     }
     else
     {
-        if (app_netconf_item_set("0", "ONBOOTP0"))
-        {
-            /* error */
-            ui->tab_wan0->setEnabled(true);
-            ui->tab_wan0->repaint();
-            return;
+        // Update Wan0 Config, stop and reconfigure service
+        // Mobile Current Cfg Update forced
+        saveWan = true;
+        if (saveWAN0cfg())  {
+            // Enable Wan0 on next boot
+            if (app_netconf_item_set("1", "ONBOOTP0"))  {
+                fprintf(stderr, "Error updating ONBOOTP0 to 1 in [%s]\n", APP_CONFIG_IPADDR_FILE);
+                /* error */
+                goto endWanSet;
+            }
+            // start service
+            fprintf(stderr, "Starting wan0 service\n");
+            system("/usr/sbin/usb3g.sh start >/dev/null 2>&1 &");
         }
-        system("/usr/sbin/usb3g.sh stop >/dev/null 2>&1 &");
     }
+    // Pause 2 secs
+    sleep (2);
 
-    ui->tab_wan0->setEnabled(true);
+    // Exit point
+endWanSet:
+    is_WanStarting = false;
+    setEnableWidgets(true);
     ui->tab_wan0->repaint();
     updateIcons();
 }
@@ -1073,6 +1093,7 @@ void net_conf::on_checkBox_hiddenESSID_toggled(bool checked)
 
     if (checked)  {
         ui->comboBox_wlan0_essid->setEnabled(false);
+        ui->comboBox_wlan0_essid->blockSignals(true);
         ui->pushButton_hidden_wlan0->setVisible(true);
         ui->pushButton_wlan0_scan->setEnabled(false);
         szVal = ui->pushButton_hidden_wlan0->text().trimmed();
@@ -1083,7 +1104,6 @@ void net_conf::on_checkBox_hiddenESSID_toggled(bool checked)
         szNewVal = ui->pushButton_hidden_wlan0->text();
     }
     else  {
-        ui->comboBox_wlan0_essid->setEnabled(true);
         ui->pushButton_hidden_wlan0->setVisible(false);
         ui->pushButton_wlan0_scan->setEnabled(true);
         // Recupera ESSID da Hidden a Combo
@@ -1093,6 +1113,8 @@ void net_conf::on_checkBox_hiddenESSID_toggled(bool checked)
             ui->comboBox_wlan0_essid->setCurrentIndex(ui->comboBox_wlan0_essid->count() - 1);
         }
         szNewVal = ui->comboBox_wlan0_essid->currentText();
+        ui->comboBox_wlan0_essid->blockSignals(false);
+        ui->comboBox_wlan0_essid->setEnabled(true);
     }
     // Set new value
     if (szNewVal != wlan0_essid)  {

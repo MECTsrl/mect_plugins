@@ -78,6 +78,7 @@ private:
     bool is_wan_active;
     bool is_loading;
     bool is_WifiScanning;
+    bool is_WanStarting;
     // Update Flags
     bool saveEth0;
     bool saveWlan0;
