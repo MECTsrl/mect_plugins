@@ -147,6 +147,7 @@ trend::trend(QWidget *parent) :
     ui(new Ui::trend)
 {
     ui->setupUi(this);
+    ui->pushButtonPen->setVisible(false);
     /* set here the protection level (pwd_admin_e, pwd_super_user_e, pwd_user_e, pwd_operator_e), default is pwd_operator_e
      * protection_level = pwd_operator_e;
      */
@@ -798,7 +799,7 @@ void trend::enableZoomMode(bool on)
         ui->labelvalue->setText("");
         ui->labelvalue->setStyleSheet("");
         ui->labelvalue->setVisible(false);
-        ui->pushButtonPen->setVisible(true);
+        ui->labelPen->setVisible(true);
     }
     ui->pushButtonZoom->setChecked(_zoom);
 }
@@ -1581,7 +1582,7 @@ void trend::moved(const QPoint &pos)
     
     ui->labelvalue->setText(y + " @ " + datetime); // for watching the value on narrow displays
     ui->labelvalue->setStyleSheet(QString("border: 2px solid #%1;" "font: 14pt \"DejaVu Sans Mono\";").arg(pens[actualPen].color));
-    ui->pushButtonPen->setVisible(false);
+    ui->labelPen->setVisible(false);
     ui->labelvalue->setVisible(true);
 }
 
@@ -1595,7 +1596,7 @@ void trend::selected(const QPolygon &pol)
     ui->labelvalue->setText("");
     ui->labelvalue->setStyleSheet("");
     ui->labelvalue->setVisible(false);
-    ui->pushButtonPen->setVisible(true);
+    ui->labelPen->setVisible(true);
 }
 
 void InterruptedCurve::drawCurve( QPainter *painter, __attribute__((unused))int style, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRectF &canvasRect, int from, int to ) const
@@ -1692,7 +1693,7 @@ void trend::showStatus(QString message, bool iserror)
         ui->labelDate->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
 
-    ui->pushButtonPen->setVisible(!iserror);
+    ui->labelPen->setVisible(!iserror);
     ui->labelDate->repaint();
 }
 
@@ -1732,7 +1733,7 @@ void trend::updatePenLabel()
 #endif
         if (strlen(pens[actualPen].description) > 0)
         {
-            ui->pushButtonPen->setText(
+            ui->labelPen->setText(
                         pens[actualPen].description
             #ifdef SHOW_ACTUAL_VALUE
                         +
@@ -1744,7 +1745,7 @@ void trend::updatePenLabel()
         }
         else
         {
-            ui->pushButtonPen->setText(
+            ui->labelPen->setText(
                         pens[actualPen].tag
             #ifdef SHOW_ACTUAL_VALUE
                         +
@@ -1759,22 +1760,22 @@ void trend::updatePenLabel()
     {
         if (strlen(pens[actualPen].description) > 0)
         {
-            ui->pushButtonPen->setText(trUtf8("Trace '%1' is not visible").arg(pens[actualPen].description));
+            ui->labelPen->setText(trUtf8("Trace '%1' is not visible").arg(pens[actualPen].description));
         }
         else
         {
-            ui->pushButtonPen->setText(trUtf8("Trace '%1' is not visible").arg(pens[actualPen].tag));
+            ui->labelPen->setText(trUtf8("Trace '%1' is not visible").arg(pens[actualPen].tag));
         }
     }
     else
     {
         if (strlen(pens[actualPen].description) > 0)
         {
-            ui->pushButtonPen->setText(trUtf8("Trace '%1' is empty").arg(pens[actualPen].description));
+            ui->labelPen->setText(trUtf8("Trace '%1' is empty").arg(pens[actualPen].description));
         }
         else
         {
-            ui->pushButtonPen->setText(trUtf8("Trace '%1' is empty").arg(actualPen + 1));
+            ui->labelPen->setText(trUtf8("Trace '%1' is empty").arg(actualPen + 1));
         }
     }
     return;
