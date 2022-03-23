@@ -50,6 +50,7 @@ time_set.cpp \
 net_conf.cpp \
 page0.cpp \
 main.cpp \
+login_pwd.cpp \
 qrcode.cpp
 
 HEADERS += \
@@ -65,6 +66,7 @@ time_set.h \
 net_conf.h \
 page0.h \
 main.h \
+login_pwd.h \
 qrcode.h
 
 FORMS += \
@@ -79,6 +81,7 @@ options.ui \
 time_set.ui \
 net_conf.ui \
 page0.ui \
+login_pwd.ui \
 qrcode.ui
 
 # install
