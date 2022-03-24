@@ -28,12 +28,14 @@ public:
 private slots:
     void changeEvent(QEvent * event);
 
-    void on_pushButtonLogin_clicked();
-    void on_pushButtonPasswords_clicked();
+    void on_pushButtonAdmin_clicked();
+    void on_pushButtonSuper_clicked();
+    void on_pushButtonUser_clicked();
     void on_pushButtonHome_clicked();
     void on_pushButtonBack_clicked();
 
 private:
+    bool    updatePassword(enum password_level_e passLevel);
     Ui::set_password *ui;
 };
 

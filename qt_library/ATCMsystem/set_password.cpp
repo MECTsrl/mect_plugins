@@ -60,14 +60,9 @@ set_password::set_password(QWidget *parent) :
  */
 void set_password::reload()
 {
-    if (active_password == pwd_operator_e)
-    {
-        ui->pushButtonPasswords->setEnabled(false);
-    }
-    else
-    {
-        ui->pushButtonPasswords->setEnabled(true);
-    }
+    ui->pushButtonAdmin->setText(QString("%1") .arg(passwords[pwd_admin_e], 4, 10));
+    ui->pushButtonSuper->setText(QString("%1") .arg(passwords[pwd_super_user_e], 4, 10));
+    ui->pushButtonUser->setText(QString("%1") .arg(passwords[pwd_user_e], 4, 10));
 }
 
 /**
@@ -76,16 +71,6 @@ void set_password::reload()
 void set_password::updateData()
 {
     page::updateData();
-    if (active_password == pwd_operator_e)
-    {
-        ui->pushButtonLogin->setText(trUtf8("LOGIN"));
-        ui->pushButtonPasswords->setEnabled(false);
-    }
-    else
-    {
-        ui->pushButtonLogin->setText(trUtf8("LOGOUT"));
-        ui->pushButtonPasswords->setEnabled(true);
-    }
 }
 
 void set_password::changeEvent(QEvent * event)
@@ -104,65 +89,6 @@ set_password::~set_password()
     delete ui;
 }
 
-
-void set_password::on_pushButtonLogin_clicked()
-{
-    int min = 0, max = 999999;
-    numpad * dk;
-    int i;
-    int password;
-    
-    if (active_password != pwd_operator_e)
-    {
-        // Logout Action
-        active_password = pwd_operator_e;
-        ui->pushButtonLogin->setText(trUtf8("LOGIN"));
-    }
-    else
-    {
-        // Login Action
-        dk = new numpad(&password, NO_DEFAULT, min, max, input_dec, true);
-        dk->showFullScreen();
-        
-        if (dk->exec() == QDialog::Accepted)
-        {
-            active_password = pwd_operator_e;
-            
-            if (min < max && (password < min || password > max))
-            {
-                QMessageBox::critical(this,trUtf8("Invalid password"), trUtf8("The inserted password is wrong!!!"));
-                delete dk;
-                return;
-            }
-            for (i = 0; i <= PASSWORD_NB; i++)
-            {
-                LOG_PRINT(verbose_e, "#############%d vs %d\n", password, passwords[i]);
-                if (password == passwords[i])
-                {
-                    active_password = i;
-                    LOG_PRINT(verbose_e, "%d vs %d\n", password, passwords[i]);
-                    break;
-                }
-            }
-            if (active_password == pwd_operator_e)
-            {
-                QMessageBox::critical(this,trUtf8("Invalid password"), trUtf8("The inserted password is wrong!!!"));
-                delete dk;
-                return;
-            }
-            else
-            {
-                QMessageBox::information(this,trUtf8("Login"), trUtf8("Logged as User: %1.").arg(PasswordsString[active_password]));
-                ui->pushButtonLogin->setText(trUtf8("LOGOUT"));
-            }
-        }
-        else
-        {
-        }
-        delete dk;
-    }
-}
-
 void set_password::on_pushButtonHome_clicked()
 {
     go_home();
@@ -173,37 +99,58 @@ void set_password::on_pushButtonBack_clicked()
     go_back();
 }
 
-void set_password::on_pushButtonPasswords_clicked()
+void set_password::on_pushButtonAdmin_clicked()
 {
-    int min = 0, max = 999999;
-    numpad * dk;
+    if (updatePassword(pwd_admin_e))  {
+        ui->pushButtonAdmin->setText(QString("%1") .arg(passwords[pwd_admin_e], 4, 10));
+    }
+}
 
-    int password;
-    dk = new numpad(&password, NO_DEFAULT, min, max, input_dec, true);
+void set_password::on_pushButtonSuper_clicked()
+{
+    if (updatePassword(pwd_super_user_e))  {
+        ui->pushButtonSuper->setText(QString("%1") .arg(passwords[pwd_super_user_e], 4, 10));
+    }
+}
+
+void set_password::on_pushButtonUser_clicked()
+{
+    if (updatePassword(pwd_user_e))  {
+        ui->pushButtonUser->setText(QString("%1") .arg(passwords[pwd_user_e], 4, 10));
+    }
+}
+
+bool    set_password::updatePassword(enum password_level_e passLevel)
+{
+    bool    pwdChanged = false;
+    int     min = 0, max = 999999;
+    numpad * dk;
+    int     oldPassword = passwords[passLevel];
+
+    int newPassword;
+    dk = new numpad(&newPassword, oldPassword, min, max, input_dec, true);
     dk->showFullScreen();
 
-    if (dk->exec() == QDialog::Accepted)
-    {
-        if (min < max && (password < min || password > max))
-        {
+    if (dk->exec() == QDialog::Accepted)  {
+        // Range Checking
+        if ((newPassword < min || newPassword > max))  {
             QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
-            delete dk;
-            return;
         }
-
-        passwords[active_password] = password;
-        if (dumpPasswords() == 0)
-        {
-            QMessageBox::information(this,trUtf8("Password changed"), trUtf8("The password is succesfully changed."));
-        }
-        else
-        {
-            QMessageBox::critical(this,trUtf8("Saving error"), trUtf8("Cannot save the new password."));
+        else  {
+            // Password has been changed
+            if (newPassword != oldPassword)  {
+                passwords[passLevel] = newPassword;
+                if (dumpPasswords() != 0)   {
+                    // Saving error, restoring prev.value
+                    passwords[passLevel] = oldPassword;
+                    QMessageBox::critical(this,trUtf8("Saving error"), trUtf8("Cannot save the new password."));
+                }
+                else  {
+                    pwdChanged = true;
+                }
+            }
         }
     }
-    else
-    {
-    }
-    delete dk;
-
+    dk->deleteLater();
+    return pwdChanged;
 }
