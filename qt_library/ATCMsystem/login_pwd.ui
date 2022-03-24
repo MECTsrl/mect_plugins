@@ -58,7 +58,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/libicons/img/Text.png);</string>
+        <string notr="true">border-image: url(:/libicons/img/Key.png);</string>
        </property>
        <property name="text">
         <string/>
@@ -77,7 +77,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="text">
-        <string>password</string>
+        <string>Login - Password</string>
        </property>
       </widget>
      </item>

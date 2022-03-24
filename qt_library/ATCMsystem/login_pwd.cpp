@@ -18,7 +18,7 @@
 /* this define set the window title */
 #define WINDOW_TITLE "LOGIN - PASSWORD"
 /* this define set the window icon the file can have a path into resource file or into the file system */
-#define WINDOW_ICON ":/libicons/img/Key.png"
+#define WINDOW_ICON ""
 
 
 /**
@@ -79,10 +79,12 @@ void login_pwd::updateData()
     if (active_password == pwd_operator_e)
     {
         ui->pushButtonLogin->setText(trUtf8("LOGIN"));
+        ui->pushButtonPasswords->setEnabled(false);
     }
     else
     {
         ui->pushButtonLogin->setText(trUtf8("LOGOUT"));
+        ui->pushButtonPasswords->setEnabled(true);
     }
 }
 
