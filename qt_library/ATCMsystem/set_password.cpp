@@ -48,7 +48,9 @@ set_password::set_password(QWidget *parent) :
     
     //setStyle::set(this);
     labelDataOra = ui->labelDataOra;
-    
+    /* connect the label that show the actual user name */
+    labelUserName = ui->labelUserName;
+
     reload();
 }
 
@@ -60,6 +62,11 @@ set_password::set_password(QWidget *parent) :
  */
 void set_password::reload()
 {
+    // Label Values
+    ui->labelAdmin->setText(QString("%1 Password:") .arg(PasswordsString[pwd_admin_e]));
+    ui->labelSuper->setText(QString("%1 Password:") .arg(PasswordsString[pwd_super_user_e]));
+    ui->labelUser->setText(QString("%1 Password:") .arg(PasswordsString[pwd_user_e]));
+    // Password Actual Values
     ui->pushButtonAdmin->setText(QString("%1") .arg(passwords[pwd_admin_e], 4, 10));
     ui->pushButtonSuper->setText(QString("%1") .arg(passwords[pwd_super_user_e], 4, 10));
     ui->pushButtonUser->setText(QString("%1") .arg(passwords[pwd_user_e], 4, 10));
@@ -127,8 +134,8 @@ bool    set_password::updatePassword(enum password_level_e passLevel)
     numpad * dk;
     int     oldPassword = passwords[passLevel];
 
-    int newPassword;
-    dk = new numpad(&newPassword, oldPassword, min, max, input_dec, true);
+    int newPassword = oldPassword;
+    dk = new numpad(&newPassword, oldPassword, min, max, input_dec, false);
     dk->showFullScreen();
 
     if (dk->exec() == QDialog::Accepted)  {

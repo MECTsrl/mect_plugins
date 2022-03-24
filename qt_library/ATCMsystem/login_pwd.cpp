@@ -48,7 +48,9 @@ login_pwd::login_pwd(QWidget *parent) :
     
     //setStyle::set(this);
     labelDataOra = ui->labelDataOra;
-    
+    /* connect the label that show the actual user name */
+    labelUserName = ui->labelUserName;
+
     reload();
 }
 
