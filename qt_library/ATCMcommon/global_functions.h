@@ -202,7 +202,7 @@ QString getMacAddr(QString interface);  // Returns MAC Address for board <interf
 
 QString getIPAddr(QString interface);   // Returns IP Address for board <interface> as a QString
 
-bool    getBoardIPInfo(QString interface, QNetworkAddressEntry &netAddr);
+bool    getBoardIPInfo(QString interface, QNetworkAddressEntry &netAddr);   // Returns first IP address info for board <interface> as a QNetworkAddressEntry
 
 bool isWlanOn(void);                    // returns true if wifi board wlan0 is up and connected to an AP
 

@@ -51,6 +51,7 @@ net_conf.cpp \
 page0.cpp \
 main.cpp \
 login_pwd.cpp \
+set_password.cpp \
 qrcode.cpp
 
 HEADERS += \
@@ -67,6 +68,7 @@ net_conf.h \
 page0.h \
 main.h \
 login_pwd.h \
+set_password.h \
 qrcode.h
 
 FORMS += \
@@ -82,6 +84,7 @@ time_set.ui \
 net_conf.ui \
 page0.ui \
 login_pwd.ui \
+set_password.ui \
 qrcode.ui
 
 # install

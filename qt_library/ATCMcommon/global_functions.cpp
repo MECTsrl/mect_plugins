@@ -1023,6 +1023,7 @@ QString getMacAddr(QString interface)
 }
 
 bool    getBoardIPInfo(QString interface, QNetworkAddressEntry &netAddr)
+// Returns first IP address info for board <interface> as a QNetworkAddressEntry
 {
     bool fRes = false;
 

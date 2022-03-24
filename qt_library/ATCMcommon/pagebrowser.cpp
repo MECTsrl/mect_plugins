@@ -42,6 +42,8 @@
 #include "recipe.h"
 #include "recipe_select.h"
 #include "login_pwd.h"
+#include "set_password.h"
+
 
 /** @brief variables used for the change page management */
 QStack<QString> History;
@@ -105,6 +107,7 @@ const char *pageNames[] =
     "trend_option",     // -18
     "trend_range"       // -19
     "login_pwd"         // -20
+    "set_password"      // -21
 
     // dialogs:
     //         "alphanumpad", "numpad", "qrcode",
@@ -1277,6 +1280,10 @@ bool page::create_next_page(page ** p, const char * t)
         else if (strcmp(t, "login_pwd") == 0)
         {
             *p = (page *)(new login_pwd);
+        }
+        else if (strcmp(t, "set_password") == 0)
+        {
+            *p = (page *)(new set_password);
         }
         else
         {
