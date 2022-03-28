@@ -62,6 +62,7 @@ extern int active_password;
 #define ID_PLC_PRODUCT_ID    5420
 #define ID_PLC_SERIAL_NUMBER 5421
 #define ID_PLC_HMI_PAGE      5422
+#define ID_PLC_MS_VERSION    5423
 
 #define ID_PLC_BEEP_VOLUME  5435
 #define ID_PLC_TOUCH_VOLUME 5436

@@ -126,6 +126,9 @@ void info::refreshSystemTab()
     ui->sys_text->appendPlainText(QString("PLC_PLC_UPTIME_s:  %1").arg(uvalue));
     readFromDbQuick(ID_PLC_UPTIME_cs, (int *)&uvalue);
     ui->sys_text->appendPlainText(QString("PLC_PLC_UPTIME_cs: %1").arg(uvalue));
+    readFromDbQuick(ID_PLC_MS_VERSION, (int *)&uvalue);
+    ui->sys_text->appendPlainText(QString("PLC_MS_VERSION: %1").arg(uvalue));
+
 
     ui->sys_text->appendPlainText(QString(""));
     fp = fopen(APP_CONFIG_SERIAL_FILE, "r");
