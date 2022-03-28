@@ -403,7 +403,7 @@ QTabWidget::tab-bar {
             <string/>
            </property>
            <property name="text">
-            <string>Pwd Logout Page [s]</string>
+            <string>Pwd Logout Page</string>
            </property>
            <property name="buddy">
             <cstring>comboBox_PwdLogoutPage</cstring>
