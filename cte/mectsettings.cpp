@@ -152,23 +152,29 @@ bool    MectSettings::loadProjectFiles(const QString &szFileSettings, const QStr
         }
     }
     file.close();
-    /* Aggiungo in coda le pagine di Libreria */
-    pagesList << QLatin1String("alarms")
-              << QLatin1String("alarms_history")
-              << QLatin1String("recipe")
-              << QLatin1String("recipe_select")
-              << QLatin1String("store")
-              << QLatin1String("store_filter")
-              << QLatin1String("data_manager")
-              << QLatin1String("display_settings")
-              << QLatin1String("info")
-              << QLatin1String("menu")
-              << QLatin1String("options")
-              << QLatin1String("system_ini")
-              << QLatin1String("time_set")
-              << QLatin1String("trend")
-              << QLatin1String("trend_option")
-              << QLatin1String("trend_range");
+    /* Aggiungo in coda le pagine di Libreria (solo quelle che hanno senso come Start/Home/login_pwd pages) */
+    pagesList
+            << QLatin1String("system_ini")
+            << QLatin1String("net_conf")
+            << QLatin1String("info")
+            << QLatin1String("data_manager")
+            << QLatin1String("display_settings")
+            // << QLatin1String("display_test")
+            << QLatin1String("menu")
+            << QLatin1String("options")
+            << QLatin1String("time_set")
+            << QLatin1String("alarms")
+            << QLatin1String("alarms_history")
+            << QLatin1String("store")
+            << QLatin1String("store_filter")
+            << QLatin1String("trend")
+            // << QLatin1String("trend_other")
+            << QLatin1String("trend_range")
+            << QLatin1String("recipe")
+            << QLatin1String("recipe_select")
+            << QLatin1String("login_pwd")
+            << QLatin1String("set_password")
+    ;
 
     /*Inserimento della lista delle pagine all'interno delle combobox*/
     ui->comboBox_HomePage->clear();
