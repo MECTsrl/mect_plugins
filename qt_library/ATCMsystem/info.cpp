@@ -117,7 +117,7 @@ void info::refreshSystemTab()
     ui->sys_text->setPlainText("");
 
     readFromDbQuick(ID_PLC_PRODUCT_ID, (int *)&uvalue);
-    ui->sys_text->appendPlainText(QString("PLC_PRODUCT_ID: 0x%1").arg(uvalue, 8, 16));
+    ui->sys_text->appendPlainText(QString("PLC_PRODUCT_ID: 0x%1").arg(uvalue, 8, 16, QChar('0')));
     readFromDbQuick(ID_PLC_SERIAL_NUMBER, (int *)&uvalue);
     ui->sys_text->appendPlainText(QString("PLC_SERIAL_NUMBER: %1").arg(uvalue));
 
@@ -127,7 +127,7 @@ void info::refreshSystemTab()
     readFromDbQuick(ID_PLC_UPTIME_cs, (int *)&uvalue);
     ui->sys_text->appendPlainText(QString("PLC_PLC_UPTIME_cs: %1").arg(uvalue));
     readFromDbQuick(ID_PLC_MS_VERSION, (int *)&uvalue);
-    ui->sys_text->appendPlainText(QString("PLC_MS_VERSION: %1").arg(uvalue));
+    ui->sys_text->appendPlainText(QString("PLC_MS_VERSION: 0x%1").arg(uvalue, 6, 16, QChar('0')));
 
 
     ui->sys_text->appendPlainText(QString(""));
