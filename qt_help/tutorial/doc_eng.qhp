@@ -13,7 +13,9 @@
             <section title="MectSuite Tutorial EN" ref="Home_Tutorial.html">
 				<section title="Introduction" ref="Introduzione_eng.html"/>
 				<section title="Update" ref="Aggiornamenti_eng.html"/>
-				<section title="Convert a 2.0.13 project into 3.x version" ref="Convertire_progetto_2x_eng.html"/>
+				<section title="Convert a 2.0.13 project into 3.x version" ref="Convertire_progetto_2x_eng.html">
+				<section title="System password change" ref="Cambio_password_sistema_eng.html"/>
+				</section>
 				<section title="Preliminary operation" ref="Operazioni_preliminari_eng.html">
 					<section title="Local connection" ref="Connetivita_locale_eng.html"/>
 					<section title="sMily remote connection" ref="Connetivita_eng.html">
@@ -126,7 +128,6 @@
 						<section title="Alarms translation" ref="Traduzioni_allarmi_eng.html"/>
 						</section>	
 					<section title="Web interface functioning" ref="Interfaccia_web_eng.html"/>	
-					<section title="System password change" ref="Cambio_password_sistema_eng.html"/>
 					<section title="Appendix" ref="Appendice_eng.html">
 						<section title="Alarm reset" ref="Reset_allarmi_eng.html"/>
 						<section title="Backlight setting by HMI function" ref="Backlight_HMI_eng.html"/>
@@ -180,7 +181,6 @@
 				<section title="Cloner" ref="Cloner_eng.html"/>
 				<section title="Micro SD card insertion" ref="SD_card_eng.html"/>
 				<section title="VNC activation" ref="VNC_eng.html"/>	
-				<section title="CAN configuration" ref="Can_eng.html"/>
             </section>
         </toc>
         <keywords>

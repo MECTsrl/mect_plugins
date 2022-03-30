@@ -13,7 +13,9 @@
             <section title="MectSuite Tutorial DE" ref="Home_Tutorial.html">
 				<section title="Einführung" ref="Introduzione_de.html"/>
 				<section title="Aktualisierung" ref="Aggiornamenti_de.html"/>
-				<section title="Konvertieren Sie ein 2.0.13-Projekt in eine 3.x-Version" ref="Convertire_progetto_2x_de.html"/>
+				<section title="Konvertieren Sie ein 2.0.13-Projekt in eine 3.x-Version" ref="Convertire_progetto_2x_de.html">	
+				<section title="Systempasswort ändern" ref="Cambio_password_sistema_de.html"/>
+				</section>
 				<section title="Vorbereitende Operationen" ref="Operazioni_preliminari_de.html">
 					<section title="Lokale Verbindung" ref="Connetivita_locale_de.html"/>
 					<section title="Fernverbindung (sMily)" ref="Connetivita_de.html">
@@ -125,8 +127,7 @@
 						<section title="Sprache aus dem Gerät auswählen" ref="Selezione_lingua_de.html"/>
 						<section title="Übersetzung von Alarmen" ref="Traduzioni_allarmi_de.html"/>
 						</section>	
-					<section title="Funktionsweise der Webschnittstelle" ref="Interfaccia_web_de.html"/>	
-					<section title="Systempasswort ändern" ref="Cambio_password_sistema_de.html"/>
+					<section title="Funktionsweise der Webschnittstelle" ref="Interfaccia_web_de.html"/>
 					<section title="Anhang" ref="Appendice_de.html">
 						<section title="Alarme zurücksetzen" ref="Reset_allarmi_de.html"/>
 						<section title="Ändern der Hintergrundbeleuchtung über HMI-Funktion" ref="Backlight_HMI_de.html"/>
@@ -180,7 +181,6 @@
 				<section title="Cloner" ref="Cloner_de.html"/>
 				<section title="Einlegen der Micro-SD-Karte" ref="SD_card_de.html"/>
 				<section title="Aktivierung VNC" ref="VNC_de.html"/>	
-				<section title="CAN-Konfiguration" ref="Can_de.html"/>	
             </section>
         </toc>
         <keywords>

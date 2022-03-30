@@ -13,7 +13,9 @@
             <section title="MectSuite Tutorial ES" ref="Home_Tutorial.html">
 				<section title="Introducción" ref="Introduzione_es.html"/>
 				<section title="Actualización" ref="Aggiornamenti_es.html"/>
-				<section title="Convertir un proyecto 2.0.13 en la versión 3.x" ref="Convertire_progetto_2x_es.html"/>
+				<section title="Convertir un proyecto 2.0.13 en la versión 3.x" ref="Convertire_progetto_2x_es.html">
+				<section title="Cambiar la contraseña del sistema" ref="Cambio_password_sistema_es.html"/>
+				</section>
 				<section title="Operaciones preliminares" ref="Operazioni_preliminari_es.html">
 					<section title="Conexión local" ref="Connetivita_locale_es.html"/>
 					<section title="Conexión remota (sMily)" ref="Connetivita_es.html">
@@ -126,7 +128,6 @@
 						<section title="Traducción de las alarmas" ref="Traduzioni_allarmi_es.html"/>
 						</section>	
 					<section title="Funcionamiento de la interfaz web" ref="Interfaccia_web_es.html"/>	
-					<section title="Cambiar la contraseña del sistema" ref="Cambio_password_sistema_es.html"/>
 					<section title="Apéndice" ref="Appendice_es.html">
 						<section title="Reinicio de alarmas" ref="Reset_allarmi_es.html"/>
 						<section title="Modificación de la luz de fondo mediante la función HMI" ref="Backlight_HMI_es.html"/>
@@ -180,7 +181,6 @@
 				<section title="Cloner" ref="Cloner_es.html"/>
 				<section title="Inserción de la tarjeta micro SD" ref="SD_card_es.html"/>
 				<section title="Activación VNC" ref="VNC_es.html"/>	
-				<section title="Configuración CAN" ref="Can_es.html"/>
             </section>
         </toc>
         <keywords>

@@ -13,7 +13,9 @@
             <section title="MectSuite Tutorial FR" ref="Home_Tutorial.html">
 				<section title="Introduction" ref="Introduzione_fr.html"/>
 				<section title="Mise à jour" ref="Aggiornamenti_fr.html"/>
-				<section title="Convertir un projet 2.0.13 en version 3.x" ref="Convertire_progetto_2x_fr.html"/>
+				<section title="Convertir un projet 2.0.13 en version 3.x" ref="Convertire_progetto_2x_fr.html">
+				<section title="Modifier le mot de passe du système" ref="Cambio_password_sistema_fr.html"/>
+				</section>
 				<section title="Opérations préliminaires" ref="Operazioni_preliminari_fr.html">
 					<section title="Connexion locale" ref="Connetivita_locale_fr.html"/>
 					<section title="Connexion à distance (sMily)" ref="Connetivita_fr.html">
@@ -126,7 +128,6 @@
 						<section title="Traduction des alarmes" ref="Traduzioni_allarmi_fr.html"/>
 						</section>	
 					<section title="Fonctionnement de l'interface Web" ref="Interfaccia_web_fr.html"/>	
-					<section title="Modifier le mot de passe du système" ref="Cambio_password_sistema_fr.html"/>
 					<section title="Annexe" ref="Appendice_fr.html">
 						<section title="Réinitialisation des alarmes" ref="Reset_allarmi_fr.html"/>
 						<section title="Modification du rétroéclairage via la fonction HMI" ref="Backlight_HMI_fr.html"/>
@@ -179,8 +180,7 @@
 				<section title="Activer / désactiver un noeud Modbus RTU-TCP" ref="Abilitazione_disabilitazione_nodo_fr.html"/>
 				<section title="Cloner" ref="Cloner_fr.html"/>
 				<section title="Insertion de la carte micro SD" ref="SD_card_fr.html"/>
-				<section title="Activation VNC" ref="VNC_fr.html"/>	
-				<section title="Configuration CAN" ref="Can_fr.html"/>				
+				<section title="Activation VNC" ref="VNC_fr.html"/>					
             </section>
         </toc>
         <keywords>
