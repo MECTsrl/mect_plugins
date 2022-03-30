@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/systemicons">
         <file alias="3d_bar_chart.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/3d_bar_chart.png</file>
+        <file alias="4g_connect.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/4g_connect.png</file>
         <file alias="Abort.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Abort.png</file>
         <file alias="About.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/About.png</file>
         <file alias="Accounting.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Accounting.png</file>
@@ -43,6 +44,7 @@
         <file alias="Chess2.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Chess2.png</file>
         <file alias="Clipboard.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Clipboard.png</file>
         <file alias="Clock.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Clock.png</file>
+        <file alias="Clock-icon.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Clock-icon.png</file>
         <file alias="Close.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Close.png</file>
         <file alias="Coin.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Coin.png</file>
         <file alias="Comment.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Comment.png</file>
@@ -72,6 +74,8 @@
         <file alias="Equipment.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Equipment.png</file>
         <file alias="Erase.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Erase.png</file>
         <file alias="Error.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Error.png</file>
+        <file alias="eye_invisible_32.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/eye_invisible_32.png</file>
+        <file alias="eye_visible_32.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/eye_visible_32.png</file>
         <file alias="Euro.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Euro.png</file>
         <file alias="Exit.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Exit.png</file>
         <file alias="Expand.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Expand.png</file>
@@ -237,6 +241,7 @@
         <file alias="Warning.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Warning.png</file>
         <file alias="WifiOff.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/WifiOff.png</file>
         <file alias="WifiOn.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/WifiOn.png</file>
+        <file alias="wifi_connect.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/wifi_connect.png</file>
         <file alias="Wrench.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Wrench.png</file>
         <file alias="Yellow_bookmark.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Yellow_bookmark.png</file>
         <file alias="Yellow_pin.png">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/img/Yellow_pin.png</file>
