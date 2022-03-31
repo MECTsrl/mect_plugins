@@ -67,7 +67,7 @@ while ($line = <INFILE>)
                                 $retval = 1;
                         }
                 }
-                elsif ($model eq "TPAC1007_AE")
+                elsif ($model eq "TPAC1007_04_AE")
                 {
                         if ($section eq "SERIAL_PORT_3" && $key eq "baudrate" && $value ne "38400")
                         {

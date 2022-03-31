@@ -26,3 +26,14 @@ SOURCES += \
 RESOURCES += \
     resources.qrc
 
+
+OTHER_FILES += \
+    hmi.ini \
+    hmi.qss
+
+
+other.files =  hmi.ini hmi.qss
+other.path = /local/root
+
+INSTALLS += other
+

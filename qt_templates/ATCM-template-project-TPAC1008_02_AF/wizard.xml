@@ -47,6 +47,8 @@ Custom project wizard configuration example file. Note that by convention,
 	   <file source="../ATCM-template-project/page100.cpp"  target="page100.cpp" openeditor="false"/>
 	   <file source="../ATCM-template-project/page100.h"  target="page100.h" openeditor="false"/>
 	   <file source="../ATCM-template-project/page100.ui"  target="page100.ui" openeditor="true"/>
+	   <file source="../ATCM-template-project/hmi.ini" target="hmi.ini" openproject="false"/>
+	   <file source="../ATCM-template-project/hmi.qss" target="hmi.qss" openproject="false"/>
 	   <file source="../ATCM-template-project/style.h" target="style.h" openproject="false"/>
 	   <file source="../ATCM-template-project/automation.cpp" target="automation.cpp" openeditor="false"/>
 	   <file source="../ATCM-template-project/automation.h" target="automation.h" openeditor="false"/>
