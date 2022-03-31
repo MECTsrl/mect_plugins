@@ -3034,10 +3034,10 @@ void ctedit::showAllRows(bool fShowAll)
         }
     }
     nRow = m_nGridRow;
-    // Trucco per centrare la riga...
-    // jumpToGridRow(0, true);
     if (nRow >= 0 && nRow < DimCrossTable)  {
-        jumpToGridRow(nRow, true, false);
+        // Trucco per centrare la riga...
+        jumpToGridRow(0, true, true);
+        jumpToGridRow(nRow, true, true);
     }
     // ui->tblCT->setFocus();
 }
