@@ -1,23 +1,146 @@
 /* System Pages Background */
-page#alarms, page#alarms_history, page#recipe, page#recipe_select, page#store, page#store_filter, page#data_manager, page#display_settings, 
-page#info, page#menu, page#options, page#net_conf, page#system_ini, page#time_set, page#trend, page#trend_option, page#trend_other, page#trend_range,
-QDialog#item_selector, QDialog#item_selector, QDialog#Calendar, QDialog#TimePopup, QDialog#alphanumpad, QDialog#numpad, QDialog#qrcode	{
-	background-color: rgb(0, 0, 0);
+page#alarms, 
+page#alarms_history, 
+page#recipe, 
+page#recipe_select, 
+page#store, 
+page#store_filter, 
+page#data_manager, 
+page#display_settings, 
+page#info, 
+page#menu, 
+page#net_conf, 
+page#options, 
+page#system_ini, 
+page#time_set, 
+page#trend, 
+page#trend_range, 
+page#login_pwd, 
+page#set_password, 
+QDialog#item_selector, 
+QDialog#Calendar, 
+QDialog#TimePopup, 
+QDialog#alphanumpad, 
+QDialog#numpad, 
+QDialog#qrcode	{
+	background-color: rgb(32, 32, 32);
 }
 /* System Pages QLabel Background and Color */
-page#alarms QLabel, page#alarms_history QLabel, page#recipe QLabel, page#recipe_select QLabel, page#store QLabel, page#store_filter QLabel, page#data_manager QLabel, page#display_settings QLabel, 
-page#info QLabel, page#menu QLabel, page#options QLabel, page#net_conf QLabel, page#system_ini QLabel, page#time_set QLabel, page#trend_option QLabel, page#trend_other QLabel, page#trend_range QLabel,
-QDialog#item_selector QLabel, QDialog#item_selector QLabel, QDialog#Calendar QLabel, QDialog#TimePopup QLabel	{
-	background-color: rgb(0, 0, 0);
-	color: rgb(255, 170, 0);
+page#alarms QLabel, 
+page#alarms_history QLabel, 
+page#recipe QLabel, 
+page#recipe_select QLabel, 
+page#store QLabel, 
+page#store_filter QLabel, 
+page#data_manager QLabel, 
+page#display_settings QLabel, 
+page#info QLabel, 
+page#menu QLabel, 
+page#net_conf QLabel, 
+page#options QLabel, 
+page#system_ini QLabel, 
+page#time_set QLabel, 
+page#trend QLabel, 
+page#trend_range QLabel, 
+page#login_pwd QLabel, 
+page#set_password QLabel, 
+QDialog#item_selector QLabel, 
+QDialog#Calendar QLabel, 
+QDialog#TimePopup QLabel, 
+QDialog#alphanumpad QLabel, 
+QDialog#numpad QLabel, 
+QDialog#qrcode QLabel	{
+	background-color: rgb(32, 32, 32);
+	color: rgb(255, 235, 51);
 }
 /* System Pages QPushButton Background and Color */
-page#alarms QPushButton, page#alarms_history QPushButton, page#recipe QPushButton, page#recipe_select QPushButton, page#store QPushButton, page#store_filter QPushButton, page#data_manager QPushButton, page#display_settings QPushButton, 
-page#info QPushButton, page#menu QPushButton, page#options QPushButton, page#net_conf QPushButton, page#system_ini QPushButton, page#time_set QPushButton, page#trend QPushButton, page#trend_option QPushButton, page#trend_other QPushButton, page#trend_range QPushButton,
-QDialog#item_selector QPushButton, QDialog#item_selector QPushButton, QDialog#Calendar QPushButton, QDialog#TimePopup QPushButton, QDialog#alphanumpad QPushButton, QDialog#numpad QPushButton	{
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DimGray, stop:1 rgb(30, 30, 30));
-	color: rgb(255, 170, 0);
+page#alarms QPushButton, 
+page#alarms_history QPushButton, 
+page#recipe QPushButton, 
+page#recipe_select QPushButton, 
+page#store QPushButton, 
+page#store_filter QPushButton, 
+page#data_manager QPushButton, 
+page#display_settings QPushButton, 
+page#info QPushButton, 
+page#menu QPushButton, 
+page#net_conf QPushButton, 
+page#options QPushButton, 
+page#system_ini QPushButton, 
+page#time_set QPushButton, 
+page#trend QPushButton, 
+page#trend_range QPushButton, 
+page#login_pwd QPushButton, 
+page#set_password QPushButton, 
+QDialog#item_selector QPushButton, 
+QDialog#Calendar QPushButton, 
+QDialog#TimePopup QPushButton, 
+QDialog#alphanumpad QPushButton, 
+QDialog#numpad QPushButton, 
+QDialog#qrcode QPushButton	{
+	border: 1px solid  DarkGray;
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DarkGray, stop:1 rgb(22, 22, 22));
+	color: rgb(255, 235, 51);
 	border-radius: 4px;
+	qproperty-focusPolicy: NoFocus;
+}
+/* System Pages QPushButton Background and Color status:pressed */
+page#alarms QPushButton:pressed, 
+page#alarms_history QPushButton:pressed, 
+page#recipe QPushButton:pressed, 
+page#recipe_select QPushButton:pressed, 
+page#store QPushButton:pressed, 
+page#store_filter QPushButton:pressed, 
+page#data_manager QPushButton:pressed, 
+page#display_settings QPushButton:pressed, 
+page#info QPushButton:pressed, 
+page#menu QPushButton:pressed, 
+page#net_conf QPushButton:pressed, 
+page#options QPushButton:pressed, 
+page#system_ini QPushButton:pressed, 
+page#time_set QPushButton:pressed, 
+page#trend QPushButton:pressed, 
+page#trend_range QPushButton:pressed, 
+page#login_pwd QPushButton:pressed, 
+page#set_password QPushButton:pressed, 
+QDialog#item_selector QPushButton:pressed, 
+QDialog#Calendar QPushButton:pressed, 
+QDialog#TimePopup QPushButton:pressed, 
+QDialog#alphanumpad QPushButton:pressed, 
+QDialog#numpad QPushButton:pressed, 
+QDialog#qrcode QPushButton:pressed	{
+	border: 2px solid  rgb(194, 194, 194);
+	color: rgb(70,70,80);
+	background-color:  rgb(255, 255, 127);
+}
+/* System Pages QPushButton Background and Color  status:disabled */
+page#alarms QPushButton:disabled, 
+page#alarms_history QPushButton:disabled, 
+page#recipe QPushButton:disabled, 
+page#recipe_select QPushButton:disabled, 
+page#store QPushButton:disabled, 
+page#store_filter QPushButton:disabled, 
+page#data_manager QPushButton:disabled, 
+page#display_settings QPushButton:disabled, 
+page#info QPushButton:disabled, 
+page#menu QPushButton:disabled, 
+page#net_conf QPushButton:disabled, 
+page#options QPushButton:disabled, 
+page#system_ini QPushButton:disabled, 
+page#time_set QPushButton:disabled, 
+page#trend QPushButton:disabled, 
+page#trend_range QPushButton:disabled, 
+page#login_pwd QPushButton:disabled, 
+page#set_password QPushButton:disabled, 
+QDialog#item_selector QPushButton:disabled, 
+QDialog#Calendar QPushButton:disabled, 
+QDialog#TimePopup QPushButton:disabled, 
+QDialog#alphanumpad QPushButton:disabled, 
+QDialog#numpad QPushButton:disabled, 
+QDialog#qrcode QPushButton:disabled	{
+	border: 1px solid  DimGray;
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DimGray, stop:1 rgb(22, 22, 22));
+	color: Silver;
 }
 /* Info Page QPlainTextEdit */
 page#info QPlainTextEdit {
