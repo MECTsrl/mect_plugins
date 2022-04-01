@@ -26,10 +26,25 @@
    <string>menu</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton
-{
+   <string notr="true">QPushButton  {
 	font: 18pt &quot;DejaVu Sans Mono&quot;;
-}</string>
+}
+QPushButton#pushButtonBack, QPushButton#pushButtonHome
+{
+	qproperty-focusPolicy: NoFocus;
+	border-radius: 8px;
+	border: 2px solid  rgb(94, 94, 94);
+}
+QPushButton:pressed
+{
+	border: 2px solid  rgb(194, 194, 194);
+	background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+	border: 2px solid  rgb(194, 194, 194);
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -166,6 +181,9 @@
        <property name="text">
         <string>page300</string>
        </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item row="3" column="0">
@@ -191,6 +209,9 @@
        <property name="text">
         <string>page400</string>
        </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
@@ -212,6 +233,9 @@
        </property>
        <property name="text">
         <string>page200</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -235,6 +259,9 @@
        <property name="text">
         <string>page100</string>
        </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item row="0" column="1">
@@ -256,6 +283,9 @@
        </property>
        <property name="text">
         <string>LOGIN</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -279,6 +309,9 @@
        <property name="text">
         <string>DATA</string>
        </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item row="2" column="1">
@@ -300,6 +333,9 @@
        </property>
        <property name="text">
         <string>OPTIONS</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -325,6 +361,9 @@
        </property>
        <property name="text">
         <string>INFO</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -377,20 +416,8 @@
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Home.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Home.png);
+	qproperty-iconSize: 24px 24px;
 }
 </string>
        </property>
@@ -425,20 +452,8 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Go_back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Go_back.png);
+	qproperty-iconSize: 24px 24px;
 }
 </string>
        </property>

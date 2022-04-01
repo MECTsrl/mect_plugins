@@ -47,16 +47,16 @@
     mystyle.append("text-align: center;"); \
     mystyle.append("border-radius: 8px;"); \
     mystyle.append("border: 2px solid  LemonChiffon;"); \
-    mystyle.append("background-color: rgb(70,70,80);"); \
+    mystyle.append("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DarkGray, stop:1 rgb(22, 22, 22));"); \
     mystyle.append("color: LemonChiffon;"); \
     mystyle.append("background-repeat: no-repeat;"); \
     mystyle.append("font: 20pt \""FONT_TYPE"\";"); \
     mystyle.append("}"); \
     mystyle.append("QPushButton:pressed"); \
     mystyle.append("{"); \
-    mystyle.append("border: 2px solid  Red;"); \
-    mystyle.append("background-color:  SlateGray;"); \
-    mystyle.append("color: rgb(70,70,80);;"); \
+    mystyle.append("border: 2px solid  rgb(194, 194, 194);"); \
+    mystyle.append("background-color:  rgb(255, 255, 127);"); \
+    mystyle.append("color: rgb(70,70,80);"); \
     mystyle.append("}"); \
     mystyle.append("QPushButton#pushButtonPassword"); \
     mystyle.append("{"); \
