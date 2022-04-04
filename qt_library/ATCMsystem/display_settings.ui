@@ -26,11 +26,39 @@
    <string>display_settings</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QPushButton  {
+	qproperty-focusPolicy: NoFocus;
+}
+QPushButton:pressed
+{
+	border: 2px solid  rgb(194, 194, 194);
+	background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+	border: 2px solid  rgb(194, 194, 194);
+}
+QPushButton#pushButtonPlus,
+QPushButton#pushButtonMinus,
+QPushButton#pushButton,
+QPushButton#pushButtonBack, 
+QPushButton#pushButtonHome	{
+	border: 2px solid  rgb(94, 94, 94);
+	border-radius: 8px;
+	qproperty-iconSize: 24px 24px;
+}
+QPushButton#pushButtonPlus,
+QPushButton#pushButtonMinus
+{
+	border-radius: 20px;
+	background-color: SlateGray;
+}
+
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>4</number>
+    <number>2</number>
    </property>
    <property name="margin">
     <number>4</number>
@@ -292,20 +320,7 @@
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/OK.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/OK.png);
 }
 </string>
        </property>
@@ -349,6 +364,12 @@ border: 2px solid  rgb(194, 194, 194);
      </property>
      <item>
       <widget class="QPushButton" name="pushButtonON">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>36</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <pointsize>16</pointsize>
@@ -369,6 +390,12 @@ border: 2px solid  rgb(194, 194, 194);
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonOFF">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>36</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <pointsize>16</pointsize>
@@ -391,6 +418,12 @@ border: 2px solid  rgb(194, 194, 194);
    </item>
    <item>
     <widget class="QPushButton" name="pushButtonTEST">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>36</height>
+      </size>
+     </property>
      <property name="font">
       <font>
        <pointsize>16</pointsize>
@@ -440,20 +473,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Home.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Home.png);
 }
 </string>
        </property>
@@ -488,20 +508,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Go_back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Go_back.png);
 }
 </string>
        </property>

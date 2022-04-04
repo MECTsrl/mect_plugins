@@ -92,19 +92,19 @@ void display_settings::reload()
     brightness_level = brightness_level_old;
     ui->horizontalSlider->setValue(brightness_level);
     
-    ui->pushButtonON->setStyleSheet("background-color: rgb(255, 255, 0);");
+    ui->pushButtonON->setStyleSheet("background-color: DarkTurquoise;");
     
     if (ScreenSaverSec == 0)
     {
-        ui->pushButtonOFF->setStyleSheet("background-color: rgb(255, 255, 0);");
-        ui->pushButtonON->setStyleSheet("background-color: rgb(180,180,180);");
+        ui->pushButtonOFF->setStyleSheet("background-color: DarkTurquoise;");
+        ui->pushButtonON->setStyleSheet("background-color: SlateGray;");
         ui->pushButtonON->setText("Disabled");
     }
     else
     {
         ui->pushButtonON->setText(QString("ON %1 sec").arg(ScreenSaverSec));
-        ui->pushButtonON->setStyleSheet("background-color: rgb(255, 255, 0);");
-        ui->pushButtonOFF->setStyleSheet("background-color: rgb(180,180,180);");
+        ui->pushButtonON->setStyleSheet("background-color: DarkTurquoise;");
+        ui->pushButtonOFF->setStyleSheet("background-color: SlateGray;");
     }
 }
 
@@ -212,8 +212,8 @@ void display_settings::on_pushButtonON_clicked()
             return;
         }
         ui->pushButtonON->setText(QString("ON %1 sec").arg(value));
-        ui->pushButtonON->setStyleSheet("background-color: rgb(255, 255, 0);");
-        ui->pushButtonOFF->setStyleSheet("background-color: rgb(180,180,180);");
+        ui->pushButtonON->setStyleSheet("background-color: DarkTurquoise;");
+        ui->pushButtonOFF->setStyleSheet("background-color: SlateGray;");
         ScreenSaverSec = value;
         QWSServer::setScreenSaverInterval(ScreenSaverSec*1000); //msec
         
@@ -228,8 +228,8 @@ void display_settings::on_pushButtonOFF_clicked()
 {
     //disabling screensaver
     QWSServer::setScreenSaverInterval(0); //msec
-    ui->pushButtonOFF->setStyleSheet("background-color: rgb(255, 255, 0);");
-    ui->pushButtonON->setStyleSheet("background-color: rgb(180,180,180);");
+    ui->pushButtonOFF->setStyleSheet("background-color: DarkTurquoise;");
+    ui->pushButtonON->setStyleSheet("background-color: SlateGray;");
     ui->pushButtonON->setText("Disabled");
     ScreenSaverSec = 0;
     QWSServer::setScreenSaverInterval(ScreenSaverSec*1000); //msec
