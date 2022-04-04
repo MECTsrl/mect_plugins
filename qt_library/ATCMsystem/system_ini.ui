@@ -23,9 +23,23 @@
    <string notr="true">QCheckBox::indicator {
 	width: 16px;
 	height:16px;
+    subcontrol-origin:border;
+    Subcontrol-position:left Center;
 }
 QCheckBox::indicator:checked:enabled {
     image: url(:/libicons/img/Yes.png);
+}
+QPushButton:pressed
+{
+	border: 2px solid  rgb(194, 194, 194);
+	background-color:  rgb(255, 255, 127);
+}
+QPushButton#pushButtonSave, 
+QPushButton#pushButtonBack, 
+QPushButton#pushButtonHome	{
+	border: 2px solid  rgb(94, 94, 94);
+	border-radius: 8px;
+	qproperty-iconSize: 24px 24px;
 }
 </string>
   </property>
@@ -163,6 +177,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -212,6 +232,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -227,6 +253,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -319,6 +351,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -367,6 +405,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -452,6 +496,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -500,6 +550,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -550,6 +606,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -581,6 +643,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -685,6 +753,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -711,6 +785,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -723,6 +803,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -753,6 +839,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -768,6 +860,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -814,6 +912,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
           </widget>
          </item>
         </layout>
@@ -857,6 +961,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="currentIndex">
             <number>3</number>
            </property>
@@ -895,6 +1005,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -917,6 +1033,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
            </property>
            <item>
             <property name="text">
@@ -968,6 +1090,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -1110,6 +1238,12 @@ QComboBox
          </item>
          <item row="1" column="1" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_Silence_SERIAL_PORT_0">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Silence [ms]</string>
            </property>
@@ -1122,6 +1256,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -1136,6 +1276,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -1143,6 +1289,12 @@ QComboBox
          </item>
          <item row="0" column="1" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_Timeout_SERIAL_PORT_0">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Timeout [ms]</string>
            </property>
@@ -1163,6 +1315,12 @@ QComboBox
          </item>
          <item row="2" column="1">
           <widget class="QLabel" name="label_MaxBlockSize_SERIAL_PORT_0">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>DejaVu Sans</family>
@@ -1184,6 +1342,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -1265,6 +1429,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -1344,6 +1514,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
+           </property>
            <item>
             <property name="text">
              <string>N</string>
@@ -1368,6 +1544,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="currentIndex">
             <number>3</number>
@@ -1422,6 +1604,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="currentIndex">
             <number>0</number>
@@ -1489,6 +1677,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -1502,6 +1696,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -1509,6 +1709,12 @@ QComboBox
          </item>
          <item row="1" column="1" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_Silence_SERIAL_PORT_1">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Silence [ms]</string>
            </property>
@@ -1516,6 +1722,12 @@ QComboBox
          </item>
          <item row="0" column="1" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_Timeout_SERIAL_PORT_1">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Timeout [ms]</string>
            </property>
@@ -1523,6 +1735,12 @@ QComboBox
          </item>
          <item row="2" column="1">
           <widget class="QLabel" name="label_MaxBlockSize_SERIAL_PORT_1">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>DejaVu Sans</family>
@@ -1544,6 +1762,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -1611,6 +1835,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -1694,6 +1924,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
+           </property>
            <item>
             <property name="text">
              <string>N</string>
@@ -1731,6 +1967,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="currentIndex">
             <number>3</number>
@@ -1783,6 +2025,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -1830,6 +2078,12 @@ QComboBox
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="1" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_Timeout_SERIAL_PORT_2">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Timeout [ms]</string>
            </property>
@@ -1850,6 +2104,12 @@ QComboBox
          </item>
          <item row="1" column="1" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_Silence_SERIAL_PORT_2">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Silence [ms]</string>
            </property>
@@ -1862,6 +2122,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -1889,6 +2155,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -1896,6 +2168,12 @@ QComboBox
          </item>
          <item row="2" column="1">
           <widget class="QLabel" name="label_MaxBlockSize_SERIAL_PORT_2">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>DejaVu Sans</family>
@@ -1917,6 +2195,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -1991,6 +2275,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -2071,6 +2361,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
+           </property>
            <item>
             <property name="text">
              <string>N</string>
@@ -2108,6 +2404,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="currentIndex">
             <number>3</number>
@@ -2159,6 +2461,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>45</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="currentIndex">
             <number>0</number>
@@ -2213,6 +2521,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -2220,6 +2534,12 @@ QComboBox
          </item>
          <item row="0" column="1" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_Timeout_SERIAL_PORT_3">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Timeout [ms]</string>
            </property>
@@ -2227,6 +2547,12 @@ QComboBox
          </item>
          <item row="1" column="1" alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_Silence_SERIAL_PORT_3">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Silence [ms]</string>
            </property>
@@ -2240,6 +2566,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -2247,6 +2579,12 @@ QComboBox
          </item>
          <item row="2" column="1">
           <widget class="QLabel" name="label_MaxBlockSize_SERIAL_PORT_3">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>DejaVu Sans</family>
@@ -2268,6 +2606,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -2356,6 +2700,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Silence [ms]</string>
            </property>
@@ -2368,6 +2718,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="text">
             <string>Timeout [ms]</string>
@@ -2382,6 +2738,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -2395,6 +2757,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -2407,6 +2775,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -2429,6 +2803,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -2547,6 +2927,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Baudrate</string>
            </property>
@@ -2562,6 +2948,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -2583,6 +2975,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -2611,6 +3009,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -2703,6 +3107,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
             <string>Baudrate</string>
            </property>
@@ -2718,6 +3128,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
@@ -2780,6 +3196,12 @@ QComboBox
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>DejaVu Sans</family>
@@ -2807,6 +3229,12 @@ QComboBox
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="font">
             <font>
@@ -2885,20 +3313,7 @@ QComboBox
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Home.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Home.png);
 }
 </string>
        </property>
@@ -2927,20 +3342,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Go_back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Go_back.png);
 }
 </string>
        </property>
@@ -2997,20 +3399,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Save.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Save.png);
 }
 </string>
        </property>
