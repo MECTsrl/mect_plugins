@@ -34,11 +34,8 @@ page#store QLabel,
 page#store_filter QLabel, 
 page#data_manager QLabel, 
 page#display_settings QLabel, 
-page#info QLabel, 
 page#menu QLabel, 
-page#net_conf QLabel, 
 page#options QLabel, 
-page#system_ini QLabel, 
 page#time_set QLabel, 
 page#trend QLabel, 
 page#trend_range QLabel, 
@@ -142,12 +139,63 @@ QDialog#qrcode QPushButton:disabled	{
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DimGray, stop:1 rgb(22, 22, 22));
 	color: Silver;
 }
+/* QCheckBox && QLabel (net_conf, system_ini) */
+page#net_conf  QCheckBox, page#net_conf  QLabel, 
+page#system_ini  QCheckBox, page#system_ini  QLabel	{
+	background-color: DimGray;
+	color: rgb(255, 235, 51);
+}
+/* QTabWidget and Tab Bar (info, net_conf, system_ini) */
+page#info QTabWidget::pane, 
+page#net_conf QTabWidget::pane, 
+page#system_ini QTabWidget::pane	{
+        border-top: 1px solid rgb(87, 130, 193);
+        border: 1px solid rgb(87, 130, 193);
+	background-color: DimGray;
+	color: rgb(255, 235, 51);
+}
+page#info QTabWidget::tab-bar, 
+page#net_conf QTabWidget::tab-bar, 
+page#system_ini QTabWidget::tab-bar	{
+        left: 10px;
+}
+page#info QTabBar::tab, 
+page#net_conf QTabBar::tab, 
+page#system_ini QTabBar::tab	{
+  	font-size: 11pt;
+  	padding: 6px;
+  	min-width:55px;
+}
+page#info QTabBar::tab:selected, 
+page#net_conf QTabBar::tab:selected, 
+page#system_ini QTabBar::tab:selected {
+	qproperty-focusPolicy: NoFocus;
+  	background: DimGray;
+	color: Yellow;
+  	margin-left: -1px;
+  	margin-right: -1px;
+}
+page#info QTabBar::tab:!selected, 
+page#net_conf QTabBar::tab:!selected, 
+page#system_ini QTabBar::tab:!selected {
+  	background: DarkGray;
+	color: DarkRed;
+    	margin-top: 4px; /* make non-selected tabs look smaller */
+}
+/*
+page#info QTabBar::tab:!enabled, 
+page#net_conf QTabBar::tab:!selected, 
+page#system_ini QTabBar::tab:!selected {
+  	background: LightGray;
+	color: Turquoise;
+} */
+
 /* Info Page QPlainTextEdit */
 page#info QPlainTextEdit {
 	border: 1px solid rgb(60, 60, 60);	
 	border-radius: 2px;
 	background-color: DimGray;
-	color:  Yellow;
+	color: rgb(255, 235, 51);
 }
 /* QProgressBar in page0 (startup), recipe  */
 page#page0 QProgressBar, page#recipe QProgressBar {
