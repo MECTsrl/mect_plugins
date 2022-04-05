@@ -46,7 +46,7 @@ QComboBox  {
 	font-size: 20px;
 }
 QScrollBar:vertical {
-	width: 30px;
+	width: 20px;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -175,6 +175,22 @@ QScrollBar:vertical {
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::MinimumExpanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>10</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QComboBox" name="comboBoxType">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
@@ -236,67 +252,7 @@ QScrollBar:vertical {
 {
         font: 16pt &quot;DejaVu Sans Mono&quot;;
 }
-QScrollBar:vertical
-{
-        border-top: 30px solid #999999;
-        border-bottom: 30px solid #999999;
-        background:white;
-        width:30px;    
-        margin: 0px 0px 0px 0px;
-}
-QScrollBar::handle:vertical 
-{
-        border: 1px solid black;
-	    background: rgb(255, 255, 255);
-        min-height: 10px;
-}
-QScrollBar::add-line:vertical
-{
-        height: 30px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: bottom;
-        subcontrol-origin: margin;
-	image: url(:/libicons/img/Down.png);
-}
-QScrollBar::sub-line:vertical 
-{
-       height: 30px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: top;
-	    subcontrol-origin: margin;
-	image: url(:/libicons/img/Up.png);
-}
-
-QScrollBar:horizontal
-{
-        border-left: 30px solid #999999;
-        border-right: 30px solid #999999;
-        background:white;
-        height:30px;    
-        margin: 0px 0px 0px 0px;
-}
-QScrollBar::handle:horizontal 
-{
-        border: 1px solid black;
-	    background: rgb(255, 255, 255);
-        min-width: 10px;
-}
-QScrollBar::add-line:horizontal
-{
-        width: 30px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: left;
-        subcontrol-origin: margin;
-	image: url(:/icons/img/left.png);
-}
-QScrollBar::sub-line:horizontal 
-{
-       width: 30px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: right;
-	    subcontrol-origin: margin;
-	image: url(:/icons/img/right.png);
-}</string>
+</string>
      </property>
      <property name="verticalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOn</enum>

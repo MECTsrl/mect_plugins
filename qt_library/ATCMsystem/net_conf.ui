@@ -20,7 +20,35 @@
    <string>net_conf</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QCheckBox::indicator {
+   <string notr="true">QPushButton  {
+	qproperty-focusPolicy: NoFocus;
+    font: 10pt &quot;DejaVu Sans&quot;;
+}
+QPushButton#pushButtonSaveAll,
+QPushButton#pushButtonBack, 
+QPushButton#pushButtonHome,
+QPushButton#pushButton_wlan0_scan,
+QPushButton#pushButton_wlan0_enable
+QPushButton#pushButton_wan0_enable
+{
+	border-radius: 8px;
+	border: 2px solid  rgb(94, 94, 94);
+	qproperty-iconSize: 24px 24px;
+}
+QPushButton:pressed
+{
+	border: 2px solid  rgb(194, 194, 194);
+	background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+	border: 2px solid  rgb(194, 194, 194);
+}
+QCheckBox
+{
+        font: 10pt &quot;DejaVu Sans&quot;;
+}
+QCheckBox::indicator {
 	width: 16px;
 	height:16px;
 }
@@ -30,10 +58,16 @@ QCheckBox::indicator:checked:enabled {
 QComboBox  {	
 	min-height: 30px;
 	font-size: 20px;
+    font: 10pt &quot;DejaVu Sans&quot;;
 }
 QScrollBar:vertical {
-	width: 30px;
-}</string>
+	width: 20px;
+}
+QLabel
+{
+        font: 10pt &quot;DejaVu Sans&quot;;
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -67,25 +101,13 @@ QPushButton
 {
         font: 10pt &quot;DejaVu Sans&quot;;
 }
-QLabel
-{
-        font: 10pt &quot;DejaVu Sans&quot;;
-}
-QCheckBox
-{
-        font: 10pt &quot;DejaVu Sans&quot;;
-}
-QPushButton
-{
-        font: 10pt &quot;DejaVu Sans&quot;;
-}
 QComboBox
 {
         font: 10pt &quot;DejaVu Sans&quot;;
 }  </string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_eth0">
       <attribute name="title">
@@ -580,20 +602,7 @@ QComboBox
              <property name="styleSheet">
               <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Sync.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Sync.png);
 }
 </string>
              </property>
@@ -620,23 +629,7 @@ border: 2px solid  rgb(194, 194, 194);
               <enum>Qt::NoFocus</enum>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton
-{
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
-}
-</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string/>
@@ -1126,23 +1119,7 @@ border: 2px solid  rgb(194, 194, 194);
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="styleSheet">
-            <string notr="true">QPushButton
-{
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
-}
-</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string/>
@@ -1218,20 +1195,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Home.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Home.png);
 }
 </string>
        </property>
@@ -1260,20 +1224,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Go_back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Go_back.png);
 }
 </string>
        </property>
@@ -1333,20 +1284,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Save.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Save.png);
 }
 </string>
        </property>

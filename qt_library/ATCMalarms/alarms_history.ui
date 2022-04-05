@@ -26,7 +26,28 @@
    <string>alarms_history</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QPushButton  {
+	qproperty-focusPolicy: NoFocus;
+	border-radius: 8px;
+	border: 2px solid  rgb(94, 94, 94);
+	qproperty-iconSize: 24px 24px;
+}
+QPushButton:pressed
+{
+	border: 2px solid  rgb(194, 194, 194);
+	background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+	border: 2px solid  rgb(194, 194, 194);
+}
+QComboBox  {	
+	min-height: 30px;
+	font-size: 20px;
+}
+QScrollBar:vertical {
+	width: 20px;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -151,6 +172,22 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::MinimumExpanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>10</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QComboBox" name="comboBoxDate">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -165,43 +202,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">QComboBox  {	
-	min-height: 30px;
-	font-size: 20px;
-}
-/* Sets up scrollbar size, border, color */
- QScrollBar:vertical {
-     border: 2px solid grey;
-     background: SlateGray;
-     width: 30px;
-     margin: 22px 0 22px 0;
- }
- QScrollBar::handle:vertical {
-     background: LightGray;
-     min-height: 20px;
- }
- QScrollBar::add-line:vertical {
-     border: 2px solid DarkGray;
-     background: LightGray;
-     height: 30px;
-     subcontrol-position: bottom;
-     subcontrol-origin: margin;
- }
-
- QScrollBar::sub-line:vertical {
-     border: 2px solid DarkGray;
-     background: LightGray;
-     height: 30px;
-     subcontrol-position: top;
-     subcontrol-origin: margin;
- }
- QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-     border: 2px solid grey;
-     width: 3px;
-     height: 3px;
-     background: Yellow;
- }
-</string>
+        <string notr="true"/>
        </property>
       </widget>
      </item>
@@ -247,67 +248,7 @@
 {
 	font: 16pt &quot;DejaVu Sans Mono&quot;;
 }
-QScrollBar:vertical
-{
-        border-top: 30px solid #999999;
-        border-bottom: 30px solid #999999;
-        background:white;
-        width:30px;    
-        margin: 0px 0px 0px 0px;
-}
-QScrollBar::handle:vertical 
-{
-        border: 1px solid black;
-	    background: rgb(128, 128, 128);
-        min-height: 10px;
-}
-QScrollBar::add-line:vertical
-{
-        height: 30px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: bottom;
-        subcontrol-origin: margin;
-	image: url(:/libicons/img/Down.png);
-}
-QScrollBar::sub-line:vertical 
-{
-       height: 30px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: top;
-	    subcontrol-origin: margin;
-	image: url(:/libicons/img/Up.png);
-}
-
-QScrollBar:horizontal
-{
-        border-left: 30px solid #999999;
-        border-right: 30px solid #999999;
-        background:white;
-        height:30px;    
-        margin: 0px 0px 0px 0px;
-}
-QScrollBar::handle:horizontal 
-{
-        border: 1px solid black;
-	    background: rgb(128, 128, 128);
-        min-width: 10px;
-}
-QScrollBar::add-line:horizontal
-{
-        width: 30px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: left;
-        subcontrol-origin: margin;
-		image: url(:/libicons/img/Back.png);
-}
-QScrollBar::sub-line:horizontal 
-{
-       width: 30px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: right;
-	    subcontrol-origin: margin;
-		image: url(:/libicons/img/Forward.png);
-}</string>
+</string>
        </property>
        <property name="verticalScrollBarPolicy">
         <enum>Qt::ScrollBarAlwaysOn</enum>
@@ -353,20 +294,7 @@ QScrollBar::sub-line:horizontal
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Home.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Home.png);
 }
 </string>
        </property>
@@ -401,20 +329,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Go_back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Go_back.png);
 }
 </string>
        </property>
@@ -462,20 +377,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Back.png);
 }
 </string>
        </property>
@@ -501,20 +403,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Forward.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Forward.png);
 }
 </string>
        </property>
@@ -540,20 +429,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Flash_drive.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Flash_drive.png);
 }
 </string>
        </property>
