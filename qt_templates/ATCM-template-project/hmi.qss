@@ -162,9 +162,9 @@ page#system_ini QTabWidget::tab-bar	{
 page#info QTabBar::tab, 
 page#net_conf QTabBar::tab, 
 page#system_ini QTabBar::tab	{
-  	font-size: 11pt;
-  	padding: 6px;
-  	min-width:55px;
+  	font-size: 14pt;
+  	padding: 1px;
+  	min-width:60px;
 }
 page#info QTabBar::tab:selected, 
 page#net_conf QTabBar::tab:selected, 
@@ -197,16 +197,57 @@ page#info QPlainTextEdit {
 	background-color: DimGray;
 	color: rgb(255, 235, 51);
 }
-/* QProgressBar in page0 (startup), recipe  */
-page#page0 QProgressBar, page#recipe QProgressBar {
+/* QProgressBar in page0 (startup), recipe, time_set  */
+page#page0 QProgressBar, 
+page#recipe QProgressBar, 
+page#time_set QProgressBar	{
     border: 2px solid 	DeepSkyBlue;
     text-align: center;
     color: black;
 }
-page#page0 QProgressBar::chunk, page#recipe QProgressBar::chunk {
+page#page0 QProgressBar::chunk, 
+page#recipe QProgressBar::chunk, 
+page#time_set QProgressBar::chunk	{
     background-color: LightSkyBlue;
     margin: 1px;
 }
+/* Alarms QLineEdit */
+page#alarms QLineEdit  {
+    background: DarkGray;
+    color: Yellow;
+}
+/* QListWidget in alarms, alarms_history, recipe_select, item_selector */
+page#alarms QListWidget, 
+page#alarms_history QListWidget, 
+page#recipe_select QListWidget, 
+QDialog#item_selector QListWidget	{
+    background-color: DarkGrey;
+    alternate-background-color: LightGrey;
+    show-decoration-selected: 1;
+}
+page#alarms QListWidget::item:selected, 
+page#alarms_history QListWidget::item:selected, 
+page#recipe_select QListWidget::item:selected, 
+QDialog#item_selector QListWidget::item:selected	{
+    border: 2px solid LightSkyBlue;
+    background: red;
+    color: yellow;
+}
+/*
+page#alarms QListWidget::item:selected:!active, 
+page#alarms_history QListWidget::item:selected:!active, 
+page#recipe_select QListWidget::item:selected:!active, 
+QDialog#item_selector QListWidget::item:selected:!active	{
+    background: Brown;
+    color: gray;
+}
+page#alarms QListWidget::item:selected:active, 
+page#alarms_history QListWidget::item:selected:active, 
+page#recipe_select QListWidget::item:selected:active, 
+QDialog#item_selector::item:selected:active	{
+    background: red;
+    color: yellow;
+} */
 /* trend QLabel, Qwt */
 page#trend QLabel, page#trend QwtPlotCanvas  {
     background-color: rgb(192, 192, 192);
