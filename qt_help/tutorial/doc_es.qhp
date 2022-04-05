@@ -136,6 +136,7 @@
 						<section title="Insertar una ventana emergente" ref="Popup_es.html"/>
 						<section title="Uso de PWM" ref="PWM_es.html"/>
 						<section title="Zumbador" ref="Buzzer_es.html"/>
+						<section title="Archivo de configuración - hmi.ini - hmi.qss" ref="Nuovi_file_configurazione_es.html"/>
 						</section>
 				</section>	
 				<section title="PLC" ref="PLC_es.html">

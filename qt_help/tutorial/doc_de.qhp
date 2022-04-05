@@ -136,6 +136,7 @@
 						<section title="Einfügen eines Popup-Fensters" ref="Popup_de.html"/>
 						<section title="Verwendung von PWM" ref="PWM_de.html"/>
 						<section title="Summer" ref="Buzzer_de.html"/>
+						<section title="Konfigurationsdatei - hmi.ini - hmi.qss" ref="Nuovi_file_configurazione_de.html"/>
 						</section>
 				</section>	
 				<section title="PLC(SPS)" ref="PLC_de.html">

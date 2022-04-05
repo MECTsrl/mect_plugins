@@ -136,6 +136,7 @@
 						<section title="Add a popup window" ref="Popup_eng.html"/>
 						<section title="PWM output" ref="PWM_eng.html"/>
 						<section title="Buzzer" ref="Buzzer_eng.html"/>
+						<section title="Configuration file - hmi.ini - hmi.qss" ref="Nuovi_file_configurazione_eng.html"/>
 						</section>
 				</section>	
 				<section title="PLC" ref="PLC_eng.html">

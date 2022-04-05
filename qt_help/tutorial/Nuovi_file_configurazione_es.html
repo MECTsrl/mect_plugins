@@ -1,0 +1,88 @@
+
+<html>
+	<head>
+	  <meta http-equiv="content-type" content="text/html; charset=windows-1252"/>
+	   <title>Nuevos archivos de configuración en proyectos con versión 3.4.x</title>
+	   <style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin-right: 2cm; margin-top: 2.5cm; margin-bottom: 1.5cm }
+		p { margin-bottom: 0.21cm; direction: ltr; color: #000000; orphans: 0; widows: 0 }
+		p.western { font-family: "Arial", "Times New Roman", serif; font-size: 10pt; so-language: it-IT }
+		h3.western { font-family: "Liberation Sans", "Arial", sans-serif; so-language: it-IT }
+		a:link { color: #0000ff }
+		a.cjk:visited { so-language: zh-CN }
+	</style>
+	</head>	
+	<body>
+		<h3 class="western">Nuevos archivos de configuración en proyectos con versión 3.4.x</h3>
+		<p class="western">Con la versión 3.4.x se han añadido dos nuevos archivos para los nuevos proyectos, <strong>hmi.ini</strong> y <strong>hmi.qss</strong>, agrupados en la nueva sección &ldquo;<strong>Other files</strong>&rdquo;.</p>		
+		<p class="western"><img src="Nuovi_file_configurazione_1.png" name="Immagine 1" align="bottom" width="1024" height="647" border="0"/></p>
+		<br/>
+		<h3 class="western"><u>File hmi.ini</u>:</h3>
+		<p class="western">El archivo <strong><i>hmi.ini</i></strong> es un archivo de texto en &ldquo;Windows Ini Format&rdquo;, organizado en <strong>Secciones</strong> (títulos encerrados por []) y <strong>pares</strong> Clave = Valor</p>
+		<pre class="western">
+		<font color="#808000">[General]</font> 
+		rotation=<font color="#808000">0</font> 
+		plc_host=127.0.0.1
+		disable_all_nodes=<font color="#808000">false</font> 
+		</pre>
+		<p class="western">El archivo <strong><i>hmi.ini</i></strong> se copia automáticamente en la misma carpeta de la aplicación durante la implementación. Su ruta de destino es <font color="#808000">/local/root/hmi.ini</font>.</p>  
+		<p class="western">Al inicio, el programa <strong>hmi</strong> leerá la clave &ldquo;<strong>disable_all_nodes</strong>&rdquo; en la sección <font color="#808000">[General]</font> y, si el valor se establece en <font color="#808000">true</font>, <strong>los nodos remotos definidos en la aplicación no se activarán automáticamente</strong>.<br>
+		El valor predeterminado es <font color="#808000">false</font> para no cambiar el comportamiento de las aplicaciones existentes.</p>
+		<p class="western">Por lo tanto, ahora es posible definir configuraciones complejas en Crosstable y activar en el código cpp, dependiendo de la configuración en el terminal, solo los nodos remotos necesarios, con la instrucción:<br>
+		<strong>doWrite_NODE_xx_STATUS(1);</strong></p>
+		<p class="western">El archivo <strong><i>hmi.ini</i></strong> se puede usar para almacenar otras configuraciones de la aplicación, preferiblemente usando secciones distintas a <font color="#808000">[General]</font>, por ejemplo:<br>
+		<pre class="western">
+		<font color="#808000">[mySession]</font> 
+		myKey<font color="#808000">=myValue</font></pre> </p>
+		<p class="western">Para leer el valor de la clave myKey en la sección mySession es suficiente, en el código cpp:</p>
+		<p class="western">#include&lt;QSettings&gt;</p>
+		<pre class="western">
+		QSettings hmi_ini("/local/root/hmi.ini", QSettings::IniFormat);
+		QString myValue = hmi_ini.value("mySession/myKey").toString()
+		</pre>
+		<br/>
+		<h3 class="western"><u>File hmi.qss</u>:</h3>
+		<p class="western">El archivo <strong><i>hmi.qss</i></strong> es un archivo de texto en formato &ldquo;<strong>Qt Style Sheet</strong>&rdquo; (similar a HTML Cascading Style Sheet CSS).</p>
+		<p class="western">El archivo <strong><i>hmi.qss</i></strong> se copia automáticamente en la misma carpeta de la aplicación durante la implementación. Su ruta de destino es <font color="#808000">/local/root/hmi.qss</font>.</p>  
+		<p class="western">Al inicio, el programa <strong>hmi</strong> leerá (si existe) el archivo &ldquo;<strong>hmi.qss</strong>&rdquo; en la función <font color="#808000">main</font> e interpretará las directivas dentro de él para todos los objetos de la aplicación, ejecutando este código (en la biblioteca):<br>
+		<pre class="western">
+		<font color="#808000">// Loading Application QSS</font> 
+		QFile fileQSS(<font color="#808000">&ldquo;/local/root/hmi.qss&rdquo;</font>);
+		<font color="#808000">if</font> (fileQSS.exists())  {
+		fileQSS.open(QFile::ReadOnly);
+		QString styleSheet = QString(fileQSS.readAll());
+		fileQSS.close();
+		app.setStyleSheet(styleSheet);
+		qDebug(<font color="#808000">&ldquo;Loaded hmi.qss&rdquo;</font>);
+		}
+		</pre>
+		<p class="western">Para que sea efectiva, esta operación debe realizarse <strong><i>antes</i></strong> de que se creen los objetos gráficos de la aplicación (páginas de usuario y del sistema).</p>
+		<p class="western">Si el archivo no existe, está vacío o tiene contenido no válido, se ignorará.</p>
+		<p class="western">El archivo provisto en los nuevos proyectos es bastante complejo, porque está diseñado para <strong>modificar solo las páginas de la biblioteca y no tiene ningún efecto en la aplicación desarrollada por el usuario</strong>, definiendo una especie de &ldquo;<strong>Dark Theme</strong>&rdquo; para las páginas de la biblioteca.</p>
+		<p class="western">El usuario tiene la posibilidad de agregar nuevas directivas QSS para sus páginas o modificar las existentes para estandarizar la apariencia final del proyecto.</p>
+		<p class="western">Para obtener más información, consulte: <font color="#0000ff"><u><a class="western" href="https://doc.qt.io/archives/qt-4.8/stylesheet-examples.html#style-sheet-usage">https://doc.qt.io/archives/qt-4.8/stylesheet-examples.html#style-sheet-usage</a></u></font></p>
+		
+		<br>
+		<h3 class="western">Cambiar al archivo de <u>automation.ccp</u>:</h3>
+		<p class="western">Para las nuevas aplicaciones, se ha modificado el archivo de <strong><i>automation.cpp</i></strong>:</p>
+		<p class="western">Debido a la optimización de la fase de arranque de los dispositivos y los cambios en el protocolo de comunicación interna entre PLC y hmi, introducidos con la versión <strong>3.3.8</strong> de Mect Suite, se ha introducido un bucle de espera en la función de <i>setup()</i> de <strong>automation.cpp</strong> que la variable de sistema PLC_EngineStatus alcance el valor 2 (enRunning)</p>
+		<pre class="western">
+		<font color="#808000">/* put here the initalization */</font> 
+		<font color="#808000">void</font> setup(<font color="#808000">void</font>)
+		{    
+			<font color="#808000">// Wait PLC Engine gets ready</font>
+			<font color="#808000">while</font> (PLC_EngineStatus < 2) {
+				fputc(<font color="#808000">'*'</font>, stderr);
+				sleep(1);
+			}
+			<font color="#808000">// Insert your start-up code here</font>
+			<font color="#808000">// .....</font>
+		}		
+		</pre>
+		
+		<p class="western">Con valores más bajos (enIdle = 0, enInitialized) no se garantiza la comunicación entre HMI y PLC y no es posible leer o configurar valores confiables para las variables de Crosstable.</p>
+		<p class="western">Por lo tanto, las decisiones basadas en los valores de las variables de Crosstable o la configuración de nuevos valores <strong>deben ocurrir después de este ciclo de espera</strong>.</p>
+		<br/>
+		
+	</body>
+</html>
