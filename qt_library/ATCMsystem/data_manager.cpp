@@ -83,13 +83,6 @@ void data_manager::reload()
  */
 void data_manager::updateData()
 {
-#if 0
-    if (ui->labelStatus->text().length() > 0)
-    {
-        ui->labelStatus->setText(ui->labelStatus->text() + ".");
-        ui->labelStatus->repaint();
-    }
-#endif
     /* call the parent updateData member */
     page::updateData();
 }
@@ -148,6 +141,7 @@ void data_manager::on_pushButtonStore_clicked()
             }
             goto_page("store");
         }
+        ui->labelStatus->clear();
         delete sel;
     }
     else

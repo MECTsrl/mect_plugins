@@ -27,7 +27,13 @@
 QCheckBox::indicator:checked:enabled {
     image: url(:/libicons/img/Yes.png);
 }
-</string>
+QComboBox  {	
+	min-height: 30px;
+	font-size: 20px;
+}
+QScrollBar:vertical {
+	width: 30px;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -79,7 +85,7 @@ QComboBox
 }  </string>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_eth0">
       <attribute name="title">
@@ -361,7 +367,7 @@ QComboBox
          <item>
           <layout class="QGridLayout" name="gridLayout_4">
            <property name="spacing">
-            <number>2</number>
+            <number>0</number>
            </property>
            <item row="0" column="0">
             <widget class="QLabel" name="label_wlan0_essid">
@@ -390,6 +396,9 @@ QComboBox
              <property name="focusPolicy">
               <enum>Qt::NoFocus</enum>
              </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
             </widget>
            </item>
            <item row="2" column="0">
@@ -415,6 +424,12 @@ QComboBox
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>25</height>
+              </size>
              </property>
              <property name="focusPolicy">
               <enum>Qt::NoFocus</enum>
@@ -473,6 +488,12 @@ QComboBox
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>25</height>
+              </size>
              </property>
              <property name="text">
               <string notr="true">-</string>
@@ -753,6 +774,12 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>25</height>
+             </size>
+            </property>
             <property name="focusPolicy">
              <enum>Qt::NoFocus</enum>
             </property>
@@ -784,6 +811,12 @@ border: 2px solid  rgb(194, 194, 194);
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>25</height>
+             </size>
             </property>
             <property name="focusPolicy">
              <enum>Qt::NoFocus</enum>
@@ -817,6 +850,12 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>25</height>
+             </size>
+            </property>
             <property name="focusPolicy">
              <enum>Qt::NoFocus</enum>
             </property>
@@ -849,6 +888,12 @@ border: 2px solid  rgb(194, 194, 194);
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>25</height>
+             </size>
+            </property>
             <property name="focusPolicy">
              <enum>Qt::NoFocus</enum>
             </property>
@@ -864,6 +909,12 @@ border: 2px solid  rgb(194, 194, 194);
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>25</height>
+             </size>
             </property>
             <property name="focusPolicy">
              <enum>Qt::NoFocus</enum>

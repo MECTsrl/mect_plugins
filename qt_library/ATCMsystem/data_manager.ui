@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>344</width>
+    <width>324</width>
     <height>302</height>
    </rect>
   </property>
@@ -26,10 +26,26 @@
    <string>data_manager</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton
+   <string notr="true">QPushButton  {
+	font: 18pt &quot;DejaVu Sans Mono&quot;;
+	qproperty-focusPolicy: NoFocus;
+}
+QPushButton#pushButtonBack, QPushButton#pushButtonHome
 {
-	font: 20pt &quot;DejaVu Sans Mono&quot;;
-}</string>
+	border-radius: 8px;
+	border: 2px solid  rgb(94, 94, 94);
+	qproperty-iconSize: 24px 24px;
+}
+QPushButton:pressed
+{
+	border: 2px solid  rgb(194, 194, 194);
+	background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+	border: 2px solid  rgb(194, 194, 194);
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -142,6 +158,12 @@
      </property>
      <item row="1" column="0">
       <widget class="QPushButton" name="pushButtonAlarms">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -151,7 +173,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -164,6 +186,12 @@
      </item>
      <item row="2" column="0">
       <widget class="QPushButton" name="pushButtonRecipe">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -173,7 +201,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -186,6 +214,12 @@
      </item>
      <item row="2" column="1">
       <widget class="QPushButton" name="pushButtonTrend">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -195,7 +229,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -208,6 +242,12 @@
      </item>
      <item row="1" column="1">
       <widget class="QPushButton" name="pushButtonStore">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -217,7 +257,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -230,6 +270,12 @@
      </item>
      <item row="3" column="0">
       <widget class="QPushButton" name="pushButtonLogStart">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -239,7 +285,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -252,6 +298,12 @@
      </item>
      <item row="3" column="1">
       <widget class="QPushButton" name="pushButtonLogStop">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -261,7 +313,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -274,6 +326,12 @@
      </item>
      <item row="4" column="0">
       <widget class="QPushButton" name="pushButtonReboot">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -283,7 +341,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -296,6 +354,12 @@
      </item>
      <item row="4" column="1">
       <widget class="QPushButton" name="pushButtonReload">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -305,7 +369,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -394,20 +458,7 @@
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Home.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Home.png);
 }
 </string>
        </property>
@@ -442,11 +493,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
 qproperty-icon: url(:/libicons/img/Go_back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
 }
 QPushButton:pressed
 {

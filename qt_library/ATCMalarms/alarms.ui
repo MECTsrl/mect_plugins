@@ -26,7 +26,28 @@
    <string>alarms</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">QPushButton  {
+	qproperty-focusPolicy: NoFocus;
+	border-radius: 8px;
+	border: 2px solid  rgb(94, 94, 94);
+	qproperty-iconSize: 24px 24px;
+}
+QPushButton:pressed
+{
+	border: 2px solid  rgb(194, 194, 194);
+	background-color:  rgb(255, 255, 127);
+}
+QPushButton:disabled
+{
+	border: 2px solid  rgb(194, 194, 194);
+}
+QComboBox  {	
+	min-height: 30px;
+	font-size: 20px;
+}
+QScrollBar:vertical {
+	width: 30px;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -159,13 +180,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">QComboBox  {	
-	min-height: 30px;
-	font-size: 20px;
-}
-QScrollBar:vertical {
-	width: 30px;
-}</string>
+        <string notr="true"/>
        </property>
        <item>
         <property name="text">
@@ -337,20 +352,7 @@ QScrollBar::sub-line:horizontal
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Home.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Home.png);
 }
 </string>
        </property>
@@ -385,20 +387,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Go_back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Go_back.png);
 }
 </string>
        </property>
@@ -449,20 +438,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Thumbs_up.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Thumbs_up.png);
 }
 </string>
        </property>
@@ -491,20 +467,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Apply.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Apply.png);
 }
 </string>
        </property>
@@ -530,20 +493,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Silence.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/Silence.png);
 }
 </string>
        </property>
@@ -572,20 +522,7 @@ border: 2px solid  rgb(194, 194, 194);
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/History.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
+	qproperty-icon: url(:/libicons/img/History.png);
 }
 </string>
        </property>
