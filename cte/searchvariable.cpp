@@ -96,7 +96,6 @@ void SearchVariable::refreshFilters(int nMainGridRow)
     isResettingFilter = false;
     // Ricarica l'eventuale filtro precedente (se esiste qualcosa)
     filterCTVars();
-    ui->txtVarname->setFocus();
     // Se esiste almeno una riga trovata di impostare la riga corrente in griglia
     if (ui->tblVariables->rowCount() > 0)  {
         int nTabRow = 0;
@@ -117,6 +116,8 @@ void SearchVariable::refreshFilters(int nMainGridRow)
         ui->tblVariables->selectRow(nTabRow);
         ui->tblVariables->setFocus();
     }
+    ui->txtVarname->selectAll();
+    ui->txtVarname->setFocus();
 }
 
 
