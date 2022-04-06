@@ -157,16 +157,28 @@ int main(int argc, char *argv[])
     };
 
     QApplication app(myargc, myargv);
-
+    // Reading Internal QSS File if present in resources
+    QString internalStyle;
+    QFile internalQSS(":/qss/scrollbars.qss");
+    if (internalQSS.exists())  {
+        internalQSS.open(QFile::ReadOnly);
+        internalStyle = QString(internalQSS.readAll());
+        internalQSS.close();
+        // qDebug("Loaded internal scrollbars.qss");
+    }
+    else {
+        qWarning("Internal scrollbars.qss not found");
+    }
     // Loading Application QSS
     QFile fileQSS("/local/root/hmi.qss");
     if (fileQSS.exists())  {
         fileQSS.open(QFile::ReadOnly);
         QString styleSheet = QString(fileQSS.readAll());
         fileQSS.close();
-        app.setStyleSheet(styleSheet);
+        internalStyle.append(styleSheet);
         qDebug("Loaded hmi.qss");
     }
+    app.setStyleSheet(internalStyle);
 
 
     /* load the library icons */

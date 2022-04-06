@@ -247,4 +247,7 @@
         <file>img/Clock-icon.png</file>
         <file>img/wifi_connect.png</file>
     </qresource>
+    <qresource prefix="/qss">
+        <file>scrollbars.qss</file>
+    </qresource>
 </RCC>
