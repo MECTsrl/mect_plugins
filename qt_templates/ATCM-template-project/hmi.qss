@@ -218,19 +218,29 @@ page#alarms QLineEdit  {
     color: Yellow;
 }
 /* QListWidget in alarms, alarms_history, recipe_select, item_selector */
+/* QTableWidget in Calendar, TimePopup, recipe, store */
 page#alarms QListWidget, 
 page#alarms_history QListWidget, 
 page#recipe_select QListWidget, 
-QDialog#item_selector QListWidget	{
+QDialog#item_selector QListWidget,
+page#recipe QTableWidget, 
+page#store QTableWidget, 
+QDialog#Calendar QTableWidget, 
+QDialog#TimePopup QTableWidget	{
     background-color: DarkGrey;
     alternate-background-color: LightGrey;
     show-decoration-selected: 1;
+    gridline-color:  LightSkyBlue;
 }
 page#alarms QListWidget::item:selected, 
 page#alarms_history QListWidget::item:selected, 
 page#recipe_select QListWidget::item:selected, 
-QDialog#item_selector QListWidget::item:selected	{
-    border: 2px solid LightSkyBlue;
+QDialog#item_selector QListWidget::item:selected,
+page#recipe QTableWidget::item:selected, 
+page#store QTableWidget::item:selected, 
+QDialog#Calendar QTableWidget::item:selected, 
+QDialog#TimePopup QTableWidget::item:selected		{
+    border: 2px solid CadetBlue;
     background: red;
     color: yellow;
 }
@@ -261,4 +271,9 @@ page#trend QwtScaleWidget {
 page#trend_range QSpinBox, page#trend_range QDoubleSpinBox {
     color: rgb(255, 237, 0);
 }
+/* QTableWidget */
+QTableView  {
+  gridline-color:  darkGray;
+}
+
 
