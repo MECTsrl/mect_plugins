@@ -15,6 +15,7 @@ page#system_ini,
 page#time_set, 
 page#trend, 
 page#trend_range, 
+page#trend_other, 
 page#login_pwd, 
 page#set_password, 
 QDialog#item_selector, 
@@ -48,7 +49,7 @@ QDialog#alphanumpad QLabel,
 QDialog#numpad QLabel, 
 QDialog#qrcode QLabel	{
 	background-color: rgb(32, 32, 32);
-	color: rgb(255, 235, 51);
+	color: rgb(255, 237, 0);
 }
 /* System Pages QPushButton Background and Color */
 page#alarms QPushButton, 
@@ -77,7 +78,7 @@ QDialog#numpad QPushButton,
 QDialog#qrcode QPushButton	{
 	border: 1px solid  DarkGray;
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DarkGray, stop:1 rgb(22, 22, 22));
-	color: rgb(255, 235, 51);
+	color: rgb(255, 237, 0);
 	border-radius: 4px;
 	qproperty-focusPolicy: NoFocus;
 }
@@ -143,7 +144,7 @@ QDialog#qrcode QPushButton:disabled	{
 page#net_conf  QCheckBox, page#net_conf  QLabel, 
 page#system_ini  QCheckBox, page#system_ini  QLabel	{
 	background-color: DimGray;
-	color: rgb(255, 235, 51);
+	color: rgb(255, 237, 0);
 }
 /* QTabWidget and Tab Bar (info, net_conf, system_ini) */
 page#info QTabWidget::pane, 
@@ -152,7 +153,7 @@ page#system_ini QTabWidget::pane	{
         border-top: 1px solid rgb(87, 130, 193);
         border: 1px solid rgb(87, 130, 193);
 	background-color: DimGray;
-	color: rgb(255, 235, 51);
+	color: rgb(255, 237, 0);
 }
 page#info QTabWidget::tab-bar, 
 page#net_conf QTabWidget::tab-bar, 
@@ -195,7 +196,7 @@ page#info QPlainTextEdit {
 	border: 1px solid rgb(60, 60, 60);	
 	border-radius: 2px;
 	background-color: DimGray;
-	color: rgb(255, 235, 51);
+	color: rgb(255, 237, 0);
 }
 /* QProgressBar in page0 (startup), recipe, time_set  */
 page#page0 QProgressBar, 
@@ -250,82 +251,14 @@ QDialog#item_selector::item:selected:active	{
 } */
 /* trend QLabel, Qwt */
 page#trend QLabel, page#trend QwtPlotCanvas  {
-    background-color: rgb(192, 192, 192);
+    background-color: DimGray;
+    color: rgb(255, 237, 0);
 }
 page#trend QwtScaleWidget {
-    color: rgb(255, 192, 0);
+    color: rgb(255, 237, 0);
 }
 /* trend_range QSpinBox */
 page#trend_range QSpinBox, page#trend_range QDoubleSpinBox {
-    color: rgb(255, 170, 0);
-}
-/*Customizing QScrollBar*/
-QScrollBar:horizontal {
-    border: 2px solid grey;
-    background: SteelBlue;
-    height: 15px;
-    margin: 0px 20px 0 20px;
-}
-QScrollBar::handle:horizontal {
-    background: white;
-    min-width: 20px;
-}
-QScrollBar::add-line:horizontal {
-    border: 2px solid grey;
-    background: SteelBlue;
-    width: 20px;
-    subcontrol-position: right;
-    subcontrol-origin: margin;
-}
-QScrollBar::sub-line:horizontal {
-    border: 2px solid grey;
-    background: SteelBlue;
-    width: 20px;
-    subcontrol-position: left;
-    subcontrol-origin: margin;
-}
-/* The left-arrow and right-arrow have a solid grey border with a white background. As an alternative, you could also embed the image of an arrow. */
-QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {
-    border: 2px solid grey;
-    width: 3px;
-    height: 3px;
-    background: white;
-}
-QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
-    background: none;
-}
-QScrollBar:vertical {
-     border: 2px solid grey;
-     background: SteelBlue;
-     width: 15px;
-     margin: 22px 0 22px 0;
-}
-QScrollBar::handle:vertical {
-     background: white;
-     min-height: 20px;
-}
-QScrollBar::add-line:vertical {
-     border: 2px solid grey;
-     background: SteelBlue;
-     height: 20px;
-     subcontrol-position: bottom;
-     subcontrol-origin: margin;
-}
-
-QScrollBar::sub-line:vertical {
-     border: 2px solid grey;
-     background: SteelBlue;
-     height: 20px;
-     subcontrol-position: top;
-     subcontrol-origin: margin;
-}
-QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-     border: 2px solid grey;
-     width: 3px;
-     height: 3px;
-     background: white;
-}
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-     background: none;
+    color: rgb(255, 237, 0);
 }
 
