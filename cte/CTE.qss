@@ -45,5 +45,5 @@ QLineEdit:enabled, QComboBox:enabled, QCheckBox::indicator:enabled {
     border-radius: 2px;
 }
 QComboBox {
-    min-width: 60px;
+    min-width: 70px;
 }
