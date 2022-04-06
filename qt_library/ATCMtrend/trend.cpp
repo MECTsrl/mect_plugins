@@ -736,11 +736,13 @@ void trend::on_pushButtonSelect_clicked()
         LOG_PRINT(verbose_e, "COLOR %s\n", pens[actualPen].color);
         ui->pushButtonSelect->setStyleSheet(
                     QString(
-                        "QPushButton"
-                        "{"
-                        "border: 20px solid  #%1;"
-                        "qproperty-focusPolicy: NoFocus;"
-                        "}"
+                            "QPushButton"
+                            "{"
+                            "   border-radius: 1px;"
+                            "   border: 1px solid yellow;"
+                            "   background-color:  #%1;"
+                            "   qproperty-focusPolicy: NoFocus;"
+                            "}"
                         ).arg(pens[actualPen].color)
                     );
 
@@ -1098,7 +1100,7 @@ bool trend::Load(const char * filename, QDateTime * begin, QDateTime * end, int 
         if (row % 750 == 0)
         {
             ui->labelDate->setText(p); // HH:MM:SS
-            ui->labelDate->setStyleSheet("color: rgb(0,0,255);");
+            // ui->labelDate->setStyleSheet("color: rgb(0,0,255);");
             ui->labelDate->repaint();
             QCoreApplication::processEvents();
         }
@@ -1397,7 +1399,7 @@ bool trend::showWindow(QDateTime Tmin, QDateTime Tmax, double ymin, double ymax,
                             }
                         }
                         ui->labelDate->setText(QString(" %1 ").arg(v, 7, 'f', decimal));
-                        ui->labelDate->setStyleSheet("color: rgb(0,0,0);");
+                        // ui->labelDate->setStyleSheet("color: rgb(0,0,0);");
                         ui->labelDate->repaint();
                     }
 
@@ -1674,7 +1676,7 @@ void trend::showStatus(QString message, bool iserror)
     ui->labelDate->setText(message);
     if (iserror)
     {
-        ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
+        // ui->labelDate->setStyleSheet("color: rgb(255,0,0);");
         ui->pushButtonOnline->setStyleSheet("QPushButton"
                                             "{"
                                             "border-image: url(:/libicons/img/Warning.png);"
@@ -1684,7 +1686,7 @@ void trend::showStatus(QString message, bool iserror)
     }
     else
     {
-        ui->labelDate->setStyleSheet("");
+        // ui->labelDate->setStyleSheet("");
         ui->pushButtonOnline->setStyleSheet("QPushButton"
                                             "{"
                                             "border-image: url(:/libicons/img/Hourglass.png);"

@@ -33,7 +33,25 @@
 QPushButton
 {
 	font: 20pt &quot;DejaVu Sans Mono&quot;;
-}</string>
+	qproperty-focusPolicy: NoFocus;
+}
+QPushButton#pushButtonBack
+{
+	border-radius: 8px;
+	border: 2px solid  rgb(94, 94, 94);
+	qproperty-iconSize: 24px 24px;
+	qproperty-icon: url(:/libicons/img/Go_back.png);
+}
+QPushButton#pushButtonBack:pressed
+{
+	border: 2px solid  rgb(194, 194, 194);
+	background-color:  rgb(255, 255, 127);
+}
+QPushButton#pushButtonBack:disabled
+{
+	border: 2px solid  rgb(194, 194, 194);
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -110,36 +128,7 @@ QPushButton
 {
 	font: 32pt &quot;DejaVu Sans Mono&quot;;
 }
-QScrollBar:vertical
-{
-        border-top: 40px solid #999999;
-        border-bottom: 40px solid #999999;
-        background:white;
-        width:40px;    
-        margin: 0px 0px 0px 0px;
-}
-QScrollBar::handle:vertical 
-{
-        border: 1px solid black;
-	    background: rgb(255, 255, 255);
-        min-height: 10px;
-}
-QScrollBar::add-line:vertical
-{
-        height: 40px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: bottom;
-        subcontrol-origin: margin;
-	image: url(:/libicons/img/Down.png);
-}
-QScrollBar::sub-line:vertical 
-{
-       height: 40px;
-	    background: rgb(255, 255, 255);
-        subcontrol-position: top;
-	    subcontrol-origin: margin;
-	image: url(:/libicons/img/Up.png);
-}</string>
+</string>
      </property>
      <property name="verticalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOn</enum>
@@ -178,24 +167,7 @@ QScrollBar::sub-line:vertical
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton
-{
-border: 2px solid  rgb(94, 94, 94);
-border-radius: 8px;
-qproperty-icon: url(:/libicons/img/Go_back.png);
-qproperty-iconSize: 24px 24px;
-qproperty-focusPolicy: NoFocus;
-}
-QPushButton:pressed
-{
-border: 2px solid  rgb(194, 194, 194);
-background-color:  rgb(255, 255, 127);
-}
-QPushButton:disabled
-{
-border: 2px solid  rgb(194, 194, 194);
-}
-</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string/>
