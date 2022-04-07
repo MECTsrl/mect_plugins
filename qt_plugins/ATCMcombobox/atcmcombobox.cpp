@@ -254,7 +254,7 @@ bool ATCMcombobox::writeValue(QString value)
     }
 
     m_fBusy = true;
-    if (m_writeAcknowledge && QMessageBox::question(this, trUtf8("Confirm Writing"), trUtf8("Do you want to save new value: '%1'?").arg(value), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel)
+    if (m_writeAcknowledge && QMessageBox::question(0, trUtf8("Confirm Writing"), trUtf8("Do you want to save new value: '%1'?").arg(value), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Cancel)
     {
         return false;
     }

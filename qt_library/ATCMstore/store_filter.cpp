@@ -134,7 +134,7 @@ void store_filter::on_pushButtonOk_clicked()
         not filterEnd.isValid() ||
         filterStart > filterEnd)  {
         // Invalid Date Range
-        QMessageBox::warning(this, trUtf8("Date Filter Range"), trUtf8("Invalid Date/Time Range!"));
+        QMessageBox::warning(0, trUtf8("Date Filter Range"), trUtf8("Invalid Date/Time Range!"));
 
     }
     else  {

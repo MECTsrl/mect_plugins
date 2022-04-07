@@ -323,7 +323,7 @@ void alarms_history::on_pushButtonSave_clicked()
         if (USBmount() == false)
         {
             LOG_PRINT(error_e, "cannot mount the usb key\n");
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
         
@@ -362,7 +362,7 @@ void alarms_history::on_pushButtonSave_clicked()
         if (sign[0] == '\0')
         {
             LOG_PRINT(error_e,"Failed read sign\n");
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
             USBumount();
             return;
         }
@@ -372,7 +372,7 @@ void alarms_history::on_pushButtonSave_clicked()
         if (fpout == NULL)
         {
             LOG_PRINT(error_e, "cannot open '%s'\n", line);
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot create the signature '%1'").arg(line));
             USBumount();
             return;
         }
@@ -382,7 +382,7 @@ void alarms_history::on_pushButtonSave_clicked()
         /* zip the file, the sign file and delete them */
         if (zipAndSave(QStringList() << QString("%1.sign").arg(dstfilename) << QString(srcfilename), QString("%1.alarm.zip").arg(dstfilename), true) == false)
         {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save the zip file '%1.alarm.zip'").arg(dstfilename));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot save the zip file '%1.alarm.zip'").arg(dstfilename));
             USBumount();
             return;
         }
@@ -392,7 +392,7 @@ void alarms_history::on_pushButtonSave_clicked()
         /* unmount USB key */
         USBumount();
         LOG_PRINT(verbose_e, "DOWNLOADED\n");
-        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
+        QMessageBox::information(0, trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
     }
 }
 

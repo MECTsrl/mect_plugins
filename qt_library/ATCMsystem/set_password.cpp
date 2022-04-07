@@ -141,7 +141,7 @@ bool    set_password::updatePassword(enum password_level_e passLevel)
     if (dk->exec() == QDialog::Accepted)  {
         // Range Checking
         if ((newPassword < min || newPassword > max))  {
-            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
+            QMessageBox::critical(0, trUtf8("Invalid data"), trUtf8("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
         }
         else  {
             // Password has been changed
@@ -150,7 +150,7 @@ bool    set_password::updatePassword(enum password_level_e passLevel)
                 if (dumpPasswords() != 0)   {
                     // Saving error, restoring prev.value
                     passwords[passLevel] = oldPassword;
-                    QMessageBox::critical(this,trUtf8("Saving error"), trUtf8("Cannot save the new password."));
+                    QMessageBox::critical(0, trUtf8("Saving error"), trUtf8("Cannot save the new password."));
                 }
                 else  {
                     pwdChanged = true;

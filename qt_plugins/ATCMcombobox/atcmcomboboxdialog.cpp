@@ -124,7 +124,7 @@ void atcmcomboboxDialog::saveState()
 			}
             else if (table->item(i,1) && table->item(i,1)->text().length() > 0)
             {
-                QMessageBox::critical(this,tr("Invalid item"), tr("The item '%1' have a description ('%2') but not a value.").arg(i+1).arg(table->item(i,1)->text()));
+                QMessageBox::critical(0, tr("Invalid item"), tr("The item '%1' have a description ('%2') but not a value.").arg(i+1).arg(table->item(i,1)->text()));
                 return;
             }
         }

@@ -310,10 +310,10 @@ void time_set::ntpManualSetDone(bool setOk)
 {
     QObject::disconnect(ntpclient, 0, 0, 0);
     if (setOk)  {
-        QMessageBox::information(this,trUtf8("Manual Date Time Set"), trUtf8("Current Date and Time set to:\n%1") .arg(datetimeTarget.toString(DATE_MASK" "TIME_MASK)));
+        QMessageBox::information(0, trUtf8("Manual Date Time Set"), trUtf8("Current Date and Time set to:\n%1") .arg(datetimeTarget.toString(DATE_MASK" "TIME_MASK)));
     }
     else {
-        QMessageBox::critical(this,trUtf8("Manual Date Time Set"), trUtf8("Error setting Date and Time to:\n%1") .arg(datetimeTarget.toString(DATE_MASK" "TIME_MASK)));
+        QMessageBox::critical(0, trUtf8("Manual Date Time Set"), trUtf8("Error setting Date and Time to:\n%1") .arg(datetimeTarget.toString(DATE_MASK" "TIME_MASK)));
     }
     lockInterface = false;
     lockUI(lockInterface);
@@ -324,10 +324,10 @@ void time_set::ntpSyncDone(bool timeOut)
     QObject::disconnect(ntpclient, 0, 0, 0);
     ntpSyncRunning = false;
     if (timeOut)  {
-        QMessageBox::warning(this,trUtf8("NTP Time Error"), trUtf8("Time Out syncing Date and Time with NTP Server:\n%1") .arg(szTimeServer));
+        QMessageBox::warning(0, trUtf8("NTP Time Error"), trUtf8("Time Out syncing Date and Time with NTP Server:\n%1") .arg(szTimeServer));
     }
     else  {
-        QMessageBox::information(this,trUtf8("NTP Time Set"), trUtf8("Current Date and Time set from NTP Server:\n%1") .arg(szTimeServer));
+        QMessageBox::information(0, trUtf8("NTP Time Set"), trUtf8("Current Date and Time set from NTP Server:\n%1") .arg(szTimeServer));
     }
     updateIface();
     lockInterface = false;

@@ -180,7 +180,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
 		if (USBmount() == false)
         {
             LOG_PRINT(error_e, "cannot mount the usb key\n");
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
 
@@ -224,7 +224,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
         /* zip the file, the sign file and delete them */
         if (zipAndSave(QStringList() << srcfilename, QString(dstfilename), false, basedir) == false)
         {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(dstfilename));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(dstfilename));
             USBumount();
             return;
         }
@@ -233,7 +233,7 @@ void recipe_select::on_pushButtonSaveUSB_clicked()
         USBumount();
 
         LOG_PRINT(verbose_e, "DOWNLOADED\n");
-        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).baseName()));
+        QMessageBox::information(0, trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).baseName()));
     }
 }
 

@@ -372,7 +372,7 @@ void store::on_pushButtonSaveUSB_clicked()
         if (USBmount() == false)
         {
             LOG_PRINT(error_e, "cannot mount the usb key\n");
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             goto umount_and_exit;
         }
 
@@ -409,7 +409,7 @@ void store::on_pushButtonSaveUSB_clicked()
         if (fpout == NULL)
         {
             LOG_PRINT(error_e, "Cannot open '%s'. [%s]\n", srcfilename, strerror(errno));
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
             goto umount_and_exit;
         }
 
@@ -445,14 +445,14 @@ void store::on_pushButtonSaveUSB_clicked()
         if (initLogRead(STORE_DIR, filename, ti, tf, &fpin) != 0)
         {
             LOG_PRINT(error_e, "\n");
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(_actual_store_));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(_actual_store_));
             goto umount_and_exit;
         }
 
         if (dumpLogHeder(fpout) != 0)
         {
             LOG_PRINT(error_e, "\n");
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
             goto umount_and_exit;
         }
 
@@ -467,7 +467,7 @@ void store::on_pushButtonSaveUSB_clicked()
                 if (dumpLogRead(fpout, outstruct) != 0)
                 {
                     LOG_PRINT(error_e, "\n");
-                    QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
+                    QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot save '%1'.").arg(QFileInfo(srcfilename).fileName()));
                     goto umount_and_exit;
                 }
             }
@@ -483,7 +483,7 @@ void store::on_pushButtonSaveUSB_clicked()
         // 3.2.9 and above: Removed usage of Sign
         // if (signFile(srcfilename, QString("%1.sign").arg(srcfilename)) == false)
         // {
-        //     QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(srcfilename));
+        //     QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot create the signature '%1.sign'").arg(srcfilename));
         //     goto umount_and_exit;
         // }
 
@@ -491,7 +491,7 @@ void store::on_pushButtonSaveUSB_clicked()
         // if (zipAndSave(QStringList() << srcfilename << QString("%1.sign").arg(srcfilename), QString(dstfilename), true) == false)
         if (not zipAndSave(QStringList() << srcfilename, QString(dstfilename), true))
         {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(dstfilename));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(dstfilename));
             goto umount_and_exit;
         }
         
@@ -499,7 +499,7 @@ void store::on_pushButtonSaveUSB_clicked()
         // QFile::remove(QString("%1.sign").arg(srcfilename));
         
         LOG_PRINT(verbose_e, "DOWNLOADED\n");
-        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
+        QMessageBox::information(0, trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).fileName()));
 
 umount_and_exit:
         /* unmount USB key */

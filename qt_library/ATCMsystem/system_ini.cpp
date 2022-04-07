@@ -497,7 +497,7 @@ void system_ini::save_all()
         /* if (ui->pushButton_HomePage->text().length() == 0)
         {
             QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, trUtf8("Error"), trUtf8("'Home Page' parameter can not be empty. Do you want to automatically set the 'Home Page' parameter equal to 'Start Page' parameter?"));
+            reply = QMessageBox::question(0, trUtf8("Error"), trUtf8("'Home Page' parameter can not be empty. Do you want to automatically set the 'Home Page' parameter equal to 'Start Page' parameter?"));
             QMessageBox::Yes|QMessageBox::No;
             if (reply == QMessageBox::Yes) {
                 ui->pushButton_HomePage->setText(ui->pushButton_StartPage->text());

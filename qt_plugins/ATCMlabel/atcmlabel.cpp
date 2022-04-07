@@ -583,7 +583,7 @@ void ATCMlabel::writeAction()
                 {
                     if (min < max && (value < min || value > max))
                     {
-                        QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
+                        QMessageBox::critical(0, trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
                     }
                     else
                     {
@@ -612,7 +612,7 @@ void ATCMlabel::writeAction()
                 {
                     if (min < max && (value < min || value > max))
                     {
-                        QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
+                        QMessageBox::critical(0, trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
                     }
                     else
                     {
@@ -631,7 +631,7 @@ void ATCMlabel::writeAction()
                 {
                     if (min < max && (value < min || value > max))
                     {
-                        QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
+                        QMessageBox::critical(0, trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
                     }
                     else
                     {
@@ -655,7 +655,7 @@ void ATCMlabel::writeAction()
             {
                 if (min < max && (value < min || value > max))
                 {
-                    QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
+                    QMessageBox::critical(0, trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
                 }
                 else
                 {
@@ -675,7 +675,7 @@ void ATCMlabel::writeAction()
             {
                 if (min < max && (value < min || value > max))
                 {
-                    QMessageBox::critical(this,trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
+                    QMessageBox::critical(0, trUtf8("Invalid Data"), trUtf8("The value'%1' inserted is invalid.\nThe value must be between '%2' and '%3'").arg(value).arg(m_min).arg(m_max));
                 }
                 else
                 {

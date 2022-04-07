@@ -186,7 +186,7 @@ void display_settings::on_pushButton_clicked()
     fp = fopen(BACKLIGHT_FILE_LOCAL, "w");
     if (fp == NULL)
     {
-        QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("Impossible to save brightness value into the file '%1'.").arg(BACKLIGHT_FILE_LOCAL));
+        QMessageBox::critical(0, trUtf8("Internal error"), trUtf8("Impossible to save brightness value into the file '%1'.").arg(BACKLIGHT_FILE_LOCAL));
     }
     fprintf(fp, "echo %d > %s\n", brightness_level, BACKLIGHT_FILE_SYSTEM);
     fclose(fp);
@@ -207,7 +207,7 @@ void display_settings::on_pushButtonON_clicked()
     {
         if (min < max && (value < min || value > max))
         {
-            QMessageBox::critical(this,trUtf8("Invalid value"), trUtf8("The typed value is invalid.\nThe value must be in the range %2 and %3 ss").arg(min).arg(max));
+            QMessageBox::critical(0, trUtf8("Invalid value"), trUtf8("The typed value is invalid.\nThe value must be in the range %2 and %3 ss").arg(min).arg(max));
             delete dk;
             return;
         }

@@ -132,7 +132,7 @@ void login_pwd::on_pushButtonLogin_clicked()
             
             if (min < max && (password < min || password > max))
             {
-                QMessageBox::critical(this,trUtf8("Invalid password"), trUtf8("The inserted password is wrong!!!"));
+                QMessageBox::critical(0, trUtf8("Invalid password"), trUtf8("The inserted password is wrong!!!"));
                 delete dk;
                 return;
             }
@@ -148,13 +148,13 @@ void login_pwd::on_pushButtonLogin_clicked()
             }
             if (active_password == pwd_operator_e)
             {
-                QMessageBox::critical(this,trUtf8("Invalid password"), trUtf8("The inserted password is wrong!!!"));
+                QMessageBox::critical(0, trUtf8("Invalid password"), trUtf8("The inserted password is wrong!!!"));
                 delete dk;
                 return;
             }
             else
             {
-                QMessageBox::information(this,trUtf8("Login"), trUtf8("Logged as User: %1.").arg(PasswordsString[active_password]));
+                QMessageBox::information(0, trUtf8("Login"), trUtf8("Logged as User: %1.").arg(PasswordsString[active_password]));
                 ui->pushButtonLogin->setText(trUtf8("LOGOUT"));
             }
         }
@@ -188,7 +188,7 @@ void login_pwd::on_pushButtonPasswords_clicked()
     {
         if (min < max && (password < min || password > max))
         {
-            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
+            QMessageBox::critical(0, trUtf8("Invalid data"), trUtf8("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
             delete dk;
             return;
         }
@@ -196,11 +196,11 @@ void login_pwd::on_pushButtonPasswords_clicked()
         passwords[active_password] = password;
         if (dumpPasswords() == 0)
         {
-            QMessageBox::information(this,trUtf8("Password changed"), trUtf8("The password is succesfully changed."));
+            QMessageBox::information(0, trUtf8("Password changed"), trUtf8("The password is succesfully changed."));
         }
         else
         {
-            QMessageBox::critical(this,trUtf8("Saving error"), trUtf8("Cannot save the new password."));
+            QMessageBox::critical(0, trUtf8("Saving error"), trUtf8("Cannot save the new password."));
         }
     }
     else

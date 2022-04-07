@@ -131,7 +131,7 @@ void options::on_pushButtonPasswords_clicked()
     {
         if (min < max && (password < min || password > max))
         {
-            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
+            QMessageBox::critical(0, trUtf8("Invalid data"), trUtf8("The inserted value is invalid.\nThe value must ranging between %2 and %3").arg(min).arg(max));
             delete dk;
             return;
         }
@@ -139,11 +139,11 @@ void options::on_pushButtonPasswords_clicked()
         passwords[active_password] = password;
         if (dumpPasswords() == 0)
         {
-            QMessageBox::information(this,trUtf8("Password changed"), trUtf8("The password is succesfully changed."));
+            QMessageBox::information(0, trUtf8("Password changed"), trUtf8("The password is succesfully changed."));
         }
         else
         {
-            QMessageBox::critical(this,trUtf8("Saving error"), trUtf8("Cannot save the new password."));
+            QMessageBox::critical(0, trUtf8("Saving error"), trUtf8("Cannot save the new password."));
         }
     }
     else
@@ -234,14 +234,14 @@ void options::on_pushButtonLanguage_clicked()
             {
                 /* install the selected language */
                 qApp->installTranslator(translator);
-                QMessageBox::information(this,trUtf8("Language"), trUtf8("The language selected is '%1'").arg(value));
+                QMessageBox::information(0, trUtf8("Language"), trUtf8("The language selected is '%1'").arg(value));
                 QSettings settings(CONFIG_FILE, QSettings::IniFormat);
                 settings.setValue("SYSTEM/language", _language_);
                 settings.sync();
             }
             else
             {
-                QMessageBox::critical(this,trUtf8("Language"), trUtf8("Error lading translation file '%1'").arg(QString(":/translations/languages_%1.qm").arg(_language_)));
+                QMessageBox::critical(0, trUtf8("Language"), trUtf8("Error lading translation file '%1'").arg(QString(":/translations/languages_%1.qm").arg(_language_)));
                 LOG_PRINT(verbose_e, "loading language file\n");
             }
         }
@@ -253,7 +253,7 @@ void options::on_pushButtonLanguage_clicked()
     }
     else
     {
-        QMessageBox::critical(this,trUtf8("Language"), trUtf8("No language translation are available"));
+        QMessageBox::critical(0, trUtf8("Language"), trUtf8("No language translation are available"));
         LOG_PRINT(error_e, "No language to show\n");
     }
 }

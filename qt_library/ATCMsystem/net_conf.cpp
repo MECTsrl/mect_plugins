@@ -847,7 +847,7 @@ void net_conf::on_pushButton_wlan0_scan_clicked()
     ui->comboBox_wlan0_essid->clear();
     ui->comboBox_wlan0_essid->addItem(NO_IP);
     if (wifiScan.exitCode() != 0)  {
-        QMessageBox::critical(this,this->windowTitle(), "Wifi scanning failure!");
+        QMessageBox::critical(0,this->windowTitle(), "Wifi scanning failure!");
         goto endScanWlan;
     }
     else {

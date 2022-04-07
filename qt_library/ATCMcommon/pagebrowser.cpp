@@ -316,7 +316,7 @@ bool page::goto_page(const char * page_name, bool remember)
         {
             LOG_PRINT(error_e,"Fail to create page '%s'\n", page_name);
             //mymutex.unlock();
-            QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("The requested page '%1' doesn't exist.").arg(page_name));
+            QMessageBox::critical(0, trUtf8("Access Denied"), trUtf8("The requested page '%1' doesn't exist.").arg(page_name));
             refresh_timer->start(REFRESH_MS);
             LOG_PRINT(verbose_e, " %s TIMER START\n", this->windowTitle().toAscii().data());
             goto exit_failure;
@@ -334,7 +334,7 @@ bool page::goto_page(const char * page_name, bool remember)
 
     if (active_password > p->protection_level)
     {
-        QMessageBox::critical(this,trUtf8("Access Denied"), trUtf8("Impossible access to '%1': inappropriate privilegies.").arg(p->windowTitle()));
+        QMessageBox::critical(0, trUtf8("Access Denied"), trUtf8("Impossible access to '%1': inappropriate privilegies.").arg(p->windowTitle()));
         LOG_PRINT(verbose_e,"active %d, protection %d\n", active_password, p->protection_level);
         goto exit_failure;
     }
@@ -1114,7 +1114,7 @@ int page::checkLicence(QString * message)
         if (fp == NULL)
         {
             LOG_PRINT(error_e, "Failed to run command '%s'\n", command );
-            QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("cannot create the code."));
+            QMessageBox::critical(0, trUtf8("Internal error"), trUtf8("cannot create the code."));
             return -1;
         }
         
@@ -1129,7 +1129,7 @@ int page::checkLicence(QString * message)
         {
             pclose(fp);
             LOG_PRINT(error_e, "Failed to run command '%s': '%s'\n", command, signedcode );
-            QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("cannot create the code."));
+            QMessageBox::critical(0, trUtf8("Internal error"), trUtf8("cannot create the code."));
             return -1;
         }
         
@@ -1150,7 +1150,7 @@ int page::checkLicence(QString * message)
         if (fp == NULL)
         {
             LOG_PRINT(error_e, "Failed to run command '%s'\n", command );
-            QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("cannot create the code."));
+            QMessageBox::critical(0, trUtf8("Internal error"), trUtf8("cannot create the code."));
             return -1;
         }
         
@@ -1164,7 +1164,7 @@ int page::checkLicence(QString * message)
         {
             pclose(fp);
             LOG_PRINT(error_e, "Failed to run command '%s': '%s'\n", command, signedcode );
-            QMessageBox::critical(0,trUtf8("Internal error"), trUtf8("cannot create the code."));
+            QMessageBox::critical(0, trUtf8("Internal error"), trUtf8("cannot create the code."));
             return -1;
         }
         

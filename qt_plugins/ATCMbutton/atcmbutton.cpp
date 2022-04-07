@@ -727,7 +727,7 @@ bool ATCMbutton::checkPassword()
             //LOG_PRINT(verbose_e, "Password '%s' vs '%d'\n", m_passwordValue.toAscii().data(), value);
             if (m_passwordValue != QString::number(value))
             {
-                QMessageBox::critical(this, trUtf8("Invalid Password"), trUtf8("The inserted password is wrong!!!"));
+                QMessageBox::critical(0, trUtf8("Invalid Password"), trUtf8("The inserted password is wrong!!!"));
                 retval = false;
             }
             else

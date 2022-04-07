@@ -141,7 +141,7 @@ void recipe::updateData()
         /* load the actual receipt  */
         if (strlen(_actual_recipe_) == 0)
         {
-            QMessageBox::critical(this,trUtf8("Empty recipe name"), trUtf8("No recipe is selected."));
+            QMessageBox::critical(0, trUtf8("Empty recipe name"), trUtf8("No recipe is selected."));
             state = 0;
             goto_page("recipe_select", false);
             return;
@@ -150,7 +150,7 @@ void recipe::updateData()
         varNbMax = testsIndexes.count();
         if (stepNbMax <= 0)
         {
-            QMessageBox::critical(this,trUtf8("Malformed recipe"), trUtf8("The recipe '%1' is malformed.").arg(_actual_recipe_));
+            QMessageBox::critical(0, trUtf8("Malformed recipe"), trUtf8("The recipe '%1' is malformed.").arg(_actual_recipe_));
             state = 0;
             go_back();
             return;
@@ -233,7 +233,7 @@ void recipe::on_pushButtonRead_clicked()
 {
     if (ui->tableWidget->currentColumn() < 0)
     {
-        QMessageBox::information(this,trUtf8("No step selected"), trUtf8("No step selected.\nPlease select a column to load from the panel"));
+        QMessageBox::information(0, trUtf8("No step selected"), trUtf8("No step selected.\nPlease select a column to load from the panel"));
         return;
     }
     ui->pushButtonLoad->setEnabled(false);
@@ -244,7 +244,7 @@ void recipe::on_pushButtonRead_clicked()
 
     int stepIndex = ui->tableWidget->currentColumn();
     if (readRecipe(stepIndex, &testsIndexes, testsTable))  {
-        QMessageBox::warning(this,trUtf8("Recipe Values"), trUtf8("Error reading Recipe!\nPlease check all Values"));
+        QMessageBox::warning(0, trUtf8("Recipe Values"), trUtf8("Error reading Recipe!\nPlease check all Values"));
     }
     for (int varIndex = 0; varIndex < testsTable[stepIndex].count(); varIndex++)
     {
@@ -269,7 +269,7 @@ void recipe::on_pushButtonLoad_clicked()
 {
     if (ui->tableWidget->currentColumn() < 0)
     {
-        QMessageBox::information(this,trUtf8("No step selected"), trUtf8("No step selected.\nPlease select a column to load into the panel"));
+        QMessageBox::information(0, trUtf8("No step selected"), trUtf8("No step selected.\nPlease select a column to load into the panel"));
         return;
     }
     ui->pushButtonLoad->setEnabled(false);
@@ -405,7 +405,7 @@ void recipe::on_tableWidget_itemClicked(QTableWidgetItem *item)
     {
         if (min < max && (value < min || value > max))
         {
-            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
+            QMessageBox::critical(0, trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
         }
         else
         {

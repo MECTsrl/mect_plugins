@@ -380,7 +380,7 @@ void trend_option::on_pushButtonChangePen_clicked()
 
 void trend_option::on_pushButtonDeletePen_clicked()
 {
-    if (QMessageBox::question(this, trUtf8("Remove confirmation"), trUtf8("do you want remove the variable '%1'?\nThe operation will take effect after save the new options.").arg(pens[actualPen].tag), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
+    if (QMessageBox::question(0, trUtf8("Remove confirmation"), trUtf8("do you want remove the variable '%1'?\nThe operation will take effect after save the new options.").arg(pens[actualPen].tag), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
     {
         pens[actualPen].visible = 0;
         pens[actualPen].tag[0] = '\0';
@@ -411,7 +411,7 @@ void trend_option::on_pushButtonYmin_clicked()
     {
         if (value < min || value > max)
         {
-            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
+            QMessageBox::critical(0, trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
             delete dk;
             return;
         }
@@ -439,7 +439,7 @@ void trend_option::on_pushButtonYmax_clicked()
     {
         if (value < min || value > max)
         {
-            QMessageBox::critical(this,trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
+            QMessageBox::critical(0, trUtf8("Invalid data"), trUtf8("The inserted value (%1) is invalid.\nThe value must ranging between %2 and %3").arg(value).arg(min).arg(max));
             delete dk;
             return;
         }
@@ -558,7 +558,7 @@ void trend_option::Save(const char * fullfilename)
         }
         fclose(fp);
         LOG_PRINT(verbose_e, "Saved '%s'\n", fullfilename);
-        QMessageBox::information(this,trUtf8("Save"), trUtf8("the trend configuration '%1' is saved into file '%2'").arg(_actual_trend_).arg(fullfilename));
+        QMessageBox::information(0, trUtf8("Save"), trUtf8("the trend configuration '%1' is saved into file '%2'").arg(_actual_trend_).arg(fullfilename));
     }
     /* force a reload */
     _trend_data_reload_ = true;
@@ -592,7 +592,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         if (USBmount() == false)
         {
             LOG_PRINT(error_e, "cannot mount the usb key\n");
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot mount the usb key"));
             return;
         }
         
@@ -617,7 +617,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         }
         if (sourcelist.count() == 0)
         {
-            QMessageBox::critical(this,trUtf8("No data"), trUtf8("Nothing to save for trend %1").arg(_actual_trend_));
+            QMessageBox::critical(0, trUtf8("No data"), trUtf8("Nothing to save for trend %1").arg(_actual_trend_));
             USBumount();
             return;
         }
@@ -625,7 +625,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         /* zip the file, the sign file and delete them */
         if (zipAndSave(sourcelist,QString("%1.zip").arg(dstfilename), true) == false)
         {
-            QMessageBox::critical(this,trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(QString("%1.zip").arg(dstfilename)));
+            QMessageBox::critical(0, trUtf8("USB error"), trUtf8("Cannot create the zip file '%1'").arg(QString("%1.zip").arg(dstfilename)));
             USBumount();
             return;
         }
@@ -633,7 +633,7 @@ void trend_option::on_pushButtonSaveUSB_clicked()
         /* unmount USB key */
         USBumount();
         LOG_PRINT(verbose_e, "DOWNLOADED\n");
-        QMessageBox::information(this,trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).baseName()));
+        QMessageBox::information(0, trUtf8("USB info"), trUtf8("File '%1' saved.").arg(QFileInfo(dstfilename).baseName()));
     }
 }
 
@@ -654,12 +654,12 @@ void trend_option::on_pushButtonNext_clicked()
 
 void trend_option::on_pushButtonDeleteTrend_clicked()
 {
-    if (QMessageBox::question(this, trUtf8("Remove confirmation"), trUtf8("do you want remove the trend '%1'?").arg(ui->pushButtonChangeTrend->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
+    if (QMessageBox::question(0, trUtf8("Remove confirmation"), trUtf8("do you want remove the trend '%1'?").arg(ui->pushButtonChangeTrend->text()), QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok)
     {
         char fullfilename [MAX_LINE];
         sprintf(fullfilename, "%s/%s.csv", CUSTOM_TREND_DIR, ui->pushButtonChangeTrend->text().toAscii().data());
         QFile::remove(fullfilename);
-        QMessageBox::information(this,trUtf8("Removed"), trUtf8("Trend '%1' removed.").arg(ui->pushButtonChangeTrend->text()));
+        QMessageBox::information(0, trUtf8("Removed"), trUtf8("Trend '%1' removed.").arg(ui->pushButtonChangeTrend->text()));
         on_pushButtonChangeTrend_clicked();
     }
 }

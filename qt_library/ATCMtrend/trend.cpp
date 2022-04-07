@@ -852,7 +852,7 @@ bool trend::printGraph()
         }
         LOG_PRINT(verbose_e, "Saving to '%s'\n", value);
         QPixmap::grabWidget(this->d_qwtplot).save(fullfilename);
-        QMessageBox::information(this,trUtf8("Saved data"), trUtf8("The trend graph is saved to '%1'.").arg(QFileInfo(fullfilename).baseName()));
+        QMessageBox::information(0, trUtf8("Saved data"), trUtf8("The trend graph is saved to '%1'.").arg(QFileInfo(fullfilename).baseName()));
         delete dk;
         return true;
     }
