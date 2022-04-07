@@ -95,3 +95,6 @@ INSTALLS += target include
 
 RESOURCES += \
     libicons.qrc
+
+OTHER_FILES += \
+    scrollbars.qss

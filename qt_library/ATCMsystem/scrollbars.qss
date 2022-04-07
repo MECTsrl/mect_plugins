@@ -6,35 +6,35 @@
 /*------------------------*/
 QScrollBar:horizontal {
     border: 2px solid grey;
-    background: Silver;
-    height: 15px;
-    margin: 0px 20px 0 20px;
+    background: rgb(218, 231, 241);
+    height: 25px;
+    margin: 0px 30px 0 30px;
 }
 /* Pulsante di scorrimento orizziontale */
 QScrollBar::handle:horizontal {
-    background: AntiqueWhite;
-    min-width: 20px;
+    background: SteelBlue;
+    min-width: 40px;
 }
 /* Estremi Destri e sinistri della Scroll orizzontale */
 QScrollBar::add-line:horizontal {
     border: 2px solid grey;
-    background: Teal;
-    width: 20px;
+    background: LightSkyBlue;
+    width: 30px;
     subcontrol-position: right;
     subcontrol-origin: margin;
 }
 QScrollBar::sub-line:horizontal {
     border: 2px solid grey;
-    background: Teal;
-    width: 20px;
+    background: LightSkyBlue;
+    width: 30px;
     subcontrol-position: left;
     subcontrol-origin: margin;
 }
 /* The left-arrow and right-arrow have a solid grey border with a white background. As an alternative, you could also embed the image of an arrow. */
 QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {
     border: 2px solid grey;
-    width: 3px;
-    height: 3px;
+    width: 6px;
+    height: 6px;
     background: white;
 }
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
@@ -45,35 +45,35 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 /*------------------------*/
 QScrollBar:vertical {
      border: 2px solid grey;
-     background: Silver;
-     width: 15px;
-     margin: 22px 0 22px 0;
+     background: rgb(218, 231, 241);
+     width: 25px;
+     margin: 27px 0 27px 0;
 }
 /* Pulsante di scorrimento verticale */
 QScrollBar::handle:vertical {
-     background: AntiqueWhite;
-     min-height: 20px;
+     background: SteelBlue;
+     min-height: 40px;
 }
 /* Estremi Sopra e Sotto della Scroll verticale */
 QScrollBar::add-line:vertical {
      border: 2px solid grey;
-     background: Teal;
-     height: 20px;
+     background: LightSkyBlue;
+     height: 30px;
      subcontrol-position: bottom;
      subcontrol-origin: margin;
 }
 
 QScrollBar::sub-line:vertical {
      border: 2px solid grey;
-     background: Teal;
-     height: 20px;
+     background: LightSkyBlue;
+     height: 30px;
      subcontrol-position: top;
      subcontrol-origin: margin;
 }
 QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
      border: 2px solid grey;
-     width: 3px;
-     height: 3px;
+     width: 6px;
+     height: 6px;
      background: white;
 }
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
