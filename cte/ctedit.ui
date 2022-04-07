@@ -1249,8 +1249,14 @@
                  <widget class="QLineEdit" name="txtBlock">
                   <property name="minimumSize">
                    <size>
-                    <width>40</width>
+                    <width>60</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>80</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1295,8 +1301,14 @@
                  <widget class="QLineEdit" name="txtNode">
                   <property name="minimumSize">
                    <size>
-                    <width>40</width>
+                    <width>60</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>80</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1318,13 +1330,13 @@
                  <widget class="QLineEdit" name="txtName">
                   <property name="minimumSize">
                    <size>
-                    <width>170</width>
+                    <width>130</width>
                     <height>0</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>170</width>
+                    <width>16777215</width>
                     <height>16777215</height>
                    </size>
                   </property>
@@ -1347,8 +1359,14 @@
                  <widget class="QLineEdit" name="txtBlockSize">
                   <property name="minimumSize">
                    <size>
-                    <width>40</width>
+                    <width>60</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>80</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1370,8 +1388,14 @@
                  <widget class="QLineEdit" name="txtIP">
                   <property name="minimumSize">
                    <size>
-                    <width>100</width>
+                    <width>120</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>160</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1380,6 +1404,9 @@
                     <weight>50</weight>
                     <bold>false</bold>
                    </font>
+                  </property>
+                  <property name="text">
+                   <string/>
                   </property>
                  </widget>
                 </item>
@@ -1410,8 +1437,14 @@
                  <widget class="QLineEdit" name="txtRegister">
                   <property name="minimumSize">
                    <size>
-                    <width>40</width>
+                    <width>60</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>80</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
@@ -1550,6 +1583,12 @@
                     <height>0</height>
                    </size>
                   </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>80</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>10</pointsize>
@@ -1662,6 +1701,12 @@
                    <size>
                     <width>66</width>
                     <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>80</width>
+                    <height>16777215</height>
                    </size>
                   </property>
                   <property name="font">
