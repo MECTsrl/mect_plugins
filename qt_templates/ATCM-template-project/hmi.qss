@@ -271,9 +271,43 @@ page#trend QwtScaleWidget {
 page#trend_range QSpinBox, page#trend_range QDoubleSpinBox {
     color: rgb(255, 237, 0);
 }
-/* QTableWidget */
-QTableView  {
-  gridline-color:  darkGray;
+/* QMessageBox */
+QMessageBox {
+   background-color: DarkGray;
+   color: rgb(255, 237, 0);
 }
+QMessageBox QLabel {
+   color: Navy;
+}
+QMessageBox QPushButton {
+    icon-size: 32px  32px;
+    min-width: 82px;
+    min-height: 42px;
+    border: 2px solid PaleTurquoise;
+    border-radius: 8px;
+    color:  DarkGreen;
+    background-color: LightBlue;
+    background-repeat: no-repeat;
+    background-position: center center;
+    image-position: top center;
+    text-align: bottom center;
+}
+/* QDialogButtonBox (Message Box Buttons) */
+QDialogButtonBox { 
+    dialogbuttonbox-buttons-have-icons: 1; 
+    /* Icons for Dialog Buttons */
+    dialog-apply-icon: url(":/systemicons/Apply_48.png");
+    dialog-cancel-icon: url(":/systemicons/Cancel_48.png");
+    dialog-close-icon: url(":/systemicons/Close_48.png");
+    dialog-discard-icon: url(":/systemicons/Discard_48.png");
+    dialog-help-icon: url(":/systemicons/Help_48.png");
+    dialog-no-icon: url(":/systemicons/No_48.png");
+    dialog-ok-icon: url(":/systemicons/Ok_48.png");
+    dialog-open-icon: url(":/systemicons/Open_48.png");
+    dialog-reset-icon: url(":/systemicons/Reset_48.png");
+    dialog-save-icon: url(":/systemicons/Save_48.png");
+    dialog-yes-icon: url(":/systemicons/Yes_48.png");
+}
+
 
 
