@@ -14,7 +14,7 @@
         <file>img/Anchor.png</file>
         <file>img/Application.png</file>
         <file>img/Apply.png</file>
-        <file>img/Apply_48.png
+        <file>img/Apply_48.png</file>
         <file>img/Back.png</file>
         <file>img/Bad_mark.png</file>
         <file>img/Bee.png</file>
@@ -37,7 +37,7 @@
         <file>img/Calculator.png</file>
         <file>img/Calendar.png</file>
         <file>img/Camera.png</file>
-        <file>img/Cancel_48.png
+        <file>img/Cancel_48.png</file>
         <file>img/Car_key.png</file>
         <file>img/CD.png</file>
         <file>img/Chess.png</file>
@@ -48,7 +48,7 @@
         <file>img/Clock-icon.png</file>
         <file>img/Clock.png</file>
         <file>img/Close.png</file>
-        <file>img/Close_48.png
+        <file>img/Close_48.png</file>
         <file>img/Coin.png</file>
         <file>img/Comment.png</file>
         <file>img/Company.png</file>
@@ -65,7 +65,7 @@
         <file>img/Diagram.png</file>
         <file>img/Dial.png</file>
         <file>img/Disaster.png</file>
-        <file>img/Discard_48.png
+        <file>img/Discard_48.png</file>
         <file>img/Display.png</file>
         <file>img/Dollar.png</file>
         <file>img/Door.png</file>
@@ -114,7 +114,7 @@
         <file>img/Hard_disk.png</file>
         <file>img/Heart.png</file>
         <file>img/Help.png</file>
-        <file>img/Help_48.png
+        <file>img/Help_48.png</file>
         <file>img/Help_book.png</file>
         <file>img/Help_book_3d.png</file>
         <file>img/Hint.png</file>
@@ -162,10 +162,10 @@
         <file>img/No-entry.png</file>
         <file>img/No.png</file>
         <file>img/Notes.png</file>
-        <file>img/No_48.png
+        <file>img/No_48.png</file>
         <file>img/OK.png</file>
-        <file>img/Ok_48.png
-        <file>img/Open_48.png
+        <file>img/Ok_48.png</file>
+        <file>img/Open_48.png</file>
         <file>img/Paste.png</file>
         <file>img/Pause.png</file>
         <file>img/People.png</file>
@@ -199,13 +199,13 @@
         <file>img/Remove.png</file>
         <file>img/Repair.png</file>
         <file>img/Report.png</file>
-        <file>img/Reset_48.png
+        <file>img/Reset_48.png</file>
         <file>img/Retort.png</file>
         <file>img/Rewind.png</file>
         <file>img/Sad.png</file>
         <file>img/Save.png</file>
         <file>img/SaveAll.png</file>
-        <file>img/Save_48.png
+        <file>img/Save_48.png</file>
         <file>img/Schedule.png</file>
         <file>img/Script.png</file>
         <file>img/SDcard.png</file>
@@ -255,7 +255,7 @@
         <file>img/Yellow_pin.png</file>
         <file>img/Yellow_tag.png</file>
         <file>img/Yes.png</file>
-        <file>img/Yes_48.png
+        <file>img/Yes_48.png</file>
         <file>img/Zoom.png</file>
     </qresource>
     <qresource prefix="/qss">
