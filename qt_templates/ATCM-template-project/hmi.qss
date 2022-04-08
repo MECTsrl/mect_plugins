@@ -19,8 +19,6 @@ page#trend_other,
 page#login_pwd, 
 page#set_password, 
 QDialog#item_selector, 
-QDialog#Calendar, 
-QDialog#TimePopup, 
 QDialog#alphanumpad, 
 QDialog#numpad, 
 QDialog#qrcode	{
@@ -43,8 +41,6 @@ page#trend_range QLabel,
 page#login_pwd QLabel, 
 page#set_password QLabel, 
 QDialog#item_selector QLabel, 
-QDialog#Calendar QLabel, 
-QDialog#TimePopup QLabel, 
 QDialog#alphanumpad QLabel, 
 QDialog#numpad QLabel, 
 QDialog#qrcode QLabel	{
@@ -71,8 +67,6 @@ page#trend_range QPushButton,
 page#login_pwd QPushButton, 
 page#set_password QPushButton, 
 QDialog#item_selector QPushButton, 
-QDialog#Calendar QPushButton, 
-QDialog#TimePopup QPushButton, 
 QDialog#alphanumpad QPushButton, 
 QDialog#numpad QPushButton, 
 QDialog#qrcode QPushButton	{
@@ -102,8 +96,6 @@ page#trend_range QPushButton:pressed,
 page#login_pwd QPushButton:pressed, 
 page#set_password QPushButton:pressed, 
 QDialog#item_selector QPushButton:pressed, 
-QDialog#Calendar QPushButton:pressed, 
-QDialog#TimePopup QPushButton:pressed, 
 QDialog#alphanumpad QPushButton:pressed, 
 QDialog#numpad QPushButton:pressed, 
 QDialog#qrcode QPushButton:pressed	{
@@ -131,8 +123,6 @@ page#trend_range QPushButton:disabled,
 page#login_pwd QPushButton:disabled, 
 page#set_password QPushButton:disabled, 
 QDialog#item_selector QPushButton:disabled, 
-QDialog#Calendar QPushButton:disabled, 
-QDialog#TimePopup QPushButton:disabled, 
 QDialog#alphanumpad QPushButton:disabled, 
 QDialog#numpad QPushButton:disabled, 
 QDialog#qrcode QPushButton:disabled	{
@@ -183,14 +173,6 @@ page#system_ini QTabBar::tab:!selected {
 	color: DarkRed;
     	margin-top: 4px; /* make non-selected tabs look smaller */
 }
-/*
-page#info QTabBar::tab:!enabled, 
-page#net_conf QTabBar::tab:!selected, 
-page#system_ini QTabBar::tab:!selected {
-  	background: LightGray;
-	color: Turquoise;
-} */
-
 /* Info Page QPlainTextEdit */
 page#info QPlainTextEdit {
 	border: 1px solid rgb(60, 60, 60);	
@@ -217,16 +199,14 @@ page#alarms QLineEdit  {
     background: DarkGray;
     color: Yellow;
 }
-/* QListWidget in alarms, alarms_history, recipe_select, item_selector */
-/* QTableWidget in Calendar, TimePopup, recipe, store */
+/* QListWidget in alarms, alarms_history, recipe_select, item_selector, store */
+/* QTableWidget in recipe, store */
 page#alarms QListWidget, 
 page#alarms_history QListWidget, 
 page#recipe_select QListWidget, 
 QDialog#item_selector QListWidget,
 page#recipe QTableWidget, 
-page#store QTableWidget, 
-QDialog#Calendar QTableWidget, 
-QDialog#TimePopup QTableWidget	{
+page#store QTableWidget	{ 
     background-color: DarkGrey;
     alternate-background-color: LightGrey;
     show-decoration-selected: 1;
@@ -237,28 +217,11 @@ page#alarms_history QListWidget::item:selected,
 page#recipe_select QListWidget::item:selected, 
 QDialog#item_selector QListWidget::item:selected,
 page#recipe QTableWidget::item:selected, 
-page#store QTableWidget::item:selected, 
-QDialog#Calendar QTableWidget::item:selected, 
-QDialog#TimePopup QTableWidget::item:selected		{
+page#store QTableWidget::item:selected	{
     border: 2px solid CadetBlue;
     background: red;
     color: yellow;
 }
-/*
-page#alarms QListWidget::item:selected:!active, 
-page#alarms_history QListWidget::item:selected:!active, 
-page#recipe_select QListWidget::item:selected:!active, 
-QDialog#item_selector QListWidget::item:selected:!active	{
-    background: Brown;
-    color: gray;
-}
-page#alarms QListWidget::item:selected:active, 
-page#alarms_history QListWidget::item:selected:active, 
-page#recipe_select QListWidget::item:selected:active, 
-QDialog#item_selector::item:selected:active	{
-    background: red;
-    color: yellow;
-} */
 /* trend QLabel, Qwt */
 page#trend QLabel, page#trend QwtPlotCanvas  {
     background-color: DimGray;
@@ -271,7 +234,7 @@ page#trend QwtScaleWidget {
 page#trend_range QSpinBox, page#trend_range QDoubleSpinBox {
     color: rgb(255, 237, 0);
 }
-/* QMessageBox */
+/* QMessageBox for System and User QMessageBox */
 QMessageBox {
    background-color: DarkGray;
    color: rgb(255, 237, 0);
@@ -283,7 +246,7 @@ QMessageBox QPushButton {
     icon-size: 32px  32px;
     min-width: 82px;
     min-height: 42px;
-    border: 2px solid PaleTurquoise;
+    border: 2px solid CornflowerBlue;
     border-radius: 8px;
     color:  DarkGreen;
     background-color: LightBlue;
@@ -308,6 +271,4 @@ QDialogButtonBox {
     dialog-save-icon: url(":/systemicons/Save_48.png");
     dialog-yes-icon: url(":/systemicons/Yes_48.png");
 }
-
-
 

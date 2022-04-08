@@ -3119,7 +3119,7 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">qproperty-icon: url(:/libicons/img/Delete.png);
+        <string notr="true">qproperty-icon: url(:/libicons/img/Cancel_48.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 </string>
@@ -3362,7 +3362,7 @@ qproperty-focusPolicy: NoFocus;
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">qproperty-icon: url(:/libicons/img/OK.png);
+        <string notr="true">qproperty-icon: url(:/libicons/img/Ok_48.png);
 qproperty-iconSize: 24px 24px;
 qproperty-focusPolicy: NoFocus;
 </string>
