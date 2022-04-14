@@ -35,7 +35,7 @@ const int nColNode = 7;
 const int nColBaudRate = 9;
 const int nColLast = 11;
 const int nItemWidth = 2;
-const int nComboWidth = 93;
+const int nComboWidth = 97;
 // Funzionalità della variabile (per discriminare i tipi di utilizzo del modulo)
 const int nUsageNone = 0;
 const int nUsageDigIn = 1;
@@ -108,7 +108,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lstModuleName.append(QLatin1String("8 Digital Output"));
     lstSfondi.append(szFileMPNE02);
     lstModuleFunction.append(nUsageDigOut);
-    lstModuleCode.append(QLatin1String("02-03-04"));
+    lstModuleCode.append(QLatin1String("02"));
     lstModuleColor.append(QLatin1String("  background-color: rbg(255,79,79);\n"));
     lstBackColor.append(QColor(255,79,79));
 //    // Module 03 Dig OUT with 4 Relays
@@ -144,7 +144,7 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     lblBox->setText(QLatin1String("MPNE10:"));
     lblBox->setStyleSheet(szTemp);
     mainGrid->addWidget(lblBox, nRowSelector, nColBase);
-    // Combo Selettore mpnc
+    // Combo Selettore mpne
     cboSelector = new QComboBox(this);
     cboSelector->setMaximumWidth(nComboWidth);
     cboSelector->setToolTip(QLatin1String("Select I/O Module"));
@@ -268,9 +268,16 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     // Combo per Codici Modulo
     cboLeft = new QComboBox(this);
     cboRight = new QComboBox(this);
+    szTemp.clear();
+    szTemp.append(QLatin1String("QComboBox { \n"));
+    szTemp.append(QLatin1String("  font-size: 11px;\n"));
+    szTemp.append(QLatin1String("}"));
+    cboLeft->setStyleSheet(szTemp);
+    cboRight->setStyleSheet(szTemp);
+    szTemp.clear();
     for (i= 0; i < nUsageMax; i++)  {
-        cboLeft->addItem(lstModuleName[i], szTemp);
-        cboRight->addItem(lstModuleName[i], szTemp);
+        cboLeft->addItem(lstModuleName[i]);
+        cboRight->addItem(lstModuleName[i]);
     }
     cboLeft->setMaximumWidth(nComboWidth);
     cboRight->setMaximumWidth(nComboWidth);
@@ -383,8 +390,9 @@ Config_MPNE::Config_MPNE(QWidget *parent) :
     szTemp.append(QLatin1String("  background-color: AliceBlue;\n"));
     szTemp.append(QLatin1String("}"));
     lblBox = new QLabel(this);
-    lblBox ->setText(QLatin1String("01"));
-    lblBox ->setStyleSheet(szTemp);
+    lblBox->setText(QLatin1String("01"));
+    lblBox->setStyleSheet(szTemp);
+    lblBox->setVisible(false);
     mainGrid->addWidget(lblBox, nRowFlags, nColBase, 1, 1, Qt::AlignHCenter);
     // Label per Codice SX - DX
     szCodeStyle.clear();
