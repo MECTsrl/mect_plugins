@@ -28,7 +28,7 @@ QPushButton#pushButtonSaveAll,
 QPushButton#pushButtonBack, 
 QPushButton#pushButtonHome,
 QPushButton#pushButton_wlan0_scan,
-QPushButton#pushButton_wlan0_enable
+QPushButton#pushButton_wlan0_enable,
 QPushButton#pushButton_wan0_enable
 {
 	border-radius: 8px;
