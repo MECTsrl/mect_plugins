@@ -42,7 +42,7 @@ Custom project wizard configuration example file. Note that by convention,
 	   <displayname>TPLC100_01_AA</displayname>;
 	   <displaycategory>Mect Projects</displaycategory>
 	   <files>
-	   <file source="../ATCM-template-project/pages.cpp" target="pages.cpp" openeditor="false"/>
+	   <file source="pages.cpp" target="pages.cpp" openeditor="false"/>
 	   <file source="../ATCM-template-project/pages.h" target="pages.h" openeditor="false"/>
 	   <file source="../ATCM-template-project/page100.cpp"  target="page100.cpp" openeditor="false"/>
 	   <file source="../ATCM-template-project/page100.h"  target="page100.h" openeditor="false"/>
