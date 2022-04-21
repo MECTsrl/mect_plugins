@@ -46,8 +46,17 @@ void ScreenSaver::restore()
     readFromDbQuick(ID_PLC_PRODUCT_ID, (int *)&uModel);
     uModel = uModel >> 8;
     // fprintf(stderr, "Model Family: 0x%08x - ON Screen\n", uModel);
-    // Patch for 100802 Family
-    if (uModel == 0x100802)  {
+    // Patch for 7":
+    //          107001 Family
+    //          107002 Family
+    //          107003 Family
+    //          100802 Family
+    //          100803 Family
+    if (uModel == 0x107001  ||
+        uModel == 0x107002  ||
+        uModel == 0x107003  ||
+        uModel == 0x100802  ||
+        uModel == 0x100803)  {
         sprintf (command, "echo %d > %s", 0, BLANK_SCREEN_FILE);
     }
     else  {
@@ -69,8 +78,17 @@ bool ScreenSaver::save(__attribute__((unused)) int level)
     readFromDbQuick(ID_PLC_PRODUCT_ID, (int *)&uModel);
     uModel = uModel >> 8;
     // fprintf(stderr, "Model Family: 0x%08x - OFF Screen\n", uModel);
-    // Patch for 100802 Family
-    if (uModel == 0x100802)  {
+    // Patch for 7":
+    //          107001 Family
+    //          107002 Family
+    //          107003 Family
+    //          100802 Family
+    //          100803 Family
+    if (uModel == 0x107001  ||
+        uModel == 0x107002  ||
+        uModel == 0x107003  ||
+        uModel == 0x100802  ||
+        uModel == 0x100803)  {
         sprintf (command, "echo %d > %s", 1, BLANK_SCREEN_FILE);
     }
     else  {
