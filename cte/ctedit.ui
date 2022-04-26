@@ -1775,7 +1775,7 @@ QCheckBox::indicator:checked {
                <widget class="QComboBox" name="cboBehavior">
                 <property name="minimumSize">
                  <size>
-                  <width>148</width>
+                  <width>147</width>
                   <height>0</height>
                  </size>
                 </property>
@@ -1791,6 +1791,12 @@ QCheckBox::indicator:checked {
                   <weight>50</weight>
                   <bold>false</bold>
                  </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QComboBox {
+    min-width: 145px;
+}
+</string>
                 </property>
                </widget>
               </item>
