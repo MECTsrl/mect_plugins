@@ -157,7 +157,7 @@ QPushBut</string>
           </size>
          </property>
          <property name="focusPolicy">
-          <enum>Qt::TabFocus</enum>
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="contextMenuPolicy">
           <enum>Qt::NoContextMenu</enum>
