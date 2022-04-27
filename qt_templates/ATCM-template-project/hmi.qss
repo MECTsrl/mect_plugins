@@ -170,7 +170,14 @@ page#info QTabBar::tab:!selected,
 page#net_conf QTabBar::tab:!selected, 
 page#system_ini QTabBar::tab:!selected {
   	background: DarkGray;
-	color: DarkRed;
+	color: DarkGreen;
+    	margin-top: 4px; /* make non-selected tabs look smaller */
+}
+page#info QTabBar::tab:!enabled, 
+page#net_conf QTabBar::tab:!enabled, 
+page#system_ini QTabBar::tab:!enabled {
+  	background: LightGrey;
+	color: LightYellow;
     	margin-top: 4px; /* make non-selected tabs look smaller */
 }
 /* Info Page QPlainTextEdit */
