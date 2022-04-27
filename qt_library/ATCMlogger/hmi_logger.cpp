@@ -383,30 +383,32 @@ void Logger::run()
         }
 
         /* check each event */
+        // fprintf(stderr, "Alarm/Event to check:[%d]\n", EventHash.count());
         for ( i = EventHash.begin(); i != EventHash.end() && i.value() != NULL ; i++)
         {
             if (i.key().length() == 0)
             {
+                fprintf(stderr, "Alarm/Event key length = 0, Skip\n");
                 continue;
             }
             /* if is active, dump if it is necessary and emit the signal */
             u_int32_t var = 0;
-            LOG_PRINT(verbose_e, "Reading '%s' - %d\n", i.key().toAscii().data(), i.value()->CtIndex);
+            // fprintf(stderr, "Reading '%s' - %d\n", i.key().toAscii().data(), i.value()->CtIndex);
             if (readFromDbLock(i.value()->CtIndex, &var) == 0)
             {
-                LOG_PRINT(verbose_e, "Reading '%s' 0x%X\n", i.key().toAscii().data(), var);
+                // fprintf(stderr, "Letto [%s] Valore: 0x[%X]\n", i.key().toAscii().data(), var);
                 /* an event is active */
                 /* if it is the first time, set the begin time  */
                 if (i.value()->begin == 0)
                 {
                     i.value()->begin = Now;
-                    LOG_PRINT(verbose_e, "%s - set begin as %ld\n", i.key().toAscii().data(), Now);
+                    // fprintf(stderr, "%s - set begin as %ld\n", i.key().toAscii().data(), Now);
                 }
                 /* if no time filter is set or if the time filter is expired, dump the event */
                 if (i.value()->filtertime == 0 || Now >= i.value()->begin + i.value()->filtertime)
                 {
                     i.value()->begin = 0;
-                    LOG_PRINT(verbose_e, "%s [%d] = %d - dumpEvent\n", i.key().toAscii().data(), i.value()->CtIndex, var);
+                    // fprintf(stderr, "%s Index[%d] = 0x[%X] - dumpEvent\n", i.key().toAscii().data(), i.value()->CtIndex, var);
                     dumpEvent(i.key(), i.value(), (var != 0) ? alarm_rise_e : alarm_fall_e);
                 }
                 else
@@ -416,7 +418,7 @@ void Logger::run()
             }
             else
             {
-                LOG_PRINT(error_e, "cannot read variable '%s'\n", i.key().toAscii().data());
+                fprintf(stderr, "cannot read variable '%s'\n", i.key().toAscii().data());
             }
         }
         /* if the logger is started */
@@ -605,8 +607,9 @@ size_t Logger::loadAlarmsTable()
 
         /* skip - operator */
 
-        /* extract the time filter before sho the alarm/event */
+        /* extract the time filter before show the alarm/event */
         item->filtertime = 0;
+        item->begin = 0;
 
         /* extract the description of the alarm/event */
         p = strrchr(p, ']');
@@ -635,10 +638,11 @@ size_t Logger::loadAlarmsTable()
 
         EventHash.insert(tag, item);
         elem_nb++;
+        // fprintf(stderr, "Loaded Alarm/Event [%d]: Type:0=E,1=A[%d] Variable:[%s] CondVar:[%s] Level:[%d] CtIndex:[%d]\n", elem_nb, item->persistence, tag, item->description, item->level, item->CtIndex);
     }
     fclose(fp);
     LOG_PRINT(verbose_e, "Loaded %d record\n", elem_nb);
-
+    // fprintf(stderr, "Total Alarm/Event count:[%d]\n", EventHash.count());
     return elem_nb;
 }
 
@@ -647,7 +651,8 @@ int Logger::getElemAlarmStyleIndex(event_descr_t * event_msg)
     QHash<QString, event_t *>::const_iterator item = EventHash.find(event_msg->tag);
     if (item == EventHash.end())
     {
-        LOG_PRINT(error_e, "FATAL: cannot find '%s' into hash table\n", event_msg->tag);
+
+        fprintf(stderr, "getElemAlarmStyleIndex: cannot find '%s' into hash table\n", event_msg->tag);
         return false;
     }
     
@@ -742,6 +747,9 @@ bool Logger::dumpEvent(QString varname, event_t * item, enum alarm_event_e alarm
 
     strftime (buffer, FILENAME_MAX, "%Y/%m/%d,%H:%M:%S", timeinfo);
     
+    if (alarm_event > 0)  {
+        // fprintf(stderr, "dumpEvent Varname:[%s] Event Type:[%d] Description:[%s] Level:[%d] CtIndex:[%d] Event:[%d]\n", varname.toLatin1().data(), item->persistence, item->description, item->level, item->CtIndex, alarm_event);
+    }
     pthread_mutex_lock(&alarmevents_list_mutex);
     {
         // called from dumpAck()
