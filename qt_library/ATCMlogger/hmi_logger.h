@@ -114,6 +114,7 @@ public:
     bool logstop();
     bool logshot();
     bool logreset();
+    bool logrunning();
 private:
     FILE * openFile(bool daily, int * newfile, const char * basedir, const char * subdir = NULL);
     int getElemAlarmStyleIndex(event_descr_t * event_msg);
@@ -161,5 +162,6 @@ extern bool doReloadAlarmsLog;
 #define logStop()  logger->logstop()
 #define logShot()  logger->logshot()
 #define logReset() logger->logreset()
+#define logRunning() logger->logrunning()
 
 #endif // HMI_LOGGER_H

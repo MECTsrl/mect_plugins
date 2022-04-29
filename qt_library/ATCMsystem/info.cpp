@@ -190,7 +190,15 @@ void info::refreshApplTab()
     readFromDbQuick(ID_PLC_HMI_Version, &i); // ex HMIversion
     ui->appl_text->appendPlainText(QString("HMI Application: %1").arg((float)i/1000.0, 0, 'f', 3));
 
+    // Logger Status
+    if (logRunning())  {
+        ui->appl_text->appendPlainText(QString("Logger: Running"));
+    }
+    else  {
+        ui->appl_text->appendPlainText(QString("Logger: Stopped"));
+    }
     ui->appl_text->appendPlainText("");
+
     if (getSdSN(SDcardSN)) {
         strcpy(SDcardSN, "-");
     }

@@ -1337,6 +1337,11 @@ int Logger::removeOldest(const char * dir)
     return 1;
 }
 
+bool Logger::logrunning()
+{
+    return logger_start;
+}
+
 int removeTheOldestLog(const char * dir, FILE *current)
 {
     struct dirent **filelist;
