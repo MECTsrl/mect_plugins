@@ -71,7 +71,7 @@
     mystyle.append("QLabel#labelMax"); \
     mystyle.append("{"); \
     mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
-    mystyle.append("    color: rgb(0,0,0);"); \
+    mystyle.append("    color: rgb(255, 237, 0);"); \
     mystyle.append("}"); \
     mystyle.append(""); \
     mystyle.append("QLineEdit#lineEditMax"); \
@@ -82,7 +82,7 @@
     mystyle.append("QLabel#labelMin"); \
     mystyle.append("{"); \
     mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
-    mystyle.append("    color: rgb(0,0,0);"); \
+    mystyle.append("    color: rgb(255, 237, 0);"); \
     mystyle.append("}"); \
     mystyle.append(""); \
     mystyle.append("QLineEdit#lineEditMin"); \
