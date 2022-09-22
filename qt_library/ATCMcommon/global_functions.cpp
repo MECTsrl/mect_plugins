@@ -1077,12 +1077,12 @@ bool isWanOn()
     return (readSettings.exitCode() == 0);
 }
 
-bool waitShellCommand(QString szCommand)
-// Shell a command and wait complection
+bool waitShellCommand(QString szCommand, int msecs)
+// Shell a command and wait complection waiting almost msecs, msecs = -1 --> wait forever
 {
     QProcess shellProcess;
     shellProcess.start("/bin/sh", QStringList() << "-c" << szCommand);
-    shellProcess.waitForFinished();
+    shellProcess.waitForFinished(msecs);
 
     return (shellProcess.exitCode() == 0);
 }
