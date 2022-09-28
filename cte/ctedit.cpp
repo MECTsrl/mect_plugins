@@ -2536,7 +2536,8 @@ void ctedit::pasteSelected()
     }
     if (fClipSourceOk)  {
         if (nRow + lstPastedRecords.count() <= MAX_NONRETENTIVE)  {
-            nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows, true);
+            bool fAddPrefix = ui->chkPrepend->isChecked();
+            nPasted = addRowsToCT(nRow, lstPastedRecords, lstDestRows, fAddPrefix);
         }
         else  {
         }
