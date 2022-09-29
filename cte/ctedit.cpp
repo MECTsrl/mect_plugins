@@ -6558,8 +6558,11 @@ int ctedit::addRowsToCT(int nRow, QList<QStringList > &lstRecords2Add, QList<int
         // Aggiunge un prefisso al nome della variabile da copiare
         if (adjustVarName)  {
             QString szNewVarName = lstRecords2Add[nPasted][colName].trimmed();
-            szNewVarName.prepend(szCopyPrefix);
-            lstRecords2Add[nPasted][colName] = szNewVarName.left(MAX_IDNAME_LEN);
+            // Only for Used Variables
+            if (!szNewVarName.isEmpty())  {
+                szNewVarName.prepend(szCopyPrefix);
+                lstRecords2Add[nPasted][colName] = szNewVarName.left(MAX_IDNAME_LEN);
+            }
         }
         // Force Block address to Row Number
         lstRecords2Add[nPasted][colBlock] = QString::number(nDestRow + 1);
