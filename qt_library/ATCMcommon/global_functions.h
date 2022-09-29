@@ -190,6 +190,8 @@ u_int32_t getMectSuiteVersion();
 
 bool check_wifi_board();                // returns true if wifi board wlan0 is present
 
+bool check_vpn_board();                 // returns true if vpn board is present
+
 bool check_usb_wan_board();             // returns true if wan board ppp0 is present
 
 bool get_wifi_signal_level(int &nQuality, int &nSignalLevel);   // Returns true if wlan0 is present and Signal Quality (0..100) and Signal Level (dbm)
@@ -207,6 +209,8 @@ bool    getBoardIPInfo(QString interface, QNetworkAddressEntry &netAddr);   // R
 bool isWlanOn(void);                    // returns true if wifi board wlan0 is up and connected to an AP
 
 bool isWanOn(void);                     // returns true if WLan ppp0 board is up and connected
+
+bool isVpnOn(void);                     // returns true if tun_mrs (VPN) is up
 
 bool waitShellCommand(QString szCommand, int msecs = 30000);   // Shell a command and wait complection waiting almost msecs, msecs = -1 --> wait forever
 

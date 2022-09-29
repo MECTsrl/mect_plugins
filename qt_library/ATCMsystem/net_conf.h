@@ -57,6 +57,8 @@ private slots:
     void on_pushButton_wan0_DNS1_clicked();
     void on_pushButton_wan0_DNS2_clicked();
 
+    // Vpn
+
     void on_pushButtonHome_clicked();
     void on_pushButtonBack_clicked();
     void on_pushButtonSaveAll_clicked();
@@ -76,9 +78,11 @@ private:
     bool is_eth0_enabled;
     bool is_wlan_active;
     bool is_wan_active;
+    bool is_vpn_active;
     bool is_loading;
     bool is_WifiScanning;
     bool is_WanStarting;
+    bool is_VpnStarting;
     // Update Flags
     bool saveEth0;
     bool saveWlan0;

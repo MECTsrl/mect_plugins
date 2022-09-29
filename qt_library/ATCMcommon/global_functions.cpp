@@ -927,6 +927,12 @@ bool check_wifi_board()
     return system("ifconfig wlan0 >/dev/null 2>&1") == 0;
 }
 
+bool check_vpn_board()
+// returns true if vpn board is present
+{
+    return system("ifconfig tun_mrs >/dev/null 2>&1") == 0;
+}
+
 bool check_usb_wan_board()
 // returns true if wan board usb_wwan is present
 {
@@ -1072,6 +1078,16 @@ bool isWanOn()
 {
     QProcess readSettings;
     readSettings.start("/bin/sh", QStringList() << "-c" << "ip addr show dev ppp0");
+    readSettings.waitForFinished();
+
+    return (readSettings.exitCode() == 0);
+}
+
+bool isVpnOn(void)
+// returns true if tun_mrs (VPN) is up
+{
+    QProcess readSettings;
+    readSettings.start("/bin/sh", QStringList() << "-c" << "ip addr show dev tun_mrs | grep 'inet'");
     readSettings.waitForFinished();
 
     return (readSettings.exitCode() == 0);

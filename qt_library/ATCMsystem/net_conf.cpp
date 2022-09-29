@@ -53,6 +53,7 @@ net_conf::net_conf(QWidget *parent) :
     is_eth0_enabled = false;
     is_WifiScanning = false;
     is_WanStarting = false;
+    is_VpnStarting = false;
     saveEth0 = false;
     saveWlan0 = false;
     saveWan = false;
@@ -333,6 +334,9 @@ void net_conf::reload()
 
     // ppp0
     is_wan_active = isWanOn();
+
+    // tun_mrs VPN
+    is_vpn_active = isVpnOn();
 
     // eth0
     if (is_eth0_enabled)  {
@@ -662,6 +666,11 @@ void net_conf::updateIcons()
             ui->label_wan0_IP->setText(NO_IP);
         }
     }
+
+    // vpn
+    bool  is_vpn_present = check_vpn_board();
+    ui->tab_vpn->setEnabled(! is_VpnStarting);
+
     // Status feedback
     /* fprintf(stderr, "Update Icons: Lan Enabled:%d | WLan Present:%d - Active:%d | Wan Present:%d - Active:%d\n",
                     is_eth0_enabled,  is_wlan_present, is_wlan_active, is_wan_present, is_wan_active); */

@@ -107,7 +107,7 @@ QComboBox
 }  </string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_eth0">
       <attribute name="title">
@@ -1167,6 +1167,11 @@ QComboBox
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_vpn">
+      <attribute name="title">
+       <string>Vpn</string>
+      </attribute>
      </widget>
     </widget>
    </item>
