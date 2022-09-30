@@ -16,7 +16,7 @@
 		<h3 class="western">Inserimento della micro SD card</h3>
 		<p class="western">Sui pannelli TPAC1007_04 &egrave; possibile inserire una micro SD card fino a 64 GB (Formattazione FAT con
 	un&rsquo;unica partizione o ext3). La prima volta che si inserir&agrave; apparir&agrave; la seguente schermata:</p>
-	<p class="western"><img src="SD_card_1.png" name="Immagine234" align="bottom" width="435" height="247" border="0"/></p>
+	<p class="western"><img src="SD_card_1.png" name="Immagine234" align="bottom" width="480" height="272" border="0"/></p>
 	
 	<p class="western" >E&rsquo; possibile scegliere 4 modalit&agrave;:</p>
 	<ul>
@@ -34,6 +34,14 @@
 		<li/>
 <p class="western"><strong>Use it as data storages (only LOG):</strong> la card viene utilizzata esclusivamente come memoria per i LOG. Massima dimensione 4GB.</p>
 	</ul>
+	<br/>
+	<p class="western"><strong>Negli ultimi due casi, solamente se la scheda SD è stata formattata in formato ext3, è possibile creare anche un file di swap per aumentare la memoria RAM disponibile.</strong></p>
+	<p class="western">Occorre spuntare la checkbox "create memory swap file" e la dimensione dell'area desiderata (16/32/64/128/256 MB). </p>
+	<p class="western">La scelta proposta è 128MB, pari alla RAM presente sulla scheda.</p>
+	<p class="western">Dopo aver selezionato il tipo di utilizzo desiderato, se spuntata questa opzione, partirà la praparazione dell'area di Swap.</p>
+	<p class="western"><img src="SD_card_2.png" name="Immagine234" align="bottom" width="480" height="272" border="0"/></p>
+	<p class="western">Questa operazione può essere molto lunga (circa 12 minuti per 128MB) e verrà effettuata una sola volta.</p>
+	<p class="western">L'utilizzo della memoria RAM e dell'area di swap può essere verificato con il comando "free" da terminale.<p>
 	<br/>
 	</body>
 </html>
