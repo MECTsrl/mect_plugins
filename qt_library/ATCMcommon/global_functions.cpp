@@ -1093,12 +1093,24 @@ bool isVpnOn(void)
     return (readSettings.exitCode() == 0);
 }
 
-bool waitShellCommand(QString szCommand, int msecs)
+bool waitShellCommand(QString szCommand)
+// Shell a command and wait complection waiting almost msecs, msecs = -1 --> wait forever
+{
+/*    int msecs = -1;
+    QProcess shellProcess;
+    shellProcess.start("/bin/sh", QStringList() << "-c" << szCommand);
+    shellProcess.waitForFinished(msecs);
+*/
+    return (waitShellCommand(szCommand, -1));
+}
+
+// bool waitShellCommandmSecs(QString szCommand, int mSecs)
+bool waitShellCommand(QString szCommand, int mSecs)
 // Shell a command and wait complection waiting almost msecs, msecs = -1 --> wait forever
 {
     QProcess shellProcess;
     shellProcess.start("/bin/sh", QStringList() << "-c" << szCommand);
-    shellProcess.waitForFinished(msecs);
+    shellProcess.waitForFinished(mSecs);
 
     return (shellProcess.exitCode() == 0);
 }

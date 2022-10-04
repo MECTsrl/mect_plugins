@@ -668,10 +668,13 @@ void net_conf::updateIcons()
     }
 
     // vpn
+    //FIXME: Hidden for 3.4.1
+    ui->tab_vpn->setVisible(false);
+    ui->pushButton_vpn_getcert->setVisible(false);
+    //FIXME: Hidden for 3.4.1
+    /*
     bool  is_vpn_present = check_vpn_board();
     ui->tab_vpn->setEnabled(! is_VpnStarting);
-    //FIXME: Hidden for 3.4.1
-    ui->pushButton_vpn_getcert->setVisible(false);
     ui->pushButton_vpn_getcert->setEnabled(! is_vpn_present && ! is_VpnStarting);
     if (is_vpn_present && ! is_VpnStarting)  {
         ui->label_vpn_IP->setText(getIPAddr("tun_mrs"));
@@ -681,7 +684,7 @@ void net_conf::updateIcons()
         ui->label_vpn_IP->setText(NO_IP);
         ui->label_vpn_status->setText(NO_IP);
     }
-
+    */
 
     // Status feedback
     /* fprintf(stderr, "Update Icons: Lan Enabled:%d | WLan Present:%d - Active:%d | Wan Present:%d - Active:%d\n",
