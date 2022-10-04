@@ -16,7 +16,7 @@
 		<h3 class="western">Einlegen der Micro-SD-Karte</h3>
 		<p class="western">Auf den Panels TPAC1007_04 ist es möglich, eine Micro-SD-Karte mit bis zu 64 GB einzustecken(ext3 oder FAT-Formatierung mit einer
 	 einzigen Partition). Bei der ersten Eingabe erscheint der folgende Bildschirm:</p>
-	<p class="western"><img src="SD_card_1.png" name="Immagine234" align="bottom" width="435" height="247" border="0"/></p>
+	<p class="western"><img src="SD_card_1.png" name="Immagine234" align="bottom" width="480" height="272" border="0"/></p>
 	
 	<p class="western" >Sie können aus 4 Modi wählen:</p>
 	<ul>
@@ -34,6 +34,14 @@
 		<li/>
 <p class="western"><strong>Use it as data storages (only LOG):</strong> Die Karte wird ausschließlich als Speicher für LOGs verwendet. Maximale Größe 4 GB.</p>
 	</ul>
+	<br/>
+	<p class="western"><strong>In den letzten beiden Fällen, nur wenn die SD-Karte im ext3-Format formatiert wurde, ist es auch möglich, eine Auslagerungsdatei zu erstellen, um den verfügbaren RAM-Speicher zu vergrößern.</strong></p>
+	<p class="western">Sie müssen das Kontrollkästchen "Speicherauslagerungsdatei erstellen" und die Größe des gewünschten Bereichs (16/32/64/128/256 MB) aktivieren. </p>
+	<p class="western">Die vorgeschlagene Auswahl beträgt 128 MB, was dem auf der Karte vorhandenen RAM entspricht.</p>
+	<p class="western">Nach Auswahl der gewünschten Nutzungsart beginnt bei aktivierter Option die Vorbereitung des Swap-Bereichs.</p>
+	<p class="western"><img src="SD_card_2.png" name="Immagine234" align="bottom" width="480" height="272" border="0"/></p>
+	<p class="western">Dies kann lange dauern (ca. 12 Minuten für 128 MB) und wird nur einmal durchgeführt.</p>
+	<p class="western">Die Belegung von RAM-Speicher und Swap-Bereich kann mit dem Befehl „free“ vom Terminal aus überprüft werden.</p>
 	<br/>
 	</body>
 </html>

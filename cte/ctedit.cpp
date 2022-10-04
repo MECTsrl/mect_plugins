@@ -818,10 +818,16 @@ bool    ctedit::selectCTFile(QString szFileCT)
         }
         m_isCtModified = false;
         // Porta in primo piano il Tab delle Variabili
+        for (int nRow = 0; nRow < lstCTRecords.count(); nRow++)  {
+            if (lstCTRecords[nRow].UsedEntry)  {
+                m_nGridRow = nRow;
+                break;
+            }
+        }
+        qDebug("selectCTFile(): Current Row: [%d]", m_nGridRow);
         jumpToGridRow(m_nGridRow, true, true);
         ui->tabWidget->setCurrentIndex(TAB_CT);
     }
-    qDebug("Size of CT Record %d", sizeof(CrossTableRecord));
     return fRes;
 }
 bool    ctedit::loadCTFile(QString szFileCT, QList<CrossTableRecord> &lstCtRecs, bool fLoadGrid)
@@ -8281,6 +8287,7 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         // Aggiorna stato del Multiline Edit
         m_fMultiEdit = true;
         nRow = m_nGridRow;
+        qDebug("Entering MultiEdit, Selected Row count:[%d] - Current Row:[%d]", lstSelectedRows.count(), m_nGridRow);
         // Cerca l'ultima riga attiva del set delle selezionate
         for (int lastRow = lstSelectedRows.count() - 1; lastRow >= 0; lastRow--)  {
             nRow = lstSelectedRows[lastRow];
@@ -8292,7 +8299,7 @@ void ctedit::on_cmdMultiEdit_clicked(bool checked)
         }
     }
     // Aggiorna il frame di Editing
-    if (lstCTRecords[nRow].UsedEntry) {
+    if (m_nGridRow >= 0 && lstCTRecords[nRow].UsedEntry) {
         QStringList lstFields;
         bool fRes = recCT2FieldsValues(lstCTRecords, lstFields, nRow);
         if (fRes)  {
