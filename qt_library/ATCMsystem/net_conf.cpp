@@ -53,7 +53,6 @@ net_conf::net_conf(QWidget *parent) :
     is_eth0_enabled = false;
     is_WifiScanning = false;
     is_WanStarting = false;
-    is_VpnStarting = false;
     saveEth0 = false;
     saveWlan0 = false;
     saveWan = false;
@@ -334,9 +333,6 @@ void net_conf::reload()
 
     // ppp0
     is_wan_active = isWanOn();
-
-    // tun_mrs VPN
-    is_vpn_active = isVpnOn();
 
     // eth0
     if (is_eth0_enabled)  {
@@ -669,8 +665,8 @@ void net_conf::updateIcons()
 
     // vpn
     //FIXME: Hidden for 3.4.1
-    ui->tab_vpn->setVisible(false);
-    ui->pushButton_vpn_getcert->setVisible(false);
+    // ui->tab_vpn->setVisible(false);
+    // ui->pushButton_vpn_getcert->setVisible(false);
     //FIXME: Hidden for 3.4.1
     /*
     bool  is_vpn_present = check_vpn_board();
