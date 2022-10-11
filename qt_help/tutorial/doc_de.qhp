@@ -16,7 +16,7 @@
 				<section title="Konvertieren Sie ein 2.0.13-Projekt in eine 3.x-Version" ref="Convertire_progetto_2x_de.html">	
 				<section title="Systempasswort ändern" ref="Cambio_password_sistema_de.html"/>
 				</section>
-				<section title="Vorbereitende Operationen" ref="Operazioni_preliminari_de.html">
+				<section title="Vorbereitende Operationen - Verbindung" ref="Operazioni_preliminari_de.html">
 					<section title="Lokale Verbindung" ref="Connetivita_locale_de.html"/>
 					<section title="Fernverbindung (sMily)" ref="Connetivita_de.html">
 					<section title="Installation von OpenVPN" ref="Installazione_OpenVPN_de.html"/>
