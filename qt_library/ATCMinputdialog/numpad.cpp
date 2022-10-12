@@ -17,6 +17,11 @@
  * @brief this macro is used to set the numpad style.
  * the syntax is html stylesheet-like
  */
+// DarkSlateGray
+// Yellow
+// mystyle.append("selection-background-color: rgb(87, 130, 193);"); \
+// mystyle.append("selection-color: red;"); \
+
 #define SET_NUMPAD_STYLE() { \
     QString mystyle; \
     mystyle.append(this->styleSheet()); \
@@ -32,8 +37,8 @@
     mystyle.append("color: LemonChiffon;"); \
     mystyle.append("background-color: DimGray;"); \
     mystyle.append("background-repeat: no-repeat;"); \
-    mystyle.append("selection-background-color: rgb(87, 130, 193);"); \
-    mystyle.append("selection-color: red;"); \
+    mystyle.append("selection-background-color: DarkSlateGray;"); \
+    mystyle.append("selection-color: Yellow;"); \
     mystyle.append("font: 18pt \""FONT_TYPE"\";"); \
     mystyle.append("}"); \
     mystyle.append("QMessageBox"); \
@@ -76,7 +81,7 @@
     mystyle.append(""); \
     mystyle.append("QLineEdit#lineEditMax"); \
     mystyle.append("{"); \
-    mystyle.append("    color: rgb(255,0,0);"); \
+    mystyle.append("    color: LawnGreen;"); \
     mystyle.append("}"); \
     mystyle.append(""); \
     mystyle.append("QLabel#labelMin"); \
@@ -87,7 +92,7 @@
     mystyle.append(""); \
     mystyle.append("QLineEdit#lineEditMin"); \
     mystyle.append("{"); \
-    mystyle.append("    color: rgb(255,0,0);"); \
+    mystyle.append("    color: LawnGreen;"); \
     mystyle.append("}"); \
     mystyle.append("QLineEdit#lineEditVal"); \
     mystyle.append("{"); \
@@ -95,6 +100,10 @@
     mystyle.append("}"); \
     this->setStyleSheet(mystyle); \
     }
+
+// mystyle.append("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DarkGray, stop:1 rgb(22, 22, 22));"); \
+
+
 
 /**
  * @brief This is the constructor. The operation written here, are executed only one time: at the instanziation of the page.
