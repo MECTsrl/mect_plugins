@@ -116,7 +116,7 @@
 					<section title="Errori di compilazione" ref="Errori_compilazione.html"/>	
 					<section title="Realizzazione di un'automazione" ref="Realizzazione_automazione_HMI.html"/>	
 					<section title="Funzionamento ricette" ref="Funzionamento_ricette.html"/>
-					<section title="Funzionamento storici" ref="Funzionamento_storici.html"/>
+					<section title="Funzionamento storici - Data logger" ref="Funzionamento_storici.html"/>
 					<section title="Funzionamento allarmi" ref="Funzionamento_allarmi.html">	
 						<section title="Pagina alarms" ref="Pagina_alarms.html"/>
 						<section title="Pagina alarms_history" ref="Pagina_alarms_history.html"/>

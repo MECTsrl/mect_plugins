@@ -116,7 +116,7 @@
 					<section title="Build errors" ref="Errori_compilazione_eng.html"/>
 					<section title="Setting up an automation" ref="Realizzazione_automazione_HMI_eng.html"/>	
 					<section title="Recipes functioning" ref="Funzionamento_ricette_eng.html"/>
-					<section title="History functioning" ref="Funzionamento_storici_eng.html"/>
+					<section title="History functioning - Data logger" ref="Funzionamento_storici_eng.html"/>
 					<section title="Alarm functioning" ref="Funzionamento_allarmi_eng.html">	
 						<section title="Alarms page" ref="Pagina_alarms_eng.html"/>
 						<section title="Alarms_history page" ref="Pagina_alarms_history_eng.html"/>
