@@ -69,24 +69,12 @@
     mystyle.append("{"); \
     mystyle.append("	image: url(:/libicons/img/eye_visible_32.png);"); \
     mystyle.append("}"); \
-    mystyle.append("QLabel#labelMax"); \
+    mystyle.append("QLabel#labelMax, QLabel#labelMin, QLabel#labelPrompt"); \
     mystyle.append("{"); \
     mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
     mystyle.append("    color: rgb(255, 237, 0);"); \
     mystyle.append("}"); \
-    mystyle.append(""); \
-    mystyle.append("QLineEdit#lineEditMax"); \
-    mystyle.append("{"); \
-    mystyle.append("    color: LawnGreen;"); \
-    mystyle.append("}"); \
-    mystyle.append(""); \
-    mystyle.append("QLabel#labelMin"); \
-    mystyle.append("{"); \
-    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
-    mystyle.append("    color: rgb(255, 237, 0);"); \
-    mystyle.append("}"); \
-    mystyle.append(""); \
-    mystyle.append("QLineEdit#lineEditMin"); \
+    mystyle.append("QLineEdit#lineEditMax, QLineEdit#lineEditMin"); \
     mystyle.append("{"); \
     mystyle.append("    color: LawnGreen;"); \
     mystyle.append("}"); \
