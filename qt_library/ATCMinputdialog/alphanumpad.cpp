@@ -40,7 +40,7 @@
     mystyle.append("QPushButton"); \
     mystyle.append("{"); \
     mystyle.append("text-align: center;"); \
-    mystyle.append("border-radius: 8px;"); \
+    mystyle.append("border-radius: 4px;"); \
     mystyle.append("border: 2px solid  LemonChiffon;"); \
     mystyle.append("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DarkGray, stop:1 rgb(22, 22, 22));"); \
     mystyle.append("color: LemonChiffon;"); \
@@ -62,6 +62,16 @@
     mystyle.append("QPushButton#pushButtonPassword:checked"); \
     mystyle.append("{"); \
     mystyle.append("	image: url(:/libicons/img/eye_visible_32.png);"); \
+    mystyle.append("}"); \
+    mystyle.append("QPushButton#pushButtonCapsLock"); \
+    mystyle.append("{"); \
+    mystyle.append("	image-position: center; "); \
+    mystyle.append("	image: url(:/libicons/img/Up.png); "); \
+    mystyle.append("	qproperty-focusPolicy: NoFocus;"); \
+    mystyle.append("}"); \
+    mystyle.append("QPushButton#pushButtonCapsLock:checked"); \
+    mystyle.append("{"); \
+    mystyle.append("	image: url(:/libicons/img/Down.png);"); \
     mystyle.append("}"); \
     this->setStyleSheet(mystyle); \
     }
@@ -209,7 +219,7 @@ void alphanumpad::on_pushButtonEsc_clicked()
 
 void alphanumpad::on_pushButtonEnter_clicked()
 {
-    if (ui->lineEditVal->text().length() == 0 && clean == false)
+    if (ui->lineEditVal->text().isEmpty() && not clean)
     {
         reject();
     }
@@ -376,11 +386,12 @@ void alphanumpad::on_pushButtonSpace_clicked()
     ui->lineEditVal->insert(" ");
 }
 
-void alphanumpad::on_pushButtonCapsLock_clicked(bool checked)
+void alphanumpad::on_pushButtonCapsLock_toggled(bool checked)
 {
     capsLock = checked;
     showUpper(checked);
 }
+
 
 void alphanumpad::showUpper(bool checked)
 {
@@ -603,7 +614,7 @@ void alphanumpad::on_pushButtonDoubleQuote_clicked()
     ui->lineEditVal->insert(QString(QChar::fromAscii(34)));
 }
 
-void alphanumpad::on_pushButtonPassword_clicked(bool checked)
+void alphanumpad::on_pushButtonPassword_toggled(bool checked)
 {
     if (checked)  {
         ui->lineEditVal->setEchoMode(QLineEdit::Normal);
@@ -611,4 +622,32 @@ void alphanumpad::on_pushButtonPassword_clicked(bool checked)
     else  {
         ui->lineEditVal->setEchoMode(QLineEdit::Password);
     }
+}
+
+void alphanumpad::setValue(char* value)
+{
+    if (value != NULL)  {
+        _value = value;
+        ui->lineEditVal->setText(QString(value));
+    }
+    else  {
+        ui->lineEditVal->clear();
+    }
+}
+
+void alphanumpad::getValue(char* value)
+{
+    if (value != NULL)  {
+        strcpy(value, ui->lineEditVal->text().toAscii().data());
+    }
+}
+
+void    alphanumpad::setQStringValue(const QString &stringValue)
+{
+    ui->lineEditVal->setText(stringValue);
+}
+
+QString alphanumpad::getQStringValue()
+{
+    return ui->lineEditVal->text().trimmed();
 }

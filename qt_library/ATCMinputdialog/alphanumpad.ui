@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>285</height>
+    <height>272</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,24 +18,31 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>0</number>
+    <number>2</number>
    </property>
-   <property name="leftMargin">
-    <number>1</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>1</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>0</number>
    </property>
    <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::MinimumExpanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_9">
      <property name="spacing">
-      <number>0</number>
+      <number>1</number>
      </property>
      <item>
       <widget class="QLineEdit" name="lineEditVal">
@@ -81,7 +88,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>80</width>
          <height>60</height>
         </size>
        </property>
@@ -102,25 +109,12 @@
     </layout>
    </item>
    <item>
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::MinimumExpanding</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>15</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <property name="spacing">
-      <number>0</number>
+      <number>1</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMaximumSize</enum>
      </property>
      <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButton1">
@@ -132,14 +126,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -175,14 +169,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -218,14 +212,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -261,14 +255,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -304,14 +298,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -347,14 +341,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -390,14 +384,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -433,14 +427,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -476,14 +470,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -519,14 +513,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -562,14 +556,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>40</width>
-         <height>40</height>
+         <width>24</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>70</width>
-         <height>140</height>
+         <width>72</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -593,10 +587,25 @@
    </item>
    <item>
     <widget class="QStackedWidget" name="stackedKeys">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <widget class="QWidget" name="pageAlpha">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <property name="spacing">
-        <number>1</number>
+        <number>0</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMaximumSize</enum>
        </property>
        <property name="margin">
         <number>0</number>
@@ -605,6 +614,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="spacing">
           <number>1</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
          </property>
          <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="q">
@@ -616,14 +628,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -659,14 +671,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -702,14 +714,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -745,14 +757,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -788,14 +800,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -831,14 +843,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -874,14 +886,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -917,14 +929,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -960,14 +972,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1003,14 +1015,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1042,6 +1054,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <property name="spacing">
           <number>1</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
          </property>
          <item>
           <spacer name="horizontalSpacer_3">
@@ -1081,14 +1096,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1124,14 +1139,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1167,14 +1182,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1210,14 +1225,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1253,14 +1268,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1296,14 +1311,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1339,14 +1354,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1382,14 +1397,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1425,14 +1440,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1493,6 +1508,9 @@
          <property name="spacing">
           <number>1</number>
          </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
+         </property>
          <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonSingleQuote">
            <property name="sizePolicy">
@@ -1503,14 +1521,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1537,14 +1555,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1580,14 +1598,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1623,14 +1641,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1666,14 +1684,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1709,14 +1727,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1752,14 +1770,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1795,14 +1813,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1838,14 +1856,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1872,14 +1890,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1901,9 +1919,18 @@
       </layout>
      </widget>
      <widget class="QWidget" name="pageSymbols">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
-        <number>1</number>
+        <number>2</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMaximumSize</enum>
        </property>
        <property name="margin">
         <number>0</number>
@@ -1912,6 +1939,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <property name="spacing">
           <number>1</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
          </property>
          <item alignment="Qt::AlignBottom">
           <widget class="QPushButton" name="pushButtonMinus">
@@ -1923,14 +1953,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1960,14 +1990,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -1997,14 +2027,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2034,14 +2064,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2071,14 +2101,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2108,14 +2138,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2145,14 +2175,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2182,14 +2212,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2219,14 +2249,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2256,14 +2286,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2289,6 +2319,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <property name="spacing">
           <number>1</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
          </property>
          <item>
           <spacer name="horizontalSpacer_9">
@@ -2333,14 +2366,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2370,14 +2403,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2407,14 +2440,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2444,14 +2477,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2481,14 +2514,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2518,14 +2551,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2555,14 +2588,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2592,14 +2625,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2629,14 +2662,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2696,6 +2729,9 @@
          <property name="spacing">
           <number>1</number>
          </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
+         </property>
          <item alignment="Qt::AlignTop">
           <widget class="QPushButton" name="pushButtonDoubleQuote">
            <property name="sizePolicy">
@@ -2706,14 +2742,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2743,14 +2779,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2780,14 +2816,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2817,14 +2853,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2854,14 +2890,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2891,14 +2927,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2928,14 +2964,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -2965,14 +3001,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -3002,14 +3038,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -3039,14 +3075,14 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>24</width>
+             <height>38</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>70</width>
-             <height>140</height>
+             <width>72</width>
+             <height>80</height>
             </size>
            </property>
            <property name="font">
@@ -3075,7 +3111,10 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
      <property name="spacing">
-      <number>3</number>
+      <number>1</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMaximumSize</enum>
      </property>
      <item alignment="Qt::AlignBottom">
       <widget class="QPushButton" name="pushButtonEsc">
@@ -3090,14 +3129,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>90</width>
-         <height>40</height>
+         <width>40</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>80</width>
-         <height>140</height>
+         <width>65</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3151,14 +3190,14 @@ qproperty-focusPolicy: NoFocus;
        </property>
        <property name="minimumSize">
         <size>
-         <width>60</width>
-         <height>40</height>
+         <width>40</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>60</width>
-         <height>140</height>
+         <width>65</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3204,14 +3243,14 @@ qproperty-focusPolicy: NoFocus;
        </property>
        <property name="minimumSize">
         <size>
-         <width>60</width>
-         <height>40</height>
+         <width>40</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>60</width>
-         <height>140</height>
+         <width>65</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3256,14 +3295,14 @@ qproperty-focusPolicy: NoFocus;
        </property>
        <property name="minimumSize">
         <size>
-         <width>50</width>
-         <height>40</height>
+         <width>40</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>140</height>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3290,14 +3329,14 @@ qproperty-focusPolicy: NoFocus;
        </property>
        <property name="minimumSize">
         <size>
-         <width>60</width>
-         <height>40</height>
+         <width>40</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>60</width>
-         <height>140</height>
+         <width>65</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3309,14 +3348,19 @@ qproperty-focusPolicy: NoFocus;
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">qproperty-icon: url(:/libicons/img/Up.png);
-</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string notr="true"/>
        </property>
        <property name="checkable">
         <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -3333,14 +3377,14 @@ qproperty-focusPolicy: NoFocus;
        </property>
        <property name="minimumSize">
         <size>
-         <width>90</width>
-         <height>40</height>
+         <width>40</width>
+         <height>38</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>90</width>
-         <height>140</height>
+         <width>65</width>
+         <height>80</height>
         </size>
        </property>
        <property name="font">
@@ -3385,6 +3429,22 @@ qproperty-focusPolicy: NoFocus;
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::MinimumExpanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

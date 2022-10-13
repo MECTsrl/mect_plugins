@@ -24,6 +24,13 @@ public:
     explicit alphanumpad(char* value, char* def = NULL, bool password = false, QWidget *parent = 0);
     explicit alphanumpad(char* value, bool showSpecialChars, char* def = NULL, bool password = false, QWidget *parent = 0);
 
+    // char[] setter and getter
+    void setValue(char* value);
+    void getValue(char* value);
+    // QString setter and getter
+    void    setQStringValue(const QString &stringValue);
+    QString getQStringValue();
+
     ~alphanumpad();
     void reload();
 
@@ -78,8 +85,6 @@ private slots:
     void on_pushButtonSingleQuote_clicked();
     void on_pushButtonUnderscore_clicked();
     void on_pushButtonSpace_clicked();
-    void on_pushButtonCapsLock_clicked(bool checked);
-
 
     void on_pushButtonDot_clicked();
     void on_pushButtonMinus_clicked();
@@ -111,8 +116,8 @@ private slots:
     void on_pushButtonTilde_clicked();
     void on_pushButtonBacktick_clicked();
     void on_pushButtonDoubleQuote_clicked();
-
-    void on_pushButtonPassword_clicked(bool checked);
+    void on_pushButtonPassword_toggled(bool checked);
+    void on_pushButtonCapsLock_toggled(bool checked);
 
 private:
     Ui::alphanumpad *ui;

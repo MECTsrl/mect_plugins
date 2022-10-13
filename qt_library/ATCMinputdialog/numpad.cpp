@@ -17,10 +17,6 @@
  * @brief this macro is used to set the numpad style.
  * the syntax is html stylesheet-like
  */
-// DarkSlateGray
-// Yellow
-// mystyle.append("selection-background-color: rgb(87, 130, 193);"); \
-// mystyle.append("selection-color: red;"); \
 
 #define SET_NUMPAD_STYLE() { \
     QString mystyle; \
@@ -101,7 +97,6 @@
     this->setStyleSheet(mystyle); \
     }
 
-// mystyle.append("background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 DarkGray, stop:1 rgb(22, 22, 22));"); \
 
 
 
@@ -695,4 +690,11 @@ int numpad::baseOfInputFormat(enum input_fmt_e fmt)
         break;
     }
     return retVal;
+}
+
+void    numpad::setPrompt(const QString &labelTitle)
+{
+    ui->labelPrompt->setText(labelTitle);
+    ui->labelPrompt->setVisible(not labelTitle.isEmpty());
+
 }
