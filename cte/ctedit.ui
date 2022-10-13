@@ -1981,8 +1981,8 @@ QCheckBox::indicator:checked {
                      <widget class="QLabel" name="lblIf">
                       <property name="font">
                        <font>
-                        <weight>50</weight>
-                        <bold>false</bold>
+                        <weight>75</weight>
+                        <bold>true</bold>
                        </font>
                       </property>
                       <property name="text">
@@ -2100,8 +2100,8 @@ QCheckBox::indicator:checked {
                      <widget class="QLabel" name="lblIs">
                       <property name="font">
                        <font>
-                        <weight>50</weight>
-                        <bold>false</bold>
+                        <weight>75</weight>
+                        <bold>true</bold>
                        </font>
                       </property>
                       <property name="text">
@@ -2142,12 +2142,13 @@ QCheckBox::indicator:checked {
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
-                        <bold>false</bold>
+                        <weight>75</weight>
+                        <bold>true</bold>
                        </font>
                       </property>
                       <property name="styleSheet">
                        <string notr="true">QComboBox {
+	font: bold;
     min-width: 80px;
 }
 </string>
@@ -2196,8 +2197,8 @@ QCheckBox::indicator:checked {
                     </property>
                     <property name="font">
                      <font>
-                      <weight>50</weight>
-                      <bold>false</bold>
+                      <weight>75</weight>
+                      <bold>true</bold>
                      </font>
                     </property>
                     <property name="text">
@@ -2224,8 +2225,8 @@ QCheckBox::indicator:checked {
                     </property>
                     <property name="font">
                      <font>
-                      <weight>50</weight>
-                      <bold>false</bold>
+                      <weight>75</weight>
+                      <bold>true</bold>
                      </font>
                     </property>
                     <property name="text">
