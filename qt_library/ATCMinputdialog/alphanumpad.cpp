@@ -651,3 +651,8 @@ QString alphanumpad::getQStringValue()
 {
     return ui->lineEditVal->text().trimmed();
 }
+
+void    alphanumpad::setTextMasked(bool isMasked)
+{
+    ui->pushButtonPassword->setChecked(! isMasked);
+}

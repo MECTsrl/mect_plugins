@@ -30,6 +30,8 @@ public:
     // QString setter and getter
     void    setQStringValue(const QString &stringValue);
     QString getQStringValue();
+    // Password Style
+    void    setTextMasked(bool isMasked);
 
     ~alphanumpad();
     void reload();
