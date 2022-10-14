@@ -646,8 +646,3 @@ void    alphanumpad::setQStringValue(const QString &stringValue)
 {
     ui->lineEditVal->setText(stringValue);
 }
-
-QString alphanumpad::getQStringValue()
-{
-    return ui->lineEditVal->text().trimmed();
-}

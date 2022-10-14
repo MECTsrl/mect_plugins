@@ -29,7 +29,7 @@ public:
     void getValue(char* value);
     // QString setter and getter
     void    setQStringValue(const QString &stringValue);
-    QString getQStringValue();
+    QString getQStringValue() const { return ui->lineEditVal->text().trimmed(); }
 
     ~alphanumpad();
     void reload();
