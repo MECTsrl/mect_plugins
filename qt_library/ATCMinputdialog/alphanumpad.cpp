@@ -73,6 +73,11 @@
     mystyle.append("{"); \
     mystyle.append("	image: url(:/libicons/img/Down.png);"); \
     mystyle.append("}"); \
+    mystyle.append("QLabel#labelPrompt"); \
+    mystyle.append("{"); \
+    mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
+    mystyle.append("    color: rgb(255, 237, 0);"); \
+    mystyle.append("}"); \
     this->setStyleSheet(mystyle); \
     }
 
@@ -655,4 +660,10 @@ QString alphanumpad::getQStringValue()
 void    alphanumpad::setTextMasked(bool isMasked)
 {
     ui->pushButtonPassword->setChecked(! isMasked);
+}
+
+void    alphanumpad::setPrompt(const QString &labelTitle)
+{
+    ui->labelPrompt->setText(labelTitle);
+    ui->labelPrompt->setVisible(not labelTitle.isEmpty());
 }

@@ -32,6 +32,8 @@ public:
     QString getQStringValue();
     // Password Style
     void    setTextMasked(bool isMasked);
+    // Show Prompt label
+    void    setPrompt(const QString &labelTitle);
 
     ~alphanumpad();
     void reload();

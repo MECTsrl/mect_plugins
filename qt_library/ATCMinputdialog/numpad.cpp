@@ -684,5 +684,4 @@ void    numpad::setPrompt(const QString &labelTitle)
 {
     ui->labelPrompt->setText(labelTitle);
     ui->labelPrompt->setVisible(not labelTitle.isEmpty());
-
 }

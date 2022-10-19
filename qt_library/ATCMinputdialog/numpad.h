@@ -51,6 +51,7 @@ public:
     ~numpad();
     static int  baseOfInputFormat(enum input_fmt_e fmt);
     void reload();
+    // Show Prompt label
     void    setPrompt(const QString &labelTitle);
 
 private slots:
