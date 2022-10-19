@@ -818,7 +818,7 @@ bool fieldValues2CTrecList(QStringList &lstRecValues, QList<CrossTableRecord> &l
             lstCTRecs[nRow].BlockSize = nPos;
         }
         // Commento
-        strncpy(lstCTRecs[nRow].Comment, lstRecValues[colComment].trimmed().toAscii().data(), MAX_COMMENT_LEN - 1);
+        strncpy(lstCTRecs[nRow].Comment, lstRecValues[colComment].trimmed().simplified().toAscii().data(), MAX_COMMENT_LEN - 1);
         // Behavior    (No per MultiSelect)
         // Clear all Variable - Event fields
         lstCTRecs[nRow].usedInAlarmsEvents = FALSE;
