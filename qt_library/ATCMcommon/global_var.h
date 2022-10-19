@@ -97,6 +97,9 @@ extern QHash<QString, QString> TagTable;
 #define APPLICATION_PERMISSION "application"
 #define LICENCE_FILE ".licence"
 #define SD_MOUNT_POINT "/local/sd_card"
+#define SD_SWAPDIR  SD_MOUNT_POINT"/swap"
+#define SD_SWAPFILE SD_SWAPDIR"/swap_file"
+
 
 #define VERSION ( \
     (QDate::fromString(__DATE__, "MMM dd yyyy").toString("yyyyMMdd").length() != 0) \

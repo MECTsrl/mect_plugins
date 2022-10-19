@@ -857,7 +857,7 @@ u_int32_t getMectSuiteVersion()
     u_int32_t   msVersion = 0;
 
     QFile file(ROOTFS_VERSION);
-    if(file.exists()) {
+    if (file.exists()) {
         file.open(QIODevice::ReadOnly);
         QTextStream in(&file);
         while(!in.atEnd()) {
@@ -1093,8 +1093,54 @@ bool isVpnOn(void)
     return (readSettings.exitCode() == 0);
 }
 
+
+bool getRamInfo(int &nMemTotalMB, int &nMemFreeMB, int &nSwapTotalMB, int &nSwapFreeMB)
+// Get info about Total and free Ram and Swap Memory
+{
+    nMemTotalMB = 0;
+    nMemFreeMB = 0;
+    nSwapTotalMB = 0;
+    nSwapFreeMB = 0;
+    bool fRes = false;
+
+    FILE *fp = NULL;
+    char buff[64];
+    fp = fopen(MEM_INFO_FILE, "r");
+    if (fp)   {
+        while (fgets(buff, 63, fp)) {
+            char    memParam[32];
+            unsigned int     uValueKB = 0;
+            int nPar = sscanf(buff, "%16s %u kB", memParam, &uValueKB);
+            if (nPar == 2)  {
+                QString line = QString(memParam);
+                int nValueMB = (int) ((float (uValueKB) / 1024.0) + 0.5);
+                if (line.startsWith("MemTotal"))  {
+                    nMemTotalMB = nValueMB;
+                }
+                else if (line.startsWith("MemFree"))  {
+                    nMemFreeMB = nValueMB;
+                }
+                else if (line.startsWith("SwapTotal"))  {
+                    nSwapTotalMB = nValueMB;
+                }
+                else if (line.startsWith("SwapFree"))  {
+                    nSwapFreeMB = nValueMB;
+                    // last interesting line...
+                    fRes = true;
+                    break;
+                }
+            }
+        }
+        fclose(fp);
+        fp = NULL;
+    }
+    return fRes;
+}
+
+
+
 bool waitShellCommand(QString szCommand)
-// Shell a command and wait complection waiting almost msecs, msecs = -1 --> wait forever
+// Shell a command and wait complection waiting forever
 {
 /*    int msecs = -1;
     QProcess shellProcess;

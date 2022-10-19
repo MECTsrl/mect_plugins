@@ -84,6 +84,9 @@ extern "C" {
 #define ROUTING_FILE       "/proc/net/route"
 #define ROOTFS_VERSION     "/rootfs_version"
 
+#define MEM_INFO_FILE      "/proc/meminfo"
+
+
 #define APP_SIGN           "/usr/bin/sign"
 #define ZIP_BIN            "/usr/bin/zip"
 

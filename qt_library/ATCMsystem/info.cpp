@@ -22,6 +22,7 @@
 #include <QPlainTextEdit>
 #include <QNetworkInterface>
 #include <QNetworkAddressEntry>
+#include <QFileInfo>
 
 
 #if 0
@@ -202,10 +203,22 @@ void info::refreshApplTab()
     if (getSdSN(SDcardSN)) {
         strcpy(SDcardSN, "-");
     }
+    // Check SD Usage (codes from 0 to 4)
     i = checkSDusage() + 1;
-    if (i < 0 || i > 4)
+    if (i < 0 || i > 4)  {
         i = 0;
-    ui->appl_text->appendPlainText(QString("SDcard: %1 (%2)").arg(SDcardSN).arg(usage[i]));
+    }
+    // Swap File Info
+    QFileInfo swapFileInfo(SD_SWAPFILE);
+    QString sdUsage = QString("SDcard: %1 (%2)").arg(SDcardSN).arg(usage[i]);
+    if (swapFileInfo.exists())  {
+        qint64  swapSizeMB = swapFileInfo.size() / 1024 / 1024;
+        sdUsage.append(QString(" Swap file size [%1]MB") .arg(swapSizeMB));
+    }
+    else {
+        sdUsage.append(" Swap file not present");
+    }
+    ui->appl_text->appendPlainText(sdUsage);
 
     ui->appl_text->appendPlainText("");
     if (USBCheck())
@@ -215,6 +228,20 @@ void info::refreshApplTab()
     else
     {
         ui->appl_text->appendPlainText("USB: -");
+    }
+    // Ram usage
+    int nMemTotal = 0;
+    int nMemFree = 0;
+    int nSwapTotal = 0;
+    int nSwapFree = 0;
+
+    if (getRamInfo(nMemTotal, nMemFree, nSwapTotal, nSwapFree))  {
+        QString ramUsage = QString("System RAM Memory:[%1]MB Free:[%2]MB - Swap Memory:[%3]MB Free:[%4]")
+                .arg(nMemTotal) .arg(nMemFree) .arg(nSwapTotal) .arg(nSwapFree);
+        ui->appl_text->appendPlainText(ramUsage);
+    }
+    else  {
+        ui->appl_text->appendPlainText("Error Getting System Memory info");
     }
     // newline per QRcode
     ui->appl_text->appendPlainText("");

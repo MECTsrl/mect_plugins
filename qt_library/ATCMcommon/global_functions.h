@@ -213,9 +213,9 @@ bool isWanOn(void);                     // returns true if WLan ppp0 board is up
 bool isVpnOn(void);                     // returns true if tun_mrs (VPN) is up
 
 bool waitShellCommand(QString szCommand);                   // Shell a command and wait complection waiting forever
+bool waitShellCommand(QString szCommand, int mSecs);        // Shell a command and wait complection waiting almost msecs, msecs = -1 --> wait forever
 
-// bool waitShellCommandmSecs(QString szCommand, int mSecs);   // Shell a command and wait complection waiting almost msecs, msecs = -1 --> wait forever
-bool waitShellCommand(QString szCommand, int mSecs);                   // Shell a command and wait complection waiting forever
+bool getRamInfo(int &nMemTotalMB, int &nMemFreeMB, int &nSwapTotalMB, int &nSwapFreeMB); // Get info about Total and free Ram and Swap Memory
 
 bool LoadTrend(const char * trend_name, QString * ErrorMsg);
 
