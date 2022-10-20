@@ -213,14 +213,14 @@ void info::refreshApplTab()
     QString sdUsage = QString("SDcard: %1 (%2)").arg(SDcardSN).arg(usage[i]);
     if (swapFileInfo.exists())  {
         qint64  swapSizeMB = swapFileInfo.size() / 1024 / 1024;
-        sdUsage.append(QString(" Swap file size [%1]MB") .arg(swapSizeMB));
+        sdUsage.append(QString(" Swap file size:%1 MB") .arg(swapSizeMB, 4, 10));
     }
     else {
         sdUsage.append(" Swap file not present");
     }
     ui->appl_text->appendPlainText(sdUsage);
-
     ui->appl_text->appendPlainText("");
+    // USB Ports
     if (USBCheck())
     {
         ui->appl_text->appendPlainText("USB: INSERTED");
@@ -229,15 +229,15 @@ void info::refreshApplTab()
     {
         ui->appl_text->appendPlainText("USB: -");
     }
+    ui->appl_text->appendPlainText("");
     // Ram usage
     int nMemTotal = 0;
     int nMemFree = 0;
     int nSwapTotal = 0;
     int nSwapFree = 0;
-
     if (getRamInfo(nMemTotal, nMemFree, nSwapTotal, nSwapFree))  {
-        QString ramUsage = QString("System RAM Memory:[%1]MB Free:[%2]MB - Swap Memory:[%3]MB Free:[%4]")
-                .arg(nMemTotal) .arg(nMemFree) .arg(nSwapTotal) .arg(nSwapFree);
+        QString ramUsage = QString("RAM:%1 MB - Free:%2 MB - Swap:%3 MB - Free:%4 MB")
+                .arg(nMemTotal, 4, 10) .arg(nMemFree, 4, 10) .arg(nSwapTotal, 4, 10) .arg(nSwapFree, 4, 10);
         ui->appl_text->appendPlainText(ramUsage);
     }
     else  {
