@@ -50,10 +50,10 @@
 <p class="western"><span lang="en-US"><strong>Trend Window [s]:</strong> </span>Contiene el valor de la ventana de tiempo 
 			de visualización de trend. El número debe ser al menos tres veces el campo &ldquo;Fast  Log Period&rdquo;.</p>
 			<li/>
-<p class="western"><strong>Retries:</strong> indica el número de errores permitidos a un dispositivo antes de reducir la tasa de interrogación.</p>
+<p class="western"><strong>Retries:</strong> Número de intentos consecutivos de consultar un nodo antes de colocarlo en la <strong> black list </strong> (lista de nodos que no se interrogarán en la siguiente ronda). El tiempo máximo de espera de respuesta de un nodo se especifica en ms en el valor <strong> Timeout </strong> (tiempo de espera de respuesta) en los parámetros del puerto serie. Los intentos consecutivos se repiten con un periodo igual al tiempo de lectura del nodo. Si Retries es 0, el nodo se incluye inmediatamente en la lista negra la primera vez que no hay respuesta, sin crear demoras ni interferencias con los otros nodos. En arquitecturas complejas (muchos nodos con diferentes periodos de lectura) es conveniente poner este valor a 0.
+Al consultar un nodo, si no responde, espera todo el tiempo de espera antes de pasar al siguiente nodo. Por lo tanto, los nodos que no responden también afectan la respuesta de los nodos posteriores dentro de un período de lectura, porque se espera todo este tiempo.</p>
 			<li/>
-<p class="western"><strong>Blacklist:</strong> Tasa de interrogación reducida si se excede el número establecido en el campo 
-			&ldquo;Retries&rdquo;.</p>
+<p class="western"><strong>Blacklist:</strong> Número de ciclos (duración del "read period" más corto para las prioridades de los nodos) en los que un nodo que no ha respondido y ha sido puesto en la "Black List" no volverá a ser interrogado.</p>
 			<li/>
 <p class="western"><strong>Start Page:</strong> Nombre de la página de la pantalla que desea visualizar en primer lugar. En Qt Creator debe estar 
             presente una página con este nombre. Solo se muestran las páginas presentes cuando se abre el proyecto.</p>
@@ -79,15 +79,21 @@
 		</ul>
 		<li/>
 		<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> se ajustan todos los parámetros de comunicación del dispositivo serie.</p>
-		<p class="western">En el campo &ldquo;<strong>Max Block Size</strong>&rdquo; se puede definir el número máximo de variables dentro de un bloque. </p>		
-		<p class="western"><strong>ATENCIÓN:</strong> el reordenamiento de los bloques se realiza <strong>después de guardar la Crosstable</strong>. Los parámetros internos de la serie no deben modificarse, ya que de lo contrario el dispositivo no funcionará correctamente.</p>
+		<ul>
+			<li /> <p class = "western"> <strong> Timeout [ms]: </strong> tiempo máximo de espera para que el Master reciba una respuesta del Slave.</p>
+			<li />
+			<p class = "western"> <strong> Silence [ms]: </strong> es el intervalo de tiempo ("tiempo de distancia") en el bus serie entre un cuadro y el siguiente. El protocolo establece un tiempo mínimo de espera igual a la transmisión de al menos 3,5 caracteres (basado en el Baudrate) con un mínimo de 1,5ms.</p>
+			<li />
+			<p class = "western"> <strong> Max Block Size [1&hellip;64]: </strong> número máximo de variables dentro de un bloque. <strong> ATENCIÓN: </strong> el reordenamiento de los bloques se produce <strong> después de guardar el Crosstable </strong>. </p>
+			</ul>
+			<p class="western"> <strong> ATENCIÓN: </strong> No se deben modificar los parámetros de los puertos seriales internos, de lo contrario el dispositivo no funcionará correctamente. </p>
 		<li/>
 		<p class="western"><strong>TCP IP PORT:</strong> se ajustan los parámetros para la comunicación TCP IP con un dispositivo remoto: </p>
 		<ul>
 			<li/>
 			<p class="western"><strong>Timeout [ms]:</strong> tiempo máximo de espera para que el Master reciba una respuesta del Slave.</p>
 			<li/>
-			<p class="western"><strong>Silence [ms]:</strong> frecuencia de peticiones consecutivas de un Master a un Slave.</p>
+			<p class="western"><strong>Silence [ms]:</strong> es el intervalo de tiempo ("tiempo de distancia") entre un cuadro y el siguiente, generalmente 0.</p>
 			<li/>
 			<p class="western"><strong>Max Block Size [1&hellip;64]:</strong> número máximo de variables dentro de un bloque. <strong>ATENCIÓN: </strong>el reordenamiento de los bloques se realiza <strong>después de guardar la Crosstable</strong>.</p>
 		</ul>

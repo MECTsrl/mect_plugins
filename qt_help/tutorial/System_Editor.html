@@ -50,10 +50,10 @@
 <p class="western"><span lang="en-US"><strong>Trend Window [s]:</strong> </span>Contiene il valore della finestra temporale di
 			visualizzazione dei trend. Il numero deve essere almeno il triplo del campo &ldquo;Fast  Log Period&rdquo;.</p>
 			<li/>
-<p class="western"><strong>Retries:</strong> indica il numero di errori permessi ad un dispositivo prima di ridurre il tasso di interrogazione.</p>
+<p class="western"><strong>Retries:</strong> Numero di tentativi consecutivi di interrogazione di un nodo  prima di metterlo in <strong>black list</strong> (lista di nodi da non interrogare al giro successivo).  Il tempo massimo di attesa di risposta da un nodo  è specificato in ms al valore <strong>Timeout</strong> (response time-out) nei parametri della porta seriale. I tentativi consecutivi vengono ripetuti con un periodo pari al read time del nodo. Se Retries è 0, il nodo viene messo subito in black list la prima volta che non si ottiene risposta, senza creare ritardi o interferenze con gli altri nodi. In architetture complesse (molti nodi con read period diversi) è conveniente impostare questo valore a 0.
+Durante l'interrogazione di un nodo, se questo non risponde, si attende tutto il time-out prima di passare al nodo successivo. Nodi che non rispondono influenzano quindi la risposta anche dei nodi successivi all'interno di un read period, perché si aspetta tutto questo tempo.</p>
 			<li/>
-<p class="western"><strong>Blacklist:</strong> Tasso di interrogazione ridotto nel caso in cui si superi il numero impostato nel campo
-			&ldquo;Retries&rdquo;.</p>
+<p class="western"><strong>Blacklist:</strong> Numero di cicli (di durata del "read period" più breve per le priorità del nodo) in cui un  nodo che non ha risposto ed è stato messo in "Black List" non verrà nuovamente interrogato.</p>
 			<li/>
 <p class="western"><strong>Start Page:</strong> Nome della pagina relativa alla schermata che si vuole visualizzare per prima. In Qt Creator
 			deve essere presente una pagina con questo nome. Vengono visualizzate solamente le pagine presenti all'apertura del progetto.</p>
@@ -79,15 +79,21 @@
 		</ul>
 		<li/>
 		<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> si impostano tutti i parametri di comunicazione delle seriali del dispositivo.</p>
-		<p class="western">Nel campo &ldquo;<strong>Max Block Size</strong>&rdquo; &egrave; possibile definire il numero massimo di variabili all&rsquo;interno di un blocco. </p>		
-		<p class="western"><strong>ATTENZIONE:</strong> il riordino dei blocchi avviene <strong>dopo aver salvato la Crosstable</strong>. I parametri delle seriali interne non devono essere modificati, pena il malfunzionamento del dispositivo.</p>
+		<ul>
+			<li/><p class="western"><strong>Timeout [ms]:</strong> tempo massimo di attesa che il Master attende per ricevere la risposta dallo Slave.</p>
+			<li/>
+			<p class="western"><strong>Silence [ms]:</strong> è l'intervallo temporale ("tempo di distanziamento")  sul bus seriale tra un frame e il successivo.  Il protocollo stabilisce un tempo minimo di attesa pari alla trasmissione di almeno 3.5 caratteri (in base al Baudrate) con un minimo di 1.5ms.</p>
+			<li/>
+			<p class="western"><strong>Max Block Size [1&hellip;64]:</strong> numero massimo di variabili all&rsquo;interno di un blocco. <strong>ATTENZIONE:  </strong>il riordino dei blocchi avviene <strong>dopo aver salvato la Crosstable</strong>.</p>
+		</ul>
+		<p class="western"><strong>ATTENZIONE:</strong> I parametri delle seriali interne non devono essere modificati, pena il malfunzionamento del dispositivo.</p>
 		<li/>
 		<p class="western"><strong>TCP IP PORT:</strong> si impostano i parametri per la comunicazione TCP IP con un dispositivo remoto: </p>
 		<ul>
 			<li/>
 			<p class="western"><strong>Timeout [ms]:</strong> tempo massimo di attesa che il Master attende per ricevere la risposta dallo Slave.</p>
 			<li/>
-			<p class="western"><strong>Silence [ms]:</strong> frequenza di richieste consecutive da un Master verso uno Slave.</p>
+			<p class="western"><strong>Silence [ms]:</strong> è l'intervallo temporale ("tempo di distanziamento") tra un frame e il successivo, normalmente a 0.</p>
 			<li/>
 			<p class="western"><strong>Max Block Size [1&hellip;64]:</strong> numero massimo di variabili all&rsquo;interno di un blocco. <strong>ATTENZIONE:  </strong>il riordino dei blocchi avviene <strong>dopo aver salvato la Crosstable</strong>.</p>
 		</ul>

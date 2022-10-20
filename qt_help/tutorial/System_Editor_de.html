@@ -50,10 +50,10 @@
 <p class="western"><span lang="en-US"><strong>Trend Window [s]:</strong> </span>Enthält den Wert des Zeitfensters der Trendanzeige
 			visualizzazione dei trend. Die Zahl muss mindestens das Dreifache des Feldes &ldquo;Fast  Log Period&rdquo; betragen.</p>
 			<li/>
-<p class="western"><strong>Retries:</strong> Zeigt die Anzahl der Fehler an, die einem Gerät erlaubt sind, bevor die Abfragequote reduziert wird.</p>
+<p class="western"><strong>Retries:</strong> Anzahl aufeinanderfolgender Versuche, einen Knoten abzufragen, bevor er in die <strong> black list </strong> aufgenommen wird (Liste der Knoten, die in der nächsten Runde nicht abgefragt werden sollen). Die maximale Antwortwartezeit von einem Knoten wird in ms beim Wert <strong> Timeout </strong> (Antwort-Timeout) in den Parametern der seriellen Schnittstelle angegeben. Die aufeinanderfolgenden Versuche werden mit einer Periode wiederholt, die gleich der Lesezeit des Knotens ist. Wenn Retries 0 ist, wird der Knoten sofort auf die schwarze Liste gesetzt, wenn zum ersten Mal keine Antwort erfolgt, ohne dass es zu Verzögerungen oder Interferenzen mit den anderen Knoten kommt. In komplexen Architekturen (viele Knoten mit unterschiedlichen Leseperioden) ist es praktisch, diesen Wert auf 0 zu setzen.
+Wenn ein Knoten abgefragt wird und dieser nicht antwortet, wartet er die gesamte Zeitüberschreitung, bevor er zum nächsten Knoten weitergeht. Nicht antwortende Knoten beeinflussen daher auch die Antwort nachfolgender Knoten innerhalb einer Leseperiode, weil diese ganze Zeit erwartet wird.</p>
 			<li/>
-<p class="western"><strong>Blacklist:</strong> : Reduzierte Abfragequote, wenn die im Feld &ldquo;Retries&rdquo; eingestellte Anzahl überschritten wird.
-			.</p>
+<p class="western"><strong>Blacklist:</strong> Anzahl der Zyklen (Dauer der kürzesten "read period" für die Knotenprioritäten), in denen ein Knoten, der nicht geantwortet hat und in die "Black List" aufgenommen wurde, nicht erneut abgefragt wird.</p>
 			<li/>
 <p class="western"><strong>Start Page:</strong> Name der Seite für den Bildschirm, den Sie zuerst anzeigen möchten. Im Qt Creator muss 
 			eine Seite mit diesem Namen vorhanden sein. Es werden nur die Seiten angezeigt, die beim Öffnen des Projekts vorhanden sind.</p>
@@ -79,15 +79,21 @@
 		</ul>
 		<li/>
 		<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> Alle Kommunikationsparameter des seriellen Gerätes sind eingestellt.</p>
-		<p class="western">Im Feld &ldquo;<strong>Max Block Size</strong>&rdquo; können Sie die maximale Anzahl von Variablen innerhalb eines Blocks festlegen. </p>		
-		<p class="western"><strong>ATTENZIONE:</strong> Die Neuordnung der Blöcke erfolgt <strong>nach dem Speichern der Crosstable</strong>. Die internen seriellen Parameter dürfen nicht verändert werden, da sonst das Gerät nicht richtig funktioniert.</p>
+		<ul>
+			<li /> <p class = "western"> <strong> Timeout [ms]: </strong> maximale Wartezeit, bis der Master eine Antwort vom Slave erhält.</p>
+			<li />
+			<p class = "western"> <strong> Silence [ms]: </strong> ist das Zeitintervall ("Distanzzeit") auf dem seriellen Bus zwischen einem Frame und dem nächsten. Das Protokoll legt eine Mindestwartezeit fest, die der Übertragung von mindestens 3,5 Zeichen (basierend auf der Baudrate) mit mindestens 1,5 ms entspricht.</p>
+			<li />
+			<p class = "western"> <strong> Max Block Size [1&hellip;64]: </strong> maximale Anzahl von Variablen innerhalb eines Blocks. <strong> ACHTUNG: </strong> die Neuordnung der Blöcke erfolgt <strong> nach dem Speichern der Kreuztabelle </strong>. </p>
+			</ul>
+			<p class = "western"> <strong> ACHTUNG: </strong> Die Parameter der internen seriellen Schnittstellen dürfen nicht verändert werden, sonst kommt es zu Fehlfunktionen des Gerätes. </p>
 		<li/>
 		<p class="western"><strong>TCP IP PORT:</strong> Sie stellen die Parameter für die TCP IP-Kommunikation mit einem entfernten Gerät ein: </p>
 		<ul>
 			<li/>
 			<p class="western"><strong>Timeout [ms]:</strong> maximale Wartezeit, bis der Master eine Antwort vom Slave erhält.</p>
 			<li/>
-			<p class="western"><strong>Silence [ms]:</strong> Häufigkeit der aufeinanderfolgenden Anfragen von einem Master an einen Slave.</p> 
+			<p class="western"><strong>Silence [ms]:</strong> ist das Zeitintervall ("Distanzzeit") zwischen einem Frame und dem nächsten, normalerweise 0.</p> 
 			<li/>
 			<p class="western"><strong>Max Block Size [1&hellip;64]:</strong> maximale Anzahl von Variablen innerhalb eines Blocks. <strong>ACHTUNG:  </strong>Die Neuordnung der Blöcke erfolgt <strong>nach dem Speichern der Crosstable</strong>.</p>
 		</ul>

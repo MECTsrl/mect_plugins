@@ -46,9 +46,10 @@
 <p class="western"><span lang="en-US"><strong>Trend Window [s]:</strong> </span>time value in seconds for the trend window. Must be at least 3
 		times of field &ldquo;Fast Log Period&rdquo;.</p>
 			<li/>
-<p class="western"><strong>Retries:</strong> number of allowed errors for a device before slowing the query	time.</p>
+<p class="western"><strong>Retries:</strong> number of consecutive attempts to query a node before putting it in the <strong> black list </strong> (list of nodes not to be interrogated on the next round). The maximum response wait time from a node is specified in ms at the <strong> Timeout </strong> (response time-out) value in the serial port parameters. The consecutive attempts are repeated with a period equal to the read time of the node. If Retries is 0, the node is immediately blacklisted the first time there is no response, without creating delays or interference with the other nodes. In complex architectures (many nodes with different read periods) it is convenient to set this value to 0.
+When querying a node, if it does not respond, it waits all the time-out before moving on to the next node. Unresponsive nodes therefore also affect the response of subsequent nodes within a read period, because all this time is expected.</p>
 			<li/>
-<p class="western"><strong>Blacklist:</strong> reduced rate of interrogation in the case where it exceeds the &ldquo;Retries&rdquo;.</p>
+<p class="western"><strong>Blacklist:</strong> number of cycles (of duration of the shortest "read period" for the node priorities) in which a node that has not answered and has been put in the "Black List" will not be interrogated again.</p>
 			<li/>
 <p class="western"><strong>Start Page:</strong> name of the	page to show first. In Qt Creator there must be a page like this. Only the pages present when the project is opened are displayed. </p>
 			<li/>
@@ -70,8 +71,14 @@
 		</ul>
 		<li/>
 	<p class="western"><strong>SERIAL PORT 0 / 1 / 2 / 3:</strong> setup of all serial communication parameter of the device.</p>
-	<p class="western">In the &ldquo;<strong>Max Block Size</strong>&rdquo; field the maximum number of variables inside a block is defined. </p>	
-	<p class="western"><strong>WARNING:</strong> blocks reorder takes place <strong>after Crosstable save</strong>. Parameters of internal serial line must not be changed, otherwise panel doesn&rsquo;t work.</p>
+	<ul>
+		<li /> <p class = "western"> <strong> Timeout [ms]: </strong> timeout for the master to wait for slave answer.</p>
+		<li />
+		<p class = "western"> <strong> Silence [ms]: </strong> is the time interval ("distance time") on the serial bus between one frame and the next. The protocol establishes a minimum waiting time equal to the transmission of at least 3.5 characters (based on the Baudrate) with a minimum of 1.5ms. </p>
+		<li />
+		<p class = "western"> <strong> Max Block Size [1&hellip;64]: </strong> maximum number of variables within a block. <strong> ATTENTION: </strong> the reordering of the blocks takes place <strong> after saving the Crosstable </strong>. </p>
+		</ul>
+		<p class = "western"> <strong> ATTENTION: </strong> The parameters of the internal serial ports must not be modified, otherwise the device will malfunction. </p>
 		<li/>
 		<p class="western"><strong>TCP IP PORT:</strong> setup of TCP IP communication parameters with a remote device: 
 		</p>
@@ -79,7 +86,7 @@
 			<li/>
 			<p class="western"><strong>Timeout [ms]:</strong> timeout for the master to wait for slave answer.</p>
 			<li/>
-			<p class="western"><strong>Silence [ms]:</strong> frequency of consecutive request of a master to a slave.</p>
+			<p class="western"><strong>Silence [ms]:</strong> is the time interval ("distance time") between one frame and the next, usually 0.</p>
 			<li/>
 			<p class="western"><strong>Max Block Size [1&hellip;64]:</strong> define the maximum number of variables inside a block. <strong>WARNING:</strong> blocks reorder takes place <strong>after Crosstable save</strong>.</p>
 		</ul>
