@@ -234,7 +234,7 @@ void ATCMlabel::setViewStatus(bool status)
     update();
 }
 
-bool ATCMlabel::setVisibilityVar(QString captionText)
+bool ATCMlabel::setEditCaption(QString captionText)
 {
     if (captionText.trimmed().length() == 0)
     {
@@ -243,6 +243,7 @@ bool ATCMlabel::setVisibilityVar(QString captionText)
     else  {
         m_editCaption = captionText.trimmed();
     }
+    return true;
 }
 
 
@@ -573,7 +574,7 @@ void ATCMlabel::writeAction()
 
                 dk = new numpad(&value, m_value.toInt(0, baseOfInputFormat(m_format)), min, max, (enum  input_fmt_e)m_format);
                 if (! m_editCaption.isEmpty())  {
-                    numpad->setPrompt(m_editCaption);
+                    dk->setPrompt(m_editCaption);
                 }
                 dk->showFullScreen();
                 if (dk->exec() == QDialog::Accepted)
@@ -595,7 +596,7 @@ void ATCMlabel::writeAction()
 
                 dk = new numpad(&value, m_value.toFloat(), decimal, min, max);
                 if (! m_editCaption.isEmpty())  {
-                    numpad->setPrompt(m_editCaption);
+                    dk->setPrompt(m_editCaption);
                 }
                 dk->showFullScreen();
                 if (dk->exec() == QDialog::Accepted)
@@ -627,7 +628,7 @@ void ATCMlabel::writeAction()
 
                 dk = new numpad(&value, m_value.toUInt(0, baseOfInputFormat(m_format)), min, max, (enum  input_fmt_e)m_format);
                 if (! m_editCaption.isEmpty())  {
-                    numpad->setPrompt(m_editCaption);
+                    dk->setPrompt(m_editCaption);
                 }
                 dk->showFullScreen();
                 if (dk->exec() == QDialog::Accepted)
@@ -649,7 +650,7 @@ void ATCMlabel::writeAction()
 
                 dk = new numpad(&value, m_value.toFloat(), decimal, min, max);
                 if (! m_editCaption.isEmpty())  {
-                    numpad->setPrompt(m_editCaption);
+                    dk->setPrompt(m_editCaption);
                 }
                 dk->showFullScreen();
                 if (dk->exec() == QDialog::Accepted)
@@ -675,7 +676,7 @@ void ATCMlabel::writeAction()
             float value  = 0, min = m_min.toFloat(), max = m_max.toFloat();
             dk = new numpad(&value, m_value.toFloat(), decimal, min, max);
             if (! m_editCaption.isEmpty())  {
-                numpad->setPrompt(m_editCaption);
+                dk->setPrompt(m_editCaption);
             }
             dk->showFullScreen();
 
@@ -698,7 +699,7 @@ void ATCMlabel::writeAction()
             int value  = 0, min = 0, max = 1;
             dk = new numpad(&value, m_value.toInt(), min, max, (enum  input_fmt_e)m_format);
             if (! m_editCaption.isEmpty())  {
-                numpad->setPrompt(m_editCaption);
+                dk->setPrompt(m_editCaption);
             }
             dk->showFullScreen();
 
