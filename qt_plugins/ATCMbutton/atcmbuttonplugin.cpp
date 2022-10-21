@@ -91,6 +91,7 @@ QString ATCMbuttonPlugin::domXml() const
             " <string notr=\"true\"></string>\n"
 			" </property>\n"
 			" <property name=\"statusvar\" >\n"
+            " <string></string>\n"
             " <string notr=\"true\"></string>\n"
 			" </property>\n"
 			" <property name=\"viewStatus\" >\n"
