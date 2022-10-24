@@ -105,7 +105,7 @@ QString ATCMlabelPlugin::domXml() const
 			" <property name=\"visibilityVar\" >\n"
 			" <string notr=\"true\"></string>\n"
 			" </property>\n"
-            " <property name=\"editCaption\" >\n"
+            // " <property name=\"editCaption\" >\n"
             " <string></string>\n"
             " </property>\n"
             " <property name=\"borderWidth\" >\n"

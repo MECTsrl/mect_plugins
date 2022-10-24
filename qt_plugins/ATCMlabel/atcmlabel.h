@@ -69,8 +69,8 @@ class
         Q_PROPERTY(bool viewStatus READ viewStatus WRITE setViewStatus RESET unsetViewStatus)
 		/* set the crosstable variable to associate the label visibility */
         Q_PROPERTY(QString visibilityVar READ visibilityVar WRITE setVisibilityVar RESET unsetVisibilityVar)
-        /* set the Caption for Numpad*/
-        Q_PROPERTY(QString editCaption READ editCaption WRITE setEditCaption RESET unsetEditCaption)
+        // /* set the Caption for Numpad*/
+        // Q_PROPERTY(QString editCaption READ editCaption WRITE setEditCaption RESET unsetEditCaption)
         /* set the label background color */
 		Q_PROPERTY(QColor bgColor READ bgColor WRITE setBgColor)
 		/* set the label border color */
@@ -116,7 +116,7 @@ class
 		int refresh()      const { return m_refresh; }
 		bool viewStatus()  const { return m_viewstatus; }
 		QString visibilityVar()  const { return m_visibilityvar; }
-        QString editCaption()    const { return m_editCaption; }
+        // QString editCaption()    const { return m_editCaption; }
 		char statusComm()      const { return m_status; }
 		int borderWidth()      const { return m_borderwidth; }
 		int borderRadius()      const { return m_borderradius; }
@@ -142,7 +142,7 @@ class
 		bool setRefresh(int);
 		void setViewStatus(bool);
         bool setVisibilityVar(QString);
-        bool setEditCaption(QString);
+        // bool setEditCaption(QString);
 		void setBgColor(const QColor& bgColor);
 		void setBorderColor(const QColor& borderColor);
 		void setFontColor(const QColor& fontColor);
@@ -164,7 +164,7 @@ class
         void unsetMax();
         void unsetViewStatus();
         void unsetVisibilityVar();
-        void unsetEditCaption();
+        // void unsetEditCaption();
         void unsetApparence();
 
     protected Q_SLOTS:
@@ -180,7 +180,7 @@ class
 		QString m_prefix;
 		QString m_suffix;
 		QString m_visibilityvar;
-        QString m_editCaption;
+        // QString m_editCaption;
 		int m_refresh;
 		char m_status;
 		bool m_viewstatus;
