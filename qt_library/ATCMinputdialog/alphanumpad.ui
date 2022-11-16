@@ -64,9 +64,6 @@
        <pointsize>11</pointsize>
       </font>
      </property>
-     <property name="text">
-      <string notr="true"/>
-     </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
@@ -88,7 +85,7 @@
        <property name="minimumSize">
         <size>
          <width>20</width>
-         <height>30</height>
+         <height>32</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -100,14 +97,14 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>17</pointsize>
+         <pointsize>19</pointsize>
         </font>
        </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
        </property>
        <property name="text">
-        <string notr="true"/>
+        <string/>
        </property>
       </widget>
      </item>
@@ -122,7 +119,7 @@
        <property name="minimumSize">
         <size>
          <width>40</width>
-         <height>30</height>
+         <height>32</height>
         </size>
        </property>
        <property name="maximumSize">
