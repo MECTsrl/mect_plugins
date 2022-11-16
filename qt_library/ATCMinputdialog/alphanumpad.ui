@@ -97,7 +97,7 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <pointsize>19</pointsize>
+         <pointsize>15</pointsize>
         </font>
        </property>
        <property name="focusPolicy">

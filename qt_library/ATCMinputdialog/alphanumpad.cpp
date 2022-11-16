@@ -21,15 +21,14 @@
     mystyle.append("}"); \
     mystyle.append("QLineEdit"); \
     mystyle.append("{"); \
-    mystyle.append("text-align: center;"); \
-    mystyle.append("border-radius: 0px;"); \
-    mystyle.append("border: 2px solid  LemonChiffon;"); \
+    mystyle.append("border-radius: 1px;"); \
+    mystyle.append("border: 1px solid  PaleTurquoise;"); \
     mystyle.append("color: Cornsilk;"); \
     mystyle.append("background-color: DimGray;"); \
     mystyle.append("background-repeat: no-repeat;"); \
     mystyle.append("selection-background-color: DarkSlateGray;"); \
     mystyle.append("selection-color: Yellow;"); \
-    mystyle.append("font: 26pt \""FONT_TYPE"\";"); \
+    mystyle.append("font: 24pt \""FONT_TYPE"\";"); \
     mystyle.append("}"); \
     mystyle.append("QMessageBox"); \
     mystyle.append("{"); \
