@@ -28,7 +28,7 @@
     mystyle.append("background-repeat: no-repeat;"); \
     mystyle.append("selection-background-color: DarkSlateGray;"); \
     mystyle.append("selection-color: Yellow;"); \
-    mystyle.append("font: 24pt \""FONT_TYPE"\";"); \
+    mystyle.append("font: 20pt \""FONT_TYPE"\";"); \
     mystyle.append("}"); \
     mystyle.append("QMessageBox"); \
     mystyle.append("{"); \

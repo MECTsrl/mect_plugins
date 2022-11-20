@@ -204,7 +204,7 @@ page#time_set QProgressBar::chunk	{
 }
 /* Alarms QLineEdit */
 page#alarms QLineEdit  {
-    background: DarkGray;
+    background: rgb(50, 50, 50);
     color: Yellow;
 }
 /* QListWidget in alarms, alarms_history, recipe_select, item_selector, store */
