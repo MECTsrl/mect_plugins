@@ -35,7 +35,7 @@ class
 #endif
 		Q_PROPERTY(Qt::LayoutDirection layoutDirection READ layoutDirection WRITE setLayoutDirection DESIGNABLE false)
         Q_PROPERTY(QKeySequence	shortcut READ shortcut WRITE setShortcut DESIGNABLE false)
-        Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
+		Q_PROPERTY(bool	autoExclusive READ autoExclusive WRITE setAutoExclusive DESIGNABLE false)
 		Q_PROPERTY(bool	autoDefault READ autoDefault WRITE setAutoDefault DESIGNABLE false)
 		Q_PROPERTY(bool	default READ isDefault WRITE setDefault DESIGNABLE false)
 		Q_PROPERTY(bool	flat READ isFlat WRITE setFlat DESIGNABLE false)
@@ -53,9 +53,9 @@ class
 		/* add or not the target page into the history */
 		Q_PROPERTY(bool remember READ remember WRITE setRemember RESET unsetRemember)
 		/* password to ask before perform the other operation when the button is pressed */
-        Q_PROPERTY(QString passwordVar READ passwordVar WRITE setPasswordVar RESET unsetPasswordVar STORED true)
+		Q_PROPERTY(QString passwordVar READ passwordVar WRITE setPasswordVar RESET unsetPasswordVar)
         /* name of the cross table variable associated to the status of button (pressed/checked or released/uncheked) */
-        Q_PROPERTY(QString statusvar READ statusvar WRITE setStatusvar RESET unsetStatusvar STORED true)
+        Q_PROPERTY(QString statusvar READ statusvar WRITE setStatusvar RESET unsetStatusvar)
         /* value to set into statusvar when the button is released  */
         Q_PROPERTY(QString statusReleasedValue READ statusReleasedValue WRITE setStatusReleasedValue)
         /* value to set into statusvar when the button is pressed */
@@ -65,7 +65,7 @@ class
         /* refresh time of the crosstable variables */
         Q_PROPERTY(int refresh READ refresh WRITE setRefresh RESET unsetRefresh)
         /* set the crosstable variable to associate the button visibility */
-        Q_PROPERTY(QString visibilityVar READ visibilityVar WRITE setVisibilityVar RESET unsetVisibilityVar STORED true)
+		Q_PROPERTY(QString visibilityVar READ visibilityVar WRITE setVisibilityVar RESET unsetVisibilityVar)
 		/* set the button background color */
 		Q_PROPERTY(QColor bgColor READ bgColor WRITE setBgColor)
 		/* set the button border color */
