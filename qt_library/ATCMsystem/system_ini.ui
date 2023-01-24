@@ -455,7 +455,7 @@ QComboBox
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Max Log Space [Mb]</string>
+            <string>Max Log Space [MB]</string>
            </property>
           </widget>
          </item>

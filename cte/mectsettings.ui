@@ -605,7 +605,7 @@ QTabWidget::tab-bar {
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="text">
-            <string>Max Log Space [Mb]</string>
+            <string>Max Log Space [MB]</string>
            </property>
            <property name="buddy">
             <cstring>lineEdit_MaxLogSpace</cstring>
