@@ -34,7 +34,8 @@ public:
     void    setTextMasked(bool isMasked);
     // Show Prompt label
     void    setPrompt(const QString &labelTitle);
-
+    // Set Max Input Chars
+    void    setMaxLength(int nMaxChars);
     ~alphanumpad();
     void reload();
 

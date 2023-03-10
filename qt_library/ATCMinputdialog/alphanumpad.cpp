@@ -666,3 +666,9 @@ void    alphanumpad::setPrompt(const QString &labelTitle)
     ui->labelPrompt->setText(labelTitle);
     ui->labelPrompt->setVisible(not labelTitle.isEmpty());
 }
+
+void    alphanumpad::setMaxLength(int nMaxChars)
+// Set Max Input Chars
+{
+    ui->lineEditVal->setMaxLength(nMaxChars);
+}
