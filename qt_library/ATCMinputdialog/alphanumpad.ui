@@ -3403,17 +3403,7 @@ qproperty-focusPolicy: NoFocus;
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton#pushButtonCapsLock
-{
-	qproperty-icon: url(:/libicons/img/Up.png);
-	qproperty-iconSize: 24px 24px;
-	qproperty-focusPolicy: NoFocus;
-}
-QPushButton#pushButtonCapsLock:checked
-{
-	qproperty-icon: url(:/libicons/img/Down.png);
-}
-</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string notr="true"/>
