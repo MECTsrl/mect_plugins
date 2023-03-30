@@ -62,16 +62,6 @@
     mystyle.append("{"); \
     mystyle.append("	image: url(:/libicons/img/eye_visible_32.png);"); \
     mystyle.append("}"); \
-    mystyle.append("QPushButton#pushButtonCapsLock"); \
-    mystyle.append("{"); \
-    mystyle.append("	image-position: center; "); \
-    mystyle.append("	image: url(:/libicons/img/Up.png); "); \
-    mystyle.append("	qproperty-focusPolicy: NoFocus;"); \
-    mystyle.append("}"); \
-    mystyle.append("QPushButton#pushButtonCapsLock:checked"); \
-    mystyle.append("{"); \
-    mystyle.append("	image: url(:/libicons/img/Down.png);"); \
-    mystyle.append("}"); \
     mystyle.append("QLabel#labelPrompt"); \
     mystyle.append("{"); \
     mystyle.append("    font: 18pt \""FONT_TYPE"\";"); \
