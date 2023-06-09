@@ -54,23 +54,25 @@
     mystyle.append("}"); \
     mystyle.append("QPushButton#pushButtonPassword"); \
     mystyle.append("{"); \
-    mystyle.append("	image-position: center; "); \
-    mystyle.append("	image: url(:/libicons/img/eye_invisible_32.png); "); \
     mystyle.append("	qproperty-focusPolicy: NoFocus;"); \
+    mystyle.append("	background-repeat: no-repeat;"); \
+    mystyle.append("	background-position: center;"); \
+    mystyle.append("	background-image: url(:/libicons/img/eye_invisible_32.png); "); \
     mystyle.append("}"); \
     mystyle.append("QPushButton#pushButtonPassword:checked"); \
     mystyle.append("{"); \
-    mystyle.append("	image: url(:/libicons/img/eye_visible_32.png);"); \
+    mystyle.append("	background-image: url(:/libicons/img/eye_visible_32.png);"); \
     mystyle.append("}"); \
     mystyle.append("QPushButton#pushButtonCapsLock"); \
     mystyle.append("{"); \
-    mystyle.append("	image-position: center; "); \
-    mystyle.append("	image: url(:/libicons/img/Up.png); "); \
     mystyle.append("	qproperty-focusPolicy: NoFocus;"); \
+    mystyle.append("	background-repeat: no-repeat;"); \
+    mystyle.append("	background-position: center;"); \
+    mystyle.append("	background-image: url(:/libicons/img/Up.png);"); \
     mystyle.append("}"); \
     mystyle.append("QPushButton#pushButtonCapsLock:checked"); \
     mystyle.append("{"); \
-    mystyle.append("	image: url(:/libicons/img/Down.png);"); \
+    mystyle.append("	background-image: url(:/libicons/img/Down.png);"); \
     mystyle.append("}"); \
     mystyle.append("QLabel#labelPrompt"); \
     mystyle.append("{"); \
