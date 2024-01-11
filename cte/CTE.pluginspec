@@ -1,4 +1,4 @@
-<plugin name="CTE" version="3.4.3" compatVersion="2.7.84">
+<plugin name="CTE" version="3.5.0" compatVersion="2.8.1">
     <vendor>MECT srl</vendor>
     <copyright>(C) 2017 MECT srl</copyright>
     <license>
@@ -13,7 +13,7 @@ Alternatively, this plugin may be used under the terms of the GNU Lesser General
     <description>Editor for MectSuite configuration files (Crosstable, System, ...).</description>
     <url>http://www.mect.it/</url>
     <dependencyList>
- <dependency name="Core" version="2.7.84"/>
- <dependency name="ProjectExplorer" version="2.7.84"/>
+ <dependency name="Core" version="2.8.1"/>
+ <dependency name="ProjectExplorer" version="2.8.1"/>
  </dependencyList>
 </plugin>

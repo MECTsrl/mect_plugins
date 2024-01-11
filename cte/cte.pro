@@ -41,17 +41,17 @@ FORMS += \
     queryportnode.ui \
     searchvariable.ui
 
-ATCM_VERSION = 3.4.3
+ATCM_VERSION = 3.5.0
 
 # Qt Creator linking
 
 ## set the QTC_SOURCE environment variable to override the setting here
 QTCREATOR_SOURCES = $$(QTC_SOURCE)
-isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=C:/qt-creator-2.8.0-rc-src
+isEmpty(QTCREATOR_SOURCES):QTCREATOR_SOURCES=C:/qt-creator-2.8.1-src
 
 ## set the QTC_BUILD environment variable to override the setting here
 IDE_BUILD_TREE = $$(QTC_BUILD)
-isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=C:/Qt485/desktop/
+isEmpty(IDE_BUILD_TREE):IDE_BUILD_TREE=C:/Qt487/desktop/QtCreator
 
 ## uncomment to build plugin into user config directory
 ## <localappdata>/plugins/<ideversion>
