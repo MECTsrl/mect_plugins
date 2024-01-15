@@ -1,9 +1,9 @@
 win32 {
-	ATCM_QWT_LIB = C:/Qt485/desktop/lib
-	ATCM_QWT_INCL = C:/Qt485/desktop/include/Qwt
-        QT_CREATOR = C:/Qt485/desktop
+	ATCM_QWT_LIB = C:/Qt487/desktop/lib
+	ATCM_QWT_INCL = C:/Qt487/desktop/include/Qwt
+        QT_CREATOR = C:/Qt487/desktop
         ATCM_DIR_COPY = "cmd /c xcopy /Q /Y /E /S /I"
-        ATCM_INSTALL_WIZARD = C:/Qt485/desktop/share/qtcreator/templates/wizards
+        ATCM_INSTALL_WIZARD = C:/Qt487/desktop/share/qtcreator/templates/wizards
         MECT_INSTALL_PLUGINS = $$[QT_INSTALL_PLUGINS]
 }
 unix:!macx {
