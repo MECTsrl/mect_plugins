@@ -31,7 +31,7 @@
      <value type="QString" key="FreePortsSpec">10000-10100</value>
      <value type="QString" key="Host">192.168.5.211</value>
      <value type="QString" key="InternalId">{9dc6589e-e4fc-4939-ae8d-ef45f11784cb}</value>
-     <value type="QString" key="KeyFile">C:/Qt485/keys/id_rsa_jolly.qtc</value>
+     <value type="QString" key="KeyFile">C:/Qt487/keys/id_rsa_jolly.qtc</value>
      <value type="QString" key="Name">Mect Device</value>
      <value type="int" key="Origin">0</value>
      <value type="QString" key="OsType">GenericLinuxOsType</value>

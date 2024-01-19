@@ -9,17 +9,17 @@
    <valuemap type="QVariantMap" key="PE.Profile.Data">
     <value type="QString" key="Android.GdbServer.Information"></value>
     <valuemap type="QVariantMap" key="Debugger.Information">
-     <value type="QString" key="Binary">C:/Qt485/sourcery-g++-lite/bin/arm-none-linux-gnueabi-gdb.exe</value>
+     <value type="QString" key="Binary">C:/Qt487/sourcery-g++-lite/bin/arm-none-linux-gnueabi-gdb.exe</value>
      <value type="int" key="EngineType">1</value>
     </valuemap>
     <value type="QString" key="PE.Profile.Device">{9dc6589e-e4fc-4939-ae8d-ef45f11784cb}</value>
     <value type="QString" key="PE.Profile.DeviceType">GenericLinuxOsType</value>
-    <value type="QString" key="PE.Profile.SysRoot">C:/Qt485/imx28/rootfs</value>
+    <value type="QString" key="PE.Profile.SysRoot">C:/Qt487/imx28/rootfs</value>
     <value type="QString" key="PE.Profile.ToolChain">ProjectExplorer.ToolChain.Custom:{e7906c18-e7ee-4943-8987-f5b24df91fcc}</value>
     <value type="QString" key="QtPM4.mkSpecInformation"></value>
     <value type="int" key="QtSupport.QtInformation">2</value>
    </valuemap>
-   <value type="QString" key="PE.Profile.Icon">C:/Qt485/desktop/share/qtcreator/templates/wizards/ATCM-template-project/console.png</value>
+   <value type="QString" key="PE.Profile.Icon">C:/Qt487/desktop/share/qtcreator/templates/wizards/ATCM-template-project/console.png</value>
    <value type="QString" key="PE.Profile.Id">{4a3d9564-037d-44df-a261-271377ff6ac7}</value>
    <value type="QString" key="PE.Profile.Name">IMX28</value>
    <value type="bool" key="PE.Profile.SDK">false</value>

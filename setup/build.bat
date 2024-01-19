@@ -171,8 +171,8 @@ IF %TARGETBUILD% == 1 (
 	echo Building target libraries distclean + qmake + make + install + distclean
 	cd /D "%IN_DIR%"
 	time /t
-	"C:\Qt487\imx28\mingw\bin\mingw32-make.exe" distclean >> %ErrorLog% 2>&1
-	"C:\Qt487\imx28\qt-everywhere-opensource-src-4.8.5\bin\qmake.exe" qt_atcm.pro -r -spec linux-arm-gnueabi-g++ -config release -config store -config trend -config recipe -config alarms >> %ErrorLog% 2>&1
+	mingw32-make.exe distclean >> %ErrorLog% 2>&1
+	"C:\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\bin\qmake.exe" qt_atcm.pro -r -spec linux-arm-gnueabi-g++ -config release -config store -config trend -config recipe -config alarms >> %ErrorLog% 2>&1
 	IF ERRORLEVEL 1 (
 		echo ERROR
 		pause
@@ -260,10 +260,10 @@ IF ERRORLEVEL 1 (
 	cd %ORIGINAL%
 	exit
 )
-mkdir "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++"
-mkdir %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\common
-copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y >> %ErrorLog% 2>&1
-copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.5\mkspecs\common	/Y >> %ErrorLog% 2>&1
+mkdir "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++"
+mkdir %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common
+copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y >> %ErrorLog% 2>&1
+copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common	/Y >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause

@@ -5,7 +5,7 @@
     <displayname>Qt Linguist</displayname>
     <category>Linguist</category>
     <executable output="showinpane" error="showinpane" modifiesdocument="no">
-        <path>C:/Qt485/desktop/bin/linguist.exe</path>
+        <path>C:/Qt487/desktop/bin/linguist.exe</path>
         <workingdirectory>%{CurrentProject:Path}</workingdirectory>
     </executable>
 </externaltool>

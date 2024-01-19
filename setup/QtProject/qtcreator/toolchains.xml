@@ -5,7 +5,7 @@
  <data>
   <variable>ToolChain.0</variable>
   <valuemap type="QVariantMap">
-   <value type="QString" key="ProjectExplorer.GccToolChain.Path">C:/Qt485/desktop/mingw32/bin/g++.exe</value>
+   <value type="QString" key="ProjectExplorer.GccToolChain.Path">C:/Qt487/desktop/mingw32/bin/g++.exe</value>
    <valuelist type="QVariantList" key="ProjectExplorer.GccToolChain.PlatformCodeGenFlags"/>
    <valuelist type="QVariantList" key="ProjectExplorer.GccToolChain.PlatformLinkerFlags"/>
    <valuelist type="QVariantList" key="ProjectExplorer.GccToolChain.SupportedAbis">
@@ -20,12 +20,12 @@
  <data>
   <variable>ToolChain.1</variable>
   <valuemap type="QVariantMap">
-   <value type="QString" key="ProjectExplorer.CustomToolChain.CompilerPath">C:/Qt485/sourcery-g++-lite/bin/arm-none-linux-gnueabi-g++.exe</value>
+   <value type="QString" key="ProjectExplorer.CustomToolChain.CompilerPath">C:/Qt487/sourcery-g++-lite/bin/arm-none-linux-gnueabi-g++.exe</value>
    <valuelist type="QVariantList" key="ProjectExplorer.CustomToolChain.Cxx11Flags">
     <value type="QString"></value>
    </valuelist>
    <valuelist type="QVariantList" key="ProjectExplorer.CustomToolChain.HeaderPaths"/>
-   <value type="QString" key="ProjectExplorer.CustomToolChain.MakePath">C:/Qt485/imx28/mingw/bin/mingw32-make.exe</value>
+   <value type="QString" key="ProjectExplorer.CustomToolChain.MakePath">C:/Qt487/imx28/mingw/bin/mingw32-make.exe</value>
    <value type="QString" key="ProjectExplorer.CustomToolChain.Mkspecs"></value>
    <valuelist type="QVariantList" key="ProjectExplorer.CustomToolChain.PredefinedMacros"/>
    <value type="QString" key="ProjectExplorer.CustomToolChain.TargetAbi">arm-linux-generic-elf-32bit</value>

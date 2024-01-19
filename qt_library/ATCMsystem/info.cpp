@@ -154,7 +154,7 @@ void info::refreshSystemTab()
         $ cat /rootfs_version
         Release: 3.0.6
         Target:  TPAC1007_03
-        Qt:      4.8.5
+        Qt:      4.8.7
         Qwt:     6.1-multiaxes
         RunTime: mect_suite_3.0/0.0
         MectPlugin: mect_suite_3.0/0.0
