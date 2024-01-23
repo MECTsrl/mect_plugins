@@ -1,2 +1,9 @@
-Files added to Mect Archive: (https://www.mect.it/archive/)
+Files moved to Mect Archive: (https://www.mect.it/archive/)
 - ActivePerl-5.16.3.1603-MSWin32-x86-296746.msi:	Windows Setup for ActivePerl 5.16.3
+- MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z:	MingW Compiler for Mect Suite (Windows side)
+- mysql-connector-c-6.1.11-win32.msi:	C++ Connector for MySql (Windows side)
+- openssl-1.0.2u_winbuild.7z:		Openssl-1.0.2u precompiled for Windos
+- qt-tools.7z:		Tools for qt bin dir (fart, jom, pathman
+
+Each file is accompanied by the corresponding MD5 calculation, obtained with the command:
+certutil -hashfile <file> MD5 > <file>.md5
