@@ -5,8 +5,10 @@ IF NOT EXIST %TEMP_DIR% MKDIR %TEMP_DIR%
 call  %TRANSFERCMD% "mysql-connector-c-6.1.11-win32.msi" %TEMP_DIR%
 if errorlevel 1 goto errorDownload
 echo File Downloaded in %TEMP_DIR%
+Pause
 exit /b
 
 :errorDownload
 echo Error Downloading file: mysql-connector-c-6.1.11-win32.msi
+Pause
 exit /b
