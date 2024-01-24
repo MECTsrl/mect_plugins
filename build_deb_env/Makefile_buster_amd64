@@ -8,9 +8,9 @@
 # - apt-get install make wget sudo aptitude
 #
 # Make targets:
-# - GNU/Linux Debian 10/amd64 host   target --> make host_target  (host_toolchain)
-# -                           i.MX28 target --> make imx28_target (imx28_toolchain)
-# -                           Rpi4   target --> make rpi4_target  (rpi4_toolchain)
+# - GNU/Linux Debian 10/amd64 host   target --> make -f Makefile_buster_amd64 host_target  (host_toolchain)
+# -                           i.MX28 target --> make -f Makefile_buster_amd64 imx28_target (imx28_toolchain)
+# -                           Rpi4   target --> make -f Makefile_buster_amd64 rpi4_target  (rpi4_toolchain)
 
 # -----------------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ $(MECT_DOWNLOADF)/%.md5:
 	@mkdir -p $(MECT_DOWNLOADF)
 	@wget  -P $(MECT_DOWNLOADF) "http://$(MECT_ARCHIVE_HOST)/archive/$(@F)"
 	@touch -c $@          # force the re-check of the downloaded file, if any
-	@$(MAKE) $(@:%.md5=%) # re-check the downloaded file, if any
+	@$(MAKE) -f $(firstword $(MAKEFILE_LIST)) $(@:%.md5=%) # re-check the downloaded file, if any
 
 $(MECT_DOWNLOADF)/%: $(MECT_DOWNLOADF)/%.md5
 	@mkdir -p $(MECT_DOWNLOADF)
