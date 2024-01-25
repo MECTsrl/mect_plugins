@@ -77,7 +77,11 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
 	#
 	# https://stackoverflow.com/questions/10354371/stdtr1-has-not-been-declared
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) &&  echo "QMAKE_CXXFLAGS = \$$\$$QMAKE_CFLAGS -std=gnu++98" >> ./mkspecs/linux-g++/qmake.conf
+	# https://bugreports.qt.io/browse/QTBUG-41361#comment-257906
+	# also ./src/3rdparty/javascriptcore/JavaScriptCore/JavaScriptCore.pri
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) &&  \
+		echo "QMAKE_CXXFLAGS = \$$\$$QMAKE_CFLAGS -std=gnu++98 -Wno-error=class-memaccess" \
+	      	>> ./mkspecs/linux-g++/qmake.conf
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
@@ -115,7 +119,8 @@ $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro:
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/Makefile: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro
-	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && $(MECT_PREFIX)/bin/qmake -r
+	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && $(MECT_PREFIX)/bin/qmake -r \
+		-silent
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/Makefile
@@ -123,7 +128,7 @@ $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator: $(MECT_SOU
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/bin/qtcreator: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator
-	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && make install
+	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && sudo make INSTALL_ROOT=$(MECT_PREFIX) install
 	@echo "---------> done $@"
 
 # --------- Qt Desktop --------- 
