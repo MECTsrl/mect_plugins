@@ -8,34 +8,14 @@
 # - apt-get install make wget sudo aptitude
 #
 # Make targets for GNU/Linux Debian 10/amd64
-# - desktop target --> make -f Makefile_buster_amd64 desktop_target  (desktop_toolchain)
-# - host    target --> make -f Makefile_buster_amd64 host_target     (host_toolchain)
-# - i.MX28  target --> make -f Makefile_buster_amd64 imx28_target    (imx28_cross_toolchain)
-# - Rpi4    target --> make -f Makefile_buster_amd64 rpi4_target     (rpi4_cross_toolchain)
+# - desktop target --> make -f Makefile_all desktop_target  (desktop_toolchain)
+# - host    target --> make -f Makefile_all host_target     (host_toolchain)
+# - i.MX28  target --> make -f Makefile_all imx28_target    (imx28_cross_toolchain)
+# - Rpi4    target --> make -f Makefile_all rpi4_target     (rpi4_cross_toolchain)
 
 # -----------------------------------------------------------------------------
 
-export LC_ALL := C
-
-MECT_SUITE_MAJOR := 3
-MECT_SUITE_MINOR := 5
-MECT_SUITE_BUILD := 1
-MECT_SUITE_RELEASE = $(MECT_BUILD_MAJOR).$(MECT_BUILD_MINOR).$(MECT_BUILD_BUILD)
-
-MECT_SUITE_QT        := 4.8.7
-MECT_SUITE_QTCREATOR := 2.8.1
-MECT_SUITE_QWT       := 6.1-multiaxes
-MECT_SUITE_OPENSSL   := 1.0.2u
-MECT_SUITE_OPENSSL_X := 1.0.0
-
-MECT_HOST_ARCH       := amd64
-MECT_HOST_PLATFORM   := pc-linux # FIXME
-
-MECT_IMX28_ARCH      := arm 
-MECT_IMX28_PLATFORM  := imx28 # FIXME
-
-MECT_RPI4_ARCH       := armhf
-MECT_RPI4_PLATFORM   := rpi4 # FIXME 
+include "Makefile_common"
 
 # -----------------------------------------------------------------------------
 
@@ -48,56 +28,6 @@ clean_all: clean_downloads clean_desktop_target clean_host_target clean_imx28_ta
 	@echo "---------> done $@"
 
 distclean_all: distclean_downloads distclean_desktop_target distclean_host_target distclean_imx28_target distclean_rpi4_target
-	@echo "---------> done $@"
-
-# -----------------------------------------------------------------------------
-
-.PHONY: downloads clean_downloads distclean_downloads
-
-MECT_ARCHIVE_HOST := www.mect.it
-MECT_ARCHIVE_HOST := localhost
-
-MECT_DOWNLOADS := \
-	qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz \
-	qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch \
-	qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch \
-	qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch \
-	\
-	openssl-$(MECT_SUITE_OPENSSL).tar.gz \
-	openssl-$(MECT_SUITE_OPENSSL)-fix_parallel_build.patch \
-	\
-	qt-creator-$(MECT_SUITE_QTCREATOR)-src.tar.gz \
-	\
-
-# download files in downloads folder
-MECT_DOWNLOADF := $(CURDIR)/downloads
-MECT_DOWNLOADS := $(MECT_DOWNLOADS:%=$(MECT_DOWNLOADF)/%)
-
-# for each download file consider file.md5 too
-MECT_DOWNLOADSM := $(MECT_DOWNLOADS:%=%.md5)
-MECT_DOWNLOADS  := $(MECT_DOWNLOADS) $(MECT_DOWNLOADSM)
-
-# generic download rules
-
-$(MECT_DOWNLOADF)/%.md5:
-	@mkdir -p $(MECT_DOWNLOADF)
-	@wget  -P $(MECT_DOWNLOADF) "http://$(MECT_ARCHIVE_HOST)/archive/$(@F)"
-	@touch -c $@          # force the re-check of the downloaded file, if any
-	@$(MAKE) -f $(firstword $(MAKEFILE_LIST)) $(@:%.md5=%) # re-check the downloaded file, if any
-
-$(MECT_DOWNLOADF)/%: $(MECT_DOWNLOADF)/%.md5
-	@mkdir -p $(MECT_DOWNLOADF)
-	@cd       $(MECT_DOWNLOADF); md5sum -c $(@F).md5 2>/dev/null || { rm -f $(@F); wget "http://$(MECT_ARCHIVE_HOST)/archive/$(@F)"; md5sum -c $(@F).md5; }
-
-downloads: $(MECT_DOWNLOADS)
-	@echo "---------> done $@"
-
-clean_downloads:
-	rm -rf $(MECT_DOWNLOADF)/*.md5
-	@echo "---------> done $@"
-
-distclean_downloads:
-	rm -rf $(MECT_DOWNLOADF)
 	@echo "---------> done $@"
 
 # -----------------------------------------------------------------------------
