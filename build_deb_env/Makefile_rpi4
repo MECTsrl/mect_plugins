@@ -1,0 +1,46 @@
+# -----------------------------------------------------------------------------
+# MectSuite Qt Embedded SDK builder
+#
+# - Windows host + i.MX28 target --> https://github.com/MECTsrl/mect_plugins/tree/mect_suite_3.5/build_win_env
+#
+# Prerequisites:
+# - Debian/GNU Linux 10.0/Buster amd64 (schroot, cdeboostrap)
+# - apt-get install make wget sudo aptitude
+#
+# Make targets for GNU/Linux Debian 10/amd64
+# - Rpi4    target --> make -f Makefile_rpi4 target     (toolchain)
+
+# -----------------------------------------------------------------------------
+include Makefile_common
+
+# -----------------------------------------------------------------------------
+.PHONY: toolchain target
+
+MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_rpi4
+MECT_SOURCES := $(CURDIR)/src_rpi4
+
+toolchain: 
+	sudo apt-get install g++
+	@echo "---------> done $@"
+
+clean_toolchain: 
+	sudo apt-get remove g++
+	@echo "---------> done $@"
+
+distclean_toolchain: 
+	sudo apt-get purge g++
+	@echo "---------> done $@"
+
+target: downloads toolchain
+	TODO
+	@echo "---------> done $@"
+
+clean_target: # clean_toolchain
+	TODO
+	@echo "---------> done $@"
+
+distclean_target: # distclean_toolchain
+	TODO
+	@echo "---------> done $@"
+
+# -----------------------------------------------------------------------------
