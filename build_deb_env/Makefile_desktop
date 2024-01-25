@@ -119,8 +119,7 @@ $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro:
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/Makefile: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro
-	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && $(MECT_PREFIX)/bin/qmake -r \
-		-silent
+	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && $(MECT_PREFIX)/bin/qmake -r 
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/Makefile
