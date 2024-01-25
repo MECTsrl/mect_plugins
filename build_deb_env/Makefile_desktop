@@ -16,10 +16,15 @@ include Makefile_common
 # -----------------------------------------------------------------------------
 .PHONY: toolchain clean_toolchain distclean_toolchain
 
+# https://doc.qt.io/archives/qt-4.8/requirements-x11.html
+# 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev
+
 MECT_PACKAGES:= \
 	g++ \
 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev \
-	libsqlite3-dev
+	libsqlite3-dev \
+	libglib2.0-dev \
+	gdb gdbserver
 	# NB: no libssl-dev, it's openssl1.1
 
 toolchain: 
@@ -55,7 +60,7 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile: $(MECT_SOURCES)/openssl-
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile
-	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make # NB: no -j $(shell nproc)
+	+cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X)
@@ -70,27 +75,27 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
+	#
+	# https://stackoverflow.com/questions/10354371/stdtr1-has-not-been-declared
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) &&  echo "QMAKE_CXXFLAGS = \$$\$$QMAKE_CFLAGS -std=gnu++98" >> ./mkspecs/linux-g++/qmake.conf
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
+	# NB no: -no-vcproj -no-cetest -no-dsp: invalid command-line switch
+	# FIXME dopo: -qt-sql-odbc -plugin-sql-odbc -plugin-sql-mysql
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && ./configure \
 		-prefix $(MECT_PREFIX) \
-	        -fast \
-	        -opensource \
 		-platform linux-g++ \
-		-debug-and-release \
-		-confirm-license \
+	        -fast \
+	        -opensource -confirm-license \
 		-no-s60 -no-webkit -no-phonon -no-phonon-backend \
 	        -no-qt3support \
-	        -nomake examples \
-	        -nomake demos \
+	        -nomake examples -nomake demos \
 		-qt-zlib \
 	        -openssl -I $(MECT_PREFIX)/include \
 		-qt-sql-sqlite -plugin-sql-sqlite \
 		\
 		-silent
-	# NB no: -no-vcproj -no-cetest -no-dsp: invalid command-line switch
-	# FIXME dopo: -qt-sql-odbc -plugin-sql-odbc -plugin-sql-mysql
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT): $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile
