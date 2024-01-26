@@ -272,6 +272,7 @@ if errorlevel 1 (
 	call :screenAndLog "Installed Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
 )
 Rem  ---- Exit batch if QWT mode
+cd %STARTDIR%
 IF [%USER_MODE%] EQU [qwt] goto JobDone
 
 :JobDone
