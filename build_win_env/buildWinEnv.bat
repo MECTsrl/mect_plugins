@@ -263,12 +263,12 @@ if errorlevel 1 (
 )
 Rem ---- Start Qwt Installation
 call :screenAndLog "Installing Qwt in %DESKTOP_DIR%"
-mingw32-make install 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" -a %TEMP_DIR%Qt487-Install.log
+mingw32-make install 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" -a %TEMP_DIR%Qwt-Install.log
 if errorlevel 1 (
 	call :screenAndLog "Error Installing Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
 	goto AbortProcess
 )  else  (
-	xcopy %QWT_DIR%lib\qwt.dll %BIN_DIR%qwt.dll /Y
+	xcopy %QWT_DIR%lib\qwt.dll %BIN_DIR% /Y /I
 	call :screenAndLog "Installed Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
 )
 Rem  ---- Exit batch if QWT mode
