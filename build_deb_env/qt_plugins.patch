@@ -1,0 +1,13 @@
+--- orig/qt_designer_environment.pri	2024-01-26 18:54:06.114730119 +0000
++++ src_desktop/qt_designer_environment.pri	2024-01-26 19:20:01.934520429 +0000
+@@ -10,8 +10,8 @@ unix:!macx {
+ 	ATCM_QWT_LIB = $$QT_ROOTFS/usr/lib
+ 	ATCM_QWT_INCL = $$QT_ROOTFS/usr/include
+         QT_CREATOR = $$HOME/qtcreator-2.8.1/bin/qtcreator
+-        ATCM_DIR_COPY = "cp -rf"
++        ATCM_DIR_COPY = "echo DO NOT cp -rf"
+         ATCM_INSTALL_WIZARD = "$$(HOME)/qtcreator-2.8.1/share/qtcreator/templates/wizards/"
+-        MECT_INSTALL_PLUGINS = "$$(HOME)/qtcreator-2.8.1/bin/plugins"
++        MECT_INSTALL_PLUGINS = "$$(HOME)/qtcreator-2.8.1/plugins"
+ }
+ 

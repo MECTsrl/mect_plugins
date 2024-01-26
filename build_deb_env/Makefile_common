@@ -14,6 +14,7 @@ MECT_SUITE_RELEASE = $(MECT_BUILD_MAJOR).$(MECT_BUILD_MINOR).$(MECT_BUILD_BUILD)
 MECT_SUITE_QT        := 4.8.7
 MECT_SUITE_QTCREATOR := 2.8.1
 MECT_SUITE_QWT       := 6.1-multiaxes
+MECT_SUITE_QWT_X     := 6.3.0
 MECT_SUITE_OPENSSL   := 1.0.2u
 MECT_SUITE_OPENSSL_X := 1.0.0
 
@@ -44,6 +45,7 @@ MECT_DOWNLOADS := \
 	\
 	qt-creator-$(MECT_SUITE_QTCREATOR)-src.tar.gz \
 	\
+	qwt-$(MECT_SUITE_QWT).tar.bz2 # qwt-6.1-multiaxes_r2275.tar.bz2
 
 # download files in downloads folder
 MECT_DOWNLOADF := $(CURDIR)/downloads
