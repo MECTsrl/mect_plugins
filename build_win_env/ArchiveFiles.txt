@@ -5,8 +5,10 @@ Files moved to Mect Archive: (https://www.mect.it/archive/build_win_env/)
 - openssl-1.0.2u_winbuild.7z:							Openssl-1.0.2u precompiled for Windows
 - qt-tools.7z:											Tools for qt bin dir (fart, jom, pathman)
 - qt-everywhere-opensource-src-4.8.7.zip:				Qt 4.8.7 Sources (Windows version)
+- qt-everywhere-opensource-src-4.8.7_patched.7z			Qt 4.8.7 Sources (with patches for embedded)
 - qt487_doc.7z:											Qt 4.8.7 documentation (from binary release)
 - qt-creator-2.8.1-src.zip:								Qt Creator 2.8.1 Sources (Windows version)
+- qwt-6.1-multiaxes_r2275_win.7z:						QWT 6.1 Multiaxes (Updated qwtconfig.pri for Windows Setup)
 
 Each file is accompanied by the corresponding MD5 calculation, obtained with the command:
 certutil -hashfile <file> MD5 > <file>.md5

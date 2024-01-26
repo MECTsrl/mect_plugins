@@ -4,20 +4,23 @@ SET USER_MODE=%1
 SET STARTDIR=%CD%
 SET QT_VERSION=4.8.7
 Rem ---- Build Dirs
-SET OUT_DIR=C:\Qt487\
+SET ROOT_DIR=C:\
+SET OUT_DIR=%ROOT_DIR%Qt487\
 SET DESKTOP_DIR=%OUT_DIR%desktop\
 SET BIN_DIR=%DESKTOP_DIR%bin\
 SET DOC_DIR=%DESKTOP_DIR%doc
 SET CC_DIR=%DESKTOP_DIR%mingw32\
-SET WINBUILD_DIR=%OUT_DIR%winbuild
-SET TEMP_DIR=C:\Ms35_tmp\
+SET WINSPEC_DIR=%DESKTOP_DIR%mkspecs\
+SET WINBUILD_DIR=%OUT_DIR%winbuild\
+SET TEMP_DIR=%ROOT_DIR%Ms35_tmp\
 SET SRC_DIR=%TEMP_DIR%qt-everywhere-opensource-src-4.8.7\
-SET OPENSSL_DIR=C:\openssl-1.0.2u\
+SET OPENSSL_DIR=%ROOT_DIR%openssl-1.0.2u\
+SET QWT_DIR=%ROOT_DIR%qwt-6.1-multiaxes_r2275_win\
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
-SET EXTRACT_CMD="c:\Program Files\7-Zip\7z.exe" x -y -r 
+SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
 Rem ---- File to be downloaded 
-SET DOWNLOAD_LIST=MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z qt-everywhere-opensource-src-4.8.7.zip openssl-1.0.2u_winbuild.7z qt-tools.7z qt487_doc.7z
+SET DOWNLOAD_LIST=MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z qt-everywhere-opensource-src-4.8.7.zip openssl-1.0.2u_winbuild.7z qt-tools.7z qt487_doc.7z qwt-6.1-multiaxes_r2275_win.7z
 SET ErrorLog=%STARTDIR%\%~n0.log
 
 Rem ---- Checking Params
@@ -44,6 +47,12 @@ Rem ---- Install Qt
 IF [%USER_MODE%] EQU [install] (
 	echo Installing Qt %QT_VERSION%
 	goto installQt
+)
+
+Rem ---- qwt
+IF [%USER_MODE%] EQU [qwt] (
+	echo Add qwt to Qt %QT_VERSION% Installation in %DESKTOP_DIR%
+	goto buildQWT
 )
 
 echo.
@@ -87,23 +96,23 @@ call :screenAndLog "Expanding downloaded components for Qt %QT_VERSION%"
 Rem ---- MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z
 %EXTRACT_CMD%  %TEMP_DIR%MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z -o%DESKTOP_DIR%
 if errorlevel 1 (
-		call :screenAndLog "Error Expanding: MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z to %DESKTOP_DIR%"
-		goto AbortProcess
+	call :screenAndLog "Error Expanding: MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z to %DESKTOP_DIR%"
+	goto AbortProcess
 )
 Rem ---- Qt Tools qt-tools.7z
 IF EXIST %BIN_DIR% RD /S /Q %BIN_DIR%
 MKDIR %BIN_DIR%
 %EXTRACT_CMD%  %TEMP_DIR%qt-tools.7z -o%BIN_DIR%
 if errorlevel 1 (
-		call :screenAndLog "Error Expanding: qt-tools.7z to %BIN_DIR%"
-		goto AbortProcess
+	call :screenAndLog "Error Expanding: qt-tools.7z to %BIN_DIR%"
+	goto AbortProcess
 )
 Rem ---- qt-everywhere-opensource-src-4.8.7.zip (Extracting in TEMP, Merge with Qt487\desktop\)
 IF EXIST %SRC_DIR% RD /S /Q %SRC_DIR%
 %EXTRACT_CMD%  %TEMP_DIR%qt-everywhere-opensource-src-4.8.7.zip -o%TEMP_DIR%
 if errorlevel 1 (
-		call :screenAndLog "Error Expanding: qt-everywhere-opensource-src-4.8.7.zip to %TEMP_DIR%"
-		goto AbortProcess
+	call :screenAndLog "Error Expanding: qt-everywhere-opensource-src-4.8.7.zip to %TEMP_DIR%"
+	goto AbortProcess
 )
 call :screenAndLog "Moving Qt %QT_VERSION% sources to %DESKTOP_DIR%"
 xcopy %SRC_DIR%*.* %DESKTOP_DIR%*.* /s /y /e /v /q
@@ -112,17 +121,25 @@ RD /S /Q %SRC_DIR%
 Rem ---- openssl-1.0.2u_winbuild.7z
 IF EXIST %OPENSSL_DIR% RD /S /Q %OPENSSL_DIR%
 MKDIR %OPENSSL_DIR%
-%EXTRACT_CMD%  %TEMP_DIR%openssl-1.0.2u_winbuild.7z -oC:\
+%EXTRACT_CMD%  %TEMP_DIR%openssl-1.0.2u_winbuild.7z -o%ROOT_DIR%
 if errorlevel 1 (
-		call :screenAndLog "Error Expanding: openssl-1.0.2u_winbuild.7z to C:\"
-		goto AbortProcess
+	call :screenAndLog "Error Expanding: openssl-1.0.2u_winbuild.7z to %ROOT_DIR%"
+	goto AbortProcess
 )
 Rem ---- Qt 487 Doc qt487_doc.7z
 IF EXIST %DOC_DIR% RD /S /Q %DOC_DIR%
 %EXTRACT_CMD%  %TEMP_DIR%qt487_doc.7z -o%DESKTOP_DIR%
 if errorlevel 1 (
-		call :screenAndLog "Error Expanding: qt487_doc.7z to %DESKTOP_DIR%"
-		goto AbortProcess
+	call :screenAndLog "Error Expanding: qt487_doc.7z to %DESKTOP_DIR%"
+	goto AbortProcess
+)
+Rem ---- qwt-6.1-multiaxes_r2275_win.7z
+IF EXIST %QWT_DIR% RD /S /Q %QWT_DIR%
+MKDIR %QWT_DIR%
+%EXTRACT_CMD%  %TEMP_DIR%qwt-6.1-multiaxes_r2275_win.7z -o%ROOT_DIR%
+if errorlevel 1 (
+	call :screenAndLog "Error Expanding: qwt-6.1-multiaxes_r2275_win.7z to %ROOT_DIR%"
+	goto AbortProcess
 )
 call :screenAndLog "Extraction completed for Qt %QT_VERSION%"
 Set DOWNLOAD_LIST=
@@ -134,15 +151,15 @@ IF EXIST %WINBUILD_DIR% RD /S /Q %WINBUILD_DIR%
 MKDIR %WINBUILD_DIR%
 cd %WINBUILD_DIR%
 if errorlevel 1 (
-		call :screenAndLog "Error entering  Build Directory: %WINBUILD_DIR%"
-		goto AbortProcess
+	call :screenAndLog "Error entering  Build Directory: %WINBUILD_DIR%"
+	goto AbortProcess
 )
 Rem ---- Updating PATH if needed
 call :addToPath "%CC_DIR%bin"
 call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
 rem Set PATH=%CC_DIR%bin;%CC_DIR%i686-w64-mingw32\bin;%BIN_DIR%;%PATH%
-%DESKTOP_DIR%configure  -prefix C:/Qt487/desktop -fast -opensource -platform win32-g++ -debug-and-release -confirm-license -no-vcproj -no-s60 -no-webkit -no-cetest -no-dsp -no-phonon -no-phonon-backend -no-qt3support -nomake examples -nomake demos -qt-zlib -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "C:\Program Files\Git\usr\bin\tee" %TEMP_DIR%Qt487-desktop-config.log
+%DESKTOP_DIR%configure  -prefix C:/Qt487/desktop -fast -opensource -platform win32-g++ -debug-and-release -confirm-license -no-vcproj -no-s60 -no-webkit -no-cetest -no-dsp -no-phonon -no-phonon-backend -no-qt3support -nomake examples -nomake demos -qt-zlib -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-desktop-config.log
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring Qt in: %WINBUILD_DIR%"
 	goto AbortProcess
@@ -164,12 +181,12 @@ Rem ---- Updating PATH if needed
 call :addToPath "%CC_DIR%bin"
 call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
-set QMAKESPEC=C:\Qt487\winbuild\mkspecs\win32-g++
+set QMAKESPEC=%WINBUILD_DIR%mkspecs\win32-g++
 Rem Creating ./bin/qt.conf with right qmake prefix path
 Set QPREFIX=%WINBUILD_DIR:\=/%
 Echo [Paths] > bin\qt.conf
 ECHO Prefix=%QPREFIX%>> bin\qt.conf
-mingw32-make  2>&1 | "C:\Program Files\Git\usr\bin\tee" %TEMP_DIR%Qt487-desktop-make.log
+mingw32-make  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-desktop-make.log
 if errorlevel 1 (
 	call :screenAndLog "Error Building Qt in: %WINBUILD_DIR%"
 	goto AbortProcess
@@ -200,7 +217,7 @@ call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
 set QMAKESPEC=C:\Qt487\winbuild\mkspecs\win32-g++
 Rem ---- Start Qt Installation
-mingw32-make install 2>&1 | "C:\Program Files\Git\usr\bin\tee" -a %TEMP_DIR%Qt487-Install.log
+mingw32-make install 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" -a %TEMP_DIR%Qt487-Install.log
 if errorlevel 1 (
 	call :screenAndLog "Error Installing Qt from %WINBUILD_DIR% to: %DESKTOP_DIR%"
 	goto AbortProcess
@@ -208,9 +225,54 @@ if errorlevel 1 (
 	call :screenAndLog "Installed Qt from %WINBUILD_DIR% to: %DESKTOP_DIR%"
 )
 cd %STARTDIR%
-
 Rem  ---- Exit batch if install mode
 IF [%USER_MODE%] EQU [install] goto JobDone
+
+:buildQWT
+call :screenAndLog "Configuring Qwt 6.1 Multiaxes"
+cd %QWT_DIR%
+if errorlevel 1 (
+	call :screenAndLog "Qwt dir %QWT_DIR% not found, please download Qt components"
+	goto AbortProcess
+)
+if not EXIST %WINSPEC_DIR% (
+	call :screenAndLog "You must configure and install Qt first"
+	goto AbortProcess
+)
+Rem ---- Updating PATH if needed
+call :addToPath "%CC_DIR%bin"
+call :addToPath %CC_DIR%i686-w64-mingw32\bin;
+call :addToPath "%BIN_DIR%"
+Rem ---- Configuring Qwt
+call :screenAndLog "Configuring Qwt"
+qmake qwt.pro 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" -a %TEMP_DIR%Qwt-Configure.log
+if errorlevel 1 (
+	call :screenAndLog "Error Configuring Qwt 6.1 Multiaxes in %QWT_DIR%"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Configured Qwt 6.1 Multiaxes in %QWT_DIR%"
+)
+Rem ---- Building Qwt
+call :screenAndLog "Building Qwt"
+mingw32-make  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qwt-Make.log
+if errorlevel 1 (
+	call :screenAndLog "Error Building Qwt 6.1 Multiaxes in %QWT_DIR%"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Builded Qwt 6.1 Multiaxes in %QWT_DIR%"
+)
+Rem ---- Start Qwt Installation
+call :screenAndLog "Installing Qwt in %DESKTOP_DIR%"
+mingw32-make install 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" -a %TEMP_DIR%Qt487-Install.log
+if errorlevel 1 (
+	call :screenAndLog "Error Installing Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
+	goto AbortProcess
+)  else  (
+	xcopy %QWT_DIR%lib\qwt.dll %BIN_DIR%qwt.dll /Y
+	call :screenAndLog "Installed Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
+)
+Rem  ---- Exit batch if QWT mode
+IF [%USER_MODE%] EQU [qwt] goto JobDone
 
 :JobDone
 	call :screenAndLog "Done."
@@ -246,5 +308,6 @@ echo mode = download: 	Download Components and exit
 echo mode = configure: 	Configure Qt and exit
 echo mode = build: 		Build Qt and exit
 echo mode = install: 	Install configured Qt and exit
+echo mode = qwt:		Configure, compile, istall QWT Multiaxes	
 
 goto JobDone

@@ -6,8 +6,11 @@ SET REVISION="%REV%"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\mect_plugins"
-rem Path alreadset on SDK Machine
+Rem ---- Updating PATH if needed
 rem SET PATH=%PATH%;C:\Qt487\desktop\mingw32\bin\
+call :addToPath "%CC_DIR%bin"
+call :addToPath %CC_DIR%i686-w64-mingw32\bin;
+call :addToPath "%BIN_DIR%"
 
 SET TARGET_LIST=AnyTPAC043 AnyTPAC070 TP1043_01_A TP1043_02_A TP1043_02_B TP1070_01_A TP1070_01_B TP1070_01_C TP1070_02_F TPAC1005 TPAC1007_03 TPAC1007_04_AA TPAC1007_04_AB TPAC1007_04_AC TPAC1007_04_AD TPAC1007_04_AE TPAC1008_02_AA TPAC1008_02_AB TPAC1008_02_AD TPAC1008_02_AE TPAC1008_02_AF TPAC1008_03_AC TPAC1008_03_AD TPLC050_01_AA TPLC100_01_AA TPLC100_01_AB TPX1043_03_C TPX1070_03_D TPX1070_03_E 
 
@@ -163,9 +166,9 @@ time /t
 rem -----------------------------------------------------------------------------
 rem #### To be continued with i.mx28 new kit !!
 rem -----------------------------------------------------------------------------
-pause
+rem pause
 
-rem -----------------------------------------------------------------------------
+rem imx28 Configuration skipped!! -----------------------------------------------------------------------------
 SET TARGETBUILD=0
 IF %TARGETBUILD% == 1 (
 	echo Building target libraries distclean + qmake + make + install + distclean
@@ -252,23 +255,29 @@ mkdir %OUT_DIR%\Qt487\desktop\bin
 copy C:\Qt487\desktop\lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%\Qt487\desktop\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
 copy C:\Qt487\desktop\lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%\Qt487\desktop\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
 copy C:\Qt487\desktop\bin\ctc.exe %OUT_DIR%\Qt487\desktop\bin\ /Y >> %ErrorLog%
-mkdir %OUT_DIR%\Qt487\imx28
-xcopy C:\Qt487\imx28\rootfs %OUT_DIR%\Qt487\imx28\rootfs	/Q /Y /E /S /I >> %ErrorLog% 2>&1
-IF ERRORLEVEL 1 (
-	echo ERROR
-	pause
-	cd %ORIGINAL%
-	exit
-)
-mkdir "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++"
-mkdir %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common
-copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y >> %ErrorLog% 2>&1
-copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common	/Y >> %ErrorLog% 2>&1
-IF ERRORLEVEL 1 (
-	echo ERROR
-	pause
-	cd %ORIGINAL%
-	exit
+
+
+rem imx28 Configuration skipped!! -----------------------------------------------------------------------------
+IF %TARGETBUILD% == 1 (
+
+	mkdir %OUT_DIR%\Qt487\imx28
+	xcopy C:\Qt487\imx28\rootfs %OUT_DIR%\Qt487\imx28\rootfs	/Q /Y /E /S /I >> %ErrorLog% 2>&1
+	IF ERRORLEVEL 1 (
+		echo ERROR
+		pause
+		cd %ORIGINAL%
+		exit
+	)
+	mkdir "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++"
+	mkdir %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common
+	copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y >> %ErrorLog% 2>&1
+	copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common	/Y >> %ErrorLog% 2>&1
+	IF ERRORLEVEL 1 (
+		echo ERROR
+		pause
+		cd %ORIGINAL%
+		exit
+	)
 )
 
 cd /D %OUT_DIR%\Qt487
@@ -283,13 +292,18 @@ IF ERRORLEVEL 1 (
 	cd %ORIGINAL%
 	exit
 )
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt487_upd_rev%REV%.7z %OUT_DIR%\Qt487\imx28 >> %ErrorLog% 2>&1
-IF ERRORLEVEL 1 (
-	echo ERROR
-	pause
-	cd %ORIGINAL%
-	exit
+
+rem imx28 Configuration skipped!! -----------------------------------------------------------------------------
+IF %TARGETBUILD% == 1 (
+	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt487_upd_rev%REV%.7z %OUT_DIR%\Qt487\imx28 >> %ErrorLog% 2>&1
+	IF ERRORLEVEL 1 (
+		echo ERROR
+		pause
+		cd %ORIGINAL%
+		exit
+	)
 )
+
 "c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt487_upd_rev%REV%.7z %OUT_DIR%\Qt487\keys >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
@@ -319,3 +333,14 @@ cd %ORIGINAL%
 echo OK: build done.
 @echo on
 pause
+
+:addToPath
+	echo ;%PATH%; | find /C /I ";%~1;"1>NUL
+	if errorlevel 1 (
+		SET PATH=%PATH%;%~1;
+		echo Added %~1 to Path Variables
+	)  else (
+		echo %~1 already in Path
+	)
+	exit /b	
+

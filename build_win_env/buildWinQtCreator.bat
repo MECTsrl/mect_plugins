@@ -14,9 +14,11 @@ SET CREATOR_DIR=%DESKTOP_DIR%QtCreator
 SET CREATOR_SOURCES=qt-creator-2.8.1-src.zip
 SET TEMP_DIR=C:\Ms35_tmp\
 SET SRC_DIR=%TEMP_DIR%qt-everywhere-opensource-src-4.8.7\
+SET QT_SRC_DIR=%DESKTOP_DIR%src\
+SET QT_SRC_DIR=%QT_SRC_DIR:\=/%
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
-SET EXTRACT_CMD="c:\Program Files\7-Zip\7z.exe" x -y -r 
+SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
 SET ErrorLog=%STARTDIR%\%~n0.log
 Rem ---- Checking Params
 IF [%USER_MODE%] EQU [] goto showUsage
@@ -68,18 +70,38 @@ if errorlevel 1 (
 call :screenAndLog "Extraction completed for Qt %CREATOR_SOURCES%"
 IF [%USER_MODE%] EQU [download] goto JobDone
 
-
 :configureCreator
 call :screenAndLog "Configuring Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
-
+qmake CONFIG+=release "QT_PRIVATE_HEADERS=%QT_SRC_DIR%include" -r 2>&1 | "%ProgramFiles%\Git\usr\bin\tee"  %TEMP_DIR%QtCreator281-Configure_Release.Log
+if errorlevel 1 (
+	call :screenAndLog "Error Building Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Builded Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
+)
+IF [%USER_MODE%] EQU [configure] goto JobDone
 
 :buildCreator
 call :screenAndLog "Building Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
-
+mingw32-make release 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%QtCreator281-Make_Release.Log
+if errorlevel 1 (
+	call :screenAndLog "Error Building Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Builded Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
+)
+IF [%USER_MODE%] EQU [build] goto JobDone
 
 :installCreator
-call :screenAndLog "Installing Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
-
+call :screenAndLog "Installing Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION% to %CREATOR_DIR%""
+mingw32-make install INSTALL_ROOT=%CREATOR_DIR% 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%QtCreator281-Install_Release.log
+if errorlevel 1 (
+	call :screenAndLog "Error Installing Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION% to %CREATOR_DIR%"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Installed Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION% to %CREATOR_DIR%"
+)
+IF [%USER_MODE%] EQU [install] goto JobDone
 
 :JobDone
 	call :screenAndLog "Done."

@@ -2,6 +2,8 @@
 Rem ---- Checking Params
 IF [%1]==[] goto showUsage
 
+SETLOCAL 
+
 Rem ---- Destination Directory
 IF [%2]==[] (Set DEST_DIR=%CD%) else (Set DEST_DIR=%2)
 SET STARTDIR=%CD%
