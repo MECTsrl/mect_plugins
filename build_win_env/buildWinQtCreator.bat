@@ -13,9 +13,7 @@ SET CC_DIR=%DESKTOP_DIR%mingw32\
 SET CREATOR_DIR=%DESKTOP_DIR%QtCreator
 SET CREATOR_SOURCES=qt-creator-2.8.1-src.zip
 SET TEMP_DIR=C:\Ms35_tmp\
-SET SRC_DIR=%TEMP_DIR%qt-everywhere-opensource-src-4.8.7\
-SET QT_SRC_DIR=%DESKTOP_DIR%src\
-SET QT_SRC_DIR=%QT_SRC_DIR:\=/%
+SET CREATOR_SRC_DIR=%ROOT_DIR%%CREATOR_SOURCES:.zip=\%
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
 SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
@@ -48,11 +46,12 @@ IF [%USER_MODE%] EQU [install] (
 
 echo.
 echo ----------------------------------------
-echo Creating Qt Creator Version %QT_CREATOR_VERSION% for %QT_VERSION%
+echo Creating Qt Creator Version %QT_CREATOR_VERSION% for %QT_VERSION% in %CREATOR_SRC_DIR%
 echo ----------------------------------------
 echo. 
 
 :downloadCreator
+IF EXIST %CREATOR_SRC_DIR% RD /S /Q %CREATOR_SRC_DIR%
 call :screenAndLog "Downloading Sources %CREATOR_SOURCES% for %QT_CREATOR_VERSION%"
 call  %TRANSFER_CMD% %CREATOR_SOURCES% %TEMP_DIR%
 if errorlevel 1 (
@@ -61,7 +60,7 @@ if errorlevel 1 (
 )  else  (
 	call :screenAndLog "Downloaded %CREATOR_SOURCES%"
 )
-call :screenAndLog "Expanding Sources %CREATOR_SOURCES%"
+call :screenAndLog "Expanding Sources %CREATOR_SOURCES% to %CREATOR_SRC_DIR%" 
 %EXTRACT_CMD%  %TEMP_DIR%%CREATOR_SOURCES% -o%ROOT_DIR%
 if errorlevel 1 (
 	call :screenAndLog "Error Expanding:  %CREATOR_SOURCES% to %ROOT_DIR%"
@@ -71,17 +70,27 @@ call :screenAndLog "Extraction completed for Qt %CREATOR_SOURCES%"
 IF [%USER_MODE%] EQU [download] goto JobDone
 
 :configureCreator
-call :screenAndLog "Configuring Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
-qmake CONFIG+=release "QT_PRIVATE_HEADERS=%QT_SRC_DIR%include" -r 2>&1 | "%ProgramFiles%\Git\usr\bin\tee"  %TEMP_DIR%QtCreator281-Configure_Release.Log
+CD %CREATOR_SRC_DIR%
 if errorlevel 1 (
-	call :screenAndLog "Error Building Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
+	call :screenAndLog "Error entering  Build Directory: %CREATOR_SRC_DIR%"
+	goto AbortProcess
+)
+call :screenAndLog "Configuring Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
+qmake CONFIG+=release -r 2>&1 | "%ProgramFiles%\Git\usr\bin\tee"  %TEMP_DIR%QtCreator281-Configure_Release.Log
+if errorlevel 1 (
+	call :screenAndLog "Error Configuring Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
 	goto AbortProcess
 )  else  (
-	call :screenAndLog "Builded Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
+	call :screenAndLog "Configured  Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
 )
 IF [%USER_MODE%] EQU [configure] goto JobDone
 
 :buildCreator
+CD %CREATOR_SRC_DIR%
+if errorlevel 1 (
+	call :screenAndLog "Error entering  Build Directory: %CREATOR_SRC_DIR%"
+	goto AbortProcess
+)
 call :screenAndLog "Building Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
 mingw32-make release 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%QtCreator281-Make_Release.Log
 if errorlevel 1 (
@@ -92,7 +101,13 @@ if errorlevel 1 (
 )
 IF [%USER_MODE%] EQU [build] goto JobDone
 
+
 :installCreator
+CD %CREATOR_SRC_DIR%
+if errorlevel 1 (
+	call :screenAndLog "Error entering  Build Directory: %CREATOR_SRC_DIR%"
+	goto AbortProcess
+)
 call :screenAndLog "Installing Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION% to %CREATOR_DIR%""
 mingw32-make install INSTALL_ROOT=%CREATOR_DIR% 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%QtCreator281-Install_Release.log
 if errorlevel 1 (
@@ -105,6 +120,7 @@ IF [%USER_MODE%] EQU [install] goto JobDone
 
 :JobDone
 	call :screenAndLog "Done."
+	cd %STARTDIR%
 	pause
 	exit /b 
 
