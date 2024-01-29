@@ -125,22 +125,75 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
-	# NB no: -no-vcproj -no-cetest -no-dsp: invalid command-line switch
-	# FIXME dopo: -qt-sql-odbc -plugin-sql-odbc -plugin-sql-mysql
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && ./configure \
-		-prefix $(MECT_PREFIX) \
+	# https://doc.qt.io/archives/qt-4.8/configure-options.html
+	# vedi qt_configure_help.txt vs qt_configure_embedded_help.txt
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ \
+		&& ./configure \
+		-prefix $(MECT_PREFIX) -prefix-install \
+		\
+		-release \
+	        -opensource -confirm-license \
+	        -shared \
+	        -no-fast \
+		-largefile \
+		-no-system-proxies \
+		-exceptions \
+	        -accessibility \
+	        -stl \
+		-plugin-sql-sqlite \
+		-plugin-sql-odbc \
+		-plugin-sql-mysql \
+		-no-qt3support \
+		-xmlpatterns \
+		-multimedia \
+		-audio-backend \
+		-no-phonon -no-phonon-backend \
+		-svg \
+		-no-webkit \
+		-javascript-jit \
+		-script \
+		-scripttools \
+		-declarative \
+		-declarative-debug \
 		-platform $(MECT_QT_PLATFORM) \
 		\
-	        -fast \
-	        -opensource -confirm-license \
-		-no-s60 -no-webkit -no-phonon -no-phonon-backend \
-	        -no-qt3support \
-	        -nomake examples -nomake demos \
-		-qt-zlib \
-	        -openssl -I $(MECT_PREFIX)/include \
-		-qt-sql-sqlite -plugin-sql-sqlite \
+		-no-3dnow \
 		\
-		-silent
+		-qt-zlib \
+		-system-libtiff \
+		-system-libpng \
+		-system-libmng \
+		-system-libjpeg \
+		-openssl -I $(MECT_PREFIX)/include \
+		-nomake examples -nomake demos \
+		-rpath \
+		-silent \
+		-no-optimized-qmake \
+		-nis \
+		-cups \
+		-iconv \
+		-pch \
+		-dbus \
+		-no-separate-debug-info \
+		\
+		-gtkstyle \
+		-no-nas-sound \
+		-no-opengl \
+		-no-openvg \
+		-sm \
+		-xshape \
+		-xvideo \
+		-xsync \
+		-xinerama \
+		-xcursor \
+		-xfixes \
+		-xrandr \
+		-xrender \
+		-mitshm \
+		-fontconfig \
+		-xinput \
+		-xkb \
+		# -no-vcproj -no-cetest -no-dsp
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT): $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile
@@ -172,7 +225,8 @@ $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile
-	+cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && make -j $(shell nproc) # NB: +
+	# all: sub-src-all-ordered sub-textengines-all-ordered sub-doc-all-ordered sub-designer-all-ordered sub-examples-all-ordered FORCE
+	+cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && make all -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X)

@@ -95,9 +95,9 @@ $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(
 .PHONY: qt
 
 MECT_QT_EMBEDDED  :=
-# MECT_QT_ARCH      :=
+MECT_QT_ARCH      :=
 MECT_QT_PLATFORM  := linux-g++
-# MECT_QT_XPLATFORM :=
+MECT_QT_XPLATFORM := linux-g++
 
 qt: \
 	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure \
@@ -112,53 +112,82 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
+	#
+	# https://stackoverflow.com/questions/10354371/stdtr1-has-not-been-declared
+	# https://bugreports.qt.io/browse/QTBUG-41361#comment-257906
+	# also ./src/3rdparty/javascriptcore/JavaScriptCore/JavaScriptCore.pri
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) &&  \
+		echo "QMAKE_CXXFLAGS = \$$\$$QMAKE_CFLAGS -std=gnu++98 -Wno-error=class-memaccess" \
+	      	>> ./mkspecs/linux-g++/qmake.conf
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && ./configure \
-		-prefix $(MECT_PREFIX) \
-		-embedded $(MECT_QT_EMBEDDED) \
+	# https://doc.qt.io/archives/qt-4.8/configure-options.html
+	# vedi qt_configure_help.txt vs qt_configure_embedded_help.txt
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ \
+		&& ./configure \
+		-prefix $(MECT_PREFIX) -prefix-install \
+		\
+		-release \
+		-opensource -confirm-license \
+	        -shared \
+	        -no-fast \
+		-no-largefile \
+		-no-system-proxies \
+		-no-exceptions \
+	        -no-accessibility \
+		-no-stl \
+		-qt-sql-sqlite \
+		-qt-sql-odbc \
+		-qt-sql-mysql \
+	        -no-qt3support \
+		-no-xmlpatterns \
+		-no-multimedia \
+		-audio-backend \
+		-no-phonon -no-phonon-backend \
+		-svg \
+		-no-webkit \
+		-no-javascript-jit \
+		-no-script \
+		-no-scripttools \
+		-no-declarative \
+		-no-declarative-debug \
 		-platform $(MECT_QT_PLATFORM) \
 		\
-		-qt-gfx-qvfb -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-nis -no-cups -depths 8,16,18,32 -confirm-license \
-	        -fast \
-	        -fontconfig \
-	        -host-little-endian \
-	        -little-endian \
-	        -no-3dnow \
-	        -no-accessibility \
-	        -no-declarative \
-	        -no-javascript-jit \
-	        -no-largefile \
-	        -nomake demos \
-	        -nomake examples \
-	        -no-mmx \
-	        -no-multimedia \
-	        -no-phonon \
-	        -no-phonon-backend \
-	        -no-qt3support \
-	        -no-script \
-	        -no-scripttools \
-	        -no-sse \
-	        -no-sse2 \
-	        -no-sse3 \
-	        -no-ssse3 \
-	        -no-stl \
-	        -no-svg \
-	        -no-webkit \
-	        -no-xmlpatterns \
-	        -opensource \
-	        -plugin-sql-sqlite \
-	        -qt-gfx-linuxfb \
-	        -qt-gfx-transformed \
-	        -qt-gfx-vnc \
-	        -qt-kbd-tty \
-	        -openssl -I $(MECT_PREFIX)/include \
-	        -no-icu \
-	        -release \
-	        -shared \
-	        -sm \
-		-silent
+		-no-3dnow \
+		\
+		-qt-zlib \
+		-no-libtiff \
+		-qt-libpng \
+		-no-libmng \
+		-qt-libjpeg \
+		-openssl -I $(MECT_PREFIX)/include \
+		-nomake examples -nomake demos \
+		-rpath \
+		-silent \
+		-no-optimized-qmake \
+		-no-nis \
+		-no-cups \
+		-iconv \
+		-pch \
+		-dbus \
+		-no-separate-debug-info \
+		\
+		-embedded $(MECT_QT_EMBEDDED) \
+		-xplatform $(MECT_QT_XPLATFORM) \
+		-little-endian \
+		-host-little-endian \
+		-system-freetype \
+		-no-opengl \
+		-depths 8,16,18,32 \
+		-qt-gfx-qvfb \
+		-qt-gfx-linuxfb \
+		-qt-gfx-transformed \
+		-qt-gfx-vnc \
+		-qt-kbd-tty \
+		-qt-mouse-tslib \
+		-glib \
+		# -fontconfig -no-icu 
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT): $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile
@@ -186,10 +215,11 @@ $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro
-	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro  # -spec qws/linux-g++-mx
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro -spec qws/linux-g++ # -spec qws/linux-g++-mx
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile
+	# all: sub-src-all-ordered sub-textengines-all-ordered sub-doc-all-ordered sub-designer-all-ordered sub-examples-all-ordered FORCE
 	+cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && make sub-src-all-ordered sub-textengines-all-ordered -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
