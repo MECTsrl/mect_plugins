@@ -8,16 +8,40 @@
 # - apt-get install make wget sudo aptitude
 #
 # Make targets for GNU/Linux Debian 10/amd64
-# - host    target --> make -f Makefile_host target     (toolchain)
+# - host target --> make -f Makefile_host all
 
-# -----------------------------------------------------------------------------
 include Makefile_common
 
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------- host target --------- 
+.PHONY: all clean_all distclean_all
+
+MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_host
+MECT_SOURCES := $(CURDIR)/src_host
+
+all: \
+	downloads toolchain \
+	openssl qt \
+	qwt qt_plugins
+	@echo "---------> done $@"
+
+clean_all: # clean_toolchain
+	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
+	@echo "---------> done $@"
+
+distclean_all: # distclean_toolchain
+	rm -rf $(MECT_SOURCES)
+	sudo rm -rf $(MECT_PREFIX)
+	@echo "---------> done $@"
+
+# ----------------------------------------------------------------------------- host native toolchain --------- 
 .PHONY: toolchain clean_toolchain distclean_toolchain
+
+# FIXME: check desktop toolchain
 
 MECT_PACKAGES:= g++
 	# NB: no libssl-dev, it's openssl1.1
+	# NB: no libqwt-dev, it's qwt6.1.4-1
 
 toolchain: 
 	sudo aptitude install $(MECT_PACKAGES)
@@ -31,13 +55,15 @@ distclean_toolchain:
 	sudo aptitude purge $(MECT_PACKAGES)
 	@echo "---------> done $@"
 
-# -----------------------------------------------------------------------------
-.PHONY: target clean_target distclean_target
+# ----------------------------------------------------------------------------- OpenSSL 1.0 --------- 
+.PHONY: openssl
 
-MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_host
-MECT_SOURCES := $(CURDIR)/src_host
-
-# --------- OpenSSL 1.0 --------- 
+openssl: \
+	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure \
+	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile \
+	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X) \
+	$(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X)
+	@echo "---------> done $@"
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
 	mkdir -p $(MECT_SOURCES)
@@ -52,14 +78,22 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile: $(MECT_SOURCES)/openssl-
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile
-	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make # NB: no -j $(shell nproc)
+	+cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X)
 	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && sudo make install
 	@echo "---------> done $@"
 
-# --------- Qt --------- 
+# ----------------------------------------------------------------------------- Qt --------- 
+.PHONY: qt
+
+qt: \
+	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure \
+	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile \
+	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT) \
+	$(MECT_PREFIX)/lib/libQtCore.so.$(MECT_SUITE_QT)
+	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	mkdir -p $(MECT_SOURCES)
@@ -120,35 +154,6 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$
 
 $(MECT_PREFIX)/lib/libQtCore.so.$(MECT_SUITE_QT): $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT)
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && sudo make install
-	@echo "---------> done $@"
-
-$(MECT_PREFIX)/bin/qtcreator: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator
-	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && make install
-	@echo "---------> done $@"
-
-# --------- Qt Host --------- 
-
-target: downloads toolchain \
-	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure \
-	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile \
-	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X) \
-	$(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X) \
-	\
-	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure \
-	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile \
-	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT) \
-	$(MECT_PREFIX)/lib/libQtCore.so.$(MECT_SUITE_QT) \
-	#
-	@echo "---------> done $@"
-
-clean_target: # clean_toolchain
-	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
-	@echo "---------> done $@"
-
-distclean_target: # distclean_toolchain
-	rm -rf $(MECT_SOURCES)
-	sudo rm -rf $(MECT_PREFIX)
 	@echo "---------> done $@"
 
 # -----------------------------------------------------------------------------
