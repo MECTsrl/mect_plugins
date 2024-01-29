@@ -337,6 +337,7 @@ cd %ORIGINAL%
 echo OK: build done.
 @echo on
 pause
+exit 0 /b	
 
 :addToPath
 	echo ;%PATH%; | find /C /I ";%~1;"1>NUL
