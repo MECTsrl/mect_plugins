@@ -8,6 +8,10 @@ SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\mect_plugins"
 Rem ---- Updating PATH if needed
 rem SET PATH=%PATH%;C:\Qt487\desktop\mingw32\bin\
+SET QT_DIR=C:\Qt487\
+SET DESKTOP_DIR=%QT_DIR%desktop\
+SET BIN_DIR=%DESKTOP_DIR%bin\
+SET CC_DIR=%DESKTOP_DIR%mingw32\
 call :addToPath "%CC_DIR%bin"
 call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
