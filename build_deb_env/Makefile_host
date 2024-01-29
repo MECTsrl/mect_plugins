@@ -21,7 +21,9 @@ MECT_SOURCES := $(CURDIR)/src_host
 all: \
 	downloads toolchain \
 	openssl qt \
-	qwt qt_plugins
+	qwt \
+	\
+	qt_plugins
 	@echo "---------> done $@"
 
 clean_all: # clean_toolchain
@@ -37,9 +39,13 @@ distclean_all: # distclean_toolchain
 # ----------------------------------------------------------------------------- host native toolchain --------- 
 .PHONY: toolchain clean_toolchain distclean_toolchain
 
-# FIXME: check desktop toolchain
+MECT_CROSS_COMPILE := 
 
-MECT_PACKAGES:= g++
+# https://doc.qt.io/archives/qt-4.8/requirements-x11.html
+# 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev
+MECT_PACKAGES:= \
+	$(MECT_CROSS_COMPILE)gcc \
+	$(MECT_CROSS_COMPILE)g++ \
 	# NB: no libssl-dev, it's openssl1.1
 	# NB: no libqwt-dev, it's qwt6.1.4-1
 
@@ -73,6 +79,7 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile: $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure
 	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && ./Configure \
+		--cross-compile-prefix $(MECT_CROSS_COMPILE) \
 		--prefix=$(MECT_PREFIX) \
 		linux-generic32 shared no-asm -DL_ENDIAN
 	@echo "---------> done $@"
@@ -87,6 +94,11 @@ $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(
 
 # ----------------------------------------------------------------------------- Qt --------- 
 .PHONY: qt
+
+MECT_QT_EMBEDDED  :=
+MECT_QT_ARCH      :=
+MECT_QT_PLATFORM  := 
+MECT_QT_XPLATFORM :=
 
 qt: \
 	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure \
@@ -106,7 +118,9 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && ./configure \
 		-prefix $(MECT_PREFIX) \
-		-embedded \
+		-embedded $(MECT_QT_EMBEDDED) \
+		-xplatform $(MECT_QT_XPLATFORM) \
+		\
 		-qt-gfx-qvfb -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -no-nis -no-cups -depths 8,16,18,32 -confirm-license \
 	        -fast \
 	        -fontconfig \
@@ -154,6 +168,34 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$
 
 $(MECT_PREFIX)/lib/libQtCore.so.$(MECT_SUITE_QT): $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT)
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && sudo make install
+	@echo "---------> done $@"
+
+# ----------------------------------------------------------------------------- QWT --------- 
+.PHONY: qwt
+
+qwt: \
+	$(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro \
+	$(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile \
+	$(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X) \
+	$(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X)
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
+	mkdir -p $(MECT_SOURCES)
+	tar -C $(MECT_SOURCES) -xjvf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_DOWNLOADF)/../qwt.patch
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile
+	+cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && make -j $(shell nproc) # NB: +
+	@echo "---------> done $@"
+
+$(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X)
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && sudo make install # NB: no INSTALL_ROOT=$(MECT_PREFIX) vedi qwt.patch
 	@echo "---------> done $@"
 
 # -----------------------------------------------------------------------------
