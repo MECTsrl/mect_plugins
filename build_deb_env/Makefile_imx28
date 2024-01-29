@@ -89,7 +89,7 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X):
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X)
-	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && sudo make install
+	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && sudo make install_sw
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- Qt --------- 
@@ -183,15 +183,15 @@ qwt: \
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	mkdir -p $(MECT_SOURCES)
 	tar -C $(MECT_SOURCES) -xjvf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
-	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_DOWNLOADF)/../qwt.patch
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_DOWNLOADF)/../qwt_embedded.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro
-	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro  # -spec qws/linux-g++-mx
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile
-	+cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && make -j $(shell nproc) # NB: +
+	+cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && make sub-src-all-ordered sub-textengines-all-ordered -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X)

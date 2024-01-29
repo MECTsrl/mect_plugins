@@ -12,6 +12,9 @@
 # - host    target --> make host_all
 # - i.MX28  target --> make imx28_all
 # - Rpi4    target --> make rpi4_all
+#
+# For instance:
+# $ time make desktop_all 2>&1 | tee make_desktop_all.log
 
 # -----------------------------------------------------------------------------
 include Makefile_common

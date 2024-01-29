@@ -43,8 +43,8 @@ distclean_all: # distclean_toolchain
 # https://doc.qt.io/archives/qt-4.8/requirements-x11.html
 # 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev
 MECT_PACKAGES:= \
-	$(MECT_CROSS_COMPILE)gcc \
-	$(MECT_CROSS_COMPILE)g++ \
+	gcc \
+	g++ \
 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev \
 	libsqlite3-dev \
 	libglib2.0-dev \
@@ -91,16 +91,16 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X):
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X)
-	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && sudo make install
+	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && sudo make install_sw
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- Qt --------- 
 .PHONY: qt
 
-MECT_QT_EMBEDDED  :=
-MECT_QT_ARCH      :=
+# MECT_QT_EMBEDDED  :=
+# MECT_QT_ARCH      :=
 MECT_QT_PLATFORM  := linux-g++
-MECT_QT_XPLATFORM :=
+# MECT_QT_XPLATFORM :=
 
 qt: \
 	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure \
@@ -164,7 +164,7 @@ qwt: \
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	mkdir -p $(MECT_SOURCES)
 	tar -C $(MECT_SOURCES) -xjvf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
-	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_DOWNLOADF)/../qwt.patch
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_DOWNLOADF)/../qwt_desktop.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro
@@ -181,6 +181,11 @@ $(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUI
 
 # ----------------------------------------------------------------------------- QtCreator --------- 
 .PHONY: qtcreator
+
+# vedi ../setup/QtProject/QtCreator.ini
+# 	...
+# 	[ProjectExplorer]
+#	Settings\EnvironmentId=@ByteArray({29281f32-36f7-41e9-9987-9d4d0f3263a7})
 
 qtcreator: \
 	$(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro \
