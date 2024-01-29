@@ -8,10 +8,10 @@
 # - apt-get install make wget sudo aptitude
 #
 # Make targets for GNU/Linux Debian 10/amd64
-# - desktop target --> make desktop_target  (desktop_toolchain)
-# - host    target --> make host_target     (host_toolchain)
-# - i.MX28  target --> make imx28_target    (imx28_cross_toolchain)
-# - Rpi4    target --> make rpi4_target     (rpi4_cross_toolchain)
+# - desktop target --> make desktop_all
+# - host    target --> make host_all
+# - i.MX28  target --> make imx28_all
+# - Rpi4    target --> make rpi4_all
 
 # -----------------------------------------------------------------------------
 include Makefile_common
@@ -19,61 +19,61 @@ include Makefile_common
 # -----------------------------------------------------------------------------
 .PHONY: all clean_all distclean_all
 
-all: downloads desktop_target host_target imx28_target rpi4_target
+all: downloads desktop_all host_all imx28_all rpi4_all
 	@echo "---------> done $@"
 
-clean_all: clean_downloads clean_desktop_target clean_host_target clean_imx28_target clean_rpi4_target
+clean_all: clean_downloads clean_desktop_all clean_host_all clean_imx28_all clean_rpi4_all
 	@echo "---------> done $@"
 
-distclean_all: distclean_downloads distclean_desktop_target distclean_host_target distclean_imx28_target distclean_rpi4_target
+distclean_all: distclean_downloads distclean_desktop_all distclean_host_all distclean_imx28_all distclean_rpi4_all
 	@echo "---------> done $@"
 
 # -----------------------------------------------------------------------------
-.PHONY: desktop_target clean_desktop_target distclean_desktop_target
+.PHONY: desktop_all clean_desktop_all distclean_desktop_all
 
-desktop_target:
-	make -f Makefile_desktop target
+desktop_all:
+	make -f Makefile_desktop all
 
-clean_desktop_target:
-	make -f Makefile_desktop clean_target
+clean_desktop_all:
+	make -f Makefile_desktop clean_all
 
-distclean_desktop_target:
-	make -f Makefile_desktop distclean_target
-
-# -----------------------------------------------------------------------------
-.PHONY: host_target clean_host_target distclean_host_target
-
-host_target:
-	make -f Makefile_host target
-
-clean_host_target:
-	make -f Makefile_host clean_target
-
-distclean_host_target:
-	make -f Makefile_host distclean_target
+distclean_desktop_all:
+	make -f Makefile_desktop distclean_all
 
 # -----------------------------------------------------------------------------
-.PHONY: imx28_target clean_imx28_target distclean_imx28_target
+.PHONY: host_all clean_host_all distclean_host_all
 
-imx28_target:
-	make -f Makefile_imx28 target
+host_all:
+	make -f Makefile_host all
 
-clean_imx28_target:
-	make -f Makefile_imx28 clean_target
+clean_host_all:
+	make -f Makefile_host clean_all
 
-distclean_imx28_target:
-	make -f Makefile_imx28 distclean_target
+distclean_host_all:
+	make -f Makefile_host distclean_all
 
 # -----------------------------------------------------------------------------
-.PHONY: rpi4_target clean_rpi4_target distclean_rpi4_target
+.PHONY: imx28_all clean_imx28_all distclean_imx28_all
 
-rpi4_target:
-	make -f Makefile_rpi4 target
+imx28_all:
+	make -f Makefile_imx28 all
 
-clean_rpi4_target:
-	make -f Makefile_rpi4 clean_target
+clean_imx28_all:
+	make -f Makefile_imx28 clean_all
 
-distclean_rpi4_target:
-	make -f Makefile_rpi4 distclean_target
+distclean_imx28_all:
+	make -f Makefile_imx28 distclean_all
+
+# -----------------------------------------------------------------------------
+.PHONY: rpi4_all clean_rpi4_all distclean_rpi4_all
+
+rpi4_all:
+	make -f Makefile_rpi4 all
+
+clean_rpi4_all:
+	make -f Makefile_rpi4 clean_all
+
+distclean_rpi4_all:
+	make -f Makefile_rpi4 distclean_all
 
 # -----------------------------------------------------------------------------
