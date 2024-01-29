@@ -77,7 +77,7 @@ IF ERRORLEVEL 1 (
 mingw32-make distclean >> %ErrorLog% 2>&1
 time /t
 
-rem -----------------------------------------------------------------------------
+rem CTE Crosstable Editor Plugin for QtCreator ----------------------
 echo QtCreator cte plugin (distclean + qmake + make)
 cd /D %IN_DIR%\cte
 time /t
@@ -102,7 +102,7 @@ IF ERRORLEVEL 1 (
 )
 time /t
 
-rem -----------------------------------------------------------------------------
+rem CTC Crosstable Complier -------------------------------------------------------
 echo (QtCreator) ctc.exe (distclean + make + copy + distclean)
 cd /D %IN_DIR%\ctc
 time /t
@@ -167,11 +167,6 @@ for /d %%a in (%TARGET_LIST%) do (
 )
 time /t
 
-rem -----------------------------------------------------------------------------
-rem #### To be continued with i.mx28 new kit !!
-rem -----------------------------------------------------------------------------
-rem pause
-
 rem imx28 Configuration skipped!! -----------------------------------------------------------------------------
 SET TARGETBUILD=0
 IF %TARGETBUILD% == 1 (
@@ -205,12 +200,12 @@ IF %TARGETBUILD% == 1 (
 )
 
 rem -----------------------------------------------------------------------------
-echo QtProject.7z (zip)
+echo QtProject_487.7z (zip)
 time /t
-if exist "%OUT_DIR%\QtProject.7z" del "%OUT_DIR%\QtProject.7z"
+if exist "%OUT_DIR%\QtProject_487.7z" del "%OUT_DIR%\QtProject_487.7z"
 rem "c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%APPDATA%\QtProject\qtcreator\devices.xml" "%APPDATA%\QtProject\qtcreator\profiles.xml" "%APPDATA%\QtProject\qtcreator\qtversion.xml" "%APPDATA%\QtProject\qtcreator\toolchains.xml" "%APPDATA%\QtProject\qtcreator\externaltools\lupdate.xml" >> %ErrorLog%
 rem "c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%APPDATA%\QtProject" -x!QtCreator.db -x!QtCreator.ini -xr!"qtcreator\generic-highlighter" -xr!"qtcreator\json" -xr!qtcreator\macros -x!qtcreator\default.qws -x!qtcreator\helpcollection.qhc >> %ErrorLog%
-"c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%OUT_DIR%\QtProject" >> %ErrorLog% 2>&1
+"c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject_487.7z" "%OUT_DIR%\QtProject" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -254,10 +249,11 @@ for /d %%a in (%TARGET_LIST%) do (
 		exit
 	)
 )
-mkdir %OUT_DIR%\Qt487\desktop\lib\qtcreator\plugins\Mect
+rem CTE Plugin Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\
+mkdir %OUT_DIR%\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\
 mkdir %OUT_DIR%\Qt487\desktop\bin
-copy C:\Qt487\desktop\lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%\Qt487\desktop\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
-copy C:\Qt487\desktop\lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%\Qt487\desktop\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
+copy C:\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
+copy C:\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
 copy C:\Qt487\desktop\bin\ctc.exe %OUT_DIR%\Qt487\desktop\bin\ /Y >> %ErrorLog%
 
 
