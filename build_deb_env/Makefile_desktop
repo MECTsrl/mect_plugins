@@ -164,7 +164,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-qt-zlib \
 		-system-libtiff \
 		-system-libpng \
-		-system-libmng \
+		-no-libmng \
 		-system-libjpeg \
 		-openssl -I $(MECT_PREFIX)/include \
 		-nomake examples -nomake demos \
@@ -182,7 +182,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-no-nas-sound \
 		-no-opengl \
 		-no-openvg \
-		-sm \
+		-no-sm \
 		-xshape \
 		-no-xvideo \
 		-xsync \
@@ -195,6 +195,8 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-fontconfig \
 		-xinput \
 		-xkb \
+		\
+		-no-s60
 		# -no-vcproj -no-cetest -no-dsp
 	@echo "---------> done $@"
 
@@ -336,7 +338,7 @@ $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro:
 	rsync -Havx ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
 	rsync -Havx ../qt_library/ $(MECT_SOURCES)/qt_library/
 	cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
-	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_DOWNLOADF)/../qt_plugins.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
+	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_DOWNLOADF)/../qt_plugins_desktop.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt_plugins/Makefile: $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro

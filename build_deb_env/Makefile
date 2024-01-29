@@ -15,6 +15,12 @@
 #
 # For instance:
 # $ time make desktop_all 2>&1 | tee make_desktop_all.log
+#
+# For developers:
+# $ meld Makefile_desktop Makefile_host
+# $ meld Makefile_host    Makefile_imx28
+# $ meld Makefile_host    Makefile_rpi4
+#
 
 # -----------------------------------------------------------------------------
 include Makefile_common

@@ -1,0 +1,12 @@
+--- qt_plugins.orig/qt_library/ATCMcommon/global_var.h	2024-01-24 17:16:12.122724821 +0000
++++ qt_plugins/qt_library/ATCMcommon/global_var.h	2024-01-29 22:35:01.066117809 +0000
+@@ -46,7 +46,9 @@
+ 
+ /* buzzer */
+ #define BUZZER      "/dev/buzzer"
++#if 0
+ #include <linux/mxs-buzzer.h>
++#endif
+ #define BUZZER_DURATION_MS 120
+ 
+ #define ID_PLC_time         5390

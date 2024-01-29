@@ -193,6 +193,8 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 	        -qt-kbd-tty \
 		-qt-mouse-tslib \
 		-glib \
+		\
+		-no-s60
 		# -fontconfig -no-icu 
 	@echo "---------> done $@"
 

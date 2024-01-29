@@ -185,9 +185,10 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-qt-gfx-transformed \
 		-qt-gfx-vnc \
 		-qt-kbd-tty \
-		-qt-mouse-tslib \
 		-glib \
-		# -fontconfig -no-icu 
+		\
+		-no-s60
+		# -fontconfig -no-icu -qt-mouse-tslib
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT): $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile
@@ -215,7 +216,7 @@ $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro
-	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro -spec qws/linux-g++ # -spec qws/linux-g++-mx
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro -spec linux-g++ # qws/linux-generic-g++ # qws/linux-g++-mx
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile
@@ -225,6 +226,44 @@ $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_
 
 $(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X)
 	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && sudo make install # NB: no INSTALL_ROOT=$(MECT_PREFIX) vedi qwt.patch
+	@echo "---------> done $@"
+
+# ----------------------------------------------------------------------------- ATCM Designer plugins --------- 
+.PHONY: qt_plugins
+
+qt_plugins: \
+	$(MECT_SOURCES)/qt_atcm.pro \
+	$(MECT_SOURCES)/Makefile \
+	$(MECT_SOURCES)/qt-plugins/ATCMlabel/libatcmlabelplugin.so \
+	$(MECT_PREFIX)/plugins/designer/libatcmlabelplugin.so
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/qt_atcm.pro:
+	mkdir -p $(MECT_SOURCES)
+	rsync -Havx ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
+	rsync -Havx ../qt_library/ $(MECT_SOURCES)/qt_library/
+	cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
+	cp -a ../qt_atcm.pro $(MECT_SOURCES)/
+	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_DOWNLOADF)/../qt_plugins_embedded_host.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/Makefile: $(MECT_SOURCES)/qt_atcm.pro
+	cd $(MECT_SOURCES)/ \
+		&& $(MECT_PREFIX)/bin/qmake -r qt_atcm.pro \
+		   QT_INSTALL_PLUGINS=$(MECT_PREFIX)/plugins \
+		   -config store -config trend -config recipe -config alarms \
+		   CONFIG+=release DEFINES+=ATCM_VERSION=\"$(MECT_SUITE_RELEASE)\"
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/qt-plugins/ATCMlabel/libatcmlabelplugin.so: $(MECT_SOURCES)/Makefile
+	+cd $(MECT_SOURCES)/ && make -j $(shell nproc) # NB: +
+	@echo "---------> done $@"
+
+$(MECT_PREFIX)/plugins/libatcmlabelplugin.so: $(MECT_SOURCES)/qt-plugins/ATCMlabel/libatcmlabelplugin.so
+	sudo mkdir -p $(MECT_PREFIX)/plugins
+	#cd $(MECT_SOURCES)/qt_plugins/ \
+	#	&& sudo cp libATCM*.so $(MECT_PREFIX)/plugins/designer/
+	cd $(MECT_SOURCES)/ && sudo make install
 	@echo "---------> done $@"
 
 # -----------------------------------------------------------------------------
