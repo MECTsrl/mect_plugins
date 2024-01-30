@@ -6,10 +6,13 @@ SET REVISION="%REV%"
 SET SETUP_DIR=%~dp0
 SET OUT_DIR=%SETUP_DIR%
 SET IN_DIR="C:\mect_plugins"
+SET ROOT_DIR=C:\
 Rem ---- Updating PATH if needed
 rem SET PATH=%PATH%;C:\Qt487\desktop\mingw32\bin\
 SET QT_DIR=C:\Qt487\
 SET DESKTOP_DIR=%QT_DIR%desktop\
+SET CREATOR_DIR=Qt487\desktop\QtCreator\
+SET TEMPLATE_DIR=%CREATOR_DIR%share\qtcreator\templates\
 SET BIN_DIR=%DESKTOP_DIR%bin\
 SET CC_DIR=%DESKTOP_DIR%mingw32\
 call :addToPath "%CC_DIR%bin"
@@ -52,7 +55,7 @@ echo QtCreator designer plugins (distclean + qmake + make + install + distclean)
 cd /D %IN_DIR%\qt_plugins
 time /t
 mingw32-make distclean >> %ErrorLog% 2>&1
-"C:\Qt487\desktop\bin\qmake.exe" qt_designer_plugins.pro -r -spec win32-g++ "CONFIG+=release" -config store -config trend -config recipe -config alarms "DEFINES += ATCM_VERSION=\"%REVISION%\"" >> %ErrorLog% 2>&1
+"%BIN_DIR%qmake.exe" qt_designer_plugins.pro -r -spec win32-g++ "CONFIG+=release" -config store -config trend -config recipe -config alarms "DEFINES += ATCM_VERSION=\"%REVISION%\"" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -82,11 +85,11 @@ echo QtCreator cte plugin (distclean + qmake + make)
 cd /D %IN_DIR%\cte
 time /t
 rem ---- Nuovo path di CTE Plugin
-del /q C:\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\cte.dll
-del /q C:\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\CTE.pluginspec
+del /q %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\cte.dll
+del /q %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.pluginspec
 
 mingw32-make distclean >> %ErrorLog% 2>&1
-"C:\Qt487\desktop\bin\qmake.exe" cte.pro -r -spec win32-g++ "CONFIG+=release"  "DEFINES += ATCM_VERSION=\"%REVISION%\"" >> %ErrorLog% 2>&1
+"%BIN_DIR%qmake.exe" cte.pro -r -spec win32-g++ "CONFIG+=release"  "DEFINES += ATCM_VERSION=\"%REVISION%\"" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -107,7 +110,7 @@ echo (QtCreator) ctc.exe (distclean + make + copy + distclean)
 cd /D %IN_DIR%\ctc
 time /t
 mingw32-make distclean >> %ErrorLog% 2>&1
-"C:\Qt487\desktop\bin\qmake.exe" ctc.pro -r -spec win32-g++ "CONFIG+=release"  "DEFINES += ATCM_VERSION=\"%REVISION%\"" >> %ErrorLog% 2>&1
+"%BIN_DIR%qmake.exe" ctc.pro -r -spec win32-g++ "CONFIG+=release"  "DEFINES += ATCM_VERSION=\"%REVISION%\"" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -121,8 +124,8 @@ IF ERRORLEVEL 1 (
 	cd %ORIGINAL%
 	exit
 )
-del /q C:\Qt487\desktop\bin\ctc.exe
-copy %IN_DIR%\ctc\release\ctc.exe C:\Qt487\desktop\bin\ctc.exe /Y >> %ErrorLog% 2>&1
+del /q %BIN_DIR%ctc.exe
+copy %IN_DIR%\ctc\release\ctc.exe %BIN_DIR%ctc.exe /Y >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -137,17 +140,17 @@ echo QtCreator template wizards (copy)
 cd /D %IN_DIR%\qt_templates
 time /t
 
-for /d %%a in ("C:\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-*") do rd /s /q "%%~a"
+for /d %%a in ("%ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-*") do rd /s /q "%%~a"
 
-mkdir %OUT_DIR%\Qt487\desktop\share\qtcreator\templates\wizards
-xcopy ATCM-template-project C:\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-project /Q /Y /E /S /I >> %ErrorLog% 2>&1
+mkdir %OUT_DIR%%TEMPLATE_DIR%wizards
+xcopy ATCM-template-project %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project /Q /Y /E /S /I >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
 	cd %ORIGINAL%
 	exit
 )
-xcopy ATCM-template-form-class C:\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-form-class /Q /Y /E /S /I >> %ErrorLog% 2>&1
+xcopy ATCM-template-form-class %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class /Q /Y /E /S /I >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -156,8 +159,8 @@ IF ERRORLEVEL 1 (
 )
 for /d %%a in (%TARGET_LIST%) do (
 	echo "        %%~a"  >> %ErrorLog% 2>&1
-	mkdir "C:\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a"
-	xcopy "ATCM-template-project-%%~a" "C:\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a" /Q /Y /E /S /I >> %ErrorLog% 2>&1
+	mkdir "%ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project-%%~a"
+	xcopy "ATCM-template-project-%%~a" "%ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project-%%~a" /Q /Y /E /S /I >> %ErrorLog% 2>&1
 	IF ERRORLEVEL 1 (
 		echo ERROR
 		pause
@@ -225,15 +228,15 @@ IF ERRORLEVEL 1 (
 	cd %ORIGINAL%
 	exit
 )
-mkdir %OUT_DIR%\Qt487\desktop\share\qtcreator\templates\wizards
-xcopy C:\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-project %OUT_DIR%\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-project				/Q /Y /E /S /I >> %ErrorLog% 2>&1
+mkdir %OUT_DIR%%TEMPLATE_DIR%wizards
+xcopy %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project %OUT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project				/Q /Y /E /S /I >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
 	cd %ORIGINAL%
 	exit
 )
-xcopy C:\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-form-class %OUT_DIR%\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-form-class	/Q /Y /E /S /I >> %ErrorLog% 2>&1
+xcopy %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class %OUT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class	/Q /Y /E /S /I >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -241,7 +244,7 @@ IF ERRORLEVEL 1 (
 	exit
 )
 for /d %%a in (%TARGET_LIST%) do (
-	xcopy C:\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a %OUT_DIR%\Qt487\desktop\share\qtcreator\templates\wizards\ATCM-template-project-%%~a				/Q /Y /E /S /I >> %ErrorLog% 2>&1
+	xcopy %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project-%%~a %OUT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project-%%~a				/Q /Y /E /S /I >> %ErrorLog% 2>&1
 	IF ERRORLEVEL 1 (
 		echo ERROR
 		pause
@@ -250,11 +253,11 @@ for /d %%a in (%TARGET_LIST%) do (
 	)
 )
 rem CTE Plugin 
-mkdir %OUT_DIR%\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\
+mkdir %OUT_DIR%\%CREATOR_DIR%lib\qtcreator\plugins\Mect\
 mkdir %OUT_DIR%\Qt487\desktop\bin
-copy C:\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
-copy C:\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
-copy C:\Qt487\desktop\bin\ctc.exe %OUT_DIR%\Qt487\desktop\bin\ /Y >> %ErrorLog%
+copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%\%CREATOR_DIR%lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
+copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%\%CREATOR_DIR%lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
+copy %BIN_DIR%ctc.exe %OUT_DIR%\Qt487\desktop\bin\ /Y >> %ErrorLog%
 
 
 rem imx28 Configuration skipped!! -----------------------------------------------------------------------------

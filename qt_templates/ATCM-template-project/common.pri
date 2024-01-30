@@ -11,7 +11,7 @@ contains(QMAKE_HOST.os,Windows){
         QT_ROOTFS = C:/Qt487/imx28/rootfs
         QT_LUPDATE_PATH = C:/Qt487/desktop/bin
         QT_LRELEASE_PATH = C:/Qt487/imx28/qt-everywhere-opensource-src-4.8.7/bin
-        ATCM_TEMPLATE_BASE_DIR = C:/Qt487/desktop/share/qtcreator/templates/wizards
+        ATCM_TEMPLATE_BASE_DIR = C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards
 }
 !contains(QMAKE_HOST.os,Windows){
         QT_ROOTFS=$$(MECT_RFSDIR)
