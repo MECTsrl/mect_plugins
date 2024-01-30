@@ -249,7 +249,7 @@ for /d %%a in (%TARGET_LIST%) do (
 		exit
 	)
 )
-rem CTE Plugin Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\
+rem CTE Plugin 
 mkdir %OUT_DIR%\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\
 mkdir %OUT_DIR%\Qt487\desktop\bin
 copy C:\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%\Qt487\desktop\QtCreator\lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
@@ -280,6 +280,7 @@ IF %TARGETBUILD% == 1 (
 	)
 )
 
+rem Clean-Up Qt487 Dir
 cd /D %OUT_DIR%\Qt487
 del /s/q "*.bak"
 
