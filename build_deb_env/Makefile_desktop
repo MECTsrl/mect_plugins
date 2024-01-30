@@ -141,7 +141,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-no-system-proxies \
 		-exceptions \
 	        -accessibility \
-	        -stl \
+		-stl \
 		-plugin-sql-sqlite \
 		-plugin-sql-odbc \
 		-plugin-sql-mysql \

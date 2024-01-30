@@ -131,7 +131,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-release \
 		-opensource -confirm-license \
 	        -shared \
-	        -no-fast \
+	        -fast \
 		-no-largefile \
 		-no-system-proxies \
 		-no-exceptions \
@@ -187,8 +187,9 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-qt-kbd-tty \
 		-glib \
 		\
-		-no-s60
-		# -fontconfig -no-icu -qt-mouse-tslib
+		-no-s60 \
+		-no-icu \
+		# -fontconfig  -qt-mouse-tslib
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/lib/libQtCore.so.$(MECT_SUITE_QT): $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile
@@ -231,11 +232,16 @@ $(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUI
 # ----------------------------------------------------------------------------- ATCM Designer plugins --------- 
 .PHONY: qt_plugins
 
+export MECT_BUILD_MAJOR := $(MECT_SUITE_MAJOR)
+export MECT_BUILD_MINOR := $(MECT_SUITE_MINOR)
+export MECT_BUILD_BUILD := $(MECT_SUITE_BUILD)
+export MECT_BUILD_RELEASE := $(MECT_SUITE_MAJOR).$(MECT_SUITE_MINOR).$(MECT_SUITE_BUILD)
+
 qt_plugins: \
 	$(MECT_SOURCES)/qt_atcm.pro \
 	$(MECT_SOURCES)/Makefile \
-	$(MECT_SOURCES)/qt-plugins/ATCMlabel/libatcmlabelplugin.so \
-	$(MECT_PREFIX)/plugins/designer/libatcmlabelplugin.so
+	$(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0 \
+	$(MECT_PREFIX)/plugins/libATCMplugin.so.1.0.0
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt_atcm.pro:
@@ -255,15 +261,16 @@ $(MECT_SOURCES)/Makefile: $(MECT_SOURCES)/qt_atcm.pro
 		   CONFIG+=release DEFINES+=ATCM_VERSION=\"$(MECT_SUITE_RELEASE)\"
 	@echo "---------> done $@"
 
-$(MECT_SOURCES)/qt-plugins/ATCMlabel/libatcmlabelplugin.so: $(MECT_SOURCES)/Makefile
-	+cd $(MECT_SOURCES)/ && make -j $(shell nproc) # NB: +
+$(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/Makefile
+	#+cd $(MECT_SOURCES)/ && make -j $(shell nproc) # NB: +
+	cd $(MECT_SOURCES)/ && make -j1
 	@echo "---------> done $@"
 
-$(MECT_PREFIX)/plugins/libatcmlabelplugin.so: $(MECT_SOURCES)/qt-plugins/ATCMlabel/libatcmlabelplugin.so
+$(MECT_PREFIX)/plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0
 	sudo mkdir -p $(MECT_PREFIX)/plugins
 	#cd $(MECT_SOURCES)/qt_plugins/ \
 	#	&& sudo cp libATCM*.so $(MECT_PREFIX)/plugins/designer/
-	cd $(MECT_SOURCES)/ && sudo make install
+	cd $(MECT_SOURCES)/ && sudo make -n install
 	@echo "---------> done $@"
 
 # -----------------------------------------------------------------------------

@@ -10,3 +10,43 @@
  #define BUZZER_DURATION_MS 120
  
  #define ID_PLC_time         5390
+--- qt_plugins.orig/qt_library/ATCMcommon/global_functions.cpp	2024-01-24 17:16:12.122724821 +0000
++++ qt_plugins/qt_library/ATCMcommon/global_functions.cpp	2024-01-30 12:59:43.557359052 +0000
+@@ -792,25 +792,7 @@
+         value = (volume & 0xFF) + (on_cs << 8) + (off_cs << 16) + (replies << 24);
+         doWrite(ID_PLC_BUZZER, &value);
+     } else {
+-        // workaround for old projects
+-        static int64_t buzzer_busy_timeout_ms = 0;
+-        static int64_t now_ms = 0;
+-        struct timespec now;
+-
+-        /* No buzzer */
+-        if (Buzzerfd == -1)
+-            return false;
+-
+-        /* Milliseconds since some time reference */
+-        if (clock_gettime(CLOCK_MONOTONIC, &now) != 0)
+-            return false;
+-        now_ms = now.tv_sec * 1000 + now.tv_nsec / 1000000;
+-
+-        /* Buzz for duration_ms (if done buzzing). */
+-        if (buzzer_busy_timeout_ms <= now_ms) {
+-            (void)ioctl(Buzzerfd, BUZZER_BEEP, duration_ms);
+-            buzzer_busy_timeout_ms = now_ms + duration_ms;
+-        }
++        return false;
+     }
+     return true;
+ }
+--- qt_plugins.orig/qt_environment.pri	2024-01-24 17:16:12.014724764 +0000
++++ qt_plugins/qt_environment.pri	2024-01-30 13:02:48.825446033 +0000
+@@ -7,6 +7,8 @@ DEFINES += MECT_BUILD_MAJOR=\"$(MECT_BUI
+            MECT_BUILD_MINOR=\"$(MECT_BUILD_MINOR)\" \
+            MECT_BUILD_BUILD=\"$(MECT_BUILD_BUILD)\"
+ 
++QT += network
++
+ CONFIG += store alarms recipe trend
+ 
+ contains(QMAKE_HOST.os,Windows){
