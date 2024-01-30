@@ -23,7 +23,7 @@ all: \
 	openssl qt \
 	qwt \
 	qtcreator \
-	cte_plugin qt_templates qt_designer_plugins 
+	cte_plugin ctc_exe qt_templates qt_designer_plugins 
 	@echo "---------> done $@"
 
 clean_all: # clean_toolchain
@@ -302,6 +302,38 @@ $(MECT_PREFIX)/lib/qtcreator/plugins/Mect/libCTE.so: $(MECT_SOURCES)/qt-creator-
 	sudo mkdir -p $(MECT_PREFIX)/lib/qtcreator/plugins/Mect
 	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/lib/qtcreator/plugins/Mect \
 		&& sudo cp libCTE.so CTE.pluginspec $(MECT_PREFIX)/lib/qtcreator/plugins/Mect/
+	@echo "---------> done $@"
+
+# ----------------------------------------------------------------------------- CTC exe --------- 
+.PHONY: ctc_exe
+
+ctc_exe: \
+	$(MECT_SOURCES)/ctc/ctc.pro \
+	$(MECT_SOURCES)/ctc/Makefile \
+	$(MECT_SOURCES)/ctc/ctc \
+	$(MECT_PREFIX)/bin/ctc
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/ctc/ctc.pro:
+	mkdir -p $(MECT_SOURCES)
+	rsync -Havx ../ctc/ $(MECT_SOURCES)/ctc/
+	# cd $(MECT_SOURCES)/ctc/ && patch -p1 < $(MECT_DOWNLOADF)/../ctc.patch
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/ctc/Makefile: $(MECT_SOURCES)/ctc/ctc.pro
+	cd $(MECT_SOURCES)/ctc/ \
+		&& $(MECT_PREFIX)/bin/qmake -r \
+		CONFIG+=release DEFINES+=ATCM_VERSION=\"$(MECT_SUITE_RELEASE)\"
+	@echo "---------> done $@"
+
+$(MECT_SOURCES)/ctc/ctc: $(MECT_SOURCES)/ctc/Makefile
+	+cd $(MECT_SOURCES)/ctc/ && make -j $(shell nproc) # NB: +
+	@echo "---------> done $@"
+
+$(MECT_PREFIX)/bin/ctc: $(MECT_SOURCES)/ctc/ctc
+	sudo mkdir -p $(MECT_PREFIX)/bin
+	cd $(MECT_SOURCES)/ctc \
+		&& sudo cp ctc $(MECT_PREFIX)/bin/
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- ATCM templates --------- 
