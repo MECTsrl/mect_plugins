@@ -268,7 +268,7 @@ $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/Makefile
 
 $(MECT_PREFIX)/plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0
 	sudo mkdir -p $(MECT_PREFIX)/plugins
-	cd $(MECT_SOURCES)/ && sudo make -n INSTALL_ROOT=$(MECT_PREFIX) install
+	cd $(MECT_SOURCES)/ && sudo make INSTALL_ROOT=$(MECT_PREFIX) install
 	@echo "---------> done $@"
 
 # -----------------------------------------------------------------------------
