@@ -100,7 +100,7 @@ const QString szNODE_Dev = QLatin1String("NODE_%1_DEV_NODE");
 const QString szNODE_Status = QLatin1String("NODE_%1_STATUS");
 
 // CrossTable originale del Modello corrente
-const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
+const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
 
 // Version Number
 #ifndef ATCM_VERSION
