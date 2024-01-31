@@ -37,7 +37,16 @@ distclean_all: # distclean_toolchain
 # https://doc.qt.io/archives/qt-4.8/requirements-x11.html
 # 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev
 MECT_PACKAGES:= \
-	build-essential \
+	rsync wget \
+	gcc \
+	g++ \
+	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev \
+	libsqlite3-dev libmariadb-dev-compat unixodbc-dev \
+	libcups2-dev \
+	libglib2.0-dev \
+	libdbus-1-dev \
+	gdb \
+	gdbserver
 	# NB: no libssl-dev, it's openssl1.1
 	# NB: no libqwt-dev, it's qwt6.1.4-1
 
@@ -221,13 +230,8 @@ $(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUI
 	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && sudo make install # NB: no INSTALL_ROOT=$(MECT_PREFIX) vedi qwt.patch
 	@echo "---------> done $@"
 
-# ----------------------------------------------------------------------------- ATCM Designer plugins --------- 
+# ----------------------------------------------------------------------------- ATCM target plugins --------- 
 .PHONY: qt_plugins
-
-export MECT_BUILD_MAJOR := $(MECT_SUITE_MAJOR)
-export MECT_BUILD_MINOR := $(MECT_SUITE_MINOR)
-export MECT_BUILD_BUILD := $(MECT_SUITE_BUILD)
-export MECT_BUILD_RELEASE := $(MECT_SUITE_MAJOR).$(MECT_SUITE_MINOR).$(MECT_SUITE_BUILD)
 
 qt_plugins: \
 	$(MECT_SOURCES)/qt_atcm.pro \
