@@ -26,7 +26,7 @@
 +#ifdef __linux__
 +const QString szTemplateCTFile = QLatin1String("/opt/qt-desktop-4.8.7/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
 +#elif _WIN32
- const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
+ const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
 +#else
 +#error "missing templates"
 +#endif
