@@ -1,14 +1,7 @@
 # -----------------------------------------------------------------------------
-# MectSuite Qt Embedded SDK builder
+# MectSuite Qt Embedded SDK builder (Debian/amd64 Host target)
 #
-# - Windows host + i.MX28 target --> https://github.com/MECTsrl/mect_plugins/tree/mect_suite_3.5/build_win_env
-#
-# Prerequisites:
-# - Debian/GNU Linux 10.0/Buster amd64 (schroot, cdeboostrap)
-# - apt-get install make wget sudo aptitude
-#
-# Make targets for GNU/Linux Debian 10/amd64
-# - host target --> make -f Makefile_host all
+# vedi ./Makefile
 
 include Makefile_common
 
@@ -44,8 +37,7 @@ distclean_all: # distclean_toolchain
 # https://doc.qt.io/archives/qt-4.8/requirements-x11.html
 # 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev
 MECT_PACKAGES:= \
-	gcc \
-	g++ \
+	build-essential \
 	# NB: no libssl-dev, it's openssl1.1
 	# NB: no libqwt-dev, it's qwt6.1.4-1
 
