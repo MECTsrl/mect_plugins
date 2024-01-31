@@ -8,7 +8,8 @@ include Makefile_common
 # ----------------------------------------------------------------------------- i.MX28 target --------- 
 .PHONY: all clean_all distclean_all
 
-MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_imx28
+# MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_imx28
+MECT_PREFIX  := /opt/Trolltech
 MECT_SOURCES := $(CURDIR)/src_imx28
 
 all: \
@@ -19,12 +20,12 @@ all: \
 	qt_plugins
 	@echo "---------> done $@"
 
-clean_all: # clean_toolchain
+clean_all: clean_toolchain
 	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
 	@echo "---------> done $@"
 
-distclean_all: # distclean_toolchain
+distclean_all: distclean_toolchain
 	rm -rf $(MECT_SOURCES)
 	sudo rm -rf $(MECT_PREFIX)
 	@echo "---------> done $@"
@@ -32,30 +33,43 @@ distclean_all: # distclean_toolchain
 # ----------------------------------------------------------------------------- i.MX28 cross toolchain --------- 
 .PHONY: toolchain clean_toolchain distclean_toolchain
 
-MECT_CROSS_COMPILE := arm-linux-gnueabi-
+export MECT_CODESOURCERY_DIR := /opt/CodeSourcery
+export MECT_CODESOURCERY_PRE := arm-2011.03
+
+MECT_CROSS_COMPILE := $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-
 
 # https://doc.qt.io/archives/qt-4.8/requirements-x11.html
 # 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev
 MECT_PACKAGES:= \
 	rsync wget \
-	$(MECT_CROSS_COMPILE)gcc \
-	$(MECT_CROSS_COMPILE)g++ \
-	\
-	$(MECT_CROSS_COMPILE)gdb \
+	libc6:i386 \
 	gdbserver
 	# NB: no libssl-dev, it's openssl1.1
 	# NB: no libqwt-dev, it's qwt6.1.4-1
 
-toolchain: 
+toolchain: $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++
+	# prepare multi-arch i386 on amd64
+	sudo dpkg --add-architecture i386
+	sudo apt-get update
+	# install amd64 and i386 packages 
 	sudo aptitude install $(MECT_PACKAGES)
 	@echo "---------> done $@"
 
+$(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++:
+	# NB: these are i386 executables
+	sudo rm -rf /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
+	sudo tar -C /opt -xjvf $(MECT_DOWNLOADF)/arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+	sudo mv /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
+	@echo "---------> done $@"
+
 clean_toolchain: 
-	sudo aptitude remove $(MECT_PACKAGES)
+	# sudo aptitude remove $(MECT_PACKAGES)
+	sudo rm -rf /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
 	@echo "---------> done $@"
 
 distclean_toolchain: 
-	sudo aptitude purge $(MECT_PACKAGES)
+	# sudo aptitude purge $(MECT_PACKAGES)
+	sudo rm -rf /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- OpenSSL 1.0 --------- 
@@ -76,7 +90,7 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile: $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure
 	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && ./Configure \
-		--cross-compile-prefix $(MECT_CROSS_COMPILE) \
+		--cross-compile-prefix=$(MECT_CROSS_COMPILE) \
 		--prefix=$(MECT_PREFIX) \
 		linux-generic32 shared no-asm -DL_ENDIAN
 	@echo "---------> done $@"
@@ -107,23 +121,21 @@ qt: \
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	mkdir -p $(MECT_SOURCES)
 	tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
-	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
-	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
-	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
 	#
-	# https://stackoverflow.com/questions/10354371/stdtr1-has-not-been-declared
-	# https://bugreports.qt.io/browse/QTBUG-41361#comment-257906
-	# also ./src/3rdparty/javascriptcore/JavaScriptCore/JavaScriptCore.pri
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) &&  \
-		echo "QMAKE_CXXFLAGS = \$$\$$QMAKE_CFLAGS -std=gnu++98 -Wno-error=class-memaccess" \
-	      	>> ./mkspecs/linux-g++/qmake.conf
+	mkdir -p $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/qws/linux-g++-mx
+	cp mkspecs_qws_linux-g++-mx_qmake.conf      $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/qws/linux-g++-mx/qmake.conf
+	cp mkspecs_qws_linux-g++-mx_qplatformdefs.h $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/qws/linux-g++-mx/qplatformdefs.h
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
 	# https://doc.qt.io/archives/qt-4.8/configure-options.html
 	# vedi qt_configure_help.txt vs qt_configure_embedded_help.txt
+	# NB: cross compilation settings in .../mkspec/linux-g++-mx/
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ \
-		&& ./configure \
+		&& ./configure -v \
 		-prefix $(MECT_PREFIX) -prefix-install \
 		\
 		-release \
@@ -136,8 +148,8 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 	        -no-accessibility \
 		-no-stl \
 		-qt-sql-sqlite \
-		-qt-sql-odbc \
-		-qt-sql-mysql \
+		-no-sql-odbc \
+		-no-sql-mysql \
 	        -no-qt3support \
 		-no-xmlpatterns \
 		-no-multimedia \
@@ -173,7 +185,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-no-cups \
 		-iconv \
 		-pch \
-		-dbus \
+		-no-dbus \
 		-no-separate-debug-info \
 		\
 		-embedded $(MECT_QT_EMBEDDED) \
@@ -189,7 +201,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 	        -qt-gfx-vnc \
 	        -qt-kbd-tty \
 		-qt-mouse-tslib \
-		-glib \
+		-no-glib \
 		\
 		-no-s60 \
 		-no-icu \
