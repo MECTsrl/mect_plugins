@@ -33,6 +33,7 @@ distclean_all: distclean_toolchain
 # ----------------------------------------------------------------------------- i.MX28 cross toolchain --------- 
 .PHONY: toolchain clean_toolchain distclean_toolchain
 
+export MECT_TARGET_DIR  := /opt/target_imx28_$(MECT_SUITE_RELEASE)
 export MECT_CODESOURCERY_DIR := /opt/CodeSourcery
 export MECT_CODESOURCERY_PRE := arm-2011.03
 
@@ -42,12 +43,16 @@ MECT_CROSS_COMPILE := $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-
 # 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev
 MECT_PACKAGES:= \
 	rsync wget \
+	unzip \
 	libc6:i386 \
 	gdbserver
 	# NB: no libssl-dev, it's openssl1.1
 	# NB: no libqwt-dev, it's qwt6.1.4-1
 
-toolchain: $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++
+toolchain: packages $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++ $(MECT_TARGET_DIR)/rootfs/usr/include/mysql/mysql.h
+	@echo "---------> done $@"
+
+packages:
 	# prepare multi-arch i386 on amd64
 	sudo dpkg --add-architecture i386
 	sudo apt-get update
@@ -60,6 +65,11 @@ $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++:
 	sudo rm -rf /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
 	sudo tar -C /opt -xjvf $(MECT_DOWNLOADF)/arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 	sudo mv /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
+	@echo "---------> done $@"
+
+$(MECT_TARGET_DIR)/rootfs/usr/include/mysql/mysql.h:
+	sudo mkdir -p $(MECT_TARGET_DIR)
+	sudo unzip -d $(MECT_TARGET_DIR) $(MECT_DOWNLOADF)/rootfs_dev_$(MECT_SUITE_RELEASE).zip
 	@echo "---------> done $@"
 
 clean_toolchain: 
@@ -148,8 +158,8 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 	        -no-accessibility \
 		-no-stl \
 		-qt-sql-sqlite \
-		-no-sql-odbc \
-		-no-sql-mysql \
+		-qt-sql-odbc \
+		-qt-sql-mysql -I $(MECT_TARGET_DIR)/rootfs/usr/include -L $(MECT_TARGET_DIR)/rootfs/usr/lib \
 	        -no-qt3support \
 		-no-xmlpatterns \
 		-no-multimedia \
@@ -201,7 +211,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 	        -qt-gfx-vnc \
 	        -qt-kbd-tty \
 		-qt-mouse-tslib \
-		-no-glib \
+		-glib \
 		\
 		-no-s60 \
 		-no-icu \
