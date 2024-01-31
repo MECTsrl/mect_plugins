@@ -9,6 +9,7 @@ Files moved to Mect Archive: (https://www.mect.it/archive/build_win_env/)
 - qt487_doc.7z:											Qt 4.8.7 documentation (from binary release)
 - qt-creator-2.8.1-src.zip:								Qt Creator 2.8.1 Sources (Windows version)
 - qwt-6.1-multiaxes_r2275_win.7z:						QWT 6.1 Multiaxes (Updated qwtconfig.pri for Windows Setup)
+- sourcery-g++-lite.7z									Sourcery g++ lite 2011.03.41 arm
 
 Each file is accompanied by the corresponding MD5 calculation, obtained with the command:
 certutil -hashfile <file> MD5 > <file>.md5
