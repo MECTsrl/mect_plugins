@@ -25,7 +25,7 @@
 #
 #   (1.2) install basic packages and create /home/you
 #       you@host:~$ schroot -c chroot:bullseye_amd64_MectSuite_3.5 -u root
-#       (bullseye_amd64_MectSuite_3.5)root@host:~# apt-get update && apt-get install make wget sudo aptitude git
+#       (bullseye_amd64_MectSuite_3.5)root@host:~# apt-get update && apt-get install make wget sudo aptitude git rsync
 #       (bullseye_amd64_MectSuite_3.5)root@host:~# mkdir /home/you
 #       (bullseye_amd64_MectSuite_3.5)root@host:~# chown you:you /home/you
 #       (bullseye_amd64_MectSuite_3.5)root@host:~# exit
