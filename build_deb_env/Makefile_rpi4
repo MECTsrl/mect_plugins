@@ -10,6 +10,7 @@ include Makefile_common
 
 MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_rpi4
 MECT_SOURCES := $(CURDIR)/src_rpi4
+MECT_PATCHES := $(CURDIR)/patches
 
 all: \
 	downloads toolchain \
@@ -217,7 +218,7 @@ qwt: \
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	mkdir -p $(MECT_SOURCES)
 	tar -C $(MECT_SOURCES) -xjvf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
-	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_DOWNLOADF)/../qwt_embedded.patch
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_PATCHES)/qwt_embedded.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro
@@ -249,7 +250,7 @@ $(MECT_SOURCES)/qt_atcm.pro:
 	rsync -Havx ../qt_library/ $(MECT_SOURCES)/qt_library/
 	cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
 	cp -a ../qt_atcm.pro $(MECT_SOURCES)/
-	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_DOWNLOADF)/../qt_plugins_embedded_host.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
+	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_PATCHES)/qt_plugins_embedded_host.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/Makefile: $(MECT_SOURCES)/qt_atcm.pro

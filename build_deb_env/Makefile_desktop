@@ -10,6 +10,7 @@ include Makefile_common
 
 MECT_PREFIX  := /opt/qt-desktop-$(MECT_SUITE_QT)
 MECT_SOURCES := $(CURDIR)/src_desktop
+MECT_PATCHES := $(CURDIR)/patches
 
 all: \
 	downloads toolchain \
@@ -216,7 +217,7 @@ qwt: \
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	mkdir -p $(MECT_SOURCES)
 	tar -C $(MECT_SOURCES) -xjvf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
-	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_DOWNLOADF)/../qwt_desktop.patch
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_PATCHES)/qwt_desktop.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro
@@ -278,7 +279,7 @@ cte_plugin: \
 $(MECT_SOURCES)/cte/cte.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Havx ../cte/ $(MECT_SOURCES)/cte/
-	cd $(MECT_SOURCES)/cte/ && patch -p1 < $(MECT_DOWNLOADF)/../cte.patch
+	cd $(MECT_SOURCES)/cte/ && patch -p1 < $(MECT_PATCHES)/cte.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/cte/Makefile: $(MECT_SOURCES)/cte/cte.pro
@@ -312,7 +313,7 @@ ctc_exe: \
 $(MECT_SOURCES)/ctc/ctc.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Havx ../ctc/ $(MECT_SOURCES)/ctc/
-	# cd $(MECT_SOURCES)/ctc/ && patch -p1 < $(MECT_DOWNLOADF)/../ctc.patch
+	# cd $(MECT_SOURCES)/ctc/ && patch -p1 < $(MECT_PATCHES)/ctc.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/ctc/Makefile: $(MECT_SOURCES)/ctc/ctc.pro
@@ -342,7 +343,7 @@ qt_templates: \
 $(MECT_SOURCES)/qt_templates/qt_templates.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Havx ../qt_templates/ $(MECT_SOURCES)/qt_templates/
-	#cd $(MECT_SOURCES)/qt_templates/ && patch -p1 < $(MECT_DOWNLOADF)/../qt_templates.patch
+	#cd $(MECT_SOURCES)/qt_templates/ && patch -p1 < $(MECT_PATCHES)/qt_templates.patch
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/share/qtcreator/templates/wizards/ATCM-template-project/project.pro: $(MECT_SOURCES)/qt_templates/qt_templates.pro
@@ -365,7 +366,7 @@ $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro:
 	rsync -Havx ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
 	rsync -Havx ../qt_library/ $(MECT_SOURCES)/qt_library/
 	cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
-	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_DOWNLOADF)/../qt_plugins_desktop.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
+	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_PATCHES)/qt_plugins_desktop.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt_plugins/Makefile: $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro
