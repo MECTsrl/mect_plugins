@@ -10,6 +10,7 @@
 #include <QChar>
 #include <QColor>
 #include <QBrush>
+#include <QDebug>
 
 messageList::messageList(const QString &szTitle, QString &szMessage, QList<QStringList> &lstTableRows, QList<int> colSizes, int  nButtons, QWidget *parent) :
     QDialog(parent),

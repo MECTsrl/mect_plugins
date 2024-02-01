@@ -17,6 +17,12 @@ SET TEMP_DIR=%ROOT_DIR%Ms35_tmp\
 SET SRC_DIR=%TEMP_DIR%qt-everywhere-opensource-src-4.8.7\
 SET OPENSSL_DIR=%ROOT_DIR%openssl-1.0.2u\
 SET QWT_DIR=%ROOT_DIR%qwt-6.1-multiaxes_r2275_win\
+Rem ---- Mect Settings
+SET MECT_PREFIX==%OUT_DIR%imx28\
+SET MECT_QT_EMBEDDED=arm
+SET MECT_QT_ARCH=arm
+Rem SET MECT_QT_XPLATFORM=qws/linux-g++-mx  
+SET MECT_QT_XPLATFORM=linux-arm-gnueabi-g++
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
 SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
@@ -109,7 +115,11 @@ call :addToPath "%CC_DIR%bin"
 call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
 rem Set PATH=%CC_DIR%bin;%CC_DIR%i686-w64-mingw32\bin;%BIN_DIR%;%PATH%
-%DESKTOP_DIR%configure  -opensource  -confirm-license -release -embedded -arch arm -platform win32-g++ -xplatform linux-arm-gnueabi-g++ -fast -no-phonon -no-webkit -no-qt3support -nomake tools -nomake examples -nomake demos  -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
+rem configure -embedded arm -xplatform qws/linux-arm-g+
+rem %DESKTOP_DIR%configure  -opensource  -confirm-license -release -embedded arm -arch arm -platform win32-g++ -xplatform linux-arm-gnueabi-g++ -fast -no-phonon -no-webkit -no-qt3support -nomake tools -nomake examples -nomake demos  -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
+%DESKTOP_DIR%configure -prefix %MECT_PREFIX%  -release -opensource -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -qt-sql-mysql  -I C:/MySQLConnector/include  -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl  -I %OPENSSL_DIR%include -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM% -little-endian -system-freetype -no-opengl -no-s60 -dbus  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
+
+
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring Qt in: %IMX28BUILD_DIR%"
 	goto AbortProcess

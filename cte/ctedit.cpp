@@ -5,7 +5,7 @@
 #include "stdlib.h"
 #include "cteUtils.h"
 #include "messagelist.h"
-#include "queryPortNode.h"
+#include "queryportnode.h"
 
 #include <QFile>
 #include <QFileDialog>
@@ -99,9 +99,6 @@ const QString szFileQSS = QLatin1String(":/qss/CTE.qss");
 const QString szNODE_Dev = QLatin1String("NODE_%1_DEV_NODE");
 const QString szNODE_Status = QLatin1String("NODE_%1_STATUS");
 
-// CrossTable originale del Modello corrente
-const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
-
 // Version Number
 #ifndef ATCM_VERSION
 #define ATCM_VERSION "DevelopmentVersion"
@@ -109,6 +106,10 @@ const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/QtCreator/share
 #define _STR(x) #x
 #define STR(x) _STR(x)
 const QString szVERSION = QLatin1String(STR(ATCM_VERSION));
+
+// CrossTable originale del Modello corrente
+// const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
+const QString szTemplateCTFile = QLatin1String(STR(ATCM_TEMPLATE_BASE_DIR)) + QString::fromLatin1("/ATCM-template-project-%1/config/Crosstable.csv");
 
 ctedit::ctedit(QWidget *parent) :
     QDialog(parent),
@@ -4923,7 +4924,13 @@ void ctedit::on_cboUpdate_currentIndexChanged(int index)
 void ctedit::on_cmdPLC_clicked()
 // Lancio della visualizzazione del PLC Editor
 {
-    // QStringList lstEnv;
+
+#ifdef __linux__
+    //linux code goes here
+    goto endStartPLC;
+#elif _WIN32
+    // windows code goes here
+    // Open only File URL
     QString     szPlcPro2Show;
 
     // First parameter: File plc.4cp
@@ -4943,74 +4950,6 @@ void ctedit::on_cmdPLC_clicked()
     szPlcPro2Show = QDir::toNativeSeparators(szPlcPro2Show);
 
 
-#ifdef __linux__
-    //linux code goes here
-    QString     szCommand;
-    QString     szPLCEngPath;
-    QStringList lstArguments;
-    QString     szTemp;
-    QString     szPathPLCApplication;
-    QProcess    procPLC;
-    qint64      pidPLC;
-
-    // Ricerca della variabile specifica per il lancio del PLC
-    szPathPLCApplication = QProcessEnvironment::systemEnvironment().value(szPLCEnvVar, szEMPTY);
-    // Search Path of PLC Application
-    lstArguments.clear();
-    if (not szPathPLCApplication.isEmpty())  {
-        // qDebug() << QString::fromAscii("Env. %1 Variable: <%2>") .arg(szPLCEnvVar) .arg(szPathPLCApplication);
-        // To be modified with specifics of PLC Application
-        szTemp = QLatin1String("%1");
-        // Remove %1
-        szPathPLCApplication.remove(szTemp, Qt::CaseInsensitive);
-        // Remove doublequote
-        szPathPLCApplication.remove(szDOUBLEQUOTE, Qt::CaseInsensitive);
-        szPathPLCApplication = szPathPLCApplication.trimmed();
-        // qDebug() << QString::fromAscii("Editor PLC: <%1>") .arg(szPathPLCApplication);
-        // Build PLC Editor Application command
-        QFileInfo plcExe(szPathPLCApplication);
-        if (plcExe.exists())  {
-            szPLCEngPath = plcExe.absolutePath();
-            // qDebug() << QString::fromAscii("Path PLC: <%1>") .arg(szPLCEngPath);
-        }
-        szCommand = szPathPLCApplication;
-        // Enclose command with double quote
-        // szCommand.append(szDOUBLEQUOTE);
-        // szCommand.prepend(szDOUBLEQUOTE);
-        // qDebug() << "PLC Command: " << szCommand;
-        // Verifica e Lancio Engineering
-        if (plcExe.exists())  {
-            // Enclose parameter with double quote (MayBe done by QProcess)
-            //szTemp.append(szDOUBLEQUOTE);
-            //szTemp.prepend(szDOUBLEQUOTE);
-            lstArguments.append(szPlcPro2Show);
-            // Imposta come Directory corrente di esecuzione la directory del File PLC
-            procPLC.setWorkingDirectory(szPLCEngPath);
-            // qDebug() << "Plc Path: " << szPLCEngPath;
-            // Esecuzione Comando
-            szCommand = QDir::toNativeSeparators(szCommand);
-            qDebug() << m_szMsg;
-            if (not procPLC.startDetached(szCommand, lstArguments, m_szCurrentPLCPath, &pidPLC))  {
-                QProcess::ProcessError errPlc = procPLC.error();
-                m_szMsg = QString::fromAscii("Error Starting PLC Engineering: %1\n") .arg(errPlc);
-                m_szMsg.append(szCommand);
-                warnUser(this, szTitle, m_szMsg);
-                goto endStartPLC;
-            }
-        }
-        else {
-            m_szMsg = QString::fromAscii("Program PLC Engineering Not Found!\n%1") .arg(szPLCEnvVar);
-            m_szMsg.append(szCommand);
-            warnUser(this, szTitle, m_szMsg);
-            goto endStartPLC;
-        }
-    }
-    else  {
-        m_szMsg = QString::fromAscii("Environment Variable for Application PLC Engineering %1 Not Found!\n") .arg(szPLCEnvVar);
-        m_szMsg.append(szCommand);
-        warnUser(this, szTitle, m_szMsg);
-    }
-#elif _WIN32
     // windows code goes here
     // Open only File URL
     if (not showFile(szPlcPro2Show))  {
