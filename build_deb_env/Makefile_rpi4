@@ -8,7 +8,7 @@ include Makefile_common
 # ----------------------------------------------------------------------------- Rpi4 target --------- 
 .PHONY: all clean_all distclean_all
 
-MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_rpi4
+MECT_PREFIX  := /opt/Qt$(MECT_SUITE_QT)/rpi4
 MECT_SOURCES := $(CURDIR)/src_rpi4
 MECT_PATCHES := $(CURDIR)/patches
 

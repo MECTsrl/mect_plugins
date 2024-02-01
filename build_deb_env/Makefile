@@ -43,7 +43,7 @@
 #       you@host:~$ xhost +local:
 #       you@host:~$ schroot -c chroot:bullseye_amd64_MectSuite_3.5
 #       (bullseye_amd64_MectSuite_3.5)you@host:~$ export DISPLAY=:0
-#       (bullseye_amd64_MectSuite_3.5)you@host:~$ /opt/qt-desktop-4.8.7/bin/qtcreator
+#       (bullseye_amd64_MectSuite_3.5)you@host:~$ /opt/Qt4.8.7/desktop/bin/qtcreator
 #
 # For developers:
 # $ meld Makefile_desktop Makefile_host

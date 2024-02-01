@@ -8,8 +8,8 @@ include Makefile_common
 # ----------------------------------------------------------------------------- i.MX28 target --------- 
 .PHONY: all clean_all distclean_all
 
-# MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_imx28
-MECT_PREFIX  := /opt/Trolltech
+MECT_PREFIX  := /opt/Qt$(MECT_SUITE_QT)/imx28
+# MECT_PREFIX  := /opt/Trolltech
 MECT_SOURCES := $(CURDIR)/src_imx28
 MECT_PATCHES := $(CURDIR)/patches
 
@@ -34,7 +34,6 @@ distclean_all: distclean_toolchain
 # ----------------------------------------------------------------------------- i.MX28 cross toolchain --------- 
 .PHONY: toolchain clean_toolchain distclean_toolchain
 
-export MECT_TARGET_DIR  := /opt/target_imx28_$(MECT_SUITE_RELEASE)
 export MECT_CODESOURCERY_DIR := /opt/CodeSourcery
 export MECT_CODESOURCERY_PRE := arm-2011.03
 
@@ -50,7 +49,7 @@ MECT_PACKAGES:= \
 	# NB: no libssl-dev, it's openssl1.1
 	# NB: no libqwt-dev, it's qwt6.1.4-1
 
-toolchain: packages $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++ $(MECT_TARGET_DIR)/rootfs/usr/include/mysql/mysql.h
+toolchain: packages $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++ $(MECT_PREFIX)/rootfs/usr/lib/libc.so
 	@echo "---------> done $@"
 
 packages:
@@ -68,9 +67,9 @@ $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++:
 	sudo mv /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
 	@echo "---------> done $@"
 
-$(MECT_TARGET_DIR)/rootfs/usr/include/mysql/mysql.h:
-	sudo mkdir -p $(MECT_TARGET_DIR)
-	sudo unzip -d $(MECT_TARGET_DIR) $(MECT_DOWNLOADF)/rootfs_dev_$(MECT_SUITE_RELEASE).zip
+$(MECT_PREFIX)/rootfs/usr/lib/libc.so:
+	sudo mkdir -p $(MECT_PREFIX)
+	sudo unzip -d $(MECT_PREFIX) $(MECT_DOWNLOADF)/rootfs_dev_$(MECT_SUITE_RELEASE).zip
 	@echo "---------> done $@"
 
 clean_toolchain: 

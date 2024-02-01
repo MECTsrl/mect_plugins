@@ -8,7 +8,7 @@ include Makefile_common
 # ----------------------------------------------------------------------------- host target --------- 
 .PHONY: all clean_all distclean_all
 
-MECT_PREFIX  := /opt/qt-embedded-$(MECT_SUITE_QT)_host
+MECT_PREFIX  := /opt/Qt$(MECT_SUITE_QT)/host
 MECT_SOURCES := $(CURDIR)/src_host
 MECT_PATCHES := $(CURDIR)/patches
 

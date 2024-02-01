@@ -39,14 +39,3 @@
      }
      return true;
  }
---- qt_plugins.orig/qt_environment.pri	2024-01-24 17:16:12.014724764 +0000
-+++ qt_plugins/qt_environment.pri	2024-01-30 13:02:48.825446033 +0000
-@@ -7,6 +7,8 @@ DEFINES += MECT_BUILD_MAJOR=\"$(MECT_BUI
-            MECT_BUILD_MINOR=\"$(MECT_BUILD_MINOR)\" \
-            MECT_BUILD_BUILD=\"$(MECT_BUILD_BUILD)\"
- 
-+QT += network
-+
- CONFIG += store alarms recipe trend
- 
- contains(QMAKE_HOST.os,Windows){

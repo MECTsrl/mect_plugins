@@ -8,7 +8,7 @@ include Makefile_common
 # ----------------------------------------------------------------------------- desktop target --------- 
 .PHONY: all clean_all distclean_all
 
-MECT_PREFIX  := /opt/qt-desktop-$(MECT_SUITE_QT)
+MECT_PREFIX  := /opt/Qt$(MECT_SUITE_QT)/desktop
 MECT_SOURCES := $(CURDIR)/src_desktop
 MECT_PATCHES := $(CURDIR)/patches
 
@@ -366,7 +366,6 @@ $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro:
 	rsync -Havx ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
 	rsync -Havx ../qt_library/ $(MECT_SOURCES)/qt_library/
 	cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
-	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_PATCHES)/qt_plugins_desktop.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt_plugins/Makefile: $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro
