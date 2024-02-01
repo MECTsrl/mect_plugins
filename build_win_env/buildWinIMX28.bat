@@ -14,7 +14,8 @@ SET WINSPEC_DIR=%DESKTOP_DIR%mkspecs\
 SET WINBUILD_DIR=%OUT_DIR%winbuild\
 SET IMX28BUILD_DIR=%OUT_DIR%imx28_build\
 SET TEMP_DIR=%ROOT_DIR%Ms35_tmp\
-SET SRC_DIR=%TEMP_DIR%qt-everywhere-opensource-src-4.8.7\
+SET SRC_FILE=qt-everywhere-opensource-src-4.8.7_patched
+SET SRC_DIR=%TEMP_DIR%%SRC_FILE%\
 SET OPENSSL_DIR=%ROOT_DIR%openssl-1.0.2u\
 SET QWT_DIR=%ROOT_DIR%qwt-6.1-multiaxes_r2275_win\
 Rem ---- Mect Settings
@@ -23,12 +24,13 @@ SET MECT_QT_EMBEDDED=arm
 SET MECT_QT_ARCH=arm
 Rem SET MECT_QT_XPLATFORM=qws/linux-g++-mx  
 SET MECT_QT_XPLATFORM=linux-arm-gnueabi-g++
+SET MECT_MKSPECS=%IMX28BUILD_DIR%mkspecs\
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
 SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
 Rem ---- File to be downloaded 
 SET SOURCERY_GCC=sourcery-g++-lite
-SET DOWNLOAD_LIST=%SOURCERY_GCC%.7z
+SET DOWNLOAD_LIST=%SOURCERY_GCC%.7z %SRC_FILE%.7z
 SET ErrorLog=%STARTDIR%\%~n0.log
 
 Rem ---- Checking Params
@@ -73,8 +75,14 @@ IF NOT EXIST %IMX28BUILD_DIR%  (
 :downloadComponents
 call :screenAndLog "Downloading components for ARM platform"
 Rem ---- Clear Temp Dir
+call :screenAndLog "Clearing %TEMP_DIR%"
 IF EXIST %TEMP_DIR% RD /S /Q %TEMP_DIR%
 MKDIR %TEMP_DIR%
+Rem ---- I.MX28 Build Dir
+call :screenAndLog "Clearing %IMX28BUILD_DIR%"
+IF EXIST %IMX28BUILD_DIR%  RD /S /Q %IMX28BUILD_DIR%
+MKDIR %IMX28BUILD_DIR% 
+
 Rem ---- Download File List
 For %%a in (%DOWNLOAD_LIST%) do (
 	call :screenAndLog "Downloading %%~a to %TEMP_DIR%"
@@ -97,14 +105,28 @@ if errorlevel 1 (
 	call :screenAndLog "Error Expanding: %SOURCERY_GCC%.7z to %OUT_DIR%"
 	goto AbortProcess
 )
+Rem ---- Qt 4.8.7 Patched Sources
+call :screenAndLog "Expanding Qt Patched Sources"
+%EXTRACT_CMD%  %TEMP_DIR%%SRC_FILE%.7z -o%TEMP_DIR%
+if errorlevel 1 (
+	call :screenAndLog "Error Expanding: %SRC_FILE%.7z to %TEMP_DIR%"
+	goto AbortProcess
+)
+call :screenAndLog "Moving Qt %QT_VERSION% sources to %IMX28BUILD_DIR%"
+xcopy %SRC_DIR%*.* %IMX28BUILD_DIR%*.* /s /y /e /v /q
+Rem --- Update MECT_QT_XPLATFORM MKSPECS for build
+call :screenAndLog "Updating  %MECT_QT_XPLATFORM%"
+xcopy %STARTDIR%\%MECT_QT_XPLATFORM% %MECT_MKSPECS%\%MECT_QT_XPLATFORM% /i /s /y /v
+
+call :screenAndLog "Cleaning  %SRC_DIR%"
+RD /S /Q %SRC_DIR%
 call :screenAndLog "Extraction completed for I.MX28 platform"
+
 Set DOWNLOAD_LIST=
 IF [%USER_MODE%] EQU [download] goto JobDone
 
 :configureQt
 call :screenAndLog "Configuring  Qt %QT_VERSION% in Folder %IMX28BUILD_DIR%"
-IF EXIST %IMX28BUILD_DIR% RD /S /Q %IMX28BUILD_DIR%
-MKDIR %IMX28BUILD_DIR%
 cd %IMX28BUILD_DIR%
 if errorlevel 1 (
 	call :screenAndLog "Error entering  Build Directory: %IMX28BUILD_DIR%"
@@ -117,8 +139,7 @@ call :addToPath "%BIN_DIR%"
 rem Set PATH=%CC_DIR%bin;%CC_DIR%i686-w64-mingw32\bin;%BIN_DIR%;%PATH%
 rem configure -embedded arm -xplatform qws/linux-arm-g+
 rem %DESKTOP_DIR%configure  -opensource  -confirm-license -release -embedded arm -arch arm -platform win32-g++ -xplatform linux-arm-gnueabi-g++ -fast -no-phonon -no-webkit -no-qt3support -nomake tools -nomake examples -nomake demos  -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
-%DESKTOP_DIR%configure -prefix %MECT_PREFIX%  -release -opensource -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -qt-sql-mysql  -I C:/MySQLConnector/include  -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl  -I %OPENSSL_DIR%include -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM% -little-endian -system-freetype -no-opengl -no-s60 -dbus  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
-
+configure -prefix %MECT_PREFIX%  -release -opensource -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -qt-sql-mysql  -I C:/MySQLConnector/include  -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl  -I %OPENSSL_DIR%include -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM% -little-endian -system-freetype -no-opengl -no-s60 -dbus  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
 
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring Qt in: %IMX28BUILD_DIR%"
