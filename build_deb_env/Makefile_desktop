@@ -343,7 +343,7 @@ qt_templates: \
 $(MECT_SOURCES)/qt_templates/qt_templates.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Havx ../qt_templates/ $(MECT_SOURCES)/qt_templates/
-	#cd $(MECT_SOURCES)/qt_templates/ && patch -p1 < $(MECT_PATCHES)/qt_templates.patch
+	cd $(MECT_SOURCES)/qt_templates/ && patch -p1 < $(MECT_PATCHES)/qt_templates.patch
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/share/qtcreator/templates/wizards/ATCM-template-project/project.pro: $(MECT_SOURCES)/qt_templates/qt_templates.pro

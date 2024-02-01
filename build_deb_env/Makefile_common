@@ -18,19 +18,15 @@ export MECT_BUILD_RELEASE := $(MECT_SUITE_MAJOR).$(MECT_SUITE_MINOR).$(MECT_SUIT
 
 MECT_SUITE_QT        := 4.8.7
 MECT_SUITE_QTCREATOR := 2.8.1
+
 MECT_SUITE_QWT       := 6.1-multiaxes
 MECT_SUITE_QWT_X     := 6.3.0
+
 MECT_SUITE_OPENSSL   := 1.0.2u# 1.1.1w 3.0.13
 MECT_SUITE_OPENSSL_X := 1.0.0# 1.1.0  3.0.0
 
-MECT_HOST_ARCH       := amd64
-MECT_HOST_PLATFORM   := pc-linux # FIXME
-
-MECT_IMX28_ARCH      := arm 
-MECT_IMX28_PLATFORM  := imx28 # FIXME
-
-MECT_RPI4_ARCH       := armhf
-MECT_RPI4_PLATFORM   := rpi4 # FIXME 
+MECT_SUITE_MYSQL     := 4.1.12
+MECT_SUITE_MYSQL_X   := 14.0.0
 
 # -----------------------------------------------------------------------------
 
@@ -45,14 +41,20 @@ MECT_DOWNLOADS := \
 	qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch \
 	qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch \
 	\
+	qt-creator-$(MECT_SUITE_QTCREATOR)-src.tar.gz \
+	\
 	openssl-$(MECT_SUITE_OPENSSL).tar.gz \
 	\
-	qt-creator-$(MECT_SUITE_QTCREATOR)-src.tar.gz \
+	mysql-$(MECT_SUITE_MYSQL).tar.gz \
+	mysql-$(MECT_SUITE_MYSQL)-fsl.patch \
+	mysql-$(MECT_SUITE_MYSQL)-gcc-4.2.patch \
 	\
 	qwt-$(MECT_SUITE_QWT).tar.bz2 \
 	\
 	arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 \
-	rootfs_dev_$(MECT_SUITE_RELEASE).zip
+	\
+	rootfs_dev_$(MECT_SUITE_RELEASE).zip \
+	#
 
 # download files in downloads folder
 MECT_DOWNLOADF := $(CURDIR)/downloads
