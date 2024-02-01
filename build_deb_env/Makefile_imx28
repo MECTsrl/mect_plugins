@@ -137,8 +137,8 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
 	#
 	mkdir -p $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/qws/linux-g++-mx
-	cp mkspecs_qws_linux-g++-mx_qmake.conf      $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/qws/linux-g++-mx/qmake.conf
-	cp mkspecs_qws_linux-g++-mx_qplatformdefs.h $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/qws/linux-g++-mx/qplatformdefs.h
+	cp $(MECT_PATCHES)/linux-g++-mx/qmake.conf      $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/qws/linux-g++-mx/qmake.conf
+	cp $(MECT_PATCHES)/linux-g++-mx/qplatformdefs.h $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/qws/linux-g++-mx/qplatformdefs.h
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
@@ -158,9 +158,9 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-no-exceptions \
 	        -no-accessibility \
 		-no-stl \
-		-qt-sql-sqlite \
-		-qt-sql-odbc \
-		-qt-sql-mysql -I $(MECT_TARGET_DIR)/rootfs/usr/include -L $(MECT_TARGET_DIR)/rootfs/usr/lib \
+		-no-sql-sqlite \
+		-no-sql-odbc \
+		-no-sql-mysql \
 	        -no-qt3support \
 		-no-xmlpatterns \
 		-no-multimedia \
@@ -212,7 +212,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 	        -qt-gfx-vnc \
 	        -qt-kbd-tty \
 		-qt-mouse-tslib \
-		-glib \
+		-no-glib \
 		\
 		-no-s60 \
 		-no-icu \
