@@ -7,19 +7,17 @@ DEFINES += MECT_BUILD_MAJOR=\"$(MECT_BUILD_MAJOR)\" \
            MECT_BUILD_MINOR=\"$(MECT_BUILD_MINOR)\" \
            MECT_BUILD_BUILD=\"$(MECT_BUILD_BUILD)\"
 
+QT += network
+
 CONFIG += store alarms recipe trend
 
 contains(QMAKE_HOST.os,Windows){
         QT_ROOTFS = C:/Qt485/imx28/rootfs
         QT_INSTALL_ROOTFS = C:/Qt485/imx28/rootfs
-        QT_CREATOR = C:/Qt485/desktop
-        ATCM_DIR_COPY = "cmd /c xcopy /Q /Y /E /S /I"
 }
 !contains(QMAKE_HOST.os,Windows){
         QT_ROOTFS = $$(MECT_RFSDIR)
         QT_INSTALL_ROOTFS = $$(INSTALL_ROOT)
-        QT_CREATOR = C:/Qt485/desktop
-        ATCM_DIR_COPY = "cp -rf"
 }
 
 ATCM_ARM_LIBRARY_LIBPATH = $$QT_ROOTFS/usr/lib
