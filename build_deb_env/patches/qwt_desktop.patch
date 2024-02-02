@@ -1,6 +1,6 @@
---- qwt-6.1-multiaxes.orig/qwtconfig.pri	2014-10-13 16:34:33.000000000 +0000
-+++ qwt-6.1-multiaxes/qwtconfig.pri	2024-01-26 17:26:26.780257993 +0000
-@@ -19,7 +19,7 @@ QWT_VERSION      = $${QWT_VER_MAJ}.$${QW
+--- orig/qwt-6.1-multiaxes/qwtconfig.pri	2014-10-13 18:34:33.000000000 +0200
++++ src_desktop/qwt-6.1-multiaxes/qwtconfig.pri	2024-02-02 10:54:55.182823550 +0100
+@@ -19,7 +19,7 @@
  QWT_INSTALL_PREFIX = $$[QT_INSTALL_PREFIX]
  
  unix {
@@ -9,7 +9,25 @@
      # QWT_INSTALL_PREFIX = /usr/local/qwt-$$QWT_VERSION-svn-qt-$$QT_VERSION
  }
  
-@@ -99,7 +99,7 @@ QWT_CONFIG     += QwtSvg
+@@ -29,7 +29,7 @@
+ }
+ 
+ QWT_INSTALL_DOCS      = $${QWT_INSTALL_PREFIX}/doc
+-QWT_INSTALL_HEADERS   = $${QWT_INSTALL_PREFIX}/include
++QWT_INSTALL_HEADERS   = $${QWT_INSTALL_PREFIX}/include/Qwt
+ QWT_INSTALL_LIBS      = $${QWT_INSTALL_PREFIX}/lib
+ 
+ ######################################################################
+@@ -63,7 +63,7 @@
+ # with every Qt upgrade. 
+ ######################################################################
+ 
+-QWT_INSTALL_FEATURES  = $${QWT_INSTALL_PREFIX}/features
++QWT_INSTALL_FEATURES  = $${QWT_INSTALL_PREFIX}/mkspecs/features
+ # QWT_INSTALL_FEATURES  = $$[QT_INSTALL_PREFIX]/features
+ 
+ ######################################################################
+@@ -99,7 +99,7 @@
  # If you want to use a OpenGL plot canvas
  ######################################################################
  
@@ -18,7 +36,7 @@
  
  ######################################################################
  # You can use the MathML renderer of the Qt solutions package to 
-@@ -110,7 +110,7 @@ QWT_CONFIG     += QwtOpenGL
+@@ -110,7 +110,7 @@
  # to your qmake project file.
  ######################################################################
  
@@ -27,7 +45,7 @@
  
  ######################################################################
  # If you want to build the Qwt designer plugin, 
-@@ -152,7 +152,7 @@ QWT_CONFIG     += QwtExamples
+@@ -152,7 +152,7 @@
  # Otherwise you have to build them from the playground directory.
  ######################################################################
  

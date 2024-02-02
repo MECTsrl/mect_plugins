@@ -231,6 +231,7 @@ $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_
 
 $(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X)
 	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && sudo make install # NB: no INSTALL_ROOT=$(MECT_PREFIX) vedi qwt.patch
+	# ??? su win/dll cp $(MECT_PREFIX)/lib/libqwt.so.$(MECT_SUITE_QWT_X) $(MECT_PREFIX)/bin/libqwt.so.$(MECT_SUITE_QWT_X)
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- QtCreator --------- 
@@ -245,13 +246,12 @@ qtcreator: \
 	$(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro \
 	$(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/Makefile \
 	$(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator \
-	$(MECT_PREFIX)/bin/qtcreator
+	$(MECT_PREFIX)/QtCreator/bin/qtcreator
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro:
 	mkdir -p $(MECT_SOURCES)
 	tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/qt-creator-$(MECT_SUITE_QTCREATOR)-src.tar.gz
-	# cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src && patch -p1 <$(MECT_DOWNLOADF)/qt-creator-$(MECT_SUITE_QTCREATOR)-src-XXXXXXX.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/Makefile: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro
@@ -263,7 +263,7 @@ $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator: $(MECT_SOU
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/bin/qtcreator: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator
-	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && sudo make INSTALL_ROOT=$(MECT_PREFIX) install
+	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && sudo make INSTALL_ROOT=$(MECT_PREFIX)/QtCreator install
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- CTE plugin --------- 
@@ -273,13 +273,12 @@ cte_plugin: \
 	$(MECT_SOURCES)/cte/cte.pro \
 	$(MECT_SOURCES)/cte/Makefile \
 	$(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/lib/qtcreator/plugins/Mect/libCTE.so \
-	$(MECT_PREFIX)/lib/qtcreator/plugins/Mect/libCTE.so
+	$(MECT_PREFIX)/QtCreator/lib/qtcreator/plugins/Mect/libCTE.so
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/cte/cte.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Havx ../cte/ $(MECT_SOURCES)/cte/
-	cd $(MECT_SOURCES)/cte/ && patch -p1 < $(MECT_PATCHES)/cte.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/cte/Makefile: $(MECT_SOURCES)/cte/cte.pro
@@ -294,10 +293,10 @@ $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/lib/qtcreator/plugins/Mec
 	+cd $(MECT_SOURCES)/cte/ && make -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
-$(MECT_PREFIX)/lib/qtcreator/plugins/Mect/libCTE.so: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/lib/qtcreator/plugins/Mect/libCTE.so
+$(MECT_PREFIX)/QtCreator/lib/qtcreator/plugins/Mect/libCTE.so: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/lib/qtcreator/plugins/Mect/libCTE.so
 	sudo mkdir -p $(MECT_PREFIX)/lib/qtcreator/plugins/Mect
 	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/lib/qtcreator/plugins/Mect \
-		&& sudo cp libCTE.so CTE.pluginspec $(MECT_PREFIX)/lib/qtcreator/plugins/Mect/
+		&& sudo cp libCTE.so CTE.pluginspec $(MECT_PREFIX)/QtCreator/lib/qtcreator/plugins/Mect/
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- CTC exe --------- 
@@ -337,7 +336,7 @@ $(MECT_PREFIX)/bin/ctc: $(MECT_SOURCES)/ctc/ctc
 
 qt_templates: \
 	$(MECT_SOURCES)/qt_templates/qt_templates.pro \
-	$(MECT_PREFIX)/share/qtcreator/templates/wizards/ATCM-template-project/project.pro 
+	$(MECT_PREFIX)/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project/project.pro 
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt_templates/qt_templates.pro:
@@ -347,9 +346,9 @@ $(MECT_SOURCES)/qt_templates/qt_templates.pro:
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/share/qtcreator/templates/wizards/ATCM-template-project/project.pro: $(MECT_SOURCES)/qt_templates/qt_templates.pro
-	sudo mkdir -p $(MECT_PREFIX)/share/qtcreator/templates/wizards
+	sudo mkdir -p $(MECT_PREFIX)/QtCreator/share/qtcreator/templates/wizards
 	cd $(MECT_SOURCES)/qt_templates \
-		&& sudo rsync -avx ./ $(MECT_PREFIX)/share/qtcreator/templates/wizards/ --exclude=qt_templates.pro
+		&& sudo rsync -avx ./ $(MECT_PREFIX)/QtCreator/share/qtcreator/templates/wizards/ --exclude=qt_templates.pro
 
 # ----------------------------------------------------------------------------- ATCM Designer plugins --------- 
 .PHONY: qt_designer_plugins
