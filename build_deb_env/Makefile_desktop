@@ -345,7 +345,7 @@ $(MECT_SOURCES)/qt_templates/qt_templates.pro:
 	cd $(MECT_SOURCES)/qt_templates/ && patch -p1 < $(MECT_PATCHES)/qt_templates.patch
 	@echo "---------> done $@"
 
-$(MECT_PREFIX)/share/qtcreator/templates/wizards/ATCM-template-project/project.pro: $(MECT_SOURCES)/qt_templates/qt_templates.pro
+$(MECT_PREFIX)/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project/project.pro: $(MECT_SOURCES)/qt_templates/qt_templates.pro
 	sudo mkdir -p $(MECT_PREFIX)/QtCreator/share/qtcreator/templates/wizards
 	cd $(MECT_SOURCES)/qt_templates \
 		&& sudo rsync -avx ./ $(MECT_PREFIX)/QtCreator/share/qtcreator/templates/wizards/ --exclude=qt_templates.pro
