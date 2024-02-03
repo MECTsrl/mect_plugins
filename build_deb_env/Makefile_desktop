@@ -311,8 +311,8 @@ ctc_exe: \
 
 $(MECT_SOURCES)/ctc/ctc.pro:
 	mkdir -p $(MECT_SOURCES)
-	rsync -Havx ../ctc/ $(MECT_SOURCES)/ctc/
-	# cd $(MECT_SOURCES)/ctc/ && patch -p1 < $(MECT_PATCHES)/ctc.patch
+	rsync -Havx --exclude=ctc.pro.user ../ctc/ $(MECT_SOURCES)/ctc/
+	cd $(MECT_SOURCES)/ctc/ && patch -p1 < $(MECT_PATCHES)/ctc.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/ctc/Makefile: $(MECT_SOURCES)/ctc/ctc.pro

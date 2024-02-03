@@ -1,0 +1,27 @@
+diff -urN A/ctc.c B/ctc.c
+--- A/ctc.c	2024-01-24 17:16:11.990724752 +0000
++++ B/ctc.c	2024-02-03 12:09:52.990904268 +0000
+@@ -786,9 +786,9 @@
+ {
+     crosstable.row_crt++;       /* Count rows from 1. */
+ 
+-    if ((c > ROW_FIELDS) || (crosstable.field_crt > ROW_FIELDS))
++    if (crosstable.field_crt > ROW_FIELDS)
+         error_log_exit(crosstable.row_crt, "too many fields in the row");
+-    else if ((c < ROW_FIELDS) || (crosstable.field_crt < ROW_FIELDS))
++    else if (crosstable.field_crt < ROW_FIELDS)
+         error_log_exit(crosstable.row_crt, "too few fields in the row");
+ 
+     /* Non-empty row */
+diff -urN A/libcsv.c B/libcsv.c
+--- A/libcsv.c	2024-01-24 17:16:11.990724752 +0000
++++ B/libcsv.c	2024-02-03 12:10:31.671316375 +0000
+@@ -17,7 +17,7 @@
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+ 
+-#if ___STDC_VERSION__ >= 199901L
++#if __STDC_VERSION__ >= 199901L
+ #  include <stdint.h>
+ #else
+ #  define SIZE_MAX ((size_t)-1) /* C89 doesn't have stdint.h or SIZE_MAX */
