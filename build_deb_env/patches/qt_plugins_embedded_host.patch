@@ -1,5 +1,5 @@
---- qt_plugins.orig/qt_library/ATCMcommon/global_var.h	2024-01-24 17:16:12.122724821 +0000
-+++ qt_plugins/qt_library/ATCMcommon/global_var.h	2024-01-29 22:35:01.066117809 +0000
+--- A/qt_library/ATCMcommon/global_var.h	2024-01-24 17:16:12.122724821 +0000
++++ B/qt_library/ATCMcommon/global_var.h	2024-02-05 10:12:40.859853835 +0000
 @@ -46,7 +46,9 @@
  
  /* buzzer */
@@ -10,8 +10,17 @@
  #define BUZZER_DURATION_MS 120
  
  #define ID_PLC_time         5390
---- qt_plugins.orig/qt_library/ATCMcommon/global_functions.cpp	2024-01-24 17:16:12.122724821 +0000
-+++ qt_plugins/qt_library/ATCMcommon/global_functions.cpp	2024-01-30 12:59:43.557359052 +0000
+@@ -139,7 +141,7 @@
+ 
+ extern char _actual_store_[FILENAME_MAX];
+ 
+-#include "qwt_plot_curve.h"
++#include "Qwt/qwt_plot_curve.h"
+ 
+ /* Trend */
+ extern char _layout_;
+--- A/qt_library/ATCMcommon/global_functions.cpp	2024-01-24 17:16:12.122724821 +0000
++++ B/qt_library/ATCMcommon/global_functions.cpp	2024-01-30 12:59:43.557359052 +0000
 @@ -792,25 +792,7 @@
          value = (volume & 0xFF) + (on_cs << 8) + (off_cs << 16) + (replies << 24);
          doWrite(ID_PLC_BUZZER, &value);
@@ -39,3 +48,69 @@
      }
      return true;
  }
+--- A/qt_library/ATCMtrend/trend.cpp	2024-01-24 17:16:12.130724824 +0000
++++ B/qt_library/ATCMtrend/trend.cpp	2024-02-05 10:51:18.972477050 +0000
+@@ -19,9 +19,9 @@
+ #include <QDir>
+ #include <QStringList>
+ #include <QFileInfo>
+-#include <qwt_scale_engine.h>
+-#include <qwt_scale_widget.h>
+-#include <qwt_plot_layout.h>
++#include <Qwt/qwt_scale_engine.h>
++#include <Qwt/qwt_scale_widget.h>
++#include <Qwt/qwt_plot_layout.h>
+ #include <pthread.h>
+ #include <ctype.h>
+ #include <QMessageBox>
+--- A/qt_library/ATCMtrend/trend.h	2024-01-24 17:16:12.130724824 +0000
++++ B/qt_library/ATCMtrend/trend.h	2024-02-05 10:49:40.194152559 +0000
+@@ -12,12 +12,12 @@
+ #include "pagebrowser.h"
+ #include "trend_other.h"
+ 
+-#include <qwt_plot.h>
+-#include <qwt_plot_grid.h>
+-#include <qwt_plot_picker.h>
+-#include <qwt_picker_machine.h>
+-#include <qwt_scale_draw.h>
+-#include <qwt_plot_marker.h>
++#include <Qwt/qwt_plot.h>
++#include <Qwt/qwt_plot_grid.h>
++#include <Qwt/qwt_plot_picker.h>
++#include <Qwt/qwt_picker_machine.h>
++#include <Qwt/qwt_scale_draw.h>
++#include <Qwt/qwt_plot_marker.h>
+ 
+ #define VALUE_TIME_SCALE
+ 
+--- A/qt_plugins/ATCMgraph/atcmgraph.h	2024-01-24 17:16:12.130724824 +0000
++++ B/qt_plugins/ATCMgraph/atcmgraph.h	2024-02-05 10:50:15.600423822 +0000
+@@ -21,11 +21,11 @@
+ #define PLOT this
+ #endif
+ 
+-#include <qwt_plot.h>
+-#include <qwt_plot_curve.h>
+-#include <qwt_plot_grid.h>
+-#include <qwt_scale_draw.h>
+-#include <qwt_legend.h>
++#include <Qwt/qwt_plot.h>
++#include <Qwt/qwt_plot_curve.h>
++#include <Qwt/qwt_plot_grid.h>
++#include <Qwt/qwt_scale_draw.h>
++#include <Qwt/qwt_legend.h>
+ 
+ #define MAX_SAMPLES 1024
+ 
+--- ../qt_library/ATCMtrend/trend.ui	2024-01-24 17:16:12.130724824 +0000
++++ src_host/qt_library/ATCMtrend/trend.ui	2024-02-05 11:04:42.232116414 +0000
+@@ -488,7 +488,7 @@
+   <customwidget>
+    <class>QwtPlot</class>
+    <extends>QFrame</extends>
+-   <header>qwt_plot.h</header>
++   <header>Qwt/qwt_plot.h</header>
+    <container>1</container>
+   </customwidget>
+  </customwidgets>
