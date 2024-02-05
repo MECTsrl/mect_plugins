@@ -279,6 +279,7 @@ cte_plugin: \
 $(MECT_SOURCES)/cte/cte.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Havx ../cte/ $(MECT_SOURCES)/cte/
+	cd $(MECT_SOURCES)/cte/ && patch -p1 < $(MECT_PATCHES)/cte.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/cte/Makefile: $(MECT_SOURCES)/cte/cte.pro

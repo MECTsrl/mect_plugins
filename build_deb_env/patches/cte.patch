@@ -1,0 +1,11 @@
+--- A/cte.pro	2024-02-01 15:53:37.736459838 +0000
++++ B/cte.pro	2024-02-05 13:44:00.399299077 +0000
+@@ -4,7 +4,7 @@
+     ATCM_TEMPLATE_BASE_DIR = C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards
+ }
+ !contains(QMAKE_HOST.os,Windows){
+-    ATCM_TEMPLATE_BASE_DIR = /opt/qt-desktop-4.8.7/share/qtcreator/templates/wizards
++    ATCM_TEMPLATE_BASE_DIR = /opt/Qt4.8.7/desktop/QtCreator/share/qtcreator/templates/wizards
+ }
+ 
+ HEADERS += \
