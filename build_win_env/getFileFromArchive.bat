@@ -31,7 +31,7 @@ if errorlevel 1 goto errCurlMD5
 
 rem ---- Calculating MD5 for received file
 echo Calculating MD5 for %DEST_FILE%
-certutil -hashfile %SOURCE_FILE% MD5 > %SOURCE_FILE%.md5.new
+"%ProgramFiles%\Git\usr\bin\md5sum" -b  %SOURCE_FILE% > %SOURCE_FILE%.md5.new
 if errorlevel 1 goto errCalcMD5
 
 rem ---- Comparing MD5 for received file
