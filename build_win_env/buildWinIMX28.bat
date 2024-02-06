@@ -12,7 +12,7 @@ SET BIN_DIR=%DESKTOP_DIR%bin\
 SET DOC_DIR=%DESKTOP_DIR%doc
 SET CC_DIR=%DESKTOP_DIR%mingw32\
 SET WINSPEC_DIR=%DESKTOP_DIR%mkspecs\
-SET IMX28BUILD_DIR=%QT_DIR%imx28_build\
+SET IMX28_SRC_DIR=%QT_DIR%imx28_qt487_src\
 SET IMX28_DIR=%QT_DIR%imx28\
 SET IMX28_ROOTFS=%IMX28_DIR%rootfs\
 SET TEMP_DIR=%ROOT_DIR%Ms35_tmp\
@@ -20,14 +20,14 @@ SET SRC_FILE=qt-everywhere-opensource-src-4.8.7_patched
 SET SRC_DIR=%TEMP_DIR%%SRC_FILE%\
 SET USR_INCLUDE=%IMX28_ROOTFS%\usr\include
 SET LINUX_INCLUDE=%IMX28_ROOTFS%\src\linux\include
-SET OPENSSL_DIR=%ROOT_DIR%openssl-1.0.2u\
+Rem SET OPENSSL_DIR=%ROOT_DIR%openssl-1.0.2u\
 SET QWT_DIR=%ROOT_DIR%qwt-6.1-multiaxes_r2275_win\
 Rem ---- Mect Settings
 SET MECT_PREFIX=%QT_DIR%imx28
 SET MECT_QT_EMBEDDED=arm
 SET MECT_QT_ARCH=arm
 SET MECT_QT_XPLATFORM=linux-arm-gnueabi-g++
-SET MECT_MKSPECS=%IMX28BUILD_DIR%mkspecs\
+SET MECT_MKSPECS=%IMX28_DIR%mkspecs\
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
 SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
@@ -41,39 +41,38 @@ IF [%USER_MODE%] EQU [] goto showUsage
 echo %DATE% - %TIME%: Starting: %~n0 Param: [%USER_MODE%]  > %ErrorLog%
 
 Rem ---- Download 
-IF [%USER_MODE%] EQU [download] (
+IF /I [%USER_MODE%] EQU [download] (
 	echo Downloading Components for %QT_VERSION%
 	goto downloadComponents
 )
 Rem ---- Configure 
-IF [%USER_MODE%] EQU [configure] (
+IF /I [%USER_MODE%] EQU [configure] (
 	echo Configuring Qt %QT_VERSION%
 	goto configureQt
 )
 Rem ---- Build Qt 
-IF [%USER_MODE%] EQU [build] (
+IF /I [%USER_MODE%] EQU [build] (
 	echo Building Qt %QT_VERSION%
 	goto buildQt
 )
 
 Rem ---- Install Qt 
-IF [%USER_MODE%] EQU [install] (
+IF /I [%USER_MODE%] EQU [install] (
 	echo Installing Qt %QT_VERSION%
 	goto installQt
 )
 
+Rem ---- Checking all
+IF /I NOT [%USER_MODE%] EQU [all]  (
+	goto showUsage
+)
 
 echo.
 echo ----------------------------------------
 echo Creating Windows Toolchain for %QT_VERSION% for ARM
 echo ----------------------------------------
 echo. 
-call :screenAndLog "Creating the Windows  Environment for ARM Qt %QT_VERSION% in %IMX28BUILD_DIR%"
-
-IF NOT EXIST %IMX28BUILD_DIR%  (
-	call :screenAndLog "Creating Qt Root Dir: %IMX28BUILD_DIR%"
-	MKDIR %IMX28BUILD_DIR% 
-)
+call :screenAndLog "Creating the Windows  Environment for ARM Qt %QT_VERSION% in %IMX28_DIR%"
 
 :downloadComponents
 call :screenAndLog "Downloading components for ARM platform"
@@ -81,10 +80,10 @@ Rem ---- Clear Temp Dir
 call :screenAndLog "Clearing %TEMP_DIR%"
 IF EXIST %TEMP_DIR% RD /S /Q %TEMP_DIR%
 MKDIR %TEMP_DIR%
-Rem ---- I.MX28 Build Dir
-call :screenAndLog "Clearing %IMX28BUILD_DIR%"
-IF EXIST %IMX28BUILD_DIR%  RD /S /Q %IMX28BUILD_DIR%
-MKDIR %IMX28BUILD_DIR% 
+Rem ---- I.MX28 SRC Dir
+call :screenAndLog "Clearing %IMX28_SRC_DIR%"
+IF EXIST %IMX28_SRC_DIR%  RD /S /Q %IMX28_SRC_DIR%
+MKDIR %IMX28_SRC_DIR% 
 Rem ---- I.MX28  Dir and rootfs dir
 call :screenAndLog "Clearing %IMX28_DIR%"
 IF EXIST %IMX28_DIR%  RD /S /Q %IMX28_DIR%
@@ -120,8 +119,8 @@ if errorlevel 1 (
 	call :screenAndLog "Error Expanding: %SRC_FILE%.7z to %TEMP_DIR%"
 	goto AbortProcess
 )
-call :screenAndLog "Moving Qt %QT_VERSION% sources to %IMX28BUILD_DIR%"
-xcopy %SRC_DIR%*.* %IMX28BUILD_DIR%*.* /s /y /e /v /q
+call :screenAndLog "Moving Qt %QT_VERSION% sources to %IMX28_SRC_DIR%"
+xcopy %SRC_DIR%*.* %IMX28_SRC_DIR%*.* /s /y /e /v /q
 Rem --- Update MECT_QT_XPLATFORM MKSPECS for build
 call :screenAndLog "Updating  %MECT_QT_XPLATFORM%"
 xcopy %STARTDIR%\%MECT_QT_XPLATFORM% %MECT_MKSPECS%\%MECT_QT_XPLATFORM% /i /s /y /v
@@ -137,13 +136,13 @@ if errorlevel 1 (
 call :screenAndLog "Extraction completed for I.MX28 platform"
 
 Set DOWNLOAD_LIST=
-IF [%USER_MODE%] EQU [download] goto JobDone
+IF /I [%USER_MODE%] EQU [download] goto JobDone
 
 :configureQt
-call :screenAndLog "Configuring  Qt %QT_VERSION% in Folder %IMX28BUILD_DIR%"
-cd %IMX28BUILD_DIR%
+call :screenAndLog "Configuring  Qt %QT_VERSION% in Folder %IMX28_DIR%"
+cd %IMX28_DIR%
 if errorlevel 1 (
-	call :screenAndLog "Error entering  Build Directory: %IMX28BUILD_DIR%"
+	call :screenAndLog "Error entering  Build Directory: %IMX28_DIR%"
 	goto AbortProcess
 )
 Rem ---- Updating PATH if needed
@@ -153,45 +152,45 @@ call :addToPath "%BIN_DIR%"
 rem Set PATH=%CC_DIR%bin;%CC_DIR%i686-w64-mingw32\bin;%BIN_DIR%;%PATH%
 rem configure -embedded arm -xplatform qws/linux-arm-g+
 rem %DESKTOP_DIR%configure  -opensource  -confirm-license -release -embedded arm -arch arm -platform win32-g++ -xplatform linux-arm-gnueabi-g++ -fast -no-phonon -no-webkit -no-qt3support -nomake tools -nomake examples -nomake demos  -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log  -prefix %MECT_PREFIX%  -openssl  -I %USR_INCLUDE%  -I %OPENSSL_DIR%include  
-configure   -prefix %MECT_PREFIX%  -platform win32-g++  -release -opensource -embedded -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM%  -little-endian -system-freetype -no-opengl -no-s60 -dbus  -openssl 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
+%IMX28_SRC_DIR%configure   -prefix %MECT_PREFIX%  -platform win32-g++  -release -opensource -embedded -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM%  -little-endian -system-freetype -no-opengl -no-s60 -dbus  -openssl 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
 
 if errorlevel 1 (
-	call :screenAndLog "Error Configuring Qt in: %IMX28BUILD_DIR%"
+	call :screenAndLog "Error Configuring Qt in: %IMX28_DIR%"
 	goto AbortProcess
 )  else  (
-	call :screenAndLog "Configuration completed for Qt %QT_VERSION% in Folder %IMX28BUILD_DIR%"
+	call :screenAndLog "Configuration completed for Qt %QT_VERSION% in Folder %IMX28_DIR%"
 )
 cd %STARTDIR%
 Rem  ---- Exit batch if configure mode
-IF [%USER_MODE%] EQU [configure] goto JobDone
+IF /I [%USER_MODE%] EQU [configure] goto JobDone
 
 :buildQt
-call :screenAndLog "Building  Qt %QT_VERSION% in %IMX28BUILD_DIR%"
-cd %IMX28BUILD_DIR%
+call :screenAndLog "Building  Qt %QT_VERSION% in %IMX28_DIR%"
+cd %IMX28_DIR%
 if errorlevel 1 (
-	call :screenAndLog "Error entering  Build Directory: %IMX28BUILD_DIR%"
+	call :screenAndLog "Error entering  Build Directory: %IMX28_DIR%"
 	goto AbortProcess
 )
 Rem ---- Updating PATH if needed
 call :addToPath "%CC_DIR%bin"
 call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
-set QMAKESPEC=%IMX28BUILD_DIR%mkspecs\win32-g++
+set QMAKESPEC=%IMX28_DIR%mkspecs\win32-g++
 Rem Creating ./bin/qt.conf with right qmake prefix path
-Set QPREFIX=%IMX28BUILD_DIR:\=/%
-Echo [Paths] > bin\qt.conf
-ECHO Prefix=%QPREFIX%>> bin\qt.conf
+Rem Set QPREFIX=%IMX28_DIR:\=/%
+Rem Echo [Paths] > bin\qt.conf
+Rem ECHO Prefix=%QPREFIX%>> bin\qt.conf
 mingw32-make  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-desktop-make.log
 if errorlevel 1 (
-	call :screenAndLog "Error Building Qt in: %IMX28BUILD_DIR%"
+	call :screenAndLog "Error Building Qt in: %IMX28_DIR%"
 	goto AbortProcess
 )  else  (
-	call :screenAndLog "Build completed for Qt %QT_VERSION% in Folder %IMX28BUILD_DIR%"
+	call :screenAndLog "Build completed for Qt %QT_VERSION% in Folder %IMX28_DIR%"
 )
 cd %STARTDIR%
 
 Rem  ---- Exit batch if build mode
-IF [%USER_MODE%] EQU [build] goto JobDone
+IF /I [%USER_MODE%] EQU [build] goto JobDone
 
 :installQt
 call :screenAndLog "Installing  Qt %QT_VERSION% from %IMX28BUILD_DIR%"
@@ -220,55 +219,10 @@ if errorlevel 1 (
 	call :screenAndLog "Installed Qt from %IMX28BUILD_DIR% to: %DESKTOP_DIR%"
 )
 cd %STARTDIR%
-Rem  ---- Exit batch if install mode
-IF [%USER_MODE%] EQU [install] goto JobDone
+Rem  ---- Exit batch if install or all mode
+IF /I [%USER_MODE%] EQU [install] goto JobDone
+IF /I [%USER_MODE%] EQU [all]     goto JobDone
 
-:buildQWT
-call :screenAndLog "Configuring Qwt 6.1 Multiaxes"
-cd %QWT_DIR%
-if errorlevel 1 (
-	call :screenAndLog "Qwt dir %QWT_DIR% not found, please download Qt components"
-	goto AbortProcess
-)
-if not EXIST %WINSPEC_DIR% (
-	call :screenAndLog "You must configure and install Qt first"
-	goto AbortProcess
-)
-Rem ---- Updating PATH if needed
-call :addToPath "%CC_DIR%bin"
-call :addToPath %CC_DIR%i686-w64-mingw32\bin;
-call :addToPath "%BIN_DIR%"
-Rem ---- Configuring Qwt
-call :screenAndLog "Configuring Qwt"
-qmake qwt.pro 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" -a %TEMP_DIR%Qwt-Configure.log
-if errorlevel 1 (
-	call :screenAndLog "Error Configuring Qwt 6.1 Multiaxes in %QWT_DIR%"
-	goto AbortProcess
-)  else  (
-	call :screenAndLog "Configured Qwt 6.1 Multiaxes in %QWT_DIR%"
-)
-Rem ---- Building Qwt
-call :screenAndLog "Building Qwt"
-mingw32-make  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qwt-Make.log
-if errorlevel 1 (
-	call :screenAndLog "Error Building Qwt 6.1 Multiaxes in %QWT_DIR%"
-	goto AbortProcess
-)  else  (
-	call :screenAndLog "Builded Qwt 6.1 Multiaxes in %QWT_DIR%"
-)
-Rem ---- Start Qwt Installation
-call :screenAndLog "Installing Qwt in %DESKTOP_DIR%"
-mingw32-make install 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" -a %TEMP_DIR%Qwt-Install.log
-if errorlevel 1 (
-	call :screenAndLog "Error Installing Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
-	goto AbortProcess
-)  else  (
-	xcopy %QWT_DIR%lib\qwt.dll %BIN_DIR% /Y /I
-	call :screenAndLog "Installed Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
-)
-Rem  ---- Exit batch if QWT mode
-cd %STARTDIR%
-IF [%USER_MODE%] EQU [qwt] goto JobDone
 
 :JobDone
 	call :screenAndLog "Done."

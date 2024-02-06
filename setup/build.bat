@@ -10,6 +10,7 @@ SET ROOT_DIR=C:\
 Rem ---- Updating PATH if needed
 rem SET PATH=%PATH%;C:\Qt487\desktop\mingw32\bin\
 SET QT_DIR=C:\Qt487\
+SET IMX28_DIR=imx28\
 SET DESKTOP_DIR=%QT_DIR%desktop\
 SET CREATOR_DIR=Qt487\desktop\QtCreator\
 SET TEMPLATE_DIR=%CREATOR_DIR%share\qtcreator\templates\
@@ -170,6 +171,18 @@ for /d %%a in (%TARGET_LIST%) do (
 )
 time /t
 
+rem Copy current imx28 Configuration (root-fs and qt Configuration)
+IF EXIST %QT_DIR%%IMX28_DIR%  (
+	echo Clean up %OUT_DIR%\Qt487\%IMX28_DIR%
+	time /t
+	IF EXIST %OUT_DIR%\Qt487\%IMX28_DIR% RD /S /Q %OUT_DIR%\Qt487\%IMX28_DIR%
+	mkdir    %OUT_DIR%\Qt487\%IMX28_DIR%
+	cd /D "%OUT_DIR%"
+	echo Copy I.MX28 Configuration from %QT_DIR%%IMX28_DIR%  to %OUT_DIR%\Qt487\%IMX28_DIR%
+	xcopy %QT_DIR%%IMX28_DIR% %OUT_DIR%\Qt487\%IMX28_DIR% /Q /Y /E /S /I >> %ErrorLog% 2>&1
+	time /t
+)
+
 rem imx28 Configuration skipped!! -----------------------------------------------------------------------------
 SET TARGETBUILD=0
 IF %TARGETBUILD% == 1 (
@@ -261,6 +274,7 @@ copy %BIN_DIR%ctc.exe %OUT_DIR%\Qt487\desktop\bin\ /Y >> %ErrorLog%
 
 
 rem imx28 Configuration skipped!! -----------------------------------------------------------------------------
+Rem Chek it !!
 IF %TARGETBUILD% == 1 (
 
 	mkdir %OUT_DIR%\Qt487\imx28

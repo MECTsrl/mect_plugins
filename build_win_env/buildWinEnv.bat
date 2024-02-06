@@ -28,32 +28,38 @@ IF [%USER_MODE%] EQU [] goto showUsage
 echo %DATE% - %TIME%: Starting: %~n0 Param: [%USER_MODE%]  > %ErrorLog%
 
 Rem ---- Download 
-IF [%USER_MODE%] EQU [download] (
+IF /I [%USER_MODE%] EQU [download] (
 	echo Downloading Components for %QT_VERSION%
 	goto downloadComponents
 )
 Rem ---- Configure 
-IF [%USER_MODE%] EQU [configure] (
+IF /I [%USER_MODE%] EQU [configure] (
 	echo Configuring Qt %QT_VERSION%
 	goto configureQt
 )
 Rem ---- Build Qt 
-IF [%USER_MODE%] EQU [build] (
+IF /I [%USER_MODE%] EQU [build] (
 	echo Building Qt %QT_VERSION%
 	goto buildQt
 )
 
 Rem ---- Install Qt 
-IF [%USER_MODE%] EQU [install] (
+IF /I [%USER_MODE%] EQU [install] (
 	echo Installing Qt %QT_VERSION%
 	goto installQt
 )
 
 Rem ---- qwt
-IF [%USER_MODE%] EQU [qwt] (
+IF /I [%USER_MODE%] EQU [qwt] (
 	echo Add qwt to Qt %QT_VERSION% Installation in %DESKTOP_DIR%
 	goto buildQWT
 )
+
+Rem ---- Checking all
+IF /I NOT [%USER_MODE%] EQU [all]  (
+	goto showUsage
+)
+
 
 echo.
 echo ----------------------------------------
@@ -143,7 +149,7 @@ if errorlevel 1 (
 )
 call :screenAndLog "Extraction completed for Qt %QT_VERSION%"
 Set DOWNLOAD_LIST=
-IF [%USER_MODE%] EQU [download] goto JobDone
+IF /I [%USER_MODE%] EQU [download] goto JobDone
 
 :configureQt
 call :screenAndLog "Configuring  Qt %QT_VERSION% in Folder %WINBUILD_DIR%"
@@ -168,7 +174,7 @@ if errorlevel 1 (
 )
 cd %STARTDIR%
 Rem  ---- Exit batch if configure mode
-IF [%USER_MODE%] EQU [configure] goto JobDone
+IF /I [%USER_MODE%] EQU [configure] goto JobDone
 
 :buildQt
 call :screenAndLog "Building  Qt %QT_VERSION% in %WINBUILD_DIR%"
@@ -196,7 +202,7 @@ if errorlevel 1 (
 cd %STARTDIR%
 
 Rem  ---- Exit batch if build mode
-IF [%USER_MODE%] EQU [build] goto JobDone
+IF /I [%USER_MODE%] EQU [build] goto JobDone
 
 :installQt
 call :screenAndLog "Installing  Qt %QT_VERSION% from %WINBUILD_DIR%"
@@ -226,7 +232,7 @@ if errorlevel 1 (
 )
 cd %STARTDIR%
 Rem  ---- Exit batch if install mode
-IF [%USER_MODE%] EQU [install] goto JobDone
+IF /I [%USER_MODE%] EQU [install] goto JobDone
 
 :buildQWT
 call :screenAndLog "Configuring Qwt 6.1 Multiaxes"
@@ -271,9 +277,10 @@ if errorlevel 1 (
 	xcopy %QWT_DIR%lib\qwt.dll %BIN_DIR% /Y /I
 	call :screenAndLog "Installed Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
 )
-Rem  ---- Exit batch if QWT mode
+Rem  ---- Exit batch if QWT or all mode
 cd %STARTDIR%
-IF [%USER_MODE%] EQU [qwt] goto JobDone
+IF /I [%USER_MODE%] EQU [qwt] goto JobDone
+IF /I [%USER_MODE%] EQU [all] goto JobDone
 
 :JobDone
 	call :screenAndLog "Done."
