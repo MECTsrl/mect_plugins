@@ -9,3 +9,15 @@
  }
  
  HEADERS += \
+--- A/ctedit.cpp	2024-02-01 15:53:37.740459767 +0000
++++ B/ctedit.cpp	2024-02-06 08:25:44.374255952 +0000
+@@ -109,7 +109,8 @@
+ 
+ // CrossTable originale del Modello corrente
+ // const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
+-const QString szTemplateCTFile = QLatin1String(STR(ATCM_TEMPLATE_BASE_DIR)) + QString::fromLatin1("/ATCM-template-project-%1/config/Crosstable.csv");
++const QString szTemplateCTFile = QLatin1String("/opt/Qt4.8.7/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
++// const QString szTemplateCTFile = QLatin1String(STR(ATCM_TEMPLATE_BASE_DIR)) + QString::fromLatin1("/ATCM-template-project-%1/config/Crosstable.csv");
+ 
+ ctedit::ctedit(QWidget *parent) :
+     QDialog(parent),
