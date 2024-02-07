@@ -24,32 +24,32 @@ SET TARGET_LIST=AnyTPAC043 AnyTPAC070 TP1043_01_A TP1043_02_A TP1043_02_B TP1070
 
 echo.
 echo ----------------------------------------
-echo Creating the version %REVISION%
+echo Creating the version %REVISION% in [%OUT_DIR%]
 echo ----------------------------------------
 echo. 
 
-SET ErrorLog="%OUT_DIR%\Build_%REV%.log"
+SET ErrorLog="%OUT_DIR%Build_%REV%.log"
 echo Creating the version %REVISION% > %ErrorLog%
 
 SET ORIGINAL=%CD%
 
 rem -----------------------------------------------------------------------------
-echo Clean up %OUT_DIR%\Qt487
-IF EXIST %OUT_DIR%\Qt487 RD /S /Q %OUT_DIR%\Qt487
+echo Clean up %OUT_DIR%Qt487
+IF EXIST %OUT_DIR%Qt487 RD /S /Q %OUT_DIR%Qt487
 
 rem -----------------------------------------------------------------------------
 echo MectSuite Tutorial help files
-mkdir %OUT_DIR%\Qt487\desktop\doc\qch  >> %ErrorLog%
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc.qhp -o %OUT_DIR%\Qt487\desktop\doc\qch\doc.qch  >> %ErrorLog%
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_eng.qhp -o %OUT_DIR%\Qt487\desktop\doc\qch\doc_eng.qch  >> %ErrorLog%	
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_fr.qhp -o %OUT_DIR%\Qt487\desktop\doc\qch\doc_fr.qch  >> %ErrorLog%	
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_es.qhp -o %OUT_DIR%\Qt487\desktop\doc\qch\doc_es.qch  >> %ErrorLog%	
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_de.qhp -o %OUT_DIR%\Qt487\desktop\doc\qch\doc_de.qch  >> %ErrorLog%	
+mkdir %OUT_DIR%Qt487\desktop\doc\qch  >> %ErrorLog%
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc.qch  >> %ErrorLog%
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_eng.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_eng.qch  >> %ErrorLog%	
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_fr.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_fr.qch  >> %ErrorLog%	
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_es.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_es.qch  >> %ErrorLog%	
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_de.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_de.qch  >> %ErrorLog%	
 
 rem -----------------------------------------------------------------------------
 echo SSH Keys
-mkdir %OUT_DIR%\Qt487\keys
-xcopy %OUT_DIR%\keys\*.* %OUT_DIR%\Qt487\keys /Q /Y /I >> %ErrorLog%
+mkdir %OUT_DIR%Qt487\keys
+xcopy %OUT_DIR%keys\*.* %OUT_DIR%Qt487\keys /Q /Y /I >> %ErrorLog%
 
 rem -----------------------------------------------------------------------------
 echo QtCreator designer plugins (distclean + qmake + make + install + distclean)
@@ -172,14 +172,17 @@ for /d %%a in (%TARGET_LIST%) do (
 time /t
 
 rem Copy current imx28 Configuration (root-fs and qt Configuration)
+cd /D "%OUT_DIR%"
 IF EXIST %QT_DIR%%IMX28_DIR%  (
-	echo Clean up %OUT_DIR%\Qt487\%IMX28_DIR%
+	echo Dumping %QT_DIR%%IMX28_DIR% to %OUT_DIR%Qt487\%IMX28_DIR%
+	echo Clean up %OUT_DIR%Qt487\%IMX28_DIR%
 	time /t
-	IF EXIST %OUT_DIR%\Qt487\%IMX28_DIR% RD /S /Q %OUT_DIR%\Qt487\%IMX28_DIR%
-	mkdir    %OUT_DIR%\Qt487\%IMX28_DIR%
-	cd /D "%OUT_DIR%"
-	echo Copy I.MX28 Configuration from %QT_DIR%%IMX28_DIR%  to %OUT_DIR%\Qt487\%IMX28_DIR%
-	xcopy %QT_DIR%%IMX28_DIR% %OUT_DIR%\Qt487\%IMX28_DIR% /Q /Y /E /S /I >> %ErrorLog% 2>&1
+	IF EXIST %OUT_DIR%Qt487\%IMX28_DIR% ( 
+		RD /S /Q %OUT_DIR%Qt487\%IMX28_DIR%
+	)
+	mkdir    %OUT_DIR%Qt487\%IMX28_DIR%
+	echo Copy I.MX28 Configuration from %QT_DIR%%IMX28_DIR%  to %OUT_DIR%Qt487\%IMX28_DIR%  >> %ErrorLog%
+	xcopy %QT_DIR%%IMX28_DIR% %OUT_DIR%Qt487\%IMX28_DIR% /Q /Y /E /S /I >> %ErrorLog% 2>&1
 	time /t
 )
 
@@ -218,10 +221,10 @@ IF %TARGETBUILD% == 1 (
 rem -----------------------------------------------------------------------------
 echo QtProject_487.7z (zip)
 time /t
-if exist "%OUT_DIR%\QtProject_487.7z" del "%OUT_DIR%\QtProject_487.7z"
+if exist "%OUT_DIR%QtProject_487.7z" del "%OUT_DIR%QtProject_487.7z"
 rem "c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%APPDATA%\QtProject\qtcreator\devices.xml" "%APPDATA%\QtProject\qtcreator\profiles.xml" "%APPDATA%\QtProject\qtcreator\qtversion.xml" "%APPDATA%\QtProject\qtcreator\toolchains.xml" "%APPDATA%\QtProject\qtcreator\externaltools\lupdate.xml" >> %ErrorLog%
 rem "c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject.7z" "%APPDATA%\QtProject" -x!QtCreator.db -x!QtCreator.ini -xr!"qtcreator\generic-highlighter" -xr!"qtcreator\json" -xr!qtcreator\macros -x!qtcreator\default.qws -x!qtcreator\helpcollection.qhc >> %ErrorLog%
-"c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%\QtProject_487.7z" "%OUT_DIR%\QtProject" >> %ErrorLog% 2>&1
+"c:\Program Files\7-Zip\7z.exe" u -r -mx1 "%OUT_DIR%QtProject_487.7z" "%OUT_DIR%QtProject" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
@@ -233,15 +236,18 @@ rem ----------------------------------------------------------------------------
 echo Qt487_upd_rev%REV%.7z (del + copy {*.dll, wizards, cte, ctc, rootfs, qmake.conf}, zip, clean "Qt487")
 time /t
 
-mkdir %OUT_DIR%\Qt487\desktop\plugins\designer
-xcopy C:\Qt487\desktop\plugins\designer\atcm*.dll %OUT_DIR%\Qt487\desktop\plugins\designer /Q /Y >> %ErrorLog% 2>&1
+echo Dumping Designer Plugins
+mkdir %OUT_DIR%Qt487\desktop\plugins\designer
+xcopy C:\Qt487\desktop\plugins\designer\atcm*.dll %OUT_DIR%Qt487\desktop\plugins\designer /Q /Y >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
 	cd %ORIGINAL%
 	exit
 )
-mkdir %OUT_DIR%%TEMPLATE_DIR%wizards
+
+echo Dumping  %OUT_DIR%%TEMPLATE_DIR%wizards
+IF NOT EXIST  %OUT_DIR%%TEMPLATE_DIR%wizards mkdir %OUT_DIR%%TEMPLATE_DIR%wizards
 xcopy %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project %OUT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project				/Q /Y /E /S /I >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
@@ -249,6 +255,7 @@ IF ERRORLEVEL 1 (
 	cd %ORIGINAL%
 	exit
 )
+echo Dumping  %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class
 xcopy %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class %OUT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class	/Q /Y /E /S /I >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
@@ -265,30 +272,32 @@ for /d %%a in (%TARGET_LIST%) do (
 		exit
 	)
 )
-rem CTE Plugin 
-mkdir %OUT_DIR%\%CREATOR_DIR%lib\qtcreator\plugins\Mect\
-mkdir %OUT_DIR%\Qt487\desktop\bin
-copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%\%CREATOR_DIR%lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
-copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%\%CREATOR_DIR%lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
-copy %BIN_DIR%ctc.exe %OUT_DIR%\Qt487\desktop\bin\ /Y >> %ErrorLog%
+
+echo Dumping CTE Plugin from %OUT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\
+mkdir %OUT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\
+mkdir %OUT_DIR%Qt487\desktop\bin
+copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
+copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\ /Y >> %ErrorLog%
+echo %BIN_DIR%ctc.exe
+copy %BIN_DIR%ctc.exe %OUT_DIR%Qt487\desktop\bin\ /Y >> %ErrorLog%
 
 
-rem imx28 Configuration skipped!! -----------------------------------------------------------------------------
+rem imx28 Reonfiguration skipped!! -----------------------------------------------------------------------------
 Rem Chek it !!
 IF %TARGETBUILD% == 1 (
 
-	mkdir %OUT_DIR%\Qt487\imx28
-	xcopy C:\Qt487\imx28\rootfs %OUT_DIR%\Qt487\imx28\rootfs	/Q /Y /E /S /I >> %ErrorLog% 2>&1
+	mkdir %OUT_DIR%Qt487\imx28
+	xcopy C:\Qt487\imx28\rootfs %OUT_DIR%Qt487\imx28\rootfs	/Q /Y /E /S /I >> %ErrorLog% 2>&1
 	IF ERRORLEVEL 1 (
 		echo ERROR
 		pause
 		cd %ORIGINAL%
 		exit
 	)
-	mkdir "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++"
-	mkdir %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common
-	copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y >> %ErrorLog% 2>&1
-	copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%\Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common	/Y >> %ErrorLog% 2>&1
+	mkdir "%OUT_DIR%Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++"
+	mkdir %OUT_DIR%Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common
+	copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y >> %ErrorLog% 2>&1
+	copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common	/Y >> %ErrorLog% 2>&1
 	IF ERRORLEVEL 1 (
 		echo ERROR
 		pause
@@ -298,45 +307,53 @@ IF %TARGETBUILD% == 1 (
 )
 
 rem Clean-Up Qt487 Dir
-cd /D %OUT_DIR%\Qt487
+cd /D %OUT_DIR%Qt487
 del /s/q "*.bak"
 
+time /t
 cd /D %OUT_DIR%
-IF EXIST "%OUT_DIR%\Qt487_upd_rev%REV%.7z" del "%OUT_DIR%\Qt487_upd_rev%REV%.7z"
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt487_upd_rev%REV%.7z %OUT_DIR%\Qt487\desktop >> %ErrorLog% 2>&1
+IF EXIST "%OUT_DIR%Qt487_upd_rev%REV%.7z" del "%OUT_DIR%Qt487_upd_rev%REV%.7z"
+echo Creating [%OUT_DIR%Qt487_upd_rev%REV%.7z]
+echo Compressing %OUT_DIR%Qt487\desktop
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%Qt487_upd_rev%REV%.7z %OUT_DIR%Qt487\desktop >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
 	cd %ORIGINAL%
 	exit
 )
+time /t
 
-rem imx28 Configuration skipped!! -----------------------------------------------------------------------------
-IF %TARGETBUILD% == 1 (
-	"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt487_upd_rev%REV%.7z %OUT_DIR%\Qt487\imx28 >> %ErrorLog% 2>&1
-	IF ERRORLEVEL 1 (
-		echo ERROR
-		pause
-		cd %ORIGINAL%
-		exit
-	)
-)
-
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%\Qt487_upd_rev%REV%.7z %OUT_DIR%\Qt487\keys >> %ErrorLog% 2>&1
+Rem Dumping full imx28 Configuration -----------------------------------------------------------------------------
+echo Compressing %OUT_DIR%Qt487\imx28
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%Qt487_upd_rev%REV%.7z %OUT_DIR%Qt487\imx28 >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
 	cd %ORIGINAL%
 	exit
 )
+time /t
+
+echo Compressing %OUT_DIR%Qt487\keys
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%Qt487_upd_rev%REV%.7z %OUT_DIR%Qt487\keys >> %ErrorLog% 2>&1
+IF ERRORLEVEL 1 (
+	echo ERROR
+	pause
+	cd %ORIGINAL%
+	exit
+)
+time /t
+
+echo Clean-Up [%OUT_DIR%Qt487] Dir
 
 RD /S /Q Qt487
 time /t
 
 rem -----------------------------------------------------------------------------
 echo   Fonts.7z
-if exist "%OUT_DIR%\Fonts.7z" del "%OUT_DIR%\Fonts.7z"
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%\Fonts.7z" "%OUT_DIR%\Fonts" >> %ErrorLog% 2>&1
+if exist "%OUT_DIR%Fonts.7z" del "%OUT_DIR%Fonts.7z"
+"c:\Program Files\7-Zip\7z.exe" u -r -mx9 "%OUT_DIR%Fonts.7z" "%OUT_DIR%Fonts" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause

@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorToolChains>
-<!-- Written by QtCreator 2.8.1, 2024-01-29T11:56:23. -->
+<!-- Written by QtCreator 2.8.1, 2024-02-07T12:15:21. -->
 <qtcreator>
  <data>
   <variable>ToolChain.0</variable>
+  <valuemap type="QVariantMap">
+   <value type="QString" key="ProjectExplorer.CustomToolChain.CompilerPath">C:/Qt487/sourcery-g++-lite/bin/arm-none-linux-gnueabi-g++.exe</value>
+   <valuelist type="QVariantList" key="ProjectExplorer.CustomToolChain.Cxx11Flags">
+    <value type="QString"></value>
+   </valuelist>
+   <valuelist type="QVariantList" key="ProjectExplorer.CustomToolChain.HeaderPaths"/>
+   <value type="QString" key="ProjectExplorer.CustomToolChain.MakePath">C:/Qt487/desktop/mingw32/bin/mingw32-make.exe</value>
+   <value type="QString" key="ProjectExplorer.CustomToolChain.Mkspecs"></value>
+   <valuelist type="QVariantList" key="ProjectExplorer.CustomToolChain.PredefinedMacros"/>
+   <value type="QString" key="ProjectExplorer.CustomToolChain.TargetAbi">arm-linux-generic-elf-32bit</value>
+   <value type="bool" key="ProjectExplorer.ToolChain.Autodetect">false</value>
+   <value type="QString" key="ProjectExplorer.ToolChain.DisplayName">IMX28</value>
+   <value type="QString" key="ProjectExplorer.ToolChain.Id">ProjectExplorer.ToolChain.Custom:{c9ebad66-b671-4ed8-a0c8-19fedf97e8f9}</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>ToolChain.1</variable>
   <valuemap type="QVariantMap">
    <value type="QString" key="ProjectExplorer.GccToolChain.Path">C:/Qt487/desktop/mingw32/bin/g++.exe</value>
    <valuelist type="QVariantList" key="ProjectExplorer.GccToolChain.PlatformCodeGenFlags"/>
@@ -18,7 +35,7 @@
   </valuemap>
  </data>
  <data>
-  <variable>ToolChain.1</variable>
+  <variable>ToolChain.2</variable>
   <valuemap type="QVariantMap">
    <value type="QString" key="ProjectExplorer.GccToolChain.Path">C:/Qt487/desktop/mingw32/bin/g++.exe</value>
    <valuelist type="QVariantList" key="ProjectExplorer.GccToolChain.PlatformCodeGenFlags"/>
@@ -34,7 +51,7 @@
  </data>
  <data>
   <variable>ToolChain.Count</variable>
-  <value type="int">2</value>
+  <value type="int">3</value>
  </data>
  <data>
   <variable>Version</variable>

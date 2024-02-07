@@ -12,7 +12,8 @@ SET BIN_DIR=%DESKTOP_DIR%bin\
 SET DOC_DIR=%DESKTOP_DIR%doc
 SET CC_DIR=%DESKTOP_DIR%mingw32\
 SET WINSPEC_DIR=%DESKTOP_DIR%mkspecs\
-SET IMX28_SRC_DIR=%QT_DIR%imx28_qt487_src\
+SET IMX28_SRC_DIR=%QT_DIR%imx28\
+SET IMX28_BUILD_DIR=%QT_DIR%imx28_build\
 SET IMX28_DIR=%QT_DIR%imx28\
 SET IMX28_ROOTFS=%IMX28_DIR%rootfs\
 SET TEMP_DIR=%ROOT_DIR%Ms35_tmp\
@@ -85,10 +86,11 @@ call :screenAndLog "Clearing %IMX28_SRC_DIR%"
 IF EXIST %IMX28_SRC_DIR%  RD /S /Q %IMX28_SRC_DIR%
 MKDIR %IMX28_SRC_DIR% 
 Rem ---- I.MX28  Dir and rootfs dir
-call :screenAndLog "Clearing %IMX28_DIR%"
-IF EXIST %IMX28_DIR%  RD /S /Q %IMX28_DIR%
-MKDIR %IMX28_DIR% 
-
+IF /I [%IMX28_SRC_DIR%] NEQ [%IMX28_DIR%]  (
+	call :screenAndLog "Clearing %IMX28_DIR%"
+	IF EXIST %IMX28_DIR%  RD /S /Q %IMX28_DIR%
+	MKDIR %IMX28_DIR% 
+)
 
 Rem ---- Download File List
 For %%a in (%DOWNLOAD_LIST%) do (
@@ -121,11 +123,11 @@ if errorlevel 1 (
 )
 call :screenAndLog "Moving Qt %QT_VERSION% sources to %IMX28_SRC_DIR%"
 xcopy %SRC_DIR%*.* %IMX28_SRC_DIR%*.* /s /y /e /v /q
-Rem --- Update MECT_QT_XPLATFORM MKSPECS for build
-call :screenAndLog "Updating  %MECT_QT_XPLATFORM%"
-xcopy %STARTDIR%\%MECT_QT_XPLATFORM% %MECT_MKSPECS%\%MECT_QT_XPLATFORM% /i /s /y /v
 call :screenAndLog "Cleaning  %SRC_DIR%"
 RD /S /Q %SRC_DIR%
+Rem --- Update MECT_QT_XPLATFORM MKSPECS for build
+call :screenAndLog "Updating  %MECT_QT_XPLATFORM%"
+xcopy %STARTDIR%\%MECT_QT_XPLATFORM% %IMX28_SRC_DIR%mkspecs\%MECT_QT_XPLATFORM% /i /s /y /v
 Rem ---  rootfs_dev_X.Y.Z.zip
 call :screenAndLog "Expanding I.MX28 root_fs"
 %EXTRACT_CMD%  %TEMP_DIR%rootfs_dev_%REV%.zip -o%IMX28_DIR%
@@ -152,7 +154,7 @@ call :addToPath "%BIN_DIR%"
 rem Set PATH=%CC_DIR%bin;%CC_DIR%i686-w64-mingw32\bin;%BIN_DIR%;%PATH%
 rem configure -embedded arm -xplatform qws/linux-arm-g+
 rem %DESKTOP_DIR%configure  -opensource  -confirm-license -release -embedded arm -arch arm -platform win32-g++ -xplatform linux-arm-gnueabi-g++ -fast -no-phonon -no-webkit -no-qt3support -nomake tools -nomake examples -nomake demos  -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log  -prefix %MECT_PREFIX%  -openssl  -I %USR_INCLUDE%  -I %OPENSSL_DIR%include  
-%IMX28_SRC_DIR%configure   -prefix %MECT_PREFIX%  -platform win32-g++  -release -opensource -embedded -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM%  -little-endian -system-freetype -no-opengl -no-s60 -dbus  -openssl 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
+%IMX28_SRC_DIR%configure   -prefix %MECT_PREFIX%  -platform win32-g++  -release -opensource -embedded -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM%  -little-endian -system-freetype -no-opengl -no-s60 -dbus  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
 
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring Qt in: %IMX28_DIR%"
@@ -160,6 +162,9 @@ if errorlevel 1 (
 )  else  (
 	call :screenAndLog "Configuration completed for Qt %QT_VERSION% in Folder %IMX28_DIR%"
 )
+Rem --- Update MECT_QT_XPLATFORM MKSPECS for build
+Rem call :screenAndLog "Updating  %MECT_QT_XPLATFORM%"
+Rem xcopy %STARTDIR%\%MECT_QT_XPLATFORM% %MECT_MKSPECS%\%MECT_QT_XPLATFORM% /i /s /y /v
 cd %STARTDIR%
 Rem  ---- Exit batch if configure mode
 IF /I [%USER_MODE%] EQU [configure] goto JobDone
