@@ -14,10 +14,10 @@
 #        ATCM_TEMPLATE_BASE_DIR = C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards
 #}
 #!contains(QMAKE_HOST.os,Windows){
-#        QT_ROOTFS=$$(MECT_RFSDIR)
-#        QT_LUPDATE_PATH = 
-#        QT_LRELEASE_PATH = $$(MECT_QT_INSTALL_DIR)/bin
-#        ATCM_TEMPLATE_BASE_DIR = 
+#        QT_ROOTFS        = /opt/Qt4.8.7/host
+#        QT_LUPDATE_PATH  = /opt/Qt4.8.7/host/bin
+#        QT_LRELEASE_PATH = /opt/Qt4.8.7/host/bin
+#        ATCM_TEMPLATE_BASE_DIR = /opt/Qt4.8.7/desktop/QtCreator/share/qtcreator/templates/wizards
 #}
 #
 #isEmpty(QT_ROOTFS) {

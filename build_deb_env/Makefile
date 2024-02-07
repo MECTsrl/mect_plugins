@@ -14,6 +14,7 @@
 #   (1.1) create the bookworm/amd64 chroot from a recent Debian/amd64 or Devuan/amd64 or Ubuntu/amd64 
 #       you@host:~$ sudo cdebootstrap -f minimal bookworm /srv/chroot/bookworm_amd64_MectSuite_3.5 http://deb.debian.org/debian/
 #           NB: using "minimal" the chrooted/home is different from /home and that's ok
+#           NB: comment the "/home /home none rw,bind 0 0" row in /etc/schroot/default/fstab
 #       you@host:~$ sudo vi /etc/schroot/schroot.conf
 #           [bookworm_amd64_MectSuite_3.5]
 #           description=Debian 12.0 Bookworm for amd64 MectSuite 3.5

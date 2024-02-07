@@ -16,7 +16,6 @@ all: \
 	downloads toolchain \
 	openssl qt \
 	qwt \
-	\
 	qt_plugins
 	@echo "---------> done $@"
 
@@ -81,7 +80,7 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile: $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure
 	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && ./Configure \
-		--prefix=$(MECT_PREFIX) \
+		--prefix=$(MECT_PREFIX)/ssl \
 		linux-generic32 shared no-asm -DL_ENDIAN
 	@echo "---------> done $@"
 
@@ -114,18 +113,16 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
-	#
-	# https://stackoverflow.com/questions/10354371/stdtr1-has-not-been-declared
-	# https://bugreports.qt.io/browse/QTBUG-41361#comment-257906
-	# also ./src/3rdparty/javascriptcore/JavaScriptCore/JavaScriptCore.pri
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) &&  \
-		echo "QMAKE_CXXFLAGS = \$$\$$QMAKE_CFLAGS -std=gnu++98 -Wno-error=class-memaccess" \
-	      	>> ./mkspecs/$(MECT_QT_PLATFORM)/qmake.conf
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 < $(MECT_PATCHES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
-	# https://doc.qt.io/archives/qt-4.8/configure-options.html
-	# vedi qt_configure_help.txt vs qt_configure_embedded_help.txt
+	# - https://doc.qt.io/archives/qt-4.8/configure-options.html
+	# - vedi qt_configure_help.txt vs qt_configure_embedded_help.txt
+	# - QtXmlPatterns was requested, but it can't be built due to exceptions being disabled.
+	# - qt-everywhere-opensource-src-4.8.7/doc/src/network-programming/ssl.qdoc
+	# OPENSSL_LIBS='-L$(MECT_PREFIX)/ssl/lib -lssl -lcrypto'
+	#
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ \
 		&& ./configure \
 		-prefix $(MECT_PREFIX) -prefix-install \
@@ -133,7 +130,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-release \
 		-opensource -confirm-license \
 	        -shared \
-	        -fast \
+		-no-fast \
 		-no-largefile \
 		-no-system-proxies \
 		-no-exceptions \
@@ -163,7 +160,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-qt-libpng \
 		-no-libmng \
 		-qt-libjpeg \
-		-openssl -I $(MECT_PREFIX)/include \
+		-openssl -I $(MECT_PREFIX)/ssl/include -L $(MECT_PREFIX)/ssl/lib \
 		-nomake examples -nomake demos \
 		-rpath \
 		-silent \

@@ -41,7 +41,7 @@ MECT_PACKAGES:= \
 	gcc \
 	g++ \
 	libfontconfig1-dev libfreetype6-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxrandr-dev libxrender-dev \
-	libsqlite3-dev \
+	libsqlite3-dev libmariadb-dev-compat unixodbc-dev \
 	libcups2-dev \
 	libglib2.0-dev \
 	libdbus-1-dev \
@@ -117,11 +117,11 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
-	# https://doc.qt.io/archives/qt-4.8/configure-options.html
-	# vedi qt_configure_help.txt vs qt_configure_embedded_help.txt
-	#
-	# qt-everywhere-opensource-src-4.8.7/doc/src/network-programming/ssl.qdoc
-	# OPENSSL_LIBS='-L$(MECT_PREFIX)/ssl/lib -lssl -lcrypto'
+	# - https://doc.qt.io/archives/qt-4.8/configure-options.html
+	# - vedi qt_configure_help.txt vs qt_configure_embedded_help.txt
+	# - QtXmlPatterns was requested, but it can't be built due to exceptions being disabled.
+	# - qt-everywhere-opensource-src-4.8.7/doc/src/network-programming/ssl.qdoc
+	#   OPENSSL_LIBS='-L$(MECT_PREFIX)/ssl/lib -lssl -lcrypto'
 	#
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ \
 		&& ./configure \
@@ -136,9 +136,9 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-exceptions \
 	        -accessibility \
 		-stl \
-		-plugin-sql-sqlite \
-		-plugin-sql-odbc \
-		-plugin-sql-mysql \
+		-qt-sql-sqlite \
+		-qt-sql-odbc \
+		-qt-sql-mysql \
 		-no-qt3support \
 		-xmlpatterns \
 		-multimedia \
@@ -278,7 +278,7 @@ cte_plugin: \
 $(MECT_SOURCES)/cte/cte.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Havx ../cte/ $(MECT_SOURCES)/cte/
-	cd $(MECT_SOURCES)/cte/ && patch -p1 < $(MECT_PATCHES)/cte.patch
+	# cd $(MECT_SOURCES)/cte/ && patch -p1 < $(MECT_PATCHES)/cte.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/cte/Makefile: $(MECT_SOURCES)/cte/cte.pro
@@ -312,7 +312,7 @@ ctc_exe: \
 $(MECT_SOURCES)/ctc/ctc.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Havx --exclude=ctc.pro.user ../ctc/ $(MECT_SOURCES)/ctc/
-	cd $(MECT_SOURCES)/ctc/ && patch -p1 < $(MECT_PATCHES)/ctc.patch
+	# cd $(MECT_SOURCES)/ctc/ && patch -p1 < $(MECT_PATCHES)/ctc.patch
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/ctc/Makefile: $(MECT_SOURCES)/ctc/ctc.pro

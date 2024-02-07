@@ -8,15 +8,15 @@ include Makefile_common
 # ----------------------------------------------------------------------------- i.MX28 target --------- 
 .PHONY: all clean_all distclean_all
 
-MECT_PREFIX  := /opt/Qt$(MECT_SUITE_QT)/imx28
-# MECT_PREFIX  := /opt/Trolltech
+MECT_PREFIX  := /opt/Qt$(MECT_SUITE_QT)/imx28# NB: no MECT_PREFIX  := /opt/Trolltech
 MECT_SOURCES := $(CURDIR)/src_imx28
 MECT_PATCHES := $(CURDIR)/patches
 
 all: \
 	downloads toolchain \
 	qt \
-	## qwt qt_plugins openssl
+	\
+	## NB: no qwt qt_plugins openssl
 	@echo "---------> done $@"
 
 clean_all: clean_toolchain
@@ -135,7 +135,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
-	#
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 < $(MECT_PATCHES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).patch
 	mkdir -p $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_XPLATFORM)
 	cp $(MECT_PATCHES)/$(MECT_QT_XPLATFORM)/qmake.conf      $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_XPLATFORM)/qmake.conf
 	cp $(MECT_PATCHES)/$(MECT_QT_XPLATFORM)/qplatformdefs.h $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_XPLATFORM)/qplatformdefs.h
@@ -145,11 +145,12 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/bin/qmake \
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
 	# https://doc.qt.io/archives/qt-4.8/configure-options.html
 	# vedi qt_configure_help.txt vs qt_configure_embedded_help.txt
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) &&  \
-		echo "QMAKE_CXXFLAGS = \$$\$$QMAKE_CFLAGS -std=gnu++98 -Wno-error=class-memaccess" \
-	      	>> ./mkspecs/$(MECT_QT_PLATFORM)/qmake.conf
+	#
+	# qt-everywhere-opensource-src-4.8.7/doc/src/network-programming/ssl.qdoc
+	# OPENSSL_LIBS='-L$(MECT_PREFIX)/ssl/lib -lssl -lcrypto'
+	#
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ \
-		&& ./configure -v \
+		&& ./configure \
 		-prefix $(MECT_PREFIX) -prefix-install \
 		\
 		-release -continue \
@@ -161,9 +162,9 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-no-exceptions \
 	        -no-accessibility \
 		-no-stl \
-		-no-sql-sqlite \
-		-no-sql-odbc \
-		-no-sql-mysql \
+		-plugin-sql-sqlite \
+		-plugin-sql-odbc \
+		-plugin-sql-mysql \
 	        -no-qt3support \
 		-no-xmlpatterns \
 		-no-multimedia \
