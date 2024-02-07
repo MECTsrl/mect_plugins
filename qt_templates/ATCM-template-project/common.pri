@@ -7,31 +7,31 @@
 # @brief Qmake project file
 #
 
-contains(QMAKE_HOST.os,Windows){
-        QT_ROOTFS = C:/Qt487/imx28/rootfs
-        QT_LUPDATE_PATH = C:/Qt487/desktop/bin
-        QT_LRELEASE_PATH = C:/Qt487/imx28/qt-everywhere-opensource-src-4.8.7/bin
-        ATCM_TEMPLATE_BASE_DIR = C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards
-}
-!contains(QMAKE_HOST.os,Windows){
-        QT_ROOTFS=$$(MECT_RFSDIR)
-        QT_LUPDATE_PATH = 
-        QT_LRELEASE_PATH = $$(MECT_QT_INSTALL_DIR)/bin
-        ATCM_TEMPLATE_BASE_DIR = 
-}
-
-isEmpty(QT_ROOTFS) {
-        error(QT_ROOTFS is empty)
-}
-isEmpty(QT_LUPDATE_PATH) {
-        warning(QT_LUPDATE_PATH is empty)
-}
-isEmpty(QT_LRELEASE_PATH) {
-        warning(QT_LRELEASE_PATH is empty)
-}
-isEmpty(ATCM_TEMPLATE_BASE_DIR) {
-        warning(ATCM_TEMPLATE_BASE_DIR is empty)
-}
+#contains(QMAKE_HOST.os,Windows){
+#        QT_ROOTFS = C:/Qt487/imx28/rootfs
+#        QT_LUPDATE_PATH = C:/Qt487/desktop/bin
+#        QT_LRELEASE_PATH = C:/Qt487/imx28/qt-everywhere-opensource-src-4.8.7/bin
+#        ATCM_TEMPLATE_BASE_DIR = C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards
+#}
+#!contains(QMAKE_HOST.os,Windows){
+#        QT_ROOTFS=$$(MECT_RFSDIR)
+#        QT_LUPDATE_PATH = 
+#        QT_LRELEASE_PATH = $$(MECT_QT_INSTALL_DIR)/bin
+#        ATCM_TEMPLATE_BASE_DIR = 
+#}
+#
+#isEmpty(QT_ROOTFS) {
+#        error(QT_ROOTFS is empty)
+#}
+#isEmpty(QT_LUPDATE_PATH) {
+#        warning(QT_LUPDATE_PATH is empty)
+#}
+#isEmpty(QT_LRELEASE_PATH) {
+#        warning(QT_LRELEASE_PATH is empty)
+#}
+#isEmpty(ATCM_TEMPLATE_BASE_DIR) {
+#        warning(ATCM_TEMPLATE_BASE_DIR is empty)
+#}
 
 ATCM_ARM_LIBRARY_LIBPATH = $$QT_ROOTFS/usr/lib
 ATCM_ARM_PLUGINS_LIBPATH = $$QT_ROOTFS/usr/lib

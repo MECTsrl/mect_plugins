@@ -786,9 +786,9 @@ cb_row(int c, void *data)
 {
     crosstable.row_crt++;       /* Count rows from 1. */
 
-    if ((c > ROW_FIELDS) || (crosstable.field_crt > ROW_FIELDS))
+    if (crosstable.field_crt > ROW_FIELDS)
         error_log_exit(crosstable.row_crt, "too many fields in the row");
-    else if ((c < ROW_FIELDS) || (crosstable.field_crt < ROW_FIELDS))
+    else if (crosstable.field_crt < ROW_FIELDS)
         error_log_exit(crosstable.row_crt, "too few fields in the row");
 
     /* Non-empty row */

@@ -108,8 +108,11 @@ const QString szNODE_Status = QLatin1String("NODE_%1_STATUS");
 const QString szVERSION = QLatin1String(STR(ATCM_VERSION));
 
 // CrossTable originale del Modello corrente
-// const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
-const QString szTemplateCTFile = QLatin1String(STR(ATCM_TEMPLATE_BASE_DIR)) + QString::fromLatin1("/ATCM-template-project-%1/config/Crosstable.csv");
+#ifdef __linux__
+const QString szTemplateCTFile = QLatin1String("/opt/Qt4.8.7/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
+#elif _WIN32
+const QString szTemplateCTFile = QLatin1String("C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project-%1/config/Crosstable.csv");
+#endif
 
 ctedit::ctedit(QWidget *parent) :
     QDialog(parent),

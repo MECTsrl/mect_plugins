@@ -4,7 +4,7 @@ contains(QMAKE_HOST.os,Windows){
     ATCM_TEMPLATE_BASE_DIR = C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards
 }
 !contains(QMAKE_HOST.os,Windows){
-    ATCM_TEMPLATE_BASE_DIR = /opt/qt-desktop-4.8.7/share/qtcreator/templates/wizards
+	ATCM_TEMPLATE_BASE_DIR = /opt/Qt4.8.7/desktop/QtCreator/share/qtcreator/templates/wizards
 }
 
 HEADERS += \

@@ -16,9 +16,9 @@ SET CREATOR_DIR=Qt487\desktop\QtCreator\
 SET TEMPLATE_DIR=%CREATOR_DIR%share\qtcreator\templates\
 SET BIN_DIR=%DESKTOP_DIR%bin\
 SET CC_DIR=%DESKTOP_DIR%mingw32\
-call :addToPath "%CC_DIR%bin"
-call :addToPath %CC_DIR%i686-w64-mingw32\bin;
-call :addToPath "%BIN_DIR%"
+call :addToPath %CC_DIR%bin
+call :addToPath %CC_DIR%i686-w64-mingw32\bin
+call :addToPath %BIN_DIR%
 
 SET TARGET_LIST=AnyTPAC043 AnyTPAC070 TP1043_01_A TP1043_02_A TP1043_02_B TP1070_01_A TP1070_01_B TP1070_01_C TP1070_02_F TPAC1005 TPAC1007_03 TPAC1007_04_AA TPAC1007_04_AB TPAC1007_04_AC TPAC1007_04_AD TPAC1007_04_AE TPAC1008_02_AA TPAC1008_02_AB TPAC1008_02_AD TPAC1008_02_AE TPAC1008_02_AF TPAC1008_03_AC TPAC1008_03_AD TPLC050_01_AA TPLC100_01_AA TPLC100_01_AB TPX1043_03_C TPX1070_03_D TPX1070_03_E 
 
@@ -174,15 +174,23 @@ time /t
 rem Copy current imx28 Configuration (root-fs and qt Configuration)
 cd /D "%OUT_DIR%"
 IF EXIST %QT_DIR%%IMX28_DIR%  (
-	echo Dumping %QT_DIR%%IMX28_DIR% to %OUT_DIR%Qt487\%IMX28_DIR%
-	echo Clean up %OUT_DIR%Qt487\%IMX28_DIR%
+	echo Dumping [%QT_DIR%%IMX28_DIR%] to [%OUT_DIR%Qt487\%IMX28_DIR%]
 	time /t
 	IF EXIST %OUT_DIR%Qt487\%IMX28_DIR% ( 
+		echo Clean up %OUT_DIR%Qt487\%IMX28_DIR%
 		RD /S /Q %OUT_DIR%Qt487\%IMX28_DIR%
 	)
 	mkdir    %OUT_DIR%Qt487\%IMX28_DIR%
-	echo Copy I.MX28 Configuration from %QT_DIR%%IMX28_DIR%  to %OUT_DIR%Qt487\%IMX28_DIR%  >> %ErrorLog%
+	echo Copy I.MX28 Configuration from [%QT_DIR%%IMX28_DIR%]  to [%OUT_DIR%Qt487\%IMX28_DIR%]  >> %ErrorLog%
 	xcopy %QT_DIR%%IMX28_DIR% %OUT_DIR%Qt487\%IMX28_DIR% /Q /Y /E /S /I >> %ErrorLog% 2>&1
+	time /t
+	rem Removing extra files
+	echo Removing %OUT_DIR%Qt487\imx28\demos
+	RD /S /Q %OUT_DIR%Qt487\imx28\demos
+	echo Removing %OUT_DIR%Qt487\imx28\doc
+	RD /S /Q %OUT_DIR%Qt487\imx28\doc
+	echo Removing %OUT_DIR%Qt487\imx28\examples
+	RD /S /Q %OUT_DIR%Qt487\imx28\examples
 	time /t
 )
 
@@ -232,7 +240,8 @@ IF ERRORLEVEL 1 (
 	exit
 )
 
-rem -----------------------------------------------------------------------------
+rem Qt487_upd_X.Y.Z -----------------------------------------------------------------------------
+IF EXIST "%OUT_DIR%Qt487_upd_rev%REV%.7z" del "%OUT_DIR%Qt487_upd_rev%REV%.7z"
 echo Qt487_upd_rev%REV%.7z (del + copy {*.dll, wizards, cte, ctc, rootfs, qmake.conf}, zip, clean "Qt487")
 time /t
 
@@ -282,7 +291,7 @@ echo %BIN_DIR%ctc.exe
 copy %BIN_DIR%ctc.exe %OUT_DIR%Qt487\desktop\bin\ /Y >> %ErrorLog%
 
 
-rem imx28 Reonfiguration skipped!! -----------------------------------------------------------------------------
+rem imx28 Reconfiguration skipped!! -----------------------------------------------------------------------------
 Rem Chek it !!
 IF %TARGETBUILD% == 1 (
 
@@ -312,10 +321,9 @@ del /s/q "*.bak"
 
 time /t
 cd /D %OUT_DIR%
-IF EXIST "%OUT_DIR%Qt487_upd_rev%REV%.7z" del "%OUT_DIR%Qt487_upd_rev%REV%.7z"
 echo Creating [%OUT_DIR%Qt487_upd_rev%REV%.7z]
 echo Compressing %OUT_DIR%Qt487\desktop
-"c:\Program Files\7-Zip\7z.exe" u -r -mx9 %OUT_DIR%Qt487_upd_rev%REV%.7z %OUT_DIR%Qt487\desktop >> %ErrorLog% 2>&1
+"c:\Program Files\7-Zip\7z.exe" a -r -mx9 %OUT_DIR%Qt487_upd_rev%REV%.7z %OUT_DIR%Qt487\desktop >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	echo ERROR
 	pause
