@@ -1,0 +1,11 @@
+--- A/src/plugins/debugger/debuggerplugin.cpp	2013-08-23 10:27:18.000000000 +0000
++++ B/src/plugins/debugger/debuggerplugin.cpp	2024-02-07 11:10:19.550083714 +0000
+@@ -1091,7 +1091,7 @@
+         const QAction *act = qobject_cast<QAction *>(sender());
+         QTC_ASSERT(act, return);
+         const BreakpointModelId id = act->data().value<BreakpointModelId>();
+-        QTC_ASSERT(id > 0, return);
++        QTC_ASSERT(id != 0, return);
+         BreakTreeView::editBreakpoint(id, mainWindow());
+     }
+ 

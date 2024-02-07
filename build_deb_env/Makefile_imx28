@@ -155,7 +155,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-release -continue \
 		-opensource -confirm-license \
 	        -shared \
-	        -no-fast \
+		-no-fast \
 		-no-largefile \
 		-no-system-proxies \
 		-no-exceptions \
@@ -205,15 +205,15 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-embedded $(MECT_QT_EMBEDDED) \
 		-xplatform $(MECT_QT_XPLATFORM) \
 		-little-endian \
-	        -host-little-endian \
+		-host-little-endian \
 		-qt-freetype \
 		-no-opengl \
 		-depths 8,16,18,32 \
 		-qt-gfx-qvfb \
-	        -qt-gfx-linuxfb \
-	        -qt-gfx-transformed \
-	        -qt-gfx-vnc \
-	        -qt-kbd-tty \
+		-qt-gfx-linuxfb \
+		-qt-gfx-transformed \
+		-qt-gfx-vnc \
+		-qt-kbd-tty \
 		-qt-mouse-linuxtp \
 		-no-glib \
 		\
