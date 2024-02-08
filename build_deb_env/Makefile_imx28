@@ -61,14 +61,14 @@ packages:
 $(MECT_CODESOURCERY_DIR)/bin/arm-none-linux-gnueabi-g++:
 	# NB: these are i386 executables
 	sudo rm -rf /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
-	sudo tar -C /opt -xjvf $(MECT_DOWNLOADF)/arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+	sudo tar -C /opt -xjf $(MECT_DOWNLOADF)/arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 	sudo mv /opt/$(MECT_CODESOURCERY_PRE) $(MECT_CODESOURCERY_DIR)
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/rootfs/usr/lib/libc.so:
 	sudo mkdir -p $(MECT_PREFIX)
 	# sudo unzip -d $(MECT_PREFIX) $(MECT_DOWNLOADF)/rootfs_dev_$(MECT_SUITE_RELEASE).zip
-	sudo tar -C $(MECT_PREFIX) -xzvf $(MECT_DOWNLOADF)/rootfs_dev_$(MECT_SUITE_RELEASE).tar.gz
+	sudo tar -C $(MECT_PREFIX) -xzf $(MECT_DOWNLOADF)/rootfs_dev_$(MECT_SUITE_RELEASE).tar.gz
 	@echo "---------> done $@"
 
 clean_toolchain: 
@@ -93,7 +93,7 @@ distclean_toolchain:
 #	
 #	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
 #		mkdir -p $(MECT_SOURCES)
-#		tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/openssl-$(MECT_SUITE_OPENSSL).tar.gz
+#		tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/openssl-$(MECT_SUITE_OPENSSL).tar.gz
 #		rm -f $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile # NB: there was an old Makefile :(
 #		@echo "---------> done $@"
 #	
@@ -131,7 +131,7 @@ qt: \
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	mkdir -p $(MECT_SOURCES)
-	tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
+	tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
@@ -150,10 +150,10 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 	# OPENSSL_LIBS='-L$(MECT_PREFIX)/ssl/lib -lssl -lcrypto'
 	#
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ \
-		&& ./configure \
+		&& ./configure -v \
 		-prefix $(MECT_PREFIX) -prefix-install \
 		\
-		-release -continue \
+		-release \
 		-opensource -confirm-license \
 	        -shared \
 		-no-fast \
@@ -162,9 +162,9 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-no-exceptions \
 	        -no-accessibility \
 		-no-stl \
-		-plugin-sql-sqlite \
-		-plugin-sql-odbc \
-		-plugin-sql-mysql \
+		-qt-sql-sqlite \
+		-qt-sql-odbc \
+		-qt-sql-mysql \
 	        -no-qt3support \
 		-no-xmlpatterns \
 		-no-multimedia \
@@ -191,7 +191,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-qt-libpng \
 		-no-libmng \
 		-qt-libjpeg \
-		-openssl \
+		-openssl -I $(MECT_PREFIX)/rootfs/usr/include -L $(MECT_PREFIX)/rootfs/usr/lib \
 		-nomake examples -nomake demos \
 		-rpath \
 		-silent \
@@ -247,7 +247,7 @@ $(MECT_PREFIX)/bin/qmake: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SU
 #	
 #	$(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 #		mkdir -p $(MECT_SOURCES)
-#		tar -C $(MECT_SOURCES) -xjvf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
+#		tar -C $(MECT_SOURCES) -xjf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
 #		cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_PATCHES)/qwt_embedded_imx28.patch
 #		@echo "---------> done $@"
 #	
@@ -276,8 +276,8 @@ $(MECT_PREFIX)/bin/qmake: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SU
 #	
 #	$(MECT_SOURCES)/qt_atcm.pro:
 #		mkdir -p $(MECT_SOURCES)
-#		rsync -Havx ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
-#		rsync -Havx ../qt_library/ $(MECT_SOURCES)/qt_library/
+#		rsync -Hax ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
+#		rsync -Hax ../qt_library/ $(MECT_SOURCES)/qt_library/
 #		cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
 #		cp -a ../qt_atcm.pro $(MECT_SOURCES)/
 #		cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_PATCHES)/qt_plugins_embedded_host.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/

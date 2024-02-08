@@ -74,7 +74,7 @@ openssl: \
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
 	mkdir -p $(MECT_SOURCES)
-	tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/openssl-$(MECT_SUITE_OPENSSL).tar.gz
+	tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/openssl-$(MECT_SUITE_OPENSSL).tar.gz
 	rm -f $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile # NB: there was an old Makefile :(
 	@echo "---------> done $@"
 
@@ -109,7 +109,7 @@ qt: \
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	mkdir -p $(MECT_SOURCES)
-	tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
+	tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
@@ -214,7 +214,7 @@ qwt: \
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	mkdir -p $(MECT_SOURCES)
-	tar -C $(MECT_SOURCES) -xjvf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
+	tar -C $(MECT_SOURCES) -xjf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
 	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_PATCHES)/qwt_desktop.patch
 	@echo "---------> done $@"
 
@@ -249,7 +249,7 @@ qtcreator: \
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro:
 	mkdir -p $(MECT_SOURCES)
-	tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/qt-creator-$(MECT_SUITE_QTCREATOR)-src.tar.gz
+	tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/qt-creator-$(MECT_SUITE_QTCREATOR)-src.tar.gz
 	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && patch -p1 < $(MECT_PATCHES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src.patch
 	@echo "---------> done $@"
 
@@ -311,7 +311,7 @@ ctc_exe: \
 
 $(MECT_SOURCES)/ctc/ctc.pro:
 	mkdir -p $(MECT_SOURCES)
-	rsync -Havx --exclude=ctc.pro.user ../ctc/ $(MECT_SOURCES)/ctc/
+	rsync -Hax --exclude=ctc.pro.user ../ctc/ $(MECT_SOURCES)/ctc/
 	# cd $(MECT_SOURCES)/ctc/ && patch -p1 < $(MECT_PATCHES)/ctc.patch
 	@echo "---------> done $@"
 
@@ -341,7 +341,7 @@ qt_templates: \
 
 $(MECT_SOURCES)/qt_templates/qt_templates.pro:
 	mkdir -p $(MECT_SOURCES)
-	rsync -Havx ../qt_templates/ $(MECT_SOURCES)/qt_templates/
+	rsync -Hax ../qt_templates/ $(MECT_SOURCES)/qt_templates/
 	cd $(MECT_SOURCES)/qt_templates/ && patch -p1 < $(MECT_PATCHES)/qt_templates.patch
 	@echo "---------> done $@"
 
@@ -362,8 +362,8 @@ qt_designer_plugins: \
 
 $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro:
 	mkdir -p $(MECT_SOURCES)
-	rsync -Havx ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
-	rsync -Havx ../qt_library/ $(MECT_SOURCES)/qt_library/
+	rsync -Hax ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
+	rsync -Hax ../qt_library/ $(MECT_SOURCES)/qt_library/
 	cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
 	@echo "---------> done $@"
 

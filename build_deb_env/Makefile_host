@@ -74,7 +74,7 @@ openssl: \
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
 	mkdir -p $(MECT_SOURCES)
-	tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/openssl-$(MECT_SUITE_OPENSSL).tar.gz
+	tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/openssl-$(MECT_SUITE_OPENSSL).tar.gz
 	rm -f $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile # NB: there was an old Makefile :(
 	@echo "---------> done $@"
 
@@ -109,7 +109,7 @@ qt: \
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	mkdir -p $(MECT_SOURCES)
-	tar -C $(MECT_SOURCES) -xzvf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
+	tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
 	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
@@ -211,7 +211,7 @@ qwt: \
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	mkdir -p $(MECT_SOURCES)
-	tar -C $(MECT_SOURCES) -xjvf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
+	tar -C $(MECT_SOURCES) -xjf $(MECT_DOWNLOADF)/qwt-$(MECT_SUITE_QWT).tar.bz2
 	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && patch -p1 < $(MECT_PATCHES)/qwt_embedded_host.patch
 	@echo "---------> done $@"
 
@@ -240,8 +240,8 @@ qt_plugins: \
 
 $(MECT_SOURCES)/qt_atcm.pro:
 	mkdir -p $(MECT_SOURCES)
-	rsync -Havx ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
-	rsync -Havx ../qt_library/ $(MECT_SOURCES)/qt_library/
+	rsync -Hax ../qt_plugins/ $(MECT_SOURCES)/qt_plugins/
+	rsync -Hax ../qt_library/ $(MECT_SOURCES)/qt_library/
 	cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
 	cp -a ../qt_atcm.pro $(MECT_SOURCES)/
 	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_PATCHES)/qt_plugins_embedded_host.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/

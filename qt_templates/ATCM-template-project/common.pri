@@ -77,13 +77,13 @@ SOURCES += \
 
 !isEmpty(ATCM_TEMPLATE_BASE_DIR) {
 	# pre-elaboration
-    check_missing_file.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/cleanmissingpage.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
-    check_undeclared_variable.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_cross_var.pl \"$$_PRO_FILE_PWD_\"
-    check_gotopage_bind.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/connectbutton.pl \"$$_PRO_FILE_PWD_\"
-    check_systemini.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_systemini.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
-    check_default_font.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/defaultfont.pl \"$$_PRO_FILE_PWD_\"
+	check_missing_file.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/cleanmissingpage.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
+	check_undeclared_variable.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_cross_var.pl \"$$_PRO_FILE_PWD_\"
+	check_gotopage_bind.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/connectbutton.pl \"$$_PRO_FILE_PWD_\"
+	check_systemini.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_systemini.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
+	check_default_font.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/defaultfont.pl \"$$_PRO_FILE_PWD_\"
 	# crosstable_compiler invocation removed from defaultfont.pl
-	crosstable_compiler.commands = $${MECT_PREFIX}/bin/ctc -c config/Crosstable.csv -g plc/Crosstable.gvl -i config/Crosstable.h -s config/Crosstable.cpp
+	crosstable_compiler.commands = $${MECT_PREFIX}/desktop/bin/ctc -c config/Crosstable.csv -g plc/Crosstable.gvl -i config/Crosstable.h -s config/Crosstable.cpp
 
         QMAKE_EXTRA_TARGETS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font  crosstable_compiler
         PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font  crosstable_compiler
