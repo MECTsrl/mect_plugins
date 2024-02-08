@@ -174,23 +174,23 @@ time /t
 rem Copy current imx28 Configuration (root-fs and qt Configuration)
 cd /D "%OUT_DIR%"
 IF EXIST %QT_DIR%%IMX28_DIR%  (
-	echo Dumping [%QT_DIR%%IMX28_DIR%] to [%OUT_DIR%Qt487\%IMX28_DIR%]
+	echo Dumping [%QT_DIR%%IMX28_DIR%] to [%OUT_DIR%Qt487\%IMX28_DIR%]  >> %ErrorLog%
 	time /t
 	IF EXIST %OUT_DIR%Qt487\%IMX28_DIR% ( 
-		echo Clean up %OUT_DIR%Qt487\%IMX28_DIR%
-		RD /S /Q %OUT_DIR%Qt487\%IMX28_DIR%
+		echo Clean up %OUT_DIR%Qt487\%IMX28_DIR% >> %ErrorLog%
+		RD /S /Q %OUT_DIR%Qt487\%IMX28_DIR% >> %ErrorLog% 2>&1
 	)
 	mkdir    %OUT_DIR%Qt487\%IMX28_DIR%
 	echo Copy I.MX28 Configuration from [%QT_DIR%%IMX28_DIR%]  to [%OUT_DIR%Qt487\%IMX28_DIR%]  >> %ErrorLog%
 	xcopy %QT_DIR%%IMX28_DIR% %OUT_DIR%Qt487\%IMX28_DIR% /Q /Y /E /S /I >> %ErrorLog% 2>&1
 	time /t
 	rem Removing extra files
-	echo Removing %OUT_DIR%Qt487\imx28\demos
-	RD /S /Q %OUT_DIR%Qt487\imx28\demos
-	echo Removing %OUT_DIR%Qt487\imx28\doc
-	RD /S /Q %OUT_DIR%Qt487\imx28\doc
-	echo Removing %OUT_DIR%Qt487\imx28\examples
-	RD /S /Q %OUT_DIR%Qt487\imx28\examples
+	echo Removing %OUT_DIR%Qt487\imx28\demos >> %ErrorLog%
+	RD /S /Q %OUT_DIR%Qt487\imx28\demos >> %ErrorLog% 2>&1
+	echo Removing %OUT_DIR%Qt487\imx28\doc >> %ErrorLog%
+	RD /S /Q %OUT_DIR%Qt487\imx28\doc >> %ErrorLog% 2>&1
+	echo Removing %OUT_DIR%Qt487\imx28\examples >> %ErrorLog%
+	RD /S /Q %OUT_DIR%Qt487\imx28\examples >> %ErrorLog% 2>&1
 	time /t
 )
 

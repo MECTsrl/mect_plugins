@@ -33,38 +33,37 @@
 #        warning(ATCM_TEMPLATE_BASE_DIR is empty)
 #}
 
-ATCM_ARM_LIBRARY_LIBPATH = $$QT_ROOTFS/usr/lib
-ATCM_ARM_PLUGINS_LIBPATH = $$QT_ROOTFS/usr/lib
-ATCM_ARM_LIBRARY_INCPATH = $$QT_ROOTFS/usr/include
-ATCM_ARM_PLUGINS_INCPATH = $$QT_ROOTFS/usr/include
+#ATCM_ARM_LIBRARY_LIBPATH = $$QT_ROOTFS/usr/lib
+#ATCM_ARM_PLUGINS_LIBPATH = $$QT_ROOTFS/usr/lib
+#ATCM_ARM_LIBRARY_INCPATH = $$QT_ROOTFS/usr/include
+#ATCM_ARM_PLUGINS_INCPATH = $$QT_ROOTFS/usr/include
 
-QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -O3
-QMAKE_CXXFLAGS_RELEASE += -Wno-psabi
-QMAKE_CXXFLAGS_DEBUG   += -Wno-psabi
+#QMAKE_CXXFLAGS_RELEASE -= -O2
+#QMAKE_CXXFLAGS_RELEASE += -O3
+#QMAKE_CXXFLAGS_RELEASE += -Wno-psabi
+#QMAKE_CXXFLAGS_DEBUG   += -Wno-psabi
 
 TARGET = hmi
 TEMPLATE = app
 
 target.path = /local/root
 
-INCLUDEPATH += .\
-	./config
+INCLUDEPATH += . ./config
 
 LIBS += \
--lts \
--lqwt \
 -lATCMcommon \
 -lATCMutility \
 -lATCMcommunication \
 -lATCMplugin \
--lATCMinputdialog \
 -lATCMlogger \
 -lATCMstore \
 -lATCMalarms \
 -lATCMrecipe \
 -lATCMtrend \
--lATCMsystem
+-lATCMsystem \
+-lATCMinputdialog \
+-lts \
+-lqwt 
 
 # Input
 HEADERS += \
@@ -83,11 +82,11 @@ SOURCES += \
     check_gotopage_bind.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/connectbutton.pl \"$$_PRO_FILE_PWD_\"
     check_systemini.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/check_systemini.pl \"$$_PRO_FILE_\" \"$$_PRO_FILE_PWD_\"
     check_default_font.commands = @perl $${ATCM_TEMPLATE_BASE_DIR}/ATCM-template-project/defaultfont.pl \"$$_PRO_FILE_PWD_\"
-# crosstable_compiler invocation moved in defaultfont.pl (for mect_suite_2.0 projects)
-#    crosstable_compiler.commands = $${QT_LUPDATE_PATH}/ctc -c config/Crosstable.csv -g plc/Crosstable.gvl -i config/Crosstable.h -s config/Crosstable.cpp
+	# crosstable_compiler invocation removed from defaultfont.pl
+	crosstable_compiler.commands = $${MECT_PREFIX}/bin/ctc -c config/Crosstable.csv -g plc/Crosstable.gvl -i config/Crosstable.h -s config/Crosstable.cpp
 
-        QMAKE_EXTRA_TARGETS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font # crosstable_compiler
-        PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font # crosstable_compiler
+        QMAKE_EXTRA_TARGETS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font  crosstable_compiler
+        PRE_TARGETDEPS += check_missing_file check_undeclared_variable check_gotopage_bind check_systemini check_default_font  crosstable_compiler
 }
 
 # system icons
