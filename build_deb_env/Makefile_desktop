@@ -343,7 +343,7 @@ $(MECT_SOURCES)/qt_templates/qt_templates.pro:
 	mkdir -p $(MECT_SOURCES)
 	rsync -Hax ../qt_templates/ $(MECT_SOURCES)/qt_templates/
 	cd $(MECT_SOURCES)/qt_templates/ && patch -p1 < $(MECT_PATCHES)/qt_templates.patch
-	for f in $(MECT_SOURCES)/qt_templates/ATCM-template-*/config/*.csv; do dos2unix $f; done
+	for f in $(MECT_SOURCES)/qt_templates/ATCM-template-*/config/*.csv; do dos2unix $$f; done
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project/project.pro: $(MECT_SOURCES)/qt_templates/qt_templates.pro
