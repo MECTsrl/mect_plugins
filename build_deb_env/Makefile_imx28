@@ -136,6 +136,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 < $(MECT_PATCHES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).patch
+	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 < $(MECT_PATCHES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)_imx28.patch
 	mkdir -p $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_XPLATFORM)
 	cp $(MECT_PATCHES)/$(MECT_QT_XPLATFORM)/qmake.conf      $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_XPLATFORM)/qmake.conf
 	cp $(MECT_PATCHES)/$(MECT_QT_XPLATFORM)/qplatformdefs.h $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_XPLATFORM)/qplatformdefs.h
@@ -163,8 +164,8 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 	        -no-accessibility \
 		-no-stl \
 		-qt-sql-sqlite \
-		-qt-sql-odbc \
-		-qt-sql-mysql \
+		-no-sql-odbc \
+		-qt-sql-mysql -mysql_config please-no-host-mysql \
 	        -no-qt3support \
 		-no-xmlpatterns \
 		-no-multimedia \
@@ -185,13 +186,14 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-no-sse2 \
 		-no-sse3 \
 		-no-ssse3 \
+		-no-neon \
 		\
 		-qt-zlib \
 		-no-libtiff \
 		-qt-libpng \
 		-no-libmng \
 		-qt-libjpeg \
-		-openssl -I $(MECT_PREFIX)/rootfs/usr/include -L $(MECT_PREFIX)/rootfs/usr/lib \
+		-openssl \
 		-nomake examples -nomake demos \
 		-rpath \
 		-silent \

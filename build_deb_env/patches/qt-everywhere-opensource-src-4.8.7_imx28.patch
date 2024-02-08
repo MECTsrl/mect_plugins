@@ -1,0 +1,17 @@
+--- A/configure	2024-02-08 13:53:48.465245348 +0000
++++ B/configure	2024-02-08 18:53:08.512078904 +0000
+@@ -960,9 +961,11 @@
+ #flags for SQL drivers
+ QT_CFLAGS_PSQL=
+ QT_LFLAGS_PSQL=
+-QT_CFLAGS_MYSQL=
+-QT_LFLAGS_MYSQL=
+-QT_LFLAGS_MYSQL_R=
++QT_CFLAGS_MYSQL="-I/opt/Qt4.8.7/imx28/rootfs/usr/include"
++QT_LFLAGS_MYSQL="-L/opt/Qt4.8.7/imx28/rootfs/usr/lib -lmysqlclient -lz"
++QT_LFLAGS_MYSQL_R="-L/opt/Qt4.8.7/imx28/rootfs/usr/lib -lmysqlclient -lz"
++QT_MYSQL_VERSION="4.1.12"
++QT_MYSQL_VERSION_MAJOR=4
+ QT_CFLAGS_SQLITE=
+ QT_LFLAGS_SQLITE=
+ QT_LFLAGS_ODBC="-lodbc"
