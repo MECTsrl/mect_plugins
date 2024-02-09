@@ -16,6 +16,7 @@ SET TEMP_DIR=%ROOT_DIR%Ms35_tmp\
 SET SRC_DIR=%TEMP_DIR%qt-everywhere-opensource-src-4.8.7\
 SET OPENSSL_DIR=%ROOT_DIR%openssl-1.0.2u\
 SET QWT_DIR=%ROOT_DIR%qwt-6.1-multiaxes_r2275_win\
+SET QTSERIAL_DIR=%ROOT_DIR%qtserialport\
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
 SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
@@ -54,6 +55,12 @@ Rem ---- qwt
 IF /I [%USER_MODE%] EQU [qwt] (
 	echo Add qwt to Qt %QT_VERSION% Installation in %DESKTOP_DIR%
 	goto buildQWT
+)
+
+Rem ---- qtserial
+IF /I [%USER_MODE%] EQU [qtserial] (
+	echo Add QtSerial to Qt %QT_VERSION% Installation in %DESKTOP_DIR%
+	goto buildQtSerial
 )
 
 Rem ---- Checking all
@@ -278,9 +285,61 @@ if errorlevel 1 (
 	xcopy %QWT_DIR%lib\qwt.dll %BIN_DIR% /Y /I
 	call :screenAndLog "Installed Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
 )
-Rem  ---- Exit batch if QWT or all mode
+Rem  ---- Exit batch if QWT
 cd %STARTDIR%
 IF /I [%USER_MODE%] EQU [qwt] goto JobDone
+
+:buildQtSerial
+call :screenAndLog "Configuring QtSerial in qtserialport"
+Rem ---- Clear QtSerial Dir
+IF EXIST %QTSERIAL_DIR% RD /S /Q %QTSERIAL_DIR%
+cd %ROOT_DIR%%
+Pause
+
+if errorlevel 1 (
+	call :screenAndLog "Qwt dir %QTSERIAL_DIR% not found, please download Qt components"
+	goto AbortProcess
+)
+if not EXIST %WINSPEC_DIR% (
+	call :screenAndLog "You must configure and install Qt first"
+	goto AbortProcess
+)
+Rem ---- Updating PATH if needed
+call :addToPath "%CC_DIR%bin"
+call :addToPath %CC_DIR%i686-w64-mingw32\bin;
+call :addToPath "%BIN_DIR%"
+Rem ---- Configuring Qwt
+call :screenAndLog "Configuring Qwt"
+qmake qwt.pro 2>&1 | "%TEE%" -a %TEMP_DIR%Qwt-Configure.log
+if errorlevel 1 (
+	call :screenAndLog "Error Configuring Qwt 6.1 Multiaxes in %QTSERIAL_DIR%"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Configured Qwt 6.1 Multiaxes in %QTSERIAL_DIR%"
+)
+Rem ---- Building Qwt
+call :screenAndLog "Building Qwt"
+mingw32-make  2>&1 | "%TEE%" %TEMP_DIR%Qwt-Make.log
+if errorlevel 1 (
+	call :screenAndLog "Error Building Qwt 6.1 Multiaxes in %QTSERIAL_DIR%"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Builded Qwt 6.1 Multiaxes in %QTSERIAL_DIR%"
+)
+Rem ---- Start Qwt Installation
+call :screenAndLog "Installing Qwt in %DESKTOP_DIR%"
+mingw32-make install 2>&1 | "%TEE%" -a %TEMP_DIR%Qwt-Install.log
+if errorlevel 1 (
+	call :screenAndLog "Error Installing Qwt 6.1 Multiaxes from %QTSERIAL_DIR% to %DESKTOP_DIR%"
+	goto AbortProcess
+)  else  (
+	xcopy %QTSERIAL_DIR%lib\qwt.dll %BIN_DIR% /Y /I
+	call :screenAndLog "Installed Qwt 6.1 Multiaxes from %QTSERIAL_DIR% to %DESKTOP_DIR%"
+)
+Rem  ---- Exit batch if QtSerial
+cd %STARTDIR%
+IF /I [%USER_MODE%] EQU [qtserial] goto JobDone
+Rem  ---- All Done
 IF /I [%USER_MODE%] EQU [all] goto JobDone
 
 :JobDone
@@ -318,5 +377,6 @@ echo mode = configure: 	Configure Qt and exit
 echo mode = build: 		Build Qt and exit
 echo mode = install: 	Install configured Qt and exit
 echo mode = qwt:		Configure, compile, istall QWT Multiaxes	
+echo mode = qtserial:	Configure, compile, istall QtSerialPort
 
 goto JobDone

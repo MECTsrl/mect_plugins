@@ -104,8 +104,9 @@ mingw32-make >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	goto AbortProcess
 )
-del /q %BIN_DIR%ctc.exe
-copy %IN_DIR%\ctc\release\ctc.exe %BIN_DIR%ctc.exe /Y  >> %ErrorLog% 2>&1
+Rem del /q %BIN_DIR%ctc.exe  >> %ErrorLog% 2>&1 :Moved from C:\Qt487\desktop\bin to C:\Qt487\desktop\QtCreator\bin
+del /q %ROOT_DIR%%CREATOR_DIR%bin\ctc.exe  >> %ErrorLog% 2>&1
+copy %IN_DIR%\ctc\release\ctc.exe %ROOT_DIR%%CREATOR_DIR%bin\ctc.exe /Y  >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	goto AbortProcess
 )
@@ -214,13 +215,13 @@ IF ERRORLEVEL 1 (
 	goto AbortProcess
 )
 
-call :screenAndLog "Dumping  %OUT_DIR%%TEMPLATE_DIR%wizards"  
+call :screenAndLog "Dumping %OUT_DIR%%TEMPLATE_DIR%wizards"  
 IF NOT EXIST  %OUT_DIR%%TEMPLATE_DIR%wizards mkdir %OUT_DIR%%TEMPLATE_DIR%wizards
 xcopy %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project %OUT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-project				/Q /Y /E /S /I  >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	goto AbortProcess
 )
-call :screenAndLog "Dumping  %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class"
+call :screenAndLog "Dumping %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class"
 xcopy %ROOT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class %OUT_DIR%%TEMPLATE_DIR%wizards\ATCM-template-form-class	/Q /Y /E /S /I  >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	goto AbortProcess
@@ -237,8 +238,8 @@ mkdir %OUT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\
 mkdir %OUT_DIR%Qt487\desktop\bin
 copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.dll %OUT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\ /Y  >> %ErrorLog% 2>&1
 copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\ /Y  >> %ErrorLog% 2>&1
-call :screenAndLog "%BIN_DIR%ctc.exe"
-copy %BIN_DIR%ctc.exe %OUT_DIR%Qt487\desktop\bin\ /Y  >> %ErrorLog% 2>&1
+call :screenAndLog "Dumping CTC %ROOT_DIR%%CREATOR_DIR%bin\ctc.exe to %OUT_DIR%%CREATOR_DIR%bin\"
+xcopy %ROOT_DIR%%CREATOR_DIR%bin\ctc.exe %OUT_DIR%%CREATOR_DIR%bin\ /I /Y  >> %ErrorLog% 2>&1
 
 
 rem imx28 Reconfiguration skipped!! -----------------------------------------------------------------------------
