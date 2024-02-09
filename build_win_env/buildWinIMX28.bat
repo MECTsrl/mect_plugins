@@ -32,6 +32,7 @@ SET MECT_MKSPECS=%IMX28_DIR%mkspecs\
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
 SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
+SET TEE=%ProgramFiles%\Git\usr\bin\tee
 Rem ---- File to be downloaded 
 SET SOURCERY_GCC=sourcery-g++-lite
 SET DOWNLOAD_LIST=%SOURCERY_GCC%.7z %SRC_FILE%.7z  rootfs_dev_%REV%.zip
@@ -153,8 +154,8 @@ call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
 rem Set PATH=%CC_DIR%bin;%CC_DIR%i686-w64-mingw32\bin;%BIN_DIR%;%PATH%
 rem configure -embedded arm -xplatform qws/linux-arm-g+
-rem %DESKTOP_DIR%configure  -opensource  -confirm-license -release -embedded arm -arch arm -platform win32-g++ -xplatform linux-arm-gnueabi-g++ -fast -no-phonon -no-webkit -no-qt3support -nomake tools -nomake examples -nomake demos  -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log  -prefix %MECT_PREFIX%  -openssl  -I %USR_INCLUDE%  -I %OPENSSL_DIR%include  
-%IMX28_SRC_DIR%configure   -prefix %MECT_PREFIX%  -platform win32-g++  -release -opensource -embedded -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM%  -little-endian -system-freetype -no-opengl -no-s60 -dbus  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-I_MX28-config.log
+rem %DESKTOP_DIR%configure  -opensource  -confirm-license -release -embedded arm -arch arm -platform win32-g++ -xplatform linux-arm-gnueabi-g++ -fast -no-phonon -no-webkit -no-qt3support -nomake tools -nomake examples -nomake demos  -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%TEE%" %TEMP_DIR%Qt487-I_MX28-config.log  -prefix %MECT_PREFIX%  -openssl  -I %USR_INCLUDE%  -I %OPENSSL_DIR%include  
+%IMX28_SRC_DIR%configure   -prefix %MECT_PREFIX%  -platform win32-g++  -release -opensource -embedded -confirm-license -arch %MECT_QT_ARCH% -shared -fast -no-system-proxies -no-exceptions -no-accessibility -no-stl -qt-sql-sqlite -qt-sql-odbc -no-qt3support -no-xmlpatterns -no-multimedia -audio-backend -no-phonon -no-phonon-backend -no-webkit -no-script -no-scripttools -no-declarative -no-declarative-debug -no-3dnow -no-mmx -no-sse -no-sse2 -qt-zlib -no-libtiff -qt-libpng -no-libmng -qt-libjpeg -openssl -nomake examples -nomake demos  -no-nis -no-cups -iconv -xplatform %MECT_QT_XPLATFORM%  -little-endian -system-freetype -no-opengl -no-s60 -dbus  2>&1 | "%TEE%" %TEMP_DIR%Qt487-I_MX28-config.log
 
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring Qt in: %IMX28_DIR%"
@@ -185,7 +186,7 @@ Rem Creating ./bin/qt.conf with right qmake prefix path
 Rem Set QPREFIX=%IMX28_DIR:\=/%
 Rem Echo [Paths] > bin\qt.conf
 Rem ECHO Prefix=%QPREFIX%>> bin\qt.conf
-mingw32-make  2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%Qt487-desktop-make.log
+mingw32-make  2>&1 | "%TEE%" %TEMP_DIR%Qt487-desktop-make.log
 if errorlevel 1 (
 	call :screenAndLog "Error Building Qt in: %IMX28_DIR%"
 	goto AbortProcess
@@ -216,7 +217,7 @@ call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
 set QMAKESPEC=C:\Qt487\winbuild\mkspecs\win32-g++
 Rem ---- Start Qt Installation
-mingw32-make install 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" -a %TEMP_DIR%Qt487-Install.log
+mingw32-make install 2>&1 | "%TEE%" -a %TEMP_DIR%Qt487-Install.log
 if errorlevel 1 (
 	call :screenAndLog "Error Installing Qt from %IMX28BUILD_DIR% to: %DESKTOP_DIR%"
 	goto AbortProcess

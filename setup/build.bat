@@ -26,7 +26,7 @@ call :addToPath %BIN_DIR%
 
 SET TARGET_LIST=AnyTPAC043 AnyTPAC070 TP1043_01_A TP1043_02_A TP1043_02_B TP1070_01_A TP1070_01_B TP1070_01_C TP1070_02_F TPAC1005 TPAC1007_03 TPAC1007_04_AA TPAC1007_04_AB TPAC1007_04_AC TPAC1007_04_AD TPAC1007_04_AE TPAC1008_02_AA TPAC1008_02_AB TPAC1008_02_AD TPAC1008_02_AE TPAC1008_02_AF TPAC1008_03_AC TPAC1008_03_AD TPLC050_01_AA TPLC100_01_AA TPLC100_01_AB TPX1043_03_C TPX1070_03_D TPX1070_03_E 
 
-echo . > %ErrorLog%
+IF EXIST %ErrorLog% del %ErrorLog%
 call :screenAndLog "----------------------------------------"
 call :screenAndLog "Creating the version %REVISION% in [%OUT_DIR%]"
 call :screenAndLog "----------------------------------------"
@@ -40,11 +40,11 @@ IF EXIST %OUT_DIR%Qt487 RD /S /Q %OUT_DIR%Qt487
 rem -----------------------------------------------------------------------------
 call :screenAndLog "MectSuite Tutorial help files"
 mkdir %OUT_DIR%Qt487\desktop\doc\qch  
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc.qch  2>&1 | "%TEE%" %ErrorLog%
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_eng.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_eng.qch  2>&1 | "%TEE%" %ErrorLog%
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_fr.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_fr.qch  2>&1 | "%TEE%" %ErrorLog%
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_es.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_es.qch  2>&1 | "%TEE%" %ErrorLog%
-c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_de.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_de.qch  2>&1 | "%TEE%" %ErrorLog%
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc.qch   >> %ErrorLog% 2>&1
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_eng.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_eng.qch   >> %ErrorLog% 2>&1
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_fr.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_fr.qch   >> %ErrorLog% 2>&1
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_es.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_es.qch   >> %ErrorLog% 2>&1
+c:\Qt487\desktop\bin\qhelpgenerator.exe ..\qt_help\tutorial\doc_de.qhp -o %OUT_DIR%Qt487\desktop\doc\qch\doc_de.qch   >> %ErrorLog% 2>&1
 
 rem -----------------------------------------------------------------------------
 call :screenAndLog "SSH Keys"
@@ -194,7 +194,7 @@ if exist "%OUT_DIR%QtProject_487.7z" (
 rem %ZIP_CMD% u -r -mx1 "%OUT_DIR%\QtProject.7z" "%APPDATA%\QtProject\qtcreator\devices.xml" "%APPDATA%\QtProject\qtcreator\profiles.xml" "%APPDATA%\QtProject\qtcreator\qtversion.xml" "%APPDATA%\QtProject\qtcreator\toolchains.xml" "%APPDATA%\QtProject\qtcreator\externaltools\lupdate.xml" >> %ErrorLog%
 rem %ZIP_CMD% u -r -mx1 "%OUT_DIR%\QtProject.7z" "%APPDATA%\QtProject" -x!QtCreator.db -x!QtCreator.ini -xr!"qtcreator\generic-highlighter" -xr!"qtcreator\json" -xr!qtcreator\macros -x!qtcreator\default.qws -x!qtcreator\helpcollection.qhc >> %ErrorLog%
 call :screenAndLog "Creating %OUT_DIR%QtProject_487.7z"
-%ZIP_CMD% a -r -mx1 "%OUT_DIR%QtProject_487.7z" "%OUT_DIR%QtProject" 2>&1 | "%TEE%" %ErrorLog%
+%ZIP_CMD% a -r -mx1 "%OUT_DIR%QtProject_487.7z" "%OUT_DIR%QtProject" >> %ErrorLog% 2>&1
 IF ERRORLEVEL 1 (
 	goto AbortProcess
 )
@@ -246,14 +246,14 @@ Rem Chek it !!
 IF %TARGETBUILD% == 1 (
 
 	mkdir %OUT_DIR%Qt487\imx28
-	xcopy C:\Qt487\imx28\rootfs %OUT_DIR%Qt487\imx28\rootfs	/Q /Y /E /S /I 2>&1 | "%TEE%" %ErrorLog%
+	xcopy C:\Qt487\imx28\rootfs %OUT_DIR%Qt487\imx28\rootfs	/Q /Y /E /S /I  >> %ErrorLog% 2>&1
 	IF ERRORLEVEL 1 (
 		goto AbortProcess
 	)
 	mkdir "%OUT_DIR%Qt487\imx28\mkspecs\linux-arm-gnueabi-g++"
 	mkdir %OUT_DIR%Qt487\imx28\mkspecs\common
-	copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%Qt487\imx28\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y 2>&1 | "%TEE%" %ErrorLog%
-	copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common	/Y 2>&1 | "%TEE%" %ErrorLog%
+	copy "%ORIGINAL%\mkspecs\linux-arm-gnueabi-g++\qmake.conf.mect" "%OUT_DIR%Qt487\imx28\mkspecs\linux-arm-gnueabi-g++\qmake.conf"	/Y 2>&1  >> %ErrorLog% 2>&1
+	copy %ORIGINAL%\mkspecs\common\mect.conf %OUT_DIR%Qt487\imx28\qt-everywhere-opensource-src-4.8.7\mkspecs\common	/Y  >> %ErrorLog% 2>&1
 	IF ERRORLEVEL 1 (
 		goto AbortProcess
 	)
@@ -310,10 +310,10 @@ time /t
 
 cd %ORIGINAL%
 
-echo OK: build done.
-@echo on
+call :screenAndLog "build done."
 pause
-exit /b	0
+@echo on
+exit /B	0
 
 :addToPath
 	echo ;%PATH%; | find /C /I ";%~1;"1>NUL
@@ -323,7 +323,7 @@ exit /b	0
 	)  else (
 		echo %~1 already in Path
 	)
-	exit /b	
+	exit /B
 
 :screenAndLog 
 	SETLOCAL
@@ -337,4 +337,4 @@ exit /b	0
 	cd %ORIGINAL%
 	Pause
 	@echo on
-	exit /b 1
+	exit /B 1
