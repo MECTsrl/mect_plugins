@@ -11,12 +11,12 @@ include Makefile_common
 MECT_PREFIX  := /opt/Qt$(MECT_SUITE_QT)/desktop
 MECT_SOURCES := $(CURDIR)/src_desktop
 MECT_PATCHES := $(CURDIR)/patches
+MECT_MKSPECS := $(CURDIR)/mkspecs
 
 all: \
 	downloads toolchain \
 	openssl qt \
-	qwt \
-	qtcreator \
+	qwt qtcreator \
 	cte_plugin ctc_exe qt_templates qt_designer_plugins 
 	@echo "---------> done $@"
 
@@ -95,10 +95,8 @@ $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(
 # ----------------------------------------------------------------------------- Qt --------- 
 .PHONY: qt
 
-# MECT_QT_EMBEDDED  :=
-# MECT_QT_ARCH      :=
+### MECT_QT_PLATFORM  := mectsuite-desktop
 MECT_QT_PLATFORM  := linux-g++
-# MECT_QT_XPLATFORM :=
 
 qt: \
 	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure \
@@ -110,10 +108,8 @@ qt: \
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	mkdir -p $(MECT_SOURCES)
 	tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
-	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1394522957.patch
-	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823825.patch
-	# NB: no cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 <$(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)-1420823826.patch
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 < $(MECT_PATCHES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).patch
+	### rsync -Hax $(MECT_MKSPECS)/$(MECT_QT_PLATFORM)/      $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_PLATFORM)/
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure
@@ -130,7 +126,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-release \
 	        -opensource -confirm-license \
 	        -shared \
-	        -fast \
+		-fast \
 		-largefile \
 		-no-system-proxies \
 		-exceptions \
@@ -306,7 +302,7 @@ ctc_exe: \
 	$(MECT_SOURCES)/ctc/ctc.pro \
 	$(MECT_SOURCES)/ctc/Makefile \
 	$(MECT_SOURCES)/ctc/ctc \
-	$(MECT_PREFIX)/bin/ctc
+	$(MECT_PREFIX)/QtCreator/bin/ctc
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/ctc/ctc.pro:
@@ -325,10 +321,10 @@ $(MECT_SOURCES)/ctc/ctc: $(MECT_SOURCES)/ctc/Makefile
 	+cd $(MECT_SOURCES)/ctc/ && make -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
-$(MECT_PREFIX)/bin/ctc: $(MECT_SOURCES)/ctc/ctc
+$(MECT_PREFIX)/QtCreator/bin/ctc: $(MECT_SOURCES)/ctc/ctc
 	sudo mkdir -p $(MECT_PREFIX)/bin
 	cd $(MECT_SOURCES)/ctc \
-		&& sudo cp ctc $(MECT_PREFIX)/bin/
+		&& sudo cp ctc $(MECT_PREFIX)/QtCreator/bin/
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- ATCM templates --------- 
@@ -382,9 +378,8 @@ $(MECT_SOURCES)/qt-plugins/ATCMlabel/libatcmlabelplugin.so: $(MECT_SOURCES)/qt_p
 
 $(MECT_PREFIX)/plugins/designer/libatcmlabelplugin.so: $(MECT_SOURCES)/qt-plugins/ATCMlabel/libatcmlabelplugin.so
 	sudo mkdir -p $(MECT_PREFIX)/plugins/designer
-	#cd $(MECT_SOURCES)/qt_plugins/ \
-	#	&& sudo cp libATCM*.so $(MECT_PREFIX)/plugins/designer/
 	cd $(MECT_SOURCES)/qt_plugins/ && sudo make install
 	@echo "---------> done $@"
 
+# ----------------------------------------------------------------------------- ATCM target plugins --------- 
 # -----------------------------------------------------------------------------
