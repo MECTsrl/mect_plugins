@@ -95,8 +95,10 @@ $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(
 # ----------------------------------------------------------------------------- Qt --------- 
 .PHONY: qt
 
-### MECT_QT_PLATFORM  := mectsuite-desktop
-MECT_QT_PLATFORM  := linux-g++
+# NB: must begin with "linux-"
+# vedi https://www.qtcentre.org/threads/37891-undefined-reference-to-QInotifyFileSystemWatcherEngine-create()
+# vedi https://doc.qt.io/archives/4.6/qt-embedded-architecture.html
+MECT_QT_PLATFORM  := linux-mectsuite-desktop
 
 qt: \
 	$(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure \
@@ -109,7 +111,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure:
 	mkdir -p $(MECT_SOURCES)
 	tar -C $(MECT_SOURCES) -xzf $(MECT_DOWNLOADF)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).tar.gz
 	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT) && patch -p1 < $(MECT_PATCHES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT).patch
-	### rsync -Hax $(MECT_MKSPECS)/$(MECT_QT_PLATFORM)/      $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_PLATFORM)/
+	rsync -Hax $(MECT_MKSPECS)/$(MECT_QT_PLATFORM)/      $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/mkspecs/$(MECT_QT_PLATFORM)/
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/configure

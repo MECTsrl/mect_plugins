@@ -91,8 +91,8 @@ $(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(
 # ----------------------------------------------------------------------------- Qt --------- 
 .PHONY: qt
 
-MECT_QT_PLATFORM  := mectsuite-desktop
-MECT_QT_XPLATFORM := mectsuite-device-rpi4
+MECT_QT_PLATFORM  := linux-mectsuite-desktop
+MECT_QT_XPLATFORM := rpi4-mectsuite-device
 MECT_QT_EMBEDDED  := arm
 MECT_QT_ARCH      := arm # FIXME: armhf?
 

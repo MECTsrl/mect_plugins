@@ -94,8 +94,8 @@ $(MECT_PREFIX)/rootfs/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/ope
 # ----------------------------------------------------------------------------- Qt --------- 
 .PHONY: qt
 
-MECT_QT_PLATFORM  := mectsuite-desktop
-MECT_QT_XPLATFORM := mectsuite-device-host
+MECT_QT_PLATFORM  := linux-mectsuite-desktop
+MECT_QT_XPLATFORM := host-mectsuite-device
 MECT_QT_EMBEDDED  := 
 MECT_QT_ARCH      :=
 

@@ -50,6 +50,7 @@ MECT_DOWNLOADS := \
 	mysql-$(MECT_SUITE_MYSQL)-gcc-4.2.patch \
 	\
 	qwt-$(MECT_SUITE_QWT).tar.bz2 \
+	qwt-6.0.1-multiaxes-1381834981.patch \
 	\
 	arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 \
 	\
