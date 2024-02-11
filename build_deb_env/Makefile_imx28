@@ -85,7 +85,7 @@ distclean_toolchain:
 .PHONY: qt
 
 MECT_QT_PLATFORM  := linux-mectsuite-desktop
-MECT_QT_XPLATFORM := imx28-mectsuite-device
+MECT_QT_XPLATFORM := linux-mectsuite-imx28
 MECT_QT_EMBEDDED  := arm
 MECT_QT_ARCH      := arm
 

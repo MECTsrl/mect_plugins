@@ -68,7 +68,7 @@ openssl: \
 	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure \
 	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile \
 	$(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X) \
-	$(MECT_PREFIX)/rootfs/lib/libssl.so.$(MECT_SUITE_OPENSSL_X)
+	$(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X)
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
@@ -79,7 +79,7 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure:
 
 $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Makefile: $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/Configure
 	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && ./Configure \
-		--prefix=$(MECT_PREFIX)/rootfs \
+		--prefix=$(MECT_PREFIX) \
 		linux-generic32 shared no-asm -DL_ENDIAN
 	@echo "---------> done $@"
 
@@ -87,7 +87,7 @@ $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X):
 	+cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
-$(MECT_PREFIX)/rootfs/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X)
+$(MECT_PREFIX)/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/libssl.so.$(MECT_SUITE_OPENSSL_X)
 	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && sudo make install_sw
 	@echo "---------> done $@"
 
@@ -95,7 +95,7 @@ $(MECT_PREFIX)/rootfs/lib/libssl.so.$(MECT_SUITE_OPENSSL_X): $(MECT_SOURCES)/ope
 .PHONY: qt
 
 MECT_QT_PLATFORM  := linux-mectsuite-desktop
-MECT_QT_XPLATFORM := host-mectsuite-device
+MECT_QT_XPLATFORM := linux-mectsuite-host
 MECT_QT_EMBEDDED  := 
 MECT_QT_ARCH      :=
 
@@ -182,6 +182,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-qt-gfx-transformed \
 		-qt-gfx-vnc \
 		-qt-kbd-tty \
+		-no-mouse-tslib \
 		-no-glib \
 		\
 		-no-s60 \
@@ -243,7 +244,7 @@ qt_plugins: \
 	$(MECT_SOURCES)/qt_atcm.pro \
 	$(MECT_SOURCES)/Makefile \
 	$(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0 \
-	$(MECT_PREFIX)/plugins/libATCMplugin.so.1.0.0
+	$(MECT_PREFIX)/usr/lib/libATCMplugin.so.1.0.0
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt_atcm.pro:
@@ -268,7 +269,7 @@ $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/Makefile
 	cd $(MECT_SOURCES)/ && make -j1
 	@echo "---------> done $@"
 
-$(MECT_PREFIX)/plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0
+$(MECT_PREFIX)/usr/lib/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0
 	sudo mkdir -p $(MECT_PREFIX)/plugins
 	cd $(MECT_SOURCES)/ && sudo make INSTALL_ROOT=$(MECT_PREFIX) install
 	@echo "---------> done $@"
