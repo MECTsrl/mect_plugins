@@ -17,7 +17,8 @@ all: \
 	downloads toolchain \
 	openssl qt \
 	qwt \
-	qt_plugins
+	qt_plugins \
+	local_folders
 	@echo "---------> done $@"
 
 clean_all: # clean_toolchain
@@ -44,6 +45,7 @@ MECT_PACKAGES:= \
 	libcups2-dev \
 	libglib2.0-dev \
 	libdbus-1-dev \
+	libts0 \
 	gdb \
 	gdbserver
 	# NB: no libssl-dev, it's openssl1.1
@@ -51,6 +53,8 @@ MECT_PACKAGES:= \
 
 toolchain: 
 	sudo aptitude install $(MECT_PACKAGES)
+	sudo mkdir -p $(MECT_PREFIX)/lib
+	cd $(MECT_PREFIX)/lib && sudo ln -s /usr/lib/x86_64-linux-gnu/libts.so.0 libts.so
 	@echo "---------> done $@"
 
 clean_toolchain: 
@@ -272,6 +276,31 @@ $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/Makefile
 $(MECT_PREFIX)/usr/lib/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0
 	sudo mkdir -p $(MECT_PREFIX)/plugins
 	cd $(MECT_SOURCES)/ && sudo make INSTALL_ROOT=$(MECT_PREFIX) install
+	@echo "---------> done $@"
+
+# ----------------------------------------------------------------------------- MectSuite /local folders --------- 
+.PHONY: local_folders
+
+local_folders: /local/flash /local/retentive /local/root /local/sd_card # no /local/update
+	@echo "---------> done $@"
+
+/local/flash:
+	for d in /local/flash /local/flash/control /local/flash/data /local/flash/etc/sysconfig /local/flash/root; \
+		do sudo mkdir -p $$d ; sudo chown 1000:1000 $$d ; done
+	@echo "---------> done $@"
+
+/local/retentive:
+	sudo dd if=/dev/zero of=$@ bs=768 count=1 
+	sudo chown 1000:1000 $@
+	@echo "---------> done $@"
+
+/local/root:
+	cd /local; sudo ln -sf flash/control; sudo ln -sf flash/data; sudo ln -sf etc; sudo ln -sf flash/root
+	@echo "---------> done $@"
+
+/local/sd_card:
+	sudo mkdir -p $@
+	sudo chown 1000:1000 $@
 	@echo "---------> done $@"
 
 # -----------------------------------------------------------------------------
