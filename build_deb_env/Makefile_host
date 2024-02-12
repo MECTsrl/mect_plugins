@@ -295,7 +295,7 @@ local_folders: /local/flash /local/retentive /local/root /local/sd_card # no /lo
 	@echo "---------> done $@"
 
 /local/root:
-	cd /local; sudo ln -sf flash/control; sudo ln -sf flash/data; sudo ln -sf etc; sudo ln -sf flash/root
+	cd /local; sudo ln -sf flash/control; sudo ln -sf flash/data; sudo ln -sf flash/etc; sudo ln -sf flash/root
 	@echo "---------> done $@"
 
 /local/sd_card:
