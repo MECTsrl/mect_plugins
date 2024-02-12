@@ -54,13 +54,13 @@ LIBS += \
 -lATCMcommon \
 -lATCMutility \
 -lATCMcommunication \
--lATCMplugin \
 -lATCMlogger \
 -lATCMstore \
 -lATCMalarms \
 -lATCMrecipe \
 -lATCMtrend \
 -lATCMsystem \
+-lATCMplugin \
 -lATCMinputdialog \
 -lts \
 -lqwt 
