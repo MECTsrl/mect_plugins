@@ -127,8 +127,8 @@ xcopy %SRC_DIR%*.* %IMX28_SRC_DIR%*.* /s /y /e /v /q
 call :screenAndLog "Cleaning  %SRC_DIR%"
 RD /S /Q %SRC_DIR%
 Rem --- Update MECT_QT_XPLATFORM MKSPECS for build
-call :screenAndLog "Updating  %MECT_QT_XPLATFORM%"
-xcopy %STARTDIR%\%MECT_QT_XPLATFORM% %IMX28_SRC_DIR%mkspecs\%MECT_QT_XPLATFORM% /i /s /y /v
+call :screenAndLog "Updating  mkspecs for %MECT_QT_XPLATFORM%"
+xcopy %STARTDIR%\mkspecs %IMX28_SRC_DIR%mkspecs /i /s /y /v
 Rem ---  rootfs_dev_X.Y.Z.zip
 call :screenAndLog "Expanding I.MX28 root_fs"
 %EXTRACT_CMD%  %TEMP_DIR%rootfs_dev_%REV%.zip -o%IMX28_DIR%
@@ -163,9 +163,6 @@ if errorlevel 1 (
 )  else  (
 	call :screenAndLog "Configuration completed for Qt %QT_VERSION% in Folder %IMX28_DIR%"
 )
-Rem --- Update MECT_QT_XPLATFORM MKSPECS for build
-Rem call :screenAndLog "Updating  %MECT_QT_XPLATFORM%"
-Rem xcopy %STARTDIR%\%MECT_QT_XPLATFORM% %MECT_MKSPECS%\%MECT_QT_XPLATFORM% /i /s /y /v
 cd %STARTDIR%
 Rem  ---- Exit batch if configure mode
 IF /I [%USER_MODE%] EQU [configure] goto JobDone
