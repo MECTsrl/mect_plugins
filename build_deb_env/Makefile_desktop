@@ -17,7 +17,8 @@ all: \
 	downloads toolchain \
 	openssl qt \
 	qwt qtcreator \
-	cte_plugin ctc_exe qt_templates qt_designer_plugins 
+	cte_plugin ctc_exe qt_templates qt_designer_plugins \
+	sdktool
 	@echo "---------> done $@"
 
 clean_all: # clean_toolchain
@@ -384,4 +385,27 @@ $(MECT_PREFIX)/plugins/designer/libatcmlabelplugin.so: $(MECT_SOURCES)/qt-plugin
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- ATCM target plugins --------- 
+ 
+# ----------------------------------------------------------------------------- MectSuite QtCreator kits --------- 
+.PHONY: sdktool
+
+MECT_SDKTOOL  := /opt/Qt$(MECT_SUITE_QT)/desktop/QtCreator/bin/sdktool
+
+sdktool:
+	# tool chain, NB: id must be "ProjectExplorer.ToolChain.Gcc:..."
+	-sudo $(MECT_SDKTOOL) rmTC --id "ProjectExplorer.ToolChain.Gcc:linux-mectsuite-desktop"
+	sudo $(MECT_SDKTOOL) addTC --id "ProjectExplorer.ToolChain.Gcc:linux-mectsuite-desktop" --name "Debian g++ (desktop)" \
+		--path /usr/bin/g++ --abi x86-linux-generic-elf-64bit --supportedAbis x86-linux-generic-elf-64bit,x86-linux-generic-elf-32bit
+	# Qt version
+	-sudo $(MECT_SDKTOOL) rmQt --id "linux-mectsuite-desktop"
+	sudo $(MECT_SDKTOOL) addQt --id "linux-mectsuite-desktop" --name "Qt$(MECT_SUITE_QT)_desktop" \
+		--qmake $(MECT_PREFIX)/bin/qmake --type Qt4ProjectManager.QtVersion.Desktop
+	# kit
+	-sudo $(MECT_SDKTOOL) rmKit --id "linux-mectsuite-desktop"
+	sudo $(MECT_SDKTOOL) addKit --id "linux-mectsuite-desktop" --name "MectSuite $(MECT_SUITE_RELEASE) desktop" \
+		--debuggerengine 1 --debugger auto --devicetype "Desktop" \
+		--toolchain "ProjectExplorer.ToolChain.Gcc:linux-mectsuite-desktop" \
+		--qt "linux-mectsuite-desktop" --mkspec "linux-mectsuite-desktop" 
+	@echo "---------> done $@"
+
 # -----------------------------------------------------------------------------

@@ -16,6 +16,7 @@ MECT_MKSPECS := $(CURDIR)/mkspecs
 all: \
 	downloads toolchain \
 	qt \
+	sdktool
 	## NB: no openssl qwt qt_plugins
 	@echo "---------> done $@"
 
@@ -220,4 +221,27 @@ $(MECT_PREFIX)/bin/qmake: $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SU
 
 # ----------------------------------------------------------------------------- ATCM target plugins -------- 
 	
+# ----------------------------------------------------------------------------- MectSuite QtCreator kits --------- 
+.PHONY: sdktool
+
+MECT_SDKTOOL  := /opt/Qt$(MECT_SUITE_QT)/desktop/QtCreator/bin/sdktool
+
+sdktool:
+	# tool chain, NB: id must be "ProjectExplorer.ToolChain.Gcc:..."
+	-sudo $(MECT_SDKTOOL) rmTC --id "ProjectExplorer.ToolChain.Gcc:linux-mectsuite-imx28"
+	sudo $(MECT_SDKTOOL) addTC --id "ProjectExplorer.ToolChain.Gcc:linux-mectsuite-imx28" --name "CodeSourcery g++ (imx28)" \
+		--path $(MECT_CROSS_COMPILE)g++ --abi arm-linux-generic-elf-32bit # non: arm-none-linux-gnueabi
+	# Qt version
+	-sudo $(MECT_SDKTOOL) rmQt --id "linux-mectsuite-imx28"
+	sudo $(MECT_SDKTOOL) addQt --id "linux-mectsuite-imx28" --name "Qt$(MECT_SUITE_QT)_imx28" \
+		--qmake $(MECT_PREFIX)/bin/qmake --type RemoteLinux.EmbeddedLinuxQt
+	# kit
+	-sudo $(MECT_SDKTOOL) rmKit --id "linux-mectsuite-imx28"
+	sudo $(MECT_SDKTOOL) addKit --id "linux-mectsuite-imx28" --name "MectSuite $(MECT_SUITE_RELEASE) imx28" \
+		--debuggerengine 1 --debugger auto --devicetype "Desktop" \
+		--sysroot $(MECT_PREFIX)/rootfs \
+		--toolchain "ProjectExplorer.ToolChain.Gcc:linux-mectsuite-imx28" \
+		--qt "linux-mectsuite-imx28" --mkspec "linux-mectsuite-imx28" 
+	@echo "---------> done $@"
+
 # -----------------------------------------------------------------------------
