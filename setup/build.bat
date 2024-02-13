@@ -241,6 +241,9 @@ copy %ROOT_DIR%%CREATOR_DIR%lib\qtcreator\plugins\Mect\CTE.pluginspec %OUT_DIR%%
 call :screenAndLog "Dumping CTC %ROOT_DIR%%CREATOR_DIR%bin\ctc.exe to %OUT_DIR%%CREATOR_DIR%bin\"
 xcopy %ROOT_DIR%%CREATOR_DIR%bin\ctc.exe %OUT_DIR%%CREATOR_DIR%bin\ /I /Y  >> %ErrorLog% 2>&1
 
+call :screenAndLog "Dumping device_config.prf from %OUT_DIR%mkspecs\features"
+mkdir %OUT_DIR%Qt487\desktop\mkspecs\features
+copy %OUT_DIR%mkspecs\features\device_config.prf %OUT_DIR%Qt487\desktop\mkspecs\features\device_config.prf /Y  >> %ErrorLog% 2>&1
 
 rem imx28 Reconfiguration skipped!! -----------------------------------------------------------------------------
 Rem Chek it !!

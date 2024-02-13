@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProfiles>
-<!-- Written by QtCreator 2.8.1, 2024-02-07T12:15:21. -->
+<!-- Written by QtCreator 2.8.1, 2024-02-13T16:56:19. -->
 <qtcreator>
  <data>
   <variable>Profile.0</variable>
@@ -39,7 +39,7 @@
     <value type="QString" key="PE.Profile.DeviceType">GenericLinuxOsType</value>
     <value type="QString" key="PE.Profile.SysRoot">C:/Qt487/imx28/rootfs</value>
     <value type="QString" key="PE.Profile.ToolChain">ProjectExplorer.ToolChain.Custom:{c9ebad66-b671-4ed8-a0c8-19fedf97e8f9}</value>
-    <value type="QString" key="QtPM4.mkSpecInformation"></value>
+    <value type="QString" key="QtPM4.mkSpecInformation">linux-mectsuite-imx28</value>
     <value type="int" key="QtSupport.QtInformation">4</value>
    </valuemap>
    <value type="QString" key="PE.Profile.Icon">C:/Qt487/desktop/QtCreator/share/qtcreator/templates/wizards/ATCM-template-project/console.png</value>
