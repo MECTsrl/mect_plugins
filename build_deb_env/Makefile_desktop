@@ -21,13 +21,17 @@ all: \
 	sdktool
 	@echo "---------> done $@"
 
-clean_all: # clean_toolchain
-	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
-	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && make confclean
+clean_all: # NB: no clean_toolchain
+	# cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
+	# cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
+	# cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && make confclean
+	# cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && make clean
+	# ...
+	rm -rf $(MECT_SOURCES)
+	sudo rm -rf $(MECT_PREFIX)
 	@echo "---------> done $@"
 
-distclean_all: # distclean_toolchain
+distclean_all: # NB: no distclean_toolchain
 	rm -rf $(MECT_SOURCES)
 	sudo rm -rf $(MECT_PREFIX)
 	@echo "---------> done $@"
@@ -159,7 +163,7 @@ $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/Makefile: $(MECT_S
 		-system-libpng \
 		-no-libmng \
 		-system-libjpeg \
-		-openssl -I $(MECT_PREFIX)/ssl/include -L $(MECT_PREFIX)/ssl/lib \
+		-openssl \
 		-nomake examples -nomake demos \
 		-rpath \
 		-silent \
@@ -218,7 +222,7 @@ $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro:
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile: $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/qwt.pro
-	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro
+	cd $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/ && $(MECT_PREFIX)/bin/qmake qwt.pro -spec linux-mectsuite-desktop
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/lib/libqwt.so.$(MECT_SUITE_QWT_X): $(MECT_SOURCES)/qwt-$(MECT_SUITE_QWT)/Makefile
@@ -253,7 +257,7 @@ $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro:
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/Makefile: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/qtcreator.pro
-	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && $(MECT_PREFIX)/bin/qmake -r 
+	cd $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/ && $(MECT_PREFIX)/bin/qmake -r -spec linux-mectsuite-desktop
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/bin/qtcreator: $(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src/Makefile
@@ -284,7 +288,7 @@ $(MECT_SOURCES)/cte/Makefile: $(MECT_SOURCES)/cte/cte.pro
 	cd $(MECT_SOURCES)/cte/ \
 		&& QTC_SOURCE=$(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src \
 		   QTC_BUILD=$(MECT_SOURCES)/qt-creator-$(MECT_SUITE_QTCREATOR)-src \
-		$(MECT_PREFIX)/bin/qmake -r \
+		$(MECT_PREFIX)/bin/qmake -r -spec linux-mectsuite-desktop \
 		CONFIG+=release DEFINES+=ATCM_VERSION=\"$(MECT_SUITE_RELEASE)\"
 	@echo "---------> done $@"
 
@@ -316,7 +320,7 @@ $(MECT_SOURCES)/ctc/ctc.pro:
 
 $(MECT_SOURCES)/ctc/Makefile: $(MECT_SOURCES)/ctc/ctc.pro
 	cd $(MECT_SOURCES)/ctc/ \
-		&& $(MECT_PREFIX)/bin/qmake -r \
+		&& $(MECT_PREFIX)/bin/qmake -r -spec linux-mectsuite-desktop \
 		CONFIG+=release DEFINES+=ATCM_VERSION=\"$(MECT_SUITE_RELEASE)\"
 	@echo "---------> done $@"
 
@@ -369,7 +373,7 @@ $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro:
 
 $(MECT_SOURCES)/qt_plugins/Makefile: $(MECT_SOURCES)/qt_plugins/qt_designer_plugins.pro
 	cd $(MECT_SOURCES)/qt_plugins/ \
-		&& $(MECT_PREFIX)/bin/qmake -r qt_designer_plugins.pro \
+		&& $(MECT_PREFIX)/bin/qmake -r qt_designer_plugins.pro -spec linux-mectsuite-desktop \
 		   QT_INSTALL_PLUGINS=$(MECT_PREFIX)/plugins/designer \
 		   -config store -config trend -config recipe -config alarms \
 		   CONFIG+=release DEFINES+=ATCM_VERSION=\"$(MECT_SUITE_RELEASE)\"
@@ -403,7 +407,8 @@ sdktool:
 	# kit
 	-sudo $(MECT_SDKTOOL) rmKit --id "linux-mectsuite-desktop"
 	sudo $(MECT_SDKTOOL) addKit --id "linux-mectsuite-desktop" --name "MectSuite $(MECT_SUITE_RELEASE) desktop" \
-		--debuggerengine 1 --debugger auto --devicetype "Desktop" \
+		--debuggerengine 1 --debugger auto \
+		--devicetype "Desktop" \
 		--toolchain "ProjectExplorer.ToolChain.Gcc:linux-mectsuite-desktop" \
 		--qt "linux-mectsuite-desktop" --mkspec "linux-mectsuite-desktop" 
 	@echo "---------> done $@"
