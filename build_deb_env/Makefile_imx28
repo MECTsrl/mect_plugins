@@ -21,8 +21,10 @@ all: \
 	@echo "---------> done $@"
 
 clean_all: clean_toolchain
-	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
+	#cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
+	#cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
+	rm -rf $(MECT_SOURCES)
+	sudo rm -rf $(MECT_PREFIX)
 	@echo "---------> done $@"
 
 distclean_all: distclean_toolchain
@@ -238,7 +240,8 @@ sdktool:
 	# kit
 	-sudo $(MECT_SDKTOOL) rmKit --id "linux-mectsuite-imx28"
 	sudo $(MECT_SDKTOOL) addKit --id "linux-mectsuite-imx28" --name "MectSuite $(MECT_SUITE_RELEASE) imx28" \
-		--debuggerengine 1 --debugger auto --devicetype "Desktop" \
+		--debuggerengine 1 --debugger auto \
+		--devicetype "GenericLinuxOsType" \
 		--sysroot $(MECT_PREFIX)/rootfs \
 		--toolchain "ProjectExplorer.ToolChain.Gcc:linux-mectsuite-imx28" \
 		--qt "linux-mectsuite-imx28" --mkspec "linux-mectsuite-imx28" 

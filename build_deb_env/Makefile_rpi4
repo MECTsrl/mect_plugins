@@ -20,8 +20,11 @@ all: \
 	@echo "---------> done $@"
 
 clean_all: clean_toolchain
-	cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
-	cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
+	# cd $(MECT_SOURCES)/openssl-$(MECT_SUITE_OPENSSL)/ && make clean
+	# cd $(MECT_SOURCES)/qt-everywhere-opensource-src-$(MECT_SUITE_QT)/ && make confclean
+	# ...
+	rm -rf $(MECT_SOURCES)
+	sudo rm -rf $(MECT_PREFIX)
 	@echo "---------> done $@"
 
 distclean_all: distclean_toolchain
@@ -50,11 +53,11 @@ toolchain:
 	@echo "---------> done $@"
 
 clean_toolchain: 
-	sudo aptitude remove $(MECT_PACKAGES)
+	#sudo aptitude remove $(MECT_PACKAGES)
 	@echo "---------> done $@"
 
 distclean_toolchain: 
-	sudo aptitude purge $(MECT_PACKAGES)
+	#sudo aptitude purge $(MECT_PACKAGES)
 	@echo "---------> done $@"
 
 # ----------------------------------------------------------------------------- OpenSSL 1.0 --------- 
@@ -275,8 +278,7 @@ $(MECT_SOURCES)/Makefile: $(MECT_SOURCES)/qt_atcm.pro
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/Makefile
-	#+cd $(MECT_SOURCES)/ && make -j $(shell nproc) # NB: +
-	cd $(MECT_SOURCES)/ && make -j1
+	+cd $(MECT_SOURCES)/ && make -j $(shell nproc) # NB: +
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0
