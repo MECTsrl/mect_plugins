@@ -103,8 +103,8 @@
  
  #define MAX_SAMPLES 1024
  
---- ../qt_library/ATCMtrend/trend.ui	2024-01-24 17:16:12.130724824 +0000
-+++ src_host/qt_library/ATCMtrend/trend.ui	2024-02-05 11:04:42.232116414 +0000
+--- A/qt_library/ATCMtrend/trend.ui	2024-01-24 17:16:12.130724824 +0000
++++ B/qt_library/ATCMtrend/trend.ui	2024-02-05 11:04:42.232116414 +0000
 @@ -488,7 +488,7 @@
    <customwidget>
     <class>QwtPlot</class>
@@ -114,3 +114,14 @@
     <container>1</container>
    </customwidget>
   </customwidgets>
+--- A/qt_library/ATCMcommunication/cross_table_utility.c	2024-01-31 10:44:44.639486249 +0100
++++ B/qt_library/ATCMcommunication/cross_table_utility.c	2024-02-14 23:18:18.451549115 +0100
+@@ -1381,7 +1381,7 @@
+     return value;
+ }
+ 
+-inline int theValue_string(int ctIndex, char * valuep)
++static inline int theValue_string(int ctIndex, char * valuep)
+ {
+     int value = 0;
+ 

@@ -262,7 +262,7 @@ $(MECT_SOURCES)/qt_atcm.pro:
 	rsync -Hax ../qt_library/ $(MECT_SOURCES)/qt_library/
 	cp -a ../qt_environment.pri ../qt_designer_environment.pri $(MECT_SOURCES)/
 	cp -a ../qt_atcm.pro $(MECT_SOURCES)/
-	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_PATCHES)/qt_plugins_embedded_host.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
+	cd $(MECT_SOURCES)/ && patch -p1 < $(MECT_PATCHES)/qt_plugins_host.patch # NB: no cd $(MECT_SOURCES)/qt_plugins/
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/Makefile: $(MECT_SOURCES)/qt_atcm.pro
