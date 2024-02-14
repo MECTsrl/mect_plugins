@@ -267,14 +267,15 @@ $(MECT_SOURCES)/qt_atcm.pro:
 
 $(MECT_SOURCES)/Makefile: $(MECT_SOURCES)/qt_atcm.pro
 	cd $(MECT_SOURCES)/ \
-		&& $(MECT_PREFIX)/bin/qmake -r qt_atcm.pro  -spec ${MECT_QT_XPLATFORM} \
+		&& $(MECT_PREFIX)/bin/qmake -r qt_atcm.pro  -spec linux-mectsuite-host \
 		   QT_INSTALL_PLUGINS=$(MECT_PREFIX)/plugins \
 		   -config store -config trend -config recipe -config alarms \
 		   CONFIG+=debug DEFINES+=ATCM_VERSION=\"$(MECT_SUITE_RELEASE)\"
 	@echo "---------> done $@"
 
 $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/Makefile
-	+cd $(MECT_SOURCES)/ && make -j $(shell nproc) # NB: +
+	# NB: no +cd $(MECT_SOURCES)/ && make -j $(shell nproc) # NB: +
+	cd $(MECT_SOURCES)/ && make -j1
 	@echo "---------> done $@"
 
 $(MECT_PREFIX)/usr/lib/libATCMplugin.so.1.0.0: $(MECT_SOURCES)/qt_plugins/libATCMplugin.so.1.0.0
