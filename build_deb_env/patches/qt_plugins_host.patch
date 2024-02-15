@@ -19,9 +19,42 @@
  
  /* Trend */
  extern char _layout_;
---- A/qt_library/ATCMcommon/global_functions.cpp	2024-01-24 17:16:12.122724821 +0000
-+++ B/qt_library/ATCMcommon/global_functions.cpp	2024-01-30 12:59:43.557359052 +0000
-@@ -792,25 +792,7 @@
+--- A/qt_library/ATCMcommon/global_functions.cpp	2024-01-31 09:44:44.639486249 +0000
++++ B/qt_library/ATCMcommon/global_functions.cpp	2024-02-15 10:33:04.816510320 +0000
+@@ -519,6 +519,7 @@
+     readIniFile();
+ 
+ #ifdef TARGET
++#ifdef Q_WS_QWS
+     /* set the cursor as invisible */
+     QWSServer::setCursorVisible(false);
+ 
+@@ -527,6 +528,9 @@
+ 
+     background.load(BACKGROUND_FILE);
+     QWSServer::setBackground(background);
++#else
++    // disabled: invisible cursor
++#endif
+ #endif
+ 
+     /* prepare the directory tree */
+@@ -543,10 +547,14 @@
+ #endif
+ 
+ #if defined(TARGET)
++#ifdef Q_WS_QWS
+     /* Set up screen saver */
+     QWSServer::setScreenSaver( new ScreenSaver );
+     QWSServer::setScreenSaverInterval(ScreenSaverSec * 1000); //msec
+     QWSServer::setScreenSaverBlockLevel(0);
++#else
++    // disabled: screensaver
++#endif
+ #endif
+     /* if a language is not set, set italian as default */
+     if (strlen(_language_) == 0)
+@@ -792,25 +800,7 @@
          value = (volume & 0xFF) + (on_cs << 8) + (off_cs << 16) + (replies << 24);
          doWrite(ID_PLC_BUZZER, &value);
      } else {
@@ -125,3 +158,146 @@
  {
      int value = 0;
  
+--- A/qt_library/ATCMcommon/global_var.cpp	2024-01-31 09:44:44.639486249 +0000
++++ B/qt_library/ATCMcommon/global_var.cpp	2024-02-15 10:56:12.807475851 +0000
+@@ -11,8 +11,12 @@
+ #include "app_usb.h"
+ 
+ #ifdef TARGET
++#ifdef Q_WS_QWS
+ #include <QWSServer>
+ #include "screensaver.h"
++#else
++	// disabled: screensaver
++#endif
+ int ScreenSaverSec = 0;
+ #endif //TARGET
+ 
+--- A/qt_library/ATCMstore/store.cpp	2024-01-31 09:44:44.639486249 +0000
++++ B/qt_library/ATCMstore/store.cpp	2024-02-15 10:35:19.759984758 +0000
+@@ -14,7 +14,10 @@
+ #include <QStringList>
+ #include <QDir>
+ #include <errno.h>
++#ifdef Q_WS_QWS
+ #include <QWSServer>
++#else
++#endif
+ #include <QCoreApplication>
+ #include <QElapsedTimer>
+ #include <QFontMetrics>
+@@ -364,7 +367,10 @@
+         FILE * fpout;
+         char * p = NULL;
+ 
++#ifdef Q_WS_QWS
+         QWSServer::setCursorVisible(true);
++#else
++#endif
+         QApplication::setOverrideCursor(Qt::WaitCursor);
+         ui->pushButtonSaveUSB->setEnabled(false);
+         this->update();
+@@ -506,7 +512,10 @@
+         USBumount();
+         ui->pushButtonSaveUSB->setEnabled(true);
+         QApplication::restoreOverrideCursor();
++#ifdef Q_WS_QWS
+         QWSServer::setCursorVisible(false);
++#else
++#endif
+         update();
+         return;
+     }
+--- A/qt_library/ATCMsystem/display_settings.cpp	2024-01-31 09:44:44.639486249 +0000
++++ B/qt_library/ATCMsystem/display_settings.cpp	2024-02-15 10:37:46.459737075 +0000
+@@ -11,7 +11,10 @@
+ #include "display_settings.h"
+ #include "ui_display_settings.h"
+ #include <QMessageBox>
++#ifdef Q_WS_QWS
+ #include <QWSServer>
++#else
++#endif
+ #include <QSettings>
+ #include <unistd.h>
+ 
+@@ -215,8 +218,10 @@
+         ui->pushButtonON->setStyleSheet("background-color: DarkTurquoise;");
+         ui->pushButtonOFF->setStyleSheet("background-color: SlateGray;");
+         ScreenSaverSec = value;
+-        QWSServer::setScreenSaverInterval(ScreenSaverSec*1000); //msec
+-        
++#ifdef Q_WS_QWS
++	QWSServer::setScreenSaverInterval(ScreenSaverSec*1000); //msec
++#else
++#endif	
+         QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+         settings.setValue(SCREENSAVER_TAG, ScreenSaverSec);
+         settings.sync();
+@@ -227,12 +232,18 @@
+ void display_settings::on_pushButtonOFF_clicked()
+ {
+     //disabling screensaver
++#ifdef Q_WS_QWS
+     QWSServer::setScreenSaverInterval(0); //msec
++#else
++#endif
+     ui->pushButtonOFF->setStyleSheet("background-color: DarkTurquoise;");
+     ui->pushButtonON->setStyleSheet("background-color: SlateGray;");
+     ui->pushButtonON->setText("Disabled");
+     ScreenSaverSec = 0;
++#ifdef Q_WS_QWS
+     QWSServer::setScreenSaverInterval(ScreenSaverSec*1000); //msec
++#else
++#endif
+     
+     QSettings settings(CONFIG_FILE, QSettings::IniFormat);
+     settings.setValue(SCREENSAVER_TAG, ScreenSaverSec);
+--- A/qt_library/ATCMcommon/screensaver.h	2024-01-31 09:44:44.639486249 +0000
++++ B/qt_library/ATCMcommon/screensaver.h	2024-02-15 11:09:53.003675741 +0000
+@@ -1,7 +1,9 @@
+ #ifndef SCREENSAVER_H
+ #define SCREENSAVER_H
+ 
++#ifdef Q_WS_QWS
+ #include <QWSScreenSaver>
++#endif
+ 
+ #define BACKLIGHT_FILE_LOCAL  LOCAL_ETC_DIR"/brightness"
+ 
+@@ -11,6 +13,7 @@
+ 
+ #define SCREENSAVER_DEFAULT_TIME 30000 //defalt time before the screensaver becomes active. Expressed in msec
+ 
++#ifdef Q_WS_QWS
+ 
+ class ScreenSaver : public QWSScreenSaver
+ {
+@@ -21,6 +24,9 @@
+ private:
+     
+ };
++#else
++	// disabled: screensaver
++#endif
+ 
+ #endif // SCREENSAVER_H
+ 
+--- A/qt_library/ATCMcommon/screensaver.cpp	2024-01-31 09:44:44.639486249 +0000
++++ B/qt_library/ATCMcommon/screensaver.cpp	2024-02-15 11:04:34.143839162 +0000
+@@ -6,6 +6,7 @@
+ #include "global_var.h"
+ #include "cross_table_utility.h"
+ 
++#ifdef Q_WS_QWS
+ #define BLANK_SCREEN_FILE "/sys/class/graphics/fb0/blank"
+ 
+ void ScreenSaver::restore()
+@@ -99,3 +100,7 @@
+     LOG_PRINT(warning_e, "ENTERING SCREENSAVER\n");
+     return true;
+ }
++
++#else
++	// disabled: screensaver
++#endif
