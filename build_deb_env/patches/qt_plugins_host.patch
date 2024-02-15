@@ -301,3 +301,46 @@
 +#else
 +	// disabled: screensaver
 +#endif
+--- A/qt_library/ATCMsystem/main.cpp	2024-01-31 09:44:44.647486465 +0000
++++ B/qt_library/ATCMsystem/main.cpp	2024-02-15 11:58:10.202950692 +0000
+@@ -147,6 +147,7 @@
+     char vncDisplay[128];
+     printVncDisplayString(vncDisplay);
+ 
++#ifdef Q_WS_QWS
+     int myargc = 4;
+     char *myargv[] =
+     {
+@@ -157,6 +158,15 @@
+     };
+ 
+     QApplication app(myargc, myargv);
++#else
++    int myargc = 1;
++    char *myargv[] =
++    {
++        argv[0]
++    };
++
++    QApplication app(myargc, myargv);
++#endif
+     // Reading Internal QSS File if present in resources
+     QString internalStyle;
+     QFile internalQSS(":/qss/scrollbars.qss");
+--- A/qt_library/ATCMcommon/pagebrowser.h	2024-01-31 09:44:44.639486249 +0000
++++ B/qt_library/ATCMcommon/pagebrowser.h	2024-02-15 12:12:03.447641210 +0000
+@@ -32,10 +32,14 @@
+ #include "alphanumpad.h"
+ 
+ #ifdef TARGET
++#ifdef Q_WS_QWS
+ #define SHOW showFullScreen
+ #else
+ #define SHOW show
+ #endif
++#else
++#define SHOW show
++#endif
+ 
+ #define PAGE_PREFIX "page"
+ 
