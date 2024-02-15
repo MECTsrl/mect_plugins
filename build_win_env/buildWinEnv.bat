@@ -16,13 +16,14 @@ SET TEMP_DIR=%ROOT_DIR%Ms35_tmp\
 SET SRC_DIR=%TEMP_DIR%qt-everywhere-opensource-src-4.8.7\
 SET OPENSSL_DIR=%ROOT_DIR%openssl-1.0.2u\
 SET QWT_DIR=%ROOT_DIR%qwt-6.1-multiaxes_r2275_win\
-SET QTSERIAL_DIR=%ROOT_DIR%qtserialport\
+SET QTSERIALPORT=qtserialport
+SET QTSERIAL_DIR=%ROOT_DIR%%QTSERIALPORT%\
 Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
 SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
 SET TEE=%ProgramFiles%\Git\usr\bin\tee
 Rem ---- File to be downloaded 
-SET DOWNLOAD_LIST=MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z qt-everywhere-opensource-src-4.8.7.zip openssl-1.0.2u_winbuild.7z qt-tools.7z qt487_doc.7z qwt-6.1-multiaxes_r2275_win.7z
+SET DOWNLOAD_LIST=MingW_i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z qt-everywhere-opensource-src-4.8.7.zip openssl-1.0.2u_winbuild.7z qt-tools.7z qt487_doc.7z qwt-6.1-multiaxes_r2275_win.7z qtserialport_487.7z
 SET ErrorLog=%STARTDIR%\%~n0.log
 
 Rem ---- Checking Params
@@ -155,6 +156,15 @@ if errorlevel 1 (
 	call :screenAndLog "Error Expanding: qwt-6.1-multiaxes_r2275_win.7z to %ROOT_DIR%"
 	goto AbortProcess
 )
+Rem ---- qtserialport_487.7z
+IF EXIST %QTSERIAL_DIR%  RD /S /Q %QTSERIAL_DIR%
+MKDIR %QTSERIAL_DIR%
+%EXTRACT_CMD%  %TEMP_DIR%qtserialport_487.7z -o%ROOT_DIR%
+if errorlevel 1 (
+	call :screenAndLog "Error Expanding: qtserialport_487.7z to %ROOT_DIR%"
+	goto AbortProcess
+)
+
 call :screenAndLog "Extraction completed for Qt %QT_VERSION%"
 Set DOWNLOAD_LIST=
 IF /I [%USER_MODE%] EQU [download] goto JobDone
@@ -170,7 +180,7 @@ if errorlevel 1 (
 )
 Rem ---- Updating PATH if needed
 call :addToPath "%CC_DIR%bin"
-call :addToPath %CC_DIR%i686-w64-mingw32\bin;
+call :addToPath %CC_DIR%i686-w64-mingw32\bin
 call :addToPath "%BIN_DIR%"
 rem Set PATH=%CC_DIR%bin;%CC_DIR%i686-w64-mingw32\bin;%BIN_DIR%;%PATH%
 %DESKTOP_DIR%configure  -prefix C:/Qt487/desktop -fast -opensource -platform win32-g++ -debug-and-release -confirm-license -no-vcproj -no-s60 -no-webkit -no-cetest -no-dsp -no-phonon -no-phonon-backend -no-qt3support -nomake examples -nomake demos -qt-zlib -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%TEE%" %ErrorLog%" %TEMP_DIR%Qt487-desktop-config.log
@@ -193,7 +203,7 @@ if errorlevel 1 (
 )
 Rem ---- Updating PATH if needed
 call :addToPath "%CC_DIR%bin"
-call :addToPath %CC_DIR%i686-w64-mingw32\bin;
+call :addToPath %CC_DIR%i686-w64-mingw32\bin
 call :addToPath "%BIN_DIR%"
 set QMAKESPEC=%WINBUILD_DIR%mkspecs\win32-g++
 Rem Creating ./bin/qt.conf with right qmake prefix path
@@ -227,7 +237,7 @@ fart -c -i -r Makefile*  c:$(INSTALL_ROOT)%WINBUILD_PATH% c:$(INSTALL_ROOT)%DESK
 set INSTALL_ROOT=
 Rem ---- Updating PATH if needed
 call :addToPath "%CC_DIR%bin"
-call :addToPath %CC_DIR%i686-w64-mingw32\bin;
+call :addToPath %CC_DIR%i686-w64-mingw32\bin
 call :addToPath "%BIN_DIR%"
 set QMAKESPEC=C:\Qt487\winbuild\mkspecs\win32-g++
 Rem ---- Start Qt Installation
@@ -255,7 +265,7 @@ if not EXIST %WINSPEC_DIR% (
 )
 Rem ---- Updating PATH if needed
 call :addToPath "%CC_DIR%bin"
-call :addToPath %CC_DIR%i686-w64-mingw32\bin;
+call :addToPath %CC_DIR%i686-w64-mingw32\bin
 call :addToPath "%BIN_DIR%"
 Rem ---- Configuring Qwt
 call :screenAndLog "Configuring Qwt"
@@ -290,14 +300,10 @@ cd %STARTDIR%
 IF /I [%USER_MODE%] EQU [qwt] goto JobDone
 
 :buildQtSerial
-call :screenAndLog "Configuring QtSerial in qtserialport"
-Rem ---- Clear QtSerial Dir
-IF EXIST %QTSERIAL_DIR% RD /S /Q %QTSERIAL_DIR%
-cd %ROOT_DIR%%
-Pause
-
-if errorlevel 1 (
-	call :screenAndLog "Qwt dir %QTSERIAL_DIR% not found, please download Qt components"
+call :screenAndLog "Configuring QtSerialPort Project"
+Rem ---- Checking Sources
+if NOT EXIST %QTSERIAL_DIR% (
+	call :screenAndLog "QtSerialPort source dir [%QTSERIAL_DIR%] not found, please download Qt components"
 	goto AbortProcess
 )
 if not EXIST %WINSPEC_DIR% (
@@ -306,35 +312,72 @@ if not EXIST %WINSPEC_DIR% (
 )
 Rem ---- Updating PATH if needed
 call :addToPath "%CC_DIR%bin"
-call :addToPath %CC_DIR%i686-w64-mingw32\bin;
+call :addToPath %CC_DIR%i686-w64-mingw32\bin
 call :addToPath "%BIN_DIR%"
-Rem ---- Configuring Qwt
-call :screenAndLog "Configuring Qwt"
-qmake qwt.pro 2>&1 | "%TEE%" -a %TEMP_DIR%Qwt-Configure.log
+Rem ---- Clear QtSerial Debug Mode Build Dir
+cd %QTSERIAL_DIR%
+IF EXIST %QTSERIAL_DIR%build_debug RD /S /Q %QTSERIAL_DIR%build_debug
+MKDIR %QTSERIAL_DIR%build_debug
+Rem ---- Configuring QtSerialPort in Debug Mode
+call :screenAndLog "Configuring QtSerialPort in debug mode"
+cd %QTSERIAL_DIR%build_debug
+qmake ..\%QTSERIALPORT%.pro  CONFIG+=debug  2>&1 | "%TEE%"  %TEMP_DIR%%QTSERIALPORT%_Configure.log
 if errorlevel 1 (
-	call :screenAndLog "Error Configuring Qwt 6.1 Multiaxes in %QTSERIAL_DIR%"
+	call :screenAndLog "Error Configuring %QTSERIALPORT% in %QTSERIAL_DIR%build_debug in Debug Mode"
 	goto AbortProcess
 )  else  (
-	call :screenAndLog "Configured Qwt 6.1 Multiaxes in %QTSERIAL_DIR%"
+	call :screenAndLog "Configured %QTSERIALPORT% in %QTSERIAL_DIR%build_debug in Debug Mode"
 )
-Rem ---- Building Qwt
-call :screenAndLog "Building Qwt"
-mingw32-make  2>&1 | "%TEE%" %TEMP_DIR%Qwt-Make.log
+Rem ---- Building QtSerialPort in Debug Mode
+call :screenAndLog "Building %QTSERIALPORT% in Debug Mode"
+mingw32-make  2>&1 | "%TEE%" %TEMP_DIR%%QTSERIALPORT%_Build.log
 if errorlevel 1 (
-	call :screenAndLog "Error Building Qwt 6.1 Multiaxes in %QTSERIAL_DIR%"
+	call :screenAndLog "Error Building %QTSERIALPORT% in %QTSERIAL_DIR% in Debug Mode"
 	goto AbortProcess
 )  else  (
-	call :screenAndLog "Builded Qwt 6.1 Multiaxes in %QTSERIAL_DIR%"
+	call :screenAndLog "Builded %QTSERIALPORT% in %QTSERIAL_DIR%build_debug in Debug Mode"
 )
-Rem ---- Start Qwt Installation
-call :screenAndLog "Installing Qwt in %DESKTOP_DIR%"
-mingw32-make install 2>&1 | "%TEE%" -a %TEMP_DIR%Qwt-Install.log
+Rem ---- Start QtSerialPort Installation in Debug Mode
+call :screenAndLog "Installing %QTSERIALPORT% in %DESKTOP_DIR%"
+mingw32-make install 2>&1 | "%TEE%" %TEMP_DIR%%QTSERIALPORT%_Install.log
 if errorlevel 1 (
-	call :screenAndLog "Error Installing Qwt 6.1 Multiaxes from %QTSERIAL_DIR% to %DESKTOP_DIR%"
+	call :screenAndLog "Error Installing %QTSERIALPORT% from %QTSERIAL_DIR%build_debug to %DESKTOP_DIR% in Debug Mode"
 	goto AbortProcess
 )  else  (
-	xcopy %QTSERIAL_DIR%lib\qwt.dll %BIN_DIR% /Y /I
-	call :screenAndLog "Installed Qwt 6.1 Multiaxes from %QTSERIAL_DIR% to %DESKTOP_DIR%"
+	call :screenAndLog "Installed %QTSERIALPORT% from %QTSERIAL_DIR%build_debug to %DESKTOP_DIR% in Debug Mode"
+)
+
+Rem ---- Clear QtSerial Release Mode Build Dir
+cd %QTSERIAL_DIR%
+IF EXIST %QTSERIAL_DIR%build_release RD /S /Q %QTSERIAL_DIR%build_release
+MKDIR %QTSERIAL_DIR%build_release
+Rem ---- Configuring QtSerialPort in Release Mode
+call :screenAndLog "Configuring QtSerialPort in release mode"
+cd %QTSERIAL_DIR%build_release
+qmake ..\%QTSERIALPORT%.pro  CONFIG+=release  2>&1 | "%TEE%" -a %TEMP_DIR%%QTSERIALPORT%_Configure.log
+if errorlevel 1 (
+	call :screenAndLog "Error Configuring %QTSERIALPORT% in %QTSERIAL_DIR%build_release in Release Mode"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Configured %QTSERIALPORT% in %QTSERIAL_DIR%build_release in Release Mode"
+)
+Rem ---- Building QtSerialPort in Release Mode
+call :screenAndLog "Building %QTSERIALPORT% in Release Mode"
+mingw32-make  2>&1 | "%TEE%" -a %TEMP_DIR%%QTSERIALPORT%_Build.log
+if errorlevel 1 (
+	call :screenAndLog "Error Building %QTSERIALPORT% in %QTSERIAL_DIR%build_release in Release Mode"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Builded %QTSERIALPORT% in %QTSERIAL_DIR%build_release in Release Mode"
+)
+Rem ---- Start QtSerialPort Installation in Release Mode
+call :screenAndLog "Installing %QTSERIALPORT% in %DESKTOP_DIR%"
+mingw32-make install 2>&1 | "%TEE%" -a %TEMP_DIR%%QTSERIALPORT%_Install.log
+if errorlevel 1 (
+	call :screenAndLog "Error Installing %QTSERIALPORT% from %QTSERIAL_DIR%build_release to %DESKTOP_DIR% in Release Mode"
+	goto AbortProcess
+)  else  (
+	call :screenAndLog "Installed %QTSERIALPORT% from %QTSERIAL_DIR%build_release to %DESKTOP_DIR% in Release Mode"
 )
 Rem  ---- Exit batch if QtSerial
 cd %STARTDIR%
@@ -376,7 +419,7 @@ echo mode = download: 	Download Components and exit
 echo mode = configure: 	Configure Qt and exit
 echo mode = build: 		Build Qt and exit
 echo mode = install: 	Install configured Qt and exit
-echo mode = qwt:		Configure, compile, istall QWT Multiaxes	
-echo mode = qtserial:	Configure, compile, istall QtSerialPort
+echo mode = qwt:		Configure, compile, install QWT Multiaxes	
+echo mode = qtserial:	Configure, compile, install QtSerialPort
 
 goto JobDone

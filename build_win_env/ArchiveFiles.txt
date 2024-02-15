@@ -10,7 +10,8 @@ Files moved to Mect Archive: (https://www.mect.it/archive/build_win_env/)
 - qt-creator-2.8.1-src.zip:								Qt Creator 2.8.1 Sources (Windows version)
 - qwt-6.1-multiaxes_r2275_win.7z:						QWT 6.1 Multiaxes (Updated qwtconfig.pri for Windows Setup)
 - sourcery-g++-lite.7z									Sourcery g++ lite 2011.03.41 arm
+- qtserialport_487.7z									QtSerialPort (see https://wiki.qt.io/Qt_Serial_Port Obtained as git clone git://code.qt.io/qt/qtserialport.git and git checkout qt4-dev)
 
 Each file is accompanied by the corresponding MD5 calculation in BYNARY Mode, obtained with the command:
 C:\Program Files\Git\usr\bin\md5sum -b <file> MD5 > <file>.md5
-for %i in (*) DO "C:\Program Files\Git\usr\bin\md5sum" %i > %i.md5
+for %i in (*.7z) DO "C:\Program Files\Git\usr\bin\md5sum" -b %i > %i.md5
