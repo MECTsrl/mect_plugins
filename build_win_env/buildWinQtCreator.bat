@@ -18,6 +18,7 @@ Rem ---- File Download program
 SET TRANSFER_CMD=%CD%\getFileFromArchive.bat
 SET EXTRACT_CMD="%ProgramFiles%\7-Zip\7z.exe" x -y -r 
 SET ErrorLog=%STARTDIR%\%~n0.log
+SET TEE=%ProgramFiles%\Git\usr\bin\tee
 Rem ---- Checking Params
 IF [%USER_MODE%] EQU [] goto showUsage
 echo %DATE% - %TIME%: Starting: %~n0 Param: [%USER_MODE%]  > %ErrorLog%
@@ -81,7 +82,7 @@ call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
 Rem ---- Configure Qt Creator
 call :screenAndLog "Configuring Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
-qmake CONFIG+=release -r 2>&1 | "%ProgramFiles%\Git\usr\bin\tee"  %TEMP_DIR%QtCreator281-Configure_Release.Log
+qmake CONFIG+=release -r 2>&1 | "%TEE%" %STARTDIR%\QtCreator281-Configure_Release.Log
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
 	goto AbortProcess
@@ -102,7 +103,7 @@ call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
 Rem ---- Build  Qt Creator
 call :screenAndLog "Building Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
-mingw32-make release 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%QtCreator281-Make_Release.Log
+mingw32-make release 2>&1 | "%TEE%" %STARTDIR%\QtCreator281-Make_Release.Log
 if errorlevel 1 (
 	call :screenAndLog "Error Building Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION%"
 	goto AbortProcess
@@ -124,7 +125,7 @@ call :addToPath %CC_DIR%i686-w64-mingw32\bin;
 call :addToPath "%BIN_DIR%"
 Rem ---- Install Qt Creator
 call :screenAndLog "Installing Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION% to %CREATOR_DIR%""
-mingw32-make install INSTALL_ROOT=%CREATOR_DIR% 2>&1 | "%ProgramFiles%\Git\usr\bin\tee" %TEMP_DIR%QtCreator281-Install_Release.log
+mingw32-make install INSTALL_ROOT=%CREATOR_DIR% 2>&1 | "%TEE%" %STARTDIR%\QtCreator281-Install_Release.log
 if errorlevel 1 (
 	call :screenAndLog "Error Installing Qt Creator %QT_CREATOR_VERSION% for Qt %QT_VERSION% to %CREATOR_DIR%"
 	goto AbortProcess

@@ -183,7 +183,7 @@ call :addToPath "%CC_DIR%bin"
 call :addToPath %CC_DIR%i686-w64-mingw32\bin
 call :addToPath "%BIN_DIR%"
 rem Set PATH=%CC_DIR%bin;%CC_DIR%i686-w64-mingw32\bin;%BIN_DIR%;%PATH%
-%DESKTOP_DIR%configure  -prefix C:/Qt487/desktop -fast -opensource -platform win32-g++ -debug-and-release -confirm-license -no-vcproj -no-s60 -no-webkit -no-cetest -no-dsp -no-phonon -no-phonon-backend -no-qt3support -nomake examples -nomake demos -qt-zlib -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%TEE%" %ErrorLog%" %TEMP_DIR%Qt487-desktop-config.log
+%DESKTOP_DIR%configure  -prefix C:/Qt487/desktop -fast -opensource -platform win32-g++ -debug-and-release -confirm-license -no-vcproj -no-s60 -no-webkit -no-cetest -no-dsp -no-phonon -no-phonon-backend -no-qt3support -nomake examples -nomake demos -qt-zlib -qt-sql-odbc -qt-sql-sqlite -plugin-sql-sqlite -plugin-sql-odbc -plugin-sql-mysql -I C:/MySQLConnector/include -L C:/MySQLConnector/lib -openssl -I %OPENSSL_DIR%include 2>&1 | "%TEE%" %STARTDIR%\Qt487-desktop-config.log
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring Qt in: %WINBUILD_DIR%"
 	goto AbortProcess
@@ -210,7 +210,7 @@ Rem Creating ./bin/qt.conf with right qmake prefix path
 Set QPREFIX=%WINBUILD_DIR:\=/%
 Echo [Paths] > bin\qt.conf
 ECHO Prefix=%QPREFIX%>> bin\qt.conf
-mingw32-make  2>&1 | "%TEE%" %TEMP_DIR%Qt487-desktop-make.log
+mingw32-make  2>&1 | "%TEE%" %STARTDIR%\Qt487-desktop-make.log
 if errorlevel 1 (
 	call :screenAndLog "Error Building Qt in: %WINBUILD_DIR%"
 	goto AbortProcess
@@ -241,7 +241,7 @@ call :addToPath %CC_DIR%i686-w64-mingw32\bin
 call :addToPath "%BIN_DIR%"
 set QMAKESPEC=C:\Qt487\winbuild\mkspecs\win32-g++
 Rem ---- Start Qt Installation
-mingw32-make install 2>&1 | "%TEE%" -a %TEMP_DIR%Qt487-Install.log
+mingw32-make install 2>&1 | "%TEE%" %STARTDIR%\Qt487-Install.log
 if errorlevel 1 (
 	call :screenAndLog "Error Installing Qt from %WINBUILD_DIR% to: %DESKTOP_DIR%"
 	goto AbortProcess
@@ -269,7 +269,7 @@ call :addToPath %CC_DIR%i686-w64-mingw32\bin
 call :addToPath "%BIN_DIR%"
 Rem ---- Configuring Qwt
 call :screenAndLog "Configuring Qwt"
-qmake qwt.pro 2>&1 | "%TEE%" -a %TEMP_DIR%Qwt-Configure.log
+qmake qwt.pro 2>&1 | "%TEE%" %STARTDIR%\Qwt-Configure.log
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring Qwt 6.1 Multiaxes in %QWT_DIR%"
 	goto AbortProcess
@@ -278,7 +278,7 @@ if errorlevel 1 (
 )
 Rem ---- Building Qwt
 call :screenAndLog "Building Qwt"
-mingw32-make  2>&1 | "%TEE%" %TEMP_DIR%Qwt-Make.log
+mingw32-make  2>&1 | "%TEE%" %STARTDIR%\Qwt-Make.log
 if errorlevel 1 (
 	call :screenAndLog "Error Building Qwt 6.1 Multiaxes in %QWT_DIR%"
 	goto AbortProcess
@@ -287,7 +287,7 @@ if errorlevel 1 (
 )
 Rem ---- Start Qwt Installation
 call :screenAndLog "Installing Qwt in %DESKTOP_DIR%"
-mingw32-make install 2>&1 | "%TEE%" -a %TEMP_DIR%Qwt-Install.log
+mingw32-make install 2>&1 | "%TEE%" %STARTDIR%\Qwt-Install.log
 if errorlevel 1 (
 	call :screenAndLog "Error Installing Qwt 6.1 Multiaxes from %QWT_DIR% to %DESKTOP_DIR%"
 	goto AbortProcess
@@ -321,7 +321,7 @@ MKDIR %QTSERIAL_DIR%build_debug
 Rem ---- Configuring QtSerialPort in Debug Mode
 call :screenAndLog "Configuring QtSerialPort in debug mode"
 cd %QTSERIAL_DIR%build_debug
-qmake ..\%QTSERIALPORT%.pro  CONFIG+=debug  2>&1 | "%TEE%"  %TEMP_DIR%%QTSERIALPORT%_Configure.log
+qmake ..\%QTSERIALPORT%.pro  CONFIG+=debug  2>&1 | "%TEE%"  %STARTDIR%\%QTSERIALPORT%_Configure.log
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring %QTSERIALPORT% in %QTSERIAL_DIR%build_debug in Debug Mode"
 	goto AbortProcess
@@ -330,7 +330,7 @@ if errorlevel 1 (
 )
 Rem ---- Building QtSerialPort in Debug Mode
 call :screenAndLog "Building %QTSERIALPORT% in Debug Mode"
-mingw32-make  2>&1 | "%TEE%" %TEMP_DIR%%QTSERIALPORT%_Build.log
+mingw32-make  2>&1 | "%TEE%" %STARTDIR%\%QTSERIALPORT%_Build.log
 if errorlevel 1 (
 	call :screenAndLog "Error Building %QTSERIALPORT% in %QTSERIAL_DIR% in Debug Mode"
 	goto AbortProcess
@@ -339,7 +339,7 @@ if errorlevel 1 (
 )
 Rem ---- Start QtSerialPort Installation in Debug Mode
 call :screenAndLog "Installing %QTSERIALPORT% in %DESKTOP_DIR%"
-mingw32-make install 2>&1 | "%TEE%" %TEMP_DIR%%QTSERIALPORT%_Install.log
+mingw32-make install 2>&1 | "%TEE%" %STARTDIR%\%QTSERIALPORT%_Install.log
 if errorlevel 1 (
 	call :screenAndLog "Error Installing %QTSERIALPORT% from %QTSERIAL_DIR%build_debug to %DESKTOP_DIR% in Debug Mode"
 	goto AbortProcess
@@ -354,7 +354,7 @@ MKDIR %QTSERIAL_DIR%build_release
 Rem ---- Configuring QtSerialPort in Release Mode
 call :screenAndLog "Configuring QtSerialPort in release mode"
 cd %QTSERIAL_DIR%build_release
-qmake ..\%QTSERIALPORT%.pro  CONFIG+=release  2>&1 | "%TEE%" -a %TEMP_DIR%%QTSERIALPORT%_Configure.log
+qmake ..\%QTSERIALPORT%.pro  CONFIG+=release  2>&1 | "%TEE%" -a %STARTDIR%\%QTSERIALPORT%_Configure.log
 if errorlevel 1 (
 	call :screenAndLog "Error Configuring %QTSERIALPORT% in %QTSERIAL_DIR%build_release in Release Mode"
 	goto AbortProcess
@@ -363,7 +363,7 @@ if errorlevel 1 (
 )
 Rem ---- Building QtSerialPort in Release Mode
 call :screenAndLog "Building %QTSERIALPORT% in Release Mode"
-mingw32-make  2>&1 | "%TEE%" -a %TEMP_DIR%%QTSERIALPORT%_Build.log
+mingw32-make  2>&1 | "%TEE%" -a %STARTDIR%\%QTSERIALPORT%_Build.log
 if errorlevel 1 (
 	call :screenAndLog "Error Building %QTSERIALPORT% in %QTSERIAL_DIR%build_release in Release Mode"
 	goto AbortProcess
@@ -372,7 +372,7 @@ if errorlevel 1 (
 )
 Rem ---- Start QtSerialPort Installation in Release Mode
 call :screenAndLog "Installing %QTSERIALPORT% in %DESKTOP_DIR%"
-mingw32-make install 2>&1 | "%TEE%" -a %TEMP_DIR%%QTSERIALPORT%_Install.log
+mingw32-make install 2>&1 | "%TEE%" -a %STARTDIR%\%QTSERIALPORT%_Install.log
 if errorlevel 1 (
 	call :screenAndLog "Error Installing %QTSERIALPORT% from %QTSERIAL_DIR%build_release to %DESKTOP_DIR% in Release Mode"
 	goto AbortProcess
